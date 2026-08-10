@@ -1,0 +1,33 @@
+Reclazz
+Copyright 2026 Onur Kat
+
+This product includes software developed by Onur Kat
+(https://github.com/onurkat/reclazz).
+
+Licensed under the Apache License, Version 2.0. See the LICENSE file for
+the full terms.
+
+"Reclazz" and the Reclazz logo are trademarks of Onur Kat. The Apache
+License does not grant permission to use them; see TRADEMARK.md for what
+is and is not allowed.
+
+--------------------------------------------------------------------------
+Third-party components
+--------------------------------------------------------------------------
+
+The distributed agent jar shades and relocates the following libraries:
+
+  Byte Buddy (https://bytebuddy.net/)
+    Copyright Rafael Winterhalter
+    Licensed under the Apache License, Version 2.0
+    Relocated to com.onurkat.reclazz.shaded.bytebuddy
+
+  ASM (https://asm.ow2.io/)
+    Copyright INRIA, France Telecom
+    Licensed under the 3-Clause BSD License
+    Relocated to com.onurkat.reclazz.shaded.asm
+
+The IntelliJ IDEA plugin builds against the IntelliJ Platform
+(https://github.com/JetBrains/intellij-community), Copyright JetBrains
+s.r.o., licensed under the Apache License, Version 2.0. The platform is
+provided by the IDE at runtime and is not redistributed here.

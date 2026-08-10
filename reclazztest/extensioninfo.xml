@@ -1,0 +1,9 @@
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+    <extension classprefix="reclazztest" name="reclazztest"
+               usemaven="false">
+        <requires-extension name="commercewebservicescommons"/>
+        <coremodule generated="true" manager="de.hybris.platform.jalo.extension.GenericManager" packageroot="com.onurkat.reclazztest"/>
+        <webmodule jspcompile="false" webroot="/reclazztest"/>
+    </extension>
+</extensioninfo>

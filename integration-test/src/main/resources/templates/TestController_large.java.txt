@@ -1,0 +1,366 @@
+package com.onurkat.reclazztest.controllers;
+
+import com.onurkat.reclazztest.services.CacheTestService;
+import com.onurkat.reclazztest.services.EventTestService;
+import com.onurkat.reclazztest.services.HelperService;
+import com.onurkat.reclazztest.services.SchedulerTestService;
+import com.onurkat.reclazztest.services.TestDao;
+import com.onurkat.reclazztest.services.TestService;
+import com.onurkat.reclazztest.interceptors.TestValidateInterceptor;
+
+import de.hybris.platform.servicelayer.search.FlexibleSearchService;
+import de.hybris.platform.servicelayer.search.SearchResult;
+import de.hybris.platform.core.model.user.TitleModel;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+
+@RestController
+@RequestMapping("/test")
+public class TestController {
+
+    @Autowired
+    private TestService testService;
+
+    @Autowired
+    private HelperService helperService;
+
+    @Autowired
+    private CacheTestService cacheTestService;
+
+    @Autowired
+    private SchedulerTestService schedulerTestService;
+
+    @Autowired
+    private EventTestService eventTestService;
+
+    @Autowired
+    private TestDao testDao;
+
+    @Autowired
+    private FlexibleSearchService flexibleSearchService;
+
+    @RequestMapping(value = "/ping", method = RequestMethod.GET)
+    public String ping() {
+        return testService.ping();
+    }
+
+    @RequestMapping(value = "/greeting", method = RequestMethod.GET)
+    public String greeting() {
+        return testService.getGreeting();
+    }
+
+    @RequestMapping(value = "/echo", method = RequestMethod.GET)
+    public String echo(@RequestParam String msg,
+                       @RequestParam(required = false, defaultValue = "") String suffix) {
+        return testService.echo(msg, suffix);
+    }
+
+    @RequestMapping(value = "/removable", method = RequestMethod.GET)
+    public String removable() {
+        return testService.removable();
+    }
+
+    @RequestMapping(value = "/service", method = RequestMethod.GET)
+    public String service() {
+        return testService.getServiceVersion();
+    }
+
+    @RequestMapping(value = "/multi", method = RequestMethod.GET)
+    public String multi() {
+        return helperService.getHelperVersion() + ":" + testService.getServiceVersion();
+    }
+
+    @RequestMapping(value = "/cache", method = RequestMethod.GET)
+    public String cache(@RequestParam String key) {
+        return cacheTestService.getCachedValue(key);
+    }
+
+    @RequestMapping(value = "/scheduler", method = RequestMethod.GET)
+    public String scheduler() {
+        return schedulerTestService.getLastRun();
+    }
+
+    @RequestMapping(value = "/event", method = RequestMethod.GET)
+    public String event() {
+        eventTestService.triggerEvent();
+        return eventTestService.getLastEvent();
+    }
+
+    @RequestMapping(value = "/interceptor", method = RequestMethod.GET)
+    public String interceptor() {
+        return TestValidateInterceptor.getLastValidation();
+    }
+
+    @RequestMapping(value = "/impex-title", method = RequestMethod.GET)
+    public String impexTitle() {
+        final String query = "SELECT {pk} FROM {Title} WHERE {code} = ?code";
+        final java.util.Map<String, Object> params = java.util.Collections.singletonMap("code", "reclazzTestTitle");
+        final SearchResult<TitleModel> result = flexibleSearchService.search(query, params);
+        if (result.getResult().isEmpty()) {
+            return "not-found";
+        }
+        return result.getResult().get(0).getName();
+    }
+
+    @RequestMapping(value = "/dao", method = RequestMethod.GET)
+    public String dao() {
+        return testDao.query();
+    }
+
+    @RequestMapping(value = "/large0", method = RequestMethod.GET)
+    public String large0() {
+        return "large-0";
+    }
+
+    @RequestMapping(value = "/large1", method = RequestMethod.GET)
+    public String large1() {
+        return "large-1";
+    }
+
+    @RequestMapping(value = "/large2", method = RequestMethod.GET)
+    public String large2() {
+        return "large-2";
+    }
+
+    @RequestMapping(value = "/large3", method = RequestMethod.GET)
+    public String large3() {
+        return "large-3";
+    }
+
+    @RequestMapping(value = "/large4", method = RequestMethod.GET)
+    public String large4() {
+        return "large-4";
+    }
+
+    @RequestMapping(value = "/large5", method = RequestMethod.GET)
+    public String large5() {
+        return "large-5";
+    }
+
+    @RequestMapping(value = "/large6", method = RequestMethod.GET)
+    public String large6() {
+        return "large-6";
+    }
+
+    @RequestMapping(value = "/large7", method = RequestMethod.GET)
+    public String large7() {
+        return "large-7";
+    }
+
+    @RequestMapping(value = "/large8", method = RequestMethod.GET)
+    public String large8() {
+        return "large-8";
+    }
+
+    @RequestMapping(value = "/large9", method = RequestMethod.GET)
+    public String large9() {
+        return "large-9";
+    }
+
+    @RequestMapping(value = "/large10", method = RequestMethod.GET)
+    public String large10() {
+        return "large-10";
+    }
+
+    @RequestMapping(value = "/large11", method = RequestMethod.GET)
+    public String large11() {
+        return "large-11";
+    }
+
+    @RequestMapping(value = "/large12", method = RequestMethod.GET)
+    public String large12() {
+        return "large-12";
+    }
+
+    @RequestMapping(value = "/large13", method = RequestMethod.GET)
+    public String large13() {
+        return "large-13";
+    }
+
+    @RequestMapping(value = "/large14", method = RequestMethod.GET)
+    public String large14() {
+        return "large-14";
+    }
+
+    @RequestMapping(value = "/large15", method = RequestMethod.GET)
+    public String large15() {
+        return "large-15";
+    }
+
+    @RequestMapping(value = "/large16", method = RequestMethod.GET)
+    public String large16() {
+        return "large-16";
+    }
+
+    @RequestMapping(value = "/large17", method = RequestMethod.GET)
+    public String large17() {
+        return "large-17";
+    }
+
+    @RequestMapping(value = "/large18", method = RequestMethod.GET)
+    public String large18() {
+        return "large-18";
+    }
+
+    @RequestMapping(value = "/large19", method = RequestMethod.GET)
+    public String large19() {
+        return "large-19";
+    }
+
+    @RequestMapping(value = "/large20", method = RequestMethod.GET)
+    public String large20() {
+        return "large-20";
+    }
+
+    @RequestMapping(value = "/large21", method = RequestMethod.GET)
+    public String large21() {
+        return "large-21";
+    }
+
+    @RequestMapping(value = "/large22", method = RequestMethod.GET)
+    public String large22() {
+        return "large-22";
+    }
+
+    @RequestMapping(value = "/large23", method = RequestMethod.GET)
+    public String large23() {
+        return "large-23";
+    }
+
+    @RequestMapping(value = "/large24", method = RequestMethod.GET)
+    public String large24() {
+        return "large-24";
+    }
+
+    @RequestMapping(value = "/large25", method = RequestMethod.GET)
+    public String large25() {
+        return "large-25";
+    }
+
+    @RequestMapping(value = "/large26", method = RequestMethod.GET)
+    public String large26() {
+        return "large-26";
+    }
+
+    @RequestMapping(value = "/large27", method = RequestMethod.GET)
+    public String large27() {
+        return "large-27";
+    }
+
+    @RequestMapping(value = "/large28", method = RequestMethod.GET)
+    public String large28() {
+        return "large-28";
+    }
+
+    @RequestMapping(value = "/large29", method = RequestMethod.GET)
+    public String large29() {
+        return "large-29";
+    }
+
+    @RequestMapping(value = "/large30", method = RequestMethod.GET)
+    public String large30() {
+        return "large-30";
+    }
+
+    @RequestMapping(value = "/large31", method = RequestMethod.GET)
+    public String large31() {
+        return "large-31";
+    }
+
+    @RequestMapping(value = "/large32", method = RequestMethod.GET)
+    public String large32() {
+        return "large-32";
+    }
+
+    @RequestMapping(value = "/large33", method = RequestMethod.GET)
+    public String large33() {
+        return "large-33";
+    }
+
+    @RequestMapping(value = "/large34", method = RequestMethod.GET)
+    public String large34() {
+        return "large-34";
+    }
+
+    @RequestMapping(value = "/large35", method = RequestMethod.GET)
+    public String large35() {
+        return "large-35";
+    }
+
+    @RequestMapping(value = "/large36", method = RequestMethod.GET)
+    public String large36() {
+        return "large-36";
+    }
+
+    @RequestMapping(value = "/large37", method = RequestMethod.GET)
+    public String large37() {
+        return "large-37";
+    }
+
+    @RequestMapping(value = "/large38", method = RequestMethod.GET)
+    public String large38() {
+        return "large-38";
+    }
+
+    @RequestMapping(value = "/large39", method = RequestMethod.GET)
+    public String large39() {
+        return "large-39";
+    }
+
+    @RequestMapping(value = "/large40", method = RequestMethod.GET)
+    public String large40() {
+        return "large-40";
+    }
+
+    @RequestMapping(value = "/large41", method = RequestMethod.GET)
+    public String large41() {
+        return "large-41";
+    }
+
+    @RequestMapping(value = "/large42", method = RequestMethod.GET)
+    public String large42() {
+        return "large-42";
+    }
+
+    @RequestMapping(value = "/large43", method = RequestMethod.GET)
+    public String large43() {
+        return "large-43";
+    }
+
+    @RequestMapping(value = "/large44", method = RequestMethod.GET)
+    public String large44() {
+        return "large-44";
+    }
+
+    @RequestMapping(value = "/large45", method = RequestMethod.GET)
+    public String large45() {
+        return "large-45";
+    }
+
+    @RequestMapping(value = "/large46", method = RequestMethod.GET)
+    public String large46() {
+        return "large-46";
+    }
+
+    @RequestMapping(value = "/large47", method = RequestMethod.GET)
+    public String large47() {
+        return "large-47";
+    }
+
+    @RequestMapping(value = "/large48", method = RequestMethod.GET)
+    public String large48() {
+        return "large-48";
+    }
+
+    @RequestMapping(value = "/large49", method = RequestMethod.GET)
+    public String large49() {
+        return "large-49";
+    }
+
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Root web application context (parent: Hybris global context via
+     HybrisContextLoaderListener). Services live here so that cache and
+     scheduling annotation processing is active on them. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/cache
+           http://www.springframework.org/schema/cache/spring-cache.xsd
+           http://www.springframework.org/schema/task
+           http://www.springframework.org/schema/task/spring-task.xsd">
+
+    <context:component-scan base-package="com.onurkat.reclazztest.services"/>
+
+    <cache:annotation-driven cache-manager="cacheManager"/>
+    <task:annotation-driven/>
+
+    <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager">
+        <constructor-arg value="testCache"/>
+    </bean>
+
+    <!-- Hybris platform filter stack: establishes JaloSession/tenant per
+         request. Without it, servicelayer calls (FlexibleSearch) fail with
+         JaloSession NPEs. log4jFilter/sessionFilter resolve from the parent
+         (global) Hybris context. -->
+    <bean id="reclazztestPlatformFilterChain" class="de.hybris.platform.servicelayer.web.PlatformFilterChain">
+        <constructor-arg>
+            <list>
+                <ref bean="log4jFilter"/>
+                <ref bean="sessionFilter"/>
+            </list>
+        </constructor-arg>
+    </bean>
+</beans>

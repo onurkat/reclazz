@@ -1,0 +1,33 @@
+package com.onurkat.reclazztest.services;
+
+import org.springframework.stereotype.Service;
+
+@Service("reclazzTestService")
+public class TestService {
+
+    private String greeting = "hello";
+
+    public TestService() {
+        // default constructor
+    }
+
+    public String ping() {
+        return "pong-v1";
+    }
+
+    public String getGreeting() {
+        return greeting;
+    }
+
+    public String echo(String msg, String suffix) {
+        return "echo:" + msg;
+    }
+
+    public String removable() {
+        return "removable-v1";
+    }
+
+    public String getServiceVersion() {
+        return "service-v1";
+    }
+}

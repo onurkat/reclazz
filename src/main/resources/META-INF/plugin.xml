@@ -1,0 +1,132 @@
+<idea-plugin>
+    <id>com.onurkat.reclazz</id>
+    <name>Reclazz</name>
+    <vendor email="onurkat@gmail.com" url="https://www.onurkat.com/reclazz">Onur Kat</vendor>
+
+    <description><![CDATA[
+        <h2>Free Hot-Reload for Spring &amp; Java Applications</h2>
+        <p>
+            Reclazz eliminates server restarts during development.
+            Edit your Java code, build, and see changes applied instantly in the
+            running JVM — including Spring bean refresh, MVC re-scan, cache eviction, and more.
+        </p>
+
+        <h3>Key Features</h3>
+        <ul>
+            <li><b>Instant Hot-Swap</b> — Redefines classes via the Instrumentation API in milliseconds</li>
+            <li><b>Spring Bean Refresh</b> — Automatically destroys and recreates singleton beans after reload</li>
+            <li><b>MVC Re-scan</b> — Re-registers @RequestMapping methods when controllers change</li>
+            <li><b>Cache Eviction</b> — Evicts Spring caches for @Cacheable/@CacheEvict classes</li>
+            <li><b>Scheduler Reload</b> — Cancels and re-registers @Scheduled tasks</li>
+            <li><b>Structural Changes</b> — Add/remove methods and fields on any JDK 17+ (JBR/DCEVM additionally give full reflective visibility)</li>
+            <li><b>SAP Commerce Support</b> — Interceptor reload, ImpEx auto-import, extension-aware</li>
+            <li><b>JDK Auto-Detection</b> — Detects JDK 17/21 and JBR/DCEVM, auto-configures JVM flags</li>
+            <li><b>One Click Setup</b> — Once enabled, the agent is injected into run configurations for you</li>
+            <li><b>100% Local &amp; Private</b> — No telemetry, no analytics, no outbound network requests</li>
+        </ul>
+
+        <h3>How It Works</h3>
+        <ol>
+            <li>Reclazz asks once whether to turn on — it ships switched off, because enabling it puts an agent into the JVM that runs your code</li>
+            <li>Run your application — the agent is injected automatically (SAP Commerce servers start outside the IDE, so Reclazz offers to add it to the wrapper config instead)</li>
+            <li>Edit code, build your project — changes are hot-swapped instantly</li>
+        </ol>
+
+        <h3>Requirements</h3>
+        <ul>
+            <li>IntelliJ IDEA 2024.1+</li>
+            <li>JDK 17+</li>
+        </ul>
+
+        <p>
+            <a href="https://www.onurkat.com/reclazz">Website</a> |
+            <a href="https://github.com/onurkat/reclazz">GitHub</a>
+        </p>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <h3>1.0.0</h3>
+        <p>First public release.</p>
+        <ul>
+            <li>Hot-swaps Java classes into a running JVM: method bodies, and adding or removing methods and fields on any JDK 17+</li>
+            <li>Refreshes Spring beans, re-scans MVC mappings, evicts caches, re-registers scheduled tasks and event listeners</li>
+            <li>Purpose-built SAP Commerce support: extension-aware watching, interceptor reload, ImpEx auto-import, items.xml and beans.xml regeneration</li>
+            <li>Validated end to end against a live SAP Commerce 2211 server</li>
+        </ul>
+    ]]></change-notes>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Settings -->
+        <projectConfigurable
+                parentId="tools"
+                instance="com.onurkat.reclazz.plugin.settings.ReclazzConfigurable"
+                id="com.onurkat.reclazz.plugin.settings"
+                displayName="Reclazz"/>
+
+        <projectService
+                serviceImplementation="com.onurkat.reclazz.plugin.settings.ReclazzSettings"/>
+
+        <applicationService
+                serviceImplementation="com.onurkat.reclazz.plugin.settings.ReclazzAppState"/>
+
+        <!-- Agent injection into run configurations -->
+        <runConfigurationExtension
+                implementation="com.onurkat.reclazz.plugin.agent.AgentInjector"/>
+
+        <!-- Core reload manager service -->
+        <projectService
+                serviceImplementation="com.onurkat.reclazz.plugin.reload.ReloadManager"/>
+
+        <!-- Tool window -->
+        <toolWindow
+                id="Reclazz"
+                anchor="bottom"
+                factoryClass="com.onurkat.reclazz.plugin.ui.ReloadToolWindowFactory"
+                icon="/icons/reclazz.svg"
+                canCloseContents="false"/>
+
+        <!-- Status bar widget -->
+        <statusBarWidgetFactory
+                id="ReclazzStatusWidget"
+                implementation="com.onurkat.reclazz.plugin.ui.ReloadStatusWidgetFactory"/>
+
+        <!-- Notification group -->
+        <notificationGroup
+                id="Reclazz"
+                displayType="BALLOON"/>
+
+        <!-- Startup activity -->
+        <postStartupActivity
+                implementation="com.onurkat.reclazz.plugin.ReclazzStartup"/>
+    </extensions>
+
+    <actions>
+        <action id="Reclazz.TriggerReload"
+                class="com.onurkat.reclazz.plugin.reload.TriggerReloadAction"
+                text="Reconnect to Reclazz Agent"
+                description="Reconnect to the Reclazz agent">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="Reclazz.AttachToServer"
+                class="com.onurkat.reclazz.plugin.agent.AttachAction"
+                text="Attach Reclazz to Running Server"
+                description="Attach the Reclazz agent to a running JVM">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="Reclazz.Disconnect"
+                class="com.onurkat.reclazz.plugin.reload.DisconnectAction"
+                text="Disconnect from Reclazz Agent"
+                description="Disconnect from the running Reclazz agent">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+    </actions>
+
+    <projectListeners>
+        <listener
+                class="com.onurkat.reclazz.plugin.reload.CompilationListener"
+                topic="com.intellij.compiler.server.BuildManagerListener"/>
+    </projectListeners>
+</idea-plugin>

@@ -1,0 +1,137 @@
+/*
+ * Copyright 2026 Onur Kat
+ * SPDX-License-Identifier: Apache-2.0
+ */
+package com.onurkat.reclazz.bootstrap;
+
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MutableCallSite;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
+
+/**
+ * Central dispatch table for invokedynamic call sites.
+ * Keyed by Class object identity (NOT class name string) so that two distinct
+ * Class instances with the same internal name — e.g. classes loaded by separate
+ * classloaders, or test fixtures sharing names — get distinct dispatch entries.
+ * Backed by a WeakHashMap so unloaded classes can be GC'd.
+ *
+ * BOOTSTRAP CLASS: Must have ZERO dependencies outside java.* packages.
+ */
+public final class DispatchTable {
+
+    private static final Map<Class<?>, ClassDispatch> dispatches =
+            Collections.synchronizedMap(new WeakHashMap<>());
+
+    public static ClassDispatch getOrCreate(Class<?> ownerClass) {
+        synchronized (dispatches) {
+            ClassDispatch existing = dispatches.get(ownerClass);
+            if (existing != null) return existing;
+            ClassDispatch fresh = new ClassDispatch();
+            dispatches.put(ownerClass, fresh);
+            return fresh;
+        }
+    }
+
+    public static ClassDispatch get(Class<?> ownerClass) {
+        synchronized (dispatches) {
+            return dispatches.get(ownerClass);
+        }
+    }
+
+    /**
+     * Re-target all call sites for a class to new method handles from a companion class.
+     * Thread-safe: uses per-class lock.
+     *
+     * Always creates the dispatch entry if it doesn't exist yet — the latest
+     * target map needs to be populated so that lazy bootstrap of call sites
+     * (which happens on first invocation, possibly AFTER a reload) picks up
+     * the latest companion handle instead of the v0 renamed method.
+     */
+    public static void retargetAll(Class<?> ownerClass,
+                                    MethodHandles.Lookup companionLookup,
+                                    Map<String, MethodHandle> newTargets) {
+        ClassDispatch dispatch = getOrCreate(ownerClass);
+        dispatch.retarget(newTargets);
+    }
+
+    public static final class ClassDispatch {
+        private final ReentrantLock lock = new ReentrantLock();
+        private volatile int version = 0;
+        private final ConcurrentHashMap<String, MutableCallSite> methodSites = new ConcurrentHashMap<>();
+        private final ConcurrentHashMap<String, MutableCallSite> fieldGetSites = new ConcurrentHashMap<>();
+        private final ConcurrentHashMap<String, MutableCallSite> fieldSetSites = new ConcurrentHashMap<>();
+        // Latest companion targets installed by {@link #retarget}. Stored even
+        // when no MutableCallSite has been bootstrapped yet so that the lazy
+        // first-invocation bootstrap of a call site picks up the latest
+        // companion handle instead of the v0 renamed method. Without this,
+        // the first reload that happens before any user request to the class
+        // is silently lost (the user sees v0 behavior on the first request,
+        // and only the SECOND reload after that request actually takes
+        // effect — matching the reported bug).
+        private final ConcurrentHashMap<String, MethodHandle> latestMethodTargets = new ConcurrentHashMap<>();
+
+        public MutableCallSite getOrCreateMethodSite(String key, MutableCallSite initial) {
+            MutableCallSite site = methodSites.computeIfAbsent(key, k -> initial);
+            // If a reload already installed a newer target for this key, retarget
+            // the freshly created site immediately so the first invocation goes
+            // to the latest companion method, not the v0 renamed one.
+            if (site == initial) {
+                MethodHandle latest = latestMethodTargets.get(key);
+                if (latest != null) {
+                    try {
+                        site.setTarget(latest);
+                    } catch (Exception ignored) {
+                        // type mismatch — leave the v0 handle in place
+                    }
+                }
+            }
+            return site;
+        }
+
+        public MutableCallSite getOrCreateFieldGetSite(String key, MutableCallSite initial) {
+            return fieldGetSites.computeIfAbsent(key, k -> initial);
+        }
+
+        public MutableCallSite getOrCreateFieldSetSite(String key, MutableCallSite initial) {
+            return fieldSetSites.computeIfAbsent(key, k -> initial);
+        }
+
+        public int getVersion() { return version; }
+
+        public void retarget(Map<String, MethodHandle> newTargets) {
+            lock.lock();
+            try {
+                int count = 0;
+                MutableCallSite[] sites = new MutableCallSite[newTargets.size()];
+
+                for (var entry : newTargets.entrySet()) {
+                    // Always remember the latest target so a future first-touch
+                    // bootstrap can install it instead of the v0 renamed handle.
+                    latestMethodTargets.put(entry.getKey(), entry.getValue());
+                    MutableCallSite site = methodSites.get(entry.getKey());
+                    if (site != null) {
+                        site.setTarget(entry.getValue());
+                        sites[count++] = site;
+                    }
+                }
+
+                // Atomic JIT invalidation for all re-targeted sites
+                if (count > 0) {
+                    MutableCallSite[] trimmed = new MutableCallSite[count];
+                    System.arraycopy(sites, 0, trimmed, 0, count);
+                    MutableCallSite.syncAll(trimmed);
+                }
+
+                version++;
+            } finally {
+                lock.unlock();
+            }
+        }
+
+    }
+}

@@ -1,0 +1,46 @@
+# Gradle
+build/
+.gradle/
+.intellijPlatform/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+*.class
+*.log
+
+# Signing certificates (NEVER commit private keys)
+certificate/
+
+# Reclazz
+reclazz.json
+.reclazz/
+
+# Hybris ant build artifacts inside the reclazztest extension
+# (generated when the extension is deployed into a live SAP Commerce)
+reclazztest/build.xml
+reclazztest/extensioninfo.xsd
+reclazztest/platformhome.properties
+reclazztest/gensrc/
+reclazztest/classes/
+reclazztest/testclasses/
+reclazztest/resources/reclazztest/
+reclazztest/src/com/onurkat/reclazztest/constants/
+reclazztest/web/webroot/WEB-INF/classes/
+
+# Claude Code
+.claude/

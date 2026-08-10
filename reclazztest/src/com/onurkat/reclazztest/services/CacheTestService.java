@@ -1,0 +1,13 @@
+package com.onurkat.reclazztest.services;
+
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
+
+@Service("reclazzCacheTestService")
+public class CacheTestService {
+
+    @Cacheable("testCache")
+    public String getCachedValue(String key) {
+        return "cached-v1:" + key;
+    }
+}
