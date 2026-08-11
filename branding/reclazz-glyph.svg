@@ -1,0 +1,20 @@
+<!--
+  Reclazz mark without the tile, for places that supply their own background
+  (IDE toolbars, monochrome contexts). Same geometry as reclazz-mark.svg; the
+  viewBox is cropped to the glyph's bounds so it fills a small square instead
+  of floating in the tile's padding.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="11 11 42 42">
+  <defs>
+    <linearGradient id="reclazzGlyph" x1="12" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#06d6a0"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#reclazzGlyph)" stroke-width="5" stroke-linecap="round">
+    <path d="M43.49 41.64A15 15 0 0 1 17.23 34.60"/>
+    <path d="M20.51 22.36A15 15 0 0 1 46.77 29.40"/>
+  </g>
+  <path d="M15.84 26.72L12.57 36.95L22.41 35.21Z" fill="url(#reclazzGlyph)"/>
+  <path d="M48.16 37.28L51.43 27.05L41.59 28.79Z" fill="url(#reclazzGlyph)"/>
+</svg>

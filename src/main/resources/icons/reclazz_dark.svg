@@ -1,4 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
-  <path fill="#A8C97E" d="M8 1C4.134 1 1 4.134 1 8s3.134 7 7 7 7-3.134 7-7-3.134-7-7-7zm0 12.6A5.6 5.6 0 1 1 8 2.4a5.6 5.6 0 0 1 0 11.2z"/>
-  <path d="M10.5 5.5L8 8l2.5 2.5M5.5 5.5L8 8 5.5 10.5" stroke="#A8C97E" stroke-width="1.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<!--
+  Tool-window icon, dark IDE themes. Same mark, lifted to the brighter end of
+  the brand ramp so it reads on a dark toolbar.
+  Master: branding/reclazz-mark.svg.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="11 11 42 42">
+  <defs>
+    <linearGradient id="reclazzIcon" x1="12" y1="12" x2="52" y2="52" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#a78bfa"/>
+      <stop offset="1" stop-color="#34d399"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" stroke="url(#reclazzIcon)" stroke-width="5" stroke-linecap="round">
+    <path d="M43.49 41.64A15 15 0 0 1 17.23 34.60"/>
+    <path d="M20.51 22.36A15 15 0 0 1 46.77 29.40"/>
+  </g>
+  <path d="M15.84 26.72L12.57 36.95L22.41 35.21Z" fill="url(#reclazzIcon)"/>
+  <path d="M48.16 37.28L51.43 27.05L41.59 28.79Z" fill="url(#reclazzIcon)"/>
 </svg>

@@ -1,12 +1,22 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+<!--
+  Dark-theme plugin icon. Identical to pluginIcon.svg on purpose: the mark
+  carries its own tile, so it needs no adjustment to sit on a dark IDE
+  background, and the point of this pass was one logo everywhere. The file
+  exists so the IDE does not have to fall back across themes.
+  Master: branding/reclazz-mark.svg.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#a78bfa"/>
-      <stop offset="100%" stop-color="#34d399"/>
+    <linearGradient id="reclazzTile" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#06d6a0"/>
     </linearGradient>
   </defs>
-  <rect width="40" height="40" rx="8" fill="#f5f5f4"/>
-  <circle cx="20" cy="20" r="12" fill="none" stroke="url(#g)" stroke-width="2.5"/>
-  <path d="M16 14l4 6-4 6" fill="none" stroke="#059669" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="M24 14l-4 6 4 6" fill="none" stroke="#6d28d9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect width="64" height="64" rx="15" fill="url(#reclazzTile)"/>
+  <g fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round">
+    <path d="M43.49 41.64A15 15 0 0 1 17.23 34.60"/>
+    <path d="M20.51 22.36A15 15 0 0 1 46.77 29.40"/>
+  </g>
+  <path d="M15.84 26.72L12.57 36.95L22.41 35.21Z" fill="#fff"/>
+  <path d="M48.16 37.28L51.43 27.05L41.59 28.79Z" fill="#fff"/>
 </svg>
