@@ -45,6 +45,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.1</h3>
+        <p>Marketplace review fixes. No change to what the plugin does.</p>
+        <ul>
+            <li>Looks the plugin up through the public PluginManager API rather than an internal one</li>
+            <li>Guarantees the packaged agent is the shaded jar, which carries the dependencies it loads at startup</li>
+        </ul>
+
         <h3>1.0.0</h3>
         <p>First public release.</p>
         <ul>

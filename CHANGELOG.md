@@ -4,6 +4,22 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.1] - 2026-08-12
+
+Marketplace review fixes. No change to what the plugin does.
+
+### Fixed
+
+- Looks the plugin up through the public `PluginManager` API rather than
+  an internal one. Marketplace review rejects the internal call; the
+  public entry point returns the same descriptor, so behaviour is
+  identical.
+- The agent's thin and shaded jars were written to the same filename and
+  overwrote each other, so the packaged agent was whichever task ran
+  last. Released builds carried the shaded jar, but the thin one is
+  missing the dependencies the agent loads at startup and would have
+  failed on launch. The two are named apart now.
+
 ## [1.0.0] - 2026-08-10
 
 First public release.
