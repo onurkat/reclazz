@@ -8,28 +8,28 @@
         <p>
             Reclazz eliminates server restarts during development.
             Edit your Java code, build, and see changes applied instantly in the
-            running JVM — including Spring bean refresh, MVC re-scan, cache eviction, and more.
+            running JVM, including Spring bean refresh, MVC re-scan, cache eviction, and more.
         </p>
 
         <h3>Key Features</h3>
         <ul>
-            <li><b>Instant Hot-Swap</b> — Redefines classes via the Instrumentation API in milliseconds</li>
-            <li><b>Spring Bean Refresh</b> — Automatically destroys and recreates singleton beans after reload</li>
-            <li><b>MVC Re-scan</b> — Re-registers @RequestMapping methods when controllers change</li>
-            <li><b>Cache Eviction</b> — Evicts Spring caches for @Cacheable/@CacheEvict classes</li>
-            <li><b>Scheduler Reload</b> — Cancels and re-registers @Scheduled tasks</li>
-            <li><b>Structural Changes</b> — Add/remove methods and fields on any JDK 17+ (JBR/DCEVM additionally give full reflective visibility)</li>
-            <li><b>SAP Commerce Support</b> — Interceptor reload, ImpEx auto-import, extension-aware</li>
-            <li><b>JDK Auto-Detection</b> — Detects JDK 17/21 and JBR/DCEVM, auto-configures JVM flags</li>
-            <li><b>One Click Setup</b> — Once enabled, the agent is injected into run configurations for you</li>
-            <li><b>100% Local &amp; Private</b> — No telemetry, no analytics, no outbound network requests</li>
+            <li><b>Instant Hot-Swap</b>: Redefines classes via the Instrumentation API in milliseconds</li>
+            <li><b>Spring Bean Refresh</b>: Automatically destroys and recreates singleton beans after reload</li>
+            <li><b>MVC Re-scan</b>: Re-registers @RequestMapping methods when controllers change</li>
+            <li><b>Cache Eviction</b>: Evicts Spring caches for @Cacheable/@CacheEvict classes</li>
+            <li><b>Scheduler Reload</b>: Cancels and re-registers @Scheduled tasks</li>
+            <li><b>Structural Changes</b>: Add/remove methods and fields on any JDK 17+ (JBR/DCEVM additionally give full reflective visibility)</li>
+            <li><b>SAP Commerce Support</b>: Interceptor reload, ImpEx auto-import, extension-aware</li>
+            <li><b>JDK Auto-Detection</b>: Detects JDK 17/21 and JBR/DCEVM, auto-configures JVM flags</li>
+            <li><b>One Click Setup</b>: Once enabled, the agent is injected into run configurations for you</li>
+            <li><b>100% Local &amp; Private</b>: No telemetry, no analytics, no outbound network requests</li>
         </ul>
 
         <h3>How It Works</h3>
         <ol>
-            <li>Reclazz asks once whether to turn on — it ships switched off, because enabling it puts an agent into the JVM that runs your code</li>
-            <li>Run your application — the agent is injected automatically (SAP Commerce servers start outside the IDE, so Reclazz offers to add it to the wrapper config instead)</li>
-            <li>Edit code, build your project — changes are hot-swapped instantly</li>
+            <li>Reclazz asks once whether to turn on. It ships switched off, because enabling it puts an agent into the JVM that runs your code</li>
+            <li>Run your application. The agent is injected automatically (SAP Commerce servers start outside the IDE, so Reclazz offers to add it to the wrapper config instead)</li>
+            <li>Edit code, build your project. Changes are hot-swapped instantly</li>
         </ol>
 
         <h3>Requirements</h3>

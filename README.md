@@ -7,7 +7,7 @@
 [![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ%20IDEA-2024.1%2B-purple.svg)](https://www.jetbrains.com/idea/)
 [![Sponsor](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa.svg)](https://github.com/sponsors/onurkat)
 
-**Free, open-source hot-reload for Spring applications. Edit code, see changes live — no restart needed.**
+**Free, open-source hot-reload for Spring applications. Edit code, see changes live, no restart needed.**
 
 Website: [www.onurkat.com/reclazz](https://www.onurkat.com/reclazz)
 
@@ -31,7 +31,7 @@ Build your project (`mvn compile` or `gradle classes`), and Reclazz hot-swaps th
 
 ## Why Reclazz?
 
-Spring Boot DevTools restarts the entire application context on every change. JRebel costs $550+/year. Reclazz is **free, open-source**, and performs true in-place class redefinition — your application state is preserved.
+Spring Boot DevTools restarts the entire application context on every change. JRebel costs $550+/year. Reclazz is **free, open-source**, and performs true in-place class redefinition, so your application state is preserved.
 
 ### Comparison
 
@@ -73,7 +73,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 - **Hot class reload**: Redefines classes in the running JVM via Instrumentation API
 - **Structural changes**: Add/remove methods and fields on any JDK 17+ (companion-class engine); JBR/DCEVM additionally gives full reflective visibility of new members
 - **Auto-detection**: Automatically detects Spring Boot, Maven, and Gradle project layouts
-- **Zero config**: Just add `-javaagent` — no configuration files needed
+- **Zero config**: Just add `-javaagent`, no configuration files needed
 - **IntelliJ IDEA plugin**: Auto-injects agent into run configurations, auto-detects JDK and JBR
 
 ### Platform Support
@@ -90,7 +90,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 2. Search for **"Reclazz"**
 3. Click **Install** and restart the IDE
 
-The plugin bundles the agent JAR — no additional downloads needed.
+The plugin bundles the agent JAR, so there is nothing else to download.
 
 ### From GitHub
 
@@ -142,7 +142,7 @@ When you run the application from IntelliJ, the plugin handles everything:
    **Tools** > **Reclazz** > **Enable Reclazz**.)
 2. Run your application from IntelliJ (Run/Debug)
 3. The agent is injected automatically with optimal JVM flags
-4. Build your project — changes are hot-swapped, status shown in the IDE
+4. Build your project. Changes are hot-swapped, status shown in the IDE
 
 ### SAP Commerce (Hybris)
 
@@ -152,7 +152,7 @@ Edit `hybris/config/local.properties`:
 tomcat.generaloptions=-javaagent:/path/to/reclazz-agent.jar ${tomcat.generaloptions}
 ```
 
-Reclazz auto-detects the Hybris home directory from `platform.home`, `HYBRIS_BIN_DIR`, or the classpath. Start the server and run `ant build` — Reclazz hot-swaps the compiled classes automatically.
+Reclazz auto-detects the Hybris home directory from `platform.home`, `HYBRIS_BIN_DIR`, or the classpath. Start the server and run `ant build`. Reclazz hot-swaps the compiled classes automatically.
 
 Hybris-specific features:
 - **Interceptor reload**: Re-registers Hybris interceptors (Validate, Prepare, Load, Remove)
@@ -165,7 +165,7 @@ If the server is already running without the `-javaagent` flag:
 
 1. Go to **Tools** > **Attach Reclazz to Running Server**
 2. Select the JVM from the list
-3. The agent loads into the running JVM — no restart needed
+3. The agent loads into the running JVM, no restart needed
 
 ## Configuration
 
@@ -206,14 +206,14 @@ Go to **Settings** > **Tools** > **Reclazz**:
 
 ## Supported JDK Providers
 
-Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument` API. Structural reload (add/remove methods and fields) works on every vendor below — the difference is reflective visibility, not whether the change takes effect.
+Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument` API. Structural reload (add/remove methods and fields) works on every vendor below. The difference is reflective visibility, not whether the change takes effect.
 
 | JDK Provider | Method Body | Structural Reload | Reflective Visibility of New Members |
 |---|---|---|---|
-| **JetBrains Runtime (JBR)** | Yes | Yes (enhanced redefinition) | Full — reflection sees new members |
-| **DCEVM** | Yes | Yes (enhanced redefinition) | Full — reflection sees new members |
+| **JetBrains Runtime (JBR)** | Yes | Yes (enhanced redefinition) | Full: reflection sees new members |
+| **DCEVM** | Yes | Yes (enhanced redefinition) | Full: reflection sees new members |
 | **Oracle JDK** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
-| **SapMachine** | Yes | Yes (companion-class mode) | Hot-compiled callers only — common in SAP Commerce |
+| **SapMachine** | Yes | Yes (companion-class mode) | Hot-compiled callers only, common in SAP Commerce |
 | **OpenJDK** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
 | **Amazon Corretto** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
 | **Eclipse Temurin** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
@@ -229,15 +229,15 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 
 | Change Type | Any JDK 17+ | Caveat on Standard JVMs |
 |---|---|---|
-| Method body changes | Yes | — |
+| Method body changes | Yes | None |
 | Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class |
 | Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class |
 | Remove methods/fields | **Yes** | Existing callers keep the previous implementation until they are hot-recompiled |
 | Change annotations | **Yes** (enhanced redefinition) / No (companion mode) | Annotations live on the original class object |
-| Spring bean logic | Yes | — |
-| New Spring beans (@Component) | Via `*-spring.xml` hot-reload | — |
-| Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | — |
-| Superclass changes | No | — |
+| Spring bean logic | Yes | None |
+| New Spring beans (@Component) | Via `*-spring.xml` hot-reload | None |
+| Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | None |
+| Superclass changes | No | None |
 
 ## Architecture
 
@@ -322,7 +322,7 @@ Reclazz couldn't find `target/classes` (Maven) or `build/classes/java/main` (Gra
 Your JVM doesn't support class redefinition. This shouldn't happen with modern JDKs.
 
 ### Structural change fails on a class
-Structural reload works on any JDK 17+ for classes the agent transformed at load time. If the message says the class "was loaded before Reclazz attached", start the server with `-javaagent` (the IntelliJ plugin's Install action sets this up) instead of attaching later — attach mode cannot retrofit the reload infrastructure into already-loaded classes on standard JVMs.
+Structural reload works on any JDK 17+ for classes the agent transformed at load time. If the message says the class "was loaded before Reclazz attached", start the server with `-javaagent` (the IntelliJ plugin's Install action sets this up) instead of attaching later. Attach mode cannot retrofit the reload infrastructure into already-loaded classes on standard JVMs.
 
 ### Spring bean not refreshed
 Reclazz destroys and recreates the singleton, cascades the refresh to dependent beans, and re-points fields that still hold the old instance to the new one (stale-reference healing). If a component still sees stale behavior, check the Reclazz tool window for a reload error on that class.
@@ -357,9 +357,9 @@ Nothing is gated behind it, and nothing in the plugin nags you about it.
 
 ## License
 
-Apache License 2.0 — see [LICENSE](LICENSE) for details.
+Apache License 2.0. See [LICENSE](LICENSE) for details.
 
 The code is yours to use, fork, and redistribute. The **name "Reclazz"**
 and its logo are trademarks and are not covered by the license: publish
-your fork under a different name. See [TRADEMARK.md](TRADEMARK.md) —
+your fork under a different name. See [TRADEMARK.md](TRADEMARK.md):
 it is short, and permissive about everything except identity.
