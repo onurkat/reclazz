@@ -310,8 +310,19 @@ reclazz/
 │
 ├── src/main/                                 # IntelliJ IDEA plugin (Kotlin)
 ├── docs/                                     # Documentation
-└── README.md
+├── branding/                                 # The mark, and where it is used
+│
+├── integration-test/                         # End-to-end suite (needs a live
+│                                             #   SAP Commerce install; see its README)
+└── reclazztest/                              # The extension that suite edits
 ```
+
+`integration-test/` and `reclazztest/` are test scaffolding. They ship
+in no release, nothing in `agent/` or `src/` refers to them, and both
+need a licensed SAP Commerce installation to run. `./gradlew clean
+build` is the whole gate for everyone else. See
+[CONTRIBUTING.md](CONTRIBUTING.md#testing) for what each layer of the
+test suite actually checks.
 
 ## Troubleshooting
 
