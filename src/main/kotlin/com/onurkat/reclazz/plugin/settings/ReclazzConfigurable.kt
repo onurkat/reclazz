@@ -4,13 +4,13 @@
  */
 package com.onurkat.reclazz.plugin.settings
 
-import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.dsl.builder.*
+import com.onurkat.reclazz.plugin.agent.AgentJarLocator
 import com.onurkat.reclazz.plugin.agent.AttachAction
 import com.onurkat.reclazz.plugin.hybris.ExtensionResolver
 import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
@@ -57,8 +57,10 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
         agentPortField = settings.agentPort
 
         val manager = ReloadManager.getInstance(project)
-        val version = PluginManagerCore
-            .getPlugin(PluginId.getId("com.onurkat.reclazz"))
+        // Public entry point: PluginManagerCore.getPlugin is internal API and
+        // the Marketplace rejects plugins that call it.
+        val version = PluginManager.getInstance()
+            .findEnabledPlugin(AgentJarLocator.RECLAZZ_PLUGIN_ID)
             ?.version ?: "?"
         val connected = manager.isConnected
         val reloadCount = manager.reloadCount

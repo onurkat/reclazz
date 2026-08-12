@@ -74,6 +74,61 @@ tasks.matching { it.name == "signPlugin" || it.name == "publishPlugin" }.configu
     dependsOn(requireSigningMaterial)
 }
 
+// The platform plugin ships verifyPluginSignature without a dependency on the
+// task that produces what it verifies, so `signPlugin verifyPluginSignature`
+// fails validation, and running it alone would check whatever signed zip
+// happens to be lying around from an earlier build.
+tasks.matching { it.name == "verifyPluginSignature" }.configureEach {
+    dependsOn("signPlugin")
+}
+
+/**
+ * Marketplace review rejects plugins that call IntelliJ internal API. The
+ * Plugin Verifier is supposed to be the local gate for that, but it does not
+ * flag every case the reviewers do: 1.0.0 was rejected for two calls to
+ * PluginManagerCore.getPlugin that verifyPlugin reported as Compatible against
+ * 2024.1, 2025.1 and 2025.2 alike.
+ *
+ * So this is a plain denylist over the sources. It is not a substitute for the
+ * verifier and it only knows what we have been taught so far, but it turns a
+ * rejection that costs a review round into a build failure. Add an entry every
+ * time review finds one.
+ */
+val checkInternalApiUsage by tasks.registering {
+    val sources = fileTree("src/main") { include("**/*.kt", "**/*.java") }
+    inputs.files(sources)
+
+    // Symbol to the public replacement to use instead.
+    val denied = mapOf(
+        "PluginManagerCore" to "PluginManager.getInstance().findEnabledPlugin(id)",
+    )
+
+    doLast {
+        val hits = mutableListOf<String>()
+        sources.forEach { file ->
+            file.readLines().forEachIndexed { i, line ->
+                // Skip comments so the explanation of why we avoid a symbol
+                // does not itself trip the check.
+                val code = line.substringBefore("//").trim()
+                denied.forEach { (symbol, replacement) ->
+                    if (code.contains(symbol)) {
+                        hits += "${file.relativeTo(projectDir)}:${i + 1}  $symbol  ->  use $replacement"
+                    }
+                }
+            }
+        }
+        if (hits.isNotEmpty()) {
+            throw GradleException(
+                "Internal IntelliJ API referenced; the Marketplace rejects this:\n" +
+                        hits.joinToString("\n") { "  $it" }
+            )
+        }
+    }
+}
+
+tasks.named("check") { dependsOn(checkInternalApiUsage) }
+tasks.matching { it.name == "buildPlugin" }.configureEach { dependsOn(checkInternalApiUsage) }
+
 intellijPlatform {
     pluginConfiguration {
         name = providers.gradleProperty("pluginName")
@@ -88,12 +143,39 @@ intellijPlatform {
     // locally first turns "rejected after upload" into a build failure.
     // The range mirrors the sinceBuild/untilBuild declared above.
     pluginVerification {
+        // The default failure level is COMPATIBILITY_PROBLEMS + INVALID_PLUGIN,
+        // which is narrower than what the Marketplace rejects for, so the
+        // levels the reviewers act on are listed explicitly.
+        //
+        // Be aware of what this does NOT buy. 1.0.0 was rejected for two calls
+        // to PluginManagerCore.getPlugin, and this task still reports
+        // "Compatible" when that call is present, on every IDE listed below.
+        // Whatever the Marketplace uses to flag it, this verifier with these
+        // IDEs does not reproduce it. Re-adding INTERNAL_API_USAGES here was
+        // checked by reintroducing the call: the build stayed green. The
+        // denylist in checkInternalApiUsage is what actually catches it.
+        //
+        // DEPRECATED_API_USAGES is deliberately absent: FileSaverDescriptor's
+        // deprecated constructor is called on purpose because the replacement
+        // does not exist in 2024.1, our declared sinceBuild.
+        failureLevel = listOf(
+            org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.INVALID_PLUGIN,
+            org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.COMPATIBILITY_PROBLEMS,
+            org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.INTERNAL_API_USAGES,
+            org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.NON_EXTENDABLE_API_USAGES,
+            org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.OVERRIDE_ONLY_API_USAGES,
+            org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.MISSING_DEPENDENCIES,
+        )
+
         ides {
             // Pinned rather than recommended(): the resolver in this Gradle
             // plugin version reaches for builds that are not downloadable.
-            // These two bracket the declared compatibility range.
+            // 2025.3 is not resolvable here either, by version or by build
+            // number, so 2025.2 is the newest this toolchain can verify while
+            // untilBuild claims 261.
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
+            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.2")
         }
     }
 

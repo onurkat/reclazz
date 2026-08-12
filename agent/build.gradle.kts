@@ -84,6 +84,12 @@ tasks.classes {
 }
 
 tasks.jar {
+    // shadowJar clears its classifier so the fat jar is the canonical
+    // agent-<version>.jar. Without a classifier here both tasks would write
+    // that same path and overwrite each other: the plugin would ship whichever
+    // ran last, and the thin one is missing the shaded ByteBuddy and ASM the
+    // agent loads at premain. That fails at runtime, not at build time.
+    archiveClassifier.set("thin")
     manifest {
         attributes(
             "Premain-Class" to "com.onurkat.reclazz.agent.ReclazzAgent",

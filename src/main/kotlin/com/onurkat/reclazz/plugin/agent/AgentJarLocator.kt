@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.plugin.agent
 
-import com.intellij.ide.plugins.PluginManagerCore
+import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.application.ReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
@@ -21,8 +21,14 @@ object AgentJarLocator {
 
     private val log = Logger.getInstance(AgentJarLocator::class.java)
 
+    /** Must match the <id> in META-INF/plugin.xml. */
+    val RECLAZZ_PLUGIN_ID: PluginId = PluginId.getId("com.onurkat.reclazz")
+
     fun findAgentJar(): File? {
-        val plugin = PluginManagerCore.getPlugin(PluginId.getId("com.onurkat.reclazz"))
+        // PluginManagerCore.getPlugin is marked internal and the Marketplace
+        // rejects submissions that call it. findEnabledPlugin is the public
+        // entry point and returns the same descriptor type.
+        val plugin = PluginManager.getInstance().findEnabledPlugin(RECLAZZ_PLUGIN_ID)
         if (plugin == null) {
             log.warn("Reclazz plugin not found in PluginManager")
             return null
