@@ -30,6 +30,11 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // StartupMustNotShowDialogTest reads our own compiled classes to walk the
+    // call graph out of the startup activity. Same version the agent uses.
+    testImplementation("org.ow2.asm:asm:9.8")
+    testImplementation("org.ow2.asm:asm-tree:9.8")
 }
 
 tasks.test {
