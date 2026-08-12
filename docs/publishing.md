@@ -56,13 +56,22 @@ history entry:
 
 ```bash
 security add-generic-password -s reclazz-signing -a reclazz -w   # once
+security add-generic-password -s reclazz-publish -a reclazz -w   # once, the Marketplace token
+
 RECLAZZ_SIGNING_PASSWORD="$(security find-generic-password -s reclazz-signing -a reclazz -w)" \
-  ./gradlew signPlugin --no-daemon
+RECLAZZ_PUBLISH_TOKEN="$(security find-generic-password -s reclazz-publish -a reclazz -w)" \
+  ./gradlew publishPlugin --no-daemon
 ```
 
-That first command prompts twice and needs a real terminal. Run through
-anything that is not a TTY and it stores an empty passphrase without
-complaining, which then fails as a missing-passphrase error.
+Those commands prompt and need a real terminal. Run one through anything
+that is not a TTY and it stores an empty value without complaining,
+which then surfaces later as a missing-credential error.
+
+Never paste either secret into a chat, an issue or a commit. A
+Marketplace token can upload a release under your name, so treat one
+that has been seen anywhere as spent: revoke it and issue another. The
+keychain exists so that the value only ever travels from the prompt to
+the build.
 
 `verifyPlugin` is also part of CI, so a compatibility break surfaces on
 push rather than in a rejection email.
