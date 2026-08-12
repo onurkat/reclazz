@@ -40,10 +40,29 @@ own.
 export RECLAZZ_SIGNING_PASSWORD='the passphrase you chose'
 export RECLAZZ_PUBLISH_TOKEN='the marketplace token'
 
-./gradlew verifyPlugin     # what the Marketplace will run on submission
-./gradlew signPlugin       # produces the signed zip
-./gradlew publishPlugin    # uploads it
+./gradlew verifyPlugin                # what the Marketplace runs on submission
+./gradlew signPlugin --no-daemon      # produces the signed zip
+./gradlew publishPlugin --no-daemon   # uploads it
 ```
+
+`--no-daemon` on the two tasks that read secrets is not optional. A
+running Gradle daemon keeps the environment it was started with, so a
+variable you export in your shell afterwards is invisible to the build
+and signing fails claiming the passphrase is missing even though it is
+right there in your shell.
+
+On macOS, keep the passphrase in the login keychain instead of a shell
+history entry:
+
+```bash
+security add-generic-password -s reclazz-signing -a reclazz -w   # once
+RECLAZZ_SIGNING_PASSWORD="$(security find-generic-password -s reclazz-signing -a reclazz -w)" \
+  ./gradlew signPlugin --no-daemon
+```
+
+That first command prompts twice and needs a real terminal. Run through
+anything that is not a TTY and it stores an empty passphrase without
+complaining, which then fails as a missing-passphrase error.
 
 `verifyPlugin` is also part of CI, so a compatibility break surfaces on
 push rather than in a rejection email.

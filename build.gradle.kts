@@ -61,7 +61,10 @@ val requireSigningMaterial by tasks.registering {
                 "Cannot sign the plugin, missing: ${missing.joinToString(", ")}.\n" +
                 "Generate the certificate once with " +
                 "./scripts/generate-signing-certificate.sh, then export the " +
-                "passphrase as RECLAZZ_SIGNING_PASSWORD."
+                "passphrase as RECLAZZ_SIGNING_PASSWORD.\n" +
+                "If you did export it: a running Gradle daemon keeps the " +
+                "environment it started with and will not see it. Re-run " +
+                "with --no-daemon."
             )
         }
     }
