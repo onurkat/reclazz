@@ -4,7 +4,6 @@
  */
 package com.onurkat.reclazz.plugin
 
-import com.intellij.openapi.application.EDT
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
@@ -13,10 +12,8 @@ import com.onurkat.reclazz.plugin.hybris.HybrisProjectDetector
 import com.onurkat.reclazz.plugin.hybris.JdkDetector
 import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 import com.onurkat.reclazz.plugin.reload.ReloadManager
+import com.onurkat.reclazz.plugin.settings.ReclazzAppState
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
-import com.onurkat.reclazz.plugin.ui.WelcomeDialog
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.util.concurrent.ConcurrentHashMap
 
 class ReclazzStartup : ProjectActivity {
@@ -50,9 +47,18 @@ class ReclazzStartup : ProjectActivity {
 
         // First run after installation: introduce Reclazz and get an
         // explicit yes, since enabling it means injecting an agent into
-        // the user's own JVM. Shown once per installation, never again.
-        withContext(Dispatchers.EDT) {
-            WelcomeDialog.showIfFirstRun(project)
+        // the user's own JVM. Once per installation, never again.
+        //
+        // A notification, not a dialog. Showing a modal dialog from here
+        // parks the event thread until someone clicks it, which hung the
+        // Marketplace review run for its full ten minute budget. The
+        // introduction is still one click away, on the notification.
+        val appState = ReclazzAppState.getInstance()
+        if (!appState.state.welcomeShown) {
+            // Marked before showing: a crash or a force-quit while the
+            // notification is up should not make the user meet this twice.
+            appState.state.welcomeShown = true
+            ReloadNotifications.welcome(project, isHybris)
         }
 
         if (!settings.state.enabled) {

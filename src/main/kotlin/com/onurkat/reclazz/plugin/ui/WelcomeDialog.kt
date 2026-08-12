@@ -7,17 +7,22 @@ package com.onurkat.reclazz.plugin.ui
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
 import com.intellij.ui.dsl.builder.panel
-import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.HybrisProjectDetector
+import com.onurkat.reclazz.plugin.ReclazzActivation
 import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
-import com.onurkat.reclazz.plugin.settings.ReclazzAppState
-import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 import javax.swing.Action
 import javax.swing.JComponent
 
 /**
- * Shown once per installation, the first time a project is opened after
- * Reclazz is installed.
+ * The introduction to Reclazz, opened on demand from the first-run
+ * notification (see ReloadNotifications.welcome) or from Settings.
+ *
+ * It used to be shown directly from the startup activity. Marketplace
+ * automated review caught that: a modal dialog on the event thread at
+ * IDE startup hangs the IDE until something clicks it, so the review run
+ * timed out after ten minutes and reported a second, unrelated-looking
+ * failure about a missing trial widget, which was just the same IDE stuck
+ * behind our dialog.
  *
  * Reclazz starts switched OFF. It works by putting a `-javaagent` into
  * the JVM that runs your code, and a tool that does that deserves to ask
@@ -106,47 +111,23 @@ class WelcomeDialog(private val project: Project) : DialogWrapper(project, false
     companion object {
 
         /**
-         * Show the dialog once per installation and apply the answer.
-         * Must be called on the EDT.
+         * Open the introduction because the user asked for it, and apply the
+         * answer. Never call this from a startup activity: a modal dialog
+         * shown while the IDE is starting blocks the event thread until
+         * someone clicks it, which is a hang for anything automated and rude
+         * for everyone else. The first-run path posts a notification instead
+         * and only lands here if the user clicks through it.
          */
-        fun showIfFirstRun(project: Project) {
-            val appState = ReclazzAppState.getInstance()
-            if (appState.state.welcomeShown) return
-            // Mark up front: a crash or a force-quit mid-dialog should not
-            // turn this into something the user meets twice.
-            appState.state.welcomeShown = true
-
+        fun showOnDemand(project: Project) {
             val dialog = WelcomeDialog(project)
             dialog.show()
 
-            val settings = ReclazzSettings.getInstance(project).state
-            if (!dialog.accepted) {
-                ReloadNotifications.info(
-                    project, "Reclazz",
-                    "Reclazz is off. Turn it on any time in Settings > Tools > Reclazz."
-                )
-                return
-            }
-
-            settings.enabled = true
-
-            if (HybrisProjectDetector.isHybrisProject(project)) {
-                when (val result = HybrisAgentInstaller.install(project)) {
-                    is HybrisAgentInstaller.Result.Success ->
-                        HybrisAgentInstaller.targetFile(project)?.let {
-                            ReloadNotifications.installed(project, result.message, it)
-                        } ?: ReloadNotifications.info(project, "Reclazz", result.message)
-                    is HybrisAgentInstaller.Result.Error ->
-                        ReloadNotifications.warn(
-                            project, "Reclazz",
-                            result.message + " You can retry from Settings > Tools > Reclazz."
-                        )
-                }
+            if (dialog.accepted) {
+                ReclazzActivation.enable(project)
             } else {
                 ReloadNotifications.info(
                     project, "Reclazz",
-                    "Reclazz is on. Run your application from the IDE and the agent " +
-                    "attaches itself; build after an edit to hot-reload it."
+                    "Reclazz is off. Turn it on any time in Settings > Tools > Reclazz."
                 )
             }
         }

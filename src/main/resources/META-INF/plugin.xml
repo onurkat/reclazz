@@ -45,6 +45,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.2</h3>
+        <ul>
+            <li>The post-install introduction is a notification instead of a dialog shown while the IDE starts, which held the event thread until it was clicked</li>
+        </ul>
+
         <h3>1.0.1</h3>
         <p>Marketplace review fixes. No change to what the plugin does.</p>
         <ul>
@@ -104,6 +109,11 @@
         <notificationGroup
                 id="Reclazz"
                 displayType="BALLOON"/>
+        <!-- The one-time introduction. Sticky so it is still there when the
+             user finishes whatever they opened the IDE to do. -->
+        <notificationGroup
+                id="Reclazz Welcome"
+                displayType="STICKY_BALLOON"/>
 
         <!-- Startup activity -->
         <postStartupActivity

@@ -11,11 +11,14 @@ import com.intellij.openapi.project.Project
 import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.JdkInfo
 import com.onurkat.reclazz.plugin.hybris.JdkVendor
+import com.onurkat.reclazz.plugin.ReclazzActivation
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
+import com.onurkat.reclazz.plugin.ui.WelcomeDialog
 
 object ReloadNotifications {
 
     private const val GROUP_ID = "Reclazz"
+    private const val WELCOME_GROUP_ID = "Reclazz Welcome"
 
     fun info(project: Project, title: String, content: String) {
         notify(project, title, content, NotificationType.INFORMATION)
@@ -87,20 +90,43 @@ object ReloadNotifications {
             .getNotificationGroup(GROUP_ID)
             .createNotification("Reclazz", content, NotificationType.INFORMATION)
             .addAction(NotificationAction.createSimpleExpiring("Enable Reclazz") {
-                ReclazzSettings.getInstance(project).state.enabled = true
-                if (isHybris) {
-                    when (val result = HybrisAgentInstaller.install(project)) {
-                        is HybrisAgentInstaller.Result.Success ->
-                            HybrisAgentInstaller.targetFile(project)?.let {
-                                installed(project, result.message, it)
-                            } ?: info(project, "Reclazz", result.message)
-                        is HybrisAgentInstaller.Result.Error -> warn(project, "Reclazz", result.message)
-                    }
-                } else {
-                    info(project, "Reclazz",
-                        "Reclazz is on. Run your application from the IDE and build " +
-                        "after an edit to hot-reload it.")
-                }
+                ReclazzActivation.enable(project)
+            })
+            .notify(project)
+    }
+
+    /**
+     * First run after installation. This is a notification rather than a
+     * dialog on purpose: the startup activity must not block the event
+     * thread, and Marketplace review fails a plugin that does. The full
+     * introduction is one click away for anyone who wants it.
+     *
+     * Sticky, because an introduction that fades out after a few seconds
+     * is an introduction most people never read.
+     */
+    fun welcome(project: Project, isHybris: Boolean) {
+        val next = if (isHybris) {
+            "SAP Commerce project detected. Enabling installs the agent into your " +
+            "platform properties; it applies after the next ant server and restart."
+        } else {
+            "Enabling lets Reclazz inject its agent into the run configurations you " +
+            "start from the IDE."
+        }
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup(WELCOME_GROUP_ID)
+            .createNotification(
+                "Reclazz is installed, and switched off",
+                "Hot-reload without restarting. Reclazz ships off because it puts a " +
+                "java agent into the JVM that runs your code, so it asks first. " + next,
+                NotificationType.INFORMATION
+            )
+            .addAction(NotificationAction.createSimpleExpiring(
+                if (isHybris) "Install Agent" else "Enable Reclazz"
+            ) {
+                ReclazzActivation.enable(project)
+            })
+            .addAction(NotificationAction.createSimpleExpiring("What it does") {
+                WelcomeDialog.showOnDemand(project)
             })
             .notify(project)
     }

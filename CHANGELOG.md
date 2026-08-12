@@ -4,6 +4,21 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.2] - 2026-08-12
+
+### Fixed
+
+- The introduction shown after installing no longer opens as a dialog
+  while the IDE is starting. A modal dialog on the startup path holds the
+  event thread until someone clicks it, so the IDE was unusable until
+  then. Marketplace automated review hit exactly that and timed out after
+  ten minutes, and its second failure, about a missing trial widget, was
+  the same stuck IDE rather than a separate fault.
+
+  Reclazz now introduces itself with a sticky notification carrying the
+  same two choices. The full introduction is still one click away, and it
+  is a dialog again once you ask for it.
+
 ## [1.0.1] - 2026-08-12
 
 Marketplace review fixes. No change to what the plugin does.
