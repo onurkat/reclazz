@@ -22,6 +22,11 @@ dependencies {
     intellijPlatform {
         intellijIdeaCommunity(providers.gradleProperty("platformVersion").get())
         bundledPlugin("com.intellij.java")
+
+        // Real Application and Project fixtures. The bytecode call-graph test
+        // answers "can startup reach a dialog"; this answers "does startup
+        // actually work", which needs the plugin loaded into a live IDE.
+        testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
     }
 
     // Plugin-side unit tests. The pieces worth testing here are the ones
@@ -35,6 +40,12 @@ dependencies {
     // call graph out of the startup activity. Same version the agent uses.
     testImplementation("org.ow2.asm:asm:9.8")
     testImplementation("org.ow2.asm:asm-tree:9.8")
+
+    // BasePlatformTestCase descends from junit.framework.TestCase, so the
+    // IDE fixtures need JUnit 3/4 on the classpath and the vintage engine to
+    // run under the JUnit Platform the rest of the suite uses.
+    testImplementation("junit:junit:4.13.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.2")
 }
 
 tasks.test {

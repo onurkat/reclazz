@@ -13,6 +13,7 @@ import com.onurkat.reclazz.plugin.hybris.JdkDetector
 import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 import com.onurkat.reclazz.plugin.reload.ReloadManager
 import com.onurkat.reclazz.plugin.settings.ReclazzAppState
+import org.jetbrains.annotations.TestOnly
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 import java.util.concurrent.ConcurrentHashMap
 
@@ -29,6 +30,18 @@ class ReclazzStartup : ProjectActivity {
 
         // Projects already warned that their JVM options drifted this session
         private val driftReported = ConcurrentHashMap.newKeySet<String>()
+
+        /**
+         * These sets exist to make each of these things happen once per IDE
+         * session. Tests share one Application across methods, so without a
+         * reset the second test to run inherits the first one's answers.
+         */
+        @TestOnly
+        fun resetSessionStateForTests() {
+            notifiedProjects.clear()
+            offeredProjects.clear()
+            driftReported.clear()
+        }
     }
 
     override suspend fun execute(project: Project) {
