@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.onurkat.reclazz</id>
     <name>Reclazz</name>
-    <vendor email="onurkat@gmail.com" url="https://www.onurkat.com/reclazz">Onur Kat</vendor>
+    <vendor email="onur@onurkat.com" url="https://www.onurkat.com/reclazz">Onur Kat</vendor>
 
     <description><![CDATA[
         <h2>Free Hot-Reload for Spring &amp; Java Applications</h2>
@@ -45,6 +45,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.3</h3>
+        <ul>
+            <li>Contact address now matches the one in SECURITY.md</li>
+        </ul>
+
         <h3>1.0.2</h3>
         <ul>
             <li>The post-install introduction is a notification instead of a dialog shown while the IDE starts, which held the event thread until it was clicked</li>

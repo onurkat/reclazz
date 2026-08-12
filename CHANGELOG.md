@@ -4,6 +4,15 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.3] - 2026-08-12
+
+### Changed
+
+- The contact address on the Marketplace listing is now
+  `onur@onurkat.com`, matching the one `SECURITY.md` gives for
+  vulnerability reports. The two used to differ, so the two places
+  people look for a way to reach the maintainer gave two answers.
+
 ## [1.0.2] - 2026-08-12
 
 ### Fixed
