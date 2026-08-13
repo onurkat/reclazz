@@ -4,31 +4,54 @@
     <vendor email="onur@onurkat.com" url="https://www.onurkat.com/reclazz">Onur Kat</vendor>
 
     <description><![CDATA[
-        <h2>Free Hot-Reload for Spring &amp; Java Applications</h2>
+        <h2>Hot-Reload for SAP Commerce and Spring, Free and Open Source</h2>
         <p>
-            Reclazz eliminates server restarts during development.
-            Edit your Java code, build, and see changes applied instantly in the
-            running JVM, including Spring bean refresh, MVC re-scan, cache eviction, and more.
+            Edit your Java code, build, and the running JVM picks up the change in about
+            50ms. No server restart, and the application state you spent five minutes
+            setting up survives.
+        </p>
+        <p>
+            <b>Built for SAP Commerce (Hybris), where the restart hurts most.</b>
+            Save a *-items.xml or *-beans.xml and Reclazz runs the platform's own code
+            generation in the background and reloads the regenerated model and DTO classes,
+            instead of ant clean all and a restart. Interceptors re-register, ImpEx can
+            auto-import, and the agent installs through the platform's documented append
+            properties so it survives ant clean all rather than being wiped by it.
+        </p>
+        <p>
+            It works just as well on any Spring Boot application, and on plain Java through
+            a watch directory.
         </p>
 
-        <h3>Key Features</h3>
+        <h3>SAP Commerce</h3>
         <ul>
-            <li><b>Instant Hot-Swap</b>: Redefines classes via the Instrumentation API in milliseconds</li>
-            <li><b>Spring Bean Refresh</b>: Automatically destroys and recreates singleton beans after reload</li>
-            <li><b>MVC Re-scan</b>: Re-registers @RequestMapping methods when controllers change</li>
-            <li><b>Cache Eviction</b>: Evicts Spring caches for @Cacheable/@CacheEvict classes</li>
-            <li><b>Scheduler Reload</b>: Cancels and re-registers @Scheduled tasks</li>
-            <li><b>Structural Changes</b>: Add/remove methods and fields, and change annotations, on any JDK 17+ (JBR/DCEVM additionally give full reflective visibility of new members)</li>
-            <li><b>SAP Commerce Support</b>: Interceptor reload, ImpEx auto-import, extension-aware watching, and regeneration from *-items.xml and *-beans.xml without a full rebuild</li>
-            <li><b>JDK Auto-Detection</b>: Detects JDK 17/21 and JBR/DCEVM, auto-configures JVM flags</li>
-            <li><b>One Click Setup</b>: Once enabled, the agent is injected into run configurations for you</li>
-            <li><b>100% Local &amp; Private</b>: No telemetry, no analytics, no outbound network requests</li>
+            <li><b>items.xml and beans.xml</b>: regeneration plus reload of the model and DTO classes, without the full rebuild. A new attribute still needs a database column, so Reclazz reminds you to run Update Running System rather than touching your database itself</li>
+            <li><b>Interceptor reload</b>: Validate, Prepare, Load and Remove interceptors re-register</li>
+            <li><b>ImpEx auto-import</b>: changed .impex files can be imported on save (opt-in)</li>
+            <li><b>Extension-aware</b>: understands the extension layout, classpath and classloader hierarchy, and covers every live application context rather than only the root one</li>
+        </ul>
+
+        <h3>Spring</h3>
+        <ul>
+            <li><b>Bean refresh</b>: singletons are destroyed and recreated, and references still holding the old instance are re-pointed at the new one</li>
+            <li><b>MVC re-scan</b>: mappings are re-registered when a controller changes</li>
+            <li><b>Cache eviction</b>: caches for @Cacheable and @CacheEvict classes are evicted</li>
+            <li><b>Scheduler and events</b>: @Scheduled tasks and @EventListener methods are re-registered</li>
+            <li><b>AOP, @Async and Spring Data</b>: proxy caches cleared, beans re-processed, repositories refreshed</li>
+        </ul>
+
+        <h3>The engine</h3>
+        <ul>
+            <li><b>Structural changes on a stock JDK</b>: add and remove methods and fields, and change annotations, on any JDK 17+. No patched JVM required. JetBrains Runtime or DCEVM additionally makes new members visible to reflection</li>
+            <li><b>Instant</b>: classes are redefined through the Instrumentation API in milliseconds</li>
+            <li><b>One click setup</b>: once enabled, the agent is injected into your run configurations for you</li>
+            <li><b>100% local and private</b>: no telemetry, no analytics, no outbound network requests. The one socket it opens is bound to loopback</li>
         </ul>
 
         <h3>How It Works</h3>
         <ol>
             <li>Reclazz asks once whether to turn on. It ships switched off, because enabling it puts an agent into the JVM that runs your code</li>
-            <li>Run your application. The agent is injected automatically (SAP Commerce servers start outside the IDE, so Reclazz offers to add it to the wrapper config instead)</li>
+            <li>Run your application. The agent is injected automatically (SAP Commerce servers start outside the IDE, so Reclazz offers to install it into the platform properties instead)</li>
             <li>Edit code, build your project. Changes are hot-swapped instantly</li>
         </ol>
 
@@ -36,6 +59,7 @@
         <ul>
             <li>IntelliJ IDEA 2023.3+</li>
             <li>JDK 17+</li>
+            <li>SAP Commerce 2211 or later for the Hybris-specific features</li>
         </ul>
 
         <p>
@@ -45,6 +69,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.6</h3>
+        <ul>
+            <li>Listing text now leads with SAP Commerce support; no change to the plugin itself</li>
+        </ul>
+
         <h3>1.0.5</h3>
         <ul>
             <li>Annotation changes now take effect on any JDK 17+, no longer needing JetBrains Runtime or DCEVM: editing a @RequestMapping value moves the endpoint</li>

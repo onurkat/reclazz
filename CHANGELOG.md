@@ -4,6 +4,16 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.6] - 2026-08-14
+
+### Changed
+
+- The Marketplace description leads with SAP Commerce. Reclazz competes
+  with a free, bundled tool on plain Spring, and with nothing at all on
+  Hybris, where a restart costs minutes and an items.xml change costs a
+  rebuild. The listing described the second case seventh, in one line.
+  Nothing about the plugin changed.
+
 ## [1.0.5] - 2026-08-13
 
 ### Fixed
