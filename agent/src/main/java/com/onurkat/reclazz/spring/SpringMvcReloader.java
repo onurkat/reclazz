@@ -40,6 +40,7 @@ public class SpringMvcReloader {
             reloaded |= reloadMappingsIn(appContext, controllerClass);
         }
 
+
         if (!reloaded) {
             // Reaching here used to produce no output at all, so a mapping
             // that silently kept its old value looked identical to a reload
@@ -53,41 +54,97 @@ public class SpringMvcReloader {
 
     private boolean reloadMappingsIn(Object appContext, Class<?> controllerClass) {
         try {
-            Object handlerMapping = getBeanOfType(appContext,
-                    "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
-            if (handlerMapping == null) {
-                // Normal: the Hybris global context has no MVC infrastructure.
-                // Only worth a word when nothing else picks the controller up,
-                // which the caller decides.
-                return false;
-            }
-
+            // Find the bean first. Asking for the handler mapping up front and
+            // returning early when it is absent meant the one context that
+            // actually owns the controller was never examined: in Hybris the
+            // bean sits in the DispatcherServlet's own context while the
+            // registry resolves from its parent, so the pair is never both
+            // present in the context being looked at.
             String beanName = SpringBeans.findBeanName(appContext, controllerClass);
             if (beanName == null) {
-                // This one is not normal. The context owns an MVC registry, so
-                // it is a web context, and we are holding a controller class it
-                // cannot name. Saying nothing here is how a re-scan that never
-                // ran reads as a reload that simply had no effect.
+                String[] byName = SpringBeans.beanNamesForType(appContext, controllerClass.getName());
+                beanName = byName.length > 0 ? byName[0] : null;
+            }
+            if (beanName == null) return false;
+
+            // The controller is here, so this is its web app. The registry is
+            // in this context or in one of its parents.
+            Object handlerMapping = findHandlerMapping(appContext);
+            if (handlerMapping == null) {
                 StatusReporter.warn("MVC re-scan skipped for " + controllerClass.getName()
-                        + ": the web context has a handler mapping but no bean of this type. "
-                        + "Its classloader is likely a different one from the reloaded class.");
+                        + ": found the bean as '" + beanName + "' but no RequestMappingHandlerMapping "
+                        + "in that context or its parents.");
                 return false;
             }
 
             unregisterMappings(handlerMapping, controllerClass);
 
-            Method detectMethod = handlerMapping.getClass().getDeclaredMethod(
-                    "detectHandlerMethods", Object.class);
+            // detectHandlerMethods is declared on AbstractHandlerMethodMapping,
+            // not on RequestMappingHandlerMapping, and getDeclaredMethod does
+            // not look at supertypes. Asking the concrete class for it threw
+            // NoSuchMethodException on every single re-scan, which the catch
+            // below reported and then swallowed as a returned false.
+            Method detectMethod = findMethodInHierarchy(
+                    handlerMapping.getClass(), "detectHandlerMethods", Object.class);
+            if (detectMethod == null) {
+                StatusReporter.warn("MVC re-scan cannot proceed for " + controllerClass.getName()
+                        + ": no detectHandlerMethods on " + handlerMapping.getClass().getName()
+                        + " or its supertypes");
+                return false;
+            }
             detectMethod.setAccessible(true);
             detectMethod.invoke(handlerMapping, beanName);
 
             return true;
-        } catch (ClassNotFoundException e) {
-            return false;
         } catch (Exception e) {
             StatusReporter.warn("Spring MVC mapping re-scan failed: " + e.getMessage());
             return false;
         }
+    }
+
+    /** Looks up a method on a type or any of its supertypes. */
+    private static Method findMethodInHierarchy(Class<?> type, String name, Class<?>... params) {
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            try {
+                return c.getDeclaredMethod(name, params);
+            } catch (NoSuchMethodException ignored) {
+                // keep walking
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The registry for a controller's context, which may be declared in a
+     * parent: a DispatcherServlet context inherits the root web context, and
+     * in Hybris that is where the two end up living apart.
+     */
+    private Object findHandlerMapping(Object appContext) {
+        Object ctx = appContext;
+        for (int depth = 0; ctx != null && depth < 5; depth++) {
+            try {
+                Object mapping = getBeanOfType(ctx,
+                        "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
+                if (mapping != null) return mapping;
+            } catch (Exception ignored) {}
+            try {
+                ctx = ctx.getClass().getMethod("getParent").invoke(ctx);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    /** Best-effort identity of a context, for diagnostics. */
+    private String describe(Object ctx) {
+        for (String getter : new String[]{"getDisplayName", "getId", "getApplicationName"}) {
+            try {
+                Object v = ctx.getClass().getMethod(getter).invoke(ctx);
+                if (v != null && !v.toString().isBlank()) return v.toString();
+            } catch (Exception ignored) {}
+        }
+        return ctx.getClass().getSimpleName();
     }
 
     private Object getBeanOfType(Object appContext, String typeName) throws Exception {
@@ -114,22 +171,44 @@ public class SpringMvcReloader {
                 Object handlerMethod = entry.getValue();
                 Method getBeanType = handlerMethod.getClass().getMethod("getBeanType");
                 Class<?> beanType = (Class<?>) getBeanType.invoke(handlerMethod);
-                if (controllerClass.equals(beanType)) {
+                // By name, not identity. The registration holds the Class the
+                // web context loaded, and the reload hands us the one it found;
+                // for the same controller those can be two objects. Comparing
+                // them with equals matched nothing, so nothing was ever
+                // unregistered and the re-scan added a second mapping for the
+                // same path, which Spring then refuses to serve at all:
+                // "Ambiguous handler methods mapped for ...", an HTTP 500 where
+                // there had been a working endpoint.
+                if (beanType != null && beanType.getName().equals(controllerClass.getName())) {
                     toUnregister.add(entry.getKey());
                 }
             }
 
             if (!toUnregister.isEmpty()) {
-                Method unregisterMethod = handlerMapping.getClass().getMethod(
-                        "unregisterMapping", Class.forName(
-                                "org.springframework.web.servlet.mvc.method.RequestMappingInfo",
-                                false, handlerMapping.getClass().getClassLoader()));
+                // unregisterMapping is declared on AbstractHandlerMethodMapping
+                // as unregisterMapping(T), so after erasure its parameter is
+                // Object, not RequestMappingInfo. Asking for the concrete type
+                // threw NoSuchMethodException on every call, and the catch
+                // below used to swallow it in silence.
+                Method unregisterMethod = findMethodInHierarchy(
+                        handlerMapping.getClass(), "unregisterMapping", Object.class);
+                if (unregisterMethod == null) {
+                    StatusReporter.warn("MVC unregister unavailable on "
+                            + handlerMapping.getClass().getName()
+                            + "; skipping re-scan to avoid duplicate mappings");
+                    return;
+                }
+                unregisterMethod.setAccessible(true);
                 for (Object mapping : toUnregister) {
                     unregisterMethod.invoke(handlerMapping, mapping);
                 }
             }
         } catch (Exception e) {
-            // If unregister fails, detectHandlerMethods will still work
+            // Not harmless, which the previous comment here claimed: leaving
+            // the old mappings in place while the re-scan adds new ones is
+            // what produces the ambiguous-mapping 500.
+            StatusReporter.warn("MVC unregister failed for " + controllerClass.getName()
+                    + " (" + e + "); the re-scan may leave duplicate mappings");
         }
     }
 }
