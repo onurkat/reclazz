@@ -32,10 +32,21 @@ public class SpringMvcReloader {
      */
     public boolean reloadMappings(Class<?> controllerClass) {
         boolean reloaded = false;
+        int contexts = 0;
         // Controllers live in web application contexts — iterate all live
         // contexts and re-scan wherever this controller is registered.
         for (Object appContext : platformContext.getAllApplicationContexts()) {
+            contexts++;
             reloaded |= reloadMappingsIn(appContext, controllerClass);
+        }
+
+        if (!reloaded) {
+            // Reaching here used to produce no output at all, so a mapping
+            // that silently kept its old value looked identical to a reload
+            // that had simply not been asked for.
+            StatusReporter.warn("MVC mappings not re-scanned for " + controllerClass.getName()
+                    + ": searched " + contexts + " application context(s) and none of them "
+                    + (contexts == 0 ? "were captured" : "held it as a handler"));
         }
         return reloaded;
     }
@@ -44,10 +55,24 @@ public class SpringMvcReloader {
         try {
             Object handlerMapping = getBeanOfType(appContext,
                     "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
-            if (handlerMapping == null) return false;
+            if (handlerMapping == null) {
+                // Normal: the Hybris global context has no MVC infrastructure.
+                // Only worth a word when nothing else picks the controller up,
+                // which the caller decides.
+                return false;
+            }
 
             String beanName = SpringBeans.findBeanName(appContext, controllerClass);
-            if (beanName == null) return false;
+            if (beanName == null) {
+                // This one is not normal. The context owns an MVC registry, so
+                // it is a web context, and we are holding a controller class it
+                // cannot name. Saying nothing here is how a re-scan that never
+                // ran reads as a reload that simply had no effect.
+                StatusReporter.warn("MVC re-scan skipped for " + controllerClass.getName()
+                        + ": the web context has a handler mapping but no bean of this type. "
+                        + "Its classloader is likely a different one from the reloaded class.");
+                return false;
+            }
 
             unregisterMappings(handlerMapping, controllerClass);
 
