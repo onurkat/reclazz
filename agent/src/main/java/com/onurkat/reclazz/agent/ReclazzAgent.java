@@ -416,21 +416,31 @@ public class ReclazzAgent {
         try {
             String fileName = event.getPath().getFileName().toString();
 
-            if (fileName.endsWith(".class") && event.getType() != ChangeEvent.Type.DELETED) {
-                handleClassFileChange(event, reloader, springOrchestrator, interceptorReloader);
-            } else if (fileName.endsWith(".java") && config.isAutoCompile() && compiler != null) {
-                handleJavaBatch(compiler, reloader, springOrchestrator, interceptorReloader);
-            } else if (fileName.endsWith(".java") && !config.isAutoCompile()) {
-                StatusReporter.info("Source changed: " + fileName + " [" + event.getModuleName() + "]");
-                StatusReporter.info("Build your project to compile, Reclazz will hot-swap automatically.");
-            } else if (fileName.endsWith("-spring.xml")) {
-                handleSpringXmlChange(event);
-            } else if (fileName.endsWith(".properties") || fileName.endsWith(".yml") || fileName.endsWith(".yaml")) {
-                handlePropertiesChange(event);
-            } else if (fileName.endsWith(".impex") && config.isAutoImpex() && impexImporter != null) {
-                handleImpexChange(event, impexImporter);
-            } else if (fileName.endsWith("-items.xml") || fileName.endsWith("-beans.xml")) {
-                handleCodegenXmlChange(event);
+            // What the file is, decided in one testable place; whether we act
+            // on it stays here, because that depends on configuration.
+            switch (com.onurkat.reclazz.watcher.ChangeKind.of(fileName)) {
+                case CLASS_FILE -> {
+                    if (event.getType() != ChangeEvent.Type.DELETED) {
+                        handleClassFileChange(event, reloader, springOrchestrator, interceptorReloader);
+                    }
+                }
+                case JAVA_SOURCE -> {
+                    if (config.isAutoCompile() && compiler != null) {
+                        handleJavaBatch(compiler, reloader, springOrchestrator, interceptorReloader);
+                    } else if (!config.isAutoCompile()) {
+                        StatusReporter.info("Source changed: " + fileName + " [" + event.getModuleName() + "]");
+                        StatusReporter.info("Build your project to compile, Reclazz will hot-swap automatically.");
+                    }
+                }
+                case SPRING_XML -> handleSpringXmlChange(event);
+                case CODEGEN_XML -> handleCodegenXmlChange(event);
+                case PROPERTIES -> handlePropertiesChange(event);
+                case IMPEX -> {
+                    if (config.isAutoImpex() && impexImporter != null) {
+                        handleImpexChange(event, impexImporter);
+                    }
+                }
+                case UNKNOWN -> { }
             }
         } catch (Throwable e) {
             // Throwable, not Exception: ASM and defineHiddenClass surface

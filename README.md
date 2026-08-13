@@ -161,6 +161,14 @@ tomcat.generaloptions=-javaagent:/path/to/reclazz-agent.jar ${tomcat.generalopti
 Reclazz auto-detects the Hybris home directory from `platform.home`, `HYBRIS_BIN_DIR`, or the classpath. Start the server and run `ant build`. Reclazz hot-swaps the compiled classes automatically.
 
 Hybris-specific features:
+- **items.xml and beans.xml regeneration**: Saving a `*-items.xml` or `*-beans.xml`
+  runs the platform's own code generation in the background and hot-reloads the
+  regenerated model and DTO classes, instead of `ant clean all` and a restart.
+  New attributes still need a database column, so Reclazz prints a reminder to
+  run **HAC > Platform > Update Running System**; it will not run DDL against a
+  live database.
+- **Spring XML reload**: `*-spring.xml` changes are diffed and applied, which is
+  also how a brand new `@Component` becomes available without a restart
 - **Interceptor reload**: Re-registers Hybris interceptors (Validate, Prepare, Load, Remove)
 - **ImpEx auto-import**: Optionally auto-imports changed `.impex` files (opt-in)
 - **Extension-aware**: Understands Hybris extension structure, classpath, and classloader hierarchy

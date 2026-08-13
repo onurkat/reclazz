@@ -19,7 +19,7 @@
             <li><b>Cache Eviction</b>: Evicts Spring caches for @Cacheable/@CacheEvict classes</li>
             <li><b>Scheduler Reload</b>: Cancels and re-registers @Scheduled tasks</li>
             <li><b>Structural Changes</b>: Add/remove methods and fields on any JDK 17+ (JBR/DCEVM additionally give full reflective visibility)</li>
-            <li><b>SAP Commerce Support</b>: Interceptor reload, ImpEx auto-import, extension-aware</li>
+            <li><b>SAP Commerce Support</b>: Interceptor reload, ImpEx auto-import, extension-aware watching, and regeneration from *-items.xml and *-beans.xml without a full rebuild</li>
             <li><b>JDK Auto-Detection</b>: Detects JDK 17/21 and JBR/DCEVM, auto-configures JVM flags</li>
             <li><b>One Click Setup</b>: Once enabled, the agent is injected into run configurations for you</li>
             <li><b>100% Local &amp; Private</b>: No telemetry, no analytics, no outbound network requests</li>
