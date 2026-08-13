@@ -3,7 +3,7 @@
 The end-to-end suite. It edits real source files in a running SAP
 Commerce server, then asks the server over HTTP whether the change took
 effect. Everything Reclazz claims to do is claimed on the strength of
-these 21 tests passing against a live 2211 install.
+these 20 tests passing against a live 2211 install.
 
 **You need a licensed SAP Commerce installation to run this.** Nothing
 here runs in CI and nothing here runs from a plain clone. If you do not
