@@ -2,6 +2,8 @@
 
 # Reclazz
 
+[![JetBrains Marketplace](https://img.shields.io/jetbrains/plugin/v/com.onurkat.reclazz?label=Marketplace)](https://plugins.jetbrains.com/plugin/33498-reclazz)
+[![Downloads](https://img.shields.io/jetbrains/plugin/d/com.onurkat.reclazz)](https://plugins.jetbrains.com/plugin/33498-reclazz)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![JDK](https://img.shields.io/badge/JDK-17%2B-orange.svg)](https://adoptium.net/)
 [![IntelliJ IDEA](https://img.shields.io/badge/IntelliJ%20IDEA-2024.1%2B-purple.svg)](https://www.jetbrains.com/idea/)
@@ -86,7 +88,11 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 
 ### From JetBrains Marketplace (Recommended)
 
-1. In IntelliJ IDEA, go to **Settings** > **Plugins** > **Marketplace**
+[plugins.jetbrains.com/plugin/33498-reclazz](https://plugins.jetbrains.com/plugin/33498-reclazz)
+
+Or from inside the IDE:
+
+1. Go to **Settings** > **Plugins** > **Marketplace**
 2. Search for **"Reclazz"**
 3. Click **Install** and restart the IDE
 
