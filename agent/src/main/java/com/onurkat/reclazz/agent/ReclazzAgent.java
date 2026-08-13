@@ -84,9 +84,17 @@ public class ReclazzAgent {
      */
     public static void agentmain(String agentArgs, Instrumentation inst) {
         instrumentation = inst;
+        attached = true;
         StatusReporter.banner();
         StatusReporter.info("Agent attached to running JVM (agentmain)");
         initialize(agentArgs);
+    }
+
+    /** True when we arrived through the Attach API rather than -javaagent. */
+    private static volatile boolean attached;
+
+    public static boolean isAttached() {
+        return attached;
     }
 
     public static Instrumentation getInstrumentation() {
@@ -231,6 +239,20 @@ public class ReclazzAgent {
                 ReflectionInterceptTransformer reflectionTransformer = new ReflectionInterceptTransformer();
                 instrumentation.addTransformer(reflectionTransformer, true);
                 StatusReporter.info("Reflection intercept transformer registered");
+
+                // This transformer only rewrites classes loaded after it was
+                // registered, and nothing retransforms the ones already in
+                // memory. Under -javaagent that is nearly everything, so it
+                // works. Attached to a running server it is the opposite: the
+                // framework loaded long ago, so its reflection call sites are
+                // untouched and a structurally added member stays invisible to
+                // any scan that looks for it. Say so rather than let it look
+                // like the reload simply had no effect.
+                if (attached) {
+                    StatusReporter.warn("Attached to a running JVM: framework code was loaded "
+                            + "before Reclazz, so members added by a structural reload will not "
+                            + "be picked up by framework scans. Start with -javaagent for that.");
+                }
 
                 structuralReloader = new StructuralReloader(instrumentation, transformContext, config, platformContext);
                 structuralReloader.setTransformer(transformer);
@@ -475,7 +497,8 @@ public class ReclazzAgent {
                 if (reloadResult.isSpringBean()) {
                     Class<?> reloadedClass = findLoadedClass(className);
                     springOrchestrator.onClassReloaded(className, reloadedClass,
-                            reloadResult.isStructuralReload());
+                            reloadResult.isStructuralReload(),
+                            reloadResult.isAnnotationsChanged());
                 }
 
                 // Hybris-specific: interceptor reload
@@ -577,7 +600,8 @@ public class ReclazzAgent {
                 if (reloadResult.isSpringBean()) {
                     Class<?> reloadedClass = findLoadedClass(className);
                     springOrchestrator.onClassReloaded(className, reloadedClass,
-                            reloadResult.isStructuralReload());
+                            reloadResult.isStructuralReload(),
+                            reloadResult.isAnnotationsChanged());
                 }
 
                 if (reloadResult.isInterceptor() && interceptorReloader != null) {

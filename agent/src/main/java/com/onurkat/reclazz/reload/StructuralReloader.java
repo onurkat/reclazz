@@ -230,7 +230,8 @@ public class StructuralReloader {
 
             // Update metadata in TransformContext
             context.putMetadata(internalName, new TransformContext.ClassMetadata(
-                    diff.getNewMethods(), diff.getNewFields(), 0, diff.getNewSuperName()));
+                    diff.getNewMethods(), diff.getNewFields(), 0, diff.getNewSuperName(),
+                    diff.getNewAnnotations()));
 
             boolean isStructural = diff.isStructural();
             if (isStructural) {
@@ -287,8 +288,14 @@ public class StructuralReloader {
                 }
             }
 
-            return ClassReloader.ReloadResult.structuralSuccess(
+            ClassReloader.ReloadResult result = ClassReloader.ReloadResult.structuralSuccess(
                     springBean, isInterceptor(targetClass), isStructural);
+            result.setAnnotationsChanged(diff.isAnnotationsChanged());
+            if (diff.isAnnotationOnly()) {
+                StatusReporter.info("Annotation change on " + className
+                        + " — re-scanning the frameworks that read it");
+            }
+            return result;
 
         } catch (Throwable e) {
             // Throwable: defineHiddenClass surfaces VerifyError (an Error)

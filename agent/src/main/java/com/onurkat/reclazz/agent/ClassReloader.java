@@ -306,6 +306,7 @@ public class ClassReloader {
         private final boolean structuralReload;
         private final String error;
         private String structuralChangeAdvice;
+        private boolean annotationsChanged;
         private boolean springMvcReloaded;
 
         private ReloadResult(boolean success, boolean springBean, boolean interceptor,
@@ -345,11 +346,21 @@ public class ClassReloader {
         void setStructuralChangeAdvice(String advice) { this.structuralChangeAdvice = advice; }
         public void setSpringMvcReloaded(boolean reloaded) { this.springMvcReloaded = reloaded; }
 
+        /**
+         * Whether the edit moved an annotation. Set separately from the
+         * factory because it is orthogonal to how the reload was applied:
+         * an annotation edit is not structural, yet the frameworks that read
+         * annotations still have to be told, which is exactly what did not
+         * happen before.
+         */
+        public void setAnnotationsChanged(boolean changed) { this.annotationsChanged = changed; }
+
         public boolean isSuccess() { return success; }
         public boolean isSpringBean() { return springBean; }
         public boolean isInterceptor() { return interceptor; }
         public boolean isStructuralChange() { return structuralChange; }
         public boolean isStructuralReload() { return structuralReload; }
+        public boolean isAnnotationsChanged() { return annotationsChanged; }
         public boolean isSpringMvcReloaded() { return springMvcReloaded; }
         public String getError() { return error; }
         public String getStructuralChangeAdvice() { return structuralChangeAdvice; }

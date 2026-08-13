@@ -112,7 +112,11 @@ public class ReclazzTransformer implements ClassFileTransformer {
 
         // Chain: ClassReader -> MethodTrampolineAdapter -> ClassWriter
         // MethodTrampolineAdapter internally applies CallSiteAdapter and FieldAccessAdapter
-        MethodTrampolineAdapter adapter = new MethodTrampolineAdapter(writer, context);
+        // Annotations as they are before we touch anything. The reload path
+        // compares against this to notice an edit that moved nothing but an
+        // annotation, which the structural diff cannot see.
+        MethodTrampolineAdapter adapter = new MethodTrampolineAdapter(
+                writer, context, AnnotationSignatures.of(classfileBuffer));
 
         reader.accept(adapter, ClassReader.EXPAND_FRAMES);
 

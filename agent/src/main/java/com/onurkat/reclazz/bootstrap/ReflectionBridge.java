@@ -114,6 +114,92 @@ public final class ReflectionBridge {
     }
 
     /**
+     * The public counterpart of {@link #getDeclaredMethods}, merging in
+     * structurally-added methods.
+     *
+     * Frameworks reach for both forms. Spring's own reflection utilities
+     * favour the declared variants, but plenty of code, including parts of
+     * Spring, calls {@code getMethods()}, and until this existed those call
+     * sites saw the class exactly as it was compiled.
+     *
+     * Only public added members are merged, because that is the contract of
+     * {@code Class.getMethods()} and code that filters on modifiers
+     * afterwards would otherwise see something impossible.
+     */
+    public static Method[] getMethods(Class<?> clazz) {
+        Method[] original = clazz.getMethods();
+        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        if (state == null || state.addedMethods.isEmpty()) {
+            return original;
+        }
+
+        List<Method> merged = new ArrayList<>(original.length + state.addedMethods.size());
+        for (Method m : original) {
+            merged.add(m);
+        }
+        for (Method m : state.addedMethods) {
+            if (java.lang.reflect.Modifier.isPublic(m.getModifiers())) {
+                merged.add(m);
+            }
+        }
+        return merged.toArray(new Method[0]);
+    }
+
+    /** The public counterpart of {@link #getDeclaredFields}. */
+    public static Field[] getFields(Class<?> clazz) {
+        Field[] original = clazz.getFields();
+        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        if (state == null || state.addedFields.isEmpty()) {
+            return original;
+        }
+
+        List<Field> merged = new ArrayList<>(original.length + state.addedFields.size());
+        for (Field f : original) {
+            merged.add(f);
+        }
+        for (Field f : state.addedFields) {
+            if (java.lang.reflect.Modifier.isPublic(f.getModifiers())) {
+                merged.add(f);
+            }
+        }
+        return merged.toArray(new Field[0]);
+    }
+
+    /**
+     * The public counterpart of {@link #getDeclaredMethod}. Falls back to the
+     * original class, which also walks the hierarchy, so an inherited method
+     * still resolves exactly as before.
+     */
+    public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes)
+            throws NoSuchMethodException {
+        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        if (state != null) {
+            for (Method m : state.addedMethods) {
+                if (java.lang.reflect.Modifier.isPublic(m.getModifiers())
+                        && m.getName().equals(name)
+                        && paramTypesMatch(m.getParameterTypes(), parameterTypes)) {
+                    return m;
+                }
+            }
+        }
+        return clazz.getMethod(name, parameterTypes);
+    }
+
+    /** The public counterpart of {@link #getDeclaredField}. */
+    public static Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        if (state != null) {
+            for (Field f : state.addedFields) {
+                if (java.lang.reflect.Modifier.isPublic(f.getModifiers())
+                        && f.getName().equals(name)) {
+                    return f;
+                }
+            }
+        }
+        return clazz.getField(name);
+    }
+
+    /**
      * Atomically replace all added members for a class.
      * Avoids the window where clearClass + re-add leaves an incomplete state.
      */

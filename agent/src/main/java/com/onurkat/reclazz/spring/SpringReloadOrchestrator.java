@@ -69,6 +69,11 @@ public class SpringReloadOrchestrator {
     }
 
     public void onClassReloaded(String className, Class<?> reloadedClass, boolean isStructural) {
+        onClassReloaded(className, reloadedClass, isStructural, false);
+    }
+
+    public void onClassReloaded(String className, Class<?> reloadedClass,
+                                boolean isStructural, boolean annotationsChanged) {
         if (reloadedClass == null) return;
 
         if (isSpringBean(reloadedClass)) {
@@ -77,8 +82,12 @@ public class SpringReloadOrchestrator {
             // across contexts with different classloaders.
             beanReloader.refreshBean(className, reloadedClass);
 
-            // 2. MVC re-scan (only on structural changes to controllers)
-            if (isStructural && isController(reloadedClass)) {
+            // 2. MVC re-scan. Structural changes need it because the set of
+            // handler methods moved; annotation changes need it because the
+            // mapping itself did, and that edit is not structural. Gating on
+            // structural alone left a changed @RequestMapping live in the
+            // class and stale in the registry.
+            if ((isStructural || annotationsChanged) && isController(reloadedClass)) {
                 boolean mvcReloaded = mvcReloader.reloadMappings(reloadedClass);
                 if (mvcReloaded) {
                     StatusReporter.success("Spring MVC mappings re-scanned for " + className);

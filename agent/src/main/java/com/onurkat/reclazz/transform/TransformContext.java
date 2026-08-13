@@ -111,19 +111,51 @@ public class TransformContext {
         private final List<FieldSig> fields;
         private final int bytecodeHash;
         private final String superName;
+        private final java.util.Set<String> annotations;
+        private final boolean annotationsKnown;
 
+        /** For callers with no annotation information; the diff stays silent. */
         public ClassMetadata(List<MethodSig> methods, List<FieldSig> fields,
                              int bytecodeHash, String superName) {
             this.methods = List.copyOf(methods);
             this.fields = List.copyOf(fields);
             this.bytecodeHash = bytecodeHash;
             this.superName = superName;
+            this.annotations = java.util.Set.of();
+            this.annotationsKnown = false;
+        }
+
+        public ClassMetadata(List<MethodSig> methods, List<FieldSig> fields,
+                             int bytecodeHash, String superName,
+                             java.util.Set<String> annotations) {
+            this.methods = List.copyOf(methods);
+            this.fields = List.copyOf(fields);
+            this.bytecodeHash = bytecodeHash;
+            this.superName = superName;
+            this.annotations = java.util.Set.copyOf(annotations);
+            this.annotationsKnown = true;
         }
 
         public List<MethodSig> getMethods() { return methods; }
         public List<FieldSig> getFields() { return fields; }
         public int getBytecodeHash() { return bytecodeHash; }
         public String getSuperName() { return superName; }
+
+        /**
+         * Annotation signatures as of this version of the class, from
+         * {@link AnnotationSignatures}. Empty when the class was recorded
+         * before annotations were tracked, which the diff treats as
+         * "nothing known" rather than "no annotations".
+         */
+        public java.util.Set<String> getAnnotations() { return annotations; }
+
+        /**
+         * Whether the annotation set was recorded at all. An empty set is a
+         * real answer, "this class has no annotations", and a class that then
+         * gains one has changed; that is different from never having looked,
+         * which is what a class recorded by an older build looks like.
+         */
+        public boolean isAnnotationsKnown() { return annotationsKnown; }
     }
 
     public record MethodSig(String name, String descriptor, int access) {}

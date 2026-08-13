@@ -170,6 +170,12 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
                     "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(descriptor);
             case "getDeclaredField" ->
                     "(Ljava/lang/String;)Ljava/lang/reflect/Field;".equals(descriptor);
+            case "getMethods" -> "()[Ljava/lang/reflect/Method;".equals(descriptor);
+            case "getFields" -> "()[Ljava/lang/reflect/Field;".equals(descriptor);
+            case "getMethod" ->
+                    "(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(descriptor);
+            case "getField" ->
+                    "(Ljava/lang/String;)Ljava/lang/reflect/Field;".equals(descriptor);
             default -> false;
         };
     }
@@ -196,6 +202,26 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
                 yield null;
             }
             case "getDeclaredField" -> {
+                if ("(Ljava/lang/String;)Ljava/lang/reflect/Field;".equals(descriptor))
+                    yield "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;";
+                yield null;
+            }
+            case "getMethods" -> {
+                if ("()[Ljava/lang/reflect/Method;".equals(descriptor))
+                    yield "(Ljava/lang/Class;)[Ljava/lang/reflect/Method;";
+                yield null;
+            }
+            case "getFields" -> {
+                if ("()[Ljava/lang/reflect/Field;".equals(descriptor))
+                    yield "(Ljava/lang/Class;)[Ljava/lang/reflect/Field;";
+                yield null;
+            }
+            case "getMethod" -> {
+                if ("(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(descriptor))
+                    yield "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;";
+                yield null;
+            }
+            case "getField" -> {
                 if ("(Ljava/lang/String;)Ljava/lang/reflect/Field;".equals(descriptor))
                     yield "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Field;";
                 yield null;

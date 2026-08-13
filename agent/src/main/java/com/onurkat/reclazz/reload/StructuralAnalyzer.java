@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.reload;
 
+import com.onurkat.reclazz.transform.AnnotationSignatures;
 import com.onurkat.reclazz.transform.TransformContext;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
@@ -71,12 +72,22 @@ public class StructuralAnalyzer {
         // Interface changes are complex — flag as unsupported for now
         boolean interfacesChanged = false; // Simplified — could be expanded
 
+        // An annotation-only edit adds and removes nothing, so without this it
+        // reads as body-only and no framework is told anything happened.
+        // An empty old set means the class was recorded before annotations
+        // were tracked; treat that as unknown rather than as "had none", so a
+        // first reload after an upgrade does not claim everything changed.
+        Set<String> newAnnotations = AnnotationSignatures.of(newBytecode);
+        boolean annotationsChanged = original.isAnnotationsKnown()
+                && !original.getAnnotations().equals(newAnnotations);
+
         return new StructuralDiff(
                 addedMethods, removedMethods, commonMethods,
                 addedFields, removedFields,
                 superChanged, interfacesChanged,
                 collector.methods, collector.fields,
-                collector.superName
+                collector.superName,
+                annotationsChanged, newAnnotations
         );
     }
 
@@ -124,6 +135,8 @@ public class StructuralAnalyzer {
         private final List<TransformContext.MethodSig> newMethods;
         private final List<TransformContext.FieldSig> newFields;
         private final String newSuperName;
+        private final boolean annotationsChanged;
+        private final Set<String> newAnnotations;
 
         StructuralDiff(Set<String> addedMethods, Set<String> removedMethods,
                        Set<String> commonMethods, Set<String> addedFields,
@@ -131,7 +144,11 @@ public class StructuralAnalyzer {
                        boolean interfacesChanged,
                        List<TransformContext.MethodSig> newMethods,
                        List<TransformContext.FieldSig> newFields,
-                       String newSuperName) {
+                       String newSuperName,
+                       boolean annotationsChanged,
+                       Set<String> newAnnotations) {
+            this.annotationsChanged = annotationsChanged;
+            this.newAnnotations = newAnnotations;
             this.addedMethods = addedMethods;
             this.removedMethods = removedMethods;
             this.commonMethods = commonMethods;
@@ -152,6 +169,19 @@ public class StructuralAnalyzer {
         public boolean isBodyOnly() {
             return !isStructural() && !superClassChanged && !interfacesChanged;
         }
+
+        /**
+         * True when the only thing that moved was an annotation. The class
+         * redefines cleanly and reflection sees the new value; what does not
+         * happen by itself is any framework noticing.
+         */
+        public boolean isAnnotationOnly() {
+            return annotationsChanged && !isStructural() && !isUnsupported();
+        }
+
+        public boolean isAnnotationsChanged() { return annotationsChanged; }
+
+        public Set<String> getNewAnnotations() { return newAnnotations; }
 
         public boolean isUnsupported() {
             return superClassChanged || interfacesChanged;

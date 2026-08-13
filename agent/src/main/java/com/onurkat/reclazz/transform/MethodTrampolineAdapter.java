@@ -51,9 +51,18 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
     // as direct PUTFIELD/PUTSTATIC instructions.
     private final java.util.Set<String> declaredFinalFieldKeys = new java.util.HashSet<>();
 
+    /** Annotation signatures of the class as it arrived, before transforming. */
+    private final java.util.Set<String> originalAnnotations;
+
     public MethodTrampolineAdapter(ClassVisitor cv, TransformContext context) {
+        this(cv, context, java.util.Set.of());
+    }
+
+    public MethodTrampolineAdapter(ClassVisitor cv, TransformContext context,
+                                   java.util.Set<String> originalAnnotations) {
         super(ASM9, cv);
         this.context = context;
+        this.originalAnnotations = originalAnnotations;
     }
 
     @Override
@@ -173,7 +182,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
         // Store metadata
         context.putMetadata(className, new TransformContext.ClassMetadata(
-                methodSigs, fieldSigs, 0, superName));
+                methodSigs, fieldSigs, 0, superName, originalAnnotations));
 
         super.visitEnd();
     }
