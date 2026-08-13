@@ -37,20 +37,13 @@ class AnnotationChangeTest(
 
             Thread.sleep(config.settleDelayMs)
 
-            if (!config.enhancedMode) {
-                // Companion mode: annotations live on the original Class
-                // object and cannot be swapped — the mapping change must NOT
-                // take effect. Documented limitation, asserted as such.
-                val pongResult = httpVerifier.get("${config.testEndpointBase}/pong")
-                val pingResult = httpVerifier.get("${config.testEndpointBase}/ping")
-                return if (pongResult.statusCode == 404 && pingResult.statusCode == 200) {
-                    result(start, TestStatus.PASS,
-                        "companion mode: mapping unchanged — annotations not swappable (documented)")
-                } else {
-                    result(start, TestStatus.FAIL,
-                        "companion expectation violated: /pong=${pongResult.statusCode}, /ping=${pingResult.statusCode}")
-                }
-            }
+            // Both modes expect the same thing now. This used to assert the
+            // opposite in companion mode, on the belief that annotations could
+            // not be swapped on a stock JVM. They can: redefineClasses accepts
+            // an annotation change and reflection reports it. What was actually
+            // stopping the mapping from moving was Spring caching its
+            // reflection per Class, so a re-scan re-read the methods it had
+            // parsed at startup. The reloader clears those caches now.
 
             // /pong should work now
             val pongResult = httpVerifier.get("${config.testEndpointBase}/pong")

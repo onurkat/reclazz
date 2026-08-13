@@ -4,6 +4,28 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.5] - 2026-08-13
+
+### Fixed
+
+- Changing an annotation now takes effect without a restart on any JDK
+  17+, where it previously required JetBrains Runtime or DCEVM. Editing
+  a `@RequestMapping` value moves the endpoint, and the old path stops
+  responding.
+
+  This was never a JVM limitation, which is what the earlier releases
+  documented. A stock JVM accepts an annotation change and reflection
+  reports it. Three things stood in the way, each hiding the next: the
+  structural diff ignored annotations, so no framework was told anything
+  had changed; three reflective lookups in the MVC reloader were wrong,
+  so a re-scan could never run; and Spring caches its reflection per
+  class, so once the re-scan did run it faithfully re-registered the
+  methods it had parsed at startup. Those caches are cleared now.
+
+- A failed MVC re-scan says so. Every one of the faults above was
+  silent, which is why an annotation change looked like it was being
+  ignored rather than like something was broken.
+
 ## [1.0.4] - 2026-08-13
 
 ### Changed

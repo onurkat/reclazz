@@ -92,6 +92,12 @@ public class SpringMvcReloader {
                         + " or its supertypes");
                 return false;
             }
+            // Spring caches reflection per Class, and redefineClasses leaves
+            // the Class identity alone, so those caches keep handing out the
+            // Method objects read at startup with the annotations they had
+            // then. The re-scan would faithfully re-register the old mapping.
+            clearSpringReflectionCaches(handlerMapping.getClass().getClassLoader());
+
             detectMethod.setAccessible(true);
             detectMethod.invoke(handlerMapping, beanName);
 
@@ -99,6 +105,29 @@ public class SpringMvcReloader {
         } catch (Exception e) {
             StatusReporter.warn("Spring MVC mapping re-scan failed: " + e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Drops Spring's own reflection and annotation caches so a re-scan reads
+     * the class as it is now rather than as it was at startup. Both are
+     * public no-arg statics that Spring provides for exactly this.
+     */
+    private void clearSpringReflectionCaches(ClassLoader loader) {
+        String[] holders = {
+                "org.springframework.util.ReflectionUtils",
+                "org.springframework.core.annotation.AnnotationUtils",
+        };
+        for (String holder : holders) {
+            try {
+                Class.forName(holder, false, loader).getMethod("clearCache").invoke(null);
+            } catch (Exception e) {
+                // An older Spring without the hook, or a context that cannot
+                // see it. Worth knowing about, because without the clear the
+                // re-scan below is very likely a no-op.
+                StatusReporter.warn("Could not clear " + holder
+                        + " (" + e.getClass().getSimpleName() + "); a stale mapping may survive");
+            }
         }
     }
 

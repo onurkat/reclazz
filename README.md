@@ -247,7 +247,7 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 | Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class |
 | Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class |
 | Remove methods/fields | **Yes** | Existing callers keep the previous implementation until they are hot-recompiled |
-| Change annotations | **Yes** (enhanced redefinition) / No (companion mode) | Annotations live on the original class object |
+| Change annotations | **Yes** | None |
 | Spring bean logic | Yes | None |
 | New Spring beans (@Component) | Via `*-spring.xml` hot-reload | None |
 | Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | None |

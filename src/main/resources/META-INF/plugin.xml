@@ -18,7 +18,7 @@
             <li><b>MVC Re-scan</b>: Re-registers @RequestMapping methods when controllers change</li>
             <li><b>Cache Eviction</b>: Evicts Spring caches for @Cacheable/@CacheEvict classes</li>
             <li><b>Scheduler Reload</b>: Cancels and re-registers @Scheduled tasks</li>
-            <li><b>Structural Changes</b>: Add/remove methods and fields on any JDK 17+ (JBR/DCEVM additionally give full reflective visibility)</li>
+            <li><b>Structural Changes</b>: Add/remove methods and fields, and change annotations, on any JDK 17+ (JBR/DCEVM additionally give full reflective visibility of new members)</li>
             <li><b>SAP Commerce Support</b>: Interceptor reload, ImpEx auto-import, extension-aware watching, and regeneration from *-items.xml and *-beans.xml without a full rebuild</li>
             <li><b>JDK Auto-Detection</b>: Detects JDK 17/21 and JBR/DCEVM, auto-configures JVM flags</li>
             <li><b>One Click Setup</b>: Once enabled, the agent is injected into run configurations for you</li>
@@ -45,6 +45,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.5</h3>
+        <ul>
+            <li>Annotation changes now take effect on any JDK 17+, no longer needing JetBrains Runtime or DCEVM: editing a @RequestMapping value moves the endpoint</li>
+        </ul>
+
         <h3>1.0.4</h3>
         <ul>
             <li>Now installs on IntelliJ IDEA 2023.3 and later, down from 2024.1</li>
