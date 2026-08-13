@@ -4,6 +4,18 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.4] - 2026-08-13
+
+### Changed
+
+- Reclazz now installs on IntelliJ IDEA 2023.3 and later, down from
+  2024.1. Nothing in the code required the higher floor; 2023.3 is the
+  oldest platform the build tooling itself supports. It matters for SAP
+  Commerce work in particular, where the IDE version is often set by
+  corporate policy rather than by the developer.
+- The plugin is now compiled against 2023.3 rather than 2024.1, so an
+  API that only exists in a newer IDE cannot slip in unnoticed.
+
 ## [1.0.3] - 2026-08-12
 
 ### Changed

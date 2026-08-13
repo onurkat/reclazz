@@ -103,7 +103,7 @@ Place the JAR anywhere on your system. You will reference its absolute path in y
 
 | Requirement | Details |
 |---|---|
-| **IntelliJ IDEA** | 2024.1 or later (Community or Ultimate) |
+| **IntelliJ IDEA** | 2023.3 or later (Community or Ultimate) |
 | **JDK** | 17 or 21 (matching your SAP Commerce version) |
 | **SAP Commerce** | 2211 or later (older versions may work but are untested) |
 | **JetBrains Runtime** | Optional but recommended for structural changes (add/remove methods/fields) |

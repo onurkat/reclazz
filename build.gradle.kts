@@ -150,7 +150,7 @@ intellijPlatform {
         name = providers.gradleProperty("pluginName")
         version = providers.gradleProperty("pluginVersion")
         ideaVersion {
-            sinceBuild = "241"
+            sinceBuild = "233"
             untilBuild = "261.*"
         }
     }
@@ -165,15 +165,16 @@ intellijPlatform {
         //
         // Be aware of what this does NOT buy. 1.0.0 was rejected for two calls
         // to PluginManagerCore.getPlugin, and this task still reports
-        // "Compatible" when that call is present, on every IDE listed below.
-        // Whatever the Marketplace uses to flag it, this verifier with these
-        // IDEs does not reproduce it. Re-adding INTERNAL_API_USAGES here was
+        // "Compatible" when that call is present, on 2024.1, 2025.1 and
+        // 2025.2 alike. Whatever the Marketplace uses to flag it, this
+        // verifier does not reproduce it. Re-adding INTERNAL_API_USAGES was
         // checked by reintroducing the call: the build stayed green. The
         // denylist in checkInternalApiUsage is what actually catches it.
         //
         // DEPRECATED_API_USAGES is deliberately absent: FileSaverDescriptor's
         // deprecated constructor is called on purpose because the replacement
-        // does not exist in 2024.1, our declared sinceBuild.
+        // does not exist at 2023.3, our declared sinceBuild, and the
+        // constructor is not even deprecated there or at 2024.1.
         failureLevel = listOf(
             org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.INVALID_PLUGIN,
             org.jetbrains.intellij.platform.gradle.tasks.VerifyPluginTask.FailureLevel.COMPATIBILITY_PROBLEMS,
@@ -189,6 +190,7 @@ intellijPlatform {
             // 2025.3 is not resolvable here either, by version or by build
             // number, so 2025.2 is the newest this toolchain can verify while
             // untilBuild claims 261.
+            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2023.3")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.2")

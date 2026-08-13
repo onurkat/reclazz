@@ -3,7 +3,7 @@
 ## Prerequisites
 
 - SAP Commerce (Hybris) 2211 or later
-- IntelliJ IDEA 2024.1+ (Ultimate or Community)
+- IntelliJ IDEA 2023.3+ (Ultimate or Community)
 - JDK 17 or 21 — any vendor. Structural hot-reload works on standard JVMs
   (SapMachine, OpenJDK, Temurin, Corretto…) via Reclazz's companion-class
   reloader, and on JBR/DCEVM via enhanced redefinition.

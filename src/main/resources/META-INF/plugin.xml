@@ -34,7 +34,7 @@
 
         <h3>Requirements</h3>
         <ul>
-            <li>IntelliJ IDEA 2024.1+</li>
+            <li>IntelliJ IDEA 2023.3+</li>
             <li>JDK 17+</li>
         </ul>
 
@@ -45,6 +45,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.4</h3>
+        <ul>
+            <li>Now installs on IntelliJ IDEA 2023.3 and later, down from 2024.1</li>
+        </ul>
+
         <h3>1.0.3</h3>
         <ul>
             <li>Contact address now matches the one in SECURITY.md</li>
