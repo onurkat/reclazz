@@ -26,6 +26,62 @@ public final class ReflectionBridge {
     private static final ConcurrentHashMap<String, ClassReflectionState> states = new ConcurrentHashMap<>();
 
     /**
+     * The prefix on everything Reclazz writes into a user's class: the
+     * {@code __reclazz$ext} instance array, the {@code __reclazz$lookup}
+     * static handle, and the {@code __reclazz$v0$...} copies of renamed
+     * original methods.
+     *
+     * None of it is the user's code and none of it may be visible to
+     * reflection. A framework that walks members does not know to skip it,
+     * and it does not have to: SAP Commerce's OCC layer collects every
+     * declared field of every DTO with no filter on synthetic or static,
+     * then feeds each field's type to JAXB. That dragged
+     * {@code MethodHandles$Lookup} into the mapping set, JAXB followed it
+     * into JDK internals, and building the context failed. Every OCC
+     * response became an empty 400 for as long as the agent was attached.
+     */
+    private static final String INTERNAL_PREFIX = "__reclazz$";
+
+    static boolean isInternal(String memberName) {
+        return memberName.startsWith(INTERNAL_PREFIX);
+    }
+
+    /**
+     * Both hide methods return the array unchanged when there is nothing to
+     * strip. Reflection over members is hot enough that allocating a copy per
+     * call, for the many classes Reclazz never touched, would be a poor trade.
+     */
+    private static Method[] hideInternal(Method[] methods) {
+        int keep = 0;
+        for (Method m : methods) {
+            if (!isInternal(m.getName())) keep++;
+        }
+        if (keep == methods.length) return methods;
+
+        Method[] visible = new Method[keep];
+        int i = 0;
+        for (Method m : methods) {
+            if (!isInternal(m.getName())) visible[i++] = m;
+        }
+        return visible;
+    }
+
+    private static Field[] hideInternal(Field[] fields) {
+        int keep = 0;
+        for (Field f : fields) {
+            if (!isInternal(f.getName())) keep++;
+        }
+        if (keep == fields.length) return fields;
+
+        Field[] visible = new Field[keep];
+        int i = 0;
+        for (Field f : fields) {
+            if (!isInternal(f.getName())) visible[i++] = f;
+        }
+        return visible;
+    }
+
+    /**
      * Get all declared methods for a class, merging original + added methods.
      * Called from bytecode-rewritten call sites (replaces Class.getDeclaredMethods()).
      */
@@ -33,7 +89,7 @@ public final class ReflectionBridge {
         String key = clazz.getName().replace('.', '/');
         ClassReflectionState state = states.get(key);
 
-        Method[] original = clazz.getDeclaredMethods();
+        Method[] original = hideInternal(clazz.getDeclaredMethods());
 
         if (state == null || state.addedMethods.isEmpty()) {
             return original;
@@ -55,7 +111,7 @@ public final class ReflectionBridge {
         String key = clazz.getName().replace('.', '/');
         ClassReflectionState state = states.get(key);
 
-        Field[] original = clazz.getDeclaredFields();
+        Field[] original = hideInternal(clazz.getDeclaredFields());
 
         if (state == null || state.addedFields.isEmpty()) {
             return original;
@@ -75,6 +131,7 @@ public final class ReflectionBridge {
      */
     public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes)
             throws NoSuchMethodException {
+        if (isInternal(name)) throw new NoSuchMethodException(name);
         String key = clazz.getName().replace('.', '/');
         ClassReflectionState state = states.get(key);
 
@@ -97,6 +154,7 @@ public final class ReflectionBridge {
      */
     public static Field getDeclaredField(Class<?> clazz, String name)
             throws NoSuchFieldException {
+        if (isInternal(name)) throw new NoSuchFieldException(name);
         String key = clazz.getName().replace('.', '/');
         ClassReflectionState state = states.get(key);
 
@@ -127,7 +185,7 @@ public final class ReflectionBridge {
      * afterwards would otherwise see something impossible.
      */
     public static Method[] getMethods(Class<?> clazz) {
-        Method[] original = clazz.getMethods();
+        Method[] original = hideInternal(clazz.getMethods());
         ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
         if (state == null || state.addedMethods.isEmpty()) {
             return original;
@@ -147,7 +205,7 @@ public final class ReflectionBridge {
 
     /** The public counterpart of {@link #getDeclaredFields}. */
     public static Field[] getFields(Class<?> clazz) {
-        Field[] original = clazz.getFields();
+        Field[] original = hideInternal(clazz.getFields());
         ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
         if (state == null || state.addedFields.isEmpty()) {
             return original;
@@ -172,6 +230,7 @@ public final class ReflectionBridge {
      */
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes)
             throws NoSuchMethodException {
+        if (isInternal(name)) throw new NoSuchMethodException(name);
         ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
         if (state != null) {
             for (Method m : state.addedMethods) {
@@ -187,6 +246,7 @@ public final class ReflectionBridge {
 
     /** The public counterpart of {@link #getDeclaredField}. */
     public static Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
+        if (isInternal(name)) throw new NoSuchFieldException(name);
         ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
         if (state != null) {
             for (Field f : state.addedFields) {

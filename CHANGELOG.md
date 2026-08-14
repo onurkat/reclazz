@@ -4,6 +4,30 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.10] - 2026-08-14
+
+### Fixed
+
+- The agent no longer breaks SAP Commerce OCC. With Reclazz attached, every
+  OCC response came back an empty 400, for as long as it was attached: one
+  server's log carried the failure 210 times in a day, and the only known
+  workaround was to comment out the `-javaagent` line.
+
+  Reclazz writes members into the classes it transforms, an
+  `__reclazz$ext` array, an `__reclazz$lookup` handle and `__reclazz$v0$...`
+  copies of renamed methods, and reflection reported all of it as if the
+  user had written it. SAP Commerce builds its JAXB context by walking every
+  declared field of every DTO, with no filter on synthetic or static, and
+  adding each field's type to the set of classes it hands to MOXy. So
+  `__reclazz$lookup` put `MethodHandles$Lookup` into that set, MOXy followed
+  it into JDK internals, and building the context failed. Any framework that
+  walks members could hit this; OCC is simply the one that walks types
+  recursively.
+
+  Those members are now invisible to reflection, including when asked for by
+  name. Members you add yourself and reload structurally are unaffected and
+  still show up.
+
 ## [1.0.9] - 2026-08-14
 
 ### Fixed
