@@ -22,11 +22,43 @@ import java.nio.file.Path;
  */
 public class ImpexAutoImporter {
 
+    private static final long MAX_IMPEX_SIZE = 50 * 1024 * 1024; // 50 MB
+
+    /**
+     * A REMOVE mode header: the keyword at the start of a line, followed by
+     * the type it deletes. Header lines start with the mode keyword, so this
+     * does not match the word appearing in a value or a comment, both of
+     * which begin with something else.
+     */
+    private static final java.util.regex.Pattern REMOVE_HEADER =
+            java.util.regex.Pattern.compile("(?im)^[ \\t]*REMOVE[ \\t]+\\w");
+
+    private final boolean allowRemove;
+
+    public ImpexAutoImporter() {
+        this(false);
+    }
+
+    public ImpexAutoImporter(boolean allowRemove) {
+        this.allowRemove = allowRemove;
+    }
+
+    /**
+     * The line number of the first REMOVE header, or -1 when there is none.
+     * Reported rather than just counted: "line 14" is something you can go
+     * and look at.
+     */
+    static int firstRemoveHeaderLine(String content) {
+        String[] lines = content.split("\\R", -1);
+        for (int i = 0; i < lines.length; i++) {
+            if (REMOVE_HEADER.matcher(lines[i]).find()) return i + 1;
+        }
+        return -1;
+    }
+
     /**
      * Import an ImpEx file into the running system.
      */
-    private static final long MAX_IMPEX_SIZE = 50 * 1024 * 1024; // 50 MB
-
     public void importFile(Path impexFile, HybrisContext context) {
         try {
             if (!Files.exists(impexFile)) {
@@ -45,6 +77,25 @@ public class ImpexAutoImporter {
             if (content.isBlank()) {
                 StatusReporter.info("ImpEx file is empty, skipping: " + impexFile.getFileName());
                 return;
+            }
+
+            // Auto-import runs against the live database on save, with no
+            // confirmation step and nothing that undoes it. INSERT and UPDATE
+            // are what the edit-and-see-it loop is for; deleting rows because
+            // a file was saved is a different act, and one nobody asked for by
+            // turning auto-import on.
+            int removeLine = firstRemoveHeaderLine(content);
+            if (removeLine > 0 && !allowRemove) {
+                StatusReporter.warn("ImpEx not imported: " + impexFile.getFileName()
+                        + " has a REMOVE header at line " + removeLine
+                        + ". Auto-import will not delete data. Import it from HAC, or "
+                        + "pass impexAllowRemove=true to the agent if you mean it.");
+                return;
+            }
+            if (removeLine > 0) {
+                StatusReporter.warn("ImpEx " + impexFile.getFileName()
+                        + " contains REMOVE (line " + removeLine + "); importing because "
+                        + "impexAllowRemove is set.");
             }
 
             // Find the Hybris global context via the holder — the agent's own

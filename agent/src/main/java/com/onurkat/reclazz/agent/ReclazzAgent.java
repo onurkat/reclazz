@@ -299,7 +299,7 @@ public class ReclazzAgent {
             final ImpexAutoImporter impexImporter;
             if (isHybris) {
                 interceptorReloader = new InterceptorReloader();
-                impexImporter = new ImpexAutoImporter();
+                impexImporter = new ImpexAutoImporter(config.isImpexAllowRemove());
                 // Hybris codegen hot-reload — handles both *-beans.xml
                 // (DTOs) and *-items.xml (model classes). On save, the
                 // reloader shells out to platform `ant build` in the

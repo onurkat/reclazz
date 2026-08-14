@@ -170,7 +170,10 @@ Hybris-specific features:
 - **Spring XML reload**: `*-spring.xml` changes are diffed and applied, which is
   also how a brand new `@Component` becomes available without a restart
 - **Interceptor reload**: Re-registers Hybris interceptors (Validate, Prepare, Load, Remove)
-- **ImpEx auto-import**: Optionally auto-imports changed `.impex` files (opt-in)
+- **ImpEx auto-import**: Optionally imports changed `.impex` files on save
+  (opt-in). It runs against your live database with no confirmation and
+  nothing that undoes it, so files containing a `REMOVE` header are refused
+  and named rather than executed. Set `impexAllowRemove=true` if you mean it.
 - **Extension-aware**: Understands Hybris extension structure, classpath, and classloader hierarchy
 
 ### Attach to Running Server
@@ -194,6 +197,7 @@ If the server is already running without the `-javaagent` flag:
 | `excludePatterns` | (none) | Semicolon-separated glob patterns to ignore |
 | `autoCompile` | `false` | Internal compilation mode (compile on save) |
 | `autoImpex` | `false` | Auto-import ImpEx files (Hybris mode) |
+| `impexAllowRemove` | `false` | Allow an auto-imported ImpEx to contain `REMOVE` headers |
 | `debounceMs` | `500` | Change debounce delay (ms) |
 | `startupDelaySec` | `30` | Delay before watching starts (seconds) |
 | `structuralReload` | `true` | Enable structural reload engine |

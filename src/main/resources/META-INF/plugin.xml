@@ -27,7 +27,7 @@
         <ul>
             <li><b>items.xml and beans.xml</b>: regeneration plus reload of the model and DTO classes, without the full rebuild. A new attribute still needs a database column, so Reclazz reminds you to run Update Running System rather than touching your database itself</li>
             <li><b>Interceptor reload</b>: Validate, Prepare, Load and Remove interceptors re-register</li>
-            <li><b>ImpEx auto-import</b>: changed .impex files can be imported on save (opt-in)</li>
+            <li><b>ImpEx auto-import</b>: changed .impex files can be imported on save (opt-in), and one carrying a REMOVE header is refused rather than run against your database</li>
             <li><b>Extension-aware</b>: understands the extension layout, classpath and classloader hierarchy, and covers every live application context rather than only the root one</li>
         </ul>
 
@@ -69,6 +69,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.8</h3>
+        <ul>
+            <li>ImpEx auto-import refuses a file containing a REMOVE header rather than running it against your live database; set impexAllowRemove=true to opt in</li>
+        </ul>
+
         <h3>1.0.7</h3>
         <ul>
             <li>Updating the plugin now updates the agent your SAP Commerce server loads; it previously kept the one from when the agent was first installed</li>

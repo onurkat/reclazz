@@ -25,6 +25,7 @@ public class AgentConfig {
 
     private static final Set<String> KNOWN_KEYS = Set.of(
             "hybrisHome", "watchExtensions", "autoCompile", "autoImpex",
+            "impexAllowRemove",
             "debounceMs", "verbose", "statusPort", "portFile",
             "excludePatterns", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
@@ -42,6 +43,15 @@ public class AgentConfig {
     private Set<String> watchExtensions = new HashSet<>();
     private boolean watchAllExtensions = true;
     private boolean autoImpex = false;
+    /**
+     * Whether an auto-imported ImpEx may contain REMOVE headers.
+     *
+     * Off by default even when auto-import is on. Importing runs against the
+     * live database with no confirmation and nothing to undo it, and saving a
+     * file is not the same act as asking for rows to be deleted. INSERT and
+     * UPDATE are what the edit-and-see-it loop is for.
+     */
+    private boolean impexAllowRemove = false;
     private boolean autoCompile = false;
     private long debounceMs = 500;
     private boolean verbose = false;
@@ -85,6 +95,9 @@ public class AgentConfig {
 
         if (params.containsKey("autoImpex")) {
             config.autoImpex = Boolean.parseBoolean(params.get("autoImpex"));
+        }
+        if (params.containsKey("impexAllowRemove")) {
+            config.impexAllowRemove = Boolean.parseBoolean(params.get("impexAllowRemove"));
         }
 
         if (params.containsKey("autoCompile")) {
@@ -170,6 +183,7 @@ public class AgentConfig {
     public Set<String> getWatchExtensions() { return Collections.unmodifiableSet(watchExtensions); }
     public boolean isWatchAllExtensions() { return watchAllExtensions; }
     public boolean isAutoImpex() { return autoImpex; }
+    public boolean isImpexAllowRemove() { return impexAllowRemove; }
     public boolean isAutoCompile() { return autoCompile; }
     public long getDebounceMs() { return debounceMs; }
     public boolean isVerbose() { return verbose; }

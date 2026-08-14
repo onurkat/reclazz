@@ -4,6 +4,20 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.8] - 2026-08-14
+
+### Changed
+
+- ImpEx auto-import refuses a file containing a `REMOVE` header instead of
+  running it. Auto-import executes against your live database the moment
+  the file is saved, with no confirmation step and nothing that undoes it,
+  and saving a file is not the same act as asking for rows to be deleted.
+  The refusal names the line so you can go and look at it. Set
+  `impexAllowRemove=true` on the agent if deleting is what you meant.
+
+  Insert and update files, which is what the edit-and-see-it loop is
+  actually for, are unaffected.
+
 ## [1.0.7] - 2026-08-14
 
 ### Fixed

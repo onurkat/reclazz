@@ -127,7 +127,7 @@ After installing the plugin, you need to enable it for your project:
 | **Auto-detect JDK** | On | Detects JDK version and JBR, adds recommended JVM flags automatically |
 | **Verbose logging** | Off | Extra detail in the Reclazz tool window |
 | **AutoCompile** | Off | Compile `.java` files internally instead of relying on `ant build` |
-| **Auto-import ImpEx** | Off | Auto-import changed `.impex` files into the running system |
+| **Auto-import ImpEx** | Off | Auto-import changed `.impex` files into the running system. Imports run against the live database with nothing to undo them, so a file with a `REMOVE` header is refused unless `impexAllowRemove=true` |
 | **Watch extensions** | (empty = all) | Semicolon-separated list of extension names to watch |
 | **Exclude patterns** | (empty) | Glob patterns for files to ignore (e.g., `*Test.class;*Mock*`) |
 | **Debounce (ms)** | 500 | Delay before processing file changes (batches rapid changes) |
