@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.support.serviceOf
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.25"
@@ -158,8 +160,49 @@ val checkInternalApiUsage by tasks.registering {
  * unsearchable.
  */
 tasks.matching { it.name == "buildSearchableOptions" }.configureEach {
-    if (this is JavaExec) {
-        maxHeapSize = "768m"
+    if (this !is JavaExec) return@configureEach
+    val task = this
+
+    maxHeapSize = "768m"
+
+    // The crash happens before the IDE has done anything, so a second attempt
+    // costs twenty seconds and almost always works. Swallow the exit code here
+    // and decide below on the evidence that matters: whether the index exists.
+    isIgnoreExitValue = true
+
+    doLast {
+        val out = task.outputs.files.singleFile
+
+        fun produced() = out.walkTopDown().any { it.isFile }
+
+        if (produced()) return@doLast
+
+        val exec = project.serviceOf<org.gradle.process.ExecOperations>()
+        var lastExit = -1
+        for (attempt in 2..4) {
+            logger.lifecycle("buildSearchableOptions produced nothing; attempt $attempt of 4")
+            val result = exec.javaexec {
+                classpath = task.classpath
+                mainClass.set(task.mainClass)
+                // The real arguments live in the providers, not in jvmArgs.
+                jvmArgs = task.jvmArgumentProviders.flatMap { it.asArguments() }
+                args = task.args ?: emptyList()
+                task.args?.let { args = it }
+                maxHeapSize = "768m"
+                isIgnoreExitValue = true
+            }
+            lastExit = result.exitValue
+            if (produced()) {
+                logger.lifecycle("buildSearchableOptions succeeded on attempt $attempt")
+                return@doLast
+            }
+        }
+
+        throw GradleException(
+            "buildSearchableOptions produced no index after 4 attempts (last exit $lastExit). " +
+            "This normally means the sandbox IDE failed to start; see " +
+            "build/idea-sandbox/*/log/idea.log. docs/publishing.md has the details."
+        )
     }
 }
 

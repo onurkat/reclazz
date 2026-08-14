@@ -80,22 +80,11 @@ If the signing material or the passphrase is missing, the build stops
 with a message naming what is absent. It does not quietly skip signing,
 which the platform's own task would otherwise do.
 
-## When buildSearchableOptions fails
+## About buildSearchableOptions
 
-It fails roughly one run in five, as:
-
-```
-Execution failed for task ':buildSearchableOptions'.
-> Process 'command '.../jbr/Contents/Home/bin/java'' finished with
-  non-zero exit value 3
-```
-
-Re-run it. The next attempt almost always passes.
-
-What is actually happening, so nobody has to work it out again: the task
-starts a whole IDE to index this plugin's settings, and that IDE
-sometimes dies during startup. Its own log, under
-`build/idea-sandbox/<version>/log/idea.log`, says:
+The task starts a whole IDE to index this plugin's settings, and that IDE
+dies during startup roughly one run in five. Its own log, under
+`build/idea-sandbox/<version>/log/idea.log`, says why:
 
 ```
 Start Failed
@@ -105,21 +94,35 @@ java.util.ConcurrentModificationException
 
 The stack is obfuscated third-party code called straight from
 `MainImpl.start`, so it happens before this plugin is loaded and is not
-ours. Two things were tried and did not fix it: capping the sandbox heap
-(kept anyway, see below) and building against a newer platform, which
-was worse rather than better.
+ours. Building against a newer platform is worse rather than better: 2025.1
+failed six times out of six.
 
-The task's heap is capped at 768m in `build.gradle.kts`. The default is
-2GB, which is the platform's number and not what indexing one
-configurable needs; the produced index is byte-identical either way. On
-a machine already running a SAP Commerce server that reservation is a
-real cost, though it is not what causes the failure above.
+The build retries it, so this should never reach you as a failure. The
+crash happens before the IDE has done anything, so a second attempt costs
+about twenty seconds and works. You will see:
 
-The task can be turned off entirely with
-`intellijPlatform { buildSearchableOptions = false }`. The trade-off is
+```
+buildSearchableOptions produced nothing; attempt 2 of 4
+buildSearchableOptions succeeded on attempt 2
+```
+
+The retry decides on whether the index was produced rather than on the
+exit code, because the exit code is the thing that lies here. After four
+attempts with no index it fails loudly, naming the sandbox log.
+
+Measured over ten clean builds: ten successes, one of which needed the
+retry, and the index it produced was byte-identical to the others.
+
+The heap is also capped at 768m, down from the platform default of 2GB,
+which is more than indexing one configurable needs. That is not what
+causes the crash, but it is worth not reserving on a machine already
+running a SAP Commerce server.
+
+Turning the task off entirely is possible with
+`intellijPlatform { buildSearchableOptions = false }`, and costs something
 concrete: the index really does contain this plugin's settings page, so
-disabling it means Settings > Tools > Reclazz stops being findable from
-the Settings search box.
+disabling it stops Settings > Tools > Reclazz appearing in the Settings
+search box.
 
 ## Before the first publication
 
