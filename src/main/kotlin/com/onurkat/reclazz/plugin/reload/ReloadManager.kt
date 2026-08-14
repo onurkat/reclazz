@@ -51,13 +51,30 @@ class ReloadManager(private val project: Project) : Disposable {
         eventListeners.remove(listener)
     }
 
-    fun connectToAgent() {
-        if (!connecting.compareAndSet(false, true)) return
+    /**
+     * Connect to a running agent.
+     *
+     * [onResult] is how a user-triggered reconnect learns what happened. The
+     * work is asynchronous and used to end silently when there was no port
+     * file, so the action that started it could only ever say it was trying.
+     * Someone whose server was not running got "Reconnecting to agent..." and
+     * then nothing, for as long as they cared to wait.
+     *
+     * Startup passes nothing and stays quiet, which is right: finding no agent
+     * when a project opens is the ordinary case, not news.
+     */
+    @JvmOverloads
+    fun connectToAgent(onResult: ((ConnectResult) -> Unit)? = null) {
+        if (!connecting.compareAndSet(false, true)) {
+            onResult?.invoke(ConnectResult.ALREADY_IN_PROGRESS)
+            return
+        }
         ApplicationManager.getApplication().executeOnPooledThread {
             try {
                 val port = readPortFile()
                 if (port == null) {
                     connecting.set(false)
+                    onResult?.invoke(ConnectResult.NO_AGENT_FOUND)
                     return@executeOnPooledThread
                 }
                 // Disconnect on pooled thread — stopReconnect() may block up to 2s
@@ -72,13 +89,18 @@ class ReloadManager(private val project: Project) : Disposable {
                     }
                 )
                 statusClient?.connect()
+                onResult?.invoke(ConnectResult.CONNECTED)
             } catch (e: Exception) {
                 log.warn("Failed to connect to agent: ${e.message}")
+                onResult?.invoke(ConnectResult.FAILED)
             } finally {
                 connecting.set(false)
             }
         }
     }
+
+    /** What a reconnect actually did, so the caller can say so. */
+    enum class ConnectResult { CONNECTED, NO_AGENT_FOUND, FAILED, ALREADY_IN_PROGRESS }
 
     fun disconnectFromAgent() {
         stopReconnect()

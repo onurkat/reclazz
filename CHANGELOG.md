@@ -4,6 +4,29 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+
+- The reload log no longer reports a failure that did not happen. Once a
+  class has gained a member, the members live in a companion rather than in
+  the loaded class, so the JVM refuses the constructor-body refresh with
+  "attempted to add a method". That is the companion engine working as
+  designed and the reload itself succeeds, but it was reported as a warning
+  with the raw exception attached, on the tool window, every time you touched
+  a class you had once added a method to. Genuine failures are still
+  reported.
+
+- Reconnecting to the agent says what happened rather than what was being
+  attempted. It used to post "Reconnecting to agent..." and stop there, so
+  anyone whose server was not running never learned that nothing had been
+  found. It now names that case and points at Attach.
+
+- The introduction no longer tells you Reclazz is switched off when it is on.
+  It is shown once per installation rather than once per project, so anyone
+  who had already enabled it somewhere met a notification contradicting their
+  own IDE, offering a button to enable what was already enabled.
+
 ## [1.0.10] - 2026-08-14
 
 ### Fixed

@@ -262,6 +262,22 @@ public class StructuralReloader {
                     // ClassFormatError (see ConstructorBodyRedefineTest).
                     instrumentation.redefineClasses(
                             new java.lang.instrument.ClassDefinition(targetClass, newBytecode));
+                } catch (UnsupportedOperationException expected) {
+                    // Once a class has gained members they live in a companion,
+                    // not in the loaded class, so the bytecode handed back here
+                    // no longer matches what the JVM will accept redefining.
+                    // The JVM says "attempted to add a method" and refuses.
+                    //
+                    // That is the companion engine working as designed, and the
+                    // reload itself succeeds a few lines below. Reporting it as
+                    // a warning with the raw exception attached told users their
+                    // edit had failed, on the one surface they watch, every time
+                    // they touched a class they had previously added a method to.
+                    if (config.isVerbose()) {
+                        StatusReporter.info("Constructor bodies not refreshed for " + className
+                                + ": the class carries members added after startup. "
+                                + "Everything else reloaded.");
+                    }
                 } catch (Throwable t) {
                     StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + t);
                 }

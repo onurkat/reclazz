@@ -81,7 +81,7 @@ class ReclazzStartup : ProjectActivity {
             // Marked before showing: a crash or a force-quit while the
             // notification is up should not make the user meet this twice.
             appState.state.welcomeShown = true
-            ReloadNotifications.welcome(project, isHybris)
+            ReloadNotifications.welcome(project, isHybris, settings.state.enabled)
         }
 
         if (!settings.state.enabled) {

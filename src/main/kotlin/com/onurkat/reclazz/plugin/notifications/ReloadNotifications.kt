@@ -124,7 +124,14 @@ object ReloadNotifications {
      * Sticky, because an introduction that fades out after a few seconds
      * is an introduction most people never read.
      */
-    fun welcome(project: Project, isHybris: Boolean) {
+    /**
+     * [alreadyEnabled] exists because the title used to be a flat assertion
+     * that Reclazz was switched off. It is shown once per installation, not
+     * once per project, so anyone who had already turned it on somewhere met a
+     * balloon telling them the opposite of what their own IDE was doing, with
+     * a button offering to enable what was already enabled.
+     */
+    fun welcome(project: Project, isHybris: Boolean, alreadyEnabled: Boolean = false) {
         val next = if (isHybris) {
             "SAP Commerce project detected. Enabling installs the agent into your " +
             "platform properties; it applies after the next ant server and restart."
@@ -135,16 +142,25 @@ object ReloadNotifications {
         NotificationGroupManager.getInstance()
             .getNotificationGroup(WELCOME_GROUP_ID)
             .createNotification(
-                "Reclazz is installed, and switched off",
-                "Hot-reload without restarting. Reclazz ships off because it puts a " +
-                "java agent into the JVM that runs your code, so it asks first. " + next,
+                if (alreadyEnabled) "Reclazz is installed, and on for this project"
+                else "Reclazz is installed, and switched off",
+                if (alreadyEnabled)
+                    "Hot-reload without restarting. Build after an edit and the running " +
+                    "JVM has it. The Reclazz tool window shows what was reloaded."
+                else
+                    "Hot-reload without restarting. Reclazz ships off because it puts a " +
+                    "java agent into the JVM that runs your code, so it asks first. " + next,
                 NotificationType.INFORMATION
             )
-            .addAction(NotificationAction.createSimpleExpiring(
-                if (isHybris) "Install Agent" else "Enable Reclazz"
-            ) {
-                ReclazzActivation.enable(project)
-            })
+            .apply {
+                if (!alreadyEnabled) {
+                    addAction(NotificationAction.createSimpleExpiring(
+                        if (isHybris) "Install Agent" else "Enable Reclazz"
+                    ) {
+                        ReclazzActivation.enable(project)
+                    })
+                }
+            }
             .addAction(NotificationAction.createSimpleExpiring("What it does") {
                 WelcomeDialog.showOnDemand(project)
             })
