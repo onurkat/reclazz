@@ -9,6 +9,7 @@ import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.HybrisProjectDetector
 import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
+import com.onurkat.reclazz.plugin.ui.ReloadStatusWidgetFactory
 
 /**
  * Turning Reclazz on, in one place.
@@ -29,6 +30,7 @@ object ReclazzActivation {
      */
     fun enable(project: Project) {
         ReclazzSettings.getInstance(project).state.enabled = true
+        ReloadStatusWidgetFactory.refreshAvailability(project)
 
         if (!HybrisProjectDetector.isHybrisProject(project)) {
             ReloadNotifications.info(

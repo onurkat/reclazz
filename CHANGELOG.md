@@ -18,6 +18,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Insert and update files, which is what the edit-and-see-it loop is
   actually for, are unaffected.
 
+- The status bar item appears only in projects where Reclazz is switched
+  on, matching the tool window, which already scoped itself that way. It
+  used to occupy the status bar of every project you opened. Ticking or
+  unticking the setting now takes effect immediately rather than at the
+  next restart.
+
+### Fixed
+
+- Clicking the status bar item opens the Reclazz tool window. It
+  previously ignored clicks, so the one part of the plugin that is always
+  on screen could report "Not connected" and offer no way to act on it.
+
 ## [1.0.7] - 2026-08-14
 
 ### Fixed

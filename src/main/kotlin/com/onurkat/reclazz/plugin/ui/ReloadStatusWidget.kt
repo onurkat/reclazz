@@ -8,6 +8,7 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.wm.StatusBar
 import com.intellij.openapi.wm.StatusBarWidget
+import com.intellij.openapi.wm.ToolWindowManager
 import com.intellij.util.Consumer
 import com.onurkat.reclazz.plugin.reload.AgentEvent
 import com.onurkat.reclazz.plugin.reload.ReloadManager
@@ -70,7 +71,20 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
         }
     }
 
-    override fun getClickConsumer(): Consumer<MouseEvent>? = null
+    /**
+     * Opens the Reclazz tool window.
+     *
+     * It used to return null, so the one surface that is always on screen
+     * reported a state and offered nowhere to go from it. "Not connected" in
+     * particular invites a click, and swallowing it reads as a broken widget
+     * rather than a deliberate one.
+     */
+    override fun getClickConsumer(): Consumer<MouseEvent> = Consumer {
+        if (project.isDisposed) return@Consumer
+        ToolWindowManager.getInstance(project)
+            .getToolWindow("Reclazz")
+            ?.activate(null)
+    }
 
     private fun updateFromEvent(event: AgentEvent) {
         val manager = ReloadManager.getInstance(project)
