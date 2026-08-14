@@ -46,10 +46,16 @@ export RECLAZZ_PUBLISH_TOKEN='the marketplace token'
 
 git tag -a vX.Y.Z -m 'Reclazz X.Y.Z' && git push origin main --follow-tags
 
-gh release create vX.Y.Z \
-  build/distributions/reclazz-X.Y.Z-signed.zip#reclazz-X.Y.Z.zip \
+cp build/distributions/reclazz-X.Y.Z-signed.zip /tmp/reclazz-X.Y.Z.zip
+gh release create vX.Y.Z /tmp/reclazz-X.Y.Z.zip \
   --title 'Reclazz X.Y.Z' --notes-file <notes from the changelog>
 ```
+
+The copy is the point of that first line. Every release since 1.0.0
+attaches `reclazz-X.Y.Z.zip`, and `gh` takes the filename from the path
+you give it. Its `path#label` syntax sets the label shown beside the
+asset, not the name it is stored under, so uploading the signed zip
+directly publishes it as `reclazz-X.Y.Z-signed.zip` and breaks the run.
 
 The last two steps used to live only in whoever was doing the release.
 1.0.8 went to the Marketplace and got its tag, and the GitHub release was
