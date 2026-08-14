@@ -69,6 +69,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.11</h3>
+        <ul>
+            <li>The reload log no longer reports a failure that did not happen: the JVM's expected refusal to refresh constructor bodies on a class that has gained members is recognised rather than shown as a raw exception</li>
+            <li>Reconnecting says what happened instead of only that it was trying, including when no running agent was found</li>
+            <li>The introduction no longer says Reclazz is switched off when it is already on for the project</li>
+        </ul>
+
         <h3>1.0.10</h3>
         <ul>
             <li>Fixes SAP Commerce OCC: with the agent attached, every OCC response came back an empty 400. Reclazz's own injected members were visible to reflection, so the JAXB context picked them up and failed to build. They are hidden now</li>
