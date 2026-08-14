@@ -206,8 +206,63 @@ tasks.matching { it.name == "buildSearchableOptions" }.configureEach {
     }
 }
 
+/**
+ * A release carries its notes in two places that have to agree: CHANGELOG.md
+ * for people reading the repository, and the change-notes block in plugin.xml
+ * for the "What's new" panel the IDE shows when it offers an update. Nothing
+ * connected them, so they drifted: 1.0.9 went to the Marketplace with 1.0.8 at
+ * the top of its notes, and everyone who updated saw nothing about what they
+ * were getting.
+ *
+ * Generating one from the other was the alternative. It was not taken because
+ * the two are deliberately different, the changelog explains and the notes
+ * summarise, and a generator would have to flatten that. Checking they both
+ * mention the version being built keeps them independent and still catches the
+ * omission before it can ship.
+ */
+val checkReleaseNotes by tasks.registering {
+    group = "verification"
+    description = "Fails when the version being built has no entry in the changelog or in plugin.xml change-notes"
+
+    val version = providers.gradleProperty("pluginVersion")
+    val pluginXml = layout.projectDirectory.file("src/main/resources/META-INF/plugin.xml")
+    val changelog = layout.projectDirectory.file("CHANGELOG.md")
+    inputs.property("version", version)
+    inputs.files(pluginXml, changelog)
+    outputs.upToDateWhen { false }
+
+    doLast {
+        val v = version.get()
+        val missing = mutableListOf<String>()
+
+        val notes = pluginXml.asFile.readText()
+        val block = Regex("""<change-notes>.*?</change-notes>""", RegexOption.DOT_MATCHES_ALL)
+            .find(notes)?.value
+            ?: throw GradleException("plugin.xml has no <change-notes> block at all")
+        if (!block.contains("<h3>$v</h3>")) {
+            missing += "plugin.xml <change-notes> has no <h3>$v</h3> section. " +
+                    "This is the text the IDE shows when it offers the update."
+        }
+
+        if (!changelog.asFile.readText().contains("## [$v]")) {
+            missing += "CHANGELOG.md has no '## [$v]' section."
+        }
+
+        if (missing.isNotEmpty()) {
+            throw GradleException(
+                "Release notes for $v are incomplete:\n  - " + missing.joinToString("\n  - ") +
+                "\n\nWrite them before publishing; a release nobody can read the notes for " +
+                "is how 1.0.9 shipped."
+            )
+        }
+    }
+}
+
 tasks.named("check") { dependsOn(checkInternalApiUsage) }
+tasks.named("check") { dependsOn(checkReleaseNotes) }
 tasks.matching { it.name == "buildPlugin" }.configureEach { dependsOn(checkInternalApiUsage) }
+tasks.matching { it.name == "publishPlugin" || it.name == "signPlugin" }
+    .configureEach { dependsOn(checkReleaseNotes) }
 
 intellijPlatform {
     pluginConfiguration {

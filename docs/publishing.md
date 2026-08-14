@@ -62,6 +62,19 @@ The last two steps used to live only in whoever was doing the release.
 simply forgotten, so for a while the repository's newest release was one
 version behind what people were installing.
 
+## Release notes live in two files
+
+`CHANGELOG.md` is for people reading the repository. The `<change-notes>`
+block in `plugin.xml` is what the IDE shows in its "What's new" panel when
+it offers the update, and it is the only one most users ever see. Both need
+an entry for the version being released.
+
+`checkReleaseNotes` fails the build when either is missing, and `signPlugin`
+and `publishPlugin` depend on it, so a release cannot go out without them.
+That check exists because 1.0.9 did: its changelog entry was written, its
+plugin.xml notes were not, and it reached the Marketplace showing 1.0.8 at
+the top of the list. Nobody who updated could see what they were getting.
+
 ## The asset must be the signed zip
 
 Attach `reclazz-X.Y.Z-signed.zip`, renamed on upload to
