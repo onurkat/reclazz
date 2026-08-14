@@ -72,9 +72,40 @@ object AgentJarLocator {
      * refreshed here whenever the bundled jar changes so plugin updates
      * still reach it.
      */
+    /** Where the server-facing copy lives, independent of the IDE install. */
+    private fun stableAgentPath() =
+        Paths.get(System.getProperty("user.home"), ".reclazz", "agent", "reclazz-agent.jar")
+
+    /**
+     * Bring an existing staged copy up to date with the one in this build of
+     * the plugin, and report whether it actually changed.
+     *
+     * Needed because staging used to happen only during agent installation.
+     * A SAP Commerce server starts outside the IDE and reads the staged jar
+     * directly, so updating the plugin left the server running the agent from
+     * whenever it was first installed, indefinitely and without a word. The
+     * plugin said one version and the server's console said another.
+     *
+     * Only refreshes a copy that is already there: someone who never
+     * installed the agent should not find 10MB appear in their home
+     * directory because they opened a project.
+     */
+    fun refreshStagedAgentJar(): Boolean {
+        val target = stableAgentPath()
+        if (!Files.exists(target)) return false
+
+        val bundled = findAgentJar() ?: return false
+        val current = target.toFile()
+        if (current.length() == bundled.length()
+            && current.lastModified() >= bundled.lastModified()) {
+            return false
+        }
+        return stableAgentJar() != null
+    }
+
     fun stableAgentJar(): File? {
         val bundled = findAgentJar() ?: return null
-        val target = Paths.get(System.getProperty("user.home"), ".reclazz", "agent", "reclazz-agent.jar")
+        val target = stableAgentPath()
 
         try {
             Files.createDirectories(target.parent)

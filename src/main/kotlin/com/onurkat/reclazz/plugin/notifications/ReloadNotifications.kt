@@ -96,6 +96,26 @@ object ReloadNotifications {
     }
 
     /**
+     * The staged agent was replaced with the one from this plugin version.
+     *
+     * Worth interrupting for: a SAP Commerce server reads that jar at startup,
+     * so until it restarts it keeps running the old agent while the IDE shows
+     * the new version. Saying nothing is how someone ends up reporting a bug
+     * that was fixed two releases ago.
+     */
+    fun agentJarRefreshed(project: Project, version: String) {
+        NotificationGroupManager.getInstance()
+            .getNotificationGroup(WELCOME_GROUP_ID)
+            .createNotification(
+                "Reclazz agent updated to $version",
+                "Your SAP Commerce server loads the agent at startup, so restart it "
+                        + "to pick this up. Until then it keeps running the previous agent.",
+                NotificationType.INFORMATION
+            )
+            .notify(project)
+    }
+
+    /**
      * First run after installation. This is a notification rather than a
      * dialog on purpose: the startup activity must not block the event
      * thread, and Marketplace review fails a plugin that does. The full

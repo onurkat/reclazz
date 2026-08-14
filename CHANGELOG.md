@@ -4,6 +4,23 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.7] - 2026-08-14
+
+### Fixed
+
+- Updating the plugin now updates the agent your SAP Commerce server
+  loads. The server starts outside the IDE and reads a staged copy of the
+  agent from your home directory, and that copy was only ever written
+  during agent installation. So the plugin could report one version while
+  the server's console printed the one it was first installed with, for
+  as long as the installation lasted, with nothing anywhere saying they
+  disagreed.
+
+  The staged copy is refreshed when a project opens, and only when one is
+  already there. Because a running server has the old agent in memory
+  until it restarts, Reclazz says so rather than leaving you to wonder
+  why a fix did not arrive.
+
 ## [1.0.6] - 2026-08-14
 
 ### Changed

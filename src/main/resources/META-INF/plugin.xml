@@ -69,6 +69,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.7</h3>
+        <ul>
+            <li>Updating the plugin now updates the agent your SAP Commerce server loads; it previously kept the one from when the agent was first installed</li>
+        </ul>
+
         <h3>1.0.6</h3>
         <ul>
             <li>Listing text now leads with SAP Commerce support; no change to the plugin itself</li>
