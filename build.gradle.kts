@@ -142,6 +142,27 @@ val checkInternalApiUsage by tasks.registering {
     }
 }
 
+/**
+ * buildSearchableOptions starts a full IDE to index this plugin's settings so
+ * they can be found from the Settings search box. It asks for a 2GB heap by
+ * default, which is the platform's number rather than anything this task
+ * needs: it indexes one configurable.
+ *
+ * On a machine already running something large, a SAP Commerce server say,
+ * that reservation is what fails, and it fails as a bare "finished with
+ * non-zero exit value 3" with no hint that memory was the problem. It cost
+ * two release attempts before the cause was found.
+ *
+ * Capped rather than disabled: the index really does contain our settings
+ * page, so turning the task off would quietly make those settings
+ * unsearchable.
+ */
+tasks.matching { it.name == "buildSearchableOptions" }.configureEach {
+    if (this is JavaExec) {
+        maxHeapSize = "768m"
+    }
+}
+
 tasks.named("check") { dependsOn(checkInternalApiUsage) }
 tasks.matching { it.name == "buildPlugin" }.configureEach { dependsOn(checkInternalApiUsage) }
 

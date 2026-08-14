@@ -80,6 +80,47 @@ If the signing material or the passphrase is missing, the build stops
 with a message naming what is absent. It does not quietly skip signing,
 which the platform's own task would otherwise do.
 
+## When buildSearchableOptions fails
+
+It fails roughly one run in five, as:
+
+```
+Execution failed for task ':buildSearchableOptions'.
+> Process 'command '.../jbr/Contents/Home/bin/java'' finished with
+  non-zero exit value 3
+```
+
+Re-run it. The next attempt almost always passes.
+
+What is actually happening, so nobody has to work it out again: the task
+starts a whole IDE to index this plugin's settings, and that IDE
+sometimes dies during startup. Its own log, under
+`build/idea-sandbox/<version>/log/idea.log`, says:
+
+```
+Start Failed
+Internal error. Please refer to https://jb.gg/ide/critical-startup-errors
+java.util.ConcurrentModificationException
+```
+
+The stack is obfuscated third-party code called straight from
+`MainImpl.start`, so it happens before this plugin is loaded and is not
+ours. Two things were tried and did not fix it: capping the sandbox heap
+(kept anyway, see below) and building against a newer platform, which
+was worse rather than better.
+
+The task's heap is capped at 768m in `build.gradle.kts`. The default is
+2GB, which is the platform's number and not what indexing one
+configurable needs; the produced index is byte-identical either way. On
+a machine already running a SAP Commerce server that reservation is a
+real cost, though it is not what causes the failure above.
+
+The task can be turned off entirely with
+`intellijPlatform { buildSearchableOptions = false }`. The trade-off is
+concrete: the index really does contain this plugin's settings page, so
+disabling it means Settings > Tools > Reclazz stops being findable from
+the Settings search box.
+
 ## Before the first publication
 
 - [ ] Screenshots for the listing (the tool window and a reload in
