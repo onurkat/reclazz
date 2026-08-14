@@ -43,7 +43,47 @@ export RECLAZZ_PUBLISH_TOKEN='the marketplace token'
 ./gradlew verifyPlugin                # what the Marketplace runs on submission
 ./gradlew signPlugin --no-daemon      # produces the signed zip
 ./gradlew publishPlugin --no-daemon   # uploads it
+
+git tag -a vX.Y.Z -m 'Reclazz X.Y.Z' && git push origin main --follow-tags
+
+gh release create vX.Y.Z \
+  build/distributions/reclazz-X.Y.Z-signed.zip#reclazz-X.Y.Z.zip \
+  --title 'Reclazz X.Y.Z' --notes-file <notes from the changelog>
 ```
+
+The last two steps used to live only in whoever was doing the release.
+1.0.8 went to the Marketplace and got its tag, and the GitHub release was
+simply forgotten, so for a while the repository's newest release was one
+version behind what people were installing.
+
+## The asset must be the signed zip
+
+Attach `reclazz-X.Y.Z-signed.zip`, renamed on upload to
+`reclazz-X.Y.Z.zip` by the `#` suffix above. Two reasons, and the second
+one has already caused a near miss:
+
+- The signed zip is the artifact that went to the Marketplace. Release
+  notes claim the download is signed, and it should be true.
+- `build/distributions/reclazz-X.Y.Z.zip`, the unsigned one, is rewritten
+  by any later build. Running `verifyPlugin` after starting the next
+  version's work, before bumping `pluginVersion`, leaves newer code
+  sitting under the old version's filename. `signPlugin` does not re-run
+  on its own, so the signed zip stays pinned to what was released while
+  the unsigned one silently does not.
+
+Check before uploading rather than trusting the filename:
+
+```bash
+unzip -p build/distributions/reclazz-X.Y.Z-signed.zip \
+  reclazz/lib/reclazz-X.Y.Z.jar > /tmp/check.jar
+unzip -l /tmp/check.jar | grep SomethingAddedAfterThatRelease   # expect nothing
+
+java -jar <marketplace-zip-signer-cli.jar> verify \
+  -in build/distributions/reclazz-X.Y.Z-signed.zip -cert certificate/chain.crt
+```
+
+The signer prints `Provided zip archive is not signed` when it is not,
+and says nothing at all when the signature is good. Silence is the pass.
 
 `--no-daemon` on the two tasks that read secrets is not optional. A
 running Gradle daemon keeps the environment it was started with, so a
