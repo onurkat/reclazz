@@ -17,7 +17,7 @@ import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.HybrisProjectDetector
 import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 import com.onurkat.reclazz.plugin.reload.ReloadManager
-import com.onurkat.reclazz.plugin.ui.ReloadStatusWidgetFactory
+import com.onurkat.reclazz.plugin.ui.ReclazzSurfaces
 import javax.swing.JComponent
 import javax.swing.JTextField
 import javax.swing.ListSelectionModel
@@ -367,10 +367,9 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                 agentPort = agentPortField
             )
         )
-        // The status bar widget only exists where Reclazz is on, and the
-        // platform re-reads that only when asked. Without this, unticking the
-        // box leaves the widget sitting there until the next restart.
-        ReloadStatusWidgetFactory.refreshAvailability(project)
+        // The tool window and the status bar item both exist only where
+        // Reclazz is on, and the platform re-reads that only when asked.
+        ReclazzSurfaces.refresh(project)
     }
 
     override fun reset() {

@@ -16,10 +16,10 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 
 /**
- * The status bar widget is the plugin's most-seen surface: unlike the tool
- * window and the settings page, it is on screen the whole time the IDE is.
- * It was also the least considered, and both of its defects took the same
- * shape, a method left at its default.
+ * Reclazz shows two things that exist only where it is enabled: the tool
+ * window and the status bar item. Every defect this covers came from those
+ * two being treated as unrelated, and each took the same shape, a method
+ * left at its platform default.
  *
  *  - `getClickConsumer` returned null, so the one always-visible thing
  *    Reclazz owns could say "Not connected" and do nothing when clicked.
@@ -27,15 +27,22 @@ import kotlin.test.fail
  *    broken rather than as deliberate.
  *  - `isAvailable` was not overridden at all, so it defaulted to true and
  *    the widget occupied the status bar of every project, including ones
- *    where Reclazz is switched off. The tool window scopes itself on the
- *    same setting; the two disagreeing was the actual bug.
+ *    where Reclazz is switched off, while the tool window scoped itself
+ *    correctly. One plugin, two answers to one question.
+ *  - Neither is re-asked by the platform on its own, so scoping them
+ *    without a refresh would mean unticking the box changes nothing until
+ *    the IDE restarts.
  *
- * Both regress silently. Nothing fails to compile, no test that exercises
- * behaviour goes red, and neither is visible in a diff unless you already
- * know to look. They are properties of the compiled methods, so this reads
- * the compiled methods.
+ * All of it regresses silently. Nothing fails to compile, no behavioural
+ * test goes red, and none of it is visible in a diff unless you already
+ * know to look, so this reads the compiled methods instead.
+ *
+ * A live-IDE fixture cannot stand in here: the test Application installs
+ * `ToolWindowHeadlessManagerImpl`, which registers no tool windows at all,
+ * so every question below would come back the same whether the code was
+ * right or wrong.
  */
-class StatusWidgetSurfaceTest {
+class ReclazzSurfacesTest {
 
     private val factory = "com/onurkat/reclazz/plugin/ui/ReloadStatusWidgetFactory"
     private val widget = "com/onurkat/reclazz/plugin/ui/ReloadStatusWidget"
@@ -90,18 +97,49 @@ class StatusWidgetSurfaceTest {
      * the user unticks a box and nothing happens.
      */
     @Test
-    fun `toggling the setting refreshes the widget`() {
+    fun `toggling the setting refreshes both surfaces`() {
         val callers = listOf(
             "com/onurkat/reclazz/plugin/ReclazzActivation" to "enable",
             "com/onurkat/reclazz/plugin/settings/ReclazzConfigurable" to "apply",
         )
         for ((owner, name) in callers) {
             val reached = callsFrom(owner, name)
-            assertTrue(reached.any { it.contains("refreshAvailability") },
+            assertTrue(reached.any { it.contains("ReclazzSurfaces.refresh") },
                 "$owner.$name changes the enabled setting but never calls " +
-                "ReloadStatusWidgetFactory.refreshAvailability, so the status " +
-                "bar keeps showing the old answer until the IDE restarts")
+                "ReclazzSurfaces.refresh, so the status bar and the tool " +
+                "window keep showing the old answer until the IDE restarts")
         }
+    }
+
+    /**
+     * The refresh has to cover both, which is the whole reason it is one
+     * function. A version that updated only the status bar would leave the
+     * tool window stale and recreate the disagreement in the other direction.
+     */
+    @Test
+    fun `the refresh covers the tool window as well as the widget`() {
+        val reached = callsFrom("com/onurkat/reclazz/plugin/ui/ReclazzSurfaces", "refresh")
+
+        assertTrue(reached.any { it.contains("StatusBarWidgetsManager.updateWidget") },
+            "refresh must re-ask for the status bar item. Calls: $reached")
+        assertTrue(reached.any { it.endsWith("ToolWindow.setAvailable") },
+            "refresh must re-ask for the tool window too, otherwise enabling " +
+            "Reclazz mid-session leaves the panel missing until restart. " +
+            "Calls: $reached")
+    }
+
+    /**
+     * ToolWindow.setAvailable asserts it is on the event thread, so a call
+     * from anywhere else throws instead of doing nothing, which is the kind
+     * of failure that only shows up in someone else's IDE.
+     */
+    @Test
+    fun `the refresh gets itself onto the event thread`() {
+        val reached = callsFrom("com/onurkat/reclazz/plugin/ui/ReclazzSurfaces", "refresh")
+        assertTrue(reached.any { it.contains("isDispatchThread") },
+            "refresh touches EDT-only API and must check the thread first")
+        assertTrue(reached.any { it.contains("invokeLater") },
+            "refresh must reschedule onto the EDT rather than assume it")
     }
 
     // ── plumbing ──────────────────────────────────────────────────────────

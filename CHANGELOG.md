@@ -4,6 +4,17 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.9] - 2026-08-14
+
+### Fixed
+
+- Switching Reclazz on in a project now brings up the tool window straight
+  away. It used to appear only after an IDE restart, because the platform
+  asks a tool window whether it belongs in a project when that project
+  opens and never asks again. The status bar item had the same problem and
+  is fixed by the same change; the two are now one decision rather than
+  two that can drift apart.
+
 ## [1.0.8] - 2026-08-14
 
 ### Changed
