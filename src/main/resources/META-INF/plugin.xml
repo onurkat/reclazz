@@ -69,6 +69,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.12</h3>
+        <ul>
+            <li>Notifications can be dismissed again. A balloon posted while a project was still opening could never start its fade-out timer, so it never faded and its entry could not be removed from the event log</li>
+            <li>The JDK capability message is written to the Reclazz tool window instead of arriving as a balloon; it is context rather than an event. A JDK that cannot hot-reload at all still warns</li>
+        </ul>
+
         <h3>1.0.11</h3>
         <ul>
             <li>The reload log no longer reports a failure that did not happen: the JVM's expected refusal to refresh constructor bodies on a class that has gained members is recognised rather than shown as a raw exception</li>
