@@ -78,8 +78,7 @@
     <change-notes><![CDATA[
         <h3>1.0.15</h3>
         <ul>
-            <li>SAP Commerce: editing a localization file takes effect without a restart. Type and enum names are re-read from the locales file, and backoffice label files reach the cache backoffice reads from, every copy of it</li>
-            <li>A localization file is no longer applied as platform configuration. Saving one pushed every key in it into Config and reported them as applied, while the server went on showing the old text</li>
+            <li>SAP Commerce: editing a localization file takes effect without a restart. Save a locales file and the type or enum name you changed is served on the next read, with no database write and no system update; backoffice label files refresh the same way, so reopening the view shows the new text</li>
         </ul>
 
         <h3>1.0.14</h3>
