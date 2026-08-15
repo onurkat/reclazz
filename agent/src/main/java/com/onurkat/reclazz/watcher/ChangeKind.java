@@ -36,6 +36,15 @@ public enum ChangeKind {
     /** {@code .properties}, {@code .yml}, {@code .yaml}. */
     PROPERTIES,
 
+    /**
+     * Static text the platform holds in a cache of its own:
+     * {@code <ext>-locales_<iso>.properties} for type and enum names, and the
+     * {@code labels_<iso>.properties} files under a backoffice labels folder.
+     * These are not platform configuration and must never be pushed into it;
+     * the cache is dropped so the next read picks the file up.
+     */
+    LOCALIZATION,
+
     /** {@code .impex}, imported only when the user opted in. */
     IMPEX,
     /**
@@ -66,6 +75,10 @@ public enum ChangeKind {
         if (fileName.endsWith("-spring.xml")) return SPRING_XML;
         if (fileName.endsWith("-items.xml") || fileName.endsWith("-beans.xml")) return CODEGEN_XML;
 
+        // Before the generic properties rule: a locales file is a properties
+        // file by extension and nothing like one in meaning.
+        if (isLocalesFile(fileName)) return LOCALIZATION;
+
         if (fileName.endsWith(".properties") || fileName.endsWith(".yml")
                 || fileName.endsWith(".yaml")) {
             return PROPERTIES;
@@ -77,5 +90,32 @@ public enum ChangeKind {
         }
 
         return UNKNOWN;
+    }
+
+    /**
+     * Same decision with the directory in hand.
+     *
+     * Backoffice label files are called {@code labels_en.properties}, a name a
+     * Spring application could equally well use for a message bundle, so the
+     * folder is what tells them apart: the platform requires them to sit in
+     * {@code <ext>-backoffice-labels}.
+     */
+    public static ChangeKind of(java.nio.file.Path path) {
+        if (path == null) return UNKNOWN;
+        String fileName = path.getFileName().toString();
+
+        java.nio.file.Path parent = path.getParent();
+        if (parent != null && parent.getFileName() != null
+                && parent.getFileName().toString().endsWith("-backoffice-labels")
+                && fileName.endsWith(".properties")) {
+            return LOCALIZATION;
+        }
+
+        return of(fileName);
+    }
+
+    /** {@code <ext>-locales_<iso>.properties}, the platform's own convention. */
+    private static boolean isLocalesFile(String fileName) {
+        return fileName.endsWith(".properties") && fileName.contains("-locales_");
     }
 }
