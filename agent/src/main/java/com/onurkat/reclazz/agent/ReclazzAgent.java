@@ -702,6 +702,18 @@ public class ReclazzAgent {
 
     private static void handlePropertiesChange(ChangeEvent event) {
         String fileName = event.getPath().getFileName().toString();
+
+        // A .properties file in an extension is far more often a message bundle
+        // or a library's settings than the platform's configuration, and the
+        // difference matters: applying one changes what the whole server reads,
+        // and it takes no edit at all to arrive, a checked-out branch will do.
+        if (platformContext instanceof HybrisPlatformContext
+                && !com.onurkat.reclazz.hybris.HybrisConfigReloader
+                        .isPlatformConfiguration(event.getPath())) {
+            StatusReporter.info(fileName + " is not platform configuration, so nothing was applied.");
+            return;
+        }
+
         StatusReporter.info("Config file changed: " + fileName);
 
         // On SAP Commerce the platform keeps its properties in memory and only

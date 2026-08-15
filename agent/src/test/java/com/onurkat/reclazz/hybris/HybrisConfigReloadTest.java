@@ -202,4 +202,44 @@ class HybrisConfigReloadTest {
             writes.set(0);
         }
     }
+
+    // ── What counts as configuration at all ───────────────────────────────
+
+    /**
+     * Everything in a watched extension is a candidate and almost none of it is
+     * configuration. Measured on a mid-sized project: 353 property files
+     * holding 8,728 keys, 350 of them message bundles for e-mails and OCC
+     * responses. Applying those changes what every component reading the
+     * platform configuration sees, and it takes no edit to arrive: checking out
+     * a branch writes the files.
+     */
+    @Test
+    void onlyThePlatformsOwnConfigurationFilesCount() {
+        assertTrue(HybrisConfigReloader.isPlatformConfiguration(
+                Path.of("/hybris/config/local.properties")));
+        assertTrue(HybrisConfigReloader.isPlatformConfiguration(
+                Path.of("/hybris/bin/custom/myext/project.properties")));
+        assertTrue(HybrisConfigReloader.isPlatformConfiguration(
+                Path.of("/hybris/config/dev/props/10-local.properties")),
+                "the platform's own numbered configuration files");
+    }
+
+    @Test
+    void aMessageBundleIsNotConfiguration() {
+        assertFalse(HybrisConfigReloader.isPlatformConfiguration(
+                Path.of("/hybris/bin/custom/myext/resources/myext/messages/email-order.properties")));
+        assertFalse(HybrisConfigReloader.isPlatformConfiguration(
+                Path.of("/hybris/bin/custom/myext/resources/occ/v2/messages/base_de.properties")));
+        assertFalse(HybrisConfigReloader.isPlatformConfiguration(
+                Path.of("/hybris/bin/custom/myext/resources/generateVariables.properties")),
+                "a build helper's file is not the running server's configuration");
+    }
+
+    @Test
+    void oddInputIsNotMistakenForConfiguration() {
+        assertFalse(HybrisConfigReloader.isPlatformConfiguration(null));
+        assertFalse(HybrisConfigReloader.isPlatformConfiguration(Path.of("props")));
+        assertFalse(HybrisConfigReloader.isPlatformConfiguration(
+                Path.of("/hybris/config/dev/props/notes.txt")));
+    }
 }

@@ -32,6 +32,23 @@ import java.util.zip.CRC32;
  */
 public final class ContentChangeGuard {
 
+    /**
+     * Files this size or larger are not read at all. The agent lives inside a
+     * long-running server and the file is whatever landed in a watched
+     * directory, so its size is not ours to assume: reading it whole to hash it
+     * would let one stray file take the heap out from under the application it
+     * is supposed to be helping. A localization file that big is not one either.
+     */
+    private static final long MAX_HASHED_BYTES = 8L * 1024 * 1024;
+
+    /**
+     * The agent runs for days and this map only ever grows, one entry per file
+     * seen. Thousands is already far past any real project, so past that it
+     * starts again rather than growing without limit; the cost of forgetting is
+     * one unnecessary reload per file.
+     */
+    private static final int MAX_ENTRIES = 4096;
+
     private final Map<Path, Long> lastSeen = new ConcurrentHashMap<>();
 
     /**
@@ -44,6 +61,8 @@ public final class ContentChangeGuard {
         long hash = hash(file);
         if (hash == -1L) return true;
 
+        if (lastSeen.size() >= MAX_ENTRIES) lastSeen.clear();
+
         Long previous = lastSeen.put(file, hash);
         return previous == null || previous != hash;
     }
@@ -55,11 +74,19 @@ public final class ContentChangeGuard {
 
     private static long hash(Path file) {
         try {
-            byte[] bytes = Files.readAllBytes(file);
+            if (Files.size(file) >= MAX_HASHED_BYTES) return -1L;
+
+            // Streamed, so the whole file is never resident. readAllBytes would
+            // hold a copy the size of the file on top of the file itself.
             CRC32 crc = new CRC32();
-            crc.update(bytes);
+            try (java.io.InputStream in = Files.newInputStream(file)) {
+                byte[] buffer = new byte[8192];
+                for (int read; (read = in.read(buffer)) != -1; ) {
+                    crc.update(buffer, 0, read);
+                }
+            }
             return crc.getValue();
-        } catch (IOException | OutOfMemoryError e) {
+        } catch (IOException e) {
             return -1L;
         }
     }

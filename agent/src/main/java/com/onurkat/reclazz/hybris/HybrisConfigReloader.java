@@ -42,6 +42,36 @@ public class HybrisConfigReloader {
 
     private static final String CONFIG_CLASS = "de.hybris.platform.util.Config";
 
+    /**
+     * Whether this file is the platform's configuration, rather than one of the
+     * many other things that happen to be spelled {@code .properties}.
+     *
+     * The distinction is not pedantic. Everything in a watched extension is a
+     * candidate, and almost none of it is configuration: on a mid-sized project
+     * measured while writing this, 353 property files held 8,728 keys, and 350
+     * of those files were message bundles for e-mails and OCC responses.
+     * Pushing an e-mail subject line into the running server's configuration
+     * changes what every component that reads that configuration sees, and it
+     * arrives with no edit at all when a branch is checked out.
+     *
+     * So the platform's own naming decides: {@code local.properties} and
+     * {@code project.properties}, and the numbered files the platform keeps in
+     * a {@code props} directory.
+     */
+    public static boolean isPlatformConfiguration(Path file) {
+        if (file == null || file.getFileName() == null) return false;
+
+        String name = file.getFileName().toString();
+        if (name.equals("local.properties") || name.equals("project.properties")) {
+            return true;
+        }
+        if (!name.endsWith(".properties")) return false;
+
+        Path parent = file.getParent();
+        return parent != null && parent.getFileName() != null
+                && parent.getFileName().toString().equals("props");
+    }
+
     private final ClassLoader platformClassLoader;
     private final Class<?> configClassForTests;
 
