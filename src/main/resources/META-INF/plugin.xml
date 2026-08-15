@@ -70,6 +70,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.13</h3>
+        <ul>
+            <li>Thymeleaf and Freemarker templates reload: editing one takes effect on the next render, with caching left on</li>
+            <li>Classes referenced from instrumented bytecode are now instrumented themselves. Frame computation resolved types by loading them, from inside the transform, and a class loaded that way never got the infrastructure it needs to be reloaded. JPA entities were the common case</li>
+            <li>A field added by a reload is set on objects created afterwards, and adding a static field no longer throws NoSuchFieldError</li>
+            <li>Added static fields and new enum values are reported as needing a restart instead of failing quietly</li>
+        </ul>
+
         <h3>1.0.12</h3>
         <ul>
             <li>Notifications can be dismissed again. A balloon posted while a project was still opening could never start its fade-out timer, so it never faded and its entry could not be removed from the event log</li>
