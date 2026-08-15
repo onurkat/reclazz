@@ -11,20 +11,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ### Added
 
 - Editing a SAP Commerce localization file takes effect without a restart.
-  Type and enum names live in `<ext>-locales_<iso>.properties`, which the
-  platform reads from disk into one cache and answers every lookup from, so
-  dropping that cache is enough for the next read to see the edit. Backoffice
-  label files are handled the same way through ZK's label cache, every copy of
-  it: ZK ships inside the web application, so a server can hold more than one,
-  and clearing the first one found is how a label change reports success and
-  changes nothing.
+  Save an `<ext>-locales_<iso>.properties` and the type or enum name you
+  changed is served on the next read, with no database write and no system
+  update. Backoffice label files refresh the same way: reopen the view and the
+  new text is there.
 
 ### Fixed
 
-- A localization file is no longer treated as platform configuration. Saving
-  one pushed every key in it into `Config` and reported them as applied, while
-  the server went on showing the old text. Localization files now go to the
-  localization cache, and ordinary property files still go to `Config`.
+- Locales files are no longer mistaken for property files, which is what made
+  saving one report a successful reload and change nothing on screen.
 
 ## [1.0.14] - 2026-08-15
 
