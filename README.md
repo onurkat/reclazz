@@ -39,22 +39,44 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 
 | Feature | Reclazz | Spring Boot DevTools | JRebel |
 |---|---|---|---|
-| Price | **Free & open source** | Free | $550+/year |
+| Price | **Free & open source** | Free | Commercial |
 | Reload type | **In-place hot-swap** | Full context restart | In-place hot-swap |
 | Application state | **Preserved** | Lost on restart | Preserved |
-| Method body changes | Yes | Yes (restart) | Yes |
-| Add methods/fields | **Yes (any JDK 17+)** | Yes (restart) | Yes |
-| Spring bean refresh | **Yes (singleton destroy + recreate)** | Yes (restart) | Yes |
+| Method body changes | **Yes** | Yes (restart) | Yes |
+| Add / remove methods | **Yes (any JDK 17+)** | Yes (restart) | Yes |
+| Add instance fields | **Yes** — set on objects created after the reload | Yes (restart) | Yes |
+| Add static fields | Reads as null/0 until restart, and says so | Yes (restart) | Yes |
+| Add enum values | No — needs a restart, and says so | Yes (restart) | Yes |
+| Change superclass / interfaces | No | Yes (restart) | Yes |
+| Spring bean refresh | **Yes** (singleton destroy + recreate) | Yes (restart) | Yes |
 | MVC mapping re-scan | **Yes** | Yes (restart) | Yes |
-| Cache eviction | **Yes** | Yes (restart) | Partial |
-| @Scheduled re-register | **Yes** | Yes (restart) | No |
-| @EventListener refresh | **Yes** | Yes (restart) | No |
-| AOP proxy refresh | **Yes** | Yes (restart) | Partial |
-| Spring Data repo refresh | **Yes** | Yes (restart) | Partial |
-| Spring Security notification | **Yes** | Yes (restart) | Partial |
-| @Async re-processing | **Yes** | Yes (restart) | No |
-| Reload speed | **Instant (~50ms)** | Seconds (context restart) | Instant |
-| SAP Commerce support | **Yes (purpose-built)** | No | Generic |
+| Cache eviction | **Yes** | Yes (restart) | Yes |
+| `@Scheduled` re-register | **Yes** | Yes (restart) | Yes |
+| `@EventListener` refresh | **Yes** | Yes (restart) | Yes |
+| AOP proxy refresh | **Yes** | Yes (restart) | Yes |
+| Spring Data repo refresh | **Yes** | Yes (restart) | Yes |
+| `@Async` re-processing | **Yes** | Yes (restart) | Yes |
+| JPA / Hibernate entity reload | Not yet (SAP Commerce cache only) | Yes (restart) | Yes |
+| Template / static resource reload | No | Yes | Yes |
+| SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
+| SAP Commerce: ImpEx auto-import | **Yes** | No | No |
+| SAP Commerce: interceptor reload | **Yes** | No | No |
+| IDE support | IntelliJ IDEA | any | IntelliJ, Eclipse, VS Code, NetBeans |
+| Remote / container sync | No | No | Yes |
+| Modified JVM required | **No** | No | No |
+
+The Reclazz column is measured, on a running JVM, for the release it ships
+with; the field and enum rows in particular are the result of running each
+case rather than reasoning about it. The other two columns come from each
+project's own published documentation, so they say what those tools claim
+rather than what was tested here, and a blank where a tool is silent is not
+evidence of absence.
+
+For the comparison that matters more: HotswapAgent covers a much wider set
+of frameworks than Reclazz and can add enum values, but needs a modified JVM
+(DCEVM) to do structural reload at all. Reclazz trades that breadth for
+working on the JDK you already have, and for going deeper on SAP Commerce
+than either.
 
 ## Features
 
@@ -73,7 +95,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 ### Core
 
 - **Hot class reload**: Redefines classes in the running JVM via Instrumentation API
-- **Structural changes**: Add/remove methods and fields on any JDK 17+ (companion-class engine); JBR/DCEVM additionally gives full reflective visibility of new members
+- **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. Added *static* fields read as null/0 until a restart, and adding an enum value needs one; Reclazz says so in the reload log rather than leaving you to find out. JBR/DCEVM additionally gives full reflective visibility of new members
 - **Auto-detection**: Automatically detects Spring Boot, Maven, and Gradle project layouts
 - **Zero config**: Just add `-javaagent`, no configuration files needed
 - **IntelliJ IDEA plugin**: Auto-injects agent into run configurations, auto-detects JDK and JBR
@@ -135,7 +157,7 @@ gradle classes  # Gradle
 
 Reclazz watches the compiled `.class` output and hot-swaps changes automatically.
 
-Structural changes (adding/removing methods and fields) work on any JDK 17+. On JBR/DCEVM, add `-XX:+AllowEnhancedClassRedefinition` for full reflective visibility of new members; on standard JVMs, reclazz uses a companion-class fallback (see [Supported JDK Providers](#supported-jdk-providers) for the reflective-visibility caveat).
+Structural changes (adding/removing methods and instance fields) work on any JDK 17+. On JBR/DCEVM, add `-XX:+AllowEnhancedClassRedefinition` for full reflective visibility of new members; on standard JVMs, reclazz uses a companion-class fallback (see [Supported JDK Providers](#supported-jdk-providers) for the reflective-visibility caveat).
 
 ### IntelliJ IDEA (Recommended)
 
@@ -224,7 +246,7 @@ Go to **Settings** > **Tools** > **Reclazz**:
 
 ## Supported JDK Providers
 
-Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument` API. Structural reload (add/remove methods and fields) works on every vendor below. The difference is reflective visibility, not whether the change takes effect.
+Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument` API. Structural reload (add/remove methods and instance fields) works on every vendor below. The difference is reflective visibility, not whether the change takes effect.
 
 | JDK Provider | Method Body | Structural Reload | Reflective Visibility of New Members |
 |---|---|---|---|
