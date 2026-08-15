@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.15] - 2026-08-15
+
 ### Added
 
 - Editing a SAP Commerce localization file takes effect without a restart.
