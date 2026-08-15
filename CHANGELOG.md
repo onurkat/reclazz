@@ -8,6 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Only the platform's own configuration files are applied to the running
+  server: `local.properties`, `project.properties`, and the numbered files the
+  platform keeps in a `props` directory. Everything else spelled `.properties`
+  is left alone. On a mid-sized project 353 property files held 8,728 keys and
+  350 of those files were message bundles for e-mails and OCC responses, so an
+  e-mail subject line could end up in the configuration every component reads,
+  and it took no edit to get there: checking out a branch writes the files.
+- A localization file is read in a bounded way. It is streamed rather than read
+  whole, and one over 8 MB is not read at all, so a stray file in a watched
+  directory cannot take the heap out from under the server the agent is running
+  inside.
+
 - A localization file that is saved without its text changing no longer clears
   the caches. Clearing them is instant, but the next reader pays for the
   rebuild: measured on a 2211 server, 830ms for the platform's localizations

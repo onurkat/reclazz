@@ -94,4 +94,42 @@ class ContentChangeGuardTest {
     void anUnreadableFileIsTreatedAsChanged() {
         assertTrue(new ContentChangeGuard().changed(dir.resolve("never-written.properties")));
     }
+
+    /**
+     * The agent runs inside the server it is helping, and the file is whatever
+     * landed in a watched directory. Reading one whole to hash it would put a
+     * copy of it on the heap, so past a sane size it is not read at all and the
+     * reload goes ahead instead.
+     */
+    @Test
+    void anAbsurdlyLargeFileIsNotReadIntoMemory() throws Exception {
+        Path big = dir.resolve("huge-locales_en.properties");
+        try (java.io.RandomAccessFile f = new java.io.RandomAccessFile(big.toFile(), "rw")) {
+            f.setLength(9L * 1024 * 1024);
+        }
+
+        ContentChangeGuard guard = new ContentChangeGuard();
+        assertTrue(guard.changed(big));
+        assertTrue(guard.changed(big),
+                "it is never hashed, so it can never be recognised as unchanged");
+    }
+
+    /**
+     * One entry per file, in a process that runs for days. Past any plausible
+     * project size it starts again rather than growing without limit.
+     */
+    @Test
+    void theTableDoesNotGrowWithoutLimit() throws Exception {
+        ContentChangeGuard guard = new ContentChangeGuard();
+        Path f = write("a.properties", "x=1");
+        guard.changed(f);
+
+        for (int i = 0; i < 4200; i++) {
+            guard.changed(write("f" + i + ".properties", "x=" + i));
+        }
+
+        assertTrue(guard.changed(f),
+                "forgotten rather than remembered forever, which costs one "
+                + "unnecessary reload and no memory");
+    }
 }
