@@ -4,6 +4,16 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- Editing a SAP Commerce property file applies the changed keys to the running
+  server. The platform reads its property files at startup and never again, so
+  an edit reached nothing; the keys whose value differs are now applied through
+  the same call the HAC console uses. Only the differences are applied, and
+  Reclazz notes that values consumed once at startup still need a restart.
+
 ## [1.0.13] - 2026-08-15
 
 ### Added

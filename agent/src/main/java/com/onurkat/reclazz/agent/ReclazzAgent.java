@@ -693,7 +693,25 @@ public class ReclazzAgent {
     }
 
     private static void handlePropertiesChange(ChangeEvent event) {
-        StatusReporter.info("Config file changed: " + event.getPath().getFileName());
+        String fileName = event.getPath().getFileName().toString();
+        StatusReporter.info("Config file changed: " + fileName);
+
+        // On SAP Commerce the platform keeps its properties in memory and only
+        // reads the files at startup, so an edit reaches nothing on its own.
+        // The keys that actually differ are applied the same way the HAC
+        // console applies them.
+        if (platformContext instanceof HybrisPlatformContext) {
+            java.util.List<String> applied = new com.onurkat.reclazz.hybris.HybrisConfigReloader(
+                    platformContext.getClass().getClassLoader()).apply(event.getPath());
+            if (!applied.isEmpty()) {
+                StatusReporter.info("Applied " + applied.size() + " property change(s): "
+                        + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));
+                StatusReporter.info("Values read per request take effect now; "
+                        + "anything consumed once at startup still needs a restart.");
+                return;
+            }
+        }
+
         StatusReporter.warn("Configuration changes may require a restart to take effect.");
     }
 
