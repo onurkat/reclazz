@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- A localization file that is saved without its text changing no longer clears
+  the caches. Clearing them is instant, but the next reader pays for the
+  rebuild: measured on a 2211 server, 830ms for the platform's localizations
+  and just under four seconds for ZK's labels. Saves that change nothing are
+  common, because the platform's build re-copies resource files and one `ant
+  build` touches every localization file in every extension. The file is now
+  compared against what it held last time, which costs 0.002ms.
+
 ## [1.0.15] - 2026-08-15
 
 ### Added
