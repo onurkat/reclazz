@@ -45,7 +45,7 @@ public class HybrisLocalizationReloader {
     private final Instrumentation instrumentation;
 
     private final Class<?> typeLocalizationForTests;
-    private final Class<?> zkLabelsForTests;
+    private final java.util.List<Class<?>> zkLabelsForTests;
 
     public HybrisLocalizationReloader(ClassLoader platformClassLoader,
                                       Instrumentation instrumentation) {
@@ -60,11 +60,11 @@ public class HybrisLocalizationReloader {
      * handing them in is less machinery than pretending to be a classloader
      * that answers to their names.
      */
-    HybrisLocalizationReloader(Class<?> typeLocalization, Class<?> zkLabels) {
+    HybrisLocalizationReloader(Class<?> typeLocalization, Class<?>... zkLabels) {
         this.platformClassLoader = null;
         this.instrumentation = null;
         this.typeLocalizationForTests = typeLocalization;
-        this.zkLabelsForTests = zkLabels;
+        this.zkLabelsForTests = java.util.List.of(zkLabels);
     }
 
     /**
@@ -105,16 +105,24 @@ public class HybrisLocalizationReloader {
      *         loaded ZK
      */
     public boolean reloadBackofficeLabels() {
-        Class<?> labels = findZkLabels();
-        if (labels == null) return false;
+        java.util.List<Class<?>> labels = findZkLabels();
+        if (labels.isEmpty()) return false;
 
-        try {
-            labels.getMethod("reset").invoke(null);
-            return true;
-        } catch (Throwable t) {
-            StatusReporter.warn("Could not refresh backoffice labels: " + describe(t));
-            return false;
+        // Every one of them. ZK ships inside the web applications that use it,
+        // so a server can hold several copies of this class, one per web
+        // application classloader, each with its own static cache. Resetting
+        // the first one found clears a cache that may belong to something
+        // else entirely, and backoffice goes on serving the old text.
+        int reset = 0;
+        for (Class<?> labelsClass : labels) {
+            try {
+                labelsClass.getMethod("reset").invoke(null);
+                reset++;
+            } catch (Throwable t) {
+                StatusReporter.warn("Could not refresh backoffice labels: " + describe(t));
+            }
         }
+        return reset > 0;
     }
 
     private Class<?> findTypeLocalization() {
@@ -128,18 +136,21 @@ public class HybrisLocalizationReloader {
     }
 
     /**
-     * ZK is loaded by the backoffice web application's own classloader, which
-     * nothing here has a reference to. The loaded-class list is the way in,
-     * and it is also the honest test of whether backoffice is running at all:
-     * a server without it never loads the class, and gets a quiet false.
+     * ZK is loaded by the web application's own classloader, which nothing
+     * here has a reference to, and a server can hold more than one copy for
+     * that reason. The loaded-class list is the way in, and it is also the
+     * honest test of whether backoffice is running at all: a server without
+     * it never loads the class, and gets a quiet false.
      */
-    private Class<?> findZkLabels() {
+    private java.util.List<Class<?>> findZkLabels() {
         if (zkLabelsForTests != null) return zkLabelsForTests;
-        if (instrumentation == null) return null;
+        if (instrumentation == null) return java.util.List.of();
+
+        java.util.List<Class<?>> found = new java.util.ArrayList<>(2);
         for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
-            if (ZK_LABELS.equals(loaded.getName())) return loaded;
+            if (ZK_LABELS.equals(loaded.getName())) found.add(loaded);
         }
-        return null;
+        return found;
     }
 
     /** Reflection wraps the real failure and carries no message of its own. */
