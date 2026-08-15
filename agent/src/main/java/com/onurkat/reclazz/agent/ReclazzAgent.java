@@ -422,7 +422,7 @@ public class ReclazzAgent {
 
             // What the file is, decided in one testable place; whether we act
             // on it stays here, because that depends on configuration.
-            switch (com.onurkat.reclazz.watcher.ChangeKind.of(fileName)) {
+            switch (com.onurkat.reclazz.watcher.ChangeKind.of(event.getPath())) {
                 case CLASS_FILE -> {
                     if (event.getType() != ChangeEvent.Type.DELETED) {
                         handleClassFileChange(event, reloader, springOrchestrator, interceptorReloader);
@@ -444,6 +444,7 @@ public class ReclazzAgent {
                         handleImpexChange(event, impexImporter);
                     }
                 }
+                case LOCALIZATION -> handleLocalizationChange(event);
                 case TEMPLATE -> handleTemplateChange(event, config);
                 case UNKNOWN -> { }
             }
@@ -729,6 +730,52 @@ public class ReclazzAgent {
         }
 
         StatusReporter.warn("Configuration changes may require a restart to take effect.");
+    }
+
+    /**
+     * Static text: type and enum names from a locales file, or backoffice
+     * labels. Neither is platform configuration, and pushing them into it
+     * would report changes the server never shows.
+     */
+    private static void handleLocalizationChange(ChangeEvent event) {
+        String fileName = event.getPath().getFileName().toString();
+        StatusReporter.info("Localization file changed: " + fileName);
+
+        if (!(platformContext instanceof HybrisPlatformContext)) {
+            // Only SAP Commerce keeps these in a cache Reclazz can reach.
+            StatusReporter.warn("Localization changes may require a restart to take effect.");
+            return;
+        }
+
+        Object appContext = platformContext.getApplicationContext();
+        ClassLoader platformLoader = appContext != null
+                ? appContext.getClass().getClassLoader()
+                : platformContext.getClass().getClassLoader();
+        com.onurkat.reclazz.hybris.HybrisLocalizationReloader reloader =
+                new com.onurkat.reclazz.hybris.HybrisLocalizationReloader(
+                        platformLoader, instrumentation);
+
+        java.nio.file.Path parent = event.getPath().getParent();
+        boolean backofficeLabels = parent != null && parent.getFileName() != null
+                && parent.getFileName().toString().endsWith("-backoffice-labels");
+
+        if (backofficeLabels) {
+            if (reloader.reloadBackofficeLabels()) {
+                StatusReporter.success("Backoffice labels re-read. Reopen the view to see them.");
+            } else {
+                // Backoffice loads ZK lazily; before anyone opens it there is
+                // no cache to clear and nothing to report.
+                StatusReporter.warn("Backoffice is not running here, so its labels were left alone.");
+            }
+            return;
+        }
+
+        if (reloader.reloadTypeLocalizations()) {
+            StatusReporter.success("Type and enum names re-read from " + fileName + ".");
+        } else {
+            StatusReporter.warn("Could not reach the platform's localization cache; "
+                    + fileName + " needs a restart to take effect.");
+        }
     }
 
     private static void handleImpexChange(ChangeEvent event,

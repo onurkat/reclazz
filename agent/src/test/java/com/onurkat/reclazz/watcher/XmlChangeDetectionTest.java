@@ -135,7 +135,7 @@ class XmlChangeDetectionTest {
 
     @Test
     void nothingBlowsUpOnOddInput() {
-        assertEquals(ChangeKind.UNKNOWN, ChangeKind.of(null));
+        assertEquals(ChangeKind.UNKNOWN, ChangeKind.of((String) null));
         assertEquals(ChangeKind.UNKNOWN, ChangeKind.of(""));
         assertEquals(ChangeKind.UNKNOWN, ChangeKind.of(".xml"));
     }
