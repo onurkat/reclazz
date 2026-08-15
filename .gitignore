@@ -48,3 +48,7 @@ reclazztest/web/webroot/WEB-INF/classes/
 # Marketing screenshots: kept out of the repo on purpose, they are
 # regenerated from the sandbox rather than reviewed as source.
 docs/screenshots/
+
+# Archived notes from deleted GitHub releases: kept locally as a record,
+# not part of the source.
+docs/release-notes-archive/
