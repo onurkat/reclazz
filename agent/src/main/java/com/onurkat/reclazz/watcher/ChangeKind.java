@@ -38,6 +38,12 @@ public enum ChangeKind {
 
     /** {@code .impex}, imported only when the user opted in. */
     IMPEX,
+    /**
+     * A template the engine has already parsed and cached: {@code .html},
+     * {@code .ftl}, {@code .ftlh}. Nothing is redefined; the cache is dropped
+     * so the next render reads the file again.
+     */
+    TEMPLATE,
 
     /** Something we watch the directory for but do nothing with. */
     UNKNOWN;
@@ -65,6 +71,10 @@ public enum ChangeKind {
             return PROPERTIES;
         }
         if (fileName.endsWith(".impex")) return IMPEX;
+        if (fileName.endsWith(".ftl") || fileName.endsWith(".ftlh")
+                || fileName.endsWith(".html") || fileName.endsWith(".htm")) {
+            return TEMPLATE;
+        }
 
         return UNKNOWN;
     }

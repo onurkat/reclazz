@@ -542,7 +542,13 @@ public class FileWatcher {
                fileName.endsWith(".properties") ||
                fileName.endsWith(".yml") ||
                fileName.endsWith(".yaml") ||
-               fileName.endsWith(".impex");
+               fileName.endsWith(".impex") ||
+               // Templates are data, not code: watched so their cache can be
+               // dropped when they change.
+               fileName.endsWith(".ftl") ||
+               fileName.endsWith(".ftlh") ||
+               fileName.endsWith(".html") ||
+               fileName.endsWith(".htm");
     }
 
     record WatchedDirectory(Path directory, String moduleName, String sourceRoot) {}

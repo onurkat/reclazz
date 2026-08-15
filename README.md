@@ -56,8 +56,9 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | AOP proxy refresh | **Yes** | Yes (restart) | Yes |
 | Spring Data repo refresh | **Yes** | Yes (restart) | Yes |
 | `@Async` re-processing | **Yes** | Yes (restart) | Yes |
-| JPA / Hibernate entity reload | Not yet (SAP Commerce cache only) | Yes (restart) | Yes |
-| Template / static resource reload | No | Yes | Yes |
+| JPA entity class reload | **Yes** | Yes (restart) | Yes |
+| JPA mapping picks up a new field | No — needs JBR/DCEVM | Yes (restart) | Yes |
+| Template reload (Thymeleaf, Freemarker) | **Yes** | Yes | Yes |
 | SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
 | SAP Commerce: ImpEx auto-import | **Yes** | No | No |
 | SAP Commerce: interceptor reload | **Yes** | No | No |

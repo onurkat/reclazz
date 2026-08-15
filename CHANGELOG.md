@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- Editing a Thymeleaf or Freemarker template takes effect without a restart.
+  A template is data rather than code: the engine parsed it once and served
+  that copy until something dropped it, which made the change that looks
+  easiest to see the one that needed a restart. Engines register themselves
+  from their constructor, because application code and Spring build them and
+  keep them private, and a template change now clears their caches.
+
+  Measured against both engines with caching configured the way production
+  configures it: neither picked up an edited template, and both do now.
+  Applications with no template engine hear nothing.
+
 ### Fixed
 
 - A class referenced from instrumented bytecode is no longer skipped by the

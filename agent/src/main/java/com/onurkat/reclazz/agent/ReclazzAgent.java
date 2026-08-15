@@ -65,6 +65,8 @@ public class ReclazzAgent {
     private static volatile JvmCapabilityProbe.ProbeResult probeResult;
     private static volatile TransformContext transformContext;
     private static volatile StructuralReloader structuralReloader;
+    private static final com.onurkat.reclazz.reload.TemplateReloader templateReloader =
+            new com.onurkat.reclazz.reload.TemplateReloader();
     private static volatile PlatformContext platformContext;
     private static volatile com.onurkat.reclazz.spring.xml.SpringXmlReloader springXmlReloader;
     private static volatile com.onurkat.reclazz.hybris.codegen.CodegenReloader codegenReloader;
@@ -172,6 +174,8 @@ public class ReclazzAgent {
                 SpringContextInterceptTransformer contextTransformer = new SpringContextInterceptTransformer();
                 instrumentation.addTransformer(contextTransformer, false);
                 StatusReporter.info("Spring context intercept transformer registered");
+                instrumentation.addTransformer(
+                        new com.onurkat.reclazz.transform.TemplateInterceptTransformer(), false);
             } catch (Exception e) {
                 StatusReporter.warn("Failed to register Spring context transformer: " + e.getMessage());
             }
@@ -440,6 +444,7 @@ public class ReclazzAgent {
                         handleImpexChange(event, impexImporter);
                     }
                 }
+                case TEMPLATE -> handleTemplateChange(event, config);
                 case UNKNOWN -> { }
             }
         } catch (Throwable e) {
@@ -658,6 +663,22 @@ public class ReclazzAgent {
             } else {
                 StatusReporter.success(summary);
             }
+        }
+    }
+
+    /**
+     * A template changed: drop the parsed copy the engine is serving.
+     *
+     * Says nothing when no engine registered itself. An application with no
+     * template engine still has .html files, and a line claiming a reload that
+     * did not happen is worse than silence.
+     */
+    private static void handleTemplateChange(ChangeEvent event, AgentConfig config) {
+        String fileName = event.getPath().getFileName().toString();
+        int cleared = templateReloader.reload(fileName);
+        if (cleared == 0 && config != null && config.isVerbose()) {
+            StatusReporter.info("Template changed: " + fileName
+                    + " (no template engine registered, nothing to clear)");
         }
     }
 
