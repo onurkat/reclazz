@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- The platform's own `config` directory is watched, so editing
+  `config/local.properties` or a numbered file under `config/<env>/props`
+  reaches the running server. Until now nothing watched the file a developer
+  actually edits, and the property reloader could only ever fire on files that
+  are not configuration.
+
+### Fixed
+
+- A saved property file is compared against its own previous content instead of
+  against the running configuration, and a value still holding a `${...}`
+  placeholder is never written. The configuration is not a copy of any one
+  file: the platform expands placeholders as it loads, and layers files so the
+  last one to define a key wins. Comparing against it made untouched lines look
+  edited. On a live server, adding one line to a `config/dev/props` file
+  reported nine keys applied, two of them the SSO keystore and metadata
+  locations, whose working absolute paths were replaced by the literal
+  characters `${HYBRIS_CONFIG_DIR}`.
+
 ### Changed
 
 - Only the platform's own configuration files are applied to the running

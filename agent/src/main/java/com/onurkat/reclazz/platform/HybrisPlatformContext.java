@@ -128,6 +128,17 @@ public class HybrisPlatformContext implements PlatformContext {
                 result.put(ext.getName(), List.of(resourcesDir));
             }
         }
+
+        // The platform's own configuration, which lives outside every
+        // extension: config/local.properties and the numbered files under
+        // config/<env>/props. Without this the property reloader has nothing
+        // to react to, because the file a developer actually edits is the one
+        // place nothing else watches.
+        Path configDir = hybrisHome.resolve("config");
+        if (Files.isDirectory(configDir)) {
+            result.put("__platform_config__", List.of(configDir));
+        }
+
         return result;
     }
 

@@ -52,6 +52,13 @@ public class ReclazzAgent {
     private static volatile Instrumentation instrumentation;
 
     /**
+     * What each platform property file said last time, so a save is read as the
+     * edit it was. See PropertyFileSnapshots.
+     */
+    private static final com.onurkat.reclazz.hybris.PropertyFileSnapshots propertySnapshots =
+            new com.onurkat.reclazz.hybris.PropertyFileSnapshots();
+
+    /**
      * Localization saves defer expensive work to whoever reads next, so a save
      * that changed nothing is worth recognising. See handleLocalizationChange.
      */
@@ -700,6 +707,11 @@ public class ReclazzAgent {
         reloader.reload(event.getPath());
     }
 
+    /** Called by the watcher at startup; see PropertyFileSnapshots. */
+    public static void baselinePropertyFile(java.nio.file.Path file) {
+        propertySnapshots.baseline(file);
+    }
+
     private static void handlePropertiesChange(ChangeEvent event) {
         String fileName = event.getPath().getFileName().toString();
 
@@ -730,7 +742,7 @@ public class ReclazzAgent {
                     ? appContext.getClass().getClassLoader()
                     : platformContext.getClass().getClassLoader();
             com.onurkat.reclazz.hybris.HybrisConfigReloader configReloader =
-                    new com.onurkat.reclazz.hybris.HybrisConfigReloader(platformLoader);
+                    new com.onurkat.reclazz.hybris.HybrisConfigReloader(platformLoader, propertySnapshots);
             java.util.List<String> applied = configReloader.apply(event.getPath());
             if (applied.isEmpty() && configReloader.isPlatformReachable()) {
                 // The file was compared against the running configuration and
