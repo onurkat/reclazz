@@ -31,6 +31,7 @@ class HybrisLocalizationReloadTest {
         StubTypeLocalization.cleared = 0;
         StubTypeLocalization.instance = new StubTypeLocalization();
         StubLabels.resets = 0;
+        SecondStubLabels.resets = 0;
     }
 
     private HybrisLocalizationReloader reloader() {
@@ -122,11 +123,42 @@ class HybrisLocalizationReloadTest {
     @Test
     void backofficeThatWasNeverOpenedIsReportedAsNotRefreshed() {
         HybrisLocalizationReloader noZk =
-                new HybrisLocalizationReloader(StubTypeLocalization.class, null);
+                new HybrisLocalizationReloader(StubTypeLocalization.class);
 
         assertFalse(noZk.reloadBackofficeLabels());
         assertTrue(noZk.reloadTypeLocalizations(),
                 "the platform cache is a separate store and is still there");
+    }
+
+    /**
+     * A server can hold more than one copy of ZK's Labels class, one per web
+     * application classloader and each with its own cache, and a copy left
+     * behind by a redeployed application is indistinguishable from the live
+     * one. Resetting only the first found clears a cache nobody reads while
+     * backoffice goes on serving the old text, which is what a run against a
+     * live server looked like: the call reported success and the label in the
+     * navigation tree did not change.
+     */
+    @Test
+    void everyCopyOfTheLabelCacheIsReset() {
+        HybrisLocalizationReloader many = new HybrisLocalizationReloader(
+                StubTypeLocalization.class, StubLabels.class, SecondStubLabels.class);
+
+        assertTrue(many.reloadBackofficeLabels());
+        assertEquals(1, StubLabels.resets);
+        assertEquals(1, SecondStubLabels.resets,
+                "the copy that is not first in the list is the one backoffice "
+                + "may actually be reading");
+    }
+
+    /** One broken copy must not stop the others from being cleared. */
+    @Test
+    void oneUnusableCopyDoesNotStopTheRest() {
+        HybrisLocalizationReloader mixed = new HybrisLocalizationReloader(
+                StubTypeLocalization.class, StubBrokenLabels.class, StubLabels.class);
+
+        assertTrue(mixed.reloadBackofficeLabels());
+        assertEquals(1, StubLabels.resets);
     }
 
     @Test
@@ -158,6 +190,16 @@ class HybrisLocalizationReloadTest {
     /** Same shape as ZK's Labels: a static reset. */
     @SuppressWarnings("unused")
     public static final class StubLabels {
+        static int resets;
+
+        public static void reset() {
+            resets++;
+        }
+    }
+
+    /** A second copy, as a second web application classloader would hold. */
+    @SuppressWarnings("unused")
+    public static final class SecondStubLabels {
         static int resets;
 
         public static void reset() {

@@ -12,7 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Type and enum names live in `<ext>-locales_<iso>.properties`, which the
   platform reads from disk into one cache and answers every lookup from, so
   dropping that cache is enough for the next read to see the edit. Backoffice
-  label files are handled the same way through ZK's label cache.
+  label files are handled the same way through ZK's label cache, every copy of
+  it: ZK ships inside the web application, so a server can hold more than one,
+  and clearing the first one found is how a label change reports success and
+  changes nothing.
 
 ### Fixed
 
