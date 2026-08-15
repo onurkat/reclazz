@@ -8,6 +8,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- A class referenced from instrumented bytecode is no longer skipped by the
+  instrumentation itself. Computing stack map frames used ASM's default
+  superclass resolver, which calls `Class.forName`, so transforming a class
+  that contains `new Product()` loaded `Product` from inside the transform.
+  The JVM does not re-enter transformers for a class loaded that way, and the
+  infrastructure can only be added while a class loads, so that class could
+  never be reloaded structurally afterwards.
+
+  It failed quietly and asymmetrically, which is why it lasted: a class
+  referenced from transformed bytecode lost, the same class named only in a
+  string did not. JPA entities lost, because whatever builds the
+  EntityManagerFactory references them, so adding a field to an entity failed
+  with a JVM message about schemas that pointed nowhere near the cause. Entity
+  classes now reload like any other.
+
+  Hibernate's own mapping still describes the entity as it was at startup, so
+  a field added to an entity is not persisted until a restart. That is the
+  next piece of work, not this one.
+
 - Adding a static field no longer kills the thread. The companion fell
   through to a plain `GETSTATIC` against a class whose schema does not have
   the field, on the reasoning that adding a static field was unusual. It is

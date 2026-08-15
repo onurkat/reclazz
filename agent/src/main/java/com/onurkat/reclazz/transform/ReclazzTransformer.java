@@ -193,13 +193,24 @@ public class ReclazzTransformer implements ClassFileTransformer {
                 return "java/lang/Object";
             }
 
-            // First try the standard Class.forName path — fast when classes
-            // are already loaded.
-            try {
-                return super.getCommonSuperClass(type1, type2);
-            } catch (Throwable ignored) {
-                // Fall through to ClassReader-based resolution.
-            }
+            // Deliberately not Class.forName first.
+            //
+            // ASM's default getCommonSuperClass calls Class.forName, and it
+            // used to be tried here as a fast path for classes already loaded.
+            // It is also a class *loader*: computing frames for a method that
+            // contains `new Product()` loads demo.Product, from inside our own
+            // transformer, and the JVM does not re-enter transformers for a
+            // class loaded during a transform. The class was then defined with
+            // no instrumentation at all, for the life of the JVM, and could
+            // never be structurally reloaded.
+            //
+            // It failed quietly and asymmetrically: a class referenced from
+            // transformed bytecode lost, one named only in a string did not.
+            // JPA entities lose, because whatever builds the
+            // EntityManagerFactory usually references them, which is why
+            // adding a field to an entity could not be reloaded.
+            //
+            // Reading class files answers the same question and loads nothing.
 
             // Walk both class hierarchies by reading bytecode, find common ancestor.
             try {

@@ -86,7 +86,12 @@ public class StructuralReloader {
             TransformContext.ClassMetadata oldMetadata = context.getMetadata(internalName);
 
             if (oldMetadata == null) {
-                // Class hasn't been transformed yet — use standard reload
+                // Watched, but never instrumented: there is no companion to
+                // dispatch to, so the structural path has nothing to work with
+                // and this used to fall straight through to a redefine the JVM
+                // rejects. Adding a field to a JPA entity ended exactly there,
+                // losing the method bodies with it, and nothing said why.
+                reportUninstrumented(className);
                 return standardReload(className, newBytecode);
             }
 
@@ -169,6 +174,33 @@ public class StructuralReloader {
         }
         return statics;
     }
+
+    /**
+     * Say why a watched class cannot be reloaded structurally.
+     *
+     * The companion engine needs two fields in the class, and they can only be
+     * put there while it is being loaded: retransforming an already-loaded
+     * class to add them is a schema change and the JVM rejects it, which was
+     * measured rather than assumed. So a class that missed the load-time
+     * transform can never get the infrastructure, for the life of that JVM.
+     *
+     * JPA entities are the case that meets this in practice. They are loaded
+     * while the EntityManagerFactory is being built, early enough to slip past
+     * instrumentation, and adding a field to one then failed with a JVM
+     * message about schemas that said nothing about why this class and not
+     * the one next to it.
+     */
+    private void reportUninstrumented(String className) {
+        if (uninstrumentedReported.add(className)) {
+            StatusReporter.warn(className + " was loaded before Reclazz could instrument it, "
+                    + "so only method bodies can be reloaded; adding or removing members "
+                    + "needs a restart. JPA entities hit this because the "
+                    + "EntityManagerFactory loads them during startup.");
+        }
+    }
+
+    private final java.util.Set<String> uninstrumentedReported =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private ClassReloader.ReloadResult standardReload(String className, byte[] newBytecode) {
         try {
