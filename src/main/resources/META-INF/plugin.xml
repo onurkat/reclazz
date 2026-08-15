@@ -38,11 +38,12 @@
             <li><b>Cache eviction</b>: caches for @Cacheable and @CacheEvict classes are evicted</li>
             <li><b>Scheduler and events</b>: @Scheduled tasks and @EventListener methods are re-registered</li>
             <li><b>AOP, @Async and Spring Data</b>: proxy caches cleared, beans re-processed, repositories refreshed</li>
+            <li><b>Templates</b>: editing a Thymeleaf or Freemarker template takes effect on the next render, without a restart and without turning caching off.</li>
         </ul>
 
         <h3>The engine</h3>
         <ul>
-            <li><b>Structural changes on a stock JDK</b>: add and remove methods and fields, and change annotations, on any JDK 17+. No patched JVM required. JetBrains Runtime or DCEVM additionally makes new members visible to reflection</li>
+            <li><b>Structural changes on a stock JDK</b>: add and remove methods and instance fields, and change annotations, on any JDK 17+. No patched JVM required. An added field is set on objects created after the reload. Added static fields and new enum values need a restart, and Reclazz tells you so rather than leaving you to find out. JetBrains Runtime or DCEVM additionally makes new members visible to reflection</li>
             <li><b>Instant</b>: classes are redefined through the Instrumentation API in milliseconds</li>
             <li><b>One click setup</b>: once enabled, the agent is injected into your run configurations for you</li>
             <li><b>100% local and private</b>: no telemetry, no analytics, no outbound network requests. The one socket it opens is bound to loopback</li>
