@@ -76,6 +76,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.15</h3>
+        <ul>
+            <li>SAP Commerce: editing a localization file takes effect without a restart. Type and enum names are re-read from the locales file, and backoffice label files reach the cache backoffice reads from, every copy of it</li>
+            <li>A localization file is no longer applied as platform configuration. Saving one pushed every key in it into Config and reported them as applied, while the server went on showing the old text</li>
+        </ul>
+
         <h3>1.0.14</h3>
         <ul>
             <li>SAP Commerce: saving a property file applies the changed keys to the running server, the same way the HAC console does. Only the keys whose value differs are applied, and values consumed once at startup are still called out as needing a restart</li>
