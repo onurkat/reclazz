@@ -14,9 +14,12 @@
             <b>Built for SAP Commerce (Hybris), where the restart hurts most.</b>
             Save a *-items.xml or *-beans.xml and Reclazz runs the platform's own code
             generation in the background and reloads the regenerated model and DTO classes,
-            instead of ant clean all and a restart. Interceptors re-register, ImpEx can
-            auto-import, and the agent installs through the platform's documented append
-            properties so it survives ant clean all rather than being wiped by it.
+            instead of ant clean all and a restart. Reloading Java is only half of a hybris
+            day, so the rest is covered too: a property is applied to the running server,
+            a locales file re-reads the text behind type and enum names, backoffice labels
+            refresh, interceptors re-register and ImpEx can auto-import. The agent installs
+            through the platform's documented append properties, so it survives ant clean
+            all rather than being wiped by it.
         </p>
         <p>
             It works just as well on any Spring Boot application, and on plain Java through
@@ -26,6 +29,9 @@
         <h3>SAP Commerce</h3>
         <ul>
             <li><b>items.xml and beans.xml</b>: regeneration plus reload of the model and DTO classes, without the full rebuild. A new attribute still needs a database column, so Reclazz reminds you to run Update Running System rather than touching your database itself</li>
+            <li><b>Properties</b>: saving a property file applies the keys whose value differs to the running server, the same call the HAC console makes, and says which values still need a restart instead of reporting them as done</li>
+            <li><b>Type and enum text</b>: editing a locales file re-reads the platform's localization cache, so the new text is served on the next lookup, with no system update and no database write</li>
+            <li><b>Backoffice labels</b>: label files reach the cache backoffice actually reads from, every copy of it; reopen the view and the text is there</li>
             <li><b>Interceptor reload</b>: Validate, Prepare, Load and Remove interceptors re-register</li>
             <li><b>ImpEx auto-import</b>: changed .impex files can be imported on save (opt-in), and one carrying a REMOVE header is refused rather than run against your database</li>
             <li><b>Extension-aware</b>: understands the extension layout, classpath and classloader hierarchy, and covers every live application context rather than only the root one</li>

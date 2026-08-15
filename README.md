@@ -197,7 +197,39 @@ Hybris-specific features:
   (opt-in). It runs against your live database with no confirmation and
   nothing that undoes it, so files containing a `REMOVE` header are refused
   and named rather than executed. Set `impexAllowRemove=true` if you mean it.
+- **Property changes applied to the running server**: the platform reads its
+  property files once, at startup. Saving one now applies the keys whose value
+  actually differs, through the same call the HAC console makes. Values that
+  are consumed once at startup are named as still needing a restart rather than
+  reported as applied.
+- **Type and enum text**: editing an `<ext>-locales_<iso>.properties` re-reads
+  the platform's localization cache, so the new text is served on the next
+  lookup. No system update and no database write.
+- **Backoffice labels**: `labels_<iso>.properties` under an extension's
+  `*-backoffice-labels` folder reach the label cache backoffice reads from,
+  every copy of it. Reopen the view and the text is there.
 - **Extension-aware**: Understands Hybris extension structure, classpath, and classloader hierarchy
+
+
+#### On SAP Commerce, compared with JRebel
+
+| What you changed | Reclazz | JRebel |
+|---|---|---|
+| Price | Free and open source | $550+/year per seat |
+| A Java class | Yes | Yes |
+| Per-extension setup file | None | `rebel.xml` for backoffice extensions |
+| A type in `items.xml` or `beans.xml` | Regenerates and reloads | Not in its Hybris manual |
+| A property | Applied to the running server | Not in its Hybris manual |
+| A type or enum name in a locales file | Yes | Not in its Hybris manual |
+| A backoffice label | Yes | Not in its Hybris manual |
+| An interceptor | Re-registered | Not in its Hybris manual |
+| An ImpEx file | Imported on save (opt-in) | Not in its Hybris manual |
+| Licence server and activation | None | Commercial licence, activation required |
+
+Compared against [JRebel's own SAP Commerce manual](https://manuals.jrebel.com/jrebel/advanced/hybris.html),
+which covers reloading compiled classes and configuring `rebel.xml`. "Not in its
+Hybris manual" means exactly that, not that JRebel is broken: it reloads classes
+on Hybris and that is what it documents.
 
 ### Attach to Running Server
 
