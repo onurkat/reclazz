@@ -74,10 +74,12 @@ public class HybrisConfigReloader {
 
     private final ClassLoader platformClassLoader;
     private final Class<?> configClassForTests;
+    private final PropertyFileSnapshots snapshots;
 
-    public HybrisConfigReloader(ClassLoader platformClassLoader) {
+    public HybrisConfigReloader(ClassLoader platformClassLoader, PropertyFileSnapshots snapshots) {
         this.platformClassLoader = platformClassLoader;
         this.configClassForTests = null;
+        this.snapshots = snapshots;
     }
 
     /**
@@ -86,8 +88,13 @@ public class HybrisConfigReloader {
      * that answers to its name.
      */
     HybrisConfigReloader(Class<?> configClass) {
+        this(configClass, new PropertyFileSnapshots());
+    }
+
+    HybrisConfigReloader(Class<?> configClass, PropertyFileSnapshots snapshots) {
         this.platformClassLoader = null;
         this.configClassForTests = configClass;
+        this.snapshots = snapshots;
     }
 
     /**
@@ -101,8 +108,11 @@ public class HybrisConfigReloader {
         Class<?> config = findConfig();
         if (config == null) return applied;
 
-        Properties fromFile = read(propertiesFile);
-        if (fromFile.isEmpty()) return applied;
+        // Against this file's own previous content, never against the running
+        // configuration: the configuration is not a copy of any one file. See
+        // PropertyFileSnapshots.
+        java.util.Map<String, String> edited = snapshots.changedSince(propertiesFile);
+        if (edited.isEmpty()) return applied;
 
         // Config reads the tenant from a ThreadLocal that the watcher thread
         // does not have. Without this the call fails with a bare
@@ -115,10 +125,13 @@ public class HybrisConfigReloader {
             Method get = config.getMethod("getParameter", String.class);
             Method set = config.getMethod("setParameter", String.class, String.class);
 
-            for (String key : fromFile.stringPropertyNames()) {
-                String desired = fromFile.getProperty(key);
+            for (java.util.Map.Entry<String, String> entry : edited.entrySet()) {
+                String key = entry.getKey();
+                String desired = entry.getValue();
+                if (desired == null || isUnresolved(desired)) continue;
+
                 String current = (String) get.invoke(null, key);
-                if (desired == null || desired.equals(current)) continue;
+                if (desired.equals(current)) continue;
 
                 set.invoke(null, key, desired);
 
@@ -156,6 +169,23 @@ public class HybrisConfigReloader {
     }
 
     /**
+     * Whether a value still contains a placeholder the platform expands when it
+     * loads the file.
+     *
+     * The file says {@code file:${HYBRIS_CONFIG_DIR}/security/keystore.jks} and
+     * the running server holds the expanded path, so the two never compare
+     * equal and the raw text looks like a change on every save. Writing it back
+     * replaces a working absolute path with the literal characters
+     * {@code ${HYBRIS_CONFIG_DIR}}, which is how a save of an untouched line
+     * takes out SSO. Reclazz does not expand these, because doing it the way
+     * the platform does means reproducing the platform, so a value carrying one
+     * is left exactly as the server has it.
+     */
+    private static boolean isUnresolved(String value) {
+        return value.contains("${");
+    }
+
+    /**
      * Whether the platform configuration can be reached at all. It separates
      * "nothing in the file differed from what the server already holds" from
      * "this is not a platform and the edit reached nothing", which read the
@@ -173,20 +203,5 @@ public class HybrisConfigReloader {
         } catch (Throwable t) {
             return null;
         }
-    }
-
-    /**
-     * A half-written file is the normal case, not the exception: editors save
-     * in stages and the watcher is fast. Returning nothing leaves the server
-     * on its previous values, and the next save will carry the same keys.
-     */
-    private Properties read(Path file) {
-        Properties p = new Properties();
-        try (InputStream in = Files.newInputStream(file)) {
-            p.load(in);
-        } catch (Throwable t) {
-            return new Properties();
-        }
-        return p;
     }
 }

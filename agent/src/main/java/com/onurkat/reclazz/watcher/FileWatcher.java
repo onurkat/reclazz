@@ -182,6 +182,7 @@ public class FileWatcher {
                     // (e.g. resources/impex/test-data.impex) — a single-level
                     // watch never saw those changes.
                     registerRecursive(resDir, moduleName, "resources");
+                    baselinePropertyFiles(resDir);
                     watchCount++;
                 }
             }
@@ -511,6 +512,26 @@ public class FileWatcher {
      * processes ~500 MB/s on modern CPUs — the overhead per dispatch
      * is in the order of 100 microseconds for a 50 KB class file.
      */
+    /**
+     * Record what the platform's configuration files say right now.
+     *
+     * A save is applied by comparing the file against its own previous content,
+     * which needs a previous content to exist. The server read these files
+     * minutes ago, so this is the version already reflected in the running
+     * configuration, and without it the first save after a start would treat
+     * every line in the file as an edit.
+     */
+    private void baselinePropertyFiles(Path dir) {
+        try (java.util.stream.Stream<Path> files = Files.walk(dir, 4)) {
+            files.filter(Files::isRegularFile)
+                 .filter(com.onurkat.reclazz.hybris.HybrisConfigReloader::isPlatformConfiguration)
+                 .forEach(com.onurkat.reclazz.agent.ReclazzAgent::baselinePropertyFile);
+        } catch (Exception e) {
+            // A directory that cannot be walked costs one over-eager first
+            // save, not a broken watcher.
+        }
+    }
+
     private long computeContentHash(Path file) {
         try {
             byte[] bytes = Files.readAllBytes(file);

@@ -39,8 +39,16 @@ class HybrisConfigReloadTest {
         StubConfig.reset();
     }
 
+    private final PropertyFileSnapshots snapshots = new PropertyFileSnapshots();
+
+    /** One store per test, as a running agent has one for its lifetime. */
     private HybrisConfigReloader reloader() {
-        return new HybrisConfigReloader(StubConfig.class);
+        return new HybrisConfigReloader(StubConfig.class, snapshots);
+    }
+
+    /** The file as the server already has it, which startup records. */
+    private void alreadyRunningWith(Path file) {
+        snapshots.baseline(file);
     }
 
     private Path write(String content) throws Exception {
@@ -120,7 +128,8 @@ class HybrisConfigReloadTest {
     @Test
     void withoutThePlatformItDoesNothingQuietly() throws Exception {
         HybrisConfigReloader off = new HybrisConfigReloader(
-                new java.net.URLClassLoader(new java.net.URL[0], null));
+                new java.net.URLClassLoader(new java.net.URL[0], null),
+                new PropertyFileSnapshots());
 
         assertEquals(List.of(), off.apply(write("some.key=value\n")));
     }
@@ -157,7 +166,8 @@ class HybrisConfigReloadTest {
                 "nothing changed, but the platform is there and was consulted");
 
         HybrisConfigReloader off = new HybrisConfigReloader(
-                new java.net.URLClassLoader(new java.net.URL[0], null));
+                new java.net.URLClassLoader(new java.net.URL[0], null),
+                new PropertyFileSnapshots());
         assertFalse(off.isPlatformReachable(),
                 "no platform: the edit really did reach nothing");
     }
@@ -241,5 +251,121 @@ class HybrisConfigReloadTest {
         assertFalse(HybrisConfigReloader.isPlatformConfiguration(Path.of("props")));
         assertFalse(HybrisConfigReloader.isPlatformConfiguration(
                 Path.of("/hybris/config/dev/props/notes.txt")));
+    }
+
+    /**
+     * The file a developer edits is config/local.properties, and it lives
+     * outside every extension, so nothing in the watch list covered it: the
+     * feature could only ever fire on files that are not configuration. The
+     * platform's config directory is watched for that reason, and this pins it
+     * because losing it again would leave a feature with no way to trigger.
+     */
+    @Test
+    void theWatchListCoversThePlatformsConfigDirectory() throws Exception {
+        String source = java.nio.file.Files.readString(sourceOf(
+                "agent/src/main/java/com/onurkat/reclazz/platform/HybrisPlatformContext.java"));
+
+        int at = source.indexOf("getResourceDirs");
+        assertTrue(at > 0, "getResourceDirs is what the watcher is built from");
+        String body = source.substring(at, Math.min(source.length(), at + 2000));
+        assertTrue(body.contains("resolve(\"config\")"),
+                "config/local.properties and config/<env>/props are where the "
+                + "platform keeps the properties a developer edits");
+    }
+
+    private static java.nio.file.Path sourceOf(String repoRelative) {
+        java.nio.file.Path p = java.nio.file.Path.of(repoRelative);
+        if (!java.nio.file.Files.isRegularFile(p)) {
+            p = java.nio.file.Path.of(repoRelative.replaceFirst("^agent/", ""));
+        }
+        if (!java.nio.file.Files.isRegularFile(p)) fail("cannot find " + repoRelative);
+        return p;
+    }
+
+    /**
+     * Hybris expands ${...} when it loads a file, so the server holds
+     * {@code file:/opt/hybris/config/security/keystore.jks} where the file
+     * still says {@code file:${HYBRIS_CONFIG_DIR}/security/keystore.jks}. The
+     * two never compare equal, so every save looked like a change, and writing
+     * the raw text back replaced a working path with literal placeholder
+     * characters. Found by saving one unrelated line in a real
+     * config/dev/props file: nine keys were rewritten, two of them the SSO
+     * keystore and metadata locations.
+     */
+    @Test
+    void aValueWithAPlaceholderIsLeftAsTheServerHasIt() throws Exception {
+        StubConfig.seed("sso.keystore.location", "file:/opt/hybris/config/security/keystore.jks");
+
+        List<String> applied = reloader().apply(write(
+                "sso.keystore.location=file:${HYBRIS_CONFIG_DIR}/security/keystore.jks\n"));
+
+        assertEquals(List.of(), applied);
+        assertEquals(0, StubConfig.writes(), "expanding these means reproducing the platform");
+        assertEquals("file:/opt/hybris/config/security/keystore.jks",
+                StubConfig.getParameter("sso.keystore.location"));
+    }
+
+    @Test
+    void aPlaceholderDoesNotStopTheRestOfTheFile() throws Exception {
+        StubConfig.seed("sso.keystore.location", "file:/opt/hybris/config/security/keystore.jks");
+        StubConfig.seed("feature.flag", "false");
+
+        List<String> applied = reloader().apply(write(
+                "sso.keystore.location=file:${HYBRIS_CONFIG_DIR}/security/keystore.jks\n"
+                + "feature.flag=true\n"));
+
+        assertEquals(List.of("feature.flag"), applied);
+        assertEquals("true", StubConfig.getParameter("feature.flag"));
+    }
+
+    // ── Measured against the file, not against the server ─────────────────
+
+    /**
+     * The platform layers property files and the last one to define a key wins.
+     * A key set in 10-local.properties and overridden in 95-local.properties
+     * differs from the running value in the first file forever, so comparing
+     * that file against the configuration made every save look like a change
+     * and quietly undid the override.
+     *
+     * Seen on a live server: adding one unrelated line to a config/dev/props
+     * file reported three keys applied, two of which the developer had not
+     * touched, one of them the agent's own options set by a later file.
+     */
+    @Test
+    void aLineTheDeveloperDidNotTouchIsLeftAlone() throws Exception {
+        Path f = write("build.development.mode=false\nfeature.flag=off\n");
+        alreadyRunningWith(f);
+        StubConfig.seed("build.development.mode", "true");   // a later file won
+        StubConfig.seed("feature.flag", "off");
+
+        Files.writeString(f, "build.development.mode=false\nfeature.flag=on\n");
+
+        assertEquals(List.of("feature.flag"), reloader().apply(f));
+        assertEquals("true", StubConfig.getParameter("build.development.mode"),
+                "the override stands; this file never set the running value");
+    }
+
+    /**
+     * The server read these files at startup, so recording them then is what
+     * makes the first save afterwards an edit rather than a whole file.
+     */
+    @Test
+    void aFileThatWasNotEditedSinceStartupAppliesNothing() throws Exception {
+        Path f = write("a=1\nb=2\n");
+        alreadyRunningWith(f);
+        StubConfig.seed("a", "from-a-later-file");
+
+        assertEquals(List.of(), reloader().apply(f));
+        assertEquals(0, StubConfig.writes());
+        assertEquals("from-a-later-file", StubConfig.getParameter("a"));
+    }
+
+    /** A file created after startup has no previous version, so it is all new. */
+    @Test
+    void aFileThatAppearedAfterStartupIsAppliedInFull() throws Exception {
+        List<String> applied = reloader().apply(write("brand.new.key=value\n"));
+
+        assertEquals(List.of("brand.new.key"), applied);
+        assertEquals("value", StubConfig.getParameter("brand.new.key"));
     }
 }
