@@ -143,13 +143,7 @@ public final class ReclazzBootstrap {
             MethodHandles.Lookup ownerLookup = MethodHandles.privateLookupIn(ownerClass, lookup);
             initialTarget = ownerLookup.findGetter(ownerClass, name, type.returnType());
         } catch (Exception e) {
-            initialTarget = MethodHandles.throwException(type.returnType(),
-                    UnsupportedOperationException.class)
-                    .bindTo(new UnsupportedOperationException(
-                            "Reclazz: field not found: " + targetClass + "." + name));
-            if (type.parameterCount() > 0) {
-                initialTarget = MethodHandles.dropArguments(initialTarget, 0, type.parameterList());
-            }
+            initialTarget = companionGetter(targetClass, name, type.returnType(), type);
         }
 
         MutableCallSite callSite = new MutableCallSite(initialTarget);
@@ -207,7 +201,8 @@ public final class ReclazzBootstrap {
             Class<?> fieldType = type.parameterType(type.parameterCount() - 1);
             initialTarget = ownerLookup.findSetter(ownerClass, name, fieldType);
         } catch (Exception e) {
-            initialTarget = MethodHandles.empty(type);
+            Class<?> fieldType = type.parameterType(type.parameterCount() - 1);
+            initialTarget = companionSetter(targetClass, name, fieldType, type);
         }
 
         MutableCallSite callSite = new MutableCallSite(initialTarget);
@@ -241,5 +236,72 @@ public final class ReclazzBootstrap {
                 ? DispatchTable.getOrCreate(ownerClass)
                 : DispatchTable.getOrCreate(lookup.lookupClass());
         return dispatch.getOrCreateFieldSetSite(siteKey, callSite);
+    }
+
+    /**
+     * Where a call site goes when the field is not in the loaded class.
+     *
+     * A field added by a reload cannot be added to the loaded class, so it
+     * lives in the companion store. Resolution against the real class fails,
+     * and the failure used to become {@code MethodHandles.empty} for writes:
+     * a call site that accepted the value and dropped it. The constructor of a
+     * class that had gained a field therefore ran, assigned, and lost the
+     * assignment, so an object created after the reload came back with the
+     * field still null. Reads got an exception-throwing handle instead, which
+     * at least said something, but neither is what the code meant.
+     *
+     * Both now go to the same store the companion reads and writes.
+     */
+    private static String fieldDescriptor(Class<?> type) {
+        if (type == int.class) return "I";
+        if (type == long.class) return "J";
+        if (type == double.class) return "D";
+        if (type == float.class) return "F";
+        if (type == boolean.class) return "Z";
+        if (type == byte.class) return "B";
+        if (type == char.class) return "C";
+        if (type == short.class) return "S";
+        if (type == void.class) return "V";
+        if (type.isArray()) return type.getName().replace('.', '/');
+        return "L" + type.getName().replace('.', '/') + ";";
+    }
+
+    private static MethodHandle companionGetter(String className, String name,
+                                                 Class<?> fieldType, MethodType type) throws Throwable {
+        MethodHandle get = MethodHandles.lookup().findStatic(
+                com.onurkat.reclazz.bootstrap.FieldStore.class, "getExtField",
+                MethodType.methodType(Object.class, Object.class, String.class,
+                        String.class, String.class));
+        return MethodHandles.insertArguments(get, 1,
+                className.replace('/', '.'), name, fieldDescriptor(fieldType)).asType(type);
+    }
+
+    private static MethodHandle companionSetter(String className, String name,
+                                                 Class<?> fieldType, MethodType type) throws Throwable {
+        MethodHandle put = MethodHandles.lookup().findStatic(
+                com.onurkat.reclazz.bootstrap.FieldStore.class, "putExtField",
+                MethodType.methodType(void.class, Object.class, Object.class,
+                        String.class, String.class, String.class));
+        return MethodHandles.insertArguments(put, 2,
+                className.replace('/', '.'), name, fieldDescriptor(fieldType)).asType(type);
+    }
+
+    private static MethodHandle companionStaticGetter(String className, String name,
+                                                       Class<?> fieldType, MethodType type) throws Throwable {
+        MethodHandle get = MethodHandles.lookup().findStatic(
+                com.onurkat.reclazz.bootstrap.FieldStore.class, "getStaticExtField",
+                MethodType.methodType(Object.class, String.class, String.class, String.class));
+        return MethodHandles.insertArguments(get, 0,
+                className.replace('/', '.'), name, fieldDescriptor(fieldType)).asType(type);
+    }
+
+    private static MethodHandle companionStaticSetter(String className, String name,
+                                                       Class<?> fieldType, MethodType type) throws Throwable {
+        MethodHandle put = MethodHandles.lookup().findStatic(
+                com.onurkat.reclazz.bootstrap.FieldStore.class, "putStaticExtFieldSwapped",
+                MethodType.methodType(void.class, Object.class, String.class,
+                        String.class, String.class));
+        return MethodHandles.insertArguments(put, 1,
+                className.replace('/', '.'), name, fieldDescriptor(fieldType)).asType(type);
     }
 }

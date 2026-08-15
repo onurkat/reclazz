@@ -120,6 +120,56 @@ public class StructuralReloader {
         }
     }
 
+    /** Whether the new bytecode declares an enum. */
+    private static boolean isEnum(byte[] newBytecode) {
+        try {
+            final boolean[] result = {false};
+            new org.objectweb.asm.ClassReader(newBytecode).accept(
+                    new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override
+                        public void visit(int version, int access, String name, String signature,
+                                          String superName, String[] interfaces) {
+                            result[0] = (access & org.objectweb.asm.Opcodes.ACC_ENUM) != 0
+                                    || "java/lang/Enum".equals(superName);
+                        }
+                    }, org.objectweb.asm.ClassReader.SKIP_CODE);
+            return result[0];
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Which of the added fields are static, read from the new bytecode.
+     *
+     * The diff carries name and descriptor but not access flags, and the
+     * distinction matters here: an instance field added by a reload is
+     * initialised on new objects, a static one is not.
+     */
+    private static java.util.List<String> staticFieldNames(StructuralAnalyzer.StructuralDiff diff,
+                                                            byte[] newBytecode) {
+        java.util.List<String> statics = new java.util.ArrayList<>();
+        try {
+            new org.objectweb.asm.ClassReader(newBytecode).accept(
+                    new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override
+                        public org.objectweb.asm.FieldVisitor visitField(
+                                int access, String name, String descriptor,
+                                String signature, Object value) {
+                            boolean isStatic =
+                                    (access & org.objectweb.asm.Opcodes.ACC_STATIC) != 0;
+                            if (isStatic && diff.getAddedFields().contains(name + ":" + descriptor)) {
+                                statics.add(name);
+                            }
+                            return null;
+                        }
+                    }, org.objectweb.asm.ClassReader.SKIP_CODE);
+        } catch (Exception ignored) {
+            // Nothing to report is better than failing the reload over a message.
+        }
+        return statics;
+    }
+
     private ClassReloader.ReloadResult standardReload(String className, byte[] newBytecode) {
         try {
             Class<?> existingClass = findLoadedClass(className);
@@ -223,9 +273,43 @@ public class StructuralReloader {
             // so that getDeclaredMethods()/getDeclaredFields() return added members
             registerReflectionMetadata(targetClass, internalName, diff, newTargets, companionLookup, companionClass);
 
-            // Log warning about new fields having default values on existing instances
+            // Two different limits, and they used to be reported as one.
+            //
+            // An instance field added by a reload is initialised on objects
+            // built after it, because the new constructor now reaches the
+            // loaded class. Objects that already existed keep the type
+            // default: they were built before the field did.
+            //
+            // A static field has no constructor to carry it. Its initialiser
+            // is in <clinit>, which the JVM will not run a second time, and
+            // re-running the whole of it would reset every other static the
+            // application is holding. So it reads as the type default until a
+            // restart, and saying so is better than looking like a null bug.
             if (!diff.getAddedFields().isEmpty()) {
-                StatusReporter.info("New fields on existing instances will have default values (null/0/false)");
+                java.util.List<String> addedStatics = staticFieldNames(diff, newBytecode);
+                // An enum constant is a static field of the enum's own type, so
+                // without this it would be reported as a static field that reads
+                // as null, which is true and useless. It is worth its own
+                // sentence because the answer is different: not "wait for a
+                // restart to see the value" but "this cannot work at all".
+                //
+                // Even if the constant were conjured up, every switch table,
+                // EnumSet and EnumMap in the application is sized for the old
+                // count and indexed by ordinal, so the new value would surface
+                // as an ArrayIndexOutOfBoundsException somewhere unrelated. A
+                // reload that half-works here is worse than one that refuses.
+                if (isEnum(newBytecode) && !addedStatics.isEmpty()) {
+                    StatusReporter.warn("Enum " + className + " gained value(s) "
+                            + addedStatics + ". Enum constants cannot be added to a "
+                            + "running JVM: restart to pick them up. Everything else "
+                            + "in this class reloaded.");
+                } else if (!addedStatics.isEmpty()) {
+                    StatusReporter.warn("Added static field(s) " + addedStatics
+                            + " read as null/0 until restart: a static initialiser "
+                            + "cannot be re-run without resetting the class's other statics.");
+                }
+                StatusReporter.info("Added fields are set on new instances; "
+                        + "objects that already existed keep the default (null/0/false).");
             }
 
             // Update metadata in TransformContext
@@ -253,7 +337,18 @@ public class StructuralReloader {
             // members, same injected infrastructure), so we can legally
             // redefine the original class with the freshly transformed new
             // bytecode — this applies constructor bodies directly.
-            if (!diff.isStructural()) {
+            // Constructor bodies reach the loaded class either way. For a
+            // body-only diff the shape already matches. For a structural one
+            // the added members are stripped first, which is the only reason
+            // the JVM would have refused: without this, an object created
+            // after the reload still ran the constructor compiled before the
+            // new field existed, so the field it was supposed to initialise
+            // came back null.
+            {
+                byte[] redefinePayload = diff.isStructural()
+                        ? com.onurkat.reclazz.transform.AddedMemberStripper.strip(
+                                newBytecode, diff.getAddedFields(), diff.getAddedMethods())
+                        : newBytecode;
                 try {
                     // RAW bytes on purpose: the registered ReclazzTransformer
                     // runs during redefineClasses and injects the
@@ -261,7 +356,7 @@ public class StructuralReloader {
                     // pre-transformed bytes double-injects the fields →
                     // ClassFormatError (see ConstructorBodyRedefineTest).
                     instrumentation.redefineClasses(
-                            new java.lang.instrument.ClassDefinition(targetClass, newBytecode));
+                            new java.lang.instrument.ClassDefinition(targetClass, redefinePayload));
                 } catch (UnsupportedOperationException expected) {
                     // Once a class has gained members they live in a companion,
                     // not in the loaded class, so the bytecode handed back here

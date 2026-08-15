@@ -204,9 +204,35 @@ public class CompanionGenerator implements Opcodes {
                                 false);
                         return;
                     }
-                    case GETSTATIC, PUTSTATIC -> {
-                        // Static fields on the original class that are "added" is unusual.
-                        // Fall through to regular access — companion has NESTMATE access.
+                    case GETSTATIC -> {
+                        // Stack: -> value
+                        // A static field added after startup is not in the loaded
+                        // class's schema, so a plain GETSTATIC here throws
+                        // NoSuchFieldError. It used to fall through on the
+                        // assumption that adding a static field was unusual; it
+                        // is not, and the throw killed the thread after the
+                        // reload had already reported success.
+                        mv.visitLdcInsn(originalClass);
+                        mv.visitLdcInsn(name);
+                        mv.visitLdcInsn(descriptor);
+                        mv.visitMethodInsn(INVOKESTATIC, FIELD_STORE, "getStaticExtField",
+                                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;",
+                                false);
+                        unbox(mv, Type.getType(descriptor));
+                        return;
+                    }
+                    case PUTSTATIC -> {
+                        // Stack: value -> ()
+                        Type fieldType = Type.getType(descriptor);
+                        box(mv, fieldType);
+                        mv.visitLdcInsn(originalClass);
+                        mv.visitLdcInsn(name);
+                        mv.visitLdcInsn(descriptor);
+                        // Reorder to (className, fieldName, desc, boxedValue)
+                        mv.visitMethodInsn(INVOKESTATIC, FIELD_STORE, "putStaticExtFieldSwapped",
+                                "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+                                false);
+                        return;
                     }
                 }
             }

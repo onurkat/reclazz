@@ -100,6 +100,57 @@ public final class FieldStore {
         }
     }
 
+    /**
+     * Values for static fields added after startup, keyed by class and field.
+     *
+     * Instance fields added by a reload live in the {@code __reclazz$ext}
+     * array on each object. A static field has no object to hang off, and the
+     * companion used to fall through to a plain GETSTATIC against the original
+     * class on the grounds that adding a static field was unusual. It is not:
+     * a constant, a cache, a feature flag. The field is not in the loaded
+     * class's schema, so that access threw NoSuchFieldError and killed the
+     * thread, after the reload had already reported success.
+     */
+    private static final java.util.concurrent.ConcurrentHashMap<String, Object> staticValues =
+            new java.util.concurrent.ConcurrentHashMap<>();
+
+    private static String staticKey(String className, String fieldName, String desc) {
+        return className + "#" + fieldName + ":" + desc;
+    }
+
+    /**
+     * Read a static field added after startup.
+     *
+     * Returns the JVM default for the descriptor when nothing has been
+     * written yet, which is what a real static field of that type would hold
+     * before its initialiser ran. Never null for a primitive: the caller
+     * unboxes immediately.
+     */
+    public static Object getStaticExtField(String className, String fieldName, String desc) {
+        Object value = staticValues.get(staticKey(className, fieldName, desc));
+        return value != null ? value : defaultValue(desc);
+    }
+
+    /** Write a static field added after startup. */
+    public static void putStaticExtField(String className, String fieldName, String desc, Object value) {
+        String key = staticKey(className, fieldName, desc);
+        if (value == null) {
+            staticValues.remove(key);
+        } else {
+            staticValues.put(key, value);
+        }
+    }
+
+    /**
+     * Same as {@link #putStaticExtField} with the value first, which is the
+     * order the value already sits in on the operand stack at a PUTSTATIC.
+     * Emitting a swap for a possibly-wide value is fiddlier than an overload.
+     */
+    public static void putStaticExtFieldSwapped(Object value, String className,
+                                                 String fieldName, String desc) {
+        putStaticExtField(className, fieldName, desc, value);
+    }
+
     /** JVM default value for a field descriptor (boxed for primitives). */
     private static Object defaultValue(String desc) {
         if (desc == null || desc.isEmpty()) return null;

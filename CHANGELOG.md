@@ -4,6 +4,39 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+
+- Adding a static field no longer kills the thread. The companion fell
+  through to a plain `GETSTATIC` against a class whose schema does not have
+  the field, on the reasoning that adding a static field was unusual. It is
+  not, and the resulting `NoSuchFieldError` brought the application down
+  after the reload had already reported success. Added static fields now go
+  to the same store the companion already used for instance fields.
+
+- A field added by a reload is initialised on objects created afterwards.
+  Previously they came back with the default, because the loaded class kept
+  the constructor compiled before the field existed, and because a write to
+  an unresolvable field resolved to `MethodHandles.empty`: a call site that
+  accepted the value and dropped it. The redefine payload now has the added
+  members stripped, which is what makes the JVM accept it and lets the new
+  constructor through, and unresolvable field access falls back to the
+  companion store instead of a no-op.
+
+  Objects that already existed keep the default. They were built before the
+  field did, and no hot-reload tool can change that.
+
+### Changed
+
+- Two limits that used to be reported as one are now reported separately. An
+  added static field reads as null or zero until a restart, because its
+  initialiser lives in `<clinit>` and re-running that would reset every other
+  static the class holds; that is now said out loud rather than looking like
+  a null bug. Adding a value to an enum is still refused, for the same reason
+  plus the ordinal-indexed structures across the application that would be
+  sized for the old constant count.
+
 ## [1.0.12] - 2026-08-15
 
 ### Fixed
