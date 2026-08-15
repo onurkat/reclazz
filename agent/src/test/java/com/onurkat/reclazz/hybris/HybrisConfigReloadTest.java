@@ -94,6 +94,22 @@ class HybrisConfigReloadTest {
         assertEquals("3", StubConfig.getParameter("c"));
     }
 
+    /**
+     * A key is only reported as applied if the server actually holds the new
+     * value afterwards. The platform is free to ignore, coerce or override a
+     * write, and reporting a change that did not take is the one thing this
+     * feature must not do.
+     */
+    @Test
+    void aValueThePlatformRefusesIsNotReportedAsApplied() throws Exception {
+        StubConfig.seed("readonly.key", "Original");
+        StubConfig.refuse("readonly.key");
+
+        assertEquals(List.of(), reloader().apply(write("readonly.key=Attempted\n")),
+                "the write was made and did not stick, so it is not an applied change");
+        assertEquals("Original", StubConfig.getParameter("readonly.key"));
+    }
+
     // ── Where it must do nothing ──────────────────────────────────────────
 
     /**
@@ -127,6 +143,25 @@ class HybrisConfigReloadTest {
         assertEquals("1", StubConfig.getParameter("a"));
     }
 
+    /**
+     * An empty result means two different things and they earn different
+     * messages: nothing in the file differed, or this is not a platform at all
+     * and the edit reached nothing.
+     */
+    @Test
+    void reachabilityIsReportedSeparatelyFromHavingNothingToDo() throws Exception {
+        StubConfig.seed("a", "1");
+        HybrisConfigReloader on = reloader();
+        assertEquals(List.of(), on.apply(write("a=1\n")));
+        assertTrue(on.isPlatformReachable(),
+                "nothing changed, but the platform is there and was consulted");
+
+        HybrisConfigReloader off = new HybrisConfigReloader(
+                new java.net.URLClassLoader(new java.net.URL[0], null));
+        assertFalse(off.isPlatformReachable(),
+                "no platform: the edit really did reach nothing");
+    }
+
     // ── the stand-in ──────────────────────────────────────────────────────
 
     /** Same signatures as the platform's Config, and counts its writes. */
@@ -136,14 +171,21 @@ class HybrisConfigReloadTest {
                 new java.util.concurrent.ConcurrentHashMap<>();
         private static final java.util.concurrent.atomic.AtomicInteger writes =
                 new java.util.concurrent.atomic.AtomicInteger();
+        private static final java.util.Set<String> refused =
+                java.util.concurrent.ConcurrentHashMap.newKeySet();
 
         public static String getParameter(String key) {
             return values.get(key);
         }
 
         public static void setParameter(String key, String value) {
-            values.put(key, value);
             writes.incrementAndGet();
+            if (refused.contains(key)) return;
+            values.put(key, value);
+        }
+
+        static void refuse(String key) {
+            refused.add(key);
         }
 
         static void seed(String key, String value) {
@@ -156,6 +198,7 @@ class HybrisConfigReloadTest {
 
         static void reset() {
             values.clear();
+            refused.clear();
             writes.set(0);
         }
     }

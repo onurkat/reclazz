@@ -66,12 +66,20 @@ public class HybrisConfigReloader {
      */
     public List<String> apply(Path propertiesFile) {
         List<String> applied = new ArrayList<>();
+        List<String> rejected = new ArrayList<>();
 
         Class<?> config = findConfig();
         if (config == null) return applied;
 
         Properties fromFile = read(propertiesFile);
         if (fromFile.isEmpty()) return applied;
+
+        // Config reads the tenant from a ThreadLocal that the watcher thread
+        // does not have. Without this the call fails with a bare
+        // NullPointerException from inside the platform.
+        if (configClassForTests == null && !PlatformTenant.ensureActive(platformClassLoader)) {
+            return applied;
+        }
 
         try {
             Method get = config.getMethod("getParameter", String.class);
@@ -83,14 +91,48 @@ public class HybrisConfigReloader {
                 if (desired == null || desired.equals(current)) continue;
 
                 set.invoke(null, key, desired);
-                applied.add(key);
+
+                // Read it back. The platform is free to ignore, coerce or
+                // override a value, and a key reported as applied that the
+                // server did not take is exactly the kind of claim this
+                // feature must not make.
+                String after = (String) get.invoke(null, key);
+                if (desired.equals(after)) {
+                    applied.add(key);
+                } else {
+                    rejected.add(key);
+                }
             }
         } catch (Throwable t) {
-            StatusReporter.warn("Could not apply property changes: " + t.getMessage());
+            // Reflection wraps whatever the platform threw, and the wrapper
+            // carries no message of its own. Report the cause, and its type:
+            // a NullPointerException with nothing to say is the usual shape
+            // here and the type is the only clue.
+            Throwable cause = (t.getCause() != null) ? t.getCause() : t;
+            String detail = (cause.getMessage() != null)
+                    ? cause.getClass().getSimpleName() + ": " + cause.getMessage()
+                    : cause.getClass().getName();
+            StatusReporter.warn("Could not apply property changes: " + detail);
             return List.of();
         }
 
+        if (!rejected.isEmpty()) {
+            StatusReporter.warn("The platform did not take " + rejected.size()
+                    + " property change(s): " + rejected
+                    + ". They need a restart.");
+        }
+
         return applied;
+    }
+
+    /**
+     * Whether the platform configuration can be reached at all. It separates
+     * "nothing in the file differed from what the server already holds" from
+     * "this is not a platform and the edit reached nothing", which read the
+     * same from an empty result and do not deserve the same message.
+     */
+    public boolean isPlatformReachable() {
+        return findConfig() != null;
     }
 
     private Class<?> findConfig() {

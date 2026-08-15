@@ -701,8 +701,24 @@ public class ReclazzAgent {
         // The keys that actually differ are applied the same way the HAC
         // console applies them.
         if (platformContext instanceof HybrisPlatformContext) {
-            java.util.List<String> applied = new com.onurkat.reclazz.hybris.HybrisConfigReloader(
-                    platformContext.getClass().getClassLoader()).apply(event.getPath());
+            // The platform's classloader, not the agent's: the agent is on the
+            // system classpath and cannot see de.hybris.platform.util.Config
+            // from there. The application context is loaded by the platform,
+            // so its loader is the one that can.
+            Object appContext = platformContext.getApplicationContext();
+            ClassLoader platformLoader = appContext != null
+                    ? appContext.getClass().getClassLoader()
+                    : platformContext.getClass().getClassLoader();
+            com.onurkat.reclazz.hybris.HybrisConfigReloader configReloader =
+                    new com.onurkat.reclazz.hybris.HybrisConfigReloader(platformLoader);
+            java.util.List<String> applied = configReloader.apply(event.getPath());
+            if (applied.isEmpty() && configReloader.isPlatformReachable()) {
+                // The file was compared against the running configuration and
+                // held nothing new: a comment, a reformat, or a save with no
+                // edit. Warning about a restart here would be noise.
+                StatusReporter.info("No property values changed.");
+                return;
+            }
             if (!applied.isEmpty()) {
                 StatusReporter.info("Applied " + applied.size() + " property change(s): "
                         + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));

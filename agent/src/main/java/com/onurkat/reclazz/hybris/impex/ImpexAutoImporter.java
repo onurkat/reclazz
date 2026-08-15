@@ -128,11 +128,7 @@ public class ImpexAutoImporter {
             // The watcher thread has no tenant — activate the master tenant
             // (Registry loaded via the context's classloader).
             ClassLoader hybrisCl = appContext.getClass().getClassLoader();
-            Class<?> registryClass = Class.forName("de.hybris.platform.core.Registry", false, hybrisCl);
-            Method hasCurrentTenant = registryClass.getMethod("hasCurrentTenant");
-            if (!(Boolean) hasCurrentTenant.invoke(null)) {
-                registryClass.getMethod("activateMasterTenant").invoke(null);
-            }
+            com.onurkat.reclazz.hybris.PlatformTenant.ensureActive(hybrisCl);
 
             // Create ImpExResource from the file content
             Class<?> streamBasedClass = Class.forName(

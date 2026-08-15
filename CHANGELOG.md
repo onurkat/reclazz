@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.14] - 2026-08-15
+
 ### Added
 
 - Editing a SAP Commerce property file applies the changed keys to the running
