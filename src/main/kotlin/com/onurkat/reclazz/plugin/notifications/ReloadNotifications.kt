@@ -7,8 +7,12 @@ package com.onurkat.reclazz.plugin.notifications
 import com.intellij.notification.NotificationAction
 import com.intellij.notification.NotificationGroupManager
 import com.intellij.notification.NotificationType
+import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.application.ApplicationActivationListener
+import com.intellij.openapi.wm.IdeFrame
 import com.intellij.openapi.project.Project
 import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
+import com.onurkat.reclazz.plugin.reload.ReloadManager
 import com.onurkat.reclazz.plugin.hybris.JdkInfo
 import com.onurkat.reclazz.plugin.hybris.JdkVendor
 import com.onurkat.reclazz.plugin.ReclazzActivation
@@ -19,6 +23,17 @@ object ReloadNotifications {
 
     private const val GROUP_ID = "Reclazz"
     private const val WELCOME_GROUP_ID = "Reclazz Welcome"
+
+    /**
+     * Say it in the Reclazz tool window rather than in a balloon.
+     *
+     * Reserved for context: true when the project opens, useful when you go
+     * looking, not worth interrupting for. A balloon for this is a thing the
+     * user has to deal with; a log line is a thing they can find.
+     */
+    private fun toolWindow(project: Project, content: String) {
+        ReloadManager.getInstance(project).postLocalMessage("INFO", content)
+    }
 
     fun info(project: Project, title: String, content: String) {
         notify(project, title, content, NotificationType.INFORMATION)
@@ -60,12 +75,11 @@ object ReloadNotifications {
                 warn(project, "Reclazz", "$message. GraalVM has known limitations with class redefinition.")
             }
             jdkInfo.capabilityLevel == JdkInfo.CapabilityLevel.COMPANION_MODE -> {
-                info(project, "Reclazz",
-                    "$message. New members reachable from hot-compiled code; " +
+                toolWindow(project, "$message. New members reachable from hot-compiled code; " +
                     "reflective caches (e.g. Hybris ModelService) need a restart to see them.")
             }
             else -> {
-                info(project, "Reclazz", message)
+                toolWindow(project, message)
             }
         }
     }
@@ -234,9 +248,44 @@ object ReloadNotifications {
     }
 
     private fun notify(project: Project, title: String, content: String, type: NotificationType) {
-        NotificationGroupManager.getInstance()
-            .getNotificationGroup(GROUP_ID)
-            .createNotification(title, content, type)
-            .notify(project)
+        whenApplicationIsActive(project) {
+            NotificationGroupManager.getInstance()
+                .getNotificationGroup(GROUP_ID)
+                .createNotification(title, content, type)
+                .notify(project)
+        }
+    }
+
+    /**
+     * Post only while the IDE is the active application.
+     *
+     * The platform starts a balloon's fade-out timer from
+     * `frameActivateBalloonListener`: immediately when the application is
+     * already active, otherwise on the next activation event. A balloon shown
+     * during startup can land in the gap between those two, when the frame is
+     * coming up but `isActive()` is still false and no further activation
+     * event follows. Its timer never starts, so it never fades, and because
+     * the balloon is still live its entry cannot be removed from the event
+     * log either. Users reported exactly that: a notification they could not
+     * delete, gone after a restart, which is what an intermittent race looks
+     * like from the outside.
+     *
+     * Waiting for the application to be active puts the platform on the
+     * branch that starts the timer straight away, every time.
+     */
+    private fun whenApplicationIsActive(project: Project, post: () -> Unit) {
+        val app = ApplicationManager.getApplication()
+        if (app.isActive) {
+            post()
+            return
+        }
+
+        val connection = app.messageBus.connect(project)
+        connection.subscribe(ApplicationActivationListener.TOPIC, object : ApplicationActivationListener {
+            override fun applicationActivated(ideFrame: IdeFrame) {
+                connection.disconnect()
+                if (!project.isDisposed) post()
+            }
+        })
     }
 }

@@ -157,6 +157,19 @@ class ReloadManager(private val project: Project) : Disposable {
         notifyListeners(event)
     }
 
+    /**
+     * Write a line into the Reclazz tool window without an agent behind it.
+     *
+     * Some of what Reclazz has to say is context rather than an event: which
+     * JDK you are on and what that means for structural reload does not need
+     * to interrupt anything, and it belongs where you are already looking
+     * when you care. It used to arrive as a balloon, which had to be
+     * dismissed and, for a while, could not be.
+     */
+    fun postLocalMessage(level: String, message: String) {
+        notifyListeners(AgentEvent(level, message, ""))
+    }
+
     private fun notifyListeners(event: AgentEvent) {
         for (listener in eventListeners) {
             try {

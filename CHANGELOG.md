@@ -4,6 +4,26 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Fixed
+
+- Notifications can be dismissed again. A user reported one that would not
+  delete and went away only after restarting the IDE. The platform starts a
+  balloon's fade-out timer either immediately, when the IDE is the active
+  application, or on the next activation event; a balloon posted while a
+  project is still opening can fall between the two, never start its timer,
+  and then never fade. While the balloon is still live its entry cannot be
+  removed from the event log either, which is what made it look undeletable.
+  Reclazz now waits for the IDE to be active before posting, which puts the
+  platform on the branch that starts the timer straight away.
+
+- The JDK capability message is written to the Reclazz tool window instead of
+  arriving as a balloon. It says which JDK you are on and what that means for
+  structural reload, which is context worth having where you are already
+  looking rather than something to dismiss. A JDK that cannot hot-reload at
+  all still warns.
+
 ## [1.0.11] - 2026-08-14
 
 ### Fixed
