@@ -8,7 +8,8 @@
         <p>
             Edit your Java code, build, and the running JVM picks up the change in about
             50ms. No server restart, and the application state you spent five minutes
-            setting up survives.
+            setting up survives. Write a new Spring MVC endpoint and it answers on the
+            next request, which is the moment a reload is worth the most.
         </p>
         <p>
             <b>Built for SAP Commerce (Hybris), where the restart hurts most.</b>
@@ -40,7 +41,7 @@
         <h3>Spring</h3>
         <ul>
             <li><b>Bean refresh</b>: singletons are destroyed and recreated, and references still holding the old instance are re-pointed at the new one</li>
-            <li><b>MVC re-scan</b>: mappings are re-registered when a controller changes</li>
+            <li><b>MVC re-scan</b>: mappings are re-registered when a controller changes, and an endpoint you add is served on the next request instead of after a restart</li>
             <li><b>Cache eviction</b>: caches for @Cacheable and @CacheEvict classes are evicted</li>
             <li><b>Scheduler and events</b>: @Scheduled tasks and @EventListener methods are re-registered</li>
             <li><b>AOP, @Async and Spring Data</b>: proxy caches cleared, beans re-processed, repositories refreshed</li>
