@@ -95,6 +95,45 @@ installation, run it.
 - Include your IntelliJ version, JDK version, and platform (Spring Boot / SAP Commerce)
 - Include relevant logs from the Reclazz tool window
 
+## Sign your work
+
+Every commit in a pull request must carry a `Signed-off-by` line:
+
+```
+git commit -s -m "your message"
+```
+
+which appends:
+
+```
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+That line is the [Developer Certificate of Origin](https://developercertificate.org/)
+1.1, the same one the Linux kernel and Docker use. In plain terms you are
+stating that the code is yours to give: you wrote it, or you took it from
+somewhere whose licence allows this, and you are fine with it being published
+under Apache 2.0 and kept in the project's history forever. It is a statement
+about the code you are contributing, not a transfer of your copyright, which
+stays yours.
+
+Use your real name and an address you can be reached at. A pull request whose
+commits are not signed off cannot be merged; `git rebase --signoff` fixes an
+existing branch.
+
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [Apache License 2.0](LICENSE).
+By contributing, you agree that your contributions will be licensed under the
+[Apache License 2.0](LICENSE). Every source file carries the licence header, and
+new files should be added with it:
+
+```java
+/*
+ * Copyright 2026 Onur Kat
+ * SPDX-License-Identifier: Apache-2.0
+ */
+```
+
+The copyright line names the project's copyright holder. Your own contributions
+remain yours; the sign-off above is what records that you gave them under this
+licence.

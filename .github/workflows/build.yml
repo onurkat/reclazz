@@ -12,6 +12,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # A sign-off that is only asked for in a document is a sign-off that stops
+  # happening. This is what keeps the project's copyright provenance intact,
+  # which is what makes relicensing or dual licensing possible later.
+  dco:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Every commit carries a Signed-off-by
+        run: |
+          missing=0
+          for commit in $(git rev-list ${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}); do
+            if ! git log -1 --format=%B "$commit" | grep -qiE '^Signed-off-by: .+ <.+@.+>'; then
+              echo "::error::$commit has no Signed-off-by line: $(git log -1 --format=%s "$commit")"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "Sign your commits with 'git commit -s', or fix an existing branch with 'git rebase --signoff'."
+            echo "See CONTRIBUTING.md#sign-your-work."
+            exit 1
+          fi
+          echo "All commits are signed off."
+
   build:
     # Windows is in here because the code is full of path handling and none of
     # it had ever been exercised on a platform with a different separator. The
