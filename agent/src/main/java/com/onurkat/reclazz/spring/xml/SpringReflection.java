@@ -57,11 +57,33 @@ final class SpringReflection {
 
     /** Parse {@code xmlFile} into {@code tempFactory}. Returns false on parse error. */
     static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader) {
+        // Spring finds the handler for a namespace like context: or util: by
+        // reading META-INF/spring.handlers from the classpath, through the
+        // reader's classloader and, failing that, the thread's. Both default to
+        // the agent's, which contains no Spring at all, so every file using a
+        // namespace failed to parse: on a real project that is nearly all of
+        // them. The loader that holds the live Spring is the one that can see
+        // its handlers.
+        Thread current = Thread.currentThread();
+        ClassLoader previousContext = current.getContextClassLoader();
         try {
+            current.setContextClassLoader(springLoader);
             Class<?> readerCls = loadClass(CLS_XML_READER, springLoader);
             Class<?> registryCls = loadClass(CLS_REGISTRY, springLoader);
             Constructor<?> readerCtor = readerCls.getConstructor(registryCls);
             Object reader = readerCtor.newInstance(tempFactory);
+
+            readerCls.getMethod("setBeanClassLoader", ClassLoader.class)
+                    .invoke(reader, springLoader);
+            Class<?> patternResolverCls = loadClass(
+                    "org.springframework.core.io.support.PathMatchingResourcePatternResolver",
+                    springLoader);
+            Object resourceLoader = patternResolverCls
+                    .getConstructor(ClassLoader.class).newInstance(springLoader);
+            Class<?> resourceLoaderIface = loadClass(
+                    "org.springframework.core.io.ResourceLoader", springLoader);
+            readerCls.getMethod("setResourceLoader", resourceLoaderIface)
+                    .invoke(reader, resourceLoader);
 
             // Disable XML validation — many Hybris / Spring extension XMLs
             // reference schemas that are shipped inside other jars and aren't
@@ -79,6 +101,8 @@ final class SpringReflection {
         } catch (Throwable t) {
             StatusReporter.warn("Failed to parse " + xmlFile.getName() + ": " + rootCause(t));
             return false;
+        } finally {
+            current.setContextClassLoader(previousContext);
         }
     }
 

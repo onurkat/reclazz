@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Spring XML reload works on files that use a namespace. Spring finds the
+  handler for `context:`, `util:` and the rest by reading `META-INF/spring
+  .handlers` from the classpath, and the parser was reading it through the
+  agent's own classloader, which contains no Spring at all. Every file
+  declaring a namespace failed to parse, which on a real project is nearly all
+  of them. Measured on a live server: the same file went from
+  `Unable to locate Spring NamespaceHandler` to 415 changes applied, and a bean
+  added to it was resolvable in the running context.
+
 ## [1.0.16] - 2026-08-16
 
 ### Added
