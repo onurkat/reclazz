@@ -97,9 +97,22 @@ public class SpringReloadOrchestrator {
             // mapping itself did, and that edit is not structural. Gating on
             // structural alone left a changed @RequestMapping live in the
             // class and stale in the registry.
-            if ((isStructural || annotationsChanged) && isController(reloadedClass)) {
+            // Any reload of a controller, not just a structural one. On a JVM
+            // with native enhanced redefinition the agent does not compute a
+            // diff, because the JVM applies the change itself, so a method
+            // added to a controller arrived with nothing marked structural and
+            // the mapping was never re-scanned: the new endpoint answered 404
+            // on a runtime that could have served it. Re-scanning a single
+            // controller is cheap and produces the same registry twice over.
+            if (isController(reloadedClass)) {
                 boolean mvcReloaded = mvcReloader.reloadMappings(reloadedClass);
-                if (mvcReloaded) {
+
+                // The scan runs on every controller reload and says so only
+                // when the mapping could have moved. A body-only change
+                // re-registers the same mappings, which is worth doing and not
+                // worth a line in the log.
+                boolean worthSaying = isStructural || annotationsChanged;
+                if (mvcReloaded && worthSaying) {
                     StatusReporter.success("Spring MVC mappings re-scanned for " + className);
 
                     // A re-scan reads the class through reflection, and a

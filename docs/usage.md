@@ -390,7 +390,13 @@ When structural reload adds new instance fields to an existing class, **existing
 
 This is a fundamental consequence of how the JVM manages object memory — existing instances cannot be resized to accommodate new fields. Reclazz stores new fields in an external array (`__reclazz$ext`), which starts empty for pre-existing instances.
 
-**Workaround:** If a new field needs a specific initial value, add a null-check or lazy initialization pattern in your code:
+Objects created after the reload do get the initializer, because they run the
+new constructor. A Spring bean is recreated by the reload, so in practice a new
+field on a bean holds the value you wrote; it is long-lived objects the reload
+did not recreate that keep the default.
+
+**Workaround:** If a new field needs a specific initial value on objects that
+already exist, add a null-check or lazy initialization pattern in your code:
 
 ```java
 private String newField; // Added via structural reload
