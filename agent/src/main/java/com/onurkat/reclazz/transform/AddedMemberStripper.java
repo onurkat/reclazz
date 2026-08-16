@@ -40,6 +40,74 @@ public final class AddedMemberStripper {
      * @param addedFields  keys as {@code name:descriptor}
      * @param addedMethods keys as {@code name:descriptor}
      */
+    /**
+     * Reshapes the new bytecode into something the JVM will accept redefining.
+     *
+     * A redefinition has to hand back the same members the loaded class has:
+     * nothing added and nothing missing. Stripping what the reload added was
+     * only half of it. When a reload also removed a method, the payload was
+     * short one member, the JVM refused the whole redefinition, and the
+     * constructor bodies this class exists to deliver went with it. Measured on
+     * a Spring Boot application: a field added by the same reload and assigned
+     * in the constructor came back null on every newly created bean.
+     *
+     * Removed members come back as stubs with their original modifiers. Their
+     * bodies are never reached: the class's methods are trampolines and the
+     * call sites of a removed method keep dispatching to the implementation
+     * they were linked to, which is the behaviour already documented for
+     * callers of a method that went away.
+     */
+    public static byte[] reshape(byte[] newBytecode,
+                                 java.util.Set<String> addedFields,
+                                 java.util.Set<String> addedMethods,
+                                 java.util.List<com.onurkat.reclazz.transform.TransformContext.MethodSig> removedMethods,
+                                 java.util.List<com.onurkat.reclazz.transform.TransformContext.FieldSig> removedFields) {
+        byte[] stripped = strip(newBytecode, addedFields, addedMethods);
+        if (removedMethods.isEmpty() && removedFields.isEmpty()) return stripped;
+
+        org.objectweb.asm.ClassReader reader = new org.objectweb.asm.ClassReader(stripped);
+        org.objectweb.asm.ClassWriter writer =
+                new org.objectweb.asm.ClassWriter(reader, 0);
+        reader.accept(new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9, writer) {
+            @Override
+            public void visitEnd() {
+                for (var f : removedFields) {
+                    org.objectweb.asm.FieldVisitor fv =
+                            writer.visitField(f.access(), f.name(), f.descriptor(), null, null);
+                    if (fv != null) fv.visitEnd();
+                }
+                for (var m : removedMethods) {
+                    if ("<init>".equals(m.name()) || "<clinit>".equals(m.name())) continue;
+                    writeStub(writer, m);
+                }
+                super.visitEnd();
+            }
+        }, 0);
+        return writer.toByteArray();
+    }
+
+    /** A body that says what happened, for the case it is ever reached. */
+    private static void writeStub(org.objectweb.asm.ClassWriter writer,
+                                  com.onurkat.reclazz.transform.TransformContext.MethodSig m) {
+        org.objectweb.asm.MethodVisitor mv =
+                writer.visitMethod(m.access(), m.name(), m.descriptor(), null, null);
+        if (mv == null) return;
+        if ((m.access() & (org.objectweb.asm.Opcodes.ACC_ABSTRACT
+                | org.objectweb.asm.Opcodes.ACC_NATIVE)) != 0) {
+            mv.visitEnd();
+            return;
+        }
+        mv.visitCode();
+        mv.visitTypeInsn(org.objectweb.asm.Opcodes.NEW, "java/lang/UnsupportedOperationException");
+        mv.visitInsn(org.objectweb.asm.Opcodes.DUP);
+        mv.visitLdcInsn("Reclazz: " + m.name() + " was removed by a reload");
+        mv.visitMethodInsn(org.objectweb.asm.Opcodes.INVOKESPECIAL,
+                "java/lang/UnsupportedOperationException", "<init>", "(Ljava/lang/String;)V", false);
+        mv.visitInsn(org.objectweb.asm.Opcodes.ATHROW);
+        mv.visitMaxs(3, 1 + org.objectweb.asm.Type.getArgumentTypes(m.descriptor()).length);
+        mv.visitEnd();
+    }
+
     public static byte[] strip(byte[] newBytecode, Set<String> addedFields, Set<String> addedMethods) {
         if ((addedFields == null || addedFields.isEmpty())
                 && (addedMethods == null || addedMethods.isEmpty())) {

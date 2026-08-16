@@ -58,6 +58,13 @@ public class StructuralAnalyzer {
         Set<String> removedMethods = new LinkedHashSet<>(oldMethods);
         removedMethods.removeAll(newMethods);
 
+        // Kept with their modifiers, because a redefinition has to hand the JVM
+        // the same members it already has, down to the access flags.
+        java.util.List<TransformContext.MethodSig> removedMethodSigs = new java.util.ArrayList<>();
+        for (var m : original.getMethods()) {
+            if (removedMethods.contains(m.name() + ":" + m.descriptor())) removedMethodSigs.add(m);
+        }
+
         Set<String> commonMethods = new LinkedHashSet<>(oldMethods);
         commonMethods.retainAll(newMethods);
 
@@ -66,6 +73,11 @@ public class StructuralAnalyzer {
 
         Set<String> removedFields = new LinkedHashSet<>(oldFields);
         removedFields.removeAll(newFields);
+
+        java.util.List<TransformContext.FieldSig> removedFieldSigs = new java.util.ArrayList<>();
+        for (var f : original.getFields()) {
+            if (removedFields.contains(f.name() + ":" + f.descriptor())) removedFieldSigs.add(f);
+        }
 
         // Check for superclass/interface changes
         boolean superChanged = !Objects.equals(original.getSuperName(), collector.superName);
@@ -87,7 +99,8 @@ public class StructuralAnalyzer {
                 superChanged, interfacesChanged,
                 collector.methods, collector.fields,
                 collector.superName,
-                annotationsChanged, newAnnotations
+                annotationsChanged, newAnnotations,
+                removedMethodSigs, removedFieldSigs
         );
     }
 
@@ -137,6 +150,8 @@ public class StructuralAnalyzer {
         private final String newSuperName;
         private final boolean annotationsChanged;
         private final Set<String> newAnnotations;
+        private final List<TransformContext.MethodSig> removedMethodSigs;
+        private final List<TransformContext.FieldSig> removedFieldSigs;
 
         StructuralDiff(Set<String> addedMethods, Set<String> removedMethods,
                        Set<String> commonMethods, Set<String> addedFields,
@@ -146,7 +161,11 @@ public class StructuralAnalyzer {
                        List<TransformContext.FieldSig> newFields,
                        String newSuperName,
                        boolean annotationsChanged,
-                       Set<String> newAnnotations) {
+                       Set<String> newAnnotations,
+                       List<TransformContext.MethodSig> removedMethodSigs,
+                       List<TransformContext.FieldSig> removedFieldSigs) {
+            this.removedMethodSigs = removedMethodSigs;
+            this.removedFieldSigs = removedFieldSigs;
             this.annotationsChanged = annotationsChanged;
             this.newAnnotations = newAnnotations;
             this.addedMethods = addedMethods;
@@ -191,6 +210,11 @@ public class StructuralAnalyzer {
         public Set<String> getRemovedMethods() { return removedMethods; }
         public Set<String> getCommonMethods() { return commonMethods; }
         public Set<String> getAddedFields() { return addedFields; }
+        /** Removed members with their modifiers, for rebuilding the class shape. */
+        public List<TransformContext.MethodSig> getRemovedMethodSigs() { return removedMethodSigs; }
+
+        public List<TransformContext.FieldSig> getRemovedFieldSigs() { return removedFieldSigs; }
+
         public Set<String> getRemovedFields() { return removedFields; }
         public boolean isSuperClassChanged() { return superClassChanged; }
         public List<TransformContext.MethodSig> getNewMethods() { return newMethods; }
