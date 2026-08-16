@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- A Spring Boot application starts again on a JVM with native enhanced
+  redefinition. The agent's bootstrap classes were installed only when its own
+  companion engine was on, and that engine is switched off on such a JVM
+  because the JVM does the work itself, so a rewritten template engine
+  constructor called a class that was not there. An application using Thymeleaf
+  failed to start at all, on the runtime this project recommends for structural
+  work.
+- A handler method added to a controller is mapped without a restart on a JVM
+  with enhanced redefinition. The method really is on the class there, but
+  nothing re-scanned the mappings, because the agent marks nothing structural
+  in a mode where the JVM applies the change. Measured on JBR 25: the new
+  endpoint went from 404 to serving.
+
 ## [1.0.18] - 2026-08-16
 
 ### Fixed

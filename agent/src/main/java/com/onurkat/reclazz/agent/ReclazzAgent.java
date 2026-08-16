@@ -155,13 +155,22 @@ public class ReclazzAgent {
                 StatusReporter.info("JBR/DCEVM detected: using native enhanced redefinition (Reclazz transform engine disabled)");
             }
 
-            // Initialize bootstrap classloader and transformer if structural reload is enabled
-            if (enableStructural) {
-                try {
-                    installBootstrapJar();
-                    StatusReporter.info("Bootstrap classes installed on bootstrap classloader");
-                } catch (Exception e) {
-                    StatusReporter.error("Failed to install bootstrap JAR: " + e.getMessage());
+            // The bootstrap classes go in whatever the mode, because the
+            // companion engine is not the only thing that needs them: a
+            // rewritten template engine constructor calls the registry, and on
+            // a JVM with native enhanced redefinition, where the companion
+            // engine is switched off, that class was simply absent. A Spring
+            // Boot application using Thymeleaf then failed to start at all,
+            // on the very runtime this project recommends for structural work.
+            boolean bootstrapInstalled;
+            try {
+                installBootstrapJar();
+                bootstrapInstalled = true;
+                StatusReporter.info("Bootstrap classes installed on bootstrap classloader");
+            } catch (Exception e) {
+                bootstrapInstalled = false;
+                StatusReporter.error("Failed to install bootstrap JAR: " + e.getMessage());
+                if (enableStructural) {
                     StatusReporter.warn("Structural reload disabled — falling back to method-body-only mode");
                     enableStructural = false;
                 }
@@ -188,8 +197,13 @@ public class ReclazzAgent {
                 SpringContextInterceptTransformer contextTransformer = new SpringContextInterceptTransformer();
                 instrumentation.addTransformer(contextTransformer, false);
                 StatusReporter.info("Spring context intercept transformer registered");
-                instrumentation.addTransformer(
-                        new com.onurkat.reclazz.transform.TemplateInterceptTransformer(), false);
+                // The rewritten constructor calls the registry, so without the
+                // bootstrap classes this would break the engine it is meant to
+                // reload.
+                if (bootstrapInstalled) {
+                    instrumentation.addTransformer(
+                            new com.onurkat.reclazz.transform.TemplateInterceptTransformer(), false);
+                }
             } catch (Exception e) {
                 StatusReporter.warn("Failed to register Spring context transformer: " + e.getMessage());
             }
