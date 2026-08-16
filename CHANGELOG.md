@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- A diagnosis for the question the log cannot answer: **Tools > Why Didn't My
+  Class Reload?**, also on the editor's right-click menu. Nearly every time it
+  is asked, no reload was ever attempted, and none of the reasons produce an
+  error: the build did not reach the class, it is built somewhere Reclazz does
+  not watch, the rebuilt bytes came out identical, the JVM has not loaded the
+  class yet, or it was loaded before the agent arrived. The agent reports which
+  of those it is, with the file it found, when that file was last built, and
+  the outcome of the last attempt, into the reload log.
 - Log levels take effect without a restart. On SAP Commerce they live in the
   property files rather than in a `log4j2.xml`, as a
   `log4j2.logger.<key>.name` and `.level` pair, and saving one now sets the

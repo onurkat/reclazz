@@ -410,6 +410,15 @@ test suite actually checks.
 
 ## Troubleshooting
 
+### "Why didn't my class reload?"
+
+Ask the agent: **Tools > Why Didn't My Class Reload?**, or right-click in the
+editor. It reports what it found for that class, into the reload log: whether a
+compiled file exists under a watched directory and when it was last built,
+whether the JVM has loaded it, whether the agent prepared it, and what the last
+reload attempt did. Most of the time the answer is that no reload was ever
+attempted, and none of those reasons produce an error message on their own.
+
 ### "No class output directories detected"
 Reclazz couldn't find `target/classes` (Maven) or `build/classes/java/main` (Gradle) on the classpath. Use `watchDirs=` to specify the directory explicitly.
 

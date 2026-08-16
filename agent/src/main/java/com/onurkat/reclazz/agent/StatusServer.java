@@ -27,6 +27,11 @@ import java.util.concurrent.TimeUnit;
  * Binds to loopback only (127.0.0.1) for security.
  *
  * Protocol: one JSON object per line, terminated by newline.
+ *
+ * Clients may send one line back: {@code DIAGNOSE <class name>}. It reads state
+ * the agent already broadcasts and returns text, so it adds no reach into the
+ * process, and the socket is loopback-only as before. Anything else is ignored
+ * rather than answered, so a stray connection cannot make the agent talk.
  */
 public class StatusServer implements StatusReporter.StatusListener {
 
@@ -41,6 +46,9 @@ public class StatusServer implements StatusReporter.StatusListener {
     private final List<ClientConnection> clients = new CopyOnWriteArrayList<>();
     private volatile boolean running = false;
     private ScheduledExecutorService heartbeatExecutor;
+
+    /** Answers DIAGNOSE, when the agent has one to give. */
+    private volatile java.util.function.Function<String, List<String>> diagnoser;
 
     public StatusServer(int port, Path portFile) {
         this.requestedPort = port;
@@ -83,6 +91,33 @@ public class StatusServer implements StatusReporter.StatusListener {
 
         StatusReporter.addListener(this);
         StatusReporter.info("Status server listening on 127.0.0.1:" + actualPort);
+    }
+
+    public void setDiagnoser(java.util.function.Function<String, List<String>> diagnoser) {
+        this.diagnoser = diagnoser;
+    }
+
+    /**
+     * Runs a client's command and sends the answer to every client, so the
+     * report lands in the reload log the developer is already looking at.
+     */
+    void handleCommand(String line) {
+        if (line == null) return;
+        String trimmed = line.strip();
+        if (trimmed.length() > MAX_COMMAND_LENGTH) return;
+        if (!trimmed.regionMatches(true, 0, DIAGNOSE, 0, DIAGNOSE.length())) return;
+
+        java.util.function.Function<String, List<String>> answering = diagnoser;
+        if (answering == null) return;
+
+        String argument = trimmed.substring(DIAGNOSE.length()).strip();
+        try {
+            for (String reportLine : answering.apply(argument)) {
+                StatusReporter.info(reportLine);
+            }
+        } catch (Exception e) {
+            StatusReporter.warn("Diagnosis failed: " + e.getMessage());
+        }
     }
 
     /** Number of currently connected status clients (diagnostics/tests). */
@@ -192,6 +227,8 @@ public class StatusServer implements StatusReporter.StatusListener {
     }
 
     private static final int MAX_MESSAGE_LENGTH = 4096;
+    private static final int MAX_COMMAND_LENGTH = 512;
+    private static final String DIAGNOSE = "DIAGNOSE";
 
     private static String escapeJson(String value) {
         if (value == null) return "";
@@ -228,7 +265,7 @@ public class StatusServer implements StatusReporter.StatusListener {
      * stopped reading (suspended IDE, hung debugger) filled the TCP window
      * and blocked the entire hot-reload pipeline indefinitely.
      */
-    private static class ClientConnection {
+    private class ClientConnection {
         /**
          * Bounded on purpose: status events are advisory. A client that
          * cannot keep up drops events rather than growing the heap.
@@ -250,6 +287,26 @@ public class StatusServer implements StatusReporter.StatusListener {
             this.writerThread = new Thread(this::drainLoop, "Reclazz-StatusWriter");
             this.writerThread.setDaemon(true);
             this.writerThread.start();
+
+            Thread readerThread = new Thread(this::readLoop, "Reclazz-StatusReader");
+            readerThread.setDaemon(true);
+            readerThread.start();
+        }
+
+        /**
+         * Clients speak only to ask a question. The loop ends when they close,
+         * which is also how the connection is noticed as gone.
+         */
+        private void readLoop() {
+            try (java.io.BufferedReader reader = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(socket.getInputStream()))) {
+                String line;
+                while (alive && (line = reader.readLine()) != null) {
+                    handleCommand(line);
+                }
+            } catch (Exception closed) {
+                // A client that went away is not an error worth reporting.
+            }
         }
 
         private void drainLoop() {

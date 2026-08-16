@@ -73,6 +73,24 @@ class AgentStatusClient(
             return running && s != null && s.isConnected && !s.isClosed
         }
 
+    /**
+     * Ask the agent something. The answer comes back as ordinary log events,
+     * because that is where the developer is already looking when they ask.
+     *
+     * @return false when there is no live connection to ask through
+     */
+    fun send(command: String): Boolean {
+        val s = socket ?: return false
+        return try {
+            val out = s.getOutputStream()
+            out.write((command + "\n").toByteArray())
+            out.flush()
+            true
+        } catch (_: Exception) {
+            false
+        }
+    }
+
     private fun connectWithRetry() {
         var retryDelay = 1000L
         val maxRetryDelay = 10000L
