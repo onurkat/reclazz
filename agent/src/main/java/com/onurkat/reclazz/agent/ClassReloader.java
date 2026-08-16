@@ -307,6 +307,7 @@ public class ClassReloader {
         private final String error;
         private String structuralChangeAdvice;
         private boolean annotationsChanged;
+        private boolean methodsAdded;
         private boolean springMvcReloaded;
 
         private ReloadResult(boolean success, boolean springBean, boolean interceptor,
@@ -354,6 +355,11 @@ public class ClassReloader {
          * happen before.
          */
         public void setAnnotationsChanged(boolean changed) { this.annotationsChanged = changed; }
+
+        /** Whether this reload added methods; the mapping scan cannot see them. */
+        public void setMethodsAdded(boolean added) { this.methodsAdded = added; }
+
+        public boolean isMethodsAdded() { return methodsAdded; }
 
         public boolean isSuccess() { return success; }
         public boolean isSpringBean() { return springBean; }

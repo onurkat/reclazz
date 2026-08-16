@@ -74,6 +74,16 @@ public class SpringReloadOrchestrator {
 
     public void onClassReloaded(String className, Class<?> reloadedClass,
                                 boolean isStructural, boolean annotationsChanged) {
+        onClassReloaded(className, reloadedClass, isStructural, annotationsChanged, false);
+    }
+
+    /**
+     * @param addedMethods whether this reload added methods, which the mapping
+     *                     scan cannot see on a stock JDK
+     */
+    public void onClassReloaded(String className, Class<?> reloadedClass,
+                                boolean isStructural, boolean annotationsChanged,
+                                boolean addedMethods) {
         if (reloadedClass == null) return;
 
         if (isSpringBean(reloadedClass)) {
@@ -91,6 +101,18 @@ public class SpringReloadOrchestrator {
                 boolean mvcReloaded = mvcReloader.reloadMappings(reloadedClass);
                 if (mvcReloaded) {
                     StatusReporter.success("Spring MVC mappings re-scanned for " + className);
+
+                    // A re-scan reads the class through reflection, and a
+                    // method this reload added is not there to be read: on a
+                    // stock JDK it lives in the companion. Existing mappings
+                    // are updated, a brand new one is not, and saying only
+                    // that the scan ran would leave the developer refreshing a
+                    // 404 wondering which of the two of us is wrong.
+                    if (isStructural && addedMethods) {
+                        StatusReporter.warn("A handler method added by this reload is not visible "
+                                + "to the mapping scan and needs a restart. Existing mappings, "
+                                + "including changed ones, are live.");
+                    }
                 }
             }
         }

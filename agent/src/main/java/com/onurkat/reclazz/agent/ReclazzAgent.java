@@ -528,7 +528,8 @@ public class ReclazzAgent {
                     Class<?> reloadedClass = findLoadedClass(className);
                     springOrchestrator.onClassReloaded(className, reloadedClass,
                             reloadResult.isStructuralReload(),
-                            reloadResult.isAnnotationsChanged());
+                            reloadResult.isAnnotationsChanged(),
+                            reloadResult.isMethodsAdded());
                 }
 
                 // Hybris-specific: interceptor reload
@@ -631,7 +632,8 @@ public class ReclazzAgent {
                     Class<?> reloadedClass = findLoadedClass(className);
                     springOrchestrator.onClassReloaded(className, reloadedClass,
                             reloadResult.isStructuralReload(),
-                            reloadResult.isAnnotationsChanged());
+                            reloadResult.isAnnotationsChanged(),
+                            reloadResult.isMethodsAdded());
                 }
 
                 if (reloadResult.isInterceptor() && interceptorReloader != null) {
