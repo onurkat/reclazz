@@ -16,23 +16,17 @@ class AddFieldTest(
 ) : BaseTest("Add field", config, agentClient, httpVerifier) {
 
     override fun run(): TestResult =
-        if (config.enhancedMode) {
-            writeAndVerify(
-                targetPath = "${config.srcDir}/com/onurkat/reclazztest/services/TestService.java",
-                templateName = "TestService_addField.java.txt",
-                httpPath = "${config.testEndpointBase}/greeting",
-                expectedBody = "hello:42",
-            )
-        } else {
-            // Companion mode: the new field exists and is readable from
-            // hot-compiled code, but field INITIALIZERS live in the
-            // constructor which cannot re-run for structural diffs — the
-            // field reads as its JVM default (0) until code assigns it.
-            writeAndVerify(
-                targetPath = "${config.srcDir}/com/onurkat/reclazztest/services/TestService.java",
-                templateName = "TestService_addField.java.txt",
-                httpPath = "${config.testEndpointBase}/greeting",
-                expectedBody = "hello:0",
-            ).withCompanionNote("new field readable with JVM default; initializer needs ctor (documented)")
-        }
+        // A field initializer is compiled into the constructor, and the bean is
+        // recreated by the reload, so the object answering this request ran that
+        // constructor and holds 42. It read 0 for as long as the redefinition
+        // carrying the new constructor body was refused, which is fixed.
+        //
+        // Objects the reload did not recreate still hold the JVM default. That
+        // is a different case and the agent says so on every structural reload.
+        writeAndVerify(
+            targetPath = "${config.srcDir}/com/onurkat/reclazztest/services/TestService.java",
+            templateName = "TestService_addField.java.txt",
+            httpPath = "${config.testEndpointBase}/greeting",
+            expectedBody = "hello:42",
+        )
 }
