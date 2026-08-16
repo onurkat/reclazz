@@ -16,22 +16,15 @@ class AddMethodTest(
 ) : BaseTest("Add new method", config, agentClient, httpVerifier) {
 
     override fun run(): TestResult =
-        if (config.enhancedMode) {
-            writeAndVerify(
-                targetPath = "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java",
-                templateName = "TestController_addMethod.java.txt",
-                httpPath = "${config.testEndpointBase}/new-endpoint",
-                expectedBody = "new-endpoint-active",
-            )
-        } else {
-            // Companion mode (standard JVM): the new method lives on a hidden
-            // nestmate — Spring MVC's reflection scan cannot see it, so the
-            // endpoint must NOT appear. Documented limitation, asserted as such.
-            writeAndVerify(
-                targetPath = "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java",
-                templateName = "TestController_addMethod.java.txt",
-                httpPath = "${config.testEndpointBase}/new-endpoint",
-                expectedStatus = 404,
-            ).withCompanionNote("new endpoint stays 404 — reflection limit (documented)")
-        }
+        // The endpoint answers on both runtimes now. On a JVM with enhanced
+        // redefinition the method is really on the controller and the mapping
+        // scan finds it; on a stock JDK it lives in the companion, where
+        // reflection cannot reach, so Reclazz hands the scan a small class
+        // carrying a copy of the method and delegating to it.
+        writeAndVerify(
+            targetPath = "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java",
+            templateName = "TestController_addMethod.java.txt",
+            httpPath = "${config.testEndpointBase}/new-endpoint",
+            expectedBody = "new-endpoint-active",
+        )
 }

@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- A Spring MVC endpoint added by a reload answers without a restart, on a stock
+  JDK as well. The mapping scan reads the controller through reflection and a
+  method the reload added is not there to be read, so Reclazz hands the scan a
+  small class carrying a copy of that method, with its annotations and the
+  controller's own, delegating to the implementation. Writing a new endpoint is
+  the moment a reload is worth the most, and it was the one thing that still
+  needed a restart. Verified on a Spring Boot application and on a live SAP
+  Commerce server: add an endpoint, change its body, add a second one with a
+  path variable, remove one; each takes effect on the next request, and the
+  endpoints the reload did not touch keep serving.
+
 ## [1.0.19] - 2026-08-16
 
 ### Fixed

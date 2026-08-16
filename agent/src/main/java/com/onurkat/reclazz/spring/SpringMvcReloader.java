@@ -190,7 +190,88 @@ public class SpringMvcReloader {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Registers a class carrying copies of the handler methods this reload
+     * added, so Spring's scan can see what reflection on the controller cannot.
+     * See AddedEndpointAdapter.
+     *
+     * @return true when the mappings were registered
+     */
+    public boolean registerAddedEndpoints(Class<?> controllerClass,
+                                          java.util.Set<String> addedMethods,
+                                          byte[] newBytecode) {
+        if (addedMethods == null || addedMethods.isEmpty() || newBytecode == null) return false;
+        try {
+            // The same search the re-scan makes: the controller decides which
+            // context this is, and the registry may live in a parent.
+            Object appContext = null;
+            String beanName = null;
+            for (Object candidate : platformContext.getAllApplicationContexts()) {
+                String name = SpringBeans.findBeanName(candidate, controllerClass);
+                if (name == null) {
+                    String[] byType = SpringBeans.beanNamesForType(candidate, controllerClass.getName());
+                    name = byType.length > 0 ? byType[0] : null;
+                }
+                if (name != null) {
+                    appContext = candidate;
+                    beanName = name;
+                    break;
+                }
+            }
+            if (appContext == null) return false;
+
+            Object controllerBean = appContext.getClass()
+                    .getMethod("getBean", String.class).invoke(appContext, beanName);
+
+            Object handlerMapping = findHandlerMapping(appContext);
+            if (handlerMapping == null) return false;
+
+            // The previous stand-in still holds the paths added before this
+            // reload, and this one carries them again. The controller's own
+            // mappings were re-registered a moment ago and must stay.
+            unregisterMappings(handlerMapping, controllerClass, false);
+
+            Object adapter = AddedEndpointAdapter.create(controllerClass, controllerBean,
+                    newBytecode, addedMethods, ADAPTER_VERSION.incrementAndGet());
+            if (adapter == null) return false;
+
+            Method detect = findMethodInHierarchy(
+                    handlerMapping.getClass(), "detectHandlerMethods", Object.class);
+            if (detect == null) return false;
+            detect.setAccessible(true);
+            detect.invoke(handlerMapping, adapter);
+            return true;
+        } catch (Throwable t) {
+            StatusReporter.warn("Could not map the handler methods added to "
+                    + controllerClass.getName() + ": " + rootCause(t));
+            return false;
+        }
+    }
+
+    /** Names the classes that stand in for added handler methods. */
+    static final String ADAPTER_SUFFIX = "$$ReclazzEndpoints$v";
+
+    private static final java.util.concurrent.atomic.AtomicInteger ADAPTER_VERSION =
+            new java.util.concurrent.atomic.AtomicInteger();
+
+    private static String rootCause(Throwable t) {
+        Throwable c = t;
+        while (c.getCause() != null) c = c.getCause();
+        return c.getClass().getSimpleName() + ": " + c.getMessage();
+    }
+
     private void unregisterMappings(Object handlerMapping, Class<?> controllerClass) {
+        unregisterMappings(handlerMapping, controllerClass, true);
+    }
+
+    /**
+     * @param includeTheControllerItself false to take out only the stand-ins for
+     *        previously added handler methods. The re-scan has just registered
+     *        the controller's own mappings by then, and taking those out again
+     *        leaves the application with no endpoints at all.
+     */
+    private void unregisterMappings(Object handlerMapping, Class<?> controllerClass,
+                                    boolean includeTheControllerItself) {
         try {
             Method getHandlerMethods = handlerMapping.getClass().getMethod("getHandlerMethods");
             Map<?, ?> handlerMethods = (Map<?, ?>) getHandlerMethods.invoke(handlerMapping);
@@ -208,7 +289,17 @@ public class SpringMvcReloader {
                 // same path, which Spring then refuses to serve at all:
                 // "Ambiguous handler methods mapped for ...", an HTTP 500 where
                 // there had been a working endpoint.
-                if (beanType != null && beanType.getName().equals(controllerClass.getName())) {
+                if (beanType == null) continue;
+
+                // The controller's own mappings, and the ones standing in for
+                // the methods a previous reload added. Those live on a
+                // generated class, and leaving them registered makes the next
+                // reload's copy a duplicate: Spring refuses the pair as an
+                // ambiguous mapping and the endpoint stops working.
+                boolean itsOwn = beanType.getName().equals(controllerClass.getName());
+                boolean standIn = beanType.getName().startsWith(
+                        controllerClass.getName() + ADAPTER_SUFFIX);
+                if ((itsOwn && includeTheControllerItself) || standIn) {
                     toUnregister.add(entry.getKey());
                 }
             }
