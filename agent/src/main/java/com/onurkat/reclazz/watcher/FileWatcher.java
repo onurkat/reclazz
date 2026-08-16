@@ -513,7 +513,7 @@ public class FileWatcher {
      * is in the order of 100 microseconds for a 50 KB class file.
      */
     /**
-     * Record what the platform's configuration files say right now.
+     * Record what the configuration files say right now.
      *
      * A save is applied by comparing the file against its own previous content,
      * which needs a previous content to exist. The server read these files
@@ -523,8 +523,11 @@ public class FileWatcher {
      */
     private void baselinePropertyFiles(Path dir) {
         try (java.util.stream.Stream<Path> files = Files.walk(dir, 4)) {
+            // Every properties file, not only the platform's: outside SAP
+            // Commerce the same comparison is what tells a changed log level
+            // from the rest of an application.properties.
             files.filter(Files::isRegularFile)
-                 .filter(com.onurkat.reclazz.hybris.HybrisConfigReloader::isPlatformConfiguration)
+                 .filter(f -> f.getFileName().toString().endsWith(".properties"))
                  .forEach(com.onurkat.reclazz.agent.ReclazzAgent::baselinePropertyFile);
         } catch (Exception e) {
             // A directory that cannot be walked costs one over-eager first

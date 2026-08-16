@@ -467,6 +467,7 @@ public class ReclazzAgent {
                 case SPRING_XML -> handleSpringXmlChange(event);
                 case CODEGEN_XML -> handleCodegenXmlChange(event);
                 case PROPERTIES -> handlePropertiesChange(event);
+                case LOGGING_CONFIG -> handleLoggingConfigChange(event);
                 case IMPEX -> {
                     if (config.isAutoImpex() && impexImporter != null) {
                         handleImpexChange(event, impexImporter);
@@ -764,6 +765,8 @@ public class ReclazzAgent {
             com.onurkat.reclazz.hybris.HybrisConfigReloader configReloader =
                     new com.onurkat.reclazz.hybris.HybrisConfigReloader(platformLoader, propertySnapshots);
             java.util.List<String> applied = configReloader.apply(event.getPath());
+            applyLoggerLevels(event.getPath(), applied);
+
             if (applied.isEmpty() && configReloader.isPlatformReachable()) {
                 // The file was compared against the running configuration and
                 // held nothing new: a comment, a reformat, or a save with no
@@ -780,6 +783,17 @@ public class ReclazzAgent {
             }
         }
 
+        // Outside SAP Commerce nothing here rebinds properties yet, but a log
+        // level is not a property the application has to read again: it can be
+        // set on the running logger directly.
+        java.util.Map<String, String> changed = propertySnapshots.changedSince(event.getPath());
+        int levelsApplied = applyLoggerLevels(event.getPath(), changed.keySet());
+
+        // Warning about a restart after the change has been applied would tell
+        // the developer to do the one thing this just saved them.
+        if (levelsApplied > 0 && changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey)) {
+            return;
+        }
         StatusReporter.warn("Configuration changes may require a restart to take effect.");
     }
 
@@ -788,6 +802,62 @@ public class ReclazzAgent {
      * labels. Neither is platform configuration, and pushing them into it
      * would report changes the server never shows.
      */
+
+    private static void handleLoggingConfigChange(ChangeEvent event) {
+        String fileName = event.getPath().getFileName().toString();
+        com.onurkat.reclazz.reload.LoggingReloader reloader =
+                new com.onurkat.reclazz.reload.LoggingReloader(instrumentation);
+
+        String framework = reloader.reconfigureFrom(event.getPath());
+        if (framework != null) {
+            StatusReporter.success(fileName + " applied to the running " + framework + " context");
+        } else if (!reloader.frameworkPresent()) {
+            StatusReporter.info(fileName + " changed, but no logging framework is loaded here.");
+        }
+    }
+
+    /**
+     * Sends the logger levels a property file asks for straight to the logging
+     * framework.
+     *
+     * Turning a logger up is the most common reason to restart a server and the
+     * least deserving one: the level is a field on an object already in memory.
+     * SAP Commerce reads these properties once at startup, so the file is not
+     * enough on its own, and Spring Boot rebinds them only on a refresh.
+     *
+     * Only the loggers the save actually touched are set. Reapplying the whole
+     * file would undo a level raised from the HAC console minutes earlier,
+     * every time any unrelated property is edited.
+     */
+    private static int applyLoggerLevels(java.nio.file.Path propertiesFile,
+                                         java.util.Collection<String> changedKeys) {
+        if (changedKeys.isEmpty()) return 0;
+
+        java.util.Properties fromFile = new java.util.Properties();
+        try (java.io.InputStream in = java.nio.file.Files.newInputStream(propertiesFile)) {
+            fromFile.load(in);
+        } catch (Throwable halfWritten) {
+            return 0;
+        }
+
+        java.util.Map<String, String> levels =
+                com.onurkat.reclazz.reload.LoggingReloader.levelsIn(fromFile, changedKeys);
+        if (levels.isEmpty()) return 0;
+
+        com.onurkat.reclazz.reload.LoggingReloader reloader =
+                new com.onurkat.reclazz.reload.LoggingReloader(instrumentation);
+        java.util.List<String> applied = reloader.applyLevels(levels);
+        if (!applied.isEmpty()) {
+            StatusReporter.success("Logger level(s) applied: "
+                    + (applied.size() > 5 ? applied.subList(0, 5) + " …" : applied.toString()));
+        }
+        return applied.size();
+    }
+
+    private static boolean isLoggingKey(String key) {
+        return key.startsWith("logging.level.") || key.startsWith("log4j2.logger.");
+    }
+
     private static void handleLocalizationChange(ChangeEvent event) {
         String fileName = event.getPath().getFileName().toString();
 
