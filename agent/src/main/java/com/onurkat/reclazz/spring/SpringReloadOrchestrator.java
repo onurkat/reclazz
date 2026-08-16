@@ -84,6 +84,19 @@ public class SpringReloadOrchestrator {
     public void onClassReloaded(String className, Class<?> reloadedClass,
                                 boolean isStructural, boolean annotationsChanged,
                                 boolean addedMethods) {
+        onClassReloaded(className, reloadedClass, isStructural, annotationsChanged,
+                addedMethods, java.util.Set.of(), null);
+    }
+
+    /**
+     * @param addedMethodSigs the methods this reload added, as name:descriptor
+     * @param newBytecode     the compiled class, where those methods can be read
+     */
+    public void onClassReloaded(String className, Class<?> reloadedClass,
+                                boolean isStructural, boolean annotationsChanged,
+                                boolean addedMethods,
+                                java.util.Set<String> addedMethodSigs,
+                                byte[] newBytecode) {
         if (reloadedClass == null) return;
 
         if (isSpringBean(reloadedClass)) {
@@ -122,9 +135,17 @@ public class SpringReloadOrchestrator {
                     // that the scan ran would leave the developer refreshing a
                     // 404 wondering which of the two of us is wrong.
                     if (isStructural && addedMethods) {
-                        StatusReporter.warn("A handler method added by this reload is not visible "
-                                + "to the mapping scan and needs a restart. Existing mappings, "
-                                + "including changed ones, are live.");
+                        // The scan cannot see a method that lives in the
+                        // companion, so it is given a class that can be read.
+                        boolean mapped = mvcReloader.registerAddedEndpoints(
+                                reloadedClass, addedMethodSigs, newBytecode);
+                        if (mapped) {
+                            StatusReporter.success("Handler methods added by this reload are mapped.");
+                        } else {
+                            StatusReporter.warn("A handler method added by this reload is not visible "
+                                    + "to the mapping scan and needs a restart. Existing mappings, "
+                                    + "including changed ones, are live.");
+                        }
                     }
                 }
             }

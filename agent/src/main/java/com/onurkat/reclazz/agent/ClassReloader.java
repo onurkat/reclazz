@@ -308,6 +308,8 @@ public class ClassReloader {
         private String structuralChangeAdvice;
         private boolean annotationsChanged;
         private boolean methodsAdded;
+        private java.util.Set<String> addedMethodSigs = java.util.Set.of();
+        private byte[] newBytecode;
         private boolean springMvcReloaded;
 
         private ReloadResult(boolean success, boolean springBean, boolean interceptor,
@@ -360,6 +362,16 @@ public class ClassReloader {
         public void setMethodsAdded(boolean added) { this.methodsAdded = added; }
 
         public boolean isMethodsAdded() { return methodsAdded; }
+
+        /** The methods this reload added, as name:descriptor. */
+        public void setAddedMethodSigs(java.util.Set<String> sigs) { this.addedMethodSigs = sigs; }
+
+        public java.util.Set<String> getAddedMethodSigs() { return addedMethodSigs; }
+
+        /** The compiled class as saved, which is where the added methods can still be read. */
+        public void setNewBytecode(byte[] bytes) { this.newBytecode = bytes; }
+
+        public byte[] getNewBytecode() { return newBytecode; }
 
         public boolean isSuccess() { return success; }
         public boolean isSpringBean() { return springBean; }

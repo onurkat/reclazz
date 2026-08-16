@@ -436,6 +436,8 @@ public class StructuralReloader {
                     springBean, isInterceptor(targetClass), isStructural);
             result.setAnnotationsChanged(diff.isAnnotationsChanged());
             result.setMethodsAdded(!diff.getAddedMethods().isEmpty());
+            result.setAddedMethodSigs(diff.getAddedMethods());
+            result.setNewBytecode(newBytecode);
             if (diff.isAnnotationOnly()) {
                 StatusReporter.info("Annotation change on " + className
                         + " — re-scanning the frameworks that read it");

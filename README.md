@@ -303,7 +303,7 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 | Change Type | Any JDK 17+ | Caveat on Standard JVMs |
 |---|---|---|
 | Method body changes | Yes | None |
-| Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class |
+| Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. A new Spring MVC endpoint is an exception: it is mapped without a restart |
 | Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class |
 | Remove methods/fields | **Yes** | Existing callers keep the previous implementation until they are hot-recompiled |
 | Change annotations | **Yes** | None |
