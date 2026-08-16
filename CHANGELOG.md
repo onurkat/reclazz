@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.18] - 2026-08-16
+
 ### Fixed
 
 - A constructor change reaches newly created objects even when the same reload
