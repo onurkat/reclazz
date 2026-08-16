@@ -76,6 +76,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.17</h3>
+        <ul>
+            <li>Adding a method and calling it from the same class works. The call used to fail at runtime, which on SAP Commerce meant an HTTP 500 from the class you had just edited, while the reload was reported as successful</li>
+            <li>Spring XML reload works on files that declare a namespace such as context: or util:, which on a real project is nearly all of them. Those files used to fail to parse and the reload stopped there</li>
+        </ul>
+
         <h3>1.0.16</h3>
         <ul>
             <li>SAP Commerce: editing config/local.properties, or a numbered file under config/&lt;env&gt;/props, now reaches the running server. Nothing watched the file you actually edit before this</li>
