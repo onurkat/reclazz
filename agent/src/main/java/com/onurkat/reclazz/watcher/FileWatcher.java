@@ -158,6 +158,11 @@ public class FileWatcher {
                 for (Path classDir : entry.getValue()) {
                     if (Files.isDirectory(classDir)) {
                         registerRecursive(classDir, moduleName, "classes");
+                        // A Spring Boot build puts application.properties here
+                        // rather than in a resources directory of its own, and
+                        // without a baseline the first save after startup reads
+                        // as though every key in the file had changed.
+                        baselinePropertyFiles(classDir);
                         watchCount++;
                         prepopulatedClasses += prepopulateContentHashes(
                                 classDir, new WatchedDirectory(classDir, moduleName, "classes"));
