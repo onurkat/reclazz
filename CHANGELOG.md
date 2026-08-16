@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- A call to a bean reaches its Spring proxy again. Reclazz dispatches calls to
+  a renamed copy of the method so a reload can swap it, and that copy lives on
+  the class being reloaded, so a receiver whose class overrides the method,
+  which is exactly what a CGLIB proxy is, was walked straight past. Measured on
+  a Spring Boot application: a `@Cacheable` method ran on every call with the
+  agent attached and once in total without it, and an around advice never ran.
+  The same applies to `@Transactional`, `@Async` and method security. The
+  receiver now decides, at the first call and again after every reload.
+
 ## [1.0.17] - 2026-08-16
 
 ### Fixed
