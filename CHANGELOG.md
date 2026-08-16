@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- A constructor change reaches newly created objects even when the same reload
+  removed something. A redefinition has to hand the JVM exactly the members the
+  loaded class has, and the payload was stripped of what the reload added but
+  still missing what it removed, so the JVM refused all of it and the new
+  constructor body went with it. Measured on a Spring Boot application: a field
+  added by the reload and assigned in the constructor came back null on every
+  new bean. Removed members are now handed back as stubs, which nothing calls:
+  existing callers keep dispatching to the implementation they were linked to,
+  as they already did.
+- An added field is one field whichever way its class is spelled. The companion
+  writes through the internal name and a constructor's assignment through the
+  binary one, and they were separate keys, so the value was stored under one and
+  read under the other.
+
 - A call to a bean reaches its Spring proxy again. Reclazz dispatches calls to
   a renamed copy of the method so a reload can swap it, and that copy lives on
   the class being reloaded, so a receiver whose class overrides the method,

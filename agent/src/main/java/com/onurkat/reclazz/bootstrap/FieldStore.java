@@ -23,19 +23,33 @@ public final class FieldStore {
     /** Cached reflective access to __reclazz$ext fields, keyed by Class. */
     private static final ConcurrentHashMap<Class<?>, java.lang.reflect.Field> extFieldCache = new ConcurrentHashMap<>();
 
+    /**
+     * One spelling of a class name, because the callers do not agree on one.
+     *
+     * A companion's bytecode carries the internal name it was generated from,
+     * {@code demo/GreetService}, and a call site set up by the bootstrap
+     * carries the binary name, {@code demo.GreetService}. Both mean the same
+     * class, and while they were separate keys they meant separate storage: a
+     * field added by a reload and assigned in a constructor was written under
+     * one and read back under the other, so it read as never set.
+     */
+    private static String layoutKey(String className) {
+        return className.replace('/', '.');
+    }
+
     public static int getIndex(String className, String fieldName, String descriptor) {
-        FieldLayout layout = layouts.get(className);
+        FieldLayout layout = layouts.get(layoutKey(className));
         if (layout == null) return -1;
         return layout.getIndex(fieldName, descriptor);
     }
 
     public static int registerField(String className, String fieldName, String descriptor) {
-        FieldLayout layout = layouts.computeIfAbsent(className, k -> new FieldLayout());
+        FieldLayout layout = layouts.computeIfAbsent(layoutKey(className), k -> new FieldLayout());
         return layout.register(fieldName, descriptor);
     }
 
     public static int getFieldCount(String className) {
-        FieldLayout layout = layouts.get(className);
+        FieldLayout layout = layouts.get(layoutKey(className));
         return layout == null ? 0 : layout.size();
     }
 
@@ -115,7 +129,7 @@ public final class FieldStore {
             new java.util.concurrent.ConcurrentHashMap<>();
 
     private static String staticKey(String className, String fieldName, String desc) {
-        return className + "#" + fieldName + ":" + desc;
+        return layoutKey(className) + "#" + fieldName + ":" + desc;
     }
 
     /**

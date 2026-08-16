@@ -378,8 +378,9 @@ public class StructuralReloader {
             // came back null.
             {
                 byte[] redefinePayload = diff.isStructural()
-                        ? com.onurkat.reclazz.transform.AddedMemberStripper.strip(
-                                newBytecode, diff.getAddedFields(), diff.getAddedMethods())
+                        ? com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
+                                newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
+                                diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs())
                         : newBytecode;
                 try {
                     // RAW bytes on purpose: the registered ReclazzTransformer
