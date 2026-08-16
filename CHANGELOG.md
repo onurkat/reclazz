@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.22] - 2026-08-16
+
 ### Fixed
 
 - The agent no longer keeps a class, or the classloader that defined it, alive

@@ -80,6 +80,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.22</h3>
+        <ul>
+            <li>Reclazz no longer keeps a class, or the classloader that defined it, alive after your application has dropped it. Three pieces of per-class state were held in static maps that outlived what they described, which costs nothing while a class stays loaded and holds an entire redeployed web application when one does not</li>
+        </ul>
+
         <h3>1.0.21</h3>
         <ul>
             <li>A log level takes effect when you save it. On SAP Commerce the levels live in the property files rather than a log4j2.xml, and those now reach the running logger; on Spring Boot so do <code>logging.level.*</code> and a saved <code>logback.xml</code> or <code>log4j2.xml</code></li>
