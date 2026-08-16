@@ -606,7 +606,7 @@ public class StructuralReloader {
         }
 
         // Atomic swap — no window where reflection sees incomplete state
-        ReflectionBridge.replaceClassState(internalName, forgedMethods, forgedFields);
+        ReflectionBridge.replaceClassState(targetClass, forgedMethods, forgedFields);
     }
 
     /**

@@ -7,40 +7,41 @@ package com.onurkat.reclazz.bootstrap;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MutableCallSite;
-import java.util.Collections;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Central dispatch table for invokedynamic call sites.
- * Keyed by Class object identity (NOT class name string) so that two distinct
- * Class instances with the same internal name — e.g. classes loaded by separate
- * classloaders, or test fixtures sharing names — get distinct dispatch entries.
- * Backed by a WeakHashMap so unloaded classes can be GC'd.
+ *
+ * Held per Class rather than per class name, so two Class instances with the
+ * same internal name, loaded by separate classloaders or by test fixtures
+ * sharing a name, get distinct dispatch entries.
+ *
+ * A ClassValue rather than a map, because the entry has to die with the class
+ * it belongs to. This was a WeakHashMap on the theory that a weak key would let
+ * an unloaded class go, and it would not have: the value holds the key. An
+ * override guard stores the owning Class outright, and every call site target
+ * is a MethodHandle bound to a method of that class, so each entry pinned its
+ * own key and, through it, the classloader that defined it. Nothing showed up
+ * in a reload loop, where the class stays loaded anyway; the cost lands on a
+ * classloader that gets discarded, a redeployed web application being the usual
+ * one, whose whole loader would then be held by an agent that is supposed to be
+ * helping. A ClassValue lives on the Class itself and cannot outlive it.
  *
  * BOOTSTRAP CLASS: Must have ZERO dependencies outside java.* packages.
  */
 public final class DispatchTable {
 
-    private static final Map<Class<?>, ClassDispatch> dispatches =
-            Collections.synchronizedMap(new WeakHashMap<>());
+    private static final ClassValue<ClassDispatch> dispatches = new ClassValue<>() {
+        @Override
+        protected ClassDispatch computeValue(Class<?> type) {
+            return new ClassDispatch();
+        }
+    };
 
     public static ClassDispatch getOrCreate(Class<?> ownerClass) {
-        synchronized (dispatches) {
-            ClassDispatch existing = dispatches.get(ownerClass);
-            if (existing != null) return existing;
-            ClassDispatch fresh = new ClassDispatch();
-            dispatches.put(ownerClass, fresh);
-            return fresh;
-        }
-    }
-
-    public static ClassDispatch get(Class<?> ownerClass) {
-        synchronized (dispatches) {
-            return dispatches.get(ownerClass);
-        }
+        return dispatches.get(ownerClass);
     }
 
     /**

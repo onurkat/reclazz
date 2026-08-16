@@ -20,8 +20,32 @@ public final class FieldStore {
      */
     private static final ConcurrentHashMap<String, FieldLayout> layouts = new ConcurrentHashMap<>();
 
-    /** Cached reflective access to __reclazz$ext fields, keyed by Class. */
-    private static final ConcurrentHashMap<Class<?>, java.lang.reflect.Field> extFieldCache = new ConcurrentHashMap<>();
+    /**
+     * Cached reflective access to the {@code __reclazz$ext} field of a class.
+     *
+     * On the Class rather than in a map keyed by it: a map entry would keep
+     * every class that ever carried an added field, and its classloader, alive
+     * for the life of the JVM. A ClassValue is stored on the class and dies
+     * with it.
+     *
+     * ABSENT stands for "this class has no such field", which is not the same
+     * as "not looked up yet" and must not be cached as a permanent answer: the
+     * field arrives when a later reload adds one.
+     */
+    private static final Object ABSENT = new Object();
+
+    private static final ClassValue<Object> extFieldCache = new ClassValue<>() {
+        @Override
+        protected Object computeValue(Class<?> type) {
+            try {
+                java.lang.reflect.Field field = type.getDeclaredField("__reclazz$ext");
+                field.setAccessible(true);
+                return field;
+            } catch (NoSuchFieldException notYet) {
+                return ABSENT;
+            }
+        }
+    };
 
     /**
      * One spelling of a class name, because the callers do not agree on one.
@@ -216,17 +240,15 @@ public final class FieldStore {
      * Does NOT cache misses — the field may be added later by retransformation.
      */
     private static java.lang.reflect.Field resolveExtField(Class<?> clazz) {
-        java.lang.reflect.Field cached = extFieldCache.get(clazz);
-        if (cached != null) return cached;
-        try {
-            java.lang.reflect.Field f = clazz.getDeclaredField("__reclazz$ext");
-            f.setAccessible(true);
-            extFieldCache.put(clazz, f);
-            return f;
-        } catch (NoSuchFieldException e) {
-            // Class doesn't have __reclazz$ext yet — don't cache, it may be added later
-            return null;
-        }
+        Object cached = extFieldCache.get(clazz);
+        if (cached instanceof java.lang.reflect.Field field) return field;
+
+        // The class had no such field when it was first asked about, and a
+        // reload may have added one since. Ask again rather than keeping the
+        // old answer.
+        extFieldCache.remove(clazz);
+        Object fresh = extFieldCache.get(clazz);
+        return (fresh instanceof java.lang.reflect.Field field) ? field : null;
     }
 
     static final class FieldLayout {

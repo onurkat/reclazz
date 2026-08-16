@@ -37,7 +37,7 @@ class ReflectionBridgePublicLookupTest {
         String packagePrivateField = "";
     }
 
-    private static final String KEY = Host.class.getName().replace('.', '/');
+    private static final Class<?> KEY = Host.class;
 
     @AfterEach
     void clearState() {

@@ -46,7 +46,7 @@ class ReflectionRewriteCoverageTest extends TransformTestBase {
             "    public String addedField = \"\";\n" +
             "}";
 
-    private String targetKey;
+    private Class<?> targetKey;
 
     @AfterEach
     void clearState() {
@@ -74,7 +74,7 @@ class ReflectionRewriteCoverageTest extends TransformTestBase {
         Class<?> caller = loader.load("Caller");
         Class<?> target = loader.load("Target");
 
-        targetKey = target.getName().replace('.', '/');
+        targetKey = target;
 
         int declaredBefore = (int) invokeStatic(caller, "declaredCount", target);
         int publicBefore = (int) invokeStatic(caller, "publicCount", target);
