@@ -8,6 +8,7 @@
 
 ## Testing
 
+- [ ] Every commit is signed off (`git commit -s`), per [CONTRIBUTING](../CONTRIBUTING.md#sign-your-work)
 - [ ] `./gradlew clean build` passes
 - [ ] Tested with SAP Commerce project (if applicable)
 - [ ] No new warnings introduced
