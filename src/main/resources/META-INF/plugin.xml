@@ -76,6 +76,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.19</h3>
+        <ul>
+            <li>Attaching to a running server reloads again. Classes loaded before Reclazz arrived were being handed back in a shape the JVM refuses, so every swap failed and attaching did nothing at all</li>
+            <li>An application starts on a JVM with enhanced redefinition (JetBrains Runtime, DCEVM). One using Thymeleaf did not start at all, because a class the agent installs only in its own engine's mode was missing</li>
+            <li>On that runtime a handler method added to a controller is mapped without a restart, where it used to answer 404</li>
+        </ul>
+
         <h3>1.0.18</h3>
         <ul>
             <li>A bean keeps its @Transactional, @Cacheable, @Async and aspects while the agent is attached. Calls from another class were reaching past the Spring proxy, so the interception quietly did not run, and after a reload it stayed that way</li>
