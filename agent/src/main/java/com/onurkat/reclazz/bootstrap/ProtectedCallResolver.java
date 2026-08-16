@@ -108,32 +108,65 @@ public final class ProtectedCallResolver {
                 ownerInternal.replace('/', '.'), false, cl);
 
         MethodHandle mh;
-        switch (kind) {
-            case KIND_STATIC: {
-                mh = targetLookup.findStatic(owner, invocationName, invocationType);
-                break;
+        try {
+            switch (kind) {
+                case KIND_STATIC: {
+                    mh = targetLookup.findStatic(owner, invocationName, invocationType);
+                    break;
+                }
+                case KIND_SPECIAL: {
+                    // findSpecial takes the "virtual" descriptor (args only,
+                    // no receiver) plus a specialCaller that must have the
+                    // declaring class as a direct or transitive superclass.
+                    // The target class is exactly that.
+                    MethodType virtualType = invocationType.dropParameterTypes(0, 1);
+                    mh = targetLookup.findSpecial(owner, invocationName, virtualType, target);
+                    break;
+                }
+                case KIND_VIRTUAL:
+                case KIND_INTERFACE: {
+                    MethodType virtualType = invocationType.dropParameterTypes(0, 1);
+                    mh = targetLookup.findVirtual(owner, invocationName, virtualType);
+                    break;
+                }
+                default:
+                    throw new UnsupportedOperationException(
+                            "Unsupported ProtectedCallResolver kind: " + kind);
             }
-            case KIND_SPECIAL: {
-                // findSpecial takes the "virtual" descriptor (args only,
-                // no receiver) plus a specialCaller that must have the
-                // declaring class as a direct or transitive superclass.
-                // The target class is exactly that.
-                MethodType virtualType = invocationType.dropParameterTypes(0, 1);
-                mh = targetLookup.findSpecial(owner, invocationName, virtualType, target);
-                break;
-            }
-            case KIND_VIRTUAL:
-            case KIND_INTERFACE: {
-                MethodType virtualType = invocationType.dropParameterTypes(0, 1);
-                mh = targetLookup.findVirtual(owner, invocationName, virtualType);
-                break;
-            }
-            default:
-                throw new UnsupportedOperationException(
-                        "Unsupported ProtectedCallResolver kind: " + kind);
+        } catch (NoSuchMethodException | NoSuchMethodError notOnTheClass) {
+            mh = addedByThisReload(caller, invocationName, invocationType, notOnTheClass);
         }
 
         return new ConstantCallSite(mh.asType(invocationType));
+    }
+
+    /**
+     * Resolves a call to a method this reload added.
+     *
+     * The JVM will not accept a redefinition that adds a member, so an added
+     * method exists only in the companion, and the companion is the class
+     * running this call: after a structural reload the original method bodies
+     * are trampolines and the real code executes here. It is static there,
+     * with the receiver as its first parameter, which is exactly the type of
+     * this call site.
+     *
+     * Without this, adding a method and calling it from an existing method of
+     * the same class, the ordinary way anyone writes a helper, resolved
+     * against the original class, found nothing, and failed the call with a
+     * BootstrapMethodError. On a live SAP Commerce server that surfaced as an
+     * HTTP 500 from a servlet filter.
+     */
+    private static MethodHandle addedByThisReload(MethodHandles.Lookup caller,
+                                                  String name,
+                                                  MethodType invocationType,
+                                                  Throwable notOnTheClass) throws Throwable {
+        try {
+            return caller.findStatic(caller.lookupClass(), name, invocationType);
+        } catch (NoSuchMethodException | NoSuchMethodError neitherPlace) {
+            // Not an added method either: report what the original lookup
+            // said, which is the failure that actually describes the code.
+            throw notOnTheClass;
+        }
     }
 
     private static MethodHandles.Lookup readTargetLookup(Class<?> target) {
