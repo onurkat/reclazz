@@ -76,6 +76,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.16</h3>
+        <ul>
+            <li>SAP Commerce: editing config/local.properties, or a numbered file under config/&lt;env&gt;/props, now reaches the running server. Nothing watched the file you actually edit before this</li>
+            <li>Only the lines you edited are applied. A line you did not touch keeps the value the server has, including paths the platform resolved from a ${...} placeholder at startup and keys a later file overrides</li>
+            <li>A .properties file that is not the platform's configuration, a message bundle for instance, is no longer applied to it</li>
+            <li>Saving a localization file whose text did not change no longer costs the next reader a cache rebuild</li>
+        </ul>
+
         <h3>1.0.15</h3>
         <ul>
             <li>SAP Commerce: editing a localization file takes effect without a restart. Save a locales file and the type or enum name you changed is served on the next read, with no database write and no system update; backoffice label files refresh the same way, so reopening the view shows the new text</li>
