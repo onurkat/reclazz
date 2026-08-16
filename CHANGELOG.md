@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.21] - 2026-08-16
+
 ### Added
 
 - Spring Boot applies a changed property to the beans that read it. The values
