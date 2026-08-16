@@ -28,10 +28,11 @@ import java.util.concurrent.TimeUnit;
  *
  * Protocol: one JSON object per line, terminated by newline.
  *
- * Clients may send one line back: {@code DIAGNOSE <class name>}. It reads state
- * the agent already broadcasts and returns text, so it adds no reach into the
- * process, and the socket is loopback-only as before. Anything else is ignored
- * rather than answered, so a stray connection cannot make the agent talk.
+ * Clients may send one line back: {@code DIAGNOSE <class name>} or
+ * {@code PENDING}. Both read state the agent already broadcasts and return
+ * text, so they add no reach into the process, and the socket is loopback-only
+ * as before. Anything else is ignored rather than answered, so a stray
+ * connection cannot make the agent talk.
  */
 public class StatusServer implements StatusReporter.StatusListener {
 
@@ -105,18 +106,24 @@ public class StatusServer implements StatusReporter.StatusListener {
         if (line == null) return;
         String trimmed = line.strip();
         if (trimmed.length() > MAX_COMMAND_LENGTH) return;
-        if (!trimmed.regionMatches(true, 0, DIAGNOSE, 0, DIAGNOSE.length())) return;
 
-        java.util.function.Function<String, List<String>> answering = diagnoser;
-        if (answering == null) return;
-
-        String argument = trimmed.substring(DIAGNOSE.length()).strip();
         try {
-            for (String reportLine : answering.apply(argument)) {
+            if (trimmed.equalsIgnoreCase(PENDING)) {
+                for (String reportLine : RestartLedger.digest()) {
+                    StatusReporter.info(reportLine);
+                }
+                return;
+            }
+            if (!trimmed.regionMatches(true, 0, DIAGNOSE, 0, DIAGNOSE.length())) return;
+
+            java.util.function.Function<String, List<String>> answering = diagnoser;
+            if (answering == null) return;
+
+            for (String reportLine : answering.apply(trimmed.substring(DIAGNOSE.length()).strip())) {
                 StatusReporter.info(reportLine);
             }
         } catch (Exception e) {
-            StatusReporter.warn("Diagnosis failed: " + e.getMessage());
+            StatusReporter.warn("Could not answer " + trimmed + ": " + e.getMessage());
         }
     }
 
@@ -229,6 +236,7 @@ public class StatusServer implements StatusReporter.StatusListener {
     private static final int MAX_MESSAGE_LENGTH = 4096;
     private static final int MAX_COMMAND_LENGTH = 512;
     private static final String DIAGNOSE = "DIAGNOSE";
+    private static final String PENDING = "PENDING";
 
     private static String escapeJson(String value) {
         if (value == null) return "";

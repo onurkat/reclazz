@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **Tools > What Still Needs a Restart?** lists what this session did that a
+  restart would still change: a static field that reads null, an enum that
+  gained a value, a superclass change, a Spring bean the XML reload could not
+  apply, a property the platform refused, a handler method the mapping scan
+  cannot see. Each is already announced as it happens, once, in a log that
+  keeps moving, and an hour later there is no way back to it. The two usual
+  endings are a long debugging session or a restart out of superstition, and
+  both are what this tool exists to avoid. When there is nothing, it says so.
 - A diagnosis for the question the log cannot answer: **Tools > Why Didn't My
   Class Reload?**, also on the editor's right-click menu. Nearly every time it
   is asked, no reload was ever attempted, and none of the reasons produce an

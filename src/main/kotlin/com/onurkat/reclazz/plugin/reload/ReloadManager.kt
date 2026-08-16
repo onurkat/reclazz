@@ -181,6 +181,15 @@ class ReloadManager(private val project: Project) : Disposable {
         return statusClient?.send("DIAGNOSE $className") ?: false
     }
 
+    /**
+     * Ask what a restart would still change. The answer arrives as log lines.
+     *
+     * @return false when no agent is connected to ask
+     */
+    fun pendingRestarts(): Boolean {
+        return statusClient?.send("PENDING") ?: false
+    }
+
     private fun notifyListeners(event: AgentEvent) {
         for (listener in eventListeners) {
             try {

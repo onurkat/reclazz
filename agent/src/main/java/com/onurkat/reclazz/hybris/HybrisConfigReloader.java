@@ -163,6 +163,8 @@ public class HybrisConfigReloader {
             StatusReporter.warn("The platform did not take " + rejected.size()
                     + " property change(s): " + rejected
                     + ". They need a restart.");
+            com.onurkat.reclazz.agent.RestartLedger.note(propertiesFile.getFileName().toString(),
+                    "property change(s) the platform refused: " + rejected);
         }
 
         return applied;

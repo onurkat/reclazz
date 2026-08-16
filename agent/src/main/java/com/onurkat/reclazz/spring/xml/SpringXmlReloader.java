@@ -172,6 +172,9 @@ public final class SpringXmlReloader {
         StatusReporter.info(summary.toString());
 
         if (!diff.unsafe.isEmpty()) {
+            for (BeanDefinitionDiff.UnsafeChange unsafe : diff.unsafe) {
+                com.onurkat.reclazz.agent.RestartLedger.note(fileName, "bean " + unsafe.beanName + ": " + unsafe.reason);
+            }
             StringBuilder warn = new StringBuilder("Restart required for").append(ctxLabel).append(":");
             for (BeanDefinitionDiff.UnsafeChange u : diff.unsafe) {
                 warn.append("\n  - ").append(u.beanName).append(" (").append(u.reason).append(")");

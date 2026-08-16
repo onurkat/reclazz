@@ -48,6 +48,8 @@ public class SpringSecurityReloader {
                 StatusReporter.warn("Spring Security configuration changed in " + reloadedClass.getName());
                 StatusReporter.warn("Security filter chain rebuild is limited. " +
                         "A full restart may be needed for security changes to take effect.");
+                com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+                        "a security configuration change the filter chain cannot rebuild");
                 return true;
             }
 
