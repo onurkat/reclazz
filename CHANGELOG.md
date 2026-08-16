@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.17] - 2026-08-16
+
 ### Fixed
 
 - Adding a method and calling it from an existing method of the same class
