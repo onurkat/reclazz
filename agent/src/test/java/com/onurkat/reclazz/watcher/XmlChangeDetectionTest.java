@@ -110,6 +110,31 @@ class XmlChangeDetectionTest {
                 "both drive the same code generation run");
     }
 
+    /**
+     * A logging configuration is an XML the running framework can be pointed
+     * at again, which is worth telling apart from the rest: sending it to the
+     * Spring reloader would parse it as bean definitions and fail, and leaving
+     * it unclassified would mean a restart for a change to one level.
+     */
+    @Test
+    void loggingConfigurationIsItsOwnKind() {
+        assertEquals(ChangeKind.LOGGING_CONFIG, ChangeKind.of("log4j2.xml"));
+        assertEquals(ChangeKind.LOGGING_CONFIG, ChangeKind.of("logback.xml"));
+        assertEquals(ChangeKind.LOGGING_CONFIG, ChangeKind.of("logback-spring.xml"),
+                "the name Spring Boot looks for first");
+        assertEquals(ChangeKind.LOGGING_CONFIG, ChangeKind.of("log4j2-test.xml"));
+    }
+
+    /**
+     * An extension called {@code logbackutils} would otherwise have every XML
+     * in it treated as a logging configuration.
+     */
+    @Test
+    void aNameThatMerelyStartsWithTheFrameworkIsNotAConfiguration() {
+        assertNotEquals(ChangeKind.LOGGING_CONFIG, ChangeKind.of("logbackutils-spring.xml"));
+        assertNotEquals(ChangeKind.LOGGING_CONFIG, ChangeKind.of("log4j2utils-items.xml"));
+    }
+
     @Test
     void otherKindsStillClassify() {
         assertEquals(ChangeKind.CLASS_FILE, ChangeKind.of("Foo.class"));

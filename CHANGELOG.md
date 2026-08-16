@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- Log levels take effect without a restart. On SAP Commerce they live in the
+  property files rather than in a `log4j2.xml`, as a
+  `log4j2.logger.<key>.name` and `.level` pair, and saving one now sets the
+  level on the running Log4j2 context. Spring Boot's `logging.level.<logger>`
+  works the same way, and a saved `logback.xml` or `log4j2.xml` is applied to
+  the running context in full, appenders and patterns included. Only the
+  loggers a save touched are set, so a level raised from the console is not
+  pushed back by an unrelated property edit. Verified on a live SAP Commerce
+  2211 server (`DEBUG` to `ERROR` and back, read from inside the JVM, with the
+  untouched loggers unchanged) and on a Spring Boot application for the Logback
+  path.
+
 ## [1.0.20] - 2026-08-16
 
 ### Added

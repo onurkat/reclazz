@@ -54,6 +54,13 @@ public enum ChangeKind {
      */
     TEMPLATE,
 
+    /**
+     * {@code log4j2.xml} or {@code logback.xml}, in any of the spellings the
+     * frameworks accept. The file is a configuration the running context can be
+     * pointed at again, so a level or an appender changes without a restart.
+     */
+    LOGGING_CONFIG,
+
     /** Something we watch the directory for but do nothing with. */
     UNKNOWN;
 
@@ -69,6 +76,10 @@ public enum ChangeKind {
 
         if (fileName.endsWith(".class")) return CLASS_FILE;
         if (fileName.endsWith(".java")) return JAVA_SOURCE;
+
+        // Ahead of the generic .xml rules: these names are configuration for a
+        // framework rather than for the application.
+        if (isLoggingConfig(fileName)) return LOGGING_CONFIG;
 
         // Order matters against the codegen suffixes below only in the sense
         // that a name cannot end with two of them; kept explicit anyway.
@@ -90,6 +101,17 @@ public enum ChangeKind {
         }
 
         return UNKNOWN;
+    }
+
+    /**
+     * The names Log4j2 and Logback look for, plus the {@code -test} and
+     * {@code -spring} variants both frameworks accept.
+     */
+    private static boolean isLoggingConfig(String fileName) {
+        if (!fileName.endsWith(".xml")) return false;
+        String stem = fileName.substring(0, fileName.length() - ".xml".length());
+        return stem.equals("log4j2") || stem.startsWith("log4j2-") || stem.startsWith("log4j2.")
+                || stem.equals("logback") || stem.startsWith("logback-") || stem.startsWith("logback.");
     }
 
     /**

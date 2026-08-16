@@ -97,6 +97,10 @@ than either.
 
 - **Hot class reload**: Redefines classes in the running JVM via Instrumentation API
 - **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. Added *static* fields read as null/0 until a restart, and adding an enum value needs one; Reclazz says so in the reload log rather than leaving you to find out. JBR/DCEVM additionally gives full reflective visibility of new members
+- **Logging configuration**: `logging.level.<logger>` in a properties file, or a
+  saved `logback.xml` / `log4j2.xml`, is applied to the running logging context.
+  Raising a logger to debug is one of the most common reasons to restart a
+  server and one of the least necessary
 - **Auto-detection**: Automatically detects Spring Boot, Maven, and Gradle project layouts
 - **Zero config**: Just add `-javaagent`, no configuration files needed
 - **IntelliJ IDEA plugin**: Auto-injects agent into run configurations, auto-detects JDK and JBR
@@ -202,6 +206,11 @@ Hybris-specific features:
   actually differs, through the same call the HAC console makes. Values that
   are consumed once at startup are named as still needing a restart rather than
   reported as applied.
+- **Log levels**: SAP Commerce keeps them in properties rather than a
+  `log4j2.xml`, as a `log4j2.logger.<key>.name` and `.level` pair. Changing a
+  level applies it to the running Log4j2 context, so raising a logger to debug
+  no longer costs a restart. Only the loggers the save touched are set, which
+  leaves a level raised from the HAC console alone.
 - **Type and enum text**: editing an `<ext>-locales_<iso>.properties` re-reads
   the platform's localization cache, so the new text is served on the next
   lookup. No system update and no database write.
@@ -220,6 +229,7 @@ Hybris-specific features:
 | Per-extension setup file | None | `rebel.xml` for backoffice extensions |
 | A type in `items.xml` or `beans.xml` | Regenerates and reloads | Not in its Hybris manual |
 | A property | Applied to the running server | Not in its Hybris manual |
+| A log level | Applied to the running Log4j2 context | Not in its Hybris manual |
 | A type or enum name in a locales file | Yes | Not in its Hybris manual |
 | A backoffice label | Yes | Not in its Hybris manual |
 | An interceptor | Re-registered | Not in its Hybris manual |
@@ -310,6 +320,7 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 | Spring bean logic | Yes | None |
 | New Spring beans (@Component) | Via `*-spring.xml` hot-reload | None |
 | Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | None |
+| Log levels and logging config | Yes (`logging.level.*`, `logback.xml`, `log4j2.xml`) | Appenders are rebuilt, so a reconfigure resets the context |
 | Superclass changes | No | None |
 
 ## Architecture
