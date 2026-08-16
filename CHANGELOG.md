@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Adding a method and calling it from an existing method of the same class
+  works. The JVM will not accept a redefinition that adds a member, so an added
+  method lives in the companion, and after a structural reload the original
+  bodies are trampolines and the real code runs there. The call was resolved
+  against the original class, which cannot have the method, and failed with a
+  BootstrapMethodError. On a live SAP Commerce server, adding one helper to a
+  servlet filter turned every request into an HTTP 500 while the reload was
+  reported as successful.
+
 - Spring XML reload works on files that use a namespace. Spring finds the
   handler for `context:`, `util:` and the rest by reading `META-INF/spring
   .handlers` from the classpath, and the parser was reading it through the
