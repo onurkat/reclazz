@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Attaching to a running JVM can actually reload something. Classes loaded
+  before the agent arrived have none of its infrastructure, and a redefinition
+  cannot introduce it, so every swap failed with "attempted to change the
+  schema (add/remove fields)": the entire point of attaching. Those classes are
+  now left as they are and reload their method bodies, which is what attaching
+  can offer.
+
 - A Spring Boot application starts again on a JVM with native enhanced
   redefinition. The agent's bootstrap classes were installed only when its own
   companion engine was on, and that engine is switched off on such a JVM

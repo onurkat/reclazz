@@ -47,6 +47,20 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // Only transform watched classes
         if (!context.isWatched(className)) return null;
 
+        // A class that was already loaded when Reclazz attached has none of the
+        // infrastructure, and a redefinition cannot introduce it: the JVM
+        // refuses to change a class's shape. Transforming it here made every
+        // reload fail with "attempted to change the schema", which is the whole
+        // of what attaching to a running server could do. Handing the bytes
+        // back untouched leaves the one thing that does work: method bodies.
+        //
+        // Whether we transformed it is our own record, not something to ask the
+        // class: the injected members are hidden from reflection on purpose,
+        // so asking the class says no even when the answer is yes.
+        if (classBeingRedefined != null && context.getMetadata(className) == null) {
+            return null;
+        }
+
         try {
             // Skip interfaces: interface fields must be PUBLIC STATIC FINAL,
             // which conflicts with our PRIVATE SYNTHETIC infrastructure fields
