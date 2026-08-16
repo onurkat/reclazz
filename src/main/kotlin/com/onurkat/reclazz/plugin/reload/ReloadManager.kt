@@ -170,6 +170,17 @@ class ReloadManager(private val project: Project) : Disposable {
         notifyListeners(AgentEvent(level, message, ""))
     }
 
+    /**
+     * Ask the running agent why a class did not reload. The answer arrives as
+     * ordinary log lines, in the tool window, alongside the reloads it is
+     * being compared against.
+     *
+     * @return false when no agent is connected to ask
+     */
+    fun diagnose(className: String): Boolean {
+        return statusClient?.send("DIAGNOSE $className") ?: false
+    }
+
     private fun notifyListeners(event: AgentEvent) {
         for (listener in eventListeners) {
             try {

@@ -269,6 +269,13 @@
                 description="Attach the Reclazz agent to a running JVM">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
+        <action id="Reclazz.Diagnose"
+                class="com.onurkat.reclazz.plugin.reload.DiagnoseAction"
+                text="Why Didn't My Class Reload?"
+                description="Ask the running agent what happened to the class in the editor">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+        </action>
         <action id="Reclazz.Disconnect"
                 class="com.onurkat.reclazz.plugin.reload.DisconnectAction"
                 text="Disconnect from Reclazz Agent"

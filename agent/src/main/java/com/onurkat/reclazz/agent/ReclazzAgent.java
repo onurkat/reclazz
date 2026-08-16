@@ -76,6 +76,12 @@ public class ReclazzAgent {
     private static volatile ExecutorService watcherExecutor;
     private static volatile ExecutorService reloadExecutor;
     private static volatile StatusServer statusServer;
+
+    /**
+     * Answers "why didn't my class reload?". Kept here because the answer is
+     * assembled from what the watcher, the transformer and the JVM each know.
+     */
+    private static volatile ReloadDiagnostics diagnostics;
     private static volatile JvmCapabilityProbe.ProbeResult probeResult;
     private static volatile TransformContext transformContext;
     private static volatile StructuralReloader structuralReloader;
@@ -295,6 +301,15 @@ public class ReclazzAgent {
                             "java.lang.reflect.Method internals). Hot-reload still works; " +
                             "only reflective scans of newly-added methods/fields are degraded.");
                 }
+            }
+
+            // After the transform context exists, because half the answer to
+            // "why didn't my class reload?" is what that context knows about
+            // the class in question.
+            diagnostics = new ReloadDiagnostics(instrumentation, platformContext, transformContext,
+                    java.time.Instant.now());
+            if (statusServer != null) {
+                statusServer.setDiagnoser(diagnostics::explain);
             }
 
             // Set up incremental compiler (only if autoCompile is enabled)
@@ -531,6 +546,13 @@ public class ReclazzAgent {
 
             long elapsed = System.currentTimeMillis() - startTime;
 
+            if (diagnostics != null) {
+                diagnostics.record(className, reloadResult.isSuccess(),
+                        reloadResult.isSuccess()
+                                ? (reloadResult.isStructuralReload() ? "structural" : "method bodies")
+                                : reloadResult.getError());
+            }
+
             if (reloadResult.isSuccess()) {
                 if (reloadResult.isStructuralReload()) {
                     StatusReporter.structuralReload(displayName, elapsed);
@@ -639,6 +661,13 @@ public class ReclazzAgent {
             } catch (Throwable t) {
                 reloadResult = ClassReloader.ReloadResult.failure(
                         "Unexpected " + t.getClass().getSimpleName() + ": " + t.getMessage(), false);
+            }
+
+            if (diagnostics != null) {
+                diagnostics.record(className, reloadResult.isSuccess(),
+                        reloadResult.isSuccess()
+                                ? (reloadResult.isStructuralReload() ? "structural" : "method bodies")
+                                : reloadResult.getError());
             }
 
             if (reloadResult.isSuccess()) {
