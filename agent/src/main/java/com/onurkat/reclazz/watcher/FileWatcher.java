@@ -527,12 +527,22 @@ public class FileWatcher {
      * every line in the file as an edit.
      */
     private void baselinePropertyFiles(Path dir) {
+        // A snapshot is the whole file, held for as long as the agent runs, so
+        // it is only taken for files a save could act on. On SAP Commerce that
+        // is the platform's own configuration and nothing else: the other 400
+        // .properties files in an installation are message bundles and library
+        // settings that the property path refuses anyway, and keeping them
+        // measured 1.6 MB of strings for nothing. Elsewhere the same comparison
+        // is what tells a changed log level or a rebindable property from the
+        // rest of an application.properties, so there it is every file.
+        java.util.function.Predicate<Path> worthKeeping =
+                (platformContext instanceof com.onurkat.reclazz.platform.HybrisPlatformContext)
+                        ? com.onurkat.reclazz.hybris.HybrisConfigReloader::isPlatformConfiguration
+                        : f -> f.getFileName().toString().endsWith(".properties");
+
         try (java.util.stream.Stream<Path> files = Files.walk(dir, 4)) {
-            // Every properties file, not only the platform's: outside SAP
-            // Commerce the same comparison is what tells a changed log level
-            // from the rest of an application.properties.
             files.filter(Files::isRegularFile)
-                 .filter(f -> f.getFileName().toString().endsWith(".properties"))
+                 .filter(worthKeeping)
                  .forEach(com.onurkat.reclazz.agent.ReclazzAgent::baselinePropertyFile);
         } catch (Exception e) {
             // A directory that cannot be walked costs one over-eager first

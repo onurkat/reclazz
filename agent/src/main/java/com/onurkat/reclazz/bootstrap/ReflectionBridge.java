@@ -23,7 +23,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class ReflectionBridge {
 
-    private static final ConcurrentHashMap<String, ClassReflectionState> states = new ConcurrentHashMap<>();
+    /**
+     * Added members, held on the class they belong to.
+     *
+     * This was a map keyed by class name, and it was never pruned. The values
+     * are Method and Field objects, each holding its declaring class, which
+     * holds the classloader that defined it, so every class that ever had a
+     * member added stayed loaded for the life of the JVM together with
+     * everything its loader had defined. A weak reference alongside the members
+     * would have changed nothing, because the members themselves are what pins
+     * the class.
+     *
+     * A ClassValue is stored on the class, so it cannot outlive it, and the
+     * lookup is the same one the callers already do: every entry point here
+     * receives the Class.
+     */
+    private static final ClassValue<ClassReflectionState> states = new ClassValue<>() {
+        @Override
+        protected ClassReflectionState computeValue(Class<?> type) {
+            return new ClassReflectionState();
+        }
+    };
 
     /**
      * The prefix on everything Reclazz writes into a user's class: the
@@ -87,7 +107,7 @@ public final class ReflectionBridge {
      */
     public static Method[] getDeclaredMethods(Class<?> clazz) {
         String key = clazz.getName().replace('.', '/');
-        ClassReflectionState state = states.get(key);
+        Members state = stateFor(clazz);
 
         Method[] original = hideInternal(clazz.getDeclaredMethods());
 
@@ -109,7 +129,7 @@ public final class ReflectionBridge {
      */
     public static Field[] getDeclaredFields(Class<?> clazz) {
         String key = clazz.getName().replace('.', '/');
-        ClassReflectionState state = states.get(key);
+        Members state = stateFor(clazz);
 
         Field[] original = hideInternal(clazz.getDeclaredFields());
 
@@ -133,7 +153,7 @@ public final class ReflectionBridge {
             throws NoSuchMethodException {
         if (isInternal(name)) throw new NoSuchMethodException(name);
         String key = clazz.getName().replace('.', '/');
-        ClassReflectionState state = states.get(key);
+        Members state = stateFor(clazz);
 
         // Check added methods first
         if (state != null) {
@@ -156,7 +176,7 @@ public final class ReflectionBridge {
             throws NoSuchFieldException {
         if (isInternal(name)) throw new NoSuchFieldException(name);
         String key = clazz.getName().replace('.', '/');
-        ClassReflectionState state = states.get(key);
+        Members state = stateFor(clazz);
 
         // Check added fields first
         if (state != null) {
@@ -186,7 +206,7 @@ public final class ReflectionBridge {
      */
     public static Method[] getMethods(Class<?> clazz) {
         Method[] original = hideInternal(clazz.getMethods());
-        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        Members state = stateFor(clazz);
         if (state == null || state.addedMethods.isEmpty()) {
             return original;
         }
@@ -206,7 +226,7 @@ public final class ReflectionBridge {
     /** The public counterpart of {@link #getDeclaredFields}. */
     public static Field[] getFields(Class<?> clazz) {
         Field[] original = hideInternal(clazz.getFields());
-        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        Members state = stateFor(clazz);
         if (state == null || state.addedFields.isEmpty()) {
             return original;
         }
@@ -231,7 +251,7 @@ public final class ReflectionBridge {
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes)
             throws NoSuchMethodException {
         if (isInternal(name)) throw new NoSuchMethodException(name);
-        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        Members state = stateFor(clazz);
         if (state != null) {
             for (Method m : state.addedMethods) {
                 if (java.lang.reflect.Modifier.isPublic(m.getModifiers())
@@ -247,7 +267,7 @@ public final class ReflectionBridge {
     /** The public counterpart of {@link #getDeclaredField}. */
     public static Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
         if (isInternal(name)) throw new NoSuchFieldException(name);
-        ClassReflectionState state = states.get(clazz.getName().replace('.', '/'));
+        Members state = stateFor(clazz);
         if (state != null) {
             for (Field f : state.addedFields) {
                 if (java.lang.reflect.Modifier.isPublic(f.getModifiers())
@@ -260,15 +280,23 @@ public final class ReflectionBridge {
     }
 
     /**
+     * The state for a class, dropping it if the class it describes is gone.
+     *
+     * Pruning on read is enough: an entry nobody reads costs one map slot, and
+     * the classloader it was holding is released the moment its last reader
+     * looks.
+     */
+    private static Members stateFor(Class<?> clazz) {
+        return states.get(clazz).members;
+    }
+
+    /**
      * Atomically replace all added members for a class.
      * Avoids the window where clearClass + re-add leaves an incomplete state.
      */
-    public static void replaceClassState(String internalClassName,
-                                          List<Method> methods, List<Field> fields) {
-        ClassReflectionState newState = new ClassReflectionState();
-        newState.addedMethods.addAll(methods);
-        newState.addedFields.addAll(fields);
-        states.put(internalClassName, newState);
+    public static void replaceClassState(Class<?> owner,
+                                         List<Method> methods, List<Field> fields) {
+        states.get(owner).members = new Members(methods, fields);
     }
 
     private static boolean paramTypesMatch(Class<?>[] a, Class<?>[] b) {
@@ -284,8 +312,30 @@ public final class ReflectionBridge {
      * Uses CopyOnWriteArrayList for thread safety — reads (getDeclaredMethods)
      * can happen concurrently with writes (registerAddedMethod/clearClass).
      */
+    /**
+     * The mutable holder a ClassValue needs, since a ClassValue itself cannot
+     * be reassigned. One volatile field, replaced whole.
+     */
     static final class ClassReflectionState {
-        final List<Method> addedMethods = new CopyOnWriteArrayList<>();
-        final List<Field> addedFields = new CopyOnWriteArrayList<>();
+        volatile Members members = Members.EMPTY;
+    }
+
+    /**
+     * What a reload added, as one immutable set.
+     *
+     * Replaced rather than edited in place: a reader that caught a clear
+     * followed by a re-add would see a class with half its members, and that
+     * window is what a framework scan would report as a missing method.
+     */
+    static final class Members {
+        static final Members EMPTY = new Members(List.of(), List.of());
+
+        final List<Method> addedMethods;
+        final List<Field> addedFields;
+
+        Members(List<Method> methods, List<Field> fields) {
+            this.addedMethods = List.copyOf(methods);
+            this.addedFields = List.copyOf(fields);
+        }
     }
 }

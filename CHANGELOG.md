@@ -6,6 +6,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- The agent no longer keeps a class, or the classloader that defined it, alive
+  after the application has dropped it. Three places held per-class state in a
+  static map: the dispatch table (a WeakHashMap, which did nothing, because
+  every value holds a call-site handle bound to the class that is its key), the
+  field store's cache of the added-field array, and the reflection bridge's
+  record of added members, whose forged Method objects hold their declaring
+  class. All three now live on the class itself, through a ClassValue, so they
+  die with it. Nothing shows in a reload loop, where the class stays loaded
+  anyway; the cost lands on a discarded classloader, a redeployed web
+  application being the usual one, whose entire loader was being held for the
+  life of the server.
+
+### Changed
+
+- On SAP Commerce only the platform's own configuration files are snapshotted
+  at startup, as before. Snapshotting every `.properties` file in an
+  installation measured 434 files and 1.6 MB of retained strings for property
+  paths that refuse them anyway. Outside SAP Commerce every file is still
+  snapshotted, which is what makes a changed log level or a rebindable property
+  distinguishable from the rest of an `application.properties`.
+
 ## [1.0.21] - 2026-08-16
 
 ### Added
