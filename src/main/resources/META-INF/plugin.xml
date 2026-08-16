@@ -76,6 +76,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.20</h3>
+        <ul>
+            <li>A Spring MVC endpoint you add is served without a restart, on an ordinary JDK as well. Writing a new endpoint is when a reload is worth the most, and it was the last thing that still sent you to restart the server</li>
+        </ul>
+
         <h3>1.0.19</h3>
         <ul>
             <li>Attaching to a running server reloads again. Classes loaded before Reclazz arrived were being handed back in a shape the JVM refuses, so every swap failed and attaching did nothing at all</li>
