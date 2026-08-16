@@ -75,6 +75,36 @@ public final class DispatchTable {
         // effect — matching the reported bug).
         private final ConcurrentHashMap<String, MethodHandle> latestMethodTargets = new ConcurrentHashMap<>();
 
+        /**
+         * What a call site needs to keep respecting an override after a
+         * reload. A reload re-points sites straight at the new implementation,
+         * and a receiver that is a Spring proxy would be walked past: the bean
+         * would keep its transaction, cache or aspect only until its first
+         * reload. See ReclazzBootstrap.guardWithOverride.
+         */
+        private final ConcurrentHashMap<String, OverrideGuard> overrideGuards = new ConcurrentHashMap<>();
+
+        private record OverrideGuard(Class<?> ownerClass, String publicName, MethodHandle publicCall) { }
+
+        /** Registered by the bootstrap for call sites outside the owning class. */
+        public void registerOverrideGuard(String key, Class<?> ownerClass,
+                                          String publicName, MethodHandle publicCall) {
+            overrideGuards.put(key, new OverrideGuard(ownerClass, publicName, publicCall));
+        }
+
+        private MethodHandle respectingOverrides(String key, MethodHandle target) {
+            OverrideGuard guard = overrideGuards.get(key);
+            if (guard == null) return target;
+            try {
+                return ReclazzBootstrap.guardWithOverride(
+                        guard.ownerClass(), guard.publicName(), guard.publicCall(), target);
+            } catch (Throwable t) {
+                // A guard that cannot be rebuilt must not cost the reload; the
+                // call still reaches the new code, just not through a proxy.
+                return target;
+            }
+        }
+
         public MutableCallSite getOrCreateMethodSite(String key, MutableCallSite initial) {
             MutableCallSite site = methodSites.computeIfAbsent(key, k -> initial);
             // If a reload already installed a newer target for this key, retarget
@@ -112,10 +142,11 @@ public final class DispatchTable {
                 for (var entry : newTargets.entrySet()) {
                     // Always remember the latest target so a future first-touch
                     // bootstrap can install it instead of the v0 renamed handle.
-                    latestMethodTargets.put(entry.getKey(), entry.getValue());
+                    MethodHandle target = respectingOverrides(entry.getKey(), entry.getValue());
+                    latestMethodTargets.put(entry.getKey(), target);
                     MutableCallSite site = methodSites.get(entry.getKey());
                     if (site != null) {
-                        site.setTarget(entry.getValue());
+                        site.setTarget(target);
                         sites[count++] = site;
                     }
                 }
