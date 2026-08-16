@@ -99,6 +99,7 @@ public class StructuralReloader {
             StructuralAnalyzer.StructuralDiff diff = StructuralAnalyzer.analyze(oldMetadata, newBytecode);
 
             if (diff.isUnsupported()) {
+                com.onurkat.reclazz.agent.RestartLedger.note(className, "changed its superclass or interfaces, which cannot be redefined");
                 return ClassReloader.ReloadResult.failure(
                         "Unsupported change: superclass or interface hierarchy changed. " +
                                 "This requires a server restart.", true);
@@ -335,10 +336,14 @@ public class StructuralReloader {
                             + addedStatics + ". Enum constants cannot be added to a "
                             + "running JVM: restart to pick them up. Everything else "
                             + "in this class reloaded.");
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "gained enum value(s) " + addedStatics + ", which a running JVM cannot add");
                 } else if (!addedStatics.isEmpty()) {
                     StatusReporter.warn("Added static field(s) " + addedStatics
                             + " read as null/0 until restart: a static initialiser "
                             + "cannot be re-run without resetting the class's other statics.");
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "added static field(s) " + addedStatics + " that read as null/0");
                 }
                 StatusReporter.info("Added fields are set on new instances; "
                         + "objects that already existed keep the default (null/0/false).");

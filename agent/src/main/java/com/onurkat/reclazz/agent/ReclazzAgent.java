@@ -937,6 +937,7 @@ public class ReclazzAgent {
         } else {
             StatusReporter.warn("Could not reach the platform's localization cache; "
                     + fileName + " needs a restart to take effect.");
+            RestartLedger.note(fileName, "localization text the platform's cache did not take");
         }
     }
 

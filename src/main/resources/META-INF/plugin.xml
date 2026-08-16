@@ -276,6 +276,12 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
+        <action id="Reclazz.PendingRestart"
+                class="com.onurkat.reclazz.plugin.reload.PendingRestartAction"
+                text="What Still Needs a Restart?"
+                description="Ask the running agent what a restart would still change">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
         <action id="Reclazz.Disconnect"
                 class="com.onurkat.reclazz.plugin.reload.DisconnectAction"
                 text="Disconnect from Reclazz Agent"

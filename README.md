@@ -410,6 +410,14 @@ test suite actually checks.
 
 ## Troubleshooting
 
+### "Do I still need to restart?"
+
+**Tools > What Still Needs a Restart?** answers it. Reclazz keeps a note of
+everything this session did that a restart would change: a static field that
+reads null, an enum that gained a value, a superclass change, a Spring bean the
+XML reload could not apply, a property the platform refused. When the list is
+empty it says so, which is the answer that saves the restart.
+
 ### "Why didn't my class reload?"
 
 Ask the agent: **Tools > Why Didn't My Class Reload?**, or right-click in the

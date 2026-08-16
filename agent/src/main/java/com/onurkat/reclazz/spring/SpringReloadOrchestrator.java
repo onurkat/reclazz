@@ -145,6 +145,8 @@ public class SpringReloadOrchestrator {
                             StatusReporter.warn("A handler method added by this reload is not visible "
                                     + "to the mapping scan and needs a restart. Existing mappings, "
                                     + "including changed ones, are live.");
+                            com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+                                    "a handler method added by a reload that the mapping scan cannot see");
                         }
                     }
                 }
