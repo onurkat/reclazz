@@ -821,8 +821,15 @@ public class ReclazzAgent {
         // Spring Boot binds a properties file into objects once, at startup.
         // The values go back into the Environment and the beans that read them
         // are put through the same binding the application did on the way up.
-        java.util.List<String> rebound = new com.onurkat.reclazz.spring.SpringPropertyRebinder(
-                platformContext.getAllApplicationContexts()).apply(changed);
+        //
+        // Not on SAP Commerce: the platform reads its properties through Config
+        // rather than the Environment, and the branch above is what applies
+        // them there. Reaching into a hundred web contexts to add a source
+        // nothing reads would be work for its own sake.
+        java.util.List<String> rebound = (platformContext instanceof HybrisPlatformContext)
+                ? java.util.List.<String>of()
+                : new com.onurkat.reclazz.spring.SpringPropertyRebinder(
+                        platformContext.getAllApplicationContexts()).apply(changed);
         if (!rebound.isEmpty()) {
             StatusReporter.success("Rebound " + rebound.size() + " @ConfigurationProperties bean(s): "
                     + (rebound.size() > 5 ? rebound.subList(0, 5) + " …" : rebound.toString()));
