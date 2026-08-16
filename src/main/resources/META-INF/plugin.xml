@@ -31,6 +31,7 @@
         <ul>
             <li><b>items.xml and beans.xml</b>: regeneration plus reload of the model and DTO classes, without the full rebuild. A new attribute still needs a database column, so Reclazz reminds you to run Update Running System rather than touching your database itself</li>
             <li><b>Properties</b>: saving a property file applies the keys whose value differs to the running server, the same call the HAC console makes, and says which values still need a restart instead of reporting them as done</li>
+            <li><b>Log levels</b>: SAP Commerce keeps them in the property files rather than a log4j2.xml, as a name and level pair. Change one and it reaches the running Log4j2 context, so turning a class up to debug costs a save instead of a restart</li>
             <li><b>Type and enum text</b>: editing a locales file re-reads the platform's localization cache, so the new text is served on the next lookup, with no system update and no database write</li>
             <li><b>Backoffice labels</b>: label files reach the cache backoffice actually reads from, every copy of it; reopen the view and the text is there</li>
             <li><b>Interceptor reload</b>: Validate, Prepare, Load and Remove interceptors re-register</li>
@@ -45,6 +46,7 @@
             <li><b>Cache eviction</b>: caches for @Cacheable and @CacheEvict classes are evicted</li>
             <li><b>Scheduler and events</b>: @Scheduled tasks and @EventListener methods are re-registered</li>
             <li><b>AOP, @Async and Spring Data</b>: proxy caches cleared, beans re-processed, repositories refreshed</li>
+            <li><b>Property and logging changes</b>: a changed key goes into the running Environment and the @ConfigurationProperties beans that read it are rebound, so a timeout or a feature flag applies on the next call. Levels, and a saved logback.xml or log4j2.xml, reach the running logging context. A bean bound through its constructor cannot take a new value, and Reclazz says so instead of reporting it as applied</li>
             <li><b>Templates</b>: editing a Thymeleaf or Freemarker template takes effect on the next render, without a restart and without turning caching off.</li>
         </ul>
 
@@ -53,6 +55,7 @@
             <li><b>Structural changes on a stock JDK</b>: add and remove methods and instance fields, and change annotations, on any JDK 17+. No patched JVM required. An added field is set on objects created after the reload. Added static fields and new enum values need a restart, and Reclazz tells you so rather than leaving you to find out. JetBrains Runtime or DCEVM additionally makes new members visible to reflection</li>
             <li><b>Instant</b>: classes are redefined through the Instrumentation API in milliseconds</li>
             <li><b>One click setup</b>: once enabled, the agent is injected into your run configurations for you</li>
+            <li><b>It explains itself</b>: when nothing happens, ask why. The build did not reach the class, it is built somewhere Reclazz does not watch, the bytes came out identical, or the JVM has not loaded it yet; none of those produce an error, which is why the log was empty. A second question lists what this session did that a restart would still change, and says so plainly when there is nothing</li>
             <li><b>100% local and private</b>: no telemetry, no analytics, no outbound network requests. The one socket it opens is bound to loopback</li>
         </ul>
 
