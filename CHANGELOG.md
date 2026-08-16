@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring Boot applies a changed property to the beans that read it. The values
+  go into the running Environment and every `@ConfigurationProperties` bean
+  whose prefix the save touched is put back through the binding post-processor,
+  the same one that filled it in at startup, so a timeout or a feature flag
+  takes effect on the next call. A bean bound through its constructor, a record
+  being the common shape, cannot be rebound: Spring accepts the request and
+  does nothing, so Reclazz names it instead of reporting it as applied, and it
+  goes on the restart list. Verified on a Spring Boot 3.3 application.
 - **Tools > What Still Needs a Restart?** lists what this session did that a
   restart would still change: a static field that reads null, an enum that
   gained a value, a superclass change, a Spring bean the XML reload could not

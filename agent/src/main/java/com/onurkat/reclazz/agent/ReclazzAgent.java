@@ -818,12 +818,24 @@ public class ReclazzAgent {
         java.util.Map<String, String> changed = propertySnapshots.changedSince(event.getPath());
         int levelsApplied = applyLoggerLevels(event.getPath(), changed.keySet());
 
+        // Spring Boot binds a properties file into objects once, at startup.
+        // The values go back into the Environment and the beans that read them
+        // are put through the same binding the application did on the way up.
+        java.util.List<String> rebound = new com.onurkat.reclazz.spring.SpringPropertyRebinder(
+                platformContext.getAllApplicationContexts()).apply(changed);
+        if (!rebound.isEmpty()) {
+            StatusReporter.success("Rebound " + rebound.size() + " @ConfigurationProperties bean(s): "
+                    + (rebound.size() > 5 ? rebound.subList(0, 5) + " …" : rebound.toString()));
+        }
+
         // Warning about a restart after the change has been applied would tell
         // the developer to do the one thing this just saved them.
+        if (!rebound.isEmpty()) return;
         if (levelsApplied > 0 && changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey)) {
             return;
         }
-        StatusReporter.warn("Configuration changes may require a restart to take effect.");
+        StatusReporter.warn("Values a bean read once at startup still need a restart; "
+                + "nothing here reads them again on its own.");
     }
 
     /**

@@ -97,6 +97,11 @@ than either.
 
 - **Hot class reload**: Redefines classes in the running JVM via Instrumentation API
 - **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. Added *static* fields read as null/0 until a restart, and adding an enum value needs one; Reclazz says so in the reload log rather than leaving you to find out. JBR/DCEVM additionally gives full reflective visibility of new members
+- **Property changes**: a changed key goes into the running Environment and the
+  `@ConfigurationProperties` beans whose prefix it touches are rebound, so a
+  timeout or a feature flag takes effect without a restart. Beans bound through
+  a constructor (a record, or `@ConstructorBinding`) hold values that cannot be
+  replaced, and Reclazz says so rather than reporting them as applied
 - **Logging configuration**: `logging.level.<logger>` in a properties file, or a
   saved `logback.xml` / `log4j2.xml`, is applied to the running logging context.
   Raising a logger to debug is one of the most common reasons to restart a
@@ -320,6 +325,7 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 | Spring bean logic | Yes | None |
 | New Spring beans (@Component) | Via `*-spring.xml` hot-reload | None |
 | Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | None |
+| Property changes | Rebound into `@ConfigurationProperties` beans | Constructor-bound beans and `@Value` fields keep their startup values |
 | Log levels and logging config | Yes (`logging.level.*`, `logback.xml`, `log4j2.xml`) | Appenders are rebuilt, so a reconfigure resets the context |
 | Superclass changes | No | None |
 
