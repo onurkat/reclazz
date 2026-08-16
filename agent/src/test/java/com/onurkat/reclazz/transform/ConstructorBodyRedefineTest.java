@@ -57,9 +57,11 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
         assertEquals("old-ctor", tag.invoke(oldInstance));
 
         // Register a live transformer the way the agent does, so redefinition
-        // re-transforms raw bytes exactly like class load did.
-        TransformContext context = new TransformContext();
-        context.addWatched("CtorClass");
+        // re-transforms raw bytes exactly like class load did. The context
+        // carries the record of that class load, as the agent's single context
+        // does: a redefinition of a class the agent never instrumented is left
+        // alone, because its shape cannot be changed after the fact.
+        TransformContext context = contextThatLoaded("CtorClass", v1.get("CtorClass"));
         ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
         instrumentation.addTransformer(transformer, true);
         try {
@@ -80,8 +82,7 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
                 V1.replace("CtorClass", "CtorClass2")));
         Class<?> cls = defineAndLoad(v1, "CtorClass2");
 
-        TransformContext context = new TransformContext();
-        context.addWatched("CtorClass2");
+        TransformContext context = contextThatLoaded("CtorClass2", v1.get("CtorClass2"));
         ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
         instrumentation.addTransformer(transformer, true);
         try {
@@ -95,5 +96,23 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
         } finally {
             instrumentation.removeTransformer(transformer);
         }
+    }
+
+    /**
+     * A context in the state the agent's own would be in after loading this
+     * class: watching it, and holding the record made while transforming it.
+     */
+    private static TransformContext contextThatLoaded(String internalName, byte[] loadedBytes) {
+        TransformContext context = new TransformContext();
+        context.addWatched(internalName);
+        try {
+            // The same call class loading makes, which is what records it.
+            new ReclazzTransformer(context, AgentConfig.parse(null))
+                    .transform(ConstructorBodyRedefineTest.class.getClassLoader(),
+                            internalName, null, null, loadedBytes);
+        } catch (Exception e) {
+            fail("could not rebuild the load-time context: " + e);
+        }
+        return context;
     }
 }
