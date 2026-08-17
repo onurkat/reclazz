@@ -292,6 +292,22 @@ Go to **Settings** > **Tools** > **Reclazz**:
 | Debounce (ms) | 500 | Delay before processing file changes |
 | Startup delay (s) | 30 | Wait before watching files after server start |
 
+## Verified On
+
+Everything documented here is measured on a running system rather than inferred
+from the code. What that means concretely:
+
+| Environment | Version | Covered |
+|---|---|---|
+| SAP Commerce | 2211 | 20/20 integration scenarios on a live server |
+| Spring Boot | 3.3 | class reload, structural reload, bean refresh, cache, MVC, properties, logging |
+| Spring Boot | 2.7 | the same six, including a new endpoint mapped without a restart |
+| JDK | SapMachine 21, JBR 25 | companion-class engine and native enhanced redefinition |
+| IntelliJ IDEA | 2023.3 to 2026.1 | the range the plugin declares |
+
+Older or newer versions are likely to work, and are not claimed to until they
+have been run.
+
 ## Supported JDK Providers
 
 Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument` API. Structural reload (add/remove methods and instance fields) works on every vendor below. The difference is reflective visibility, not whether the change takes effect.
