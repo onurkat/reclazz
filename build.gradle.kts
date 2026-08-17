@@ -361,6 +361,14 @@ tasks.named<Zip>("buildPlugin") {
         rename { "reclazz-agent.jar" }
         into("agent")
     }
-    // Remove duplicates from nested paths
+
+    // The licence terms travel with the thing they license. Both licences in
+    // the agent jar require it: Apache 2.0 asks for the licence and the NOTICE
+    // to be carried along, and ASM's BSD asks for its copyright notice. Keeping
+    // them in the repository only serves people who go looking for the source,
+    // and the people who most need them are the ones reviewing a downloaded
+    // zip on behalf of an employer.
+    from("LICENSE", "NOTICE", "THIRD-PARTY.md")
+
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- The release carries `LICENSE`, `NOTICE` and a new `THIRD-PARTY.md` beside the
+  code, listing everything shipped inside the agent, its version, its licence
+  and why it is there. Byte Buddy is Apache 2.0 and ASM is BSD 3-Clause, and
+  both ask for their terms to travel with the distribution; keeping them in the
+  repository served everyone except the person reviewing a downloaded zip on
+  behalf of an employer.
+
 ### Fixed
 
 - A class file built for a newer Java than the server runs is refused with an
