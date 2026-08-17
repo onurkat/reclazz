@@ -82,6 +82,14 @@ public class StructuralReloader {
     public ClassReloader.ReloadResult reload(String className, byte[] newBytecode) {
         String internalName = className.replace('.', '/');
 
+        // Before anything is generated or swapped: the JVM cannot load a class
+        // file newer than itself, and finding that out halfway through leaves a
+        // warning in the middle of a reload that then reports success.
+        String tooNew = com.onurkat.reclazz.util.BytecodeVersion.rejectionReason(newBytecode);
+        if (tooNew != null) {
+            return ClassReloader.ReloadResult.failure(className + " " + tooNew, false);
+        }
+
         try {
             TransformContext.ClassMetadata oldMetadata = context.getMetadata(internalName);
 

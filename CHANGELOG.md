@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- A class file built for a newer Java than the server runs is refused with an
+  explanation instead of being reported as reloaded. The JVM cannot load it, and
+  that rejection used to arrive as a passing warning in the middle of a reload
+  that then announced success and a refreshed bean, while the application went
+  on running the old code. A module left on a newer toolchain than the server is
+  an ordinary mismatch, and a green log next to unchanged behaviour is the one
+  failure that stops a developer from looking. The message now names both
+  versions and which end to change. Found on a Spring Boot 2.7 application while
+  verifying JDK 17.
+
 ## [1.0.22] - 2026-08-16
 
 ### Fixed

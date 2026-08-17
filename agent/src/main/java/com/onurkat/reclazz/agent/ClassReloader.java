@@ -57,6 +57,11 @@ public class ClassReloader {
      * Reload a class by its fully qualified name with new bytecode.
      */
     public ReloadResult reload(String className, byte[] newBytecode) {
+        String tooNew = com.onurkat.reclazz.util.BytecodeVersion.rejectionReason(newBytecode);
+        if (tooNew != null) {
+            return ReloadResult.failure(className + " " + tooNew, false);
+        }
+
         try {
             // Find the already-loaded class in the JVM
             Class<?> existingClass = findLoadedClass(className);
