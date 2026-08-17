@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Free, open-source hot-reload for SAP Commerce (Hybris) and Spring. Save an items.xml and it regenerates and reloads instead of costing you ant clean all and a restart. Interceptors, ImpEx, Spring beans and MVC mappings included.">
+    <meta name="keywords" content="SAP Commerce, Hybris, hybris hot reload, items.xml, impex hot reload, hybris localization reload, backoffice labels reload, hybris properties reload, JRebel alternative, DCEVM alternative, Spring Boot, hot-reload, Java agent, hot-swap, Spring bean refresh, MVC, Reclazz, IntelliJ plugin">
+    <meta name="author" content="Onur Kat">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#06060a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)">
+    <meta property="og:title" content="Reclazz: Free Hot-Reload for SAP Commerce and Spring">
+    <meta property="og:description" content="Stop restarting SAP Commerce. Edit code, build, and the running server picks up the change in about 50ms. Even an items.xml save regenerates and reloads. Free and open source.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reclazz.com">
+    <meta property="og:image" content="https://reclazz.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Reclazz: stop restarting SAP Commerce.">
+    <meta property="og:site_name" content="Onur Kat">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Reclazz: Free Hot-Reload for SAP Commerce and Spring">
+    <meta name="twitter:description" content="Stop restarting SAP Commerce. Edit code, build, and the running server picks up the change in about 50ms. Even an items.xml save regenerates and reloads. Free and open source.">
+    <meta name="twitter:image" content="https://reclazz.com/og-image.png">
+    <meta name="twitter:image:alt" content="Reclazz: stop restarting SAP Commerce.">
+    <link rel="canonical" href="https://reclazz.com">
+    <title>Reclazz | Free Hot-Reload for SAP Commerce and Spring</title>
+    <link rel="icon" type="image/svg+xml" href="/reclazz/favicon.svg">
+    <link rel="apple-touch-icon" href="/reclazz/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+    :root {
+        --bg-dark: #06060a;
+        --bg-elevated: #0d0d14;
+        --bg-card: #111118;
+        --bg-card-hover: #16161f;
+        --bg-subtle: #1a1a24;
+        --primary: #7c3aed;
+        --primary-glow: #a78bfa;
+        --primary-dark: #6d28d9;
+        --primary-light: #c4b5fd;
+        --accent: #06d6a0;
+        --accent-glow: #34d399;
+        --cyan: #22d3ee;
+        --pink: #f472b6;
+        --orange: #fb923c;
+        --success: #10b981;
+        --warning: #fbbf24;
+        --error: #f43f5e;
+        --text: #f8fafc;
+        --text-secondary: #e2e8f0;
+        --text-muted: #94a3b8;
+        --text-dim: #64748b;
+        --border-subtle: rgba(255,255,255,0.04);
+        --border-glass: rgba(255,255,255,0.08);
+        --font-primary: 'Poppins', sans-serif;
+        --font-secondary: 'Inter', sans-serif;
+        --font-mono: 'JetBrains Mono', monospace;
+        --header-height: 80px;
+    }
+
+    html[data-theme="light"] {
+        --bg-dark: #fafaf9; --bg-elevated: #ffffff; --bg-card: #ffffff;
+        --bg-card-hover: #f5f5f4; --bg-subtle: #fafaf9;
+        --primary: #6d28d9; --primary-glow: #7c3aed;
+        --accent: #059669; --text: #1c1917; --text-secondary: #292524;
+        --text-muted: #57534e; --text-dim: #78716c;
+        --border-subtle: rgba(28,25,23,0.06); --border-glass: rgba(28,25,23,0.1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; scroll-behavior: smooth; }
+    body {
+        font-family: var(--font-secondary);
+        color: var(--text);
+        background: var(--bg-dark);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+        line-height: 1.6;
+    }
+    a { color: var(--primary-glow); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: var(--accent); }
+    :focus-visible { outline: 2px solid var(--primary-glow); outline-offset: 2px; }
+    ::selection { background: rgba(124,58,237,0.3); }
+
+    /* Skip to content */
+    .skip-to-content {
+        position: absolute; top: -100%; left: 50%; transform: translateX(-50%);
+        padding: 12px 24px; background: var(--primary); color: #fff;
+        font-weight: 600; border-radius: 0 0 8px 8px; z-index: 999;
+        transition: top 0.2s;
+    }
+    .skip-to-content:focus { top: 0; color: #fff; }
+
+    /* Header */
+    .header {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+        height: var(--header-height);
+        background: rgba(6,6,10,0.72);
+        backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%);
+        border-bottom: 1px solid transparent;
+        transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, height 0.3s;
+    }
+    /* Over the hero the header stays airy; once the page scrolls it earns a
+       solid backdrop and an edge so content passing underneath stays legible. */
+    .header.is-scrolled {
+        height: 68px;
+        background: rgba(6,6,10,0.92);
+        border-bottom-color: var(--border-subtle);
+        box-shadow: 0 10px 40px rgba(0,0,0,0.45);
+    }
+    /* Hairline of brand colour along the very top edge. */
+    .header::after {
+        content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(124,58,237,0.55) 30%, rgba(6,214,160,0.55) 70%, transparent);
+        opacity: 0; transition: opacity 0.3s;
+    }
+    .header.is-scrolled::after { opacity: 1; }
+    html[data-theme="light"] .header { background: rgba(255,255,255,0.72); }
+    html[data-theme="light"] .header.is-scrolled {
+        background: rgba(255,255,255,0.92);
+        box-shadow: 0 10px 30px rgba(15,15,30,0.08);
+    }
+    .header-inner {
+        max-width: 1200px; margin: 0 auto; height: 100%;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 0 24px;
+    }
+    .header-logo {
+        display: flex; align-items: center; gap: 11px;
+        color: var(--text); font-family: var(--font-primary);
+        font-weight: 700; font-size: 1.15rem; letter-spacing: -0.01em;
+        text-decoration: none;
+    }
+    .header-mark { display: flex; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    /* The mark turns once on hover: the product reloads, so the logo does too. */
+    .header-logo:hover .header-mark { transform: rotate(180deg); }
+    .header-wordmark {
+        background: linear-gradient(120deg, var(--text) 0%, var(--text) 45%, #06d6a0 100%);
+        -webkit-background-clip: text; background-clip: text;
+        -webkit-text-fill-color: transparent; color: transparent;
+    }
+    /* On white the brand teal is too pale to read, so the wordmark lands on a
+       deeper shade of it in light mode. */
+    html[data-theme="light"] .header-wordmark {
+        background: linear-gradient(120deg, var(--text) 0%, var(--text) 45%, #059669 100%);
+        -webkit-background-clip: text; background-clip: text;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .header-mark, .header-logo:hover .header-mark { transition: none; transform: none; }
+    }
+    .header-logo img { height: 36px; width: 36px; }
+    .header-nav { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-utils { display: contents; }
+    .header-nav a {
+        color: var(--text-muted); font-size: 0.875rem; font-weight: 500;
+        text-transform: uppercase; letter-spacing: 0.05em;
+        transition: color 0.2s;
+    }
+    /* Section links get an underline that grows from the centre, and stays put
+       for whichever section is currently in view (see the scrollspy below). */
+    .header-nav a[href^="#"] { position: relative; padding-bottom: 3px; }
+    .header-nav a[href^="#"]::after {
+        content: ''; position: absolute; left: 50%; right: 50%; bottom: 0; height: 2px;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #7c3aed, #06d6a0);
+        transition: left 0.25s ease, right 0.25s ease;
+    }
+    .header-nav a[href^="#"]:hover::after,
+    .header-nav a[href^="#"].is-active::after { left: 0; right: 0; }
+    .header-nav a[href^="#"].is-active { color: var(--text); }
+    .header-nav a:hover { color: var(--text); }
+    .btn-github {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 9px 20px; border-radius: 999px;
+        background: linear-gradient(120deg, var(--primary), #6d28d9 55%, #0ea47a);
+        color: #fff;
+        font-size: 0.875rem; font-weight: 600;
+        box-shadow: 0 2px 12px rgba(124,58,237,0.28);
+        transition: all 0.3s; border: none; cursor: pointer;
+    }
+    .btn-github:hover { color: #fff; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(124,58,237,0.45); filter: brightness(1.08); }
+    .theme-toggle {
+        background: none; border: 1px solid var(--border-glass);
+        color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        transition: all 0.3s; font-size: 1rem;
+    }
+    .theme-toggle:hover { color: var(--text); border-color: var(--primary); }
+
+    /* Mobile menu */
+    .menu-toggle {
+        display: none; background: none; border: 1px solid var(--border-glass);
+        color: var(--text-muted); width: 36px; height: 36px; border-radius: 8px;
+        cursor: pointer; align-items: center; justify-content: center;
+        transition: all 0.3s; font-size: 1.2rem;
+    }
+    .menu-toggle:hover { color: var(--text); border-color: var(--primary); }
+    @media (max-width: 768px) {
+        .menu-toggle { display: flex; }
+        .header-nav {
+            position: fixed; top: var(--header-height); left: 0; right: 0;
+            flex-direction: column; gap: 0; padding: 0;
+            /* Opaque, not translucent: the panel sits inside .header, which
+               already has a backdrop-filter, so a nested one is ignored and
+               the old 0.95 alpha left the hero headline ghosting through. */
+            background: var(--bg-dark);
+            border-bottom: 1px solid var(--border-glass);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+        }
+        html[data-theme="light"] .header-nav { background: var(--bg-elevated); box-shadow: 0 20px 40px rgba(15,15,30,0.12); }
+        /* The old fixed 320px cut the menu off mid-way: the content is taller
+           than that, so the Install button survived as a 17px sliver. Bound it
+           to the viewport instead and let it scroll if it ever outgrows one. */
+        .header-nav.open { max-height: calc(100vh - var(--header-height)); overflow-y: auto; }
+        /* The bar shrinks on scroll, so the panel has to follow it up. */
+        .header.is-scrolled .header-nav { top: 68px; }
+        .header.is-scrolled .header-nav.open { max-height: calc(100vh - 68px); }
+        .header-nav a, .header-nav .btn-github {
+            padding: 14px 24px; width: 100%; text-align: left;
+            border-bottom: 1px solid var(--border-subtle); border-radius: 0;
+        }
+        /* A centre-growing underline makes no sense on full-width rows; the
+           active section gets a left accent instead. */
+        .header-nav a[href^="#"] { padding-bottom: 14px; }
+        .header-nav a[href^="#"]::after {
+            left: 0; right: auto; top: 0; bottom: 0; width: 3px; height: auto;
+            background: linear-gradient(180deg, #7c3aed, #06d6a0);
+            opacity: 0; transition: opacity 0.2s;
+        }
+        .header-nav a[href^="#"]:hover::after,
+        .header-nav a[href^="#"].is-active::after { opacity: 1; left: 0; right: auto; }
+        /* The controls used to sit at three different alignments: a centred
+           language pill, a 36px circular theme button and a full-bleed CTA.
+           They now share the rows' left edge, and the CTA becomes a pill. */
+        .nav-utils {
+            display: flex; align-items: center; gap: 10px; width: 100%;
+            padding: 14px 24px; border-bottom: 1px solid var(--border-subtle);
+        }
+        .header-nav .lang-toggle { padding: 7px 16px; }
+        .header-nav .btn-github {
+            width: calc(100% - 32px); margin: 16px; border-radius: 999px;
+            border-bottom: none; justify-content: center; text-align: center;
+            padding: 14px 24px;
+        }
+    }
+
+    /* Hero */
+    .hero {
+        min-height: 100vh; display: flex; align-items: center;
+        padding-top: var(--header-height);
+        position: relative; overflow: hidden;
+    }
+    .hero::before {
+        content: ''; position: absolute; inset: 0;
+        background:
+            radial-gradient(ellipse at 30% 20%, rgba(124,58,237,0.15) 0, transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(6,214,160,0.1) 0, transparent 50%),
+            radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.08) 0, transparent 40%);
+        pointer-events: none;
+    }
+    html[data-theme="light"] .hero::before {
+        background:
+            radial-gradient(ellipse at 30% 20%, rgba(124,58,237,0.06) 0, transparent 50%),
+            radial-gradient(ellipse at 70% 80%, rgba(6,214,160,0.04) 0, transparent 50%);
+    }
+    .hero-inner {
+        max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+        text-align: center; position: relative; z-index: 1;
+    }
+    .hero-badge {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 6px 16px; border-radius: 999px;
+        background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2);
+        color: var(--primary-glow); font-size: 0.8rem; font-weight: 600;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        margin-bottom: 32px;
+    }
+    .hero-badge .dot {
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--accent); animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(1.5); }
+    }
+    .hero h1 {
+        font-family: var(--font-primary); font-size: clamp(2.5rem, 7vw, 5rem);
+        font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
+        margin-bottom: 24px;
+    }
+    .text-gradient {
+        background: linear-gradient(135deg, #7c3aed 0%, #06d6a0 40%, #22d3ee 70%, #f472b6 100%);
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero-subtitle {
+        font-size: clamp(1.1rem, 2vw, 1.35rem);
+        color: var(--text-muted); max-width: 680px; margin: 0 auto 40px;
+        line-height: 1.7;
+    }
+    .hero-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 64px; }
+    .btn-primary {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 14px 32px; border-radius: 999px;
+        background: var(--primary); color: #fff;
+        font-size: 1rem; font-weight: 600; font-family: var(--font-secondary);
+        transition: all 0.3s; border: none; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--primary-dark); color: #fff; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(124,58,237,0.5); }
+    .btn-outline {
+        display: inline-flex; align-items: center; gap: 10px;
+        padding: 14px 32px; border-radius: 999px;
+        background: transparent; color: var(--text);
+        font-size: 1rem; font-weight: 600; font-family: var(--font-secondary);
+        border: 1px solid var(--border-glass); cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary-glow); background: rgba(124,58,237,0.05); }
+
+    /* Terminal */
+    .terminal {
+        max-width: 720px; margin: 0 auto;
+        background: var(--bg-card); border: 1px solid var(--border-glass);
+        border-radius: 12px; overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        text-align: left;
+    }
+    html[data-theme="light"] .terminal { box-shadow: 0 20px 60px rgba(0,0,0,0.08); }
+    .terminal-bar {
+        display: flex; align-items: center; gap: 8px;
+        padding: 12px 16px; background: var(--bg-elevated);
+        border-bottom: 1px solid var(--border-subtle);
+    }
+    .terminal-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .terminal-dot.red { background: #f43f5e; }
+    .terminal-dot.yellow { background: #fbbf24; }
+    .terminal-dot.green { background: #10b981; }
+    .terminal-title { color: var(--text-dim); font-size: 0.75rem; margin-left: 8px; font-family: var(--font-mono); }
+    .terminal-body {
+        padding: 20px; font-family: var(--font-mono); font-size: 0.85rem;
+        line-height: 1.8; color: var(--text-muted);
+    }
+    .terminal-body .line { display: block; }
+    .terminal-body .prompt { color: var(--accent); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .ok { color: var(--success); }
+    .terminal-body .info { color: var(--cyan); }
+    .terminal-body .swap { color: #a78bfa; font-weight: 600; }
+    .terminal-body .time { color: var(--text-dim); }
+    .terminal-body .banner { color: var(--cyan); font-weight: 500; }
+
+    /* Sections */
+    .section { padding: 120px 24px; position: relative; }
+    .section-alt { background: var(--bg-elevated); }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-header { text-align: center; margin-bottom: 64px; }
+    .section-label {
+        display: inline-block; font-size: 0.75rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 0.12em;
+        color: var(--primary-glow); margin-bottom: 16px;
+    }
+    .section-header h2 {
+        font-family: var(--font-primary); font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 700; line-height: 1.15; letter-spacing: -0.02em;
+    }
+    .section-header p {
+        color: var(--text-muted); font-size: 1.15rem; max-width: 600px;
+        margin: 16px auto 0; line-height: 1.7;
+    }
+
+    /* Feature grid */
+    .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+    .feature-card {
+        padding: 36px 28px; background: var(--bg-card);
+        border: 1px solid var(--border-subtle); border-radius: 16px;
+        transition: all 0.4s; position: relative; overflow: hidden;
+    }
+    .feature-card::before {
+        content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        opacity: 0; transition: opacity 0.4s;
+    }
+    .feature-card:hover { border-color: rgba(124,58,237,0.3); transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.2); }
+    .feature-card:hover::before { opacity: 1; }
+    .feature-icon {
+        width: 48px; height: 48px; border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem; margin-bottom: 20px;
+        background: rgba(124,58,237,0.1); color: var(--primary-glow);
+    }
+    .feature-icon.green { background: rgba(6,214,160,0.1); color: var(--accent); }
+    .feature-icon.cyan { background: rgba(34,211,238,0.1); color: var(--cyan); }
+    .feature-icon.pink { background: rgba(244,114,182,0.1); color: var(--pink); }
+    .feature-icon.orange { background: rgba(251,146,60,0.1); color: var(--orange); }
+    .feature-card h3 {
+        font-family: var(--font-primary); font-size: 1.15rem;
+        font-weight: 600; margin-bottom: 12px;
+    }
+    .feature-card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.7; }
+
+    /* Comparison table */
+    .comparison-wrapper {
+        background: var(--bg-card); border: 1px solid var(--border-subtle);
+        border-radius: 16px; overflow: hidden;
+    }
+    .comparison-table { width: 100%; border-collapse: collapse; }
+    .comparison-table th, .comparison-table td {
+        padding: 16px 24px; text-align: left; font-size: 0.95rem;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+    .comparison-table thead th {
+        background: var(--bg-elevated); font-family: var(--font-primary);
+        font-weight: 600; color: var(--text); font-size: 0.9rem;
+        text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .comparison-table tbody td { color: var(--text-muted); }
+    .comparison-table tbody tr:hover { background: var(--bg-card-hover); }
+    .comparison-table tbody tr:last-child td { border-bottom: none; }
+    .check { color: var(--success); font-weight: 700; font-size: 1.1rem; }
+    .cross { color: var(--text-dim); }
+    .partial { color: var(--warning); font-size: 0.85em; }
+    .highlight-cell { color: var(--accent) !important; font-weight: 600; }
+
+    /* JDK matrix */
+    .jdk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+    .jdk-card {
+        padding: 32px; background: var(--bg-card);
+        border: 1px solid var(--border-subtle); border-radius: 16px;
+        transition: all 0.3s;
+    }
+    .jdk-card:hover { border-color: rgba(124,58,237,0.3); }
+    .jdk-card h3 { font-family: var(--font-primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; }
+    .jdk-card .jdk-type {
+        font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.08em; margin-bottom: 16px;
+    }
+    .jdk-card .jdk-type.standard { color: var(--cyan); }
+    .jdk-card .jdk-type.jbr { color: var(--accent); }
+    .jdk-card ul { list-style: none; padding: 0; }
+    .jdk-card li {
+        padding: 6px 0; color: var(--text-muted); font-size: 0.9rem;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .jdk-card li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .jdk-card.standard li::before { background: var(--cyan); }
+    .jdk-card.jbr li::before { background: var(--accent); }
+
+    /* Install steps */
+    .install-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+    .install-step {
+        padding: 32px 24px; text-align: center;
+        background: var(--bg-card); border: 1px solid var(--border-subtle);
+        border-radius: 16px; position: relative;
+    }
+    .step-number {
+        width: 48px; height: 48px; border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-glow));
+        color: #fff; font-family: var(--font-primary); font-weight: 800;
+        font-size: 1.2rem; display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 20px;
+    }
+    .install-step h3 { font-family: var(--font-primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
+    .install-step p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+    .install-step code {
+        display: inline-block; margin-top: 12px; padding: 8px 16px;
+        background: var(--bg-elevated); border: 1px solid var(--border-subtle);
+        border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem;
+        color: var(--accent);
+    }
+
+    /* CTA */
+    .cta-section {
+        text-align: center; padding: 100px 24px;
+        background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-elevated) 100%);
+        position: relative;
+    }
+    .cta-section::before {
+        content: ''; position: absolute; inset: 0;
+        background: radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.08) 0, transparent 60%);
+        pointer-events: none;
+    }
+    .cta-section h2 {
+        font-family: var(--font-primary); font-size: clamp(2rem, 4vw, 2.8rem);
+        font-weight: 700; margin-bottom: 16px; position: relative;
+    }
+    .cta-section p { color: var(--text-muted); font-size: 1.15rem; margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; position: relative; }
+    .cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+    /* Footer */
+    .footer {
+        padding: 40px 24px; text-align: center;
+        border-top: 1px solid var(--border-subtle);
+        color: var(--text-dim); font-size: 0.85rem;
+    }
+    .footer a { color: var(--text-muted); }
+    .footer a:hover { color: var(--primary-glow); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .features-grid { grid-template-columns: repeat(2, 1fr); }
+        .jdk-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+        .features-grid, .install-steps { grid-template-columns: 1fr; }
+        .comparison-table th, .comparison-table td { padding: 12px 16px; font-size: 0.85rem; }
+        .section { padding: 80px 16px; }
+    }
+
+    /* Animations */
+    @keyframes fade-up {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate { animation: fade-up 0.6s ease-out both; }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+
+    /* Scroll-triggered */
+    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* GitHub star badge */
+    .github-star {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 14px 32px; border-radius: 999px;
+        background: transparent; color: var(--text);
+        font-size: 1rem; font-weight: 600; font-family: var(--font-secondary);
+        border: 1px solid var(--border-glass); cursor: pointer;
+        transition: all 0.3s;
+    }
+    .github-star:hover { border-color: var(--warning); color: var(--warning); background: rgba(251,191,36,0.05); }
+    .github-star .star-icon { color: var(--warning); }
+
+    /* How it works */
+    .architecture-diagram {
+        max-width: 720px; margin: 0 auto;
+        background: var(--bg-card); border: 1px solid var(--border-glass);
+        border-radius: 16px; padding: 32px; text-align: left;
+        font-family: var(--font-mono); font-size: 0.82rem;
+        line-height: 1.6; color: var(--text-muted);
+        white-space: pre; overflow-x: auto;
+    }
+    .architecture-diagram .highlight { color: var(--accent); font-weight: 600; }
+    .architecture-diagram .label { color: var(--primary-glow); }
+    .architecture-diagram .dim { color: var(--text-dim); }
+
+    /* Limitations table */
+    .limitations-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 40px; }
+    .limitation-card {
+        padding: 24px; background: var(--bg-card);
+        border: 1px solid var(--border-subtle); border-radius: 12px;
+        border-left: 3px solid var(--warning);
+    }
+    .limitation-card h4 {
+        font-family: var(--font-primary); font-size: 0.95rem;
+        font-weight: 600; margin-bottom: 6px; color: var(--text);
+    }
+    .limitation-card p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
+    @media (max-width: 768px) { .limitations-grid { grid-template-columns: 1fr; } }
+
+    /* FAQ */
+    .faq-list { max-width: 800px; margin: 0 auto; }
+    .faq-item {
+        background: var(--bg-card); border: 1px solid var(--border-subtle);
+        border-radius: 12px; margin-bottom: 12px; overflow: hidden;
+    }
+    .faq-question {
+        width: 100%; padding: 20px 24px; background: none; border: none;
+        color: var(--text); font-family: var(--font-secondary);
+        font-size: 1rem; font-weight: 600; text-align: left;
+        cursor: pointer; display: flex; align-items: center;
+        justify-content: space-between; gap: 16px;
+    }
+    .faq-question:hover { color: var(--primary-glow); }
+    .faq-arrow { color: var(--text-dim); font-size: 0.8rem; transition: transform 0.3s; flex-shrink: 0; }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-answer {
+        max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+    }
+    .faq-answer-inner {
+        padding: 0 24px 20px; color: var(--text-muted);
+        font-size: 0.95rem; line-height: 1.7;
+    }
+    .faq-item.open .faq-answer { max-height: 500px; }
+
+    /* Language toggle */
+    .lang-toggle {
+        background: none; border: 1px solid var(--border-glass);
+        color: var(--text-muted); padding: 4px 12px; border-radius: 999px;
+        cursor: pointer; font-size: 0.8rem; font-weight: 600;
+        font-family: var(--font-secondary); transition: all 0.3s;
+        text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .lang-toggle:hover { color: var(--text); border-color: var(--primary); }
+
+    /* Social proof */
+    .social-proof {
+        display: flex; gap: 32px; justify-content: center; align-items: center;
+        margin-top: 32px; flex-wrap: wrap;
+    }
+    .proof-item {
+        display: flex; align-items: center; gap: 8px;
+        color: var(--text-muted); font-size: 0.9rem; font-weight: 500;
+    }
+    .proof-item .proof-value {
+        color: var(--text); font-weight: 700; font-size: 1.1rem;
+    }
+    .proof-item svg { color: var(--text-dim); }
+
+    /* Pre-publish notice */
+    .marketplace-notice {
+        display: none; margin-top: 12px; font-size: 0.85rem;
+        color: var(--text-dim); text-align: center;
+    }
+    </style>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Reclazz",
+        "alternateName": "Reclazz",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "description": "Free, open-source hot-reload for Spring and SAP Commerce (Hybris) applications. Edit Java code, build, and the running JVM picks up the change in about 50ms: Spring beans refresh, MVC mappings re-scan, caches evict, Hybris interceptors re-register. No server restart, and application state survives. An alternative to JRebel that costs nothing.",
+        "url": "https://reclazz.com",
+        "downloadUrl": "https://plugins.jetbrains.com/plugin/33498-reclazz",
+              "author": {
+            "@type": "Person",
+            "name": "Onur Kat",
+            "url": "https://www.onurkat.com"
+        },
+        "license": "https://github.com/onurkat/reclazz/blob/main/LICENSE",
+        "codeRepository": "https://github.com/onurkat/reclazz"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Will Reclazz break my running application?",
+                "acceptedAnswer": { "@type": "Answer", "text": "No. Reclazz uses the standard JVM Instrumentation API (the same mechanism used by debuggers and profilers). If a hot-swap fails, the original class remains loaded and your application continues running normally." }
+            },
+            {
+                "@type": "Question",
+                "name": "How is Reclazz different from Spring Boot DevTools?",
+                "acceptedAnswer": { "@type": "Answer", "text": "DevTools restarts the entire application context on every change, losing all application state. Reclazz performs true in-place class redefinition, so your application state is preserved, and reloads complete in ~50ms instead of seconds." }
+            },
+            {
+                "@type": "Question",
+                "name": "Does Reclazz work with Maven and Gradle?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Reclazz auto-detects target/classes (Maven) or build/classes/java/main (Gradle) from the classpath. Just run mvn compile or gradle classes and Reclazz hot-swaps the changes automatically." }
+            },
+            {
+                "@type": "Question",
+                "name": "What happens if a hot-swap fails?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes are superclass or interface changes, which always require a restart." }
+            },
+            {
+                "@type": "Question",
+                "name": "Does Reclazz send any data to external servers?",
+                "acceptedAnswer": { "@type": "Answer", "text": "No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine." }
+            },
+            {
+                "@type": "Question",
+                "name": "Does Reclazz support SAP Commerce (Hybris)?",
+                "acceptedAnswer": { "@type": "Answer", "text": "Yes, and it is the reason Reclazz exists. Saving a *-items.xml or *-beans.xml runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC > Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), *-spring.xml reload, ImpEx auto-import and extension-aware class watching." }
+            }
+        ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Onur Kat", "item": "https://www.onurkat.com" },
+            { "@type": "ListItem", "position": 2, "name": "Reclazz", "item": "https://reclazz.com" }
+        ]
+    }
+    </script>
+</head>
+<body>
+<a href="#features" class="skip-to-content">Skip to content</a>
+
+<!-- Header -->
+<header class="header">
+    <div class="header-inner">
+        <!-- Mark is inline rather than an <img>: it cannot 404 the way the
+             previous /images/logo-white.svg did, and it costs no request.
+             Geometry is the shared master in the product repo's branding/
+             directory, identical to the plugin icon and the favicon. -->
+        <a href="#top" class="header-logo" aria-label="Reclazz, back to top">
+            <span class="header-mark" aria-hidden="true">
+                <svg viewBox="0 0 64 64" width="34" height="34">
+                    <defs>
+                        <linearGradient id="reclazzMark" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#7c3aed"/>
+                            <stop offset="1" stop-color="#06d6a0"/>
+                        </linearGradient>
+                    </defs>
+                    <rect width="64" height="64" rx="15" fill="url(#reclazzMark)"/>
+                    <g fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round">
+                        <path d="M43.49 41.64A15 15 0 0 1 17.23 34.60"/>
+                        <path d="M20.51 22.36A15 15 0 0 1 46.77 29.40"/>
+                    </g>
+                    <path d="M15.84 26.72L12.57 36.95L22.41 35.21Z" fill="#fff"/>
+                    <path d="M48.16 37.28L51.43 27.05L41.59 28.79Z" fill="#fff"/>
+                </svg>
+            </span>
+            <span class="header-wordmark">Reclazz</span>
+        </a>
+        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">&#9776;</button>
+        <nav class="header-nav" id="headerNav">
+            <a href="#sap" data-i18n="nav.sap" style="white-space:nowrap">SAP Commerce</a>
+            <a href="#features" data-i18n="nav.features">Features</a>
+            <a href="#comparison" data-i18n="nav.compare">Compare</a>
+            <a href="#jdk" data-i18n="nav.jdk">JDK Support</a>
+            <a href="#how-it-works" data-i18n="nav.howitworks">How It Works</a>
+            <a href="#install" data-i18n="nav.install">Install</a>
+            <a href="#faq">FAQ</a>
+            <!-- display:contents on desktop, so these stay direct flex children
+                 of the nav there and only group up inside the mobile panel. -->
+            <div class="nav-utils">
+                <button class="lang-toggle" id="langToggle">TR</button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9790;</button>
+            </div>
+            <a href="https://plugins.jetbrains.com/plugin/33498-reclazz" class="btn-github" target="_blank" rel="noopener noreferrer">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Install
+            </a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="hero" id="home">
+    <div class="hero-inner">
+        <div class="hero-badge animate">
+            <span class="dot"></span>
+            <span data-i18n="hero.badge">Free &amp; Open Source</span>
+        </div>
+        <h1 class="animate delay-1">
+            <span data-i18n="hero.title">Stop Restarting<br><span class="text-gradient">SAP Commerce</span></span>
+        </h1>
+        <p class="hero-subtitle animate delay-2" data-i18n="hero.subtitle">
+            Edit code, build, and the running server picks up the change in ~50ms. Even an
+            items.xml save regenerates and reloads instead of costing you ant clean all.
+            Works the same on any Spring Boot application.
+        </p>
+        <div class="hero-actions animate delay-3">
+            <a href="https://plugins.jetbrains.com/plugin/33498-reclazz" class="btn-primary" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Install from Marketplace
+            </a>
+            <a href="https://github.com/onurkat/reclazz" class="btn-outline" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                <span class="star-icon" style="color:var(--warning)">&#9733;</span>
+                <span data-i18n="hero.github">Star on GitHub</span>
+                <span id="starCount" style="display:none;background:var(--bg-subtle);padding:2px 8px;border-radius:999px;font-size:0.8em;color:var(--text-muted)"></span>
+            </a>
+        </div>
+        <div class="social-proof animate delay-3" id="socialProof" style="display:none">
+            <div class="proof-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                <span class="proof-value" id="proofStars">-</span> stars
+            </div>
+        </div>
+
+        <!-- Terminal demo -->
+        <div class="terminal animate delay-4" role="img" aria-label="Terminal showing Reclazz startup">
+            <div class="terminal-bar">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot yellow"></span>
+                <span class="terminal-dot green"></span>
+                <span class="terminal-title">hybris &mdash; Server</span>
+            </div>
+            <div class="terminal-body">
+                <span class="line banner">══════════════════════════════════════════</span>
+                <span class="line banner">  Reclazz</span>
+                <span class="line banner">══════════════════════════════════════════</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:15:03]</span> Platform: SAP Commerce 2211 (auto-detected)</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:15:03]</span> Watching 42 extensions</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:15:03]</span> Structural reload: SUPPORTED (companion-class engine)</span>
+                <span class="line"><span class="ok">[Reclazz]</span> <span class="time">[10:15:03]</span> <span class="ok">Reclazz is active.</span></span>
+                <span class="line">&nbsp;</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:18:41]</span> items.xml changed: myextension</span>
+                <span class="line"><span class="swap">[Reclazz]</span> <span class="time">[10:18:41]</span> <span class="swap">Regenerated model classes (11s)</span></span>
+                <span class="line"><span class="ok">[Reclazz]</span> <span class="time">[10:18:52]</span> <span class="ok">Reloaded into the running server, no restart</span></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SAP Commerce -->
+<section class="section" id="sap">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="sap.label">SAP Commerce</span>
+            <h2 data-i18n="sap.title_html">Built For SAP Commerce,<br><span class="text-gradient">Not Adapted To It.</span></h2>
+            <p data-i18n="sap.subtitle">Reloading Java classes is the easy half. On SAP Commerce most of a day's edits are not Java at all: a type in items.xml, a property, a line of text in a locales file, an ImpEx. Reclazz reloads those too. Every item below was measured on a running 2211 server.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#129513;</div>
+                <h3 data-i18n="sap.items.title">items.xml &amp; beans.xml</h3>
+                <p data-i18n="sap.items.desc">Saving one runs the platform's own code generation and reloads the regenerated model and DTO classes, instead of ant clean all and a restart. A new attribute still needs its database column, so Reclazz tells you to run Update Running System rather than touching your schema itself.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#127793;</div>
+                <h3 data-i18n="sap.spring.title">Spring XML</h3>
+                <p data-i18n="sap.spring.desc">Changes to a *-spring.xml are diffed and applied to the live context, which is also how a brand new bean becomes available without a restart.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#9881;</div>
+                <h3 data-i18n="sap.props.title">Properties</h3>
+                <p data-i18n="sap.props.desc">The platform reads its property files once, at startup. Save one now and the keys whose value actually changed are applied to the running server, through the same call the HAC console makes. Values consumed once at startup are named as still needing a restart, instead of being reported as done.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128220;</div>
+                <h3 data-i18n="sap.logging.title">Log Levels</h3>
+                <p data-i18n="sap.logging.desc">SAP Commerce keeps its levels in the property files rather than a log4j2.xml, as a name and level pair. Change one and it reaches the running logger, so turning a class up to debug costs a save instead of a restart. Levels you did not touch are left where they are, including one you raised from the HAC console.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon pink">&#127760;</div>
+                <h3 data-i18n="sap.l10n.title">Type &amp; Enum Text</h3>
+                <p data-i18n="sap.l10n.desc">Edit a locales file and the new text is served on the next read. No system update, no database write, no restart.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#127991;</div>
+                <h3 data-i18n="sap.labels.title">Backoffice Labels</h3>
+                <p data-i18n="sap.labels.desc">Label files reach the label cache backoffice actually reads from, every copy of it. Reopen the view and your text is there.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#128274;</div>
+                <h3 data-i18n="sap.interceptors.title">Interceptors</h3>
+                <p data-i18n="sap.interceptors.desc">Validate, Prepare, Load and Remove interceptors re-register, so a changed rule applies to the next model that passes through it.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#128228;</div>
+                <h3 data-i18n="sap.impex.title">ImpEx On Save</h3>
+                <p data-i18n="sap.impex.desc">Changed .impex files can be imported the moment you save them. It is opt-in, because it runs against your live database, and a file carrying a REMOVE header is named and refused rather than executed.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#128193;</div>
+                <h3 data-i18n="sap.ext.title">Extension Aware</h3>
+                <p data-i18n="sap.ext.desc">It reads your extension layout, classpath and classloader hierarchy on its own. There is no per-extension descriptor to write and keep in sync.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SAP vs JRebel -->
+<section class="section section-alt" id="sap-comparison">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="sapcmp.label">On SAP Commerce, Specifically</span>
+            <h2 data-i18n="sapcmp.title_html"><span class="text-gradient">Reclazz</span> vs JRebel on Hybris</h2>
+            <p data-i18n="sapcmp.subtitle">JRebel reloads Java classes on SAP Commerce, and it does that well. The rest of what a hybris day is made of is a different question, and the honest place to answer it is JRebel's own SAP Commerce manual.</p>
+        </div>
+        <div class="comparison-wrapper reveal" style="overflow-x:auto">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="sapcmp.what">What you changed</th>
+                        <th>Reclazz</th>
+                        <th>JRebel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td data-i18n="sapcmp.price">Price</td><td class="highlight-cell"><span data-i18n="sapcmp.v.free">Free &amp; open source</span></td><td><span data-i18n="sapcmp.v.price_jr">$550+/year per seat</span></td></tr>
+                    <tr><td data-i18n="sapcmp.classes">A Java class</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="sapcmp.setup">Per-extension setup file</td><td class="highlight-cell"><span data-i18n="sapcmp.v.none">None</span></td><td><span data-i18n="sapcmp.v.rebelxml">rebel.xml for backoffice extensions</span></td></tr>
+                    <tr><td data-i18n="sapcmp.items">A type in items.xml or beans.xml</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.regen">regenerates &amp; reloads</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.logging">A log level</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.applied">applied to the running server</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.props">A property</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.applied">applied to the running server</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.l10n">A type or enum name in a locales file</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.labels">A backoffice label</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.interceptors">An interceptor</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.rereg">re-registered</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.impex">An ImpEx file</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.optin">opt-in, imported on save</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.offline">Licence server &amp; activation</td><td class="highlight-cell"><span data-i18n="sapcmp.v.nolic">None, nothing leaves your machine</span></td><td><span data-i18n="sapcmp.v.commercial">Commercial licence, activation required</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="margin-top:1.25rem;font-size:0.9em;color:var(--text-dim);max-width:56rem" data-i18n="sapcmp.footnote_html">Compared against <a href="https://manuals.jrebel.com/jrebel/advanced/hybris.html" target="_blank" rel="noopener">JRebel's own SAP Commerce manual</a>, which covers reloading compiled classes and configuring rebel.xml. A cross means that capability is not described there, not that JRebel is broken: it reloads classes on Hybris and that is what it documents.</p>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="section section-alt" id="features">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="features.label">Features</span>
+            <h2 data-i18n="features.title_html">Deep Spring Integration.<br><span class="text-gradient">Not Just Hot-Swap.</span></h2>
+            <p data-i18n="features.subtitle">Reclazz understands Spring internals. When a class reloads, beans refresh, mappings re-scan, caches evict, and schedulers re-register, automatically.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#127793;</div>
+                <h3 data-i18n="features.bean.title">Spring Bean Refresh</h3>
+                <p data-i18n="features.bean.desc">Automatically destroys and recreates singleton beans after class reload. Your changes take effect immediately without losing application state.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128268;</div>
+                <h3 data-i18n="features.mvc.title">MVC Re-scan</h3>
+                <p data-i18n="features.mvc.desc">Re-registers @RequestMapping methods when a controller changes. An endpoint you add is served on the next request, on an ordinary JDK as well, instead of after a restart.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon pink">&#128293;</div>
+                <h3 data-i18n="features.cache.title">Cache Eviction</h3>
+                <p data-i18n="features.cache.desc">Evicts Spring caches for classes with @Cacheable, @CacheEvict, or @CachePut. No stale data after reload.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#9202;</div>
+                <h3 data-i18n="features.scheduler.title">Scheduler Reload</h3>
+                <p data-i18n="features.scheduler.desc">Cancels and re-registers @Scheduled tasks. Changed cron expressions and fixed-rate schedules apply immediately.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#128736;</div>
+                <h3 data-i18n="features.structural.title">Structural Changes</h3>
+                <p data-i18n="features.structural.desc">Add or remove methods and instance fields, and change annotations, on any JDK 17+. No patched JVM required. Added static fields and new enum values need a restart, and Reclazz says so.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#128196;</div>
+                <h3 data-i18n="features.templates.title">Template Reload</h3>
+                <p data-i18n="features.templates.desc">Editing a Thymeleaf or Freemarker template takes effect on the next render, with caching left on.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#9881;</div>
+                <h3 data-i18n="features.props.title">Property &amp; Log Changes</h3>
+                <p data-i18n="features.props.desc">Spring Boot reads a properties file once, at startup. Save one now and the changed keys go into the running Environment and the @ConfigurationProperties beans that read them are rebound, so a timeout or a feature flag applies on the next call. Log levels, and a saved logback.xml or log4j2.xml, reach the running logging context too. A bean bound through its constructor cannot take a new value, and Reclazz says so rather than reporting it as applied.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128269;</div>
+                <h3 data-i18n="features.diag.title">It Explains Itself</h3>
+                <p data-i18n="features.diag.desc">When nothing happens, ask why: the build did not reach the class, it is built somewhere Reclazz does not watch, the bytes came out identical, or the JVM has not loaded it yet. None of those produce an error, which is why the log was empty. A second question, what still needs a restart, lists what this session left behind, and says so plainly when there is nothing.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#128737;</div>
+                <h3 data-i18n="features.aop.title">AOP &amp; Events</h3>
+                <p data-i18n="features.aop.desc">Clears AOP proxy caches for @Aspect classes. Re-registers @EventListener methods. Refreshes @Async processing.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128218;</div>
+                <h3 data-i18n="features.data.title">Spring Data &amp; Security</h3>
+                <p data-i18n="features.data.desc">Refreshes Repository beans. Detects @EnableWebSecurity and SecurityConfigurer changes. Full Spring ecosystem support.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#9889;</div>
+                <h3 data-i18n="features.hotswap.title">Instant Hot-Swap</h3>
+                <p data-i18n="features.hotswap.desc">Redefines classes in the running JVM via the Instrumentation API. Method body changes apply in ~50ms. Zero downtime.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon pink">&#128274;</div>
+                <h3 data-i18n="features.privacy.title">100% Local &amp; Private</h3>
+                <p data-i18n="features.privacy.desc">No telemetry, no analytics, no license server, no outbound requests. Everything runs on your machine. Your code never leaves your environment.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comparison -->
+<section class="section" id="comparison">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="compare.label">Comparison</span>
+            <h2 data-i18n="compare.title_html"><span class="text-gradient">Reclazz</span> vs DevTools vs JRebel</h2>
+            <p data-i18n="compare.subtitle">Spring Boot DevTools restarts your entire context. JRebel costs $550+/year. Reclazz is free, open-source, and performs true in-place hot-swap.</p>
+        </div>
+        <div class="comparison-wrapper reveal" style="overflow-x:auto">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="compare.feature">Feature</th>
+                        <th>Reclazz</th>
+                        <th>Spring Boot DevTools</th>
+                        <th>JRebel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td data-i18n="compare.price">Price</td><td class="highlight-cell">Free &amp; open source</td><td>Free</td><td>$550+/year</td></tr>
+                    <tr><td data-i18n="compare.reload_type">Reload type</td><td class="highlight-cell">In-place hot-swap</td><td>Full context restart</td><td>In-place hot-swap</td></tr>
+                    <tr><td data-i18n="compare.app_state">Application state</td><td class="highlight-cell">Preserved</td><td>Lost on restart</td><td>Preserved</td></tr>
+                    <tr><td data-i18n="compare.speed">Reload speed</td><td class="highlight-cell">~50ms</td><td>Seconds</td><td>~50ms</td></tr>
+                    <tr><td data-i18n="compare.method_body">Method body changes</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.structural">Add/remove methods &amp; fields</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(with JBR)</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.spring_bean">Spring bean refresh</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.mvc">MVC mapping re-scan</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.cache">Cache eviction</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="partial">Partial</span></td></tr>
+                    <tr><td data-i18n="compare.scheduler">@Scheduled re-register</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="cross">&#10007;</span></td></tr>
+                    <tr><td data-i18n="compare.events">@EventListener refresh</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="cross">&#10007;</span></td></tr>
+                    <tr><td data-i18n="compare.aop">AOP proxy refresh</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="partial">Partial</span></td></tr>
+                    <tr><td data-i18n="compare.sap">SAP Commerce support</td><td class="highlight-cell"><a href="#sap-comparison" style="color:inherit">Purpose-built</a></td><td><span class="cross">&#10007;</span></td><td>Generic</td></tr>
+                    <tr><td data-i18n="compare.open_source">Open source</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">Apache 2.0</span></td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- JDK Support -->
+<section class="section section-alt" id="jdk">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="jdk.label">JDK Support</span>
+            <h2 data-i18n="jdk.title_html">Works With <span class="text-gradient">Your JDK</span></h2>
+            <p data-i18n="jdk.subtitle">Reclazz auto-detects your JDK and configures the right flags. Structural changes work everywhere; JetBrains Runtime additionally makes new members visible to reflection.</p>
+        </div>
+        <div class="jdk-grid">
+            <div class="jdk-card standard reveal">
+                <h3 data-i18n="jdk.standard.title">Standard JDK</h3>
+                <span class="jdk-type standard">JDK 17 / 21 / 25, any vendor</span>
+                <ul>
+                    <li data-i18n="jdk.standard.method">Method body changes</li>
+                    <li><strong style="color:var(--cyan)" data-i18n="jdk.standard.structural">Add &amp; remove methods and fields</strong></li>
+                    <li data-i18n="jdk.standard.spring">Spring bean refresh</li>
+                    <li data-i18n="jdk.standard.mvc">MVC re-scan &amp; cache eviction</li>
+                    <li data-i18n="jdk.standard.scheduler">Scheduler &amp; event reload</li>
+                    <li><strong style="color:var(--cyan)" data-i18n="jdk.standard.annotations">Change annotations</strong></li>
+                    <li>Auto-configured <code style="font-family:var(--font-mono);font-size:0.85em;color:var(--cyan)">--add-opens</code> flags</li>
+                </ul>
+            </div>
+            <div class="jdk-card jbr reveal" style="border-color: rgba(6,214,160,0.2);">
+                <h3 data-i18n="jdk.jbr.title">JetBrains Runtime / DCEVM <span style="font-size:0.7em;color:var(--accent);font-weight:400;">optional</span></h3>
+                <span class="jdk-type jbr">JBR / DCEVM 17 / 21 / 25</span>
+                <ul>
+                    <li data-i18n="jdk.jbr.everything">Everything above, plus:</li>
+                    <li><strong style="color:var(--accent)" data-i18n="jdk.jbr.reflection">New members visible to reflection</strong></li>
+                    <li><strong style="color:var(--accent)" data-i18n="jdk.jbr.caches">Reflective caches see them without a restart</strong></li>
+                    <li>Auto-configured <code style="font-family:var(--font-mono);font-size:0.85em;color:var(--accent)">-XX:+AllowEnhancedClassRedefinition</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section" id="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="architecture.label">Architecture</span>
+            <h2 data-i18n="architecture.title_html">How <span class="text-gradient">Reclazz</span> Works</h2>
+            <p data-i18n="architecture.subtitle">A lightweight Java agent runs inside your application JVM. It watches compiled classes and orchestrates Spring-aware reloading.</p>
+        </div>
+        <div class="architecture-diagram reveal" role="img" aria-label="Architecture diagram showing Reclazz agent pipeline: FileWatcher monitors compiled classes, ClassReloader redefines them via Instrumentation API, then Spring-aware modules handle bean refresh, MVC re-scan, cache eviction, scheduler re-registration, and AOP proxy refresh">
+<span class="dim">  Build Tool (mvn/gradle/ant)         Application JVM</span>
+<span class="dim">  ===========================         ===============</span>
+
+  <span class="label">mvn compile</span>                           <span class="label">[Reclazz Agent]</span>
+  <span class="label">gradle classes</span>                              |
+       |                                <span class="highlight">FileWatcher</span>
+       v                             (NIO WatchService)
+  classes/*.class                     watches output dir
+                                            |
+                                     <span class="highlight">ClassReloader</span>
+                                  (Instrumentation API)
+                                            |
+                              +------+------+------+------+
+                              |      |      |      |      |
+                           <span class="highlight">Spring</span>  <span class="highlight">MVC</span>  <span class="highlight">Cache</span>  <span class="highlight">Sched</span>  <span class="highlight">AOP</span>
+                           Bean   Re-   Evict  Re-    Proxy
+                           Refresh scan        reg    Refresh
+                                  + Events, Async, Data, Security</div>
+    </div>
+</section>
+
+<!-- Limitations -->
+<section class="section section-alt" id="limitations">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="limits.label">Transparency</span>
+            <h2 data-i18n="limits.title_html">What <span class="text-gradient">Can't</span> Be Hot-Reloaded</h2>
+            <p data-i18n="limits.subtitle">These are fundamental JVM and framework limitations that no tool can fully overcome.</p>
+        </div>
+        <div class="limitations-grid">
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.hierarchy_title">Class Hierarchy Changes</h4>
+                <p data-i18n="limits.hierarchy_desc">Changing superclass or interfaces is a JVM limitation. No tool can work around this. It requires a restart.</p>
+            </div>
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.structural_title">Reflection on New Members (standard JDKs)</h4>
+                <p data-i18n="limits.structural_desc">Adding and removing methods or fields works on any JDK 17+. On a standard JDK the new members live on a hidden companion class, so code that calls them directly sees them, but reflection on the original class and caches built at startup (Hybris ModelService, Jackson) do not until a restart. JetBrains Runtime or DCEVM removes that caveat.</p>
+            </div>
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.config_title">Spring Configuration Changes</h4>
+                <p data-i18n="limits.config_desc">Configuration file changes (application.properties, application.yml, XML bean definitions) are loaded at startup and require a restart.</p>
+            </div>
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.new_beans_title">New Spring Beans</h4>
+                <p data-i18n="limits.new_beans_desc">Adding entirely new @Component classes requires a restart. Spring's component scanning runs at startup. Modifying existing beans works out of the box.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Install -->
+<section class="section" id="install">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="install.label">Get Started</span>
+            <h2 data-i18n="install.title_html">Up and Running in <span class="text-gradient">3 Steps</span></h2>
+        </div>
+        <div class="install-steps">
+            <div class="install-step reveal">
+                <div class="step-number">1</div>
+                <h3 data-i18n="install.step1.title">Add the Agent</h3>
+                <p data-i18n="install.step1.desc">Add the -javaagent flag to your JVM arguments, or install the IntelliJ plugin for automatic injection.</p>
+                <code>-javaagent:/path/to/reclazz-agent.jar</code>
+            </div>
+            <div class="install-step reveal">
+                <div class="step-number">2</div>
+                <h3 data-i18n="install.step2.title">Run Your App</h3>
+                <p data-i18n="install.step2.desc">Start your Spring Boot application normally. Reclazz auto-detects your project layout and begins watching.</p>
+                <code>mvn spring-boot:run</code>
+            </div>
+            <div class="install-step reveal">
+                <div class="step-number">3</div>
+                <h3 data-i18n="install.step3.title">Build &amp; Reload</h3>
+                <p data-i18n="install.step3.desc">Change your code, then compile. Reclazz hot-swaps the changes automatically. No restart needed.</p>
+                <code>mvn compile  or  gradle classes</code>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="section section-alt" id="faq">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label">FAQ</span>
+            <h2 data-i18n="faq.title_html">Frequently Asked <span class="text-gradient">Questions</span></h2>
+        </div>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q1">Will Reclazz break my running application?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a1">No. Reclazz uses the standard JVM Instrumentation API, the same mechanism used by debuggers and profilers. If a hot-swap fails (e.g., a structural change on standard OpenJDK), the original class remains loaded and your application continues running normally.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q2">How is Reclazz different from Spring Boot DevTools?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a2">DevTools restarts the entire Spring application context on every change, which takes seconds and loses all application state. Reclazz performs true in-place class redefinition, so your state is preserved, and reloads complete in ~50ms. Reclazz also handles Spring-specific concerns like MVC re-scanning, cache eviction, and scheduler re-registration without a restart.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q3">Does Reclazz work with Maven and Gradle?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a3">Yes. Reclazz auto-detects <code style="font-family:var(--font-mono);font-size:0.9em">target/classes</code> (Maven) or <code style="font-family:var(--font-mono);font-size:0.9em">build/classes/java/main</code> (Gradle) from the classpath. Just run <code style="font-family:var(--font-mono);font-size:0.9em">mvn compile</code> or <code style="font-family:var(--font-mono);font-size:0.9em">gradle classes</code> and Reclazz hot-swaps the changes automatically.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q4">What happens when a hot-swap fails?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a4">Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes: superclass or interface changes, which always require a restart.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q5">Does Reclazz send any data to external servers?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a5">No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine. Your code never leaves your environment.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q6">Does Reclazz support SAP Commerce (Hybris)?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a6">Yes, and it is the reason Reclazz exists. Saving a <strong>*-items.xml</strong> or <strong>*-beans.xml</strong> runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC &gt; Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), <strong>*-spring.xml</strong> reload, ImpEx auto-import and extension-aware class watching.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q7">Do I need JetBrains Runtime?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a7">Not required. Structural changes (adding and removing methods and fields) work on any JDK 17+. JetBrains Runtime or DCEVM additionally makes those new members visible to reflection and to caches built at startup. Reclazz auto-detects which runtime you're using and configures itself accordingly.</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="reveal" data-i18n="cta.title_html">Stop Wasting Time on<br><span class="text-gradient">Application Restarts</span></h2>
+        <p class="reveal" data-i18n="cta.subtitle">Spring Boot DevTools restarts take seconds and lose your state. Reclazz reloads in ~50ms and preserves everything. Free and open source.</p>
+        <div class="cta-actions reveal">
+            <a href="https://plugins.jetbrains.com/plugin/33498-reclazz" class="btn-primary" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span data-i18n="cta.install">Install from Marketplace</span>
+            </a>
+            <a href="https://github.com/onurkat/reclazz" class="btn-outline" target="_blank" rel="noopener noreferrer" data-i18n="cta.github">View Source on GitHub</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p>&copy; 2026 <a href="/">Onur Kat</a> | <a href="/reclazz/license.html">License (Apache 2.0)</a> | <a href="/reclazz/privacy.html">Privacy</a> | <a href="https://github.com/onurkat/reclazz" target="_blank" rel="noopener noreferrer">GitHub</a></p>
+    </div>
+</footer>
+
+<script>
+// Theme toggle
+const toggle = document.getElementById('themeToggle');
+const html = document.documentElement;
+const saved = localStorage.getItem('theme');
+if (saved) html.setAttribute('data-theme', saved);
+toggle.addEventListener('click', () => {
+    const next = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    toggle.textContent = next === 'dark' ? '\u263E' : '\u2600';
+});
+toggle.textContent = html.getAttribute('data-theme') === 'dark' ? '\u263E' : '\u2600';
+
+// Mobile menu toggle
+const menuToggle = document.getElementById('menuToggle');
+const headerNav = document.getElementById('headerNav');
+menuToggle.addEventListener('click', () => {
+    headerNav.classList.toggle('open');
+    menuToggle.textContent = headerNav.classList.contains('open') ? '\u2715' : '\u2630';
+});
+headerNav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        headerNav.classList.remove('open');
+        menuToggle.textContent = '\u2630';
+    });
+});
+
+// Header: solid backdrop once the hero scrolls away.
+const header = document.querySelector('.header');
+const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
+window.addEventListener('scroll', onScroll, { passive: true });
+onScroll();
+
+// Scrollspy: highlight the nav link for the section currently in view. Each
+// section reports its own visibility, and we pick the topmost visible one so
+// short sections next to long ones still win when they are what you're reading.
+const navLinks = new Map();
+headerNav.querySelectorAll('a[href^="#"]').forEach(a => {
+    const target = document.getElementById(a.getAttribute('href').slice(1));
+    if (target) navLinks.set(target, a);
+});
+if (navLinks.size) {
+    const visible = new Set();
+    const spy = new IntersectionObserver(entries => {
+        entries.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target));
+        const current = [...visible].sort((a, b) => a.offsetTop - b.offsetTop)[0];
+        navLinks.forEach((link, section) => link.classList.toggle('is-active', section === current));
+    }, { rootMargin: '-88px 0px -55% 0px' });
+    navLinks.forEach((_, section) => spy.observe(section));
+}
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// FAQ accordion
+document.querySelectorAll('.faq-question').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const item = btn.parentElement;
+        document.querySelectorAll('.faq-item').forEach(other => {
+            if (other !== item) {
+                other.classList.remove('open');
+                other.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+            }
+        });
+        item.classList.toggle('open');
+        btn.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
+    });
+});
+
+
+// GitHub stars
+fetch('https://api.github.com/repos/onurkat/reclazz')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+        if (data && data.stargazers_count !== undefined) {
+            const count = data.stargazers_count;
+            const starEl = document.getElementById('starCount');
+            const proofStars = document.getElementById('proofStars');
+            const proof = document.getElementById('socialProof');
+            if (starEl) {
+                starEl.textContent = count.toLocaleString();
+                starEl.style.display = 'inline';
+            }
+            if (proofStars && count > 0) {
+                proofStars.textContent = count.toLocaleString();
+                if (proof) proof.style.display = 'flex';
+            }
+        }
+    })
+    .catch(() => {});
+
+// i18n
+const translations = {
+    tr: {
+        'nav.features': '\u00D6zellikler',
+        'nav.compare': 'Kar\u015F\u0131la\u015Ft\u0131r',
+        'nav.jdk': 'JDK Deste\u011Fi',
+        'nav.howitworks': 'Nas\u0131l \u00C7al\u0131\u015F\u0131r',
+        'nav.install': 'Kurulum',
+        'hero.badge': '\u00DCcretsiz & A\u00E7\u0131k Kaynak',
+        'hero.title': '<span class="text-gradient">SAP Commerce\'i</span><br>Yeniden Ba\u015Flatmay\u0131 B\u0131rak\u0131n',
+        'hero.subtitle': 'Kodu d\u00FCzenleyin, derleyin; \u00E7al\u0131\u015Fan sunucu de\u011Fi\u015Fikli\u011Fi ~50ms\'de al\u0131r. items.xml kayd\u0131 bile ant clean all\'a mal olmak yerine yeniden \u00FCretilip y\u00FCklenir. Her Spring Boot uygulamas\u0131nda da ayn\u0131 \u015Fekilde \u00E7al\u0131\u015F\u0131r.',
+        'hero.install': 'Marketplace\'den Y\u00FCkle',
+        'hero.github': 'GitHub\'da Y\u0131ld\u0131zla',
+        'features.label': '\u00D6zellikler',
+        'features.title_html': 'Derin Spring Entegrasyonu.<br><span class="text-gradient">Sadece Hot-Swap De\u011Fil.</span>',
+        'features.subtitle': 'Reclazz, Spring i\u00E7 yap\u0131s\u0131n\u0131 anlar. S\u0131n\u0131f yenilendi\u011Finde bean\'ler yenilenir, e\u015Flemeler taran\u0131r, \u00F6nbellekler temizlenir ve zamanlay\u0131c\u0131lar yeniden kaydedilir, otomatik olarak.',
+        'features.bean.title': 'Spring Bean Yenileme',
+        'features.bean.desc': 'S\u0131n\u0131f yenilendikten sonra singleton bean\'leri otomatik olarak yok edip yeniden olu\u015Fturur. Uygulama durumu korunur.',
+        'features.mvc.title': 'MVC Yeniden Tarama',
+        'features.mvc.desc': 'Bir controller de\u011fi\u015fti\u011finde @RequestMapping metotlari yeniden kaydolur. Ekledi\u011finiz endpoint, restart beklemeden bir sonraki istekte cevap verir, siradan bir JDK\'da da.',
+        'features.cache.title': '\u00D6nbellek Temizleme',
+        'features.cache.desc': '@Cacheable, @CacheEvict veya @CachePut i\u00E7eren s\u0131n\u0131flar i\u00E7in Spring \u00F6nbelleklerini temizler. Yenileme sonras\u0131 eski veri kalmaz.',
+        'features.scheduler.title': 'Zamanlay\u0131c\u0131 Yenileme',
+        'features.scheduler.desc': '@Scheduled g\u00F6revlerini iptal edip yeniden kaydeder. De\u011Fi\u015Fen cron ifadeleri an\u0131nda uygulan\u0131r.',
+        'features.structural.title': 'Yap\u0131sal De\u011Fi\u015Fiklikler',
+        'features.structural.desc': 'Her JDK 17+ s\u00FCr\u00FCm\u00FCnde metot ve \u00F6rnek alan\u0131 ekleyin, kald\u0131r\u0131n, anotasyon de\u011Fi\u015Ftirin. Yamal\u0131 bir JVM gerekmez. Statik alan ve yeni enum de\u011Ferleri yeniden ba\u015Flatma ister; Reclazz bunu s\u00F6yler.',
+        'features.templates.title': '\u015Eablon Yeniden Y\u00FCkleme',
+        'features.templates.desc': 'Thymeleaf veya Freemarker \u015Fablonunu d\u00FCzenledi\u011Finizde bir sonraki render\u0027da ge\u00E7erli olur; \u00F6nbellek a\u00E7\u0131k kalabilir.',
+        'features.props.title': 'Property ve Log De\u011Fi\u015Fiklikleri',
+        'features.props.desc': 'Spring Boot bir property dosyas\u0131n\u0131 yaln\u0131z a\u00E7\u0131l\u0131\u015Fta okur. Art\u0131k kaydetti\u011Finizde de\u011Fi\u015Fen anahtarlar \u00E7al\u0131\u015Fan Environment'a girer ve onlar\u0131 okuyan @ConfigurationProperties bean'leri yeniden ba\u011Flan\u0131r; bir timeout ya da bir \u00F6zellik anahtar\u0131 sonraki \u00E7a\u011Fr\u0131da ge\u00E7erli olur. Log seviyeleri ile kaydedilen bir logback.xml veya log4j2.xml de \u00E7al\u0131\u015Fan log altyap\u0131s\u0131na ula\u015F\u0131r. Constructor ile ba\u011Flanan bir bean yeni de\u011Feri alamaz, Reclazz bunu "uyguland\u0131" diye raporlamak yerine a\u00E7\u0131k\u00E7a s\u00F6yler.',
+        'features.diag.title': 'Kendini A\u00E7\u0131kl\u0131yor',
+        'features.diag.desc': 'Hi\u00E7bir \u015Fey olmad\u0131\u011F\u0131nda nedenini sorun: build o s\u0131n\u0131fa u\u011Framam\u0131\u015Ft\u0131r, s\u0131n\u0131f Reclazz'\u0131n izlemedi\u011Fi bir yere derleniyordur, \u00FCretilen byte'lar ayn\u0131 \u00E7\u0131km\u0131\u015Ft\u0131r ya da JVM s\u0131n\u0131f\u0131 hen\u00FCz y\u00FCklememi\u015Ftir. Bunlar\u0131n hi\u00E7biri hata \u00FCretmez, log'un bo\u015F olmas\u0131n\u0131n sebebi budur. \u0130kinci soru da \u015Fu: neyin i\u00E7in h\u00E2l\u00E2 restart gerekiyor. Bu oturumun geride b\u0131rakt\u0131klar\u0131n\u0131 listeler, hi\u00E7bir \u015Fey yoksa onu da a\u00E7\u0131k\u00E7a s\u00F6yler.',
+        'features.aop.title': 'AOP & Olaylar',
+        'features.aop.desc': '@Aspect s\u0131n\u0131flar\u0131 i\u00E7in AOP proxy \u00F6nbelleklerini temizler. @EventListener metotlar\u0131n\u0131 yeniden kaydeder. @Async i\u015Flemeyi yeniler.',
+        'features.data.title': 'Spring Data & G\u00FCvenlik',
+        'features.data.desc': 'Repository bean\'leri yeniler. @EnableWebSecurity ve SecurityConfigurer de\u011Fi\u015Fikliklerini alg\u0131lar. T\u00FCm Spring ekosistemi deste\u011Fi.',
+        'features.hotswap.title': 'Anl\u0131k Hot-Swap',
+        'features.hotswap.desc': '\u00C7al\u0131\u015Fan JVM\'deki s\u0131n\u0131flar\u0131 Instrumentation API ile yeniden tan\u0131mlar. ~50ms\'de uygulan\u0131r. S\u0131f\u0131r kesinti.',
+        'features.privacy.title': '100% Yerel & Gizli',
+        'features.privacy.desc': 'Telemetri yok, analitik yok, lisans sunucusu yok, d\u0131\u015F istek yok. Her \u015Fey makinenizde \u00E7al\u0131\u015F\u0131r. Kodunuz ortam\u0131n\u0131zdan asla \u00E7\u0131kmaz.',
+        'compare.label': 'Kar\u015F\u0131la\u015Ft\u0131rma',
+        'compare.title_html': '<span class="text-gradient">Reclazz</span> vs DevTools vs JRebel',
+        'compare.subtitle': 'Spring Boot DevTools t\u00FCm uygulama ba\u011Flam\u0131n\u0131 yeniden ba\u015Flat\u0131r. JRebel y\u0131lda $550+ tutar. Reclazz \u00FCcretsiz, a\u00E7\u0131k kaynak ve ger\u00E7ek yerinde hot-swap yapar.',
+        'compare.feature': '\u00D6zellik',
+        'compare.price': 'Fiyat',
+        'compare.reload_type': 'Yenileme t\u00FCr\u00FC',
+        'compare.app_state': 'Uygulama durumu',
+        'compare.speed': 'Yenileme h\u0131z\u0131',
+        'compare.method_body': 'Metot g\u00F6vdesi de\u011Fi\u015Fiklikleri',
+        'compare.structural': 'Metot ve alan ekleme/kald\u0131rma',
+        'compare.spring_bean': 'Spring bean yenileme',
+        'compare.mvc': 'MVC e\u015Fleme yeniden tarama',
+        'compare.cache': '\u00D6nbellek temizleme',
+        'compare.scheduler': '@Scheduled yeniden kay\u0131t',
+        'compare.events': '@EventListener yenileme',
+        'compare.aop': 'AOP proxy yenileme',
+        'compare.sap': 'SAP Commerce deste\u011Fi',
+        'compare.open_source': 'A\u00E7\u0131k kaynak',
+        'sap.label': 'SAP Commerce',
+        'sap.title_html': 'SAP Commerce\'e <span class="text-gradient">Uyarlanmad\u0131, Onun \u0130\u00E7in Yaz\u0131ld\u0131.</span>',
+        'sap.subtitle': 'Java s\u0131n\u0131flar\u0131n\u0131 yeniden y\u00FCklemek i\u015Fin kolay yar\u0131s\u0131. SAP Commerce\'te bir g\u00FCn\u00FCn de\u011Fi\u015Fikliklerinin \u00E7o\u011Fu Java bile de\u011Fil: items.xml\'de bir tip, bir property, bir locales dosyas\u0131ndaki bir sat\u0131r metin, bir ImpEx. Reclazz bunlar\u0131 da yeniden y\u00FCkl\u00FCyor. A\u015Fa\u011F\u0131daki maddelerin hepsi \u00E7al\u0131\u015Fan bir 2211 sunucusunda \u00F6l\u00E7\u00FCld\u00FC.',
+        'sap.items.title': 'items.xml ve beans.xml',
+        'sap.items.desc': 'Kaydetti\u011Finizde platformun kendi kod \u00FCretimini \u00E7al\u0131\u015Ft\u0131r\u0131p yeniden \u00FCretilen model ve DTO s\u0131n\u0131flar\u0131n\u0131 y\u00FCkler, ant clean all ve restart yerine. Yeni bir attribute h\u00E2l\u00E2 veritaban\u0131 kolonu ister, o y\u00FCzden Reclazz \u015Feman\u0131za dokunmak yerine Update Running System \u00E7al\u0131\u015Ft\u0131rman\u0131z\u0131 s\u00F6yler.',
+        'sap.spring.title': 'Spring XML',
+        'sap.spring.desc': '*-spring.xml de\u011Fi\u015Fiklikleri farklan\u0131p canl\u0131 context\'e uygulan\u0131r; yepyeni bir bean de restart olmadan b\u00F6yle kullan\u0131labilir hale gelir.',
+        'sap.props.title': 'Property\'ler',
+        'sap.logging.title': 'Log Seviyeleri',
+        'sap.logging.desc': 'SAP Commerce log seviyelerini bir log4j2.xml'de de\u011Fil, property dosyalar\u0131nda ad ve seviye \u00E7ifti olarak tutar. Birini de\u011Fi\u015Ftirdi\u011Finizde \u00E7al\u0131\u015Fan logger'a ula\u015F\u0131r; bir s\u0131n\u0131f\u0131 debug'a \u00E7ekmek restart de\u011Fil, bir kaydetme kadar s\u00FCrer. Dokunmad\u0131\u011F\u0131n\u0131z seviyeler yerinde kal\u0131r, HAC konsolundan y\u00FCkseltti\u011Finiz bir seviye dahil.',
+        'sap.props.desc': 'Platform property dosyalar\u0131n\u0131 yaln\u0131z a\u00E7\u0131l\u0131\u015Fta okur. Art\u0131k kaydetti\u011Finizde ger\u00E7ekten de\u011Feri de\u011Fi\u015Fen anahtarlar, HAC konsolunun kulland\u0131\u011F\u0131 \u00E7a\u011Fr\u0131n\u0131n ayn\u0131s\u0131yla \u00E7al\u0131\u015Fan sunucuya uygulan\u0131r. Yaln\u0131zca a\u00E7\u0131l\u0131\u015Fta okunan de\u011Ferler ise "oldu" diye raporlanmaz, restart gerektirdi\u011Fi a\u00E7\u0131k\u00E7a s\u00F6ylenir.',
+        'sap.l10n.title': 'Tip ve Enum Metinleri',
+        'sap.l10n.desc': 'Bir locales dosyas\u0131n\u0131 d\u00FCzenleyin, yeni metin bir sonraki okumada gelir. System update yok, veritaban\u0131 yaz\u0131m\u0131 yok, restart yok.',
+        'sap.labels.title': 'Backoffice Label\'lar\u0131',
+        'sap.labels.desc': 'Label dosyalar\u0131 backoffice\'in ger\u00E7ekten okudu\u011Fu \u00F6nbelle\u011Fe ula\u015F\u0131r, hem de her kopyas\u0131na. G\u00F6r\u00FCn\u00FCm\u00FC yeniden a\u00E7\u0131n, metniniz orada.',
+        'sap.interceptors.title': 'Interceptor\'lar',
+        'sap.interceptors.desc': 'Validate, Prepare, Load ve Remove interceptor\'lar\u0131 yeniden kaydolur; de\u011Fi\u015Fen kural i\u00E7inden ge\u00E7en bir sonraki modelde ge\u00E7erlidir.',
+        'sap.impex.title': 'Kaydedince ImpEx',
+        'sap.impex.desc': 'De\u011Fi\u015Fen .impex dosyalar\u0131 kaydetti\u011Finiz anda i\u00E7eri al\u0131nabilir. Canl\u0131 veritaban\u0131n\u0131zda \u00E7al\u0131\u015Ft\u0131\u011F\u0131 i\u00E7in iste\u011Fe ba\u011Fl\u0131d\u0131r ve REMOVE ba\u015Fl\u0131\u011F\u0131 ta\u015F\u0131yan dosya \u00E7al\u0131\u015Ft\u0131r\u0131lmaz, ad\u0131yla birlikte reddedilir.',
+        'sap.ext.title': 'Eklentileri Tan\u0131r',
+        'sap.ext.desc': 'Eklenti yap\u0131n\u0131z\u0131, classpath\'i ve classloader hiyerar\u015Fisini kendi okur. Yaz\u0131p g\u00FCncel tutman\u0131z gereken eklenti ba\u015F\u0131na bir tan\u0131m dosyas\u0131 yoktur.',
+        'sapcmp.label': '\u00D6zellikle SAP Commerce\'te',
+        'sapcmp.title_html': 'Hybris\'te <span class="text-gradient">Reclazz</span> ve JRebel',
+        'sapcmp.subtitle': 'JRebel SAP Commerce\'te Java s\u0131n\u0131flar\u0131n\u0131 yeniden y\u00FCkl\u00FCyor ve bunu iyi yap\u0131yor. Bir hybris g\u00FCn\u00FCn\u00FCn geri kalan\u0131 ayr\u0131 bir soru; yan\u0131tlamak i\u00E7in en d\u00FCr\u00FCst yer de JRebel\'in kendi SAP Commerce k\u0131lavuzu.',
+        'sapcmp.what': 'De\u011Fi\u015Ftirdi\u011Finiz \u015Fey',
+        'sapcmp.price': 'Fiyat',
+        'sapcmp.classes': 'Bir Java s\u0131n\u0131f\u0131',
+        'sapcmp.setup': 'Eklenti ba\u015F\u0131na kurulum dosyas\u0131',
+        'sapcmp.items': 'items.xml veya beans.xml\'de bir tip',
+        'sapcmp.logging': 'Bir log seviyesi',
+        'sapcmp.props': 'Bir property',
+        'sapcmp.l10n': 'Locales dosyas\u0131nda bir tip veya enum ad\u0131',
+        'sapcmp.labels': 'Bir backoffice label\'\u0131',
+        'sapcmp.interceptors': 'Bir interceptor',
+        'sapcmp.impex': 'Bir ImpEx dosyas\u0131',
+        'sapcmp.offline': 'Lisans sunucusu ve aktivasyon',
+        'sapcmp.footnote_html': 'Kar\u015F\u0131la\u015Ft\u0131rma <a href="https://manuals.jrebel.com/jrebel/advanced/hybris.html" target="_blank" rel="noopener">JRebel\'in kendi SAP Commerce k\u0131lavuzuna</a> g\u00F6re yap\u0131ld\u0131; o k\u0131lavuz derlenmi\u015F s\u0131n\u0131flar\u0131n yeniden y\u00FCklenmesini ve rebel.xml yap\u0131land\u0131rmas\u0131n\u0131 anlat\u0131yor. \u00C7arp\u0131 i\u015Fareti, o yetene\u011Fin orada tarif edilmedi\u011Fi anlam\u0131na gelir, JRebel bozuk demek de\u011Fildir: Hybris\'te s\u0131n\u0131flar\u0131 yeniden y\u00FCkl\u00FCyor ve belgeledi\u011Fi \u015Fey bu.',
+        'nav.sap': 'SAP Commerce',
+        'sapcmp.v.free': '\u00DCcretsiz ve a\u00E7\u0131k kaynak',
+        'sapcmp.v.price_jr': 'Kullan\u0131c\u0131 ba\u015F\u0131na 550+ dolar/y\u0131l',
+        'sapcmp.v.none': 'Yok',
+        'sapcmp.v.rebelxml': 'backoffice eklentileri i\u00E7in rebel.xml',
+        'sapcmp.v.regen': 'yeniden \u00FCretir ve y\u00FCkler',
+        'sapcmp.v.applied': '\u00E7al\u0131\u015Fan sunucuya uygulan\u0131r',
+        'sapcmp.v.rereg': 'yeniden kaydolur',
+        'sapcmp.v.optin': 'iste\u011Fe ba\u011Fl\u0131, kaydedince',
+        'sapcmp.v.notdoc': 'Hybris k\u0131lavuzunda yok',
+        'sapcmp.v.nolic': 'Yok, makinenizden hi\u00E7bir \u015Fey \u00E7\u0131kmaz',
+        'sapcmp.v.commercial': 'Ticari lisans, aktivasyon gerekir',
+        'jdk.label': 'JDK Deste\u011Fi',
+        'jdk.title_html': '<span class="text-gradient">JDK\'n\u0131zla</span> \u00C7al\u0131\u015F\u0131r',
+        'jdk.subtitle': 'Reclazz JDK\'n\u0131z\u0131 otomatik alg\u0131lar ve do\u011Fru bayraklar\u0131 yap\u0131land\u0131r\u0131r. Yap\u0131sal de\u011Fi\u015Fiklikler her JDK\'de \u00E7al\u0131\u015F\u0131r; JetBrains Runtime ek olarak yeni \u00FCyeleri reflection\'a g\u00F6r\u00FCn\u00FCr k\u0131lar.',
+        'jdk.standard.title': 'Standart JDK',
+        'jdk.standard.structural': 'Metot ve alan ekleme/kald\u0131rma',
+        'jdk.standard.method': 'Metot g\u00F6vdesi de\u011Fi\u015Fiklikleri',
+        'jdk.standard.spring': 'Spring bean yenileme',
+        'jdk.standard.mvc': 'MVC yeniden tarama & \u00F6nbellek temizleme',
+        'jdk.standard.scheduler': 'Zamanlay\u0131c\u0131 & olay yenileme',
+        'jdk.jbr.title': 'JetBrains Runtime / DCEVM',
+        'jdk.jbr.everything': 'Yukar\u0131dakilerin hepsi, art\u0131:',
+        'jdk.jbr.reflection': 'Yeni \u00FCyeler reflection ile g\u00F6r\u00FCn\u00FCr',
+        'jdk.jbr.caches': 'Reflection \u00F6nbellekleri yeniden ba\u015Flatmadan g\u00F6r\u00FCr',
+        
+        'jdk.standard.annotations': 'Anotasyon de\u011Fi\u015Ftirme',
+        'architecture.label': 'Mimari',
+        'architecture.title_html': '<span class="text-gradient">Reclazz</span> Nas\u0131l \u00C7al\u0131\u015F\u0131r',
+        'architecture.subtitle': 'Uygulama JVM\'nizin i\u00E7inde hafif bir Java agent \u00E7al\u0131\u015F\u0131r. Derlenen s\u0131n\u0131flar\u0131 izler ve Spring-bilin\u00E7li yenilemeyi koordine eder.',
+        'limits.label': '\u015Eeffafl\u0131k',
+        'limits.title_html': 'Hot-Reload <span class="text-gradient">Yap\u0131lamayan</span> \u015Eeyler',
+        'limits.subtitle': 'Bunlar hi\u00E7bir arac\u0131n tam olarak a\u015Famayaca\u011F\u0131 temel JVM ve framework s\u0131n\u0131rlamalar\u0131d\u0131r.',
+        'limits.hierarchy_title': 'S\u0131n\u0131f Hiyerar\u015Fisi De\u011Fi\u015Fiklikleri',
+        'limits.hierarchy_desc': '\u00DCst s\u0131n\u0131f veya aray\u00FCz de\u011Fi\u015Ftirmek JVM s\u0131n\u0131rlamas\u0131d\u0131r. Hi\u00E7bir ara\u00E7 bunu a\u015Famaz. Yeniden ba\u015Flatma gerekir.',
+        'limits.structural_title': 'Yeni \u00DCyelerde Reflection (standart JDK)',
+        'limits.structural_desc': 'Metot ve alan ekleme/kald\u0131rma her JDK 17+ s\u00FCr\u00FCm\u00FCnde \u00E7al\u0131\u015F\u0131r. Standart JDK\'de yeni \u00FCyeler gizli bir companion s\u0131n\u0131fta durur: onlar\u0131 do\u011Frudan \u00E7a\u011F\u0131ran kod g\u00F6r\u00FCr, ancak orijinal s\u0131n\u0131f \u00FCzerindeki reflection ve a\u00E7\u0131l\u0131\u015Fta kurulan \u00F6nbellekler (Hybris ModelService, Jackson) yeniden ba\u015Flatmaya kadar g\u00F6rmez. JetBrains Runtime veya DCEVM bu k\u0131s\u0131t\u0131 kald\u0131r\u0131r.',
+        'limits.config_title': 'Spring Yap\u0131land\u0131rma De\u011Fi\u015Fiklikleri',
+        'limits.config_desc': 'Yap\u0131land\u0131rma dosyas\u0131 de\u011Fi\u015Fiklikleri (application.properties, application.yml, XML bean tan\u0131mlar\u0131) ba\u015Flang\u0131\u00E7ta y\u00FCklenir ve yeniden ba\u015Flatma gerektirir.',
+        'limits.new_beans_title': 'Yeni Spring Bean\'leri',
+        'limits.new_beans_desc': 'Tamamen yeni @Component s\u0131n\u0131flar\u0131 eklemek yeniden ba\u015Flatma gerektirir. Spring\'in bile\u015Fen taramas\u0131 ba\u015Flang\u0131\u00E7ta \u00E7al\u0131\u015F\u0131r. Mevcut bean\'leri de\u011Fi\u015Ftirmek sorunsuz \u00E7al\u0131\u015F\u0131r.',
+        'install.label': 'Ba\u015Flayal\u0131m',
+        'install.title_html': '<span class="text-gradient">3 Ad\u0131mda</span> \u00C7al\u0131\u015F\u0131r Duruma Gelin',
+        'install.step1.title': 'Agent\'\u0131 Ekleyin',
+        'install.step1.desc': 'JVM arg\u00FCmanlar\u0131n\u0131za -javaagent bayra\u011F\u0131n\u0131 ekleyin veya otomatik enjeksiyon i\u00E7in IntelliJ eklentisini kurun.',
+        'install.step2.title': 'Uygulaman\u0131z\u0131 \u00C7al\u0131\u015Ft\u0131r\u0131n',
+        'install.step2.desc': 'Spring Boot uygulaman\u0131z\u0131 normal \u015Fekilde ba\u015Flat\u0131n. Reclazz proje d\u00FCzeninizi otomatik alg\u0131lar ve izlemeye ba\u015Flar.',
+        'install.step3.title': 'Derle & Yenile',
+        'install.step3.desc': 'Kodunuzu de\u011Fi\u015Ftirin, sonra derleyin. Reclazz de\u011Fi\u015Fiklikleri otomatik olarak hot-swap yapar. Yeniden ba\u015Flatma gerekmez.',
+        'faq.title_html': 'S\u0131k Sorulan <span class="text-gradient">Sorular</span>',
+        'faq.q1': 'Reclazz \u00E7al\u0131\u015Fan uygulamamam\u0131 bozar m\u0131?',
+        'faq.a1': 'Hay\u0131r. Reclazz standart JVM Instrumentation API kullan\u0131r, hata ay\u0131klay\u0131c\u0131lar ve profiler\'lar\u0131n kulland\u0131\u011F\u0131 ayn\u0131 mekanizma. Hot-swap ba\u015Far\u0131s\u0131z olursa, orijinal s\u0131n\u0131f y\u00FCkl\u00FC kal\u0131r ve uygulaman\u0131z normal \u00E7al\u0131\u015Fmaya devam eder.',
+        'faq.q2': 'Reclazz Spring Boot DevTools\'dan nas\u0131l farkl\u0131?',
+        'faq.a2': 'DevTools her de\u011Fi\u015Fiklikte t\u00FCm Spring uygulama ba\u011Flam\u0131n\u0131 yeniden ba\u015Flat\u0131r, bu saniyeler s\u00FCrer ve t\u00FCm uygulama durumunu kaybeder. Reclazz ger\u00E7ek yerinde s\u0131n\u0131f yeniden tan\u0131mlama yapar, durumunuz korunur ve yenilemeler ~50ms\'de tamamlan\u0131r. Reclazz ayr\u0131ca MVC yeniden tarama, \u00F6nbellek temizleme ve zamanlay\u0131c\u0131 yeniden kay\u0131t gibi Spring\'e \u00F6zel konular\u0131 yeniden ba\u015Flatma olmadan ele al\u0131r.',
+        'faq.q3': 'Reclazz Maven ve Gradle ile \u00E7al\u0131\u015F\u0131r m\u0131?',
+        'faq.a3': 'Evet. Reclazz classpath\'ten <code style="font-family:var(--font-mono);font-size:0.9em">target/classes</code> (Maven) veya <code style="font-family:var(--font-mono);font-size:0.9em">build/classes/java/main</code> (Gradle) dizinini otomatik alg\u0131lar. <code style="font-family:var(--font-mono);font-size:0.9em">mvn compile</code> veya <code style="font-family:var(--font-mono);font-size:0.9em">gradle classes</code> \u00E7al\u0131\u015Ft\u0131r\u0131n, Reclazz de\u011Fi\u015Fiklikleri otomatik hot-swap yapar.',
+        'faq.q4': 'Hot-swap ba\u015Far\u0131s\u0131z olursa ne olur?',
+        'faq.a4': 'Reclazz hatay\u0131 ara\u00E7 penceresinde ve bildirimle raporlar. Orijinal s\u0131n\u0131f y\u00FCkl\u00FC kal\u0131r, uygulaman\u0131z asla bozuk durumda b\u0131rak\u0131lmaz. Yayg\u0131n neden: \u00FCst s\u0131n\u0131f veya aray\u00FCz de\u011Fi\u015Fiklikleri, ki bunlar her zaman yeniden ba\u015Flatma gerektirir.',
+        'faq.q5': 'Reclazz harici sunuculara veri g\u00F6nderir mi?',
+        'faq.a5': 'Hay\u0131r. Reclazz %100 yereldir. Telemetri, analitik, lisans sunucusu veya d\u0131\u015F a\u011F iste\u011Fi yoktur. Her \u015Fey tamamen makinenizde \u00E7al\u0131\u015F\u0131r.',
+        'faq.q6': 'Reclazz SAP Commerce (Hybris) destekliyor mu?',
+        'faq.a6': 'Evet, zaten Reclazz\'in var olma sebebi bu. Bir <strong>*-items.xml</strong> ya da <strong>*-beans.xml</strong> kaydetti\u011Finizde platformun kendi kod \u00FCretimi arka planda \u00E7al\u0131\u015F\u0131r ve yeniden \u00FCretilen model ile DTO s\u0131n\u0131flar\u0131 an\u0131nda y\u00FCklenir; ant clean all ve yeniden ba\u015Flatma gerekmez. Yeni bir attribute h\u00E2l\u00E2 veritaban\u0131 s\u00FCtunu ister, o y\u00FCzden Reclazz veritaban\u0131n\u0131za dokunmak yerine HAC &gt; Update Running System \u00E7al\u0131\u015Ft\u0131rman\u0131z\u0131 hat\u0131rlat\u0131r. Bunlara ek olarak: interceptor yenileme (Validate, Prepare, Load, Remove) ile birlikte \u00E7al\u0131\u015Fan sunucuya uygulanan property de\u011Fi\u015Fiklikleri, \u00E7al\u0131\u015Fan Log4j2 ba\u011Flam\u0131na uygulanan log seviyeleri, locales dosyalar\u0131ndan yeniden okunan tip ve enum metinleri, tazelenen backoffice label\'lar\u0131, <strong>*-spring.xml</strong> yenileme, ImpEx otomatik import ve uzant\u0131-bilin\u00E7li s\u0131n\u0131f izleme.',
+        'faq.q7': 'JetBrains Runtime gerekli mi?',
+        'faq.a7': 'Gerekli de\u011Fil. Yap\u0131sal de\u011Fi\u015Fiklikler (metot ve alan ekleme/kald\u0131rma) her JDK 17+ s\u00FCr\u00FCm\u00FCnde \u00E7al\u0131\u015F\u0131r. JetBrains Runtime veya DCEVM ek olarak bu yeni \u00FCyeleri reflection\'a ve a\u00E7\u0131l\u0131\u015Fta kurulan \u00F6nbelleklere g\u00F6r\u00FCn\u00FCr k\u0131lar. Reclazz hangi runtime kulland\u0131\u011F\u0131n\u0131z\u0131 otomatik alg\u0131lar.',
+        'cta.title_html': 'Uygulama Yeniden Ba\u015Flatmalar\u0131na<br><span class="text-gradient">Zaman Harcamay\u0131 B\u0131rak\u0131n</span>',
+        'cta.subtitle': 'Spring Boot DevTools yeniden ba\u015Flatmalar\u0131 saniyeler s\u00FCrer ve durumunuzu kaybeder. Reclazz ~50ms\'de yeniler ve her \u015Feyi korur. \u00DCcretsiz ve a\u00E7\u0131k kaynak.',
+        'cta.install': 'Marketplace\'den Y\u00FCkle',
+        'cta.github': 'Kaynak Kodu GitHub\'da'
+    }
+};
+
+let currentLang = localStorage.getItem('reclazz-lang') || 'en';
+const langToggle = document.getElementById('langToggle');
+const originalTexts = {};
+
+// Store original English texts
+document.querySelectorAll('[data-i18n]').forEach(el => {
+    originalTexts[el.getAttribute('data-i18n')] = el.innerHTML;
+});
+
+function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('reclazz-lang', lang);
+    langToggle.textContent = lang === 'en' ? 'TR' : 'EN';
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (lang === 'tr' && translations.tr[key]) {
+            // Preserve arrow spans in FAQ questions
+            const arrow = el.querySelector('.faq-arrow');
+            el.innerHTML = translations.tr[key];
+            if (arrow) el.appendChild(arrow);
+        } else if (lang === 'en' && originalTexts[key]) {
+            const arrow = el.querySelector('.faq-arrow');
+            el.innerHTML = originalTexts[key];
+            if (arrow) el.appendChild(arrow);
+        }
+    });
+}
+
+langToggle.addEventListener('click', () => {
+    setLang(currentLang === 'en' ? 'tr' : 'en');
+});
+
+if (currentLang === 'tr') setLang('tr');
+</script>
+</body>
+</html>

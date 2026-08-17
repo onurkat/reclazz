@@ -1,0 +1,26 @@
+<!--
+  Reclazz master mark. Every other icon in this repo and on the website is
+  this same geometry: a two-arrow reload cycle, 180-degree rotationally
+  symmetric about the centre of a 64x64 box, on a rounded gradient tile.
+
+  Ring radius 15 about (32,32). Each arc sweeps 130 degrees, leaving two
+  22-degree gaps once the arrowheads are drawn in. The arcs carry round caps
+  that the arrowhead triangles cover completely, so the join is seamless.
+
+  Do not redraw these paths by hand. Copy them.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="reclazzTile" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7c3aed"/>
+      <stop offset="1" stop-color="#06d6a0"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#reclazzTile)"/>
+  <g fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round">
+    <path d="M43.49 41.64A15 15 0 0 1 17.23 34.60"/>
+    <path d="M20.51 22.36A15 15 0 0 1 46.77 29.40"/>
+  </g>
+  <path d="M15.84 26.72L12.57 36.95L22.41 35.21Z" fill="#fff"/>
+  <path d="M48.16 37.28L51.43 27.05L41.59 28.79Z" fill="#fff"/>
+</svg>
