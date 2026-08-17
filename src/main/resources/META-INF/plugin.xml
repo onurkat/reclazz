@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>com.onurkat.reclazz</id>
     <name>Reclazz</name>
-    <vendor email="onur@onurkat.com" url="https://www.onurkat.com/reclazz">Onur Kat</vendor>
+    <vendor email="onur@onurkat.com" url="https://reclazz.com">Onur Kat</vendor>
 
     <description><![CDATA[
         <h2>Hot-Reload for SAP Commerce and Spring, Free and Open Source</h2>
@@ -74,7 +74,7 @@
         </ul>
 
         <p>
-            <a href="https://www.onurkat.com/reclazz">Website</a> |
+            <a href="https://reclazz.com">Website</a> |
             <a href="https://github.com/onurkat/reclazz">GitHub</a>
         </p>
     ]]></description>

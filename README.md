@@ -11,7 +11,7 @@
 
 **Free, open-source hot-reload for Spring applications. Edit code, see changes live, no restart needed.**
 
-Website: [www.onurkat.com/reclazz](https://www.onurkat.com/reclazz)
+Website: [reclazz.com](https://reclazz.com)
 
 Reclazz is a Java agent that watches your compiled class files and hot-swaps them into the running JVM instantly. Works with any Spring Boot application out of the box, with extended support for SAP Commerce (Hybris).
 
