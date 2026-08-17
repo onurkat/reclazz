@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.23] - 2026-08-17
+
 ### Added
 
 - The release carries `LICENSE`, `NOTICE` and a new `THIRD-PARTY.md` beside the

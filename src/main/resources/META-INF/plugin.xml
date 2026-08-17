@@ -80,6 +80,13 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.23</h3>
+        <ul>
+            <li>A class built for a newer Java than your server runs is now refused with an explanation naming both versions, instead of being reported as reloaded while the application keeps running the old code. If your module and your server disagree about the Java release, which is easy to miss, you were being told the edit had landed when it had not</li>
+            <li>Verified on Spring Boot 2.7 as well as 3.3, and on Java 17 as well as 21 and JetBrains Runtime 25</li>
+            <li>The download now carries its licence terms and a list of everything inside the agent, for anyone reviewing it on behalf of an employer</li>
+        </ul>
+
         <h3>1.0.22</h3>
         <ul>
             <li>Reclazz no longer keeps a class, or the classloader that defined it, alive after your application has dropped it. Three pieces of per-class state were held in static maps that outlived what they described, which costs nothing while a class stays loaded and holds an entire redeployed web application when one does not</li>
