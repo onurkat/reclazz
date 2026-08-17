@@ -404,7 +404,7 @@ object HybrisAgentInstaller {
         }
     }
 
-    private fun removeMarkerBlock(content: String): String {
+    internal fun removeMarkerBlock(content: String): String {
         val begin = content.indexOf(MARKER_BEGIN)
         if (begin == -1) return content
         val endMarker = content.indexOf(MARKER_END, begin)
