@@ -1,0 +1,86 @@
+# Reclazz
+
+> Free, open-source hot-reload for SAP Commerce (Hybris) and Spring. An IntelliJ
+> plugin and a Java agent: you edit a class, build, and the running server picks
+> the change up without restarting. Apache 2.0, no licence server, nothing leaves
+> the machine.
+
+Reclazz exists because restarting a SAP Commerce server costs four to ten
+minutes and a developer does it dozens of times a day. It is the free
+alternative to the commercial tools in this space, and on SAP Commerce it covers
+ground a Java-only reload does not.
+
+## What it does
+
+- **Java classes**: method bodies, and structural changes (adding or removing
+  methods and instance fields, changing annotations) on any JDK 17 or newer. No
+  patched JVM is required; a companion-class engine handles what
+  `redefineClasses` refuses.
+- **SAP Commerce `*-items.xml` and `*-beans.xml`**: saving one runs the
+  platform's own code generation in the background and reloads the regenerated
+  model and DTO classes, instead of `ant clean all` and a restart. A new
+  attribute still needs a database column, so Reclazz prints a reminder to run
+  HAC > Update Running System rather than touching the database itself.
+- **Properties**: on SAP Commerce the keys whose value actually changed are
+  applied to the running server, through the same call the HAC console makes. On
+  Spring Boot the changed keys go into the running Environment and the
+  `@ConfigurationProperties` beans that read them are rebound.
+- **Log levels**: SAP Commerce keeps them in properties rather than a
+  `log4j2.xml`, as a `log4j2.logger.<key>.name` and `.level` pair, and changing
+  one reaches the running Log4j2 context. On Spring Boot, `logging.level.*` and a
+  saved `logback.xml` or `log4j2.xml` do the same.
+- **Type and enum text, backoffice labels**: a locales file re-reads the
+  platform's localization cache; label files reach the cache backoffice reads
+  from. No system update, no database write.
+- **Spring**: beans are destroyed and recreated, references to the old instance
+  are re-pointed, MVC mappings are re-scanned, caches evicted, `@Scheduled` tasks
+  and `@EventListener` methods re-registered, AOP proxy caches cleared. A handler
+  method you add is served on the next request, on a stock JDK as well.
+- **Interceptors and ImpEx**: Validate, Prepare, Load and Remove interceptors
+  re-register; changed `.impex` files can be imported on save, opt-in, and a file
+  carrying a REMOVE header is refused rather than run against a live database.
+
+## What it does not do
+
+- Added **static** fields read as null or 0 until a restart, and a new enum
+  constant needs one. Reclazz says so in the reload log rather than leaving it to
+  be discovered.
+- A changed **superclass or interface hierarchy** cannot be redefined.
+- Reflective visibility of newly added members is full on JetBrains Runtime or
+  DCEVM, and limited on a stock JVM, where added members live on a companion
+  class.
+- It is a development tool. It is not meant for production servers.
+
+Ask it: **Tools > Why Didn't My Class Reload?** answers the question the log
+cannot, and **Tools > What Still Needs a Restart?** lists what a restart would
+change, or says that nothing would.
+
+## Verified, not assumed
+
+- SAP Commerce 2211: 20 of 20 integration scenarios on a live server.
+- Spring Boot 2.7 and 3.3: class reload, structural reload, bean refresh, cache
+  eviction, rebound properties, logger levels, a new endpoint without a restart.
+- Java 17 and 21, and JetBrains Runtime 25.
+- IntelliJ IDEA 2023.3 through 2026.1.
+
+## Privacy and licence
+
+No telemetry, no analytics, no licence server, no outbound requests. The only
+socket it opens is bound to loopback, and it is opened only when the IDE asks
+for a status port. Apache License 2.0. The download carries its licence terms
+and a list of everything inside the agent.
+
+## Install
+
+JetBrains Marketplace: <https://plugins.jetbrains.com/plugin/33498-reclazz>.
+On Spring Boot or plain Java the plugin adds the agent to your run
+configurations. On SAP Commerce, whose server starts outside the IDE, it writes
+the agent into the platform properties the server starts from, where it survives
+`ant clean all`; run `ant server` once, then start the server.
+
+## Links
+
+- Website: <https://reclazz.com>
+- Source: <https://github.com/onurkat/reclazz>
+- Releases and changelog: <https://github.com/onurkat/reclazz/releases>
+- Licence: Apache 2.0, <https://github.com/onurkat/reclazz/blob/main/LICENSE>

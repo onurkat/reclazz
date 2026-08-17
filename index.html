@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Free, open-source hot-reload for SAP Commerce (Hybris) and Spring. Save an items.xml and it regenerates and reloads instead of costing you ant clean all and a restart. Interceptors, ImpEx, Spring beans and MVC mappings included.">
+    <meta name="description" content="Free, open-source hot-reload for SAP Commerce (Hybris) and Spring, and a free alternative to JRebel. Save an items.xml and it regenerates and reloads instead of costing you ant clean all and a restart. Properties, log levels, locales, backoffice labels, Spring beans and MVC mappings included. Apache 2.0, any JDK 17+.">
     <meta name="keywords" content="SAP Commerce, Hybris, hybris hot reload, items.xml, impex hot reload, hybris localization reload, backoffice labels reload, hybris properties reload, JRebel alternative, DCEVM alternative, Spring Boot, hot-reload, Java agent, hot-swap, Spring bean refresh, MVC, Reclazz, IntelliJ plugin">
     <meta name="author" content="Onur Kat">
     <meta name="robots" content="index, follow">
@@ -24,7 +24,8 @@
     <meta name="twitter:image" content="https://reclazz.com/og-image.png">
     <meta name="twitter:image:alt" content="Reclazz: stop restarting SAP Commerce.">
     <link rel="canonical" href="https://reclazz.com">
-    <title>Reclazz | Free Hot-Reload for SAP Commerce and Spring</title>
+    <link rel="alternate" type="text/markdown" href="https://reclazz.com/llms.txt" title="Reclazz summary for language models">
+    <title>Reclazz: Free Hot-Reload for SAP Commerce (Hybris) and Spring</title>
     <link rel="icon" type="image/svg+xml" href="/reclazz/favicon.svg">
     <link rel="apple-touch-icon" href="/reclazz/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
@@ -642,46 +643,101 @@
             "url": "https://www.onurkat.com"
         },
         "license": "https://github.com/onurkat/reclazz/blob/main/LICENSE",
-        "codeRepository": "https://github.com/onurkat/reclazz"
+        "codeRepository": "https://github.com/onurkat/reclazz",
+        "softwareVersion": "1.0.23",
+        "isAccessibleForFree": true,
+        "applicationSubCategory": "IDE Plugin",
+        "softwareRequirements": "JDK 17 or newer; IntelliJ IDEA 2023.3 through 2026.1",
+        "installUrl": "https://plugins.jetbrains.com/plugin/33498-reclazz",
+        "releaseNotes": "https://github.com/onurkat/reclazz/releases",
+        "keywords": "SAP Commerce, Hybris, hot reload, Spring Boot, JRebel alternative, items.xml, IntelliJ plugin, Java agent",
+        "sameAs": [
+            "https://github.com/onurkat/reclazz",
+            "https://plugins.jetbrains.com/plugin/33498-reclazz"
+        ],
+        "featureList": [
+            "Hot-reload of Java classes, including added methods and instance fields, on any JDK 17+",
+            "SAP Commerce items.xml and beans.xml regeneration with reload of the generated model classes",
+            "Property changes applied to a running SAP Commerce server",
+            "Log levels applied to the running logging context",
+            "Spring bean refresh, MVC re-scan, cache eviction, scheduler and event listener re-registration",
+            "A newly added Spring MVC endpoint served without a restart",
+            "Type and enum text from locales files, and backoffice labels, refreshed without a system update",
+            "Hybris interceptor reload and opt-in ImpEx import on save"
+        ]
     }
     </script>
     <script type="application/ld+json">
-    {
+{
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
-            {
-                "@type": "Question",
-                "name": "Will Reclazz break my running application?",
-                "acceptedAnswer": { "@type": "Answer", "text": "No. Reclazz uses the standard JVM Instrumentation API (the same mechanism used by debuggers and profilers). If a hot-swap fails, the original class remains loaded and your application continues running normally." }
-            },
-            {
-                "@type": "Question",
-                "name": "How is Reclazz different from Spring Boot DevTools?",
-                "acceptedAnswer": { "@type": "Answer", "text": "DevTools restarts the entire application context on every change, losing all application state. Reclazz performs true in-place class redefinition, so your application state is preserved, and reloads complete in ~50ms instead of seconds." }
-            },
-            {
-                "@type": "Question",
-                "name": "Does Reclazz work with Maven and Gradle?",
-                "acceptedAnswer": { "@type": "Answer", "text": "Yes. Reclazz auto-detects target/classes (Maven) or build/classes/java/main (Gradle) from the classpath. Just run mvn compile or gradle classes and Reclazz hot-swaps the changes automatically." }
-            },
-            {
-                "@type": "Question",
-                "name": "What happens if a hot-swap fails?",
-                "acceptedAnswer": { "@type": "Answer", "text": "Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes are superclass or interface changes, which always require a restart." }
-            },
-            {
-                "@type": "Question",
-                "name": "Does Reclazz send any data to external servers?",
-                "acceptedAnswer": { "@type": "Answer", "text": "No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine." }
-            },
-            {
-                "@type": "Question",
-                "name": "Does Reclazz support SAP Commerce (Hybris)?",
-                "acceptedAnswer": { "@type": "Answer", "text": "Yes, and it is the reason Reclazz exists. Saving a *-items.xml or *-beans.xml runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC > Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), *-spring.xml reload, ImpEx auto-import and extension-aware class watching." }
-            }
+                {
+                        "@type": "Question",
+                        "name": "Will Reclazz break my running application?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "No. Reclazz uses the standard JVM Instrumentation API (the same mechanism used by debuggers and profilers). If a hot-swap fails, the original class remains loaded and your application continues running normally."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "How is Reclazz different from Spring Boot DevTools?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "DevTools restarts the entire application context on every change, losing all application state. Reclazz performs true in-place class redefinition, so your application state is preserved, and reloads complete in ~50ms instead of seconds."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Does Reclazz work with Maven and Gradle?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Yes. Reclazz auto-detects target/classes (Maven) or build/classes/java/main (Gradle) from the classpath. Just run mvn compile or gradle classes and Reclazz hot-swaps the changes automatically."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "What happens if a hot-swap fails?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes are superclass or interface changes, which always require a restart."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Does Reclazz send any data to external servers?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Does Reclazz support SAP Commerce (Hybris)?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Yes, and it is the reason Reclazz exists. Saving a *-items.xml or *-beans.xml runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC > Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), *-spring.xml reload, ImpEx auto-import and extension-aware class watching."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Is there a free alternative to JRebel for SAP Commerce?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Reclazz is one, and it is open source under Apache 2.0 with no licence server and no per-seat cost. It reloads Java classes, including added methods and instance fields, on any JDK 17 or newer. On SAP Commerce it also covers what a Java-only reload does not: saving a *-items.xml or *-beans.xml regenerates and reloads the model and DTO classes, property changes reach the running server, log levels change without a restart, locales text and backoffice labels refresh, *-spring.xml is applied to the live context, and an endpoint you just wrote answers on the next request. Compared against JRebel's own SAP Commerce manual, which documents reloading compiled classes and configuring rebel.xml, those platform-specific parts are not in it."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "How do I reload an items.xml change without running ant clean all?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server."
+                        }
+                }
         ]
-    }
+}
     </script>
     <script type="application/ld+json">
     {
@@ -1174,6 +1230,14 @@
                 <button class="faq-question" aria-expanded="false" data-i18n="faq.q7">Do I need JetBrains Runtime?<span class="faq-arrow">&#9660;</span></button>
                 <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a7">Not required. Structural changes (adding and removing methods and fields) work on any JDK 17+. JetBrains Runtime or DCEVM additionally makes those new members visible to reflection and to caches built at startup. Reclazz auto-detects which runtime you're using and configures itself accordingly.</div></div>
             </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q8">Is there a free alternative to JRebel for SAP Commerce?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a8">Reclazz is one, and it is open source under Apache 2.0 with no licence server and no per-seat cost. It reloads Java classes, including added methods and instance fields, on any JDK 17 or newer. On SAP Commerce it also covers what a Java-only reload does not: saving a *-items.xml or *-beans.xml regenerates and reloads the model and DTO classes, property changes reach the running server, log levels change without a restart, locales text and backoffice labels refresh, *-spring.xml is applied to the live context, and an endpoint you just wrote answers on the next request. Compared against JRebel's own SAP Commerce manual, which documents reloading compiled classes and configuring rebel.xml, those platform-specific parts are not in it.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q9">How do I reload an items.xml change without running ant clean all?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a9">Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server.</div></div>
+            </div>
         </div>
     </div>
 </section>
@@ -1456,6 +1520,10 @@ const translations = {
         'faq.a6': 'Evet, zaten Reclazz\'in var olma sebebi bu. Bir <strong>*-items.xml</strong> ya da <strong>*-beans.xml</strong> kaydetti\u011Finizde platformun kendi kod \u00FCretimi arka planda \u00E7al\u0131\u015F\u0131r ve yeniden \u00FCretilen model ile DTO s\u0131n\u0131flar\u0131 an\u0131nda y\u00FCklenir; ant clean all ve yeniden ba\u015Flatma gerekmez. Yeni bir attribute h\u00E2l\u00E2 veritaban\u0131 s\u00FCtunu ister, o y\u00FCzden Reclazz veritaban\u0131n\u0131za dokunmak yerine HAC &gt; Update Running System \u00E7al\u0131\u015Ft\u0131rman\u0131z\u0131 hat\u0131rlat\u0131r. Bunlara ek olarak: interceptor yenileme (Validate, Prepare, Load, Remove) ile birlikte \u00E7al\u0131\u015Fan sunucuya uygulanan property de\u011Fi\u015Fiklikleri, \u00E7al\u0131\u015Fan Log4j2 ba\u011Flam\u0131na uygulanan log seviyeleri, locales dosyalar\u0131ndan yeniden okunan tip ve enum metinleri, tazelenen backoffice label\'lar\u0131, <strong>*-spring.xml</strong> yenileme, ImpEx otomatik import ve uzant\u0131-bilin\u00E7li s\u0131n\u0131f izleme.',
         'faq.q7': 'JetBrains Runtime gerekli mi?',
         'faq.a7': 'Gerekli de\u011Fil. Yap\u0131sal de\u011Fi\u015Fiklikler (metot ve alan ekleme/kald\u0131rma) her JDK 17+ s\u00FCr\u00FCm\u00FCnde \u00E7al\u0131\u015F\u0131r. JetBrains Runtime veya DCEVM ek olarak bu yeni \u00FCyeleri reflection\'a ve a\u00E7\u0131l\u0131\u015Fta kurulan \u00F6nbelleklere g\u00F6r\u00FCn\u00FCr k\u0131lar. Reclazz hangi runtime kulland\u0131\u011F\u0131n\u0131z\u0131 otomatik alg\u0131lar.',
+        'faq.q8': 'SAP Commerce i\u00E7in JRebel\'e \u00FCcretsiz bir alternatif var m\u0131?',
+        'faq.a8': 'Reclazz bunlardan biri ve Apache 2.0 ile a\u00E7\u0131k kaynak; lisans sunucusu yok, ki\u015Fi ba\u015F\u0131 \u00FCcret yok. Java s\u0131n\u0131flar\u0131n\u0131, eklenen metot ve alanlar dahil, JDK 17 ve \u00FCzerinde yeniden y\u00FCkl\u00FCyor. SAP Commerce taraf\u0131nda ise yaln\u0131z Java ile s\u0131n\u0131rl\u0131 kalm\u0131yor: bir *-items.xml ya da *-beans.xml kaydetti\u011Finizde model ve DTO s\u0131n\u0131flar\u0131 yeniden \u00FCretilip y\u00FCkleniyor, property de\u011Fi\u015Fiklikleri \u00E7al\u0131\u015Fan sunucuya ula\u015F\u0131yor, log seviyeleri restarts\u0131z de\u011Fi\u015Fiyor, locales metinleri ve backoffice etiketleri tazeleniyor, *-spring.xml canl\u0131 ba\u011Flama uygulan\u0131yor ve yeni yazd\u0131\u011F\u0131n\u0131z bir u\u00E7 sonraki istekte cevap veriyor.',
+        'faq.q9': 'items.xml de\u011Fi\u015Fikli\u011Fini ant clean all \u00E7al\u0131\u015Ft\u0131rmadan nas\u0131l y\u00FCklerim?',
+        'faq.a9': 'Reclazz a\u00E7\u0131kken dosyay\u0131 kaydetmeniz yeterli. Platformun kendi kod \u00FCretimi arka planda \u00E7al\u0131\u015F\u0131yor ve yeniden \u00FCretilen model ile DTO s\u0131n\u0131flar\u0131 ayakta duran sunucuya y\u00FCkleniyor; yani tam yeniden derleme ve yeniden ba\u015Flatma yerine saniyeler i\u00E7inde canl\u0131 oluyor. Yeni bir attribute h\u00E2l\u00E2 veritaban\u0131 s\u00FCtunu ister, o y\u00FCzden Reclazz size HAC > Platform > Update Running System \u00E7al\u0131\u015Ft\u0131rman\u0131z\u0131 hat\u0131rlat\u0131r, veritaban\u0131n\u0131zda kendisi DDL \u00E7al\u0131\u015Ft\u0131rmaz. \u00C7al\u0131\u015Fan bir SAP Commerce 2211 sunucusunda \u00F6l\u00E7\u00FCld\u00FC.',
         'cta.title_html': 'Uygulama Yeniden Ba\u015Flatmalar\u0131na<br><span class="text-gradient">Zaman Harcamay\u0131 B\u0131rak\u0131n</span>',
         'cta.subtitle': 'Spring Boot DevTools yeniden ba\u015Flatmalar\u0131 saniyeler s\u00FCrer ve durumunuzu kaybeder. Reclazz ~50ms\'de yeniler ve her \u015Feyi korur. \u00DCcretsiz ve a\u00E7\u0131k kaynak.',
         'cta.install': 'Marketplace\'den Y\u00FCkle',
