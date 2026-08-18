@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- The log says which SAP Commerce line the server is: `Platform version:
+  2211-jdk21.8`, read from the platform's own `build.number`. Two lines are in
+  the field at once, because SAP moved the platform to Java 21 and Spring 6.2 in
+  the 2211-jdk21 update and blocks new Java 17 builds after 31 August 2026, so
+  every installation is migrating or has just migrated. It was the first
+  question worth asking about any report, and the answer was two directories
+  away from a log that said only "Platform: Hybris (auto-detected)".
+
+- The verified matrix now says what it was actually measured on. The 20
+  integration scenarios have been running against 2211-jdk21.8 with Spring
+  6.2.12 on Java 21, and the table said "2211", which now reads as the Java 17
+  line that is being retired. Spring 6.2 is listed too: it was covered through
+  the SAP Commerce run and only Spring Boot's 5.3 and 6.1 were claimed.
+
 ### Fixed
 
 - Attaching to a JVM that was started with dynamic agent loading disabled now

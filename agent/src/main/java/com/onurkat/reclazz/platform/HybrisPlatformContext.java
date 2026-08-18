@@ -42,7 +42,38 @@ public class HybrisPlatformContext implements PlatformContext {
         hybrisContext = new HybrisContext(hybrisHome);
         hybrisContext.initialize();
         StatusReporter.info("Hybris home: " + hybrisHome);
+        StatusReporter.info("Platform version: " + platformVersion());
         StatusReporter.info("Found " + hybrisContext.getExtensions().size() + " extensions");
+    }
+
+    /**
+     * Which SAP Commerce line this is, from the platform's own build number.
+     *
+     * <p>Two lines are in the field at once. SAP shipped 2211-jdk21 in
+     * September 2025, moving the platform to Java 21 and Spring 6.2, and after
+     * 31 August 2026 builds on the Java 17 line are blocked, so every
+     * installation is either migrating or has just migrated. The two behave
+     * differently enough that it is the first question worth asking about any
+     * report, and the answer is sitting in {@code bin/platform/build.number}
+     * as {@code version=2211-jdk21.8}.
+     *
+     * <p>Printed rather than acted on: it costs one line in the log and saves
+     * a round trip on every question that starts with "which version".
+     */
+    private String platformVersion() {
+        Path buildNumber = hybrisHome.resolve("bin").resolve("platform").resolve("build.number");
+        try {
+            for (String line : java.nio.file.Files.readAllLines(buildNumber)) {
+                String trimmed = line.trim();
+                if (trimmed.startsWith("version=")) {
+                    String version = trimmed.substring("version=".length()).trim();
+                    if (!version.isEmpty()) return version;
+                }
+            }
+            return "unknown (build.number has no version)";
+        } catch (Exception e) {
+            return "unknown (" + buildNumber.getFileName() + " not readable)";
+        }
     }
 
     @Override

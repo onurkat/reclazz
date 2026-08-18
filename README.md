@@ -302,10 +302,11 @@ from the code. What that means concretely:
 
 | Environment | Version | Covered |
 |---|---|---|
-| SAP Commerce | 2211 | 20/20 integration scenarios on a live server |
+| SAP Commerce | 2211-jdk21.8 (Java 21, Spring 6.2) | 20/20 integration scenarios on a live server |
 | Spring Boot | 3.3 | class reload, structural reload, bean refresh, cache, MVC, properties, logging |
 | Spring Boot | 2.7 | the same six, including a new endpoint mapped without a restart |
 | JDK | SapMachine 17 and 21, JBR 25 | companion-class engine on both, plus native enhanced redefinition |
+| Spring Framework | 6.2 (through the SAP Commerce run) and 5.3 / 6.1 (through Spring Boot 2.7 / 3.3) | bean refresh, MVC re-scan, cache, scheduler, events |
 | IntelliJ IDEA | 2023.3 to 2026.1 | the range the plugin declares |
 
 Older or newer versions are likely to work, and are not claimed to until they

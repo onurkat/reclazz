@@ -71,7 +71,7 @@
         <ul>
             <li>IntelliJ IDEA 2023.3+</li>
             <li>JDK 17+</li>
-            <li>SAP Commerce 2211 or later for the Hybris-specific features</li>
+            <li>SAP Commerce 2211 or later for the Hybris-specific features, including the 2211-jdk21 line (Java 21 and Spring 6.2) that every installation has to be on to keep building after 31 August 2026; that is the line the 20 integration scenarios run against</li>
         </ul>
 
         <p>
