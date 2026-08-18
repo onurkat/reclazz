@@ -85,9 +85,16 @@ public final class EnumConstantAppender {
 
         EnumSurgery.Outcome outcome = EnumSurgery.append(loaded, names);
         if (!outcome.applied()) {
+            // One sentence, not two. Following "could not gain" with the
+            // generic notice, which opens "gained value(s)", read as a
+            // contradiction: the describe() there is about what the source
+            // did, and next to a refusal it looked like the opposite of what
+            // had just been said.
             StatusReporter.warn("Enum " + className + " could not gain " + names + ": "
-                    + outcome.declinedBecause() + ".");
-            EnumConstantChange.report(className, change);
+                    + outcome.declinedBecause() + ". values() and valueOf() keep the old set "
+                    + "until a restart. Everything else in this class reloaded.");
+            com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    change.describe() + ", which could not be applied to this JVM");
             return false;
         }
 

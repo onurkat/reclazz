@@ -6,6 +6,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- A JVM that refuses `sun.misc.Unsafe` no longer costs the whole class reload.
+  JEP 471 is phasing those methods out, and JDK 26 refuses them by default;
+  appending an enum constant needs them, because writing a final field has no
+  supported alternative (a VarHandle from `unreflectVarHandle` answers
+  `UnsupportedOperationException` for a final field, with or without
+  `setAccessible`, instance and static alike).
+
+  Tested by bringing JDK 26's behaviour forward with
+  `--sun-misc-unsafe-memory-access=deny`. Before: `Hot-swap failed for Status:
+  Structural reload failed: staticFieldBase`, with a method body changed in the
+  same save lost along with the enum, and a JDK internal name presented as the
+  reason. Now the enum declines with a sentence naming the policy and the flag
+  that reproduces it, and everything else in the save reloads.
+
+  On Java 24 and 25 the JVM prints its own deprecation warning for this, ending
+  with a request to report it to the maintainers of a Reclazz class. Reclazz now
+  answers that in the same breath, so nobody has to open an issue about a
+  deliberate choice.
+
+
 ## [1.0.25] - 2026-08-18
 
 ### Changed
