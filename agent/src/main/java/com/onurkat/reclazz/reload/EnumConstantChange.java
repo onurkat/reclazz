@@ -154,6 +154,20 @@ public final class EnumConstantChange {
                         ? ", and " + switchTables + " switch table(s) grew so existing switches take "
                           + "their default branch instead of throwing"
                         : ""));
+
+        // The JVM prints its own warning for this, and it ends with "Please
+        // consider reporting this to the maintainers of
+        // com.onurkat.reclazz.bootstrap.UnsafeAccess", which is us. Someone
+        // reading that has been asked by their JVM to open an issue about a
+        // deliberate choice. Answering it in the same breath costs one line
+        // and saves them the trip.
+        if (Runtime.version().feature() >= 24) {
+            com.onurkat.reclazz.ui.StatusReporter.info("Java " + Runtime.version().feature()
+                    + " prints a sun.misc.Unsafe deprecation warning for this and names Reclazz; "
+                    + "it is expected. Writing a final field is what adding a constant needs and "
+                    + "has no supported alternative, so from JDK 26 this declines and asks for a "
+                    + "restart instead.");
+        }
     }
 
     /** Said when the change was more than an append, which cannot be applied. */

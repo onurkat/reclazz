@@ -10,21 +10,50 @@ import java.lang.reflect.Field;
  * The narrow set of memory writes the enum work needs, behind one door.
  *
  * <p>Writing a final field and allocating an instance without a constructor are
- * the two things {@code Unsafe} is here for. Both are unavoidable: an enum
- * constant is a final static holding an object whose constructor is private and
- * whose {@code name} and {@code ordinal} are final, and the JVM will not run
- * the class initialiser that would have set them a second time.
+ * the two things {@code Unsafe} is here for. Both are unavoidable for that
+ * feature: an enum constant is a final static holding an object whose
+ * constructor is private and whose {@code name} and {@code ordinal} are final,
+ * and the JVM will not run the class initialiser that would have set them a
+ * second time. Every supported alternative was measured and none of them
+ * writes a final field: a VarHandle from {@code unreflectVarHandle} answers
+ * {@code UnsupportedOperationException} for a final field, with or without
+ * {@code setAccessible}, for instance and static fields alike.
  *
- * <p>It is kept in one class so there is one place to check whether it is
- * available and one place to change if a JVM closes the door. Everything that
- * uses it asks {@link #isAvailable()} first and declines rather than throwing,
- * because the feature this serves is optional and the application is not.
+ * <h2>This door is closing</h2>
+ *
+ * <p>JEP 471 deprecated these methods for removal and is phasing them out: a
+ * warning from JDK 24, an exception by default in JDK 26, removal after that.
+ * The behaviour can be brought forward today with
+ * {@code --sun-misc-unsafe-memory-access=deny}, which is how the handling here
+ * was tested rather than reasoned about.
+ *
+ * <p>So every accessor assumes it can fail. The first refusal is remembered, so
+ * that a JVM which has closed this door is asked once and not once per reload,
+ * and it is reported as {@link MemoryAccessUnavailable} rather than as whatever
+ * internal name the JVM happened to use. Before this, the refusal surfaced as
+ * <em>Structural reload failed: staticFieldBase</em>: the whole class reload
+ * lost, including method bodies that had nothing to do with the enum, and a JDK
+ * internal put in front of the developer as if it meant something to them.
  */
 final class UnsafeAccess {
 
     private static final sun.misc.Unsafe UNSAFE = find();
 
+    /**
+     * Set the first time this JVM refuses. Not probed at startup on purpose:
+     * probing is itself a call, and on JDK 24 and 25 a call is what prints the
+     * warning. An application that never reloads an enum should never see it.
+     */
+    private static volatile boolean denied = false;
+
     private UnsafeAccess() {
+    }
+
+    /** Thrown when this JVM will not do the memory access, rather than a JDK internal. */
+    static final class MemoryAccessUnavailable extends RuntimeException {
+        MemoryAccessUnavailable(Throwable cause) {
+            super("this JVM does not allow the memory access this needs", cause);
+        }
     }
 
     private static sun.misc.Unsafe find() {
@@ -38,31 +67,71 @@ final class UnsafeAccess {
     }
 
     static boolean isAvailable() {
-        return UNSAFE != null;
+        return UNSAFE != null && !denied;
+    }
+
+    /** Whether this JVM has already refused, which is worth saying differently. */
+    static boolean isDenied() {
+        return denied;
     }
 
     static Object allocateInstance(Class<?> type) throws InstantiationException {
-        return UNSAFE.allocateInstance(type);
+        try {
+            return UNSAFE.allocateInstance(type);
+        } catch (InstantiationException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw refused(t);
+        }
     }
 
     static Object getStatic(Field field) {
-        return UNSAFE.getObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field));
+        try {
+            return UNSAFE.getObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field));
+        } catch (Throwable t) {
+            throw refused(t);
+        }
     }
 
     static void putStatic(Field field, Object value) {
-        UNSAFE.putObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field), value);
+        try {
+            UNSAFE.putObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field), value);
+        } catch (Throwable t) {
+            throw refused(t);
+        }
     }
 
     static void putObject(Object target, Field field, Object value) {
-        UNSAFE.putObject(target, UNSAFE.objectFieldOffset(field), value);
+        try {
+            UNSAFE.putObject(target, UNSAFE.objectFieldOffset(field), value);
+        } catch (Throwable t) {
+            throw refused(t);
+        }
     }
 
     static void putInt(Object target, Field field, int value) {
-        UNSAFE.putInt(target, UNSAFE.objectFieldOffset(field), value);
+        try {
+            UNSAFE.putInt(target, UNSAFE.objectFieldOffset(field), value);
+        } catch (Throwable t) {
+            throw refused(t);
+        }
     }
 
     /** The array an EnumMap or EnumSet captured when it was built. */
     static Object getObject(Object target, Field field) {
-        return UNSAFE.getObject(target, UNSAFE.objectFieldOffset(field));
+        try {
+            return UNSAFE.getObject(target, UNSAFE.objectFieldOffset(field));
+        } catch (Throwable t) {
+            throw refused(t);
+        }
+    }
+
+    /**
+     * A refusal is permanent for this JVM, so it is remembered: asking again
+     * cannot succeed and every ask is another warning in the developer's log.
+     */
+    private static MemoryAccessUnavailable refused(Throwable cause) {
+        denied = true;
+        return new MemoryAccessUnavailable(cause);
     }
 }

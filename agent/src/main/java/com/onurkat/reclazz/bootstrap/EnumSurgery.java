@@ -108,16 +108,21 @@ public final class EnumSurgery {
             return Outcome.declined("java.lang.Class does not have the expected enum caches");
         }
 
-        Object[] existing = (Object[]) UnsafeAccess.getStatic(valuesField);
-        if (existing == null) {
-            return Outcome.declined("the enum's constant array is empty after initialisation");
-        }
-        if (!existing.getClass().getComponentType().equals(enumClass)) {
-            return Outcome.declined("the enum's constant array is not the expected type");
-        }
-
+        // From here on every read and write can be refused by the JVM, and from
+        // JDK 26 it is refused by default. One try covers all of them so that a
+        // refusal declines the append instead of failing the whole class
+        // reload: the method bodies in the same save have nothing to do with
+        // the enum and used to be lost along with it.
         List<String> appended = new ArrayList<>();
         try {
+            Object[] existing = (Object[]) UnsafeAccess.getStatic(valuesField);
+            if (existing == null) {
+                return Outcome.declined("the enum's constant array is empty after initialisation");
+            }
+            if (!existing.getClass().getComponentType().equals(enumClass)) {
+                return Outcome.declined("the enum's constant array is not the expected type");
+            }
+
             Object[] grown = (Object[]) Array.newInstance(enumClass, existing.length + names.size());
             System.arraycopy(existing, 0, grown, 0, existing.length);
 
@@ -146,6 +151,11 @@ public final class EnumSurgery {
             // cached on the Class after the first call.
             UnsafeAccess.putObject(enumClass, constantsCache, null);
             UnsafeAccess.putObject(enumClass, directoryCache, null);
+        } catch (UnsafeAccess.MemoryAccessUnavailable e) {
+            return Outcome.declined("this JVM does not allow the memory access an enum "
+                    + "append needs. JDK 26 refuses it by default, and any release can be "
+                    + "run that way with --sun-misc-unsafe-memory-access=deny. Nothing was "
+                    + "changed");
         } catch (Throwable t) {
             return Outcome.declined("the constant could not be built: " + t);
         }
@@ -170,6 +180,8 @@ public final class EnumSurgery {
      */
     public static int growSwitchTables(Class<?>[] loadedClasses, Class<?> enumClass, int newLength) {
         if (loadedClasses == null || enumClass == null || !UnsafeAccess.isAvailable()) return 0;
+        // A JVM that has already refused will refuse every one of these, and
+        // each ask is another warning in the developer's log.
 
         // $SwitchMap$com$example$Status for com.example.Status; the mangling
         // replaces each dot with a dollar.
@@ -193,6 +205,10 @@ public final class EnumSurgery {
                     System.arraycopy(table, 0, wider, 0, table.length);
                     UnsafeAccess.putStatic(field, wider);
                     grown++;
+                } catch (UnsafeAccess.MemoryAccessUnavailable e) {
+                    // Refused once means refused for the rest of this JVM's
+                    // life; carrying on would print a warning per class.
+                    return grown;
                 } catch (Throwable ignored) {
                     // One table that will not grow is one switch that still
                     // throws; the rest are worth doing anyway.
