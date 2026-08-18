@@ -47,7 +47,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Add instance fields | **Yes** — set on objects created after the reload | Yes (restart) | Yes |
 | Add static fields | **Yes** — the field gets its initial value: constants, and initialisers that stand on their own | Yes (restart) | Yes, but the initialiser is not re-run |
 | Added static field whose initialiser is entangled with the rest of `<clinit>` | Reads as null/0, and names the field and the reason | Yes (restart) | Reads as null/0 |
-| Add enum values (on the end) | **Yes** — `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it, on any JDK 17+ | Yes (restart) | Yes |
+| Add enum values (on the end) | **Yes on JDK 17-25** — `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it. JDK 26 refuses the memory access this needs, so Reclazz declines and says so; `--sun-misc-unsafe-memory-access=allow` gives it back | Yes (restart) | Yes |
 | Insert, remove or reorder enum values | No — that renumbers every ordinal after the change, including `@Enumerated` columns already in your database. Reclazz refuses and says why | Yes (restart) | Yes |
 | Add / remove an interface | **Yes on JetBrains Runtime or DCEVM**, existing objects included; on a stock JDK it is refused by the JVM and Reclazz names the interface | Yes (restart) | Yes |
 | Change superclass | No — `redefineClasses` rejects it on every JVM, JBR included. The method bodies in the same save are still applied, and the log says the class keeps its old superclass until a restart | Yes (restart) | Yes, by loading classes itself instead of redefining them |
