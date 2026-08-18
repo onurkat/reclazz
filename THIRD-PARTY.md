@@ -41,6 +41,18 @@ the IntelliJ Platform itself.
 | Kotlin standard library | Apache License 2.0 | Provided by the IDE at runtime |
 | SAP Commerce, Spring, Hibernate, Log4j2, Logback | their own | Reached reflectively, at runtime, in your process. Nothing is bundled and no API is redistributed |
 
+## Used to build and test, never shipped
+
+The build file names more than the table above, and the difference is worth
+stating rather than leaving for someone to find and wonder about. JUnit, Spring
+(for the XML reloader's tests), `jakarta.persistence-api` (so a test can use the
+real annotations the agent matches by descriptor) and Byte Buddy's agent-attach
+helper are test dependencies. None of them are in a release; the commands below
+are how you check that rather than take it on trust.
+
+Byte Buddy in particular used to ship and no longer does, so seeing its name in
+`agent/build.gradle.kts` is expected: what is left is `testImplementation`.
+
 ## Verifying this yourself
 
 The claim is checkable without trusting the table:
@@ -50,6 +62,26 @@ unzip -l reclazz-<version>.zip                     # what the release contains
 unzip -l agent/reclazz-agent.jar | grep -v onurkat # anything outside our packages
 ```
 
-The second command returning nothing but directory entries and `META-INF` is the
-whole point: there is no unrelocated third-party code, and nothing else is
-along for the ride.
+The second command returns directory entries, `META-INF`, a small
+`reclazz.properties`, and one file worth explaining rather than leaving as an
+unexplained blob in an audit:
+
+    META-INF/reclazz-bootstrap.bin
+
+It is a jar inside the jar, holding the classes that have to live on the
+bootstrap classloader so that instrumented code can reach them. The `.bin`
+extension only stops the shadow plugin from unpacking it during the build. It
+is a plain jar and opens like one:
+
+```bash
+unzip -p agent/reclazz-agent.jar META-INF/reclazz-bootstrap.bin > bootstrap.jar
+unzip -l bootstrap.jar | grep -v onurkat   # directory entries and MANIFEST, nothing else
+```
+
+So: no unrelocated third-party code at the top level, none nested inside, and
+nothing else along for the ride. The relocation is checkable the same way:
+
+```bash
+unzip -l agent/reclazz-agent.jar | grep -c org/objectweb/asm            # 0
+unzip -l agent/reclazz-agent.jar | grep -c com/onurkat/reclazz/shaded/asm  # 149
+```
