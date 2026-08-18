@@ -24,6 +24,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- The ImpEx integration scenario stopped failing at random. Importing an ImpEx
+  is not synchronous with saving one: the agent hands the file to the platform's
+  own cronjob, so "the agent reported the import" and "the data is readable" are
+  different moments. The test slept for a fixed delay and read once, and on one
+  run it reported `Expected 'Reclazz Test Title v2', got 'Reclazz Test Title v1'`
+  while the log showed the import twice, five seconds apart, with the read
+  landing between them.
+
+  It now waits for the agent's own import event, the signal the rest of the
+  suite is built on, and then polls the value instead of guessing when it will
+  appear. Three consecutive runs after the change: 20/20 each, with the scenario
+  taking 3.5 to 3.7 seconds, which is no slower than the sleep it replaced.
+
 - Attaching to a JVM that was started with dynamic agent loading disabled now
   says what to do about it. JEP 451 warns from Java 21 and will disallow the
   attach in a future release; a server started with
