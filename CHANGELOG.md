@@ -6,6 +6,84 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.25] - 2026-08-18
+
+### Changed
+
+- The agent no longer ships Byte Buddy, and is 0.7 MB instead of 10.2 MB. It was
+  there to emit two probe classes that ask the JVM whether it accepts a
+  structural redefinition, and in one file only for the copy of ASM bundled
+  inside it. Both are ASM's job and ASM was already shipped. The agent is loaded
+  into the JVM that runs your application, so every library inside it is a
+  library inside that application: this was 25 MB of classes to save sixty
+  lines. Byte Buddy remains a test dependency, where it never reaches anyone.
+
+- The file watcher starts when the application reports ready instead of after a
+  fixed thirty seconds. Spring's context refresh is already instrumented, so the
+  moment a context finishes is known exactly; the configured delay stays as the
+  cap, because a plain Java application has no context to refresh and an
+  application that fails to start must not leave the watcher waiting. Measured:
+  a Spring Boot application starts watching after 4.2 seconds instead of 30, and
+  SAP Commerce after 4.6, with all 20 integration scenarios still passing.
+
+### Fixed
+
+- A class the JVM has never loaded is no longer reported as having been "loaded
+  before Reclazz could instrument it". Missing metadata has two causes and only
+  one of them is worth telling anyone: a class that really did miss the
+  load-time transform. The other is an ordinary new file, and the message was
+  appearing every time one was compiled beside a changed one, describing a
+  startup-ordering problem the reader did not have.
+
+- The integration suite stopped under-reporting what the product does. Two
+  scenarios checked an old endpoint and noted that a newly added one was
+  "invisible (documented)", which stopped being true when handler methods added
+  by a reload started being mapped. Both now ask for the new endpoint, and both
+  pass on SAP Commerce with a stock JDK.
+
+### Known limitation
+
+- Appending an enum constant costs about 1.5 seconds on a large server, and it
+  is worth knowing why before anyone tries to shave it. Measured on SAP
+  Commerce: the reload that appends takes 1673ms, the same enum reloaded again
+  with nothing to append takes 135ms, and an ordinary class takes 334ms. The
+  time is the switch-table scan, which asks every loaded class whether it holds
+  a table for this enum, and a Hybris JVM has tens of thousands of them.
+
+  Narrowing the scan by classloader visibility was tried and measured at
+  1673ms, which is no gain: on that platform almost every class can see the
+  enum, so the filter excludes nothing. It was reverted rather than kept as an
+  unmeasured improvement. The cost is paid once per enum, since a constant that
+  is already live is not appended again, and it buys a server restart of four
+  to ten minutes.
+
+
+- A superclass change still costs the whole class when one method body needs
+  what the class is losing. The other methods edited in the same save are
+  refused with it.
+
+  Applying them per method was tried and reverted, because the first attempt
+  crashed a running application, and the mechanics are worth recording so the
+  next attempt does not rediscover them. A transformed class keeps its original
+  body under a renamed method, `__reclazz$v0$<name>$<hash>`, and the method that
+  keeps the original name becomes a pure trampoline: `aload_0`,
+  `invokedynamic`, `areturn`. The real body is either in the companion or in
+  that renamed method.
+
+  So leaving an entangled method out of the companion is not enough. The
+  redefinition payload still carries its new body, the transform renames that
+  body over the old one, dispatch falls back to it, and the call it could not
+  resolve throws `UnsupportedOperationException: method not found` in
+  application code.
+
+  Doing it properly needs the old body carried into the payload: capture the
+  loaded class's bytes before redefining (a retransform-capture, which re-enters
+  our own transformer, or storing last-known-good bytes, which costs memory per
+  class), lift `__reclazz$v0$<name>$<hash>` out of them, and splice it in. The
+  captured body is already transformed, with invokedynamic call sites of its
+  own, so the second pass over it has to be measured rather than assumed.
+
+
 ## [1.0.24] - 2026-08-18
 
 ### Added

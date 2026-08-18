@@ -109,8 +109,14 @@ public class FileWatcher {
         try {
             int delaySec = config.getStartupDelaySec();
             if (delaySec > 0) {
-                StatusReporter.info("FileWatcher will start in " + delaySec + " seconds (waiting for server startup)...");
-                Thread.sleep(delaySec * 1000L);
+                StatusReporter.info("FileWatcher starts when the application reports ready, "
+                        + "or in " + delaySec + " seconds, whichever comes first...");
+                long waited = com.onurkat.reclazz.platform.StartupSignal.awaitReady(delaySec);
+                if (com.onurkat.reclazz.platform.StartupSignal.isReady()) {
+                    StatusReporter.info("Application context refreshed after " + waited
+                            + "ms; watching from here instead of waiting out the "
+                            + delaySec + "s cap");
+                }
             }
 
             if (!active) return;

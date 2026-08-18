@@ -5,10 +5,8 @@
 package com.onurkat.reclazz.agent;
 
 import com.onurkat.reclazz.ui.StatusReporter;
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.description.modifier.Visibility;
-import net.bytebuddy.dynamic.DynamicType;
-import net.bytebuddy.implementation.FixedValue;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Opcodes;
 
 import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
@@ -183,32 +181,14 @@ public class JvmCapabilityProbe {
         }
 
         try {
-            String probeName = "com.onurkat.reclazz.agent.Probe$$Reclazz$$" + System.nanoTime();
+            // A name nothing else can be using, so a second probe in the same
+            // JVM cannot collide with the first.
+            String probeName = "com/onurkat/reclazz/agent/Probe$$Reclazz$$" + System.nanoTime();
 
-            // Generate v1: a class with one method
-            DynamicType.Unloaded<?> v1 = new ByteBuddy()
-                    .subclass(Object.class)
-                    .name(probeName)
-                    .defineMethod("probeMethod", String.class, Visibility.PUBLIC)
-                    .intercept(FixedValue.value("v1"))
-                    .make();
+            byte[] v1Bytes = probeClass(probeName, false);
+            byte[] v2Bytes = probeClass(probeName, true);
 
-            // Generate v2: same class with an added method (structural change)
-            DynamicType.Unloaded<?> v2 = new ByteBuddy()
-                    .subclass(Object.class)
-                    .name(probeName)
-                    .defineMethod("probeMethod", String.class, Visibility.PUBLIC)
-                    .intercept(FixedValue.value("v2"))
-                    .defineMethod("addedMethod", String.class, Visibility.PUBLIC)
-                    .intercept(FixedValue.value("added"))
-                    .make();
-
-            byte[] v1Bytes = v1.getBytes();
-            byte[] v2Bytes = v2.getBytes();
-
-            // Load v1 into the JVM
-            Class<?> probeClass = v1.load(JvmCapabilityProbe.class.getClassLoader())
-                    .getLoaded();
+            Class<?> probeClass = ProbeLoader.define(probeName, v1Bytes);
 
             // Attempt structural redefinition with v2
             ClassDefinition redefinition = new ClassDefinition(probeClass, v2Bytes);
@@ -234,6 +214,62 @@ public class JvmCapabilityProbe {
             // UnsupportedOperationException branch above: companion mode
             // still handles structural reloads.
             return CapabilityLevel.COMPANION_MODE;
+        }
+    }
+
+    /**
+     * The two-method-or-one class this probe redefines between.
+     *
+     * <p>Written with ASM rather than a code-generation library because it is
+     * the only thing that library was here for. The agent is loaded into the
+     * JVM that runs somebody else's application, so a dependency that exists
+     * to emit two methods returning a constant is 25 MB of classes in that
+     * application to save sixty lines here.
+     *
+     * @param withAddedMethod true for the second version, whose extra method is
+     *                        the structural change the JVM is being asked about
+     */
+    private static byte[] probeClass(String internalName, boolean withAddedMethod) {
+        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        cw.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_SUPER,
+                internalName, null, "java/lang/Object", null);
+
+        var ctor = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        ctor.visitCode();
+        ctor.visitVarInsn(Opcodes.ALOAD, 0);
+        ctor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+        ctor.visitInsn(Opcodes.RETURN);
+        ctor.visitMaxs(0, 0);
+        ctor.visitEnd();
+
+        constantMethod(cw, "probeMethod", withAddedMethod ? "v2" : "v1");
+        if (withAddedMethod) {
+            constantMethod(cw, "addedMethod", "added");
+        }
+
+        cw.visitEnd();
+        return cw.toByteArray();
+    }
+
+    private static void constantMethod(ClassWriter cw, String name, String value) {
+        var mv = cw.visitMethod(Opcodes.ACC_PUBLIC, name, "()Ljava/lang/String;", null, null);
+        mv.visitCode();
+        mv.visitLdcInsn(value);
+        mv.visitInsn(Opcodes.ARETURN);
+        mv.visitMaxs(0, 0);
+        mv.visitEnd();
+    }
+
+    /** Defines the probe class without asking anyone else to. */
+    private static final class ProbeLoader extends ClassLoader {
+
+        private ProbeLoader() {
+            super(JvmCapabilityProbe.class.getClassLoader());
+        }
+
+        static Class<?> define(String internalName, byte[] bytecode) {
+            return new ProbeLoader().defineClass(
+                    internalName.replace('/', '.'), bytecode, 0, bytecode.length);
         }
     }
 }

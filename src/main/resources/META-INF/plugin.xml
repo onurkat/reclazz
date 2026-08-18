@@ -81,6 +81,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.25</h3>
+        <ul>
+            <li><b>The agent is 0.7 MB instead of 10.2 MB.</b> It was carrying Byte Buddy to generate two probe classes, and in one file only for the copy of ASM bundled inside it. The agent is loaded into the JVM that runs your application, so every library inside it is a library inside your application; this was 25 MB of classes to save sixty lines of ours</li>
+            <li><b>Reloading starts working sooner.</b> The file watcher used to sleep for a fixed thirty seconds before arming. It now starts when your application reports ready and keeps the delay only as a cap: measured at 4.2 seconds on Spring Boot and 4.6 on SAP Commerce, so the first save after a restart is picked up almost half a minute earlier</li>
+            <li>A class the JVM has never loaded is no longer reported as having been "loaded before Reclazz could instrument it". That sentence was appearing every time you compiled a new file beside a changed one, describing a startup-ordering problem you did not have</li>
+            <li>Two integration scenarios were checking an old endpoint and calling a newly added one "invisible", which stopped being true when handler methods added by a reload started being mapped. The suite no longer under-reports what the plugin does</li>
+        </ul>
+
         <h3>1.0.24</h3>
         <ul>
             <li><b>An enum value added on the end now works without a restart</b>, on any JDK 17+. values(), valueOf(), switches compiled before it existed, and the EnumMap/EnumSet built before the reload all see it. Inserting, removing or reordering values renumbers every ordinal after the change, including any @Enumerated column already in your database, so that is refused with an explanation instead of half-applied</li>
