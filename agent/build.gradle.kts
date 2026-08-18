@@ -28,6 +28,11 @@ dependencies {
     implementation("org.ow2.asm:asm-util:9.8")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    // Test only, and deliberately not an implementation dependency: the agent
+    // recognises a mapped class by the annotation's descriptor, never by
+    // loading it, so that it works against jakarta and javax alike and against
+    // an application whose persistence API the agent has never seen.
+    testImplementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Spring for XML reloader tests only — production code stays
     // reflection-only and has no Spring compile dependency.

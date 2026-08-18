@@ -107,11 +107,56 @@ public class StructuralReloader {
             StructuralAnalyzer.StructuralDiff diff = StructuralAnalyzer.analyze(oldMetadata, newBytecode);
 
             if (diff.isUnsupported()) {
-                com.onurkat.reclazz.agent.RestartLedger.note(className, "changed its superclass or interfaces, which cannot be redefined");
-                return ClassReloader.ReloadResult.failure(
-                        "Unsupported change: superclass or interface hierarchy changed. " +
-                                "This requires a server restart.", true);
+                // The hierarchy is not going to be applied by any JVM. The rest
+                // of the file still can be, and refusing the whole save threw
+                // away method bodies edited alongside the extends clause.
+                Class<?> loadedForRevert = findLoadedClass(className);
+                HierarchyRevert.Result reverted = HierarchyRevert.toLoadedSuperclass(
+                        newBytecode, oldMetadata.getSuperName(),
+                        loadedForRevert == null ? null : loadedForRevert.getSuperclass());
+
+                if (!reverted.applied()) {
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "changed its superclass, which no JVM will redefine");
+                    return ClassReloader.ReloadResult.failure(
+                            className + " changed its superclass, and the rest of the class "
+                                    + "cannot be applied without it (" + reverted.reason() + "). "
+                                    + "No JVM applies a changed superclass to a loaded class: "
+                                    + "redefineClasses rejects it on a stock JDK and on JetBrains "
+                                    + "Runtime alike, because every object of this class already "
+                                    + "has the old layout and identity. Restart to pick it up.",
+                            true);
+                }
+
+                StatusReporter.warn(className + " changed its superclass to "
+                        + simpleName(superNameOf(newBytecode)) + ". No JVM applies that to a loaded "
+                        + "class, so it still extends " + simpleName(oldMetadata.getSuperName())
+                        + " until a restart. The method bodies in this save were applied.");
+                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        "changed its superclass, which no JVM will redefine; method bodies were applied");
+
+                // Everything downstream reads the payload, so it has to be the
+                // one that is actually going to be redefined.
+                newBytecode = reverted.bytecode();
+                diff = StructuralAnalyzer.analyze(oldMetadata, newBytecode);
             }
+
+            // An added or removed interface is not the same case. Enhanced
+            // redefinition applies it, existing objects included, and Reclazz
+            // hands the class straight to the JVM there. On a stock JDK the
+            // redefinition is refused, and the refusal used to be swallowed by
+            // the handler that covers the benign constructor-refresh case: the
+            // method bodies landed, the interface did not, and the reload was
+            // reported as a plain success. Whatever else happens below, that
+            // has to be said out loud.
+            if (diff.isInterfacesChanged()) {
+                reportInterfaceChange(className, diff);
+            }
+
+            // Same gap on this engine as on the enhanced one, and for the same
+            // reason: the mapping is Hibernate's, built once, and a class
+            // redefinition is not something it listens for.
+            JpaEntityChange.reportIfChanged(className, findLoadedClass(className), newBytecode);
 
             // Warn about removed methods — callers retain previous version's implementation
             if (!diff.getRemovedMethods().isEmpty()) {
@@ -131,6 +176,19 @@ public class StructuralReloader {
                 e.printStackTrace();
             }
             return ClassReloader.ReloadResult.failure("Structural reload error: " + e.getMessage(), false);
+        }
+    }
+
+    private static String simpleName(String internalName) {
+        if (internalName == null) return "its previous superclass";
+        return internalName.substring(internalName.lastIndexOf('/') + 1).replace('$', '.');
+    }
+
+    private static String superNameOf(byte[] bytecode) {
+        try {
+            return new org.objectweb.asm.ClassReader(bytecode).getSuperName();
+        } catch (RuntimeException e) {
+            return null;
         }
     }
 
@@ -160,6 +218,155 @@ public class StructuralReloader {
      * distinction matters here: an instance field added by a reload is
      * initialised on new objects, a static one is not.
      */
+    /**
+     * Say what happened to a changed interface list.
+     *
+     * <p>This runs only where Reclazz's own engine runs, which is a JVM
+     * without enhanced redefinition; on JetBrains Runtime or DCEVM the agent
+     * disables this engine and the VM applies the change itself, so there is
+     * nothing to warn about there.
+     *
+     * <p>The message names the interface. "An interface changed" would send
+     * the developer back to the diff to work out which one, and the whole
+     * reason this exists is that they were previously sent to look for a bug
+     * in their own code.
+     */
+    private void reportInterfaceChange(String className, StructuralAnalyzer.StructuralDiff diff) {
+        List<String> added = simpleNames(diff.getAddedInterfaces());
+        List<String> removed = simpleNames(diff.getRemovedInterfaces());
+
+        StringBuilder what = new StringBuilder();
+        if (!added.isEmpty()) what.append("now declares ").append(String.join(", ", added));
+        if (!removed.isEmpty()) {
+            if (what.length() > 0) what.append(" and ");
+            what.append("no longer declares ").append(String.join(", ", removed));
+        }
+
+        StatusReporter.warn(className + " " + what + ", and this JVM will not change the "
+                + "interfaces of a loaded class. Everything else in this class reloaded, so "
+                + "an instanceof or a cast against " + (added.isEmpty() ? "it" : added.get(0))
+                + " still answers the old way until a restart. JetBrains Runtime or DCEVM with "
+                + "-XX:+AllowEnhancedClassRedefinition applies this without one.");
+        com.onurkat.reclazz.agent.RestartLedger.note(className, what.toString()
+                + ", which a stock JVM cannot apply to a loaded class");
+    }
+
+    private static List<String> simpleNames(java.util.Collection<String> internalNames) {
+        List<String> names = new ArrayList<>();
+        for (String n : internalNames) {
+            names.add(n.substring(n.lastIndexOf('/') + 1).replace('$', '.'));
+        }
+        return names;
+    }
+
+    /**
+     * The added static fields that still have no value.
+     *
+     * <p>A field a reload adds never enters the loaded class's schema, because
+     * the JVM cannot add one. So every later reload diffs it as added again,
+     * and initialising it again would throw away whatever the application has
+     * put there since. Asking the store what it already holds is what keeps an
+     * unrelated edit from emptying a cache.
+     */
+    private static java.util.Set<String> uninitialisedStatics(
+            StructuralAnalyzer.StructuralDiff diff, byte[] newBytecode, String internalName) {
+        java.util.Set<String> pending = new java.util.LinkedHashSet<>();
+        try {
+            new org.objectweb.asm.ClassReader(newBytecode).accept(
+                    new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override
+                        public org.objectweb.asm.FieldVisitor visitField(
+                                int access, String name, String descriptor,
+                                String signature, Object value) {
+                            boolean isStatic =
+                                    (access & org.objectweb.asm.Opcodes.ACC_STATIC) != 0;
+                            String key = name + ":" + descriptor;
+                            if (isStatic && diff.getAddedFields().contains(key)
+                                    && !FieldStore.isStaticInitialised(internalName, name, descriptor)) {
+                                pending.add(key);
+                            }
+                            return null;
+                        }
+                    }, org.objectweb.asm.ClassReader.SKIP_CODE);
+        } catch (Exception ignored) {
+            // An unreadable class fails later and louder; there is nothing
+            // useful to initialise from it here.
+        }
+        return pending;
+    }
+
+    /**
+     * Give the added static fields their initial values, and say plainly which
+     * ones kept null or zero and why.
+     */
+    private void initialiseAddedStatics(String className, String internalName,
+                                        CompanionGenerator.CompanionResult companion,
+                                        MethodHandles.Lookup companionLookup,
+                                        Class<?> companionClass,
+                                        java.util.Set<String> attempted) {
+        StaticInitialiserSlicer.Plan plan = companion.getStaticPlan();
+        java.util.List<String> done = new java.util.ArrayList<>();
+
+        // Compile-time constants never reach <clinit>: javac puts them in a
+        // ConstantValue attribute on the field, so there is nothing to run.
+        for (var entry : plan.constants.entrySet()) {
+            String key = entry.getKey();
+            String name = key.substring(0, key.indexOf(':'));
+            String desc = key.substring(key.indexOf(':') + 1);
+            Object value = StaticInitialiserSlicer.narrowConstant(desc, entry.getValue());
+            if (FieldStore.initialiseStaticOnce(internalName, name, desc, value)) {
+                done.add(name + " = " + describe(value));
+            }
+        }
+
+        if (plan.hasCode()) {
+            try {
+                companionLookup.findStatic(companionClass,
+                        StaticInitialiserSlicer.INIT_METHOD,
+                        java.lang.invoke.MethodType.methodType(void.class)).invokeExact();
+                for (String key : plan.slicedKeys) {
+                    done.add(key.substring(0, key.indexOf(':')));
+                }
+            } catch (Throwable t) {
+                // The initialiser threw where <clinit> would have thrown at
+                // startup. The class is otherwise reloaded, so this is a
+                // warning about one field rather than a failed reload.
+                StatusReporter.warn("Initialiser for added static field(s) in " + className
+                        + " threw " + t.getClass().getSimpleName()
+                        + (t.getMessage() == null ? "" : ": " + t.getMessage())
+                        + ". Those fields read as null/0.");
+                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        "an added static field's initialiser threw, so it reads as null/0");
+            }
+        }
+
+        if (!done.isEmpty()) {
+            StatusReporter.info("Initialised added static field(s): " + String.join(", ", done));
+        }
+
+        java.util.List<String> refused = new java.util.ArrayList<>();
+        for (var entry : plan.refused.entrySet()) {
+            String key = entry.getKey();
+            if (!attempted.contains(key)) continue;
+            refused.add(key.substring(0, key.indexOf(':')) + " (" + entry.getValue() + ")");
+        }
+        if (!refused.isEmpty()) {
+            StatusReporter.warn("Added static field(s) read as null/0 until restart: "
+                    + String.join(", ", refused));
+            com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    "added static field(s) " + refused + " that read as null/0");
+        }
+    }
+
+    /** A value as it should appear in a one-line log, strings quoted. */
+    private static String describe(Object value) {
+        if (value instanceof String s) {
+            String shown = s.length() > 40 ? s.substring(0, 37) + "..." : s;
+            return '"' + shown + '"';
+        }
+        return String.valueOf(value);
+    }
+
     private static java.util.List<String> staticFieldNames(StructuralAnalyzer.StructuralDiff diff,
                                                             byte[] newBytecode) {
         java.util.List<String> statics = new java.util.ArrayList<>();
@@ -234,9 +441,17 @@ public class StructuralReloader {
             // Increment version (thread-safe)
             int version = versionCounters.merge(internalName, 1, Integer::sum);
 
-            // Generate companion class
-            CompanionGenerator.CompanionResult companion =
-                    CompanionGenerator.generate(internalName, newBytecode, diff, version);
+            // Generate companion class. Added statics that have not been given
+            // a value yet are worked out first, because the companion carries
+            // the code that gives them one.
+            java.util.Set<String> staticsNeedingValue =
+                    uninitialisedStatics(diff, newBytecode, internalName);
+            // Taken before anything is redefined, for the same reason as every
+            // other check of this kind.
+            EnumConstantChange.Change enumChange =
+                    EnumConstantChange.check(findLoadedClass(className), newBytecode);
+            CompanionGenerator.CompanionResult companion = CompanionGenerator.generate(
+                    internalName, newBytecode, diff, version, staticsNeedingValue);
 
             // Get Lookup from the target class's __reclazz$lookup field
             Class<?> targetClass = findLoadedClass(className);
@@ -324,8 +539,10 @@ public class StructuralReloader {
             // A static field has no constructor to carry it. Its initialiser
             // is in <clinit>, which the JVM will not run a second time, and
             // re-running the whole of it would reset every other static the
-            // application is holding. So it reads as the type default until a
-            // restart, and saying so is better than looking like a null bug.
+            // application is holding. What can be done is to run the part that
+            // belongs to the new field, which is what happens here; what
+            // cannot is reported with the reason rather than left to be
+            // discovered as a null.
             if (!diff.getAddedFields().isEmpty()) {
                 java.util.List<String> addedStatics = staticFieldNames(diff, newBytecode);
                 // An enum constant is a static field of the enum's own type, so
@@ -339,19 +556,16 @@ public class StructuralReloader {
                 // count and indexed by ordinal, so the new value would surface
                 // as an ArrayIndexOutOfBoundsException somewhere unrelated. A
                 // reload that half-works here is worse than one that refuses.
+                // The wording lives in EnumConstantChange because the other
+                // engine needs the same sentence: on JetBrains Runtime this
+                // reloader is switched off, the JVM accepts the redefinition,
+                // and the constant is still unusable.
                 if (isEnum(newBytecode) && !addedStatics.isEmpty()) {
-                    StatusReporter.warn("Enum " + className + " gained value(s) "
-                            + addedStatics + ". Enum constants cannot be added to a "
-                            + "running JVM: restart to pick them up. Everything else "
-                            + "in this class reloaded.");
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
-                            "gained enum value(s) " + addedStatics + ", which a running JVM cannot add");
+                    EnumConstantAppender.applyOrExplain(className, findLoadedClass(className),
+                            newBytecode, enumChange, instrumentation);
                 } else if (!addedStatics.isEmpty()) {
-                    StatusReporter.warn("Added static field(s) " + addedStatics
-                            + " read as null/0 until restart: a static initialiser "
-                            + "cannot be re-run without resetting the class's other statics.");
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
-                            "added static field(s) " + addedStatics + " that read as null/0");
+                    initialiseAddedStatics(className, internalName, companion,
+                            companionLookup, companionClass, staticsNeedingValue);
                 }
                 StatusReporter.info("Added fields are set on new instances; "
                         + "objects that already existed keep the default (null/0/false).");

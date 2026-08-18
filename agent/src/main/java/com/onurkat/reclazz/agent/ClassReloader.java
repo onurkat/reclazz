@@ -71,9 +71,27 @@ public class ClassReloader {
                 return handleNewClass(className, newBytecode);
             }
 
+            // Taken before the redefinition: on an enhanced-redefinition VM the
+            // redefine puts the field on the loaded class, and a comparison
+            // made afterwards would find nothing to report.
+            var mappingChange =
+                    com.onurkat.reclazz.reload.JpaEntityChange.check(existingClass, newBytecode);
+            var enumChange =
+                    com.onurkat.reclazz.reload.EnumConstantChange.check(existingClass, newBytecode);
+
             // Redefine the existing class
             ClassDefinition definition = new ClassDefinition(existingClass, newBytecode);
             instrumentation.redefineClasses(definition);
+
+            // A mapped class that gained a persistent field reloads cleanly and
+            // is still not persisted, because Hibernate's mapping was built
+            // once at startup and a redefinition is not something it listens
+            // for. Said only after the reload actually succeeded.
+            com.onurkat.reclazz.reload.JpaEntityChange.report(className, existingClass, mappingChange);
+            // An enhanced-redefinition VM accepts an added enum constant and
+            // leaves it null, so success here is exactly where it needs saying.
+            com.onurkat.reclazz.reload.EnumConstantAppender.applyOrExplain(
+                    className, existingClass, newBytecode, enumChange, instrumentation);
 
             // Invalidate caches — class may have gained/lost annotations
             springBeanCache.remove(className);
@@ -133,6 +151,11 @@ public class ClassReloader {
         Map<String, ReloadResult> results = new LinkedHashMap<>();
         List<ClassDefinition> definitions = new ArrayList<>();
         Map<String, Class<?>> resolvedClasses = new LinkedHashMap<>();
+        // Compared before the batch redefinition, for the same reason as above.
+        Map<String, com.onurkat.reclazz.reload.JpaEntityChange.Change> mappingChanges =
+                new LinkedHashMap<>();
+        Map<String, com.onurkat.reclazz.reload.EnumConstantChange.Change> enumChanges =
+                new LinkedHashMap<>();
 
         // Resolve classes and separate new from existing
         for (var entry : classMap.entrySet()) {
@@ -145,6 +168,12 @@ public class ClassReloader {
             } else {
                 definitions.add(new ClassDefinition(existingClass, bytecode));
                 resolvedClasses.put(className, existingClass);
+                var mappingChange =
+                        com.onurkat.reclazz.reload.JpaEntityChange.check(existingClass, bytecode);
+                if (mappingChange != null) mappingChanges.put(className, mappingChange);
+                var enumChange =
+                        com.onurkat.reclazz.reload.EnumConstantChange.check(existingClass, bytecode);
+                if (enumChange != null) enumChanges.put(className, enumChange);
             }
         }
 
@@ -160,6 +189,16 @@ public class ClassReloader {
             for (String name : resolvedClasses.keySet()) {
                 springBeanCache.remove(name);
                 interceptorCache.remove(name);
+            }
+
+            for (var entry : mappingChanges.entrySet()) {
+                com.onurkat.reclazz.reload.JpaEntityChange.report(entry.getKey(),
+                        resolvedClasses.get(entry.getKey()), entry.getValue());
+            }
+            for (var entry : enumChanges.entrySet()) {
+                com.onurkat.reclazz.reload.EnumConstantAppender.applyOrExplain(
+                        entry.getKey(), resolvedClasses.get(entry.getKey()),
+                        classMap.get(entry.getKey()), entry.getValue(), instrumentation);
             }
 
             // All succeeded — populate results

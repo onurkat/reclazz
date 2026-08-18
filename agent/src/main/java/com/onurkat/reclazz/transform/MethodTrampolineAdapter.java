@@ -34,6 +34,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
     private final TransformContext context;
     private String className;
     private String superName;
+    private java.util.Set<String> declaredInterfaces = java.util.Set.of();
     private boolean isInterface;
     private boolean isEnum;
     private boolean hasClinitMethod = false;
@@ -70,6 +71,9 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
                       String superName, String[] interfaces) {
         this.className = name;
         this.superName = superName;
+        this.declaredInterfaces = interfaces == null
+                ? java.util.Set.<String>of()
+                : java.util.Set.of(interfaces);
         this.isInterface = (access & ACC_INTERFACE) != 0;
         this.isEnum = (access & ACC_ENUM) != 0;
         super.visit(version, access, name, signature, superName, interfaces);
@@ -182,7 +186,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
         // Store metadata
         context.putMetadata(className, new TransformContext.ClassMetadata(
-                methodSigs, fieldSigs, 0, superName, originalAnnotations));
+                methodSigs, fieldSigs, 0, superName, originalAnnotations, declaredInterfaces));
 
         super.visitEnd();
     }

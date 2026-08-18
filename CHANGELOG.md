@@ -6,6 +6,133 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.0.24] - 2026-08-18
+
+### Added
+
+- An added static field now gets the value its initialiser would have given it,
+  instead of reading as null or 0 until a restart.
+
+  Two routes, because javac uses two. A compile-time constant such as
+  `static final int MAX = 50` never reaches `<clinit>` at all: it is stored in a
+  `ConstantValue` attribute on the field, so the value is read straight off it
+  and no code runs. Everything else is a run of instructions in `<clinit>` that
+  starts with an empty operand stack and ends at that field's `PUTSTATIC`, and
+  that run is lifted out and executed on its own.
+
+  What this deliberately does not do is re-run `<clinit>`. Doing that would
+  reset every other static the application has been mutating since startup, and
+  re-fire whatever side effects the static block has. So an initialiser that
+  cannot be separated from the rest of the block, because it shares a computed
+  value with another field, because it branches, or because it sits inside a
+  try/catch, is left alone: the field reads as the type default exactly as
+  before, and the log now names the field and says which of those it was.
+
+  The field is initialised once. A field a reload adds never enters the loaded
+  class's schema, since the JVM cannot add one, so every later reload of that
+  class diffs it as added again; initialising it each time would have emptied a
+  cache because somebody edited a method body in the same class.
+
+- An enum constant added on the end is now applied to the running JVM, on any
+  JDK 17 or newer. `values()` and `valueOf` return it, switches compiled before
+  it existed take their default branch instead of throwing, and the EnumMap and
+  EnumSet instances that were built before the reload accept it.
+
+  Three pieces. The constant is built and the enum's private array grown, which
+  the class initialiser would have done and will not do twice. The synthetic
+  tables javac generates for a switch over an enum from another file are grown,
+  with the new slot left at zero, which is the value javac uses for "not one of
+  my cases". And EnumMap and EnumSet, which size their storage from the enum
+  when they are built, are taught to notice that it grew: their instances cannot
+  be found on the heap, so a repair call is injected at the head of their
+  instance methods, installed on the first append and never before.
+
+  Only an append. Inserting, removing or reordering renumbers every constant
+  after the change, and nothing in memory or in a database survives that, so it
+  is refused with its own message. Reordering counts even though no name moved,
+  which a comparison by set would have called no change at all.
+
+  Every JDK internal this reaches for is located and identified before anything
+  is written, so a release that moves one makes Reclazz decline and print what
+  it printed before this existed. It does not half-apply.
+
+### Fixed
+
+- Adding an interface to a class was reported as a successful reload and did not
+  happen. The analyser never compared interfaces at all, so the reload took the
+  ordinary path: the method bodies landed, the redefinition that would have
+  carried the interface was refused by the JVM, and the refusal was swallowed by
+  the handler written for a different and harmless case. What reached the
+  developer was `Reloaded Service (19ms)` and a class whose `instanceof` was
+  false against an interface their source clearly declares, which sends them
+  looking for a bug in their own code.
+
+  Interfaces are now compared. On a stock JDK the change is refused by the JVM,
+  and Reclazz names the interface, says an `instanceof` or a cast still answers
+  the old way, and records it in the restart ledger; everything else in the class
+  still reloads. On JetBrains Runtime or DCEVM with
+  `-XX:+AllowEnhancedClassRedefinition` the change is applied for real, including
+  to objects created before the reload, and there is nothing to warn about.
+
+- A field added to a JPA entity reloaded onto the class and was never persisted,
+  and the log said only "Reloaded". Hibernate builds its metamodel and entity
+  persisters once, when the SessionFactory is created, so the mapping keeps the
+  old shape however well the class redefinition went. Measured on Spring Boot 3.3
+  with Hibernate, on JetBrains Runtime with enhanced class redefinition, which is
+  the most capable configuration this has: the class gained the field, the
+  metamodel did not, the table had no column, and a value written and read back
+  through a cleared persistence context came back null.
+
+  Reclazz now names the field and says it is neither saved nor loaded, and reads
+  the running persistence unit to say what to do about it, because one answer
+  fits only one of the three configurations. At `ddl-auto=update` a restart is
+  the whole fix and Hibernate writes the column itself. At `validate` a restart
+  is the wrong move: the application refuses to start while a mapped column is
+  missing, so the column has to come first. At `none`, or where the setting
+  cannot be read, it says restart and add the column, which is the instruction
+  that is always safe. It does not try to refresh the
+  mapping: that means rebuilding the SessionFactory, which takes the persistence
+  context, the open transactions and every repository proxy with it, and it would
+  still leave the missing column, so on a project with `ddl-auto` at validate or
+  none it would turn a working application into one that fails its next query.
+  The same trade already applies on SAP Commerce, where a new items.xml attribute
+  reloads the model class and prints a reminder to run Update Running System
+  rather than writing to the database.
+
+- Adding an enum value was reported as a plain success on JetBrains Runtime. The
+  warning lived inside the companion engine, and that engine is switched off on
+  a VM with enhanced class redefinition: the JVM accepted the redefinition,
+  added the field, left it null, and the log read `Reloaded Status (61ms)` while
+  `values()` returned the old set and `valueOf` still threw. The sentence now
+  lives in one place that both engines use, and a removed value is reported the
+  same way.
+
+- A structural change that carried its own explanation printed the word `null`
+  underneath it. Both places that print the extra advice did so without checking
+  whether there was any.
+
+### Changed
+
+- A changed superclass no longer costs the rest of the save. The hierarchy is
+  still not applied, because no JVM applies one to a loaded class, but the
+  method bodies edited in the same file now are: the payload is rewritten to
+  keep the superclass the JVM already has, and the `super()` call, which is the
+  only place javac names the new one, is pointed back with it. An inherited call
+  compiles to an invocation on the class itself, so it resolves against the
+  hierarchy the class keeps.
+
+  It refuses rather than half-applies when a body genuinely needs what it is
+  losing: a call or field that only the new superclass provides, a cast to it, a
+  member typed as it, or an old superclass without a matching constructor. The
+  message names the method and the member that blocked it.
+
+- A changed superclass now says why it cannot work rather than only that it
+  cannot. It was measured on three VMs before the wording was written: a stock
+  JDK, JetBrains Runtime, and JetBrains Runtime with enhanced class redefinition
+  all reject it, because every existing object already has the old layout and
+  identity. Changing the superclass and changing the interface list used to share
+  one verdict, and they have different answers.
+
 ## [1.0.23] - 2026-08-17
 
 ### Added

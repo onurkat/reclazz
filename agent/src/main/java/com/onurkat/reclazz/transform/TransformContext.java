@@ -113,6 +113,7 @@ public class TransformContext {
         private final String superName;
         private final java.util.Set<String> annotations;
         private final boolean annotationsKnown;
+        private final java.util.Set<String> interfaces;
 
         /** For callers with no annotation information; the diff stays silent. */
         public ClassMetadata(List<MethodSig> methods, List<FieldSig> fields,
@@ -123,18 +124,41 @@ public class TransformContext {
             this.superName = superName;
             this.annotations = java.util.Set.of();
             this.annotationsKnown = false;
+            this.interfaces = null;
         }
 
         public ClassMetadata(List<MethodSig> methods, List<FieldSig> fields,
                              int bytecodeHash, String superName,
                              java.util.Set<String> annotations) {
+            this(methods, fields, bytecodeHash, superName, annotations, null);
+        }
+
+        /**
+         * @param interfaces the interfaces the loaded class declares, or null
+         *                   when the caller does not know. Null means unknown
+         *                   rather than none, the same distinction annotations
+         *                   make: a class recorded before interfaces were
+         *                   tracked would otherwise diff as having lost every
+         *                   interface it has on the first reload after an
+         *                   upgrade.
+         */
+        public ClassMetadata(List<MethodSig> methods, List<FieldSig> fields,
+                             int bytecodeHash, String superName,
+                             java.util.Set<String> annotations,
+                             java.util.Set<String> interfaces) {
             this.methods = List.copyOf(methods);
             this.fields = List.copyOf(fields);
             this.bytecodeHash = bytecodeHash;
             this.superName = superName;
             this.annotations = java.util.Set.copyOf(annotations);
             this.annotationsKnown = true;
+            this.interfaces = interfaces == null ? null : java.util.Set.copyOf(interfaces);
         }
+
+        /** Null when unknown; never confuse that with an empty set. */
+        public java.util.Set<String> getInterfaces() { return interfaces; }
+
+        public boolean isInterfacesKnown() { return interfaces != null; }
 
         public List<MethodSig> getMethods() { return methods; }
         public List<FieldSig> getFields() { return fields; }

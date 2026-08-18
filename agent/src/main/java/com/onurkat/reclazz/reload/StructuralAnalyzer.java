@@ -81,8 +81,30 @@ public class StructuralAnalyzer {
 
         // Check for superclass/interface changes
         boolean superChanged = !Objects.equals(original.getSuperName(), collector.superName);
-        // Interface changes are complex — flag as unsupported for now
-        boolean interfacesChanged = false; // Simplified — could be expanded
+
+        // Interfaces used to be hardcoded as unchanged, and the consequence was
+        // the quietest kind of wrong. Adding an interface produced a reload
+        // that reported success: the method bodies landed through the
+        // companion, the redefinition that would have carried the interface was
+        // refused by the JVM, and that refusal was swallowed by the handler
+        // that exists for a different and benign case. The developer was left
+        // with a class whose `instanceof` was false against an interface the
+        // source clearly declares, and nothing anywhere said so.
+        //
+        // Null means the class was recorded before interfaces were tracked;
+        // treating that as "had none" would report every interface as newly
+        // added on the first reload after an upgrade.
+        Set<String> oldInterfaces = original.getInterfaces();
+        Set<String> newInterfaces = collector.interfaces;
+        Set<String> addedInterfaces = new LinkedHashSet<>();
+        Set<String> removedInterfaces = new LinkedHashSet<>();
+        if (oldInterfaces != null) {
+            addedInterfaces.addAll(newInterfaces);
+            addedInterfaces.removeAll(oldInterfaces);
+            removedInterfaces.addAll(oldInterfaces);
+            removedInterfaces.removeAll(newInterfaces);
+        }
+        boolean interfacesChanged = !addedInterfaces.isEmpty() || !removedInterfaces.isEmpty();
 
         // An annotation-only edit adds and removes nothing, so without this it
         // reads as body-only and no framework is told anything happened.
@@ -100,12 +122,14 @@ public class StructuralAnalyzer {
                 collector.methods, collector.fields,
                 collector.superName,
                 annotationsChanged, newAnnotations,
-                removedMethodSigs, removedFieldSigs
+                removedMethodSigs, removedFieldSigs,
+                addedInterfaces, removedInterfaces
         );
     }
 
     private static class NewClassCollector extends ClassVisitor {
         String superName;
+        Set<String> interfaces = new LinkedHashSet<>();
         final List<TransformContext.MethodSig> methods = new ArrayList<>();
         final List<TransformContext.FieldSig> fields = new ArrayList<>();
 
@@ -117,6 +141,7 @@ public class StructuralAnalyzer {
         public void visit(int version, int access, String name, String signature,
                           String superName, String[] interfaces) {
             this.superName = superName;
+            if (interfaces != null) this.interfaces.addAll(List.of(interfaces));
         }
 
         @Override
@@ -152,6 +177,8 @@ public class StructuralAnalyzer {
         private final Set<String> newAnnotations;
         private final List<TransformContext.MethodSig> removedMethodSigs;
         private final List<TransformContext.FieldSig> removedFieldSigs;
+        private final Set<String> addedInterfaces;
+        private final Set<String> removedInterfaces;
 
         StructuralDiff(Set<String> addedMethods, Set<String> removedMethods,
                        Set<String> commonMethods, Set<String> addedFields,
@@ -163,7 +190,11 @@ public class StructuralAnalyzer {
                        boolean annotationsChanged,
                        Set<String> newAnnotations,
                        List<TransformContext.MethodSig> removedMethodSigs,
-                       List<TransformContext.FieldSig> removedFieldSigs) {
+                       List<TransformContext.FieldSig> removedFieldSigs,
+                       Set<String> addedInterfaces,
+                       Set<String> removedInterfaces) {
+            this.addedInterfaces = addedInterfaces;
+            this.removedInterfaces = removedInterfaces;
             this.removedMethodSigs = removedMethodSigs;
             this.removedFieldSigs = removedFieldSigs;
             this.annotationsChanged = annotationsChanged;
@@ -202,9 +233,32 @@ public class StructuralAnalyzer {
 
         public Set<String> getNewAnnotations() { return newAnnotations; }
 
+        /**
+         * A change no JVM will apply to a loaded class.
+         *
+         * <p>Only the superclass qualifies, and it was measured rather than
+         * assumed: {@code redefineClasses} rejects a changed superclass on a
+         * stock JDK, on JetBrains Runtime, and on JetBrains Runtime with
+         * {@code -XX:+AllowEnhancedClassRedefinition}, all three with
+         * "attempted to change superclass or interfaces". A changed interface
+         * list is a different case, since that same enhanced redefinition
+         * accepts it, so it is reported through
+         * {@link #isInterfacesChanged()} instead of being refused outright.
+         */
         public boolean isUnsupported() {
-            return superClassChanged || interfacesChanged;
+            return superClassChanged;
         }
+
+        /** Whether the declared interfaces differ from the loaded class's. */
+        public boolean isInterfacesChanged() {
+            return interfacesChanged;
+        }
+
+        /** Interfaces this version declares that the loaded class does not have. */
+        public Set<String> getAddedInterfaces() { return addedInterfaces; }
+
+        /** Interfaces the loaded class has that this version no longer declares. */
+        public Set<String> getRemovedInterfaces() { return removedInterfaces; }
 
         public Set<String> getAddedMethods() { return addedMethods; }
         public Set<String> getRemovedMethods() { return removedMethods; }
