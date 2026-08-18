@@ -16,18 +16,24 @@ repositories {
 }
 
 dependencies {
-    implementation("net.bytebuddy:byte-buddy:1.18.5") {
-        exclude(group = "org.slf4j")
-    }
-    implementation("net.bytebuddy:byte-buddy-agent:1.18.5") {
-        exclude(group = "org.slf4j")
-    }
+    // Byte Buddy is deliberately absent. It was here to emit two probe classes
+    // and, in one file, only for the copy of ASM bundled inside it; both are
+    // ASM's job and ASM is already here. The agent is loaded into the JVM that
+    // runs somebody else's application, so 25 MB of classes to save sixty
+    // lines was the wrong trade. It stays as a test dependency because the
+    // tests use its agent attach helper, which never ships.
     implementation("org.ow2.asm:asm:9.8")
     implementation("org.ow2.asm:asm-commons:9.8")
     implementation("org.ow2.asm:asm-tree:9.8")
     implementation("org.ow2.asm:asm-util:9.8")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("net.bytebuddy:byte-buddy:1.18.5") {
+        exclude(group = "org.slf4j")
+    }
+    testImplementation("net.bytebuddy:byte-buddy-agent:1.18.5") {
+        exclude(group = "org.slf4j")
+    }
     // Test only, and deliberately not an implementation dependency: the agent
     // recognises a mapped class by the annotation's descriptor, never by
     // loading it, so that it works against jakarta and javax alike and against
@@ -92,7 +98,7 @@ tasks.jar {
     // shadowJar clears its classifier so the fat jar is the canonical
     // agent-<version>.jar. Without a classifier here both tasks would write
     // that same path and overwrite each other: the plugin would ship whichever
-    // ran last, and the thin one is missing the shaded ByteBuddy and ASM the
+    // ran last, and the thin one is missing the shaded ASM the
     // agent loads at premain. That fails at runtime, not at build time.
     archiveClassifier.set("thin")
     manifest {
@@ -110,7 +116,6 @@ tasks.jar {
 tasks.shadowJar {
     dependsOn(bootstrapJar)
     archiveClassifier.set("")
-    relocate("net.bytebuddy", "com.onurkat.reclazz.shaded.bytebuddy")
     relocate("org.objectweb.asm", "com.onurkat.reclazz.shaded.asm")
     exclude("org/slf4j/**")
     exclude("META-INF/services/org.slf4j.*")

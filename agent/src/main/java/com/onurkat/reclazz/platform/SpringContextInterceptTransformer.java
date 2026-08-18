@@ -9,7 +9,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
-import net.bytebuddy.jar.asm.*;
+import org.objectweb.asm.*;
 
 /**
  * ClassFileTransformer that intercepts AbstractApplicationContext.refresh() to capture

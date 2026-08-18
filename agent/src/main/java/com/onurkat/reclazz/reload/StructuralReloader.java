@@ -99,7 +99,7 @@ public class StructuralReloader {
                 // and this used to fall straight through to a redefine the JVM
                 // rejects. Adding a field to a JPA entity ended exactly there,
                 // losing the method bodies with it, and nothing said why.
-                reportUninstrumented(className);
+                reportUninstrumented(className, findLoadedClass(className));
                 return standardReload(className, newBytecode);
             }
 
@@ -406,7 +406,20 @@ public class StructuralReloader {
      * message about schemas that said nothing about why this class and not
      * the one next to it.
      */
-    private void reportUninstrumented(String className) {
+    private void reportUninstrumented(String className, Class<?> loaded) {
+        // Missing metadata has two causes and they are not the same news.
+        //
+        // A class the JVM has never loaded is an ordinary new file: it will be
+        // instrumented the first time something asks for it, and there is
+        // nothing for the developer to do. Telling them it "was loaded before
+        // Reclazz could instrument it" is a statement about their server that
+        // is simply untrue, and it was being made every time a new class was
+        // compiled beside a changed one.
+        //
+        // A class the JVM does have, with no metadata, really did miss the
+        // load-time transform, and that one is worth saying.
+        if (loaded == null) return;
+
         if (uninstrumentedReported.add(className)) {
             StatusReporter.warn(className + " was loaded before Reclazz could instrument it, "
                     + "so only method bodies can be reloaded; adding or removing members "

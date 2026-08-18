@@ -11,16 +11,20 @@ accept.
 
 | Component | Version | Licence | Why it is here |
 |---|---|---|---|
-| [Byte Buddy](https://bytebuddy.net/) | 1.18.5 | Apache License 2.0 | Generates the companion classes that carry members a reload adds |
-| [ASM](https://asm.ow2.io/) | 9.8 | BSD 3-Clause | Reads and rewrites bytecode: call sites, field access, added members |
+| [ASM](https://asm.ow2.io/) | 9.8 | BSD 3-Clause | Reads and rewrites bytecode: call sites, field access, added members, companion classes |
 
-Both are relocated so they cannot collide with the copies your application
-already has:
+One library. Byte Buddy used to be the second, and it was removed once it came
+to this table and could not answer the question at the top of it: it was
+generating two probe classes, and in one file it was only being used for the
+copy of ASM bundled inside it. That is 25 MB of classes in your application's
+JVM to save sixty lines in ours. The shipped agent went from 10.2 MB to 0.7 MB.
+
+It is relocated so it cannot collide with the copy your application already
+has:
 
     org.objectweb.asm      ->  com.onurkat.reclazz.shaded.asm
-    net.bytebuddy          ->  com.onurkat.reclazz.shaded.bytebuddy
 
-Their SLF4J bindings are excluded, because an agent has no business installing a
+SLF4J bindings are excluded, because an agent has no business installing a
 logging implementation into somebody else's process.
 
 ## Shipped in `lib/reclazz-<version>.jar`

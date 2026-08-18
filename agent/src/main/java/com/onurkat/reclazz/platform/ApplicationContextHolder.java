@@ -34,6 +34,10 @@ public class ApplicationContextHolder {
         });
 
         contexts.add(new WeakReference<>(applicationContext));
+
+        // A refreshed context is the application saying it is far enough along
+        // to be watched, which is a better answer than a fixed delay.
+        StartupSignal.applicationReady();
     }
 
     /**

@@ -15,23 +15,19 @@ class LargeClassReloadTest(
     httpVerifier: HttpVerifier,
 ) : BaseTest("Large class reload", config, agentClient, httpVerifier) {
 
+    /**
+     * Twenty-five endpoints added in one save. The point is that a large
+     * structural reload neither fails nor disturbs what already worked, and
+     * now also that the new endpoints answer: the companion branch used to
+     * check /ping and note the new ones were "invisible — documented", which
+     * stopped being true when handler methods added by a reload started being
+     * mapped. Asking for the last of the twenty-five tests both things at once.
+     */
     override fun run(): TestResult =
-        if (config.enhancedMode) {
-            writeAndVerify(
-                targetPath = "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java",
-                templateName = "TestController_large.java.txt",
-                httpPath = "${config.testEndpointBase}/large25",
-                expectedBody = "large-25",
-            )
-        } else {
-            // Companion mode: the 25 new endpoints are reflection-invisible.
-            // The real assertion here is that a LARGE structural reload
-            // neither fails nor breaks existing behavior.
-            writeAndVerify(
-                targetPath = "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java",
-                templateName = "TestController_large.java.txt",
-                httpPath = "${config.testEndpointBase}/ping",
-                expectedStatus = 200,
-            ).withCompanionNote("large reload applied, existing endpoints intact (new ones invisible — documented)")
-        }
+        writeAndVerify(
+            targetPath = "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java",
+            templateName = "TestController_large.java.txt",
+            httpPath = "${config.testEndpointBase}/large25",
+            expectedBody = "large-25",
+        )
 }
