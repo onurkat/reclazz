@@ -134,6 +134,24 @@ object JvmAttacher {
                         e
                     )
 
+                // JEP 451 is closing this door. Java 21 warns, Java 25 still
+                // allows it by default, and a future release disallows it;
+                // a server already started with -XX:-EnableDynamicAgentLoading
+                // refuses today. The JVM's own sentence is good but stops at
+                // naming the flag, and the developer's next question is where
+                // to put it, which depends on how their server starts.
+                message.contains("Dynamic agent loading is not enabled", ignoreCase = true) ->
+                    AttachResult.Error(
+                        "PID $pid was started with dynamic agent loading disabled, so no agent " +
+                        "can be attached to it while it runs. Add -XX:+EnableDynamicAgentLoading " +
+                        "to how that JVM starts and restart it: on SAP Commerce that is " +
+                        "tomcat.javaoptions in config/dev/props/95-local.properties, which is " +
+                        "the file Reclazz already writes its agent line into; on Spring Boot it " +
+                        "is the VM options of the run configuration. Starting the server with " +
+                        "the agent already on the command line needs none of this.",
+                        e
+                    )
+
                 else -> AttachResult.Error("Failed to attach to PID $pid: $message", e)
             }
         }

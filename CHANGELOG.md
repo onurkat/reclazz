@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Attaching to a JVM that was started with dynamic agent loading disabled now
+  says what to do about it. JEP 451 warns from Java 21 and will disallow the
+  attach in a future release; a server started with
+  `-XX:-EnableDynamicAgentLoading` refuses today. The JVM's own sentence names
+  the flag and stops there, and it was reaching the developer wrapped in two
+  that added nothing: "Failed to attach to PID 1234: Failed to load agent
+  library: Dynamic agent loading is not enabled...". The message now says where
+  the flag goes, which differs by platform, and that a server started with the
+  agent already on its command line never meets this at all.
+
 - A JVM that refuses `sun.misc.Unsafe` no longer costs the whole class reload.
   JEP 471 is phasing those methods out, and JDK 26 refuses them by default;
   appending an enum constant needs them, because writing a final field has no
