@@ -169,14 +169,51 @@ public final class FieldStore {
         return value != null ? value : defaultValue(desc);
     }
 
+    /**
+     * Static keys that have been written at least once, whatever the value.
+     *
+     * A null write removes the entry from {@link #staticValues}, so presence
+     * there cannot answer "has this field ever been set". The initialiser
+     * needs that answer and nothing else does.
+     */
+    private static final java.util.Set<String> staticsEverWritten =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
     /** Write a static field added after startup. */
     public static void putStaticExtField(String className, String fieldName, String desc, Object value) {
         String key = staticKey(className, fieldName, desc);
+        staticsEverWritten.add(key);
         if (value == null) {
             staticValues.remove(key);
         } else {
             staticValues.put(key, value);
         }
+    }
+
+    /**
+     * Give an added static field its initial value, once and only once.
+     *
+     * <p>The JVM cannot add a field to a loaded class, so a field added by a
+     * reload never enters the loaded class's schema. Every later reload
+     * therefore diffs it as added all over again, and an initialiser that ran
+     * each time would wipe the field on every unrelated edit: a cache emptied
+     * because somebody changed a method body two files away. So the first
+     * write wins, and later reloads leave the field where the application put
+     * it.
+     *
+     * @return true when this call is what set the field
+     */
+    public static boolean initialiseStaticOnce(String className, String fieldName,
+                                                String desc, Object value) {
+        String key = staticKey(className, fieldName, desc);
+        if (!staticsEverWritten.add(key)) return false;
+        if (value != null) staticValues.put(key, value);
+        return true;
+    }
+
+    /** Whether an added static field has been written or initialised yet. */
+    public static boolean isStaticInitialised(String className, String fieldName, String desc) {
+        return staticsEverWritten.contains(staticKey(className, fieldName, desc));
     }
 
     /**

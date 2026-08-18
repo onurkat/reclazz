@@ -42,11 +42,12 @@ class ConstructorRefreshNoiseTest {
         assumeCompiled(cls);
         ClassNode node = new ClassNode();
         new ClassReader(Files.readAllBytes(cls)).accept(node, ClassReader.SKIP_FRAMES);
+        // Identified by the handler this test is about, not by "has a
+        // try/catch": the class has several, and picking the first one made
+        // this test fail the day an unrelated method gained a catch block.
         return node.methods.stream()
-                .filter(m -> !m.tryCatchBlocks.isEmpty())
                 .filter(m -> m.tryCatchBlocks.stream().anyMatch(
-                        t -> "java/lang/UnsupportedOperationException".equals(t.type)
-                          || "java/lang/Throwable".equals(t.type)))
+                        t -> "java/lang/UnsupportedOperationException".equals(t.type)))
                 .findFirst()
                 .orElseThrow(() -> new AssertionError(
                         "no method in StructuralReloader guards the constructor-body refresh"));

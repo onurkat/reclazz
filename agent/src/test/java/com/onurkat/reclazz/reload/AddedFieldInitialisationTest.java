@@ -38,11 +38,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * adding a static field was unusual, and the resulting NoSuchFieldError killed
  * the thread after the reload had already reported success.
  *
- * What is fixed and what is not, deliberately: instance fields are initialised
- * on new objects; static fields no longer throw but read as the type default,
- * because their initialiser lives in {@code <clinit>} and re-running that
- * would reset every other static the class holds. The second case is now said
- * out loud rather than looking like a null bug.
+ * What is fixed, and where the line now sits: instance fields are initialised
+ * on new objects, and static fields no longer throw. Their initial value is
+ * handled separately, in {@link StaticInitialiserTest}, because the answer
+ * there is not one rule but three: a constant comes off the field itself, an
+ * initialiser that forms a self-contained block is lifted out of
+ * {@code <clinit>} and run, and anything entangled with the rest of the static
+ * block still reads as the type default and says so.
  */
 class AddedFieldInitialisationTest {
 
@@ -180,7 +182,9 @@ class AddedFieldInitialisationTest {
      */
     @Test
     void addingAnEnumValueIsReportedAsItsOwnCase() throws IOException {
-        List<String> text = memberNamesIn("com/onurkat/reclazz/reload/StructuralReloader");
+        // The sentence moved to EnumConstantChange when the other reload
+        // engine, the one used on JetBrains Runtime, needed to say it too.
+        List<String> text = memberNamesIn("com/onurkat/reclazz/reload/EnumConstantChange");
 
         assertTrue(text.stream().anyMatch(t -> t.contains("Enum constants cannot be added")),
                 "adding an enum value needs a restart, and saying so is the whole "

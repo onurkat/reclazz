@@ -50,6 +50,21 @@ public class CompanionGenerator implements Opcodes {
     public static CompanionResult generate(String originalClassName, byte[] newBytecode,
                                             StructuralAnalyzer.StructuralDiff diff,
                                             int version) {
+        return generate(originalClassName, newBytecode, diff, version, java.util.Set.of());
+    }
+
+    /**
+     * @param staticsToInitialise "name:desc" of added static fields that still
+     *                            need their initial value. The companion gains
+     *                            a {@link StaticInitialiserSlicer#INIT_METHOD}
+     *                            method for the ones whose initialiser can be
+     *                            lifted out of {@code <clinit>} safely; the
+     *                            rest come back in the plan as refused, with a
+     *                            reason to show the developer.
+     */
+    public static CompanionResult generate(String originalClassName, byte[] newBytecode,
+                                            StructuralAnalyzer.StructuralDiff diff,
+                                            int version, Set<String> staticsToInitialise) {
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 
@@ -80,9 +95,27 @@ public class CompanionGenerator implements Opcodes {
                 writer, originalClassName, companionName, addedFieldKeys, methodHandleKeys, diff);
         reader.accept(extractor, ClassReader.EXPAND_FRAMES);
 
+        // The initial value of an added static field. The slice is written
+        // through the same adapter as every other companion method, so a
+        // private call or an added field inside an initialiser is rewritten
+        // exactly as it would be anywhere else.
+        StaticInitialiserSlicer.Plan staticPlan =
+                StaticInitialiserSlicer.planFor(newBytecode, staticsToInitialise);
+        if (staticPlan.hasCode()) {
+            MethodVisitor mv = writer.visitMethod(ACC_PUBLIC | ACC_STATIC,
+                    StaticInitialiserSlicer.INIT_METHOD, "()V", null, null);
+            MethodVisitor adapter = new CompanionMethodAdapter(mv, originalClassName,
+                    companionName, addedFieldKeys, true);
+            adapter.visitCode();
+            staticPlan.initialiserCode.accept(adapter);
+            adapter.visitInsn(RETURN);
+            adapter.visitMaxs(0, 0);
+            adapter.visitEnd();
+        }
+
         writer.visitEnd();
 
-        return new CompanionResult(writer.toByteArray(), companionName, methodHandleKeys);
+        return new CompanionResult(writer.toByteArray(), companionName, methodHandleKeys, staticPlan);
     }
 
     /**
@@ -440,15 +473,24 @@ public class CompanionGenerator implements Opcodes {
         private final byte[] bytecode;
         private final String companionName;
         private final Map<String, String> methodHandleKeys;
+        private final StaticInitialiserSlicer.Plan staticPlan;
 
         CompanionResult(byte[] bytecode, String companionName, Map<String, String> methodHandleKeys) {
+            this(bytecode, companionName, methodHandleKeys,
+                    StaticInitialiserSlicer.planFor(new byte[0], java.util.Set.of()));
+        }
+
+        CompanionResult(byte[] bytecode, String companionName, Map<String, String> methodHandleKeys,
+                        StaticInitialiserSlicer.Plan staticPlan) {
             this.bytecode = bytecode;
             this.companionName = companionName;
             this.methodHandleKeys = methodHandleKeys;
+            this.staticPlan = staticPlan;
         }
 
         public byte[] getBytecode() { return bytecode; }
         public String getCompanionName() { return companionName; }
         public Map<String, String> getMethodHandleKeys() { return methodHandleKeys; }
+        public StaticInitialiserSlicer.Plan getStaticPlan() { return staticPlan; }
     }
 }

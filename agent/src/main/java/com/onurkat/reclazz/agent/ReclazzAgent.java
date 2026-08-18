@@ -579,8 +579,13 @@ public class ReclazzAgent {
                 }
             } else {
                 StatusReporter.error("Hot-swap failed for " + displayName + ": " + reloadResult.getError());
-                if (reloadResult.isStructuralChange()) {
-                    StatusReporter.warn(reloadResult.getStructuralChangeAdvice());
+                // A structural failure does not always carry advice: the ones
+                // raised with their own explanation have nothing to add. Printing
+                // it unguarded put the literal word "null" under the message that
+                // had just explained the problem properly.
+                String advice = reloadResult.getStructuralChangeAdvice();
+                if (reloadResult.isStructuralChange() && advice != null && !advice.isBlank()) {
+                    StatusReporter.warn(advice);
                 }
             }
         } catch (Exception e) {
@@ -692,8 +697,13 @@ public class ReclazzAgent {
             } else {
                 failCount++;
                 StatusReporter.error("Hot-swap failed for " + className + ": " + reloadResult.getError());
-                if (reloadResult.isStructuralChange()) {
-                    StatusReporter.warn(reloadResult.getStructuralChangeAdvice());
+                // A structural failure does not always carry advice: the ones
+                // raised with their own explanation have nothing to add. Printing
+                // it unguarded put the literal word "null" under the message that
+                // had just explained the problem properly.
+                String advice = reloadResult.getStructuralChangeAdvice();
+                if (reloadResult.isStructuralChange() && advice != null && !advice.isBlank()) {
+                    StatusReporter.warn(advice);
                 }
             }
         }

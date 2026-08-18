@@ -45,9 +45,12 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Method body changes | **Yes** | Yes (restart) | Yes |
 | Add / remove methods | **Yes (any JDK 17+)** | Yes (restart) | Yes |
 | Add instance fields | **Yes** — set on objects created after the reload | Yes (restart) | Yes |
-| Add static fields | Reads as null/0 until restart, and says so | Yes (restart) | Yes |
-| Add enum values | No — needs a restart, and says so | Yes (restart) | Yes |
-| Change superclass / interfaces | No | Yes (restart) | Yes |
+| Add static fields | **Yes** — the field gets its initial value: constants, and initialisers that stand on their own | Yes (restart) | Yes, but the initialiser is not re-run |
+| Added static field whose initialiser is entangled with the rest of `<clinit>` | Reads as null/0, and names the field and the reason | Yes (restart) | Reads as null/0 |
+| Add enum values (on the end) | **Yes** — `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it, on any JDK 17+ | Yes (restart) | Yes |
+| Insert, remove or reorder enum values | No — that renumbers every ordinal after the change, including `@Enumerated` columns already in your database. Reclazz refuses and says why | Yes (restart) | Yes |
+| Add / remove an interface | **Yes on JetBrains Runtime or DCEVM**, existing objects included; on a stock JDK it is refused by the JVM and Reclazz names the interface | Yes (restart) | Yes |
+| Change superclass | No — `redefineClasses` rejects it on every JVM, JBR included. The method bodies in the same save are still applied, and the log says the class keeps its old superclass until a restart | Yes (restart) | Yes, by loading classes itself instead of redefining them |
 | Spring bean refresh | **Yes** (singleton destroy + recreate) | Yes (restart) | Yes |
 | MVC mapping re-scan | **Yes** | Yes (restart) | Yes |
 | Cache eviction | **Yes** | Yes (restart) | Yes |
@@ -57,7 +60,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Spring Data repo refresh | **Yes** | Yes (restart) | Yes |
 | `@Async` re-processing | **Yes** | Yes (restart) | Yes |
 | JPA entity class reload | **Yes** | Yes (restart) | Yes |
-| JPA mapping picks up a new field | No — needs JBR/DCEVM | Yes (restart) | Yes |
+| JPA mapping picks up a new field | No, on any JVM — Hibernate builds its mapping once at startup. Reclazz names the field, says it is neither saved nor loaded, and reads your `ddl-auto` to tell you whether a restart is enough or the column has to exist first | Yes (restart) | Yes, the mapping is refreshed; the database column is still yours to add |
 | Template reload (Thymeleaf, Freemarker) | **Yes** | Yes | Yes |
 | SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
 | SAP Commerce: ImpEx auto-import | **Yes** | No | No |
@@ -96,7 +99,7 @@ than either.
 ### Core
 
 - **Hot class reload**: Redefines classes in the running JVM via Instrumentation API
-- **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. Added *static* fields read as null/0 until a restart, and adding an enum value needs one; Reclazz says so in the reload log rather than leaving you to find out. JBR/DCEVM additionally gives full reflective visibility of new members
+- **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. An added *static* field gets its initial value too: a compile-time constant comes straight off the field, and an initialiser that forms a self-contained block is lifted out of `<clinit>` and run on its own, so the rest of the static block is never re-executed. Where the two cannot be separated the field reads as null/0 and the log names it and the reason. Adding an enum value still needs a restart, and Reclazz says so rather than leaving you to find out. JBR/DCEVM additionally gives full reflective visibility of new members
 - **Property changes**: a changed key goes into the running Environment and the
   `@ConfigurationProperties` beans whose prefix it touches are rebound, so a
   timeout or a feature flag takes effect without a restart. Beans bound through
@@ -435,9 +438,10 @@ test suite actually checks.
 ### "Do I still need to restart?"
 
 **Tools > What Still Needs a Restart?** answers it. Reclazz keeps a note of
-everything this session did that a restart would change: a static field that
-reads null, an enum that gained a value, a superclass change, a Spring bean the
-XML reload could not apply, a property the platform refused. When the list is
+everything this session did that a restart would change: a static field whose
+initialiser could not be separated from the rest of the static block, an enum
+that gained a value, a superclass change, a Spring bean the XML reload could
+not apply, a property the platform refused. When the list is
 empty it says so, which is the answer that saves the restart.
 
 ### "Why didn't my class reload?"
