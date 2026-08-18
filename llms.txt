@@ -42,10 +42,37 @@ ground a Java-only reload does not.
 
 ## What it does not do
 
-- Added **static** fields read as null or 0 until a restart, and a new enum
-  constant needs one. Reclazz says so in the reload log rather than leaving it to
-  be discovered.
-- A changed **superclass or interface hierarchy** cannot be redefined.
+- An **enum constant added on the end** is applied to the running JVM on any JDK
+  17 or newer: `values()` and `valueOf` return it, switches compiled before it
+  existed take their default branch, and the EnumMap and EnumSet instances built
+  before the reload accept it. Inserting, removing or reordering constants
+  renumbers every ordinal after the change, including any `@Enumerated` column
+  already written to a database, so that is refused and explained rather than
+  half-applied.
+- An added **static** field does get its initial value: a compile-time constant
+  is read from the field itself, and an initialiser that forms a self-contained
+  block is lifted out of the class initialiser and run on its own, so a static
+  block with side effects is never re-executed. Where an initialiser is
+  entangled with the rest of the static block (it shares a computation, it
+  branches, it sits in a try/catch), the field reads as null or 0 and the log
+  names the field and the reason.
+- A changed **superclass** cannot be applied to a loaded class by any JVM,
+  JetBrains Runtime included, because every existing object already has the old
+  layout and identity. Reclazz reports it as needing a restart, and applies the
+  method bodies edited in the same save rather than refusing those too, unless a
+  body genuinely needs the superclass it is losing.
+- An added or removed **interface** is applied on JetBrains Runtime or DCEVM with
+  `-XX:+AllowEnhancedClassRedefinition`, objects created before the reload
+  included. On a stock JDK the JVM refuses it; the rest of the class still
+  reloads and Reclazz names the interface rather than reporting plain success.
+- A field added to a **JPA entity** is not picked up by the persistence
+  mapping, on any JVM. Hibernate builds its metamodel and entity persisters
+  once, when the SessionFactory is created, and a class redefinition is not
+  something it listens for; the database has no column for the field either.
+  The class itself reloads, and Reclazz names the field and says it is neither
+  saved nor loaded rather than reporting a plain success. Refreshing the
+  mapping would mean rebuilding the SessionFactory, which is a restart of the
+  persistence layer under another name.
 - Reflective visibility of newly added members is full on JetBrains Runtime or
   DCEVM, and limited on a stock JVM, where added members live on a companion
   class.
