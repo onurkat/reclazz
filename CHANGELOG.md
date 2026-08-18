@@ -37,6 +37,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   answers that in the same breath, so nobody has to open an issue about a
   deliberate choice.
 
+  Both messages name `--sun-misc-unsafe-memory-access=allow`, which was measured
+  rather than assumed: it silences the warning on Java 25 and is what keeps the
+  feature working on JDK 26. The claim in the comparison table now says JDK 17
+  to 25 rather than any JDK 17+, with that flag as the way past it.
+
 
 ## [1.0.25] - 2026-08-18
 

@@ -164,9 +164,10 @@ public final class EnumConstantChange {
         if (Runtime.version().feature() >= 24) {
             com.onurkat.reclazz.ui.StatusReporter.info("Java " + Runtime.version().feature()
                     + " prints a sun.misc.Unsafe deprecation warning for this and names Reclazz; "
-                    + "it is expected. Writing a final field is what adding a constant needs and "
-                    + "has no supported alternative, so from JDK 26 this declines and asks for a "
-                    + "restart instead.");
+                    + "it is expected. Writing a final field is what adding a constant needs "
+                    + "and has no supported alternative. Starting the JVM with "
+                    + "--sun-misc-unsafe-memory-access=allow silences it, and is what keeps this "
+                    + "working on JDK 26, where the access is refused by default.");
         }
     }
 

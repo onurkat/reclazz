@@ -153,9 +153,9 @@ public final class EnumSurgery {
             UnsafeAccess.putObject(enumClass, directoryCache, null);
         } catch (UnsafeAccess.MemoryAccessUnavailable e) {
             return Outcome.declined("this JVM does not allow the memory access an enum "
-                    + "append needs. JDK 26 refuses it by default, and any release can be "
-                    + "run that way with --sun-misc-unsafe-memory-access=deny. Nothing was "
-                    + "changed");
+                    + "append needs. JDK 26 refuses it by default; starting the JVM with "
+                    + "--sun-misc-unsafe-memory-access=allow gives it back for as long as "
+                    + "that flag exists. Nothing was changed");
         } catch (Throwable t) {
             return Outcome.declined("the constant could not be built: " + t);
         }

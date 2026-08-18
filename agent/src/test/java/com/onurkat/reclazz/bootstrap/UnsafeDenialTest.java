@@ -113,8 +113,12 @@ class UnsafeDenialTest {
 
         assertTrue(text.stream().anyMatch(t -> t.contains("JDK 26 refuses it by default")),
                 "a developer meeting this on a new JDK should not have to guess why");
-        assertTrue(text.stream().anyMatch(t -> t.contains("--sun-misc-unsafe-memory-access=deny")),
-                "and should be able to reproduce it on the JDK they have");
+        // The flag a developer needs here is the one that gives the feature
+        // back, not the one that reproduces the refusal. Reproducing is our
+        // problem and lives in the changelog; theirs is a server that stopped
+        // picking up an enum value.
+        assertTrue(text.stream().anyMatch(t -> t.contains("--sun-misc-unsafe-memory-access=allow")),
+                "the way out has to be in the message, not only the diagnosis");
         assertTrue(text.stream().anyMatch(t -> t.contains("Nothing was changed")),
                 "a half-applied enum is the one outcome worse than none");
     }
