@@ -155,6 +155,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Evaluated and deferred
 
+- An Unsafe-free enum append on JetBrains Runtime, as JDK 26 insurance. The
+  idea: enhanced redefinition might accept a redefinition that strips
+  ACC_FINAL from the enum's static fields, at which point the constant can be
+  built by injected bytecode with the enum's real constructor and stored with
+  a plain PUTSTATIC, no sun.misc.Unsafe anywhere. Measured on JBR 25.0.2 with
+  `-XX:+AllowEnhancedClassRedefinition`: the redefinition that definalises
+  `$VALUES` and the constant fields, adds a SHIPPED field and adds a
+  `__reclazz$` init method is accepted; the init method built
+  `new CStatus("SHIPPED", 2)` through the constructor and grew `$VALUES`;
+  after clearing the two Class caches with plain reflection
+  (`--add-opens java.base/java.lang`, which the agent already requests),
+  `values()=[NEW, PAID, SHIPPED]` and `valueOf("SHIPPED")` with ordinal 2 both
+  answered correctly, and `Field.set` on the definalised `$VALUES` works for
+  later appends. Stock SapMachine 21 refuses the same redefinition with
+  "attempted to change the schema (add/remove fields)", so this is a JBR-only
+  path, exactly as hoped.
+
+  Deferred because the spike's clean result does not make the agent
+  implementation small. The developer's new `<clinit>` builds every constant,
+  old and new, and cannot be rerun without giving the old constants new
+  identities; the injected initialiser therefore has to carry only the
+  appended constants' construction, which for enums with constructor
+  arguments means slicing each constant's argument expressions out of
+  `<clinit>` bytecode, plus a second redefinition pass and its idempotency
+  story in both reload engines. Meanwhile JDK 26 continuity is already
+  covered on every JVM by `--sun-misc-unsafe-memory-access=allow`, which the
+  plugin now writes where the JVM is measured to accept it. Worth reopening
+  when that flag starts disappearing (its removal is scheduled after the
+  Unsafe methods are gone), with the spike under scratchpad c2spike as the
+  starting point.
+
 - Throwing stubs for removed methods: the idea was to re-point a removed
   method's call sites at a handle that throws `NoSuchMethodError` naming the
   method, so stale calls fail loudly instead of running code the source no
