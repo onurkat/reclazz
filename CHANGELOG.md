@@ -146,6 +146,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The enum append success message now tells the measured truth about Java 21
+  switches. What each switch shape does with an appended constant was measured
+  on stock JDK 21 and JetBrains Runtime 25, with and without enhanced
+  redefinition, all three agreeing: a classic switch with a written default
+  takes it (the grown `$SwitchMap` slot is javac's "not one of my cases"); an
+  exhaustive switch with no written default throws `MatchException` on the new
+  constant, because javac plants a throwing default in every switch it proved
+  exhaustive (`IncompatibleClassChangeError` when compiled at source levels
+  before 21); and a pattern switch with a guard or type pattern, which
+  compiles to `invokedynamic SwitchBootstraps.enumSwitch` and not to a table,
+  needs no help at all: a call site linked before the append matched the new
+  constant with its total type pattern and threw `MatchException` where
+  exhaustive, never a wrong branch and never a stale answer. The suspected
+  correctness bug, an indy call site caching a mapping sized to the old
+  constant universe and misrouting the new one, does not exist on any tested
+  JDK; `PatternSwitchAppendTest` pins all of this so a JDK that starts
+  caching will be caught. The old message claimed switches "take their
+  default branch instead of throwing", which is wrong for the exhaustive
+  shape, where the default branch IS a throw.
+
 - The log says which SAP Commerce line the server is: `Platform version:
   2211-jdk21.8`, read from the platform's own `build.number`. Two lines are in
   the field at once, because SAP moved the platform to Java 21 and Spring 6.2 in
