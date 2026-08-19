@@ -301,6 +301,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- The README's two enum sentences now agree with each other and with the
+  code. The features list still said "Adding an enum value still needs a
+  restart", written before the append existed and contradicting the
+  comparison table three screens up; it now states the shipped scope. And
+  the one thing no repair can reach is stated where the capability is
+  claimed: an array the application itself sized with `values().length`
+  before the reload keeps its old length, and indexing it by the new
+  constant's ordinal throws. Nothing can enumerate the heap for such arrays,
+  so the sentence is the fix.
+
 - The removed-method warning now says what actually happens to existing
   callers, which was measured to be three cases where one sentence claimed
   one. The old warning always said "existing callers will continue using the
