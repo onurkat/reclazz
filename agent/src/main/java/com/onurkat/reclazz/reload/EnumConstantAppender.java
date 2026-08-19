@@ -114,7 +114,36 @@ public final class EnumConstantAppender {
         int mappers = JacksonEnumCaches.flushAfterAppend();
 
         EnumConstantChange.reportAppended(className, outcome.appended(), tables, mappers);
+
+        // A static SAP Commerce enumtype compiles to a real Java enum, so the
+        // append above made the JVM side whole; the platform side is not. The
+        // persistence layer stores such a value as a reference to its
+        // EnumerationValue item, and that row exists only after a system
+        // update. Said here because this is the one place that knows both
+        // facts; detected by interface name so a non-Hybris JVM never pays
+        // for the question.
+        if (implementsHybrisEnumValue(loaded)) {
+            StatusReporter.info("This is a SAP Commerce enumtype: the platform can persist "
+                    + names + " only after the matching EnumerationValue item exists. "
+                    + "Run HAC -> Platform -> Update Running System (or import it via ImpEx) "
+                    + "before using the value on a model.");
+        }
         return true;
+    }
+
+    /** Walks the interface graph by name: no Hybris classes are ever loaded for this. */
+    private static boolean implementsHybrisEnumValue(Class<?> type) {
+        try {
+            for (Class<?> iface : type.getInterfaces()) {
+                if ("de.hybris.platform.core.HybrisEnumValue".equals(iface.getName())
+                        || implementsHybrisEnumValue(iface)) {
+                    return true;
+                }
+            }
+        } catch (Throwable ignored) {
+            // A class this JVM will not describe is not a Hybris enum.
+        }
+        return false;
     }
 
     private static int countConstants(Class<?> enumClass) {
