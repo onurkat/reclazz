@@ -240,6 +240,15 @@ public class CodegenReloader {
                     + "(default URL: https://localhost:9002/hac/platform/update) to apply.");
             StatusReporter.warn("New attributes on existing model instances will return null "
                     + "until HAC updatesystem runs and ModelService re-fetches from the DB.");
+            // Enumtype values have the same second half. A static enumtype
+            // regenerates as a Java enum and Reclazz appends the constant to
+            // the running JVM; a dynamic enumtype's class materialises values
+            // through its own valueOf cache. Either way the platform persists
+            // the value as a reference to its EnumerationValue item, and that
+            // row is also created by Update Running System.
+            StatusReporter.warn("The same applies to new enumtype values: the JVM side reloads, "
+                    + "but the platform can persist a value only after Update Running System "
+                    + "(or an ImpEx) has created its EnumerationValue item.");
         }
     }
 

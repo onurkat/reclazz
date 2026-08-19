@@ -250,6 +250,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The enum messages now carry the SAP Commerce half of the enumtype story.
+  Read end to end from the platform's generated sources: a static enumtype
+  compiles to a real Java enum (`public enum ImportStatus implements
+  HybrisEnumValue`), so an items.xml save flows through the codegen reloader's
+  `ant build`, the regenerated class reaches the class watcher, and Reclazz's
+  append makes the JVM side whole; a dynamic enumtype (such as OrderStatus)
+  compiles to a plain class whose values materialise through its own
+  `valueOf` cache and never meet the enum append at all. In both cases the
+  platform persists the value as a reference to its EnumerationValue item,
+  and that row exists only after Update Running System or an ImpEx creates
+  it. The append success path now says so when the appended enum implements
+  `HybrisEnumValue` (detected by interface name, so no Hybris class is ever
+  loaded and other platforms never see the line), and the codegen reloader's
+  items.xml reminder now covers enumtype values alongside new attributes.
+
 - The enum append success message now tells the measured truth about Java 21
   switches. What each switch shape does with an appended constant was measured
   on stock JDK 21 and JetBrains Runtime 25, with and without enhanced
