@@ -106,7 +106,14 @@ public final class EnumConstantAppender {
                     instrumentation.getAllLoadedClasses(), loaded, countConstants(loaded));
         }
 
-        EnumConstantChange.reportAppended(className, outcome.appended(), tables);
+        // Jackson keeps per-mapper enum caches sized to the old constant set;
+        // measured to turn the new constant into a 500 on serialise and a 400
+        // on deserialise until they are flushed. Zero mappers means no Spring
+        // or no Jackson, and the report stays silent about a repair that had
+        // nothing to repair.
+        int mappers = JacksonEnumCaches.flushAfterAppend();
+
+        EnumConstantChange.reportAppended(className, outcome.appended(), tables, mappers);
         return true;
     }
 

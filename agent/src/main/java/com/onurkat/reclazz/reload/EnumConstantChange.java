@@ -147,7 +147,8 @@ public final class EnumConstantChange {
     }
 
     /** Said when the constants were actually added to the running JVM. */
-    public static void reportAppended(String className, List<String> names, int switchTables) {
+    public static void reportAppended(String className, List<String> names, int switchTables,
+                                      int jacksonMappers) {
         com.onurkat.reclazz.ui.StatusReporter.success("Enum " + className + " gained "
                 + names + " without a restart: values(), valueOf() and new EnumMap/EnumSet see them"
                 + (switchTables > 0
@@ -156,6 +157,10 @@ public final class EnumConstantChange {
                           + "or, for a switch the compiler proved exhaustive, javac's own "
                           + "MatchException throw. Pattern switches ending in a type pattern "
                           + "match the new value directly"
+                        : "")
+                + (jacksonMappers > 0
+                        ? ". " + jacksonMappers + " Jackson ObjectMapper bean(s) had their enum "
+                          + "caches flushed, so JSON serialises and deserialises the new value too"
                         : ""));
 
         // The JVM prints its own warning for this, and it ends with "Please
