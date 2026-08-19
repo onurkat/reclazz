@@ -155,6 +155,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Evaluated and deferred
 
+- Reordering or inserting enum constants without a restart, which today is
+  refused outright. The in-memory side is mechanically repairable by
+  name-based remapping (permute each EnumMap's value array, translate EnumSet
+  bits, rebuild `$SwitchMap` tables from old name to new ordinal); the
+  blocker has always been `@Enumerated(ORDINAL)` columns, where the database
+  keeps the old numbers and no in-memory repair reaches them. What was
+  measured is the gate, not the feature: whether the loaded JPA metamodel
+  plus reflection can say reliably that a given enum is persisted ORDINAL
+  somewhere. On Spring Boot 3.3.4 with Hibernate 6.5.3, walking
+  `Metamodel.getManagedTypes()` and reading `@Enumerated` off each
+  attribute's `javaMember` found every enum-typed attribute, including the
+  `@ElementCollection` plural: an unannotated attribute reports as
+  ORDINAL-by-default (which is what JPA makes it), `@Enumerated(STRING)` is
+  visible, and `@Convert` is visible as its own category, whose storage
+  format cannot be known without running the converter. Every blind spot
+  (converters, Hibernate `@JdbcTypeCode`, XML mappings, custom UserTypes)
+  degrades toward refusing, never toward allowing, so the gate is sound in
+  the only direction that matters.
+
+  Deferred with this design recorded: the remap would run only when (1) the
+  developer opted in by agent argument, (2) the gate walked every reachable
+  metamodel and found the enum only in STRING-mapped attributes, zero
+  ORDINAL and zero converted, and (3) the report still warned that ordinals
+  serialised outside the JVM's sight (native SQL, caches, other services
+  sharing the database, files) cannot be seen by any gate. Applications
+  without a reachable JPA metamodel, including SAP Commerce, fail the gate
+  by construction and keep today's refusal. Not implemented: the remap
+  machinery is heap-wide surgery an order beyond the append, and the
+  measured gate is the part that had to be true before any of it is worth
+  building.
+
 - An Unsafe-free enum append on JetBrains Runtime, as JDK 26 insurance. The
   idea: enhanced redefinition might accept a redefinition that strips
   ACC_FINAL from the enum's static fields, at which point the constant can be
