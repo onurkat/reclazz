@@ -292,6 +292,25 @@ public class ReclazzAgent {
                             + "be picked up by framework scans. Start with -javaagent for that.");
                 }
 
+                // Root-level reflection filtering: hides __reclazz$ members
+                // inside the JDK itself, which covers the meta-reflection
+                // routes the call-site bridge cannot reach. Probes once; on a
+                // JVM that refuses, it says so and the bridge remains the only
+                // cover. Per-class registration happens on each reload (the
+                // reloader has the Class there); the sweep below catches
+                // watched classes that are already loaded AND were transformed,
+                // which only exists when initialize runs after classes went
+                // through the transformer.
+                com.onurkat.reclazz.transform.ReflectionRootFilter.install(instrumentation);
+                for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                    String internal = loaded.getName().replace('.', '/');
+                    if (transformContext.isWatched(internal)
+                            && transformContext.getMetadata(internal) != null) {
+                        com.onurkat.reclazz.transform.ReflectionRootFilter
+                                .registerInjectedMembersOn(loaded);
+                    }
+                }
+
                 structuralReloader = new StructuralReloader(instrumentation, transformContext, config, platformContext);
                 structuralReloader.setTransformer(transformer);
                 StatusReporter.success("Structural reload engine active on " +
