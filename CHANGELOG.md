@@ -8,6 +8,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- An appended enum constant now round-trips through Jackson without a restart.
+  Jackson builds an enum's serializer and deserializer once per ObjectMapper
+  and keeps them sized to the constants that existed at first use; measured on
+  Spring Boot 3.3.4 (stock JDK 21, Jackson via spring-boot-starter-web) after
+  appending URGENT to a two-constant enum whose endpoints had already served
+  traffic: serialising the new constant answered HTTP 500
+  (`HttpMessageNotWritableException: Could not write JSON: Index 2 out of
+  bounds for length 2`) and deserialising its name answered HTTP 400 (`not one
+  of the values accepted for Enum class: [HIGH, LOW]`), while old constants
+  kept working both ways. After a successful append the agent now flushes the
+  serializer cache, the deserializer cache and the root-deserializer map of
+  every ObjectMapper registered as a Spring bean, purely reflectively: Reclazz
+  gains no Jackson dependency, and an application without Jackson or without
+  Spring is measurably untouched (the plain-Java append run is byte for byte
+  the same). Verified live after the fix: the same endpoints serialise
+  `{"code":"T-URGENT","priority":"URGENT"}` and deserialise
+  `deser:URGENT:ordinal=2`, old constants unchanged, an unknown name still
+  400. A mapper is only counted, and only touched, when all three members are
+  located first, so a Jackson that renames one is skipped rather than
+  half-flushed; mappers that are not Spring beans stay stale and no message
+  claims otherwise. The append success line reports the flush only when at
+  least one mapper was actually flushed.
+
 - JPA mapping refresh, opt-in via the agent argument `jpaRefresh=true`. When a
   reload adds or removes a persistent field on a mapped class, and the VM has
   enhanced class redefinition (JBR/DCEVM), and `hbm2ddl.auto` is update, create
