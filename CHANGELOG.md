@@ -109,6 +109,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Known limitation
 
+- A documented limitation turned out not to exist, and two mechanisms for the
+  remaining reflection gap were proven in spikes; both are recorded here so the
+  next step starts from measurements.
+
+  The companion generator's javadoc claimed intra-class calls were not
+  retargeted, so a method changed together with its callee would keep invoking
+  the old callee. Measured live across two generations (change A and B, then
+  only B, for private and protected callees): A observes the newest B every
+  time. The claim predates the trampoline transform and is now replaced by the
+  measured behaviour.
+
+  For hiding injected members from every reflective path at once: the JDK's own
+  root-level filter (`jdk.internal.reflect.Reflection.registerFieldsToFilter`),
+  reached via `Instrumentation.redefineModule` opening
+  `jdk.internal.reflect`, was measured working on JDK 21 and 25. It hides
+  `__reclazz$` members from direct scans, from meta-reflection (which no
+  call-site rewrite can ever catch), and from `getDeclaredField` by name, with
+  no `sun.misc.Unsafe` involved. This is the planned replacement for chasing
+  reflective call sites one at a time, and the JDK-26-safe route for forged
+  members.
+
+
 - Adding an interface on a stock JDK stays refused, and a subclass-based
   workaround was evaluated, measured and deferred. The mechanics work: a
   generated nestmate subclass of the loaded class carries the new interface,
