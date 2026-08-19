@@ -21,11 +21,15 @@ import static org.junit.jupiter.api.Assertions.*;
  * redefineClasses on a transformed class.
  *
  * Live finding: the agent's registered ReclazzTransformer also runs during
- * redefineClasses. Feeding it bytes that were ALREADY doTransform'ed made
- * it inject the infrastructure twice → ClassFormatError (duplicate field) →
- * "Constructor-body refresh skipped". The redefinition must therefore pass
- * the RAW compiled bytes and let the registered transformer do its work,
- * exactly like at load time.
+ * redefineClasses. Feeding it bytes that were ALREADY doTransform'ed used to
+ * make it inject the infrastructure twice → ClassFormatError (duplicate
+ * field) → "Constructor-body refresh skipped". The ordinary reload path
+ * still passes RAW compiled bytes and lets the registered transformer do its
+ * work exactly like at load time; the transformer is additionally idempotent
+ * now (it recognises its own output by the injected __reclazz$lookup field
+ * and passes it through), because the superclass salvage has to redefine a
+ * payload that is already transformed: the old bodies it splices in only
+ * exist in transformed form.
  */
 class ConstructorBodyRedefineTest extends TransformTestBase {
 
@@ -53,20 +57,20 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
 
     @Test
     void rawBytesRedefineAppliesCtorBody_withRegisteredTransformer() throws Exception {
-        Map<String, byte[]> v1 = compileAndTransform(new SourceFile("CtorClass", V1));
-        Class<?> cls = defineAndLoad(v1, "CtorClass");
-
-        Object oldInstance = cls.getDeclaredConstructor().newInstance();
-        Method tag = cls.getDeclaredMethod("tag");
-        assertEquals("old-ctor", tag.invoke(oldInstance));
-
         // Register a live transformer the way the agent does, so redefinition
         // re-transforms raw bytes exactly like class load did. The context
         // carries the record of that class load, as the agent's single context
         // does: a redefinition of a class the agent never instrumented is left
         // alone, because its shape cannot be changed after the fact.
-        TransformContext context = contextThatLoaded("CtorClass", v1.get("CtorClass"));
+        TransformContext context = new TransformContext();
+        context.addWatched("CtorClass");
         ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
+        Class<?> cls = loadThrough(transformer, "CtorClass", V1);
+
+        Object oldInstance = cls.getDeclaredConstructor().newInstance();
+        Method tag = cls.getDeclaredMethod("tag");
+        assertEquals("old-ctor", tag.invoke(oldInstance));
+
         instrumentation.addTransformer(transformer, true);
         try {
             Map<String, byte[]> v2raw = compile(new SourceFile("CtorClass", V2));
@@ -80,43 +84,56 @@ class ConstructorBodyRedefineTest extends TransformTestBase {
         }
     }
 
+    /**
+     * Pre-transformed bytes used to be rejected here (double infrastructure
+     * injection, ClassFormatError), which is why the reloader insists on raw
+     * bytes for the ordinary path. The superclass salvage cannot use raw
+     * bytes: its payload carries spliced, already-transformed old bodies. So
+     * the registered transformer now recognises its own output and passes it
+     * through, and this redefinition must succeed with the constructor body
+     * applied. Losing the pass-through brings back the ClassFormatError, on
+     * the salvage path, during redefineClasses, on a live server.
+     */
     @Test
-    void preTransformedBytesRedefineFails_documentsWhyRawBytesAreRequired() throws Exception {
-        Map<String, byte[]> v1 = compileAndTransform(new SourceFile("CtorClass2",
-                V1.replace("CtorClass", "CtorClass2")));
-        Class<?> cls = defineAndLoad(v1, "CtorClass2");
-
-        TransformContext context = contextThatLoaded("CtorClass2", v1.get("CtorClass2"));
+    void preTransformedBytesPassThroughAndTheCtorBodyStillApplies() throws Exception {
+        TransformContext context = new TransformContext();
+        context.addWatched("CtorClass2");
         ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
+        Class<?> cls = loadThrough(transformer, "CtorClass2",
+                V1.replace("CtorClass", "CtorClass2"));
+        Method tag = cls.getDeclaredMethod("tag");
+        assertEquals("old-ctor", tag.invoke(cls.getDeclaredConstructor().newInstance()));
+
         instrumentation.addTransformer(transformer, true);
         try {
-            // Pre-transformed bytes + registered transformer = double
-            // infrastructure injection → the JVM must reject it.
             Map<String, byte[]> v2transformed = compileAndTransform(new SourceFile("CtorClass2",
                     V2.replace("CtorClass", "CtorClass2")));
-            assertThrows(Throwable.class, () ->
-                    instrumentation.redefineClasses(
-                            new ClassDefinition(cls, v2transformed.get("CtorClass2"))));
+            instrumentation.redefineClasses(
+                    new ClassDefinition(cls, v2transformed.get("CtorClass2")));
+
+            Object fresh = cls.getDeclaredConstructor().newInstance();
+            assertEquals("new-ctor", tag.invoke(fresh),
+                    "the pass-through payload's constructor body must reach new instances");
         } finally {
             instrumentation.removeTransformer(transformer);
         }
     }
 
     /**
-     * A context in the state the agent's own would be in after loading this
-     * class: watching it, and holding the record made while transforming it.
+     * Compile, transform through the given transformer (which records the
+     * class in its context exactly like class loading does) and load. The
+     * transform has to see the RAW bytes: since the transformer became
+     * idempotent it passes its own output through without recording, so
+     * rebuilding the context from already-transformed bytes records nothing.
      */
-    private static TransformContext contextThatLoaded(String internalName, byte[] loadedBytes) {
-        TransformContext context = new TransformContext();
-        context.addWatched(internalName);
-        try {
-            // The same call class loading makes, which is what records it.
-            new ReclazzTransformer(context, AgentConfig.parse(null))
-                    .transform(ConstructorBodyRedefineTest.class.getClassLoader(),
-                            internalName, null, null, loadedBytes);
-        } catch (Exception e) {
-            fail("could not rebuild the load-time context: " + e);
-        }
-        return context;
+    private static Class<?> loadThrough(ReclazzTransformer transformer,
+                                        String name, String source) throws Exception {
+        byte[] raw = compile(new SourceFile(name, source)).get(name);
+        byte[] transformed = transformer.transform(
+                ConstructorBodyRedefineTest.class.getClassLoader(), name, null, null, raw);
+        assertNotNull(transformed, "the load-time transform must produce output");
+        Map<String, byte[]> loadMap = new java.util.LinkedHashMap<>();
+        loadMap.put(name, transformed);
+        return defineAndLoad(loadMap, name);
     }
 }

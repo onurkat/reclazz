@@ -106,6 +106,12 @@ public class StructuralReloader {
             // Analyze structural changes
             StructuralAnalyzer.StructuralDiff diff = StructuralAnalyzer.analyze(oldMetadata, newBytecode);
 
+            // Method bodies the superclass salvage pins to their previous
+            // implementation, and the pre-spliced payload that carries those
+            // previous bodies. Both stay empty outside the salvage path.
+            java.util.Map<String, String> pinnedMethods = java.util.Map.of();
+            byte[] pinnedRedefinePayload = null;
+
             if (diff.isUnsupported()) {
                 // The hierarchy is not going to be applied by any JVM. The rest
                 // of the file still can be, and refusing the whole save threw
@@ -128,17 +134,62 @@ public class StructuralReloader {
                             true);
                 }
 
-                StatusReporter.warn(className + " changed its superclass to "
-                        + simpleName(superNameOf(newBytecode)) + ". No JVM applies that to a loaded "
-                        + "class, so it still extends " + simpleName(oldMetadata.getSuperName())
-                        + " until a restart. The method bodies in this save were applied.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
-                        "changed its superclass, which no JVM will redefine; method bodies were applied");
+                String newSuper = simpleName(superNameOf(newBytecode));
+                String oldSuper = simpleName(oldMetadata.getSuperName());
 
                 // Everything downstream reads the payload, so it has to be the
                 // one that is actually going to be redefined.
                 newBytecode = reverted.bytecode();
                 diff = StructuralAnalyzer.analyze(oldMetadata, newBytecode);
+
+                if (reverted.entangled().isEmpty()) {
+                    StatusReporter.warn(className + " changed its superclass to " + newSuper
+                            + ". No JVM applies that to a loaded class, so it still extends "
+                            + oldSuper + " until a restart. The method bodies in this save "
+                            + "were applied.");
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "changed its superclass, which no JVM will redefine; "
+                                    + "method bodies were applied");
+                } else {
+                    // One or more bodies need the new superclass. The rest of
+                    // the save still applies; those bodies are pinned to the
+                    // implementation they had. The spliced payload is built
+                    // NOW, before anything is generated or retargeted, so a
+                    // refusal here leaves the class exactly as it was.
+                    PinnedPrep prep = preparePinnedPayload(internalName, diff, newBytecode,
+                            loadedForRevert, reverted.entangled().keySet());
+                    if (prep.refusal() != null) {
+                        String entangledSummary = reverted.entangled().entrySet().stream()
+                                .map(e -> e.getKey().substring(0, e.getKey().indexOf(':'))
+                                        + " " + e.getValue())
+                                .collect(java.util.stream.Collectors.joining("; "));
+                        com.onurkat.reclazz.agent.RestartLedger.note(className,
+                                "changed its superclass, which no JVM will redefine");
+                        return ClassReloader.ReloadResult.failure(
+                                className + " changed its superclass, and the rest of the class "
+                                        + "cannot be applied without it (" + entangledSummary
+                                        + ", and " + prep.refusal() + "). "
+                                        + "No JVM applies a changed superclass to a loaded class: "
+                                        + "redefineClasses rejects it on a stock JDK and on JetBrains "
+                                        + "Runtime alike, because every object of this class already "
+                                        + "has the old layout and identity. Restart to pick it up.",
+                                true);
+                    }
+                    pinnedMethods = reverted.entangled();
+                    pinnedRedefinePayload = prep.payload();
+
+                    StatusReporter.warn(className + " changed its superclass to " + newSuper
+                            + ". No JVM applies that to a loaded class, so it still extends "
+                            + oldSuper + " until a restart. The method bodies in this save "
+                            + "were applied, except " + describePinned(pinnedMethods)
+                            + ", which " + (pinnedMethods.size() == 1 ? "keeps" : "keep")
+                            + " the implementation " + (pinnedMethods.size() == 1 ? "it" : "they")
+                            + " had.");
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "changed its superclass, which no JVM will redefine; method bodies "
+                                    + "were applied, except " + pinnedNames(pinnedMethods)
+                                    + ", pinned to the previous implementation");
+                }
             }
 
             // An added or removed interface is not the same case. Enhanced
@@ -168,7 +219,8 @@ public class StructuralReloader {
             // Always use companion class pattern for watched classes.
             // Even body-only changes go through this path to avoid re-adding
             // __reclazz$ext and __reclazz$lookup fields via redefineClasses.
-            return structuralReload(className, internalName, newBytecode, diff);
+            return structuralReload(className, internalName, newBytecode, diff,
+                    pinnedMethods, pinnedRedefinePayload);
 
         } catch (Exception e) {
             StatusReporter.error("Structural reload error for " + className + ": " + e.getMessage());
@@ -190,6 +242,82 @@ public class StructuralReloader {
         } catch (RuntimeException e) {
             return null;
         }
+    }
+
+    /** What the pinned-payload preparation produced: a payload, or the reason it could not. */
+    private record PinnedPrep(byte[] payload, String refusal) {
+    }
+
+    /**
+     * Build the redefine payload for a reload with pinned methods.
+     *
+     * <p>The first per-method salvage skipped the entangled method in the
+     * companion and let the ordinary payload through, and the payload still
+     * carried the method's NEW body, which the transformer renamed over
+     * {@code __reclazz$v0$...}. The trampoline's fallback then dispatched into
+     * a body calling a member only the new superclass provides and killed the
+     * application thread. So the payload is prepared here, up front: reshaped,
+     * transformed, and spliced so the pinned methods' OLD bodies are what the
+     * loaded class ends up holding. Any doubt refuses, which is the
+     * pre-salvage behaviour for the whole class.
+     */
+    private PinnedPrep preparePinnedPayload(String internalName,
+                                            StructuralAnalyzer.StructuralDiff diff,
+                                            byte[] revertedBytecode,
+                                            Class<?> loadedClass,
+                                            java.util.Set<String> pinnedKeys) {
+        // A pinned body is the OLD body, and it may use a member this save
+        // removes: the payload would then carry the remover's stub where the
+        // pinned body expects an implementation, and the pin would throw at
+        // its first call. Refusing is today's behaviour and stays the floor.
+        if (!diff.getRemovedMethodSigs().isEmpty() || !diff.getRemovedFieldSigs().isEmpty()) {
+            return new PinnedPrep(null,
+                    "the same save also removes members, which a pinned body may still use");
+        }
+        if (transformer == null) {
+            return new PinnedPrep(null, "no transformer is registered to prepare the payload");
+        }
+        byte[] lastKnownGood =
+                com.onurkat.reclazz.transform.TransformedClassCache.get(internalName);
+        if (lastKnownGood == null) {
+            return new PinnedPrep(null,
+                    "no last-known-good bytecode is cached for this class");
+        }
+        try {
+            byte[] stripped = com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
+                    revertedBytecode, diff.getAddedFields(), diff.getAddedMethods(),
+                    diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
+            // doTransform records metadata as a side effect, and the stripped
+            // payload is not the class this reload installs. The record from
+            // before is put back right after: the reload writes the real new
+            // one when it commits, and a refusal below must leave no trace.
+            TransformContext.ClassMetadata before = context.getMetadata(internalName);
+            byte[] transformed = transformer.doTransform(internalName, stripped,
+                    loadedClass == null ? null : loadedClass.getClassLoader());
+            context.putMetadata(internalName, before);
+            PinnedMethodSplice.Result spliced = PinnedMethodSplice.apply(
+                    transformed, lastKnownGood, pinnedKeys);
+            if (!spliced.applied()) {
+                return new PinnedPrep(null, spliced.reason());
+            }
+            return new PinnedPrep(spliced.bytecode(), null);
+        } catch (Exception e) {
+            return new PinnedPrep(null, "preparing the pinned payload failed: " + e);
+        }
+    }
+
+    /** "c (calls yalnizB2, which only Base2 provides)" for each pinned method. */
+    private static String describePinned(java.util.Map<String, String> pinned) {
+        return pinned.entrySet().stream()
+                .map(e -> e.getKey().substring(0, e.getKey().indexOf(':'))
+                        + " (" + e.getValue() + ")")
+                .collect(java.util.stream.Collectors.joining(" and "));
+    }
+
+    private static String pinnedNames(java.util.Map<String, String> pinned) {
+        return pinned.keySet().stream()
+                .map(k -> k.substring(0, k.indexOf(':')))
+                .collect(java.util.stream.Collectors.joining(", "));
     }
 
     /** Whether the new bytecode declares an enum. */
@@ -462,9 +590,20 @@ public class StructuralReloader {
         }
     }
 
+    /**
+     * @param pinnedMethods         {@code name:descriptor} keys of methods the
+     *                              superclass salvage pins to their previous
+     *                              implementation, with the reason; empty
+     *                              outside that path
+     * @param pinnedRedefinePayload the pre-spliced, already-transformed
+     *                              payload carrying the pinned methods' old
+     *                              bodies, or null outside that path
+     */
     private ClassReloader.ReloadResult structuralReload(String className, String internalName,
                                                          byte[] newBytecode,
-                                                         StructuralAnalyzer.StructuralDiff diff) {
+                                                         StructuralAnalyzer.StructuralDiff diff,
+                                                         java.util.Map<String, String> pinnedMethods,
+                                                         byte[] pinnedRedefinePayload) {
         try {
             // Increment version (thread-safe)
             int version = versionCounters.merge(internalName, 1, Integer::sum);
@@ -479,7 +618,8 @@ public class StructuralReloader {
             EnumConstantChange.Change enumChange =
                     EnumConstantChange.check(findLoadedClass(className), newBytecode);
             CompanionGenerator.CompanionResult companion = CompanionGenerator.generate(
-                    internalName, newBytecode, diff, version, staticsNeedingValue);
+                    internalName, newBytecode, diff, version, staticsNeedingValue,
+                    pinnedMethods.keySet());
 
             // Get Lookup from the target class's __reclazz$lookup field
             Class<?> targetClass = findLoadedClass(className);
@@ -650,17 +790,21 @@ public class StructuralReloader {
             // new field existed, so the field it was supposed to initialise
             // came back null.
             {
-                byte[] redefinePayload = diff.isStructural()
-                        ? com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
-                                newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
-                                diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs())
-                        : newBytecode;
+                // RAW bytes on the ordinary path: the registered
+                // ReclazzTransformer runs during redefineClasses and injects
+                // the infrastructure exactly like at load time. The pinned
+                // payload is the exception, prepared and transformed up front
+                // so the old bodies could be spliced in; the transformer
+                // recognises its own output and passes it through untouched
+                // (see ConstructorBodyRedefineTest).
+                byte[] redefinePayload = pinnedRedefinePayload != null
+                        ? pinnedRedefinePayload
+                        : diff.isStructural()
+                                ? com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
+                                        newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
+                                        diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs())
+                                : newBytecode;
                 try {
-                    // RAW bytes on purpose: the registered ReclazzTransformer
-                    // runs during redefineClasses and injects the
-                    // infrastructure exactly like at load time. Feeding it
-                    // pre-transformed bytes double-injects the fields →
-                    // ClassFormatError (see ConstructorBodyRedefineTest).
                     instrumentation.redefineClasses(
                             new java.lang.instrument.ClassDefinition(targetClass, redefinePayload));
                 } catch (UnsupportedOperationException expected) {
@@ -683,6 +827,7 @@ public class StructuralReloader {
                     StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + t);
                 }
             }
+
 
             boolean springBean = isSpringBean(targetClass);
 
@@ -726,7 +871,12 @@ public class StructuralReloader {
             if (!diff.isStructural()) {
                 StatusReporter.warn("Companion reload failed for " + className +
                         " (" + e + ") — falling back to class redefinition");
-                return standardReload(className, newBytecode);
+                // On the pinned path the raw payload still carries the
+                // entangled methods' NEW bodies, and redefining it would put
+                // exactly the crash back that the splice exists to prevent.
+                // The spliced payload is the one that is safe to redefine.
+                return standardReload(className,
+                        pinnedRedefinePayload != null ? pinnedRedefinePayload : newBytecode);
             }
             return ClassReloader.ReloadResult.failure(
                     "Structural reload failed: " + e.getMessage(), true);

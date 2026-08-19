@@ -7,8 +7,10 @@ package com.onurkat.reclazz.reload;
 import org.objectweb.asm.*;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,10 +42,16 @@ import java.util.Set;
  * superclass and the class file becomes one the JVM will accept, carrying the
  * new bodies.
  *
- * <p>Anything beyond that mention and the salvage is refused. A body that
- * takes the new superclass as a parameter, casts to it, reads a field on it or
- * calls a static on it would compile here and fail at the call, and a reload
- * that plants a NoSuchMethodError for later is worse than one that declines.
+ * <p>Anything beyond that mention is a problem, and it comes in two sizes. A
+ * field typed as the new superclass, a method that takes or returns it, or a
+ * constructor whose body needs it are class-level: no payload can carry them,
+ * so the salvage is refused outright. A plain method body that needs the new
+ * superclass (calls something only it provides, casts to it, reads its
+ * fields) is smaller than that: the rest of the class does not depend on it,
+ * so the body is reported as entangled and the reloader pins that one method
+ * to the implementation it had, instead of throwing away the whole save.
+ * Applying such a body anyway would plant a NoSuchMethodError for later,
+ * which is worse than either.
  */
 public final class HierarchyRevert {
 
@@ -53,8 +61,17 @@ public final class HierarchyRevert {
     /**
      * @param bytecode  the rewritten class, or null when it was refused
      * @param blockers  what stopped it, when it was refused
+     * @param entangled method bodies that need the new superclass and cannot
+     *                  be applied, keyed {@code name:descriptor}, the value a
+     *                  reason phrase without the method name (the caller
+     *                  formats "c (calls yalnizB2, ...)" from it). Empty when
+     *                  the class was refused or nothing was entangled.
      */
-    public record Result(byte[] bytecode, List<String> blockers) {
+    public record Result(byte[] bytecode, List<String> blockers, Map<String, String> entangled) {
+
+        public Result(byte[] bytecode, List<String> blockers) {
+            this(bytecode, blockers, Map.of());
+        }
 
         public boolean applied() {
             return bytecode != null;
@@ -84,6 +101,7 @@ public final class HierarchyRevert {
         }
 
         List<String> blockers = new ArrayList<>();
+        Map<String, String> entangled = new LinkedHashMap<>();
         Set<String> superConstructorDescriptors = new LinkedHashSet<>();
 
         // An inherited call does not name the superclass, it names this class:
@@ -100,7 +118,7 @@ public final class HierarchyRevert {
         ClassReader reader = new ClassReader(newBytecode);
         ClassWriter writer = new ClassWriter(reader, 0);
         reader.accept(new Rewriter(writer, declaredSuper, loadedSuper,
-                blockers, superConstructorDescriptors, declared, inherited), 0);
+                blockers, entangled, superConstructorDescriptors, declared, inherited), 0);
 
         // The super() call is rewritten to the old superclass, so that
         // constructor has to exist there. Changing a superclass and its
@@ -116,25 +134,28 @@ public final class HierarchyRevert {
         if (!blockers.isEmpty()) {
             return new Result(null, dedupe(blockers));
         }
-        return new Result(writer.toByteArray(), List.of());
+        return new Result(writer.toByteArray(), List.of(), entangled);
     }
 
     private static final class Rewriter extends ClassVisitor {
         private final String declaredSuper;
         private final String loadedSuper;
         private final List<String> blockers;
+        private final Map<String, String> entangled;
         private final Set<String> superConstructorDescriptors;
         private final Declared declared;
         private final Inherited inherited;
         private String className;
 
         Rewriter(ClassVisitor next, String declaredSuper, String loadedSuper,
-                 List<String> blockers, Set<String> superConstructorDescriptors,
+                 List<String> blockers, Map<String, String> entangled,
+                 Set<String> superConstructorDescriptors,
                  Declared declared, Inherited inherited) {
             super(Opcodes.ASM9, next);
             this.declaredSuper = declaredSuper;
             this.loadedSuper = loadedSuper;
             this.blockers = blockers;
+            this.entangled = entangled;
             this.superConstructorDescriptors = superConstructorDescriptors;
             this.declared = declared;
             this.inherited = inherited;
@@ -163,7 +184,16 @@ public final class HierarchyRevert {
                 blockers.add(name + " takes or returns " + simple(declaredSuper));
             }
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
-            return new BodyRewriter(mv, name);
+            // A constructor or static initialiser cannot be pinned: their
+            // bodies run on the real class, not through a trampoline, so
+            // there is no previous implementation to keep serving. The same
+            // is true of a method the transformer never trampolines. For
+            // those, a body that needs the new superclass still refuses the
+            // whole class, which is the pre-salvage behaviour.
+            boolean pinnable = !"<init>".equals(name) && !"<clinit>".equals(name)
+                    && !com.onurkat.reclazz.transform.TransformExclusions
+                            .shouldSkipMethod(className, name, descriptor, access);
+            return new BodyRewriter(mv, name, descriptor, pinnable);
         }
 
         private boolean mentions(String descriptor) {
@@ -172,10 +202,39 @@ public final class HierarchyRevert {
 
         private final class BodyRewriter extends MethodVisitor {
             private final String methodName;
+            private final String methodDescriptor;
+            private final boolean pinnable;
+            private final List<String> reasons = new ArrayList<>();
 
-            BodyRewriter(MethodVisitor next, String methodName) {
+            BodyRewriter(MethodVisitor next, String methodName, String methodDescriptor,
+                         boolean pinnable) {
                 super(Opcodes.ASM9, next);
                 this.methodName = methodName;
+                this.methodDescriptor = methodDescriptor;
+                this.pinnable = pinnable;
+            }
+
+            /**
+             * A body-level need for the new superclass. In a pinnable method
+             * it marks the method entangled; anywhere else it blocks the
+             * class, because there is no previous implementation to fall
+             * back to.
+             */
+            private void flag(String phrase) {
+                if (pinnable) {
+                    if (!reasons.contains(phrase)) reasons.add(phrase);
+                } else {
+                    blockers.add(methodName + " " + phrase);
+                }
+            }
+
+            @Override
+            public void visitEnd() {
+                if (!reasons.isEmpty()) {
+                    entangled.merge(methodName + ":" + methodDescriptor,
+                            String.join("; ", reasons), (a, b) -> a + "; " + b);
+                }
+                super.visitEnd();
             }
 
             @Override
@@ -188,13 +247,13 @@ public final class HierarchyRevert {
                         super.visitMethodInsn(opcode, loadedSuper, name, descriptor, isInterface);
                         return;
                     }
-                    blockers.add(methodName + " calls " + simple(declaredSuper) + "." + name);
+                    flag("calls " + simple(declaredSuper) + "." + name);
                 } else if (owner.equals(className) && !"<init>".equals(name)
                         && !declared.methods.contains(name + descriptor)
                         && !inherited.methods.contains(name + descriptor)) {
                     // Inherited from the superclass it is losing, and nothing
                     // in the hierarchy it keeps provides it.
-                    blockers.add(methodName + " calls " + name
+                    flag("calls " + name
                             + ", which only " + simple(declaredSuper) + " provides");
                 }
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
@@ -203,11 +262,11 @@ public final class HierarchyRevert {
             @Override
             public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
                 if (owner.equals(declaredSuper)) {
-                    blockers.add(methodName + " reads or writes " + simple(declaredSuper) + "." + name);
+                    flag("reads or writes " + simple(declaredSuper) + "." + name);
                 } else if (owner.equals(className)
                         && !declared.fields.contains(name + ":" + descriptor)
                         && !inherited.fields.contains(name + ":" + descriptor)) {
-                    blockers.add(methodName + " uses the field " + name
+                    flag("uses the field " + name
                             + ", which only " + simple(declaredSuper) + " provides");
                 }
                 super.visitFieldInsn(opcode, owner, name, descriptor);
@@ -216,7 +275,7 @@ public final class HierarchyRevert {
             @Override
             public void visitTypeInsn(int opcode, String type) {
                 if (type.equals(declaredSuper)) {
-                    blockers.add(methodName + " names " + simple(declaredSuper) + " as a type");
+                    flag("names " + simple(declaredSuper) + " as a type");
                 }
                 super.visitTypeInsn(opcode, type);
             }
@@ -225,7 +284,7 @@ public final class HierarchyRevert {
             public void visitLdcInsn(Object value) {
                 if (value instanceof Type type && type.getSort() == Type.OBJECT
                         && type.getInternalName().equals(declaredSuper)) {
-                    blockers.add(methodName + " uses the " + simple(declaredSuper) + " class literal");
+                    flag("uses the " + simple(declaredSuper) + " class literal");
                 }
                 super.visitLdcInsn(value);
             }
