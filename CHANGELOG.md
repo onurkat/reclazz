@@ -8,6 +8,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- JPA mapping refresh, opt-in via the agent argument `jpaRefresh=true`. When a
+  reload adds or removes a persistent field on a mapped class, and the VM has
+  enhanced class redefinition (JBR/DCEVM), and `hbm2ddl.auto` is update, create
+  or create-drop, and the entity's owning factory bean is Spring's
+  `AbstractEntityManagerFactoryBean`, Reclazz rebuilds the persistence unit
+  instead of only warning: it invokes the bean's protected
+  `createNativeEntityManagerFactory()` (which runs the schema action, so the
+  column is created), swaps the bean's private `nativeEntityManagerFactory`
+  field, and closes the old factory. Spring resolves every injected
+  EntityManagerFactory, `@PersistenceContext` EntityManager and Spring Data
+  repository through that field at call time, so nothing else needs recreating.
+
+  Measured before implementing, on Spring Boot 3.3.4 with Hibernate 6.5.3 and
+  file-based H2, JBR 25 with `-XX:+AllowEnhancedClassRedefinition`,
+  `ddl-auto=update`, adding a field `currency` to an entity: the rebuild took
+  95ms scripted externally and 65ms through the agent path, the CURRENCY
+  column appeared in the table, the new metamodel carried the field, and a
+  persist-flush-clear-find round trip through both an EntityManager and a
+  repository injected before the swap returned the written value ("EUR" and
+  "GBP", previously null). A second ordinary request after the swap worked;
+  the rebuild ran on a request thread and on the agent's reloader thread
+  without deadlock. The stated scope is printed with the result: open
+  persistence contexts from before the rebuild are closed.
+
+  Every non-qualifying case keeps the existing warning byte for byte. The only
+  addition is the sentence "Start the agent with jpaRefresh=true to rebuild
+  the persistence unit automatically.", appended only when the flag is the one
+  thing missing, verified live: JBR without the flag prints the warning plus
+  that sentence, and a stock JDK (SapMachine 21) with the flag prints the old
+  warning unchanged, because a rebuilt metamodel cannot see a field the loaded
+  class never physically gained.
+
 - A save that changes the superclass AND has a method body needing the new
   parent no longer costs the whole save. Every other edited body reloads;
   the entangled method is pinned to the implementation it had, and the

@@ -84,8 +84,12 @@ final class JpaSchemaAdvice {
      * <p>An application can have more than one, so the entity's own unit is the
      * one that matters: asking any factory at random would give the right
      * answer only by luck. A factory that does not know this entity is skipped.
+     *
+     * <p>Package-visible because {@link JpaMappingRefresh} gates on the same
+     * setting: rebuilding the unit only helps when the schema action will
+     * create the column during the rebuild.
      */
-    private static String ddlAutoSetting(Class<?> entityClass) {
+    static String ddlAutoSetting(Class<?> entityClass) {
         for (Object context : ApplicationContextHolder.getAllContexts()) {
             for (Object factory : entityManagerFactories(context)) {
                 if (!managesEntity(factory, entityClass)) continue;
@@ -131,7 +135,7 @@ final class JpaSchemaAdvice {
     }
 
     /** Whether this persistence unit is the one that maps the entity. */
-    private static boolean managesEntity(Object factory, Class<?> entityClass) {
+    static boolean managesEntity(Object factory, Class<?> entityClass) {
         try {
             Object metamodel = factory.getClass().getMethod("getMetamodel").invoke(factory);
             Method entity = metamodel.getClass().getMethod("entity", Class.class);
