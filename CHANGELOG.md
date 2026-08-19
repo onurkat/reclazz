@@ -34,6 +34,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   first reload are unaffected either way, which is why the call-site bridge
   stays.
 
+### Evaluated and deferred
+
+- Throwing stubs for removed methods: the idea was to re-point a removed
+  method's call sites at a handle that throws `NoSuchMethodError` naming the
+  method, so stale calls fail loudly instead of running code the source no
+  longer contains. The named kill condition was framework machinery invoking
+  every visible method during normal operation, and it was measured to happen:
+  on Spring Boot 3.3.4 (Java 21, Jackson via spring-boot-starter-web), a DTO
+  whose getter was removed by a reload turned its JSON endpoint into
+  `HTTP 500` with `HttpMessageNotWritableException: Could not write JSON:
+  Reclazz: getRemovable was removed by a reload`. Jackson's serializer is
+  built from a member scan and invokes every getter it found on every
+  serialization, and neither route avoids the stub: the cached accessor
+  dispatches through the same trampoline call site a re-scan would find,
+  because the removed member stays in the loaded class (no JVM can take it
+  out). So a throwing target fires on traffic that never names the removed
+  method, and shipping it default-on would turn a getter removal into a broken
+  endpoint. A CGLIB-proxied `@Cacheable` bean losing an unrelated method kept
+  answering normally on its other methods, so proxies alone would not have
+  killed it; Jackson did. Opt-in was ruled out in the proposal itself as
+  halving the value, so nothing shipped.
+
+  The same measurement recorded what happens today, and it is two different
+  behaviours. When the class has no members added by an earlier reload, the
+  constructor-body redefinition succeeds and carries the
+  `AddedMemberStripper` stub for the removed method, whose renamed copy
+  replaces the old implementation, so existing callers already meet
+  `UnsupportedOperationException: Reclazz: <name> was removed by a reload`
+  (measured on both the direct caller and the Jackson path above). When the
+  class does carry added members, that redefinition is refused and existing
+  callers really do keep the previous implementation, which is the only case
+  the reloader's warning sentence describes correctly today.
+
 ### Changed
 
 - The log says which SAP Commerce line the server is: `Platform version:
