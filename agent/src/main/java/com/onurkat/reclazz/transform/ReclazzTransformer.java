@@ -61,6 +61,21 @@ public class ReclazzTransformer implements ClassFileTransformer {
             return null;
         }
 
+        // Already-transformed input passes through untouched. The marker is
+        // the injected __reclazz$lookup field: nothing else puts a field of
+        // that name in a class, and it is present in every transformed one.
+        // Transforming such a class a second time renames trampolines over
+        // their own targets and injects the fields twice, which the JVM
+        // rejects as a ClassFormatError. Being idempotent instead is what
+        // makes a spliced, already-transformed redefine payload safe to hand
+        // to redefineClasses with this transformer still registered. The
+        // pass-through is also recorded as the latest emitted bytecode,
+        // because from the JVM's point of view it is.
+        if (isAlreadyTransformed(classfileBuffer)) {
+            TransformedClassCache.put(className, classfileBuffer);
+            return null;
+        }
+
         try {
             // Skip interfaces: interface fields must be PUBLIC STATIC FINAL,
             // which conflicts with our PRIVATE SYNTHETIC infrastructure fields
@@ -102,6 +117,13 @@ public class ReclazzTransformer implements ClassFileTransformer {
                 StatusReporter.info("Transformed: " + className.replace('/', '.'));
             }
 
+            // The emitted bytes are the last-known-good version of this class:
+            // its __reclazz$v0$ copies are what the per-method superclass
+            // salvage pins an entangled method back to. Written on the way out
+            // of every transform, load-time and redefine alike, so the cache
+            // always holds what the transformer most recently produced.
+            TransformedClassCache.put(className, transformed);
+
             return transformed;
         } catch (Exception e) {
             StatusReporter.error("Transform failed for " + className + ": " + e.getMessage());
@@ -110,6 +132,32 @@ public class ReclazzTransformer implements ClassFileTransformer {
             }
             // Return null to use original bytecode (no transform)
             return null;
+        }
+    }
+
+    /**
+     * Whether these bytes already carry the transform, read from the bytes
+     * themselves. Asking the Class does not work here: the injected members
+     * are hidden from reflection on purpose, so the class answers no even
+     * when the answer is yes. The field scan skips code and debug info, so
+     * the check costs a header walk, not a full parse.
+     */
+    static boolean isAlreadyTransformed(byte[] classfileBuffer) {
+        try {
+            final boolean[] found = {false};
+            new ClassReader(classfileBuffer).accept(new org.objectweb.asm.ClassVisitor(Opcodes.ASM9) {
+                @Override
+                public org.objectweb.asm.FieldVisitor visitField(
+                        int access, String name, String descriptor,
+                        String signature, Object value) {
+                    if ("__reclazz$lookup".equals(name)) found[0] = true;
+                    return null;
+                }
+            }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            return found[0];
+        } catch (RuntimeException e) {
+            // Unreadable bytes are not ours; let the normal path report them.
+            return false;
         }
     }
 

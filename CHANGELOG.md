@@ -8,6 +8,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- A save that changes the superclass AND has a method body needing the new
+  parent no longer costs the whole save. Every other edited body reloads;
+  the entangled method is pinned to the implementation it had, and the
+  warning names it with its reason: "The method bodies in this save were
+  applied, except c (calls yalnizB2, which only Base2 provides), which keeps
+  the implementation it had." Anything a pin cannot cover still refuses the
+  whole class, which was the previous behaviour and stays the floor: a field
+  typed as the new superclass, a constructor body needing it, a missing
+  old-superclass constructor, a save that also removes members, or a class
+  with no cached previous version.
+
+  The first attempt at this crashed a live application, and the fix is built
+  around that measurement. Skipping the entangled method in the companion
+  was not enough: the redefine payload still carried the method's NEW body,
+  the transformer renamed it over `__reclazz$v0$...`, and the trampoline's
+  fallback dispatched into a body calling a member only the new superclass
+  provides (`UnsupportedOperationException: Reclazz: method not found:
+  Service.yalnizB2`, on the application's own thread). So pinning now means
+  the OLD body is what the loaded class ends up holding: the transformer
+  keeps its last emitted bytecode per class (deflated; the cache size is
+  logged when the watcher starts, and measured at 3 classes / 2 KB on the
+  plain-Java replay and 55 classes / 298 KB deflated on the live SAP
+  Commerce install watching all extensions, nowhere near the 30 MB that
+  would have forced restricting it to developer source roots),
+  the reverted payload is transformed up front, the pinned methods' previous
+  `__reclazz$v0$` bodies and trampolines are spliced in from that cache, and
+  the spliced payload is what `redefineClasses` applies. The transformer
+  became idempotent for this (its own output, recognised by the injected
+  `__reclazz$lookup` field, passes through untouched), which is what makes
+  an already-transformed payload safe to redefine with the transformer still
+  registered. The pinned methods' MutableCallSites are left alone.
+
+  Replayed live on SapMachine 21 with the exact crash scenario (Service
+  moves from Base1 to Base2, a() and b() edited, c() calls yalnizB2()):
+  a() and b() served their new bodies on the next tick, c() kept serving its
+  old one, the warning named c with its reason, zero exceptions in the
+  application, and both a further pinned save and an ordinary reload of the
+  same class afterwards worked. When the cache has no entry for the class,
+  the reload refuses the whole class up front and nothing is half-applied,
+  which the unit suite holds. The cache is warm for every class the
+  transformer emitted, because the transform runs at class load and the
+  cache is written on its way out; the states without an entry (loaded
+  before attach, never loaded, or the validation fallback that loads a class
+  untransformed) never reach the salvage with something to pin.
+
 - Reclazz's injected members are now hidden at the root of reflection, inside
   the JDK, not only at rewritten call sites. The existing bridge rewrites
   `Class.getDeclaredMethods()` call sites, and that can never be complete:

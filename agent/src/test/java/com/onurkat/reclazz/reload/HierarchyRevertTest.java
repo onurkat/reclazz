@@ -30,9 +30,14 @@ import static org.junit.jupiter.api.Assertions.*;
  * unavoidable mention is the {@code super()} call in the constructor. Point
  * that back and the file becomes redefinable with its new bodies.
  *
- * <p>These tests exist mostly to hold the refusals. Salvaging a body that
- * genuinely needs the new superclass would plant a NoSuchMethodError to be
- * discovered later, which is worse than the refusal it replaced.
+ * <p>A body that genuinely needs the new superclass is not applied either
+ * way, and the tests hold the split introduced with per-method pinning: a
+ * plain method body is reported as entangled, so the reloader can pin just
+ * that method to its previous implementation, while anything the pin cannot
+ * cover (a field typed as the new superclass, a constructor body needing it,
+ * a missing old-superclass constructor) still refuses the whole class.
+ * Applying an entangled body anyway would plant a NoSuchMethodError to be
+ * discovered later, which is worse than either.
  */
 class HierarchyRevertTest {
 
@@ -61,19 +66,32 @@ class HierarchyRevertTest {
     }
 
     /**
-     * The salvage is only honest while the bodies do not need what they no
-     * longer have. A call to a method that lives on the new superclass would
-     * compile into the payload and fail at the call.
+     * The salvage is only honest while the applied bodies do not need what
+     * they no longer have. A body that calls a method living only on the new
+     * superclass would compile into the payload and fail at the call, so it
+     * is reported as entangled: the rest of the class applies and the
+     * reloader pins this one method to its previous implementation. Losing
+     * the entangled classification silently reintroduces the live crash the
+     * splice exists to prevent.
      */
     @Test
-    void aBodyThatCallsTheNewSuperclassIsRefused() throws IOException {
+    void aBodyThatCallsTheNewSuperclassIsEntangledNotRefused() throws IOException {
         var result = revert(RebasedCallingNewBase.class);
 
-        assertFalse(result.applied());
-        assertTrue(result.reason().contains("onlyOnNewBase"),
-                "the reason has to name the call that blocked it: " + result.reason());
+        assertTrue(result.applied(), "the rest of the class is salvageable: " + result.reason());
+        String reason = result.entangled().get("report:()Ljava/lang/String;");
+        assertNotNull(reason, "the entangled map has to carry report, got: " + result.entangled());
+        assertTrue(reason.contains("onlyOnNewBase"),
+                "the reason has to name the call so the warning can: " + reason);
+        assertFalse(reason.startsWith("report"),
+                "the reason phrase carries no method name; the caller formats it: " + reason);
     }
 
+    /**
+     * A field's type is class-level, not body-level: every constructor and
+     * every reader touches it, so there is no single method to pin and the
+     * whole class is still refused.
+     */
     @Test
     void aFieldTypedAsTheNewSuperclassIsRefused() throws IOException {
         var result = revert(RebasedHoldingNewBase.class);
@@ -83,11 +101,29 @@ class HierarchyRevertTest {
     }
 
     @Test
-    void aCastToTheNewSuperclassIsRefused() throws IOException {
+    void aCastToTheNewSuperclassIsEntangledNotRefused() throws IOException {
         var result = revert(RebasedCasting.class);
 
+        assertTrue(result.applied(), result.reason());
+        String reason = result.entangled().get("report:(Ljava/lang/Object;)Ljava/lang/String;");
+        assertNotNull(reason, "the cast marks the method entangled: " + result.entangled());
+        assertTrue(reason.contains("as a type"), reason);
+    }
+
+    /**
+     * A constructor body cannot be pinned: constructors run on the real
+     * class, not through a trampoline, so there is no previous
+     * implementation to keep serving and the refusal stays whole-class.
+     */
+    @Test
+    void aConstructorBodyThatNeedsTheNewSuperclassStillRefusesTheClass() throws IOException {
+        var result = revert(RebasedCtorNeedsNewBase.class);
+
         assertFalse(result.applied());
-        assertTrue(result.reason().contains("as a type"), result.reason());
+        assertTrue(result.reason().contains("<init>"),
+                "the refusal has to say the constructor is the problem: " + result.reason());
+        assertTrue(result.entangled().isEmpty(),
+                "nothing is entangled when the class is refused outright");
     }
 
     /**
@@ -150,6 +186,13 @@ class HierarchyRevertTest {
     @SuppressWarnings("unused")
     static class RebasedCasting extends NewBase {
         String report(Object o) { return ((NewBase) o).who(); }
+    }
+
+    /** The body that needs the new superclass is the constructor's. */
+    @SuppressWarnings("unused")
+    static class RebasedCtorNeedsNewBase extends NewBase {
+        final String tag;
+        RebasedCtorNeedsNewBase() { tag = onlyOnNewBase(); }
     }
 
     private static HierarchyRevert.Result revert(Class<?> rebased) throws IOException {

@@ -202,6 +202,17 @@ public class FileWatcher {
         String mode = config.isAutoCompile() ? "autoCompile (watching sources)" : "default (watching classes)";
         StatusReporter.info("Mode: " + mode);
         StatusReporter.info("Watching " + watchCount + " directories");
+
+        // The transformer keeps its last emitted bytecode per class for the
+        // per-method superclass salvage, deflated. This line is the memory
+        // measurement for that cache on a real server: the watcher starts
+        // after the application reports ready, which is when most watched
+        // classes have been loaded and transformed.
+        StatusReporter.info("Last-known-good bytecode cache: "
+                + com.onurkat.reclazz.transform.TransformedClassCache.classCount()
+                + " classes, "
+                + (com.onurkat.reclazz.transform.TransformedClassCache.deflatedBytes() / 1024)
+                + " KB deflated");
     }
 
     private void registerRecursive(Path root, String moduleName, String sourceRoot) throws IOException {

@@ -72,6 +72,21 @@ public class CompanionGenerator implements Opcodes {
     public static CompanionResult generate(String originalClassName, byte[] newBytecode,
                                             StructuralAnalyzer.StructuralDiff diff,
                                             int version, Set<String> staticsToInitialise) {
+        return generate(originalClassName, newBytecode, diff, version,
+                staticsToInitialise, java.util.Set.of());
+    }
+
+    /**
+     * @param skipMethods {@code name:descriptor} keys of methods to leave out
+     *                    of the companion. Used by the per-method superclass
+     *                    salvage: a pinned method gets no new companion
+     *                    target, so its MutableCallSites are not retargeted
+     *                    and keep dispatching to the implementation it had.
+     */
+    public static CompanionResult generate(String originalClassName, byte[] newBytecode,
+                                            StructuralAnalyzer.StructuralDiff diff,
+                                            int version, Set<String> staticsToInitialise,
+                                            Set<String> skipMethods) {
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 
@@ -99,7 +114,8 @@ public class CompanionGenerator implements Opcodes {
 
         // Visit original class to extract method bodies
         CompanionMethodExtractor extractor = new CompanionMethodExtractor(
-                writer, originalClassName, companionName, addedFieldKeys, methodHandleKeys, diff);
+                writer, originalClassName, companionName, addedFieldKeys, methodHandleKeys,
+                diff, skipMethods);
         reader.accept(extractor, ClassReader.EXPAND_FRAMES);
 
         // The initial value of an added static field. The slice is written
@@ -135,10 +151,11 @@ public class CompanionGenerator implements Opcodes {
         private final Set<String> addedFields;
         private final Map<String, String> methodHandleKeys;
         private final StructuralAnalyzer.StructuralDiff diff;
+        private final Set<String> skipMethods;
 
         CompanionMethodExtractor(ClassWriter writer, String originalClass, String companionName,
                                   Set<String> addedFields, Map<String, String> methodHandleKeys,
-                                  StructuralAnalyzer.StructuralDiff diff) {
+                                  StructuralAnalyzer.StructuralDiff diff, Set<String> skipMethods) {
             super(ASM9);
             this.writer = writer;
             this.originalClass = originalClass;
@@ -146,6 +163,7 @@ public class CompanionGenerator implements Opcodes {
             this.addedFields = addedFields;
             this.methodHandleKeys = methodHandleKeys;
             this.diff = diff;
+            this.skipMethods = skipMethods;
         }
 
         @Override
@@ -156,6 +174,13 @@ public class CompanionGenerator implements Opcodes {
 
             // Skip methods that should not be trampolined
             if (TransformExclusions.shouldSkipMethod(originalClass, name, descriptor, access)) {
+                return null;
+            }
+
+            // A pinned method keeps the implementation it has: no companion
+            // body, no methodHandleKeys entry, so retargetAll never touches
+            // its call sites.
+            if (skipMethods.contains(name + ":" + descriptor)) {
                 return null;
             }
 
