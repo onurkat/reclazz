@@ -130,6 +130,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- The removed-method warning now says what actually happens to existing
+  callers, which was measured to be three cases where one sentence claimed
+  one. The old warning always said "existing callers will continue using the
+  previous implementation". When the constructor-body redefinition lands, it
+  installs the remover's stub over the removed method's renamed fallback, so
+  a call site never retargeted to a companion throws
+  `UnsupportedOperationException: Reclazz: <name> was removed by a reload`
+  (measured on Spring Boot 3.3.4: a removed getter turned its JSON endpoint
+  into HTTP 500 while the message said old code was still serving). A site
+  that WAS retargeted by an earlier reload keeps dispatching to that
+  companion body and never reaches the stub (measured on the SAP Commerce
+  integration run: reload the method, then remove it, and callers keep the
+  reloaded body). And when the redefinition is refused, every caller keeps
+  what it had.
+
+  The discriminator is knowable at warn time and is used: the warning moved
+  to the redefinition site, where its outcome is in hand, and consults the
+  dispatch table for whether each removed method's site was ever retargeted.
+  Methods whose callers will throw are reported with "restore the method or
+  restart"; methods whose callers keep serving are reported with "existing
+  callers keep the previous implementation until restart". Writing the test
+  for the refused case measured one more thing worth recording: the
+  transformer rewrites the class's metadata record during every
+  redefinition, so a healthy record re-detects an earlier-added member as
+  added and the payload re-strips it, and the redefinition lands again; the
+  refusal arises when the record still lists the added member as existing.
+  Dispatch behaviour is unchanged, message only.
+
 - The ImpEx integration scenario stopped failing at random. Importing an ImpEx
   is not synchronous with saving one: the agent hands the file to the platform's
   own cronjob, so "the agent reported the import" and "the data is readable" are

@@ -55,11 +55,15 @@ public final class AddedMemberStripper {
      * a Spring Boot application: a field added by the same reload and assigned
      * in the constructor came back null on every newly created bean.
      *
-     * Removed members come back as stubs with their original modifiers. Their
-     * bodies are never reached: the class's methods are trampolines and the
-     * call sites of a removed method keep dispatching to the implementation
-     * they were linked to, which is the behaviour already documented for
-     * callers of a method that went away.
+     * Removed members come back as stubs with their original modifiers, and
+     * whether a stub body is reached was measured rather than assumed. When
+     * this payload is redefined successfully, the transformer renames the
+     * stub over the removed method's {@code __reclazz$v0$...} copy, so
+     * existing callers meet the stub's UnsupportedOperationException. When
+     * the class carries members added by an earlier reload, the redefinition
+     * is refused and callers keep dispatching to the implementation they
+     * were linked to. The reloader's removed-method warning states whichever
+     * of the two actually occurred.
      */
     public static byte[] reshape(byte[] newBytecode,
                                  java.util.Set<String> addedFields,
