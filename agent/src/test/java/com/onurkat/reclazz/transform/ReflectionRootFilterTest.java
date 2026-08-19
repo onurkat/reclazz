@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
  * Root-level hiding of {@code __reclazz$} members.
@@ -180,6 +181,59 @@ class ReflectionRootFilterTest {
 
         assertTrue(fieldNames(NotOurs.class).contains("__reclazz$ext"),
                 "no lookup field means Reclazz never transformed this class, so nothing is hidden");
+    }
+
+    /**
+     * The filter's benefit came with a leak, and this holds the fix.
+     *
+     * <p>The JDK's own {@code fieldFilterMap}/{@code methodFilterMap} keep a
+     * strong {@code Class} key with no removal API. A class registered from a
+     * discardable loader (a Tomcat webapp that gets redeployed) could then
+     * never be collected, and neither could its whole classloader, which is the
+     * exact retention 1.0.22 removed elsewhere. Measured on a throwaway loader
+     * before the fix: not collectable. So a class on a loader outside the
+     * system classloader's permanent chain is registered nowhere in the JDK
+     * map and keeps the bridge's call-site cover instead. This test defines a
+     * transformed class in a throwaway loader, registers it, drops the loader,
+     * and asserts it collects.
+     */
+    @Test
+    void aClassOnADiscardableLoaderDoesNotPinItsLoaderInTheJdkFilterMap() throws Exception {
+        ReflectionRootFilter filter = new ReflectionRootFilter(instrumentation);
+        assumeTrue(filter.isAvailable(), "root filter unsupported on this JVM; nothing to leak");
+
+        java.lang.ref.WeakReference<ClassLoader> watch = registerInThrowawayLoader(filter);
+
+        for (int attempt = 0; attempt < 25 && watch.get() != null; attempt++) {
+            System.gc();
+            Thread.sleep(20);
+        }
+        assertNull(watch.get(),
+                "a class registered from a discardable loader must not be pinned in the "
+                + "JDK filter map, or the whole loader leaks on every redeploy");
+    }
+
+    /**
+     * Isolated so the only strong reference to the loader is the one this
+     * method drops on return: a transformed class defined by a throwaway
+     * loader, registered with the filter, then let go.
+     */
+    private static java.lang.ref.WeakReference<ClassLoader> registerInThrowawayLoader(
+            ReflectionRootFilter filter) throws Exception {
+        String name = Transformed.class.getName();
+        byte[] bytes;
+        try (java.io.InputStream in = ReflectionRootFilterTest.class.getClassLoader()
+                .getResourceAsStream(name.replace('.', '/') + ".class")) {
+            bytes = in.readAllBytes();
+        }
+        ClassLoader loader = new ClassLoader(ReflectionRootFilterTest.class.getClassLoader()) {
+            Class<?> define() {
+                return defineClass(name, bytes, 0, bytes.length);
+            }
+        };
+        Class<?> victim = (Class<?>) loader.getClass().getDeclaredMethod("define").invoke(loader);
+        filter.registerInjectedMembers(victim);
+        return new java.lang.ref.WeakReference<>(loader);
     }
 
     private static List<String> fieldNames(Class<?> c) {

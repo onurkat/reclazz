@@ -5,8 +5,8 @@
 package com.onurkat.reclazz.transform;
 
 import java.io.ByteArrayOutputStream;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
@@ -22,16 +22,43 @@ import java.util.zip.Inflater;
  * successful transform. Nothing is captured retroactively: a class that was
  * never transformed has no entry, and the salvage refuses rather than guesses.
  *
- * <p>The bytes are deflated because the natural lifetime of this cache is the
- * whole JVM and the natural population is every watched class the server
- * loads. Class files deflate well (they are mostly constant-pool text), and
- * the running total is kept so the real cost on a real server can be read
- * from one log line instead of estimated.
+ * <p>The bytes are deflated because class files deflate well (they are mostly
+ * constant-pool text), and the running total is kept so the real cost on a
+ * real server can be read from one log line instead of estimated.
+ *
+ * <p>The cache is bounded by a deflated-byte budget, least-recently-used, and
+ * that needs saying because it looked like it could grow without limit. Every
+ * watched class the server loads is put here at load time, which on a large
+ * SAP Commerce install measured about 4000 classes and roughly 20 MB deflated,
+ * none of it ever evicted. Yet the only consumer is a superclass-salvage
+ * reload, which reads the class it is right then reloading, so the entry it
+ * needs is always the most recently touched one. Bounding to the most recent
+ * classes therefore keeps every entry the salvage will actually ask for, and
+ * the classes that fall off the end are the thousands loaded once at startup
+ * and never edited. The cost of an eviction is the safe floor this cache
+ * already declines to: a salvage that finds no entry refuses the whole save,
+ * exactly as it does for a class that was never transformed. So a miss is
+ * never wrong, only occasionally less generous, and the memory is now capped
+ * instead of tracking the size of the codebase.
  */
 public final class TransformedClassCache {
 
-    private static final ConcurrentHashMap<String, Entry> ENTRIES = new ConcurrentHashMap<>();
-    private static final AtomicLong DEFLATED_TOTAL = new AtomicLong();
+    /**
+     * Deflated-byte ceiling. Chosen so a normal application caches entirely
+     * (the measured average is a few KB per class, so this holds thousands)
+     * while a very large install is bounded well under its uncapped footprint.
+     */
+    private static final long MAX_DEFLATED_BYTES = 8L * 1024 * 1024;
+
+    private static final Object LOCK = new Object();
+    private static long deflatedTotal = 0;
+
+    // Access-order LinkedHashMap: get() and put() move an entry to the most
+    // recent end, and eviction takes from the least recent. All access is
+    // under LOCK because eviction has to read and shrink the running total
+    // atomically with the structural change.
+    private static final LinkedHashMap<String, Entry> ENTRIES =
+            new LinkedHashMap<>(256, 0.75f, true);
 
     private record Entry(byte[] deflated, int rawLength) {
     }
@@ -43,25 +70,51 @@ public final class TransformedClassCache {
     public static void put(String internalName, byte[] bytes) {
         if (internalName == null || bytes == null) return;
         byte[] deflated = deflate(bytes);
-        Entry previous = ENTRIES.put(internalName, new Entry(deflated, bytes.length));
-        long delta = deflated.length - (previous == null ? 0 : previous.deflated.length);
-        DEFLATED_TOTAL.addAndGet(delta);
+        Entry entry = new Entry(deflated, bytes.length);
+        synchronized (LOCK) {
+            Entry previous = ENTRIES.put(internalName, entry);
+            deflatedTotal += deflated.length - (previous == null ? 0 : previous.deflated.length);
+            evictWhileOverBudget(internalName);
+        }
     }
 
-    /** The latest emitted class file, or null when this class was never transformed. */
+    /** The latest emitted class file, or null when this class is not (or no longer) cached. */
     public static byte[] get(String internalName) {
-        Entry entry = ENTRIES.get(internalName);
+        Entry entry;
+        synchronized (LOCK) {
+            entry = ENTRIES.get(internalName);   // also marks it most-recently-used
+        }
         if (entry == null) return null;
         return inflate(entry.deflated, entry.rawLength);
     }
 
     public static int classCount() {
-        return ENTRIES.size();
+        synchronized (LOCK) {
+            return ENTRIES.size();
+        }
     }
 
     /** Total deflated payload in bytes, the number the memory measurement reads. */
     public static long deflatedBytes() {
-        return DEFLATED_TOTAL.get();
+        synchronized (LOCK) {
+            return deflatedTotal;
+        }
+    }
+
+    /**
+     * Drop least-recently-used entries until under the byte budget, but never
+     * the one just written: it is the most likely to be read next, and a
+     * single class larger than the whole budget should stay rather than evict
+     * itself into uselessness.
+     */
+    private static void evictWhileOverBudget(String justWritten) {
+        var it = ENTRIES.entrySet().iterator();
+        while (deflatedTotal > MAX_DEFLATED_BYTES && ENTRIES.size() > 1 && it.hasNext()) {
+            Map.Entry<String, Entry> eldest = it.next();
+            if (eldest.getKey().equals(justWritten)) continue;
+            deflatedTotal -= eldest.getValue().deflated.length;
+            it.remove();
+        }
     }
 
     private static byte[] deflate(byte[] bytes) {
