@@ -31,6 +31,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   claims otherwise. The append success line reports the flush only when at
   least one mapper was actually flushed.
 
+- The plugin now writes `--sun-misc-unsafe-memory-access=allow` where it
+  writes JVM options, gated on the real version of the JVM that will start.
+  The flag is what keeps enum constant appends working on JDK 26, which
+  refuses the needed Unsafe access by default (JEP 471), and it silences the
+  JVM's deprecation warning on 24 and 25; but the option only exists from JDK
+  23, and starting an older launcher with it fails outright, measured on
+  SapMachine 21: `Unrecognized option: --sun-misc-unsafe-memory-access=allow
+  ... Could not create the Java Virtual Machine`. So the gate is detection,
+  not guessing. For SAP Commerce installs the platform's own JDK is read from
+  the generated `tomcat/conf/wrapper.conf` (`wrapper.java.command`, verified
+  on a 2211-jdk21 project to name the server's real JDK binary) and that
+  JDK's `release` file; a project that has never generated its wrapper config
+  yields no answer and no flag, because a missing flag costs a declining enum
+  append with a message naming it while a wrong one costs the server refusing
+  to boot. For run configurations the gate is the configuration's own JVM
+  (`params.jdk`, which may be an alternate JRE rather than the project SDK),
+  and the flag is added only from feature version 24, where it starts having
+  an effect.
+
 - JPA mapping refresh, opt-in via the agent argument `jpaRefresh=true`. When a
   reload adds or removes a persistent field on a mapped class, and the VM has
   enhanced class redefinition (JBR/DCEVM), and `hbm2ddl.auto` is update, create

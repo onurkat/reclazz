@@ -105,6 +105,17 @@ object JdkDetector {
     }
 
     /**
+     * Feature version of the JVM behind an SDK, or null when unknown. Unlike
+     * [detect] this asks about a specific SDK, because a run configuration
+     * may start an alternate JRE rather than the project SDK, and a flag
+     * written for the wrong one is a flag the started JVM may refuse.
+     */
+    fun featureVersionOf(sdk: com.intellij.openapi.projectRoots.Sdk): Int? {
+        val version = JavaSdk.getInstance().getVersion(sdk) ?: return null
+        return version.name.removePrefix("JDK_").toIntOrNull()
+    }
+
+    /**
      * Detect the JDK vendor from the release file and path heuristics.
      * Checks are ordered from most specific to least specific.
      */

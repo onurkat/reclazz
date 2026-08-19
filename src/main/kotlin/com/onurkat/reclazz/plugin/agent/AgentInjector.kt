@@ -9,6 +9,7 @@ import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.configurations.RunnerSettings
 import com.intellij.openapi.diagnostic.Logger
+import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.JdkDetector
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 
@@ -46,6 +47,21 @@ class AgentInjector : RunConfigurationExtension() {
                 if (!params.vmParametersList.parameters.contains(arg)) {
                     params.vmParametersList.add(arg)
                 }
+            }
+        }
+
+        // From JDK 24 the JVM warns about the sun.misc.Unsafe access an enum
+        // append needs, and JDK 26 refuses it by default; this flag restores
+        // it. It is gated on the JVM this configuration actually starts
+        // (params.jdk, which may be an alternate JRE rather than the project
+        // SDK), because launchers before JDK 23 fail outright on the option:
+        // measured on SapMachine 21, "Unrecognized option ... Could not
+        // create the Java Virtual Machine". No resolvable JDK means no flag.
+        val runtimeJdk = params.jdk?.let { JdkDetector.featureVersionOf(it) }
+        if (runtimeJdk != null && runtimeJdk >= 24) {
+            val flag = HybrisAgentInstaller.UNSAFE_ACCESS_FLAG
+            if (!params.vmParametersList.parameters.contains(flag)) {
+                params.vmParametersList.add(flag)
             }
         }
 

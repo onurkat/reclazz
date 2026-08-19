@@ -56,6 +56,16 @@ object HybrisAgentInstaller {
     private const val JAVA_OPTIONS = "tomcat.javaoptions"
     private const val DEBUG_JAVA_OPTIONS = "tomcat.debugjavaoptions"
 
+    /**
+     * Restores the sun.misc.Unsafe memory access that appending an enum
+     * constant needs (JEP 471: a warning from JDK 24, refused by default on
+     * JDK 26). The option exists from JDK 23; older launchers fail to start
+     * on it, measured on SapMachine 21: "Unrecognized option ... Could not
+     * create the Java Virtual Machine". So it is gated on the platform JDK's
+     * real version, never guessed.
+     */
+    internal const val UNSAFE_ACCESS_FLAG = "--sun-misc-unsafe-memory-access=allow"
+
     /** Generated files earlier versions used to edit; cleaned up on install. */
     private val LEGACY_WRAPPER_CONFS = listOf("wrapper.conf", "wrapper-debug.conf")
 
@@ -109,10 +119,23 @@ object HybrisAgentInstaller {
         removeLegacyWrapperBlocks(platformHome)
 
         val settings = ReclazzSettings.getInstance(project).state
-        val agentArg = agentArgument(
+        var agentArg = agentArgument(
             "${pluginAgentJar.toPath().toAbsolutePath()}=" +
                     AgentJarLocator.buildAgentArgs(project, settings)
         )
+
+        // From JDK 24 the JVM warns about the sun.misc.Unsafe access an enum
+        // constant append needs, and JDK 26 refuses it by default; the flag
+        // restores it. It only exists as a launcher option from JDK 23:
+        // measured on SapMachine 21, a JVM started with it fails outright
+        // ("Unrecognized option ... Could not create the Java Virtual
+        // Machine"), so it is written only when the platform's own JDK is
+        // known to be 24 or newer, and never on a guess.
+        val platformJdk = platformJdkFeature(platformHome)
+        val flagAdded = platformJdk != null && platformJdk >= 24
+        if (flagAdded) {
+            agentArg = "$agentArg $UNSAFE_ACCESS_FLAG"
+        }
 
         // Read what the user already has, from every layer except ours, so
         // appending never erases their JDWP flags or custom options.
@@ -157,7 +180,12 @@ object HybrisAgentInstaller {
                 "${target.fileName}.reclazz-bak). It contains a path specific to this " +
                 "machine, so keep it out of version control. $nextStep"
             }
-            Result.Success(note)
+            val flagNote = if (flagAdded) {
+                " The server's JDK is $platformJdk, so $UNSAFE_ACCESS_FLAG was added too: " +
+                "it silences the JVM's Unsafe deprecation warning and keeps enum constant " +
+                "appends working on JDK 26, which refuses that access by default."
+            } else ""
+            Result.Success(note + flagNote)
         } catch (e: Exception) {
             Result.Error("Failed to write ${target.fileName}: ${e.message}")
         }
@@ -190,6 +218,51 @@ object HybrisAgentInstaller {
         } catch (e: Exception) {
             Result.Error("Failed to write ${target.fileName}: ${e.message}")
         }
+    }
+
+    /**
+     * The feature version of the JDK the server actually starts with, or
+     * null when it cannot be known.
+     *
+     * The wrapper templates set `wrapper.java.command=${java.home}/bin/java`,
+     * resolved at ant time from the JVM running the build, so the generated
+     * `tomcat/conf/wrapper.conf` names the server's real JDK (verified
+     * against a 2211-jdk21 project: the line reads
+     * `wrapper.java.command=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin/java`).
+     * The binary's home directory carries the JDK's own `release` file with
+     * `JAVA_VERSION="21.0.10.0.1"`, whose leading number is the feature
+     * version. A project that has never generated its wrapper config answers
+     * null, and null means the flag is not written: a missing flag costs a
+     * declining enum append with a message naming it, a wrongly written one
+     * costs the server refusing to start.
+     */
+    internal fun platformJdkFeature(platformHome: Path): Int? {
+        val wrapperConf = platformHome.resolve("tomcat").resolve("conf").resolve("wrapper.conf")
+        val command = try {
+            Files.readAllLines(wrapperConf)
+                .firstOrNull { it.startsWith("wrapper.java.command=") }
+                ?.substringAfter('=')?.trim()
+        } catch (e: Exception) {
+            null
+        } ?: return null
+        val javaHome = try {
+            Path.of(command).parent?.parent
+        } catch (e: Exception) {
+            null
+        } ?: return null
+        return jdkFeatureOf(javaHome)
+    }
+
+    /** Leading number of JAVA_VERSION in a JDK home's release file. */
+    internal fun jdkFeatureOf(jdkHome: Path): Int? {
+        val versionLine = try {
+            Files.readAllLines(jdkHome.resolve("release"))
+                .firstOrNull { it.startsWith("JAVA_VERSION=") }
+        } catch (e: Exception) {
+            null
+        } ?: return null
+        return versionLine.substringAfter('=').trim('"', ' ')
+            .takeWhile { it.isDigit() }.toIntOrNull()
     }
 
     /** Prefix recording what a property held before Reclazz touched it. */
