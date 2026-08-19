@@ -273,6 +273,22 @@ public final class FieldStore {
     }
 
     /**
+     * Resolve and cache the {@code __reclazz$ext} Field while reflection can
+     * still see it.
+     *
+     * <p>Root-level reflection filtering (ReflectionRootFilter in the agent)
+     * hides the field from {@code getDeclaredField} for everyone, this class
+     * included, and the first added-field access on a class usually happens
+     * after its first structural reload, which is exactly when the filter goes
+     * on. A {@code Field} captured before registration keeps working after it
+     * (measured on SapMachine 21 and JBR 25), so the filter calls this before
+     * registering and the cache carries the access from then on.
+     */
+    public static void captureExtField(Class<?> clazz) {
+        resolveExtField(clazz);
+    }
+
+    /**
      * Resolve the __reclazz$ext field for a class, with caching.
      * Does NOT cache misses — the field may be added later by retransformation.
      */

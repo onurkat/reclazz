@@ -6,6 +6,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- Reclazz's injected members are now hidden at the root of reflection, inside
+  the JDK, not only at rewritten call sites. The existing bridge rewrites
+  `Class.getDeclaredMethods()` call sites, and that can never be complete:
+  invoking `getDeclaredFields` through a `Method` object
+  (`Class.class.getMethod("getDeclaredFields").invoke(target)`) reaches the JDK
+  with no call site to rewrite, and a `__reclazz$` field surfacing in a
+  framework scan through such a route was observed once in the field and never
+  reproduced. The agent now registers every `__reclazz$` member with the JDK's
+  own filter (`jdk.internal.reflect.Reflection.registerFieldsToFilter` and
+  `registerMethodsToFilter`, the mechanism that hides `IMPL_LOOKUP` from scans
+  of `MethodHandles.Lookup`), reached via `Instrumentation.redefineModule`.
+
+  Measured on SapMachine 21 and JBR 25, in a live app under the agent: before
+  the first reload, meta-reflection listed `__reclazz$ext`, `__reclazz$lookup`
+  and two `__reclazz$v0$` method copies; after it, direct scans, meta-reflection
+  and `getDeclaredField` by name all answer as if the members did not exist,
+  and `Method.invoke` on real methods is untouched. Registration happens per
+  class on its first reload (the JDK accepts exactly one registration per
+  class, so it carries every name at once), and everything the engine itself
+  reads reflectively, the class's lookup and the ext field, is captured before
+  the filter goes on; the second and later reloads were verified live on both
+  JVMs. A JVM that refuses any part of the probe gets one info line and exactly
+  the previous behaviour. Scans that a framework cached before the class's
+  first reload are unaffected either way, which is why the call-site bridge
+  stays.
+
 ### Changed
 
 - The log says which SAP Commerce line the server is: `Platform version:

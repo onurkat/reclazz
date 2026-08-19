@@ -170,6 +170,11 @@ public final class ProtectedCallResolver {
     }
 
     private static MethodHandles.Lookup readTargetLookup(Class<?> target) {
+        // Captured before root-level reflection filtering hid the field; once
+        // a class is registered there, the reflective read below answers
+        // NoSuchFieldException and this cache is the only way to the lookup.
+        MethodHandles.Lookup captured = LookupCapture.get(target);
+        if (captured != null) return captured;
         try {
             Field lookupField = target.getDeclaredField("__reclazz$lookup");
             lookupField.setAccessible(true);

@@ -488,26 +488,35 @@ public class StructuralReloader {
                         "Class not loaded, cannot perform structural reload", false);
             }
 
-            java.lang.reflect.Field lookupField;
-            try {
-                lookupField = targetClass.getDeclaredField("__reclazz$lookup");
-            } catch (NoSuchFieldException e) {
-                // The loaded class carries no reclazz infrastructure — it was
-                // loaded BEFORE the agent attached, so the load-time transform
-                // never ran (and standard JVMs cannot retrofit fields via
-                // retransform). Body-only changes still work through plain
-                // redefinition; structural changes genuinely need the agent
-                // present at class-load time.
-                if (!diff.isStructural()) {
-                    return standardReload(className, newBytecode);
+            // Captured on the first reload, before ReflectionRootFilter hides
+            // the field: from then on getDeclaredField answers
+            // NoSuchFieldException for it, which the branch below reads as
+            // "loaded before the agent". That is true for the class that
+            // really was, and wrong for one whose field is merely filtered.
+            MethodHandles.Lookup classLookup =
+                    com.onurkat.reclazz.bootstrap.LookupCapture.get(targetClass);
+            if (classLookup == null) {
+                java.lang.reflect.Field lookupField;
+                try {
+                    lookupField = targetClass.getDeclaredField("__reclazz$lookup");
+                } catch (NoSuchFieldException e) {
+                    // The loaded class carries no reclazz infrastructure: it was
+                    // loaded BEFORE the agent attached, so the load-time transform
+                    // never ran (and standard JVMs cannot retrofit fields via
+                    // retransform). Body-only changes still work through plain
+                    // redefinition; structural changes genuinely need the agent
+                    // present at class-load time.
+                    if (!diff.isStructural()) {
+                        return standardReload(className, newBytecode);
+                    }
+                    return ClassReloader.ReloadResult.failure(
+                            "Class " + className + " was loaded before Reclazz attached; " +
+                            "structural changes need the agent at server start " +
+                            "(-javaagent in wrapper.conf / JVM args) or JBR/DCEVM.", true);
                 }
-                return ClassReloader.ReloadResult.failure(
-                        "Class " + className + " was loaded before Reclazz attached — " +
-                        "structural changes need the agent at server start " +
-                        "(-javaagent in wrapper.conf / JVM args) or JBR/DCEVM.", true);
+                lookupField.setAccessible(true);
+                classLookup = (MethodHandles.Lookup) lookupField.get(null);
             }
-            lookupField.setAccessible(true);
-            MethodHandles.Lookup classLookup = (MethodHandles.Lookup) lookupField.get(null);
 
             if (classLookup == null) {
                 return ClassReloader.ReloadResult.failure(
@@ -556,6 +565,15 @@ public class StructuralReloader {
             // Register forged Method/Field objects with ReflectionBridge
             // so that getDeclaredMethods()/getDeclaredFields() return added members
             registerReflectionMetadata(targetClass, internalName, diff, newTargets, companionLookup, companionClass);
+
+            // Hide the injected members at the root of reflection. Placed
+            // after the lookup and companion work above (the filter's captures
+            // need the pre-hiding window this reload is still in on its first
+            // pass) and before the constructor-body redefinition below, so the
+            // redefinition's reflection-cache invalidation lands on a class
+            // whose filter is already on. Idempotent from the second reload on.
+            com.onurkat.reclazz.transform.ReflectionRootFilter
+                    .registerInjectedMembersOn(targetClass);
 
             // Two different limits, and they used to be reported as one.
             //
