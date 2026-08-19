@@ -60,7 +60,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Spring Data repo refresh | **Yes** | Yes (restart) | Yes |
 | `@Async` re-processing | **Yes** | Yes (restart) | Yes |
 | JPA entity class reload | **Yes** | Yes (restart) | Yes |
-| JPA mapping picks up a new field | No, on any JVM — Hibernate builds its mapping once at startup. Reclazz names the field, says it is neither saved nor loaded, and reads your `ddl-auto` to tell you whether a restart is enough or the column has to exist first | Yes (restart) | Yes, the mapping is refreshed; the database column is still yours to add |
+| JPA mapping picks up a new field | **Yes, opt-in** (`jpaRefresh=true`): on JBR/DCEVM with `ddl-auto` at update/create/create-drop, Reclazz rebuilds the persistence unit (65ms measured on the demo app), the schema action creates the column, and repositories injected before the rebuild keep working. Open persistence contexts from before the rebuild are closed. In every other configuration Reclazz names the field, says it is neither saved nor loaded, and reads your `ddl-auto` to tell you whether a restart is enough or the column has to exist first | Yes (restart) | Yes, the mapping is refreshed; the database column is still yours to add |
 | Template reload (Thymeleaf, Freemarker) | **Yes** | Yes | Yes |
 | SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
 | SAP Commerce: ImpEx auto-import | **Yes** | No | No |
@@ -274,6 +274,7 @@ If the server is already running without the `-javaagent` flag:
 | `debounceMs` | `500` | Change debounce delay (ms) |
 | `startupDelaySec` | `30` | Delay before watching starts (seconds) |
 | `structuralReload` | `true` | Enable structural reload engine |
+| `jpaRefresh` | `false` | Rebuild the persistence unit when a reloaded entity gains or loses a persistent field. Requires JBR/DCEVM and `ddl-auto` at update/create/create-drop; closes persistence contexts open at the moment of the rebuild |
 | `verbose` | `false` | Verbose console output |
 
 Example:

@@ -29,7 +29,7 @@ public class AgentConfig {
             "debounceMs", "verbose", "statusPort", "portFile",
             "excludePatterns", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
-            "platform", "watchDirs"
+            "platform", "watchDirs", "jpaRefresh"
     );
 
     // Split on comma followed by a known key= pattern
@@ -65,6 +65,14 @@ public class AgentConfig {
     private boolean verifyTransform = false;
     private String platform = "auto";
     private List<Path> watchDirs = new ArrayList<>();
+    /**
+     * Whether a qualifying entity reload may rebuild its persistence unit.
+     *
+     * Off by default. The rebuild closes every persistence context opened
+     * against the old factory, which is a correct thing to do to a development
+     * server only when the developer asked for it.
+     */
+    private boolean jpaRefresh = false;
 
     public static AgentConfig parse(String agentArgs) {
         AgentConfig config = new AgentConfig();
@@ -166,6 +174,10 @@ public class AgentConfig {
             config.platform = params.get("platform").toLowerCase();
         }
 
+        if (params.containsKey("jpaRefresh")) {
+            config.jpaRefresh = Boolean.parseBoolean(params.get("jpaRefresh"));
+        }
+
         if (params.containsKey("watchDirs")) {
             String[] dirs = params.get("watchDirs").split(";");
             for (String dir : dirs) {
@@ -196,6 +208,7 @@ public class AgentConfig {
     public boolean isVerifyTransform() { return verifyTransform; }
     public String getPlatform() { return platform; }
     public List<Path> getWatchDirs() { return Collections.unmodifiableList(watchDirs); }
+    public boolean isJpaRefresh() { return jpaRefresh; }
 
     public boolean shouldWatchExtension(String extensionName) {
         return watchAllExtensions || watchExtensions.contains(extensionName);

@@ -104,6 +104,12 @@ public final class JpaEntityChange {
     public static void report(String className, Class<?> entityClass, Change change) {
         if (change == null) return;
 
+        // The one configuration where the gap can be closed instead of
+        // described: opted in, enhanced redefinition, a schema action that
+        // creates the column, and a Spring factory bean to swap under.
+        JpaMappingRefresh.Result refresh = JpaMappingRefresh.apply(className, entityClass, change);
+        if (refresh.refreshed()) return;
+
         // What to do next is not the same for everyone, and saying one thing to
         // all of them was wrong twice over: at hbm2ddl.auto=update a restart is
         // the whole fix, and at validate a restart stops the application from
@@ -112,7 +118,8 @@ public final class JpaEntityChange {
                 + ", and the persistence mapping still has the old shape. Hibernate builds it "
                 + "once at startup, so the field is neither saved nor loaded, and the database "
                 + "has no column for it. The class itself reloaded."
-                + JpaSchemaAdvice.forEntity(entityClass));
+                + JpaSchemaAdvice.forEntity(entityClass)
+                + refresh.appendix());
         com.onurkat.reclazz.agent.RestartLedger.note(className,
                 change.describe() + " as a mapped field, which the persistence mapping has not picked up");
     }

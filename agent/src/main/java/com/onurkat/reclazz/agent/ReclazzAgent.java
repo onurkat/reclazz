@@ -143,6 +143,13 @@ public class ReclazzAgent {
         return platformContext;
     }
 
+    /** The parsed agent arguments, or null before {@link #premain} has run. */
+    public static AgentConfig getConfig() {
+        return agentConfig;
+    }
+
+    private static volatile AgentConfig agentConfig;
+
     private static synchronized void initialize(String agentArgs) {
         if (running) {
             StatusReporter.warn("Reclazz agent already initialized, skipping duplicate init.");
@@ -150,6 +157,7 @@ public class ReclazzAgent {
         }
         try {
             AgentConfig config = AgentConfig.parse(agentArgs);
+            agentConfig = config;
 
             // Check JVM capabilities
             reportCapabilities();
