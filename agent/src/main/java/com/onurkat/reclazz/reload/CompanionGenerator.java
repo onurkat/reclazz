@@ -20,10 +20,17 @@ import java.util.*;
  * - Uses NESTMATE access to reach private members of the host class
  * - Rewrites field access for new fields to FieldStore calls
  *
- * Known limitation: intra-class method calls (e.g., methodA calling methodB
- * within the same class) are NOT retargeted to the companion. They dispatch
- * to the original class version. This means if both methodA and methodB change,
- * methodA's call to methodB will invoke the old version of methodB.
+ * A limitation this class used to document turned out to be stale, and it is
+ * worth recording why so it does not come back. It said intra-class calls
+ * (methodA calling methodB) were not retargeted, so methodA would invoke the
+ * old methodB. That was written before the trampoline transform: since every
+ * method of the loaded class is now a pure invokedynamic trampoline, a
+ * companion body's call to methodB lands on the trampoline and dispatches to
+ * the latest target. Measured live across two generations, for a private and
+ * a protected callee alike: change A and B together, then change only B, and
+ * A observes the second B, not the first. The suspect one-shot binding in the
+ * rewritten call sites does not occur, because the bootstrap hands back the
+ * same MutableCallSite the dispatch table retargets.
  */
 public class CompanionGenerator implements Opcodes {
 
