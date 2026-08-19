@@ -65,8 +65,8 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
 | SAP Commerce: ImpEx auto-import | **Yes** | No | No |
 | SAP Commerce: interceptor reload | **Yes** | No | No |
-| IDE support | IntelliJ IDEA | any | IntelliJ, Eclipse, VS Code, NetBeans |
-| Remote / container sync | No | No | Yes |
+| IDE support | Any IDE or none; the IntelliJ plugin adds auto-attach and a status UI | any | IntelliJ, Eclipse, VS Code, NetBeans |
+| Remote / container sync | Syncing changed `.class` files into a watched directory is enough; Compose Watch and rsync recipes under [Remote and containers](#remote-and-containers). CCv2 is unreachable for every tool | No | Yes |
 | Modified JVM required | **No** | No | No |
 
 The Reclazz column is measured, on a running JVM, for the release it ships
@@ -184,6 +184,70 @@ When you run the application from IntelliJ, the plugin handles everything:
 2. Run your application from IntelliJ (Run/Debug)
 3. The agent is injected automatically with optimal JVM flags
 4. Build your project. Changes are hot-swapped, status shown in the IDE
+
+### Without IntelliJ
+
+The agent has no IDE dependency. It needs three things: the `-javaagent` flag
+on the JVM, a directory to watch, and any build that writes `.class` files
+into that directory.
+
+```bash
+java -javaagent:/path/to/reclazz-agent.jar=watchDirs=/path/to/build/classes/java/main -jar myapp.jar
+```
+
+Then let any compiler write class files on change:
+
+```bash
+gradle -t classes    # Gradle continuous build: recompiles on every save
+mvn compile          # Maven: run it after each change; Maven has no built-in watch mode
+```
+
+VS Code's Java extension compiles on save, and Eclipse does the same with
+**Build Automatically** (its default), so both work out of the box: saving a
+file puts the fresh `.class` where Reclazz is watching. One thing to check in
+VS Code: Gradle projects imported there may have their class output under
+`bin/` rather than `build/classes`, so point `watchDirs` at the directory
+your setup actually writes.
+
+The IntelliJ plugin is a convenience on top of this, not a requirement: it
+adds auto-attach and a status UI.
+
+### Remote and containers
+
+The agent does not care where the compiler runs. It only needs the changed
+`.class` files to appear in a directory it watches, on the filesystem of the
+JVM it lives in. Remote and containerized development is therefore a
+file-sync problem, not an agent feature.
+
+For Docker, sync the host build output into the watched directory with
+Docker Compose Watch:
+
+```yaml
+services:
+  app:
+    build: .
+    # your entrypoint or JAVA_TOOL_OPTIONS adds:
+    #   -javaagent:/opt/reclazz/reclazz-agent.jar=watchDirs=/app/classes
+    develop:
+      watch:
+        - action: sync
+          path: ./target/classes
+          target: /app/classes
+```
+
+`docker compose watch` copies each changed class file into the container the
+moment the compiler writes it, and the agent inside picks it up.
+
+For a VM, one rsync after each build does the same:
+
+```bash
+rsync -az target/classes/ user@devhost:/app/classes/
+```
+
+SAP Commerce Cloud (CCv2) is out of reach for this, and for every hot-reload
+tool: there is no SSH into the running container and the images are
+immutable, so a changed class file has no way to arrive. Hot reload on SAP
+Commerce is for locally hosted servers.
 
 ### SAP Commerce (Hybris)
 
