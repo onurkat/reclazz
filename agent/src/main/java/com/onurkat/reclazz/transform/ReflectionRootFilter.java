@@ -246,6 +246,25 @@ public final class ReflectionRootFilter {
             }
             return;
         }
+
+        // The JDK filter maps (fieldFilterMap/methodFilterMap) are JVM-global,
+        // keyed by a strong Class reference, and have no removal API. A class
+        // handed to them can never be collected, and neither can its
+        // classloader. For a class on a loader that lives as long as the JVM
+        // (the system loader and its ancestors, which is where a hybris
+        // platform's own extension classes sit) that costs nothing: those
+        // classes never unload anyway. For a class on a discardable loader (a
+        // Tomcat webapp that gets redeployed) it is a leak of the whole loader,
+        // measured on a throwaway-loader spike. So the root filter is used only
+        // where it is free, and a discardable loader's class keeps the
+        // call-site cover of ReflectionBridge instead, which is exactly the
+        // behaviour that shipped before the root filter existed. Marked
+        // registered so the once-only path does not retry it every reload.
+        if (isDiscardableLoader(clazz)) {
+            record.registered = true;
+            return;
+        }
+
         try {
             if (!fieldNames.isEmpty()) {
                 registerFields.invoke(null, clazz, Set.copyOf(fieldNames));
@@ -269,6 +288,39 @@ public final class ReflectionRootFilter {
             StatusReporter.warn("Could not register reflection filter for "
                     + clazz.getName() + ": " + t);
         }
+    }
+
+    /**
+     * Whether a class sits on a loader the JVM may discard.
+     *
+     * <p>Permanent loaders are the bootstrap loader (null) and every loader on
+     * the system classloader's parent chain, which live for the whole JVM. A
+     * loader that is not among them, a Tomcat webapp loader being the case that
+     * matters, can be dropped on redeploy, and anything the JDK filter map pins
+     * from it leaks the entire loader.
+     *
+     * <p>The conservative direction is deliberate: a false "discardable" only
+     * forgoes the root filter and falls back to the bridge, which is safe; a
+     * false "permanent" would be the leak. So a loader that cannot be proven
+     * permanent is treated as discardable.
+     */
+    private static boolean isDiscardableLoader(Class<?> clazz) {
+        ClassLoader owner;
+        try {
+            owner = clazz.getClassLoader();
+        } catch (Throwable t) {
+            return true;
+        }
+        if (owner == null) return false;                 // bootstrap: permanent
+        try {
+            for (ClassLoader p = ClassLoader.getSystemClassLoader();
+                 p != null; p = p.getParent()) {
+                if (owner == p) return false;            // system loader or an ancestor
+            }
+        } catch (Throwable t) {
+            return true;
+        }
+        return true;
     }
 
     /**

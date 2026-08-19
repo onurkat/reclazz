@@ -151,6 +151,16 @@ public final class EnumSurgery {
             // cached on the Class after the first call.
             UnsafeAccess.putObject(enumClass, constantsCache, null);
             UnsafeAccess.putObject(enumClass, directoryCache, null);
+
+            // The writes above are plain (non-volatile) Unsafe stores. A reload
+            // is single-threaded and debounced, so in practice syncAll and GC
+            // fences on the reload path publish them, but that is luck rather
+            // than a guarantee: a thread calling values() or valueOf()
+            // concurrently with the append has no happens-before edge to the
+            // grown array or the cleared caches without a fence here. The
+            // storeFence makes the publication safe rather than incidental, and
+            // it runs once per append, off any hot path.
+            UnsafeAccess.storeFence();
         } catch (UnsafeAccess.MemoryAccessUnavailable e) {
             return Outcome.declined("this JVM does not allow the memory access an enum "
                     + "append needs. JDK 26 refuses it by default; starting the JVM with "

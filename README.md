@@ -249,6 +249,21 @@ tool: there is no SSH into the running container and the images are
 immutable, so a changed class file has no way to arrive. Hot reload on SAP
 Commerce is for locally hosted servers.
 
+### The trust boundary
+
+A watched directory is a way to run code in the server's JVM, so it is worth
+stating plainly what that means. Anyone who can write a `.class` file into a
+watched directory has that class redefined into the running process; anyone who
+can write a `.impex` file into a watched ImpEx directory (opt-in) has it run
+against the live database. Reclazz does not, and cannot, verify where those
+files came from, any more than the JVM verifies its own classpath. So a watched
+directory should be trusted exactly as much as the server's classpath itself:
+keep it to your own build output on your own machine, which is what local
+development is. The agent opens one socket, bound to loopback, that answers two
+read-only status questions and triggers nothing; it makes no outbound network
+connection of any kind. Nothing about your code or your machine leaves the
+machine.
+
 ### SAP Commerce (Hybris)
 
 Edit `hybris/config/local.properties`:

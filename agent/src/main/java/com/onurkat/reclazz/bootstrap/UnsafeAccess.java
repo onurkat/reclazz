@@ -109,6 +109,22 @@ final class UnsafeAccess {
         }
     }
 
+    /**
+     * A release fence, so plain stores made just before it are visible to
+     * another thread that reads the same locations afterwards. Used to publish
+     * an appended enum's grown array and cleared caches safely rather than
+     * relying on unrelated fences on the reload path. {@code storeFence} is an
+     * ordinary intrinsic, not a memory-access method, so it is outside JEP
+     * 471's deprecation; it is guarded the same way only for uniformity.
+     */
+    static void storeFence() {
+        try {
+            UNSAFE.storeFence();
+        } catch (Throwable t) {
+            throw refused(t);
+        }
+    }
+
     static void putInt(Object target, Field field, int value) {
         try {
             UNSAFE.putInt(target, UNSAFE.objectFieldOffset(field), value);
