@@ -173,7 +173,18 @@ public final class EnumSurgery {
      * nothing to do with the reload. The new slot is left at zero, which is the
      * value javac uses for "not one of the cases I know", so the switch takes
      * its default branch: exactly what code compiled before the constant
-     * existed should do.
+     * existed should do. When the source wrote no default because the switch
+     * was exhaustive, that branch is javac's synthetic throw (MatchException
+     * from source 21, IncompatibleClassChangeError before), which is the
+     * compiler's own answer for a constant it proved could not arrive.
+     *
+     * <p>Java 21 pattern switches, the ones with a guard or a type pattern,
+     * compile to invokedynamic SwitchBootstraps.enumSwitch instead of a table
+     * and need no growing. Measured on stock JDK 21 and JetBrains Runtime 25,
+     * with the call site linked before the append: a total type pattern
+     * matches the appended constant, constant-label cases proved exhaustive
+     * throw MatchException for it, and no shape caches its way into a wrong
+     * branch. PatternSwitchAppendTest holds those three facts.
      *
      * @param loadedClasses every class the JVM has, from Instrumentation
      * @return how many tables were grown

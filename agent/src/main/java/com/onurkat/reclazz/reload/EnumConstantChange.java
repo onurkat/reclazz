@@ -151,8 +151,11 @@ public final class EnumConstantChange {
         com.onurkat.reclazz.ui.StatusReporter.success("Enum " + className + " gained "
                 + names + " without a restart: values(), valueOf() and new EnumMap/EnumSet see them"
                 + (switchTables > 0
-                        ? ", and " + switchTables + " switch table(s) grew so existing switches take "
-                          + "their default branch instead of throwing"
+                        ? ", and " + switchTables + " switch table(s) grew so existing switches "
+                          + "send the new value to their default: the one written in the source, "
+                          + "or, for a switch the compiler proved exhaustive, javac's own "
+                          + "MatchException throw. Pattern switches ending in a type pattern "
+                          + "match the new value directly"
                         : ""));
 
         // The JVM prints its own warning for this, and it ends with "Please
