@@ -209,12 +209,11 @@ public class StructuralReloader {
             // redefinition is not something it listens for.
             JpaEntityChange.reportIfChanged(className, findLoadedClass(className), newBytecode);
 
-            // Warn about removed methods — callers retain previous version's implementation
-            if (!diff.getRemovedMethods().isEmpty()) {
-                StatusReporter.warn("Removed methods detected in " + className +
-                        " — existing callers will continue using the previous implementation: " +
-                        diff.getRemovedMethods());
-            }
+            // Removed methods are reported at the redefinition site below,
+            // because what happens to their existing callers depends on
+            // whether that redefinition lands and on where their call sites
+            // already dispatch, and the message has to say the true thing for
+            // the case that actually occurred.
 
             // Always use companion class pattern for watched classes.
             // Even body-only changes go through this path to avoid re-adding
@@ -303,6 +302,54 @@ public class StructuralReloader {
             return new PinnedPrep(spliced.bytecode(), null);
         } catch (Exception e) {
             return new PinnedPrep(null, "preparing the pinned payload failed: " + e);
+        }
+    }
+
+    /**
+     * Say what a removed method's existing callers will actually meet.
+     *
+     * <p>One sentence used to claim "existing callers will continue using
+     * the previous implementation" for every removal, and what really
+     * happens was measured to be three cases. When the constructor-body
+     * redefinition above lands, it installs AddedMemberStripper's throwing
+     * stub over the removed method's renamed fallback; a call site that was
+     * never retargeted to a companion falls back exactly there, so its
+     * callers throw (measured on Spring Boot: a removed getter turned its
+     * JSON endpoint into HTTP 500 while the message said old code was still
+     * running). A site that WAS retargeted by an earlier reload keeps
+     * dispatching to that companion body and never reaches the stub
+     * (measured on the SAP Commerce integration run: reload the method, then
+     * remove it, and callers keep the reloaded body). And when the
+     * redefinition is refused, nothing changed at all, so every caller keeps
+     * what it had. The first case fails and the other two keep serving,
+     * which is why the discriminator is the redefinition outcome plus the
+     * dispatch table, both known right here.
+     */
+    private void reportRemovedMethods(String className, Class<?> targetClass,
+                                      StructuralAnalyzer.StructuralDiff diff,
+                                      boolean payloadApplied) {
+        java.util.List<String> failing = new java.util.ArrayList<>();
+        java.util.List<String> keeping = new java.util.ArrayList<>();
+        for (var m : diff.getRemovedMethodSigs()) {
+            if ("<init>".equals(m.name()) || "<clinit>".equals(m.name())) continue;
+            // ACC_STATIC and Modifier.STATIC share the value 0x0008.
+            String siteKey = ((m.access() & Modifier.STATIC) != 0 ? "static:" : "")
+                    + m.name() + ":" + CallSiteAdapter.descHash(m.descriptor());
+            boolean companionServes = DispatchTable.hasCompanionTarget(targetClass, siteKey);
+            if (payloadApplied && !companionServes) {
+                failing.add(m.name());
+            } else {
+                keeping.add(m.name());
+            }
+        }
+        if (!failing.isEmpty()) {
+            StatusReporter.warn("Removed method(s) detected in " + className + ": " + failing
+                    + ". Existing callers will now fail with UnsupportedOperationException "
+                    + "naming the removed method. Restore the method or restart.");
+        }
+        if (!keeping.isEmpty()) {
+            StatusReporter.warn("Removed method(s) detected in " + className + ": " + keeping
+                    + ". Existing callers keep the previous implementation until restart.");
         }
     }
 
@@ -789,6 +836,7 @@ public class StructuralReloader {
             // after the reload still ran the constructor compiled before the
             // new field existed, so the field it was supposed to initialise
             // came back null.
+            boolean redefinePayloadApplied = false;
             {
                 // RAW bytes on the ordinary path: the registered
                 // ReclazzTransformer runs during redefineClasses and injects
@@ -807,6 +855,7 @@ public class StructuralReloader {
                 try {
                     instrumentation.redefineClasses(
                             new java.lang.instrument.ClassDefinition(targetClass, redefinePayload));
+                    redefinePayloadApplied = true;
                 } catch (UnsupportedOperationException expected) {
                     // Once a class has gained members they live in a companion,
                     // not in the loaded class, so the bytecode handed back here
@@ -828,6 +877,9 @@ public class StructuralReloader {
                 }
             }
 
+            if (!diff.getRemovedMethodSigs().isEmpty()) {
+                reportRemovedMethods(className, targetClass, diff, redefinePayloadApplied);
+            }
 
             boolean springBean = isSpringBean(targetClass);
 

@@ -45,6 +45,21 @@ public final class DispatchTable {
     }
 
     /**
+     * Whether a reload has ever installed a companion target for this site
+     * key. Read-only, for reporting: what a removed method's existing
+     * callers meet depends on it. A site with a companion target keeps
+     * dispatching there, so the throwing stub the redefinition put under the
+     * renamed fallback is never reached; a site without one falls back to
+     * exactly that renamed method. Both were measured, the first on the SAP
+     * Commerce integration run (method reloaded, then removed: callers kept
+     * the reloaded body), the second on Spring Boot (method removed without
+     * ever being reloaded: callers threw).
+     */
+    public static boolean hasCompanionTarget(Class<?> ownerClass, String siteKey) {
+        return getOrCreate(ownerClass).latestMethodTargets.containsKey(siteKey);
+    }
+
+    /**
      * Re-target all call sites for a class to new method handles from a companion class.
      * Thread-safe: uses per-class lock.
      *
