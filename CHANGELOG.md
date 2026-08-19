@@ -109,6 +109,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Known limitation
 
+- Adding an interface on a stock JDK stays refused, and a subclass-based
+  workaround was evaluated, measured and deferred. The mechanics work: a
+  generated nestmate subclass of the loaded class carries the new interface,
+  and an instance of it answers `instanceof` true for both the original class
+  and the interface, with inherited and default methods working. The honest
+  blockers, for whoever picks this up, are not the ones that first come to
+  mind. Split identity (`getClass()` returning a generated name, a
+  `getClass()`-based `equals` treating old and new instances as foreign) is
+  exactly what every CGLIB-proxied Spring bean already exhibits, so for
+  container-managed instances it is a tolerated cost, not a new one. The real
+  costs are: interface methods newly implemented on the class live in the
+  companion engine behind invokedynamic, so the subclass would need bridge
+  stubs kept consistent across later reloads; serialization and session
+  persistence would see a class name that does not exist after a restart; final
+  classes and constructor wiring need Spring's own bean instantiation rather
+  than `newInstance()`. A viable shape exists (opt-in, Spring-beans-only,
+  instantiated through the BeanFactory, refused for classes the application
+  also instantiates via `new`), and the first real user request for this is the
+  trigger to build it rather than re-deriving it from zero.
+
+
 - Appending an enum constant costs about 1.5 seconds on a large server, and it
   is worth knowing why before anyone tries to shave it. Measured on SAP
   Commerce: the reload that appends takes 1673ms, the same enum reloaded again

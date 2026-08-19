@@ -242,11 +242,26 @@ public class StructuralReloader {
             what.append("no longer declares ").append(String.join(", ", removed));
         }
 
+        // The way out differs by how the JVM was launched, and one sentence for
+        // both was wrong for the audience that meets this most. A hybris server
+        // runs SapMachine, started by the wrapper outside any IDE: "IntelliJ
+        // already ships JBR" is true and useless there, because the bundled
+        // runtime only reaches JVMs the IDE launches. Switching a hybris
+        // server means installing standalone JBR and repointing the server's
+        // own JVM, and JBR is not an SAP-supported runtime, which a team
+        // deserves to know before rather than after.
+        String wayOut = isHybris
+                ? "JBR or DCEVM with -XX:+AllowEnhancedClassRedefinition applies this without "
+                  + "a restart, but for this server that means changing its JVM: install "
+                  + "standalone JetBrains Runtime, point the wrapper's java at it, and add the "
+                  + "flag to tomcat.javaoptions. Note JBR is not an SAP-supported JVM."
+                : "JetBrains Runtime or DCEVM with -XX:+AllowEnhancedClassRedefinition applies "
+                  + "this without one; for an application launched from IntelliJ, the IDE "
+                  + "already bundles JBR, so it is a run-configuration JVM change.";
         StatusReporter.warn(className + " " + what + ", and this JVM will not change the "
                 + "interfaces of a loaded class. Everything else in this class reloaded, so "
                 + "an instanceof or a cast against " + (added.isEmpty() ? "it" : added.get(0))
-                + " still answers the old way until a restart. JetBrains Runtime or DCEVM with "
-                + "-XX:+AllowEnhancedClassRedefinition applies this without one.");
+                + " still answers the old way until a restart. " + wayOut);
         com.onurkat.reclazz.agent.RestartLedger.note(className, what.toString()
                 + ", which a stock JVM cannot apply to a loaded class");
     }
