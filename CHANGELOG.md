@@ -4,7 +4,7 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [1.0.26] - 2026-08-20
 
 ### Added
 
@@ -300,6 +300,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the SAP Commerce run and only Spring Boot's 5.3 and 6.1 were claimed.
 
 ### Fixed
+
+- A memory leak in the reflection-root filter, the same shape 1.0.22 removed
+  elsewhere. Hiding an injected member handed the class to the JDK's own
+  `fieldFilterMap`/`methodFilterMap`, which keep a strong `Class` key with no
+  removal API, so a class on a Tomcat webapp loader that a redeploy discards
+  could never be collected and neither could its whole loader. Measured before
+  the fix on a throwaway loader: not collectable. The filter now registers
+  only for classes on the system classloader's permanent chain, which never
+  unload anyway; a discardable loader's class keeps the call-site bridge cover
+  it had before the filter existed. A throwaway-loader retention test holds it.
+
+- The value of a static field added by a reload no longer pins the class or its
+  loader. It was kept in a process-global map keyed by class name, and for an
+  appended enum constant that value is an instance of the class itself, so the
+  map held the value, the value held its class, and the class held its loader
+  for the life of the JVM: on a webapp loader a redeploy discards, a leak of
+  the whole application. The storage is now keyed by the owning class the way
+  the instance-field store already was, so it is collected with the class. A
+  retention test, and a spike that shows the old design uncollectable and the
+  new one collectable, hold it. Live E2E on SAP Commerce after the change: 20
+  of 20 reload scenarios pass with no `NoSuchFieldError`.
+
+- The last-known-good bytecode cache, used by the superclass salvage, no longer
+  grows with the size of the codebase. It kept one deflated class file for
+  every watched class the server ever loaded and never evicted it, about 4000
+  entries and roughly 20 MB deflated on a large SAP Commerce install. It is now
+  an 8 MB least-recently-used cache. Its only consumer reads the class it is
+  reloading right then, always the most recently touched entry, so the cap
+  keeps everything the salvage asks for and drops the thousands of classes
+  loaded once at startup and never edited; a miss falls to the whole-class
+  refusal the salvage already uses, so it is never wrong, only occasionally
+  less generous.
+
+- An enum append published its grown `$VALUES` array and cleared reflection
+  caches with plain non-volatile writes, so a thread calling `values()` or
+  `valueOf()` at the same time saw them only by luck of the reload path's other
+  fences. A release fence after the writes makes the publication safe, once per
+  append and off any hot path.
 
 - The README's two enum sentences now agree with each other and with the
   code. The features list still said "Adding an enum value still needs a
