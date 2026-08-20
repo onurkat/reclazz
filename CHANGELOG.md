@@ -4,6 +4,22 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- A settings checkbox for the JPA mapping refresh, "Refresh JPA mapping when an
+  entity field changes (opt-in)", under General. The feature shipped in 1.0.26
+  as the agent argument `jpaRefresh=true` but nothing in the IDE wrote it, so it
+  could only be turned on by editing agent arguments by hand. The checkbox is
+  persisted like every other setting and flows through the one args builder all
+  three injection paths share, run configurations, direct attach and the SAP
+  Commerce wrapper.conf install, so switching it on reaches the agent wherever
+  it starts. The comment states the requirement plainly: it rebuilds the
+  persistence unit on JetBrains Runtime or DCEVM with `ddl-auto` at
+  update/create/create-drop, names the field in the log otherwise, and closes
+  persistence contexts open from before the rebuild.
+
 ## [1.0.26] - 2026-08-20
 
 ### Added

@@ -160,6 +160,7 @@ object AgentJarLocator {
 
         // Common settings
         if (settings.verbose) args.add("verbose=true")
+        if (settings.jpaRefresh) args.add("jpaRefresh=true")
         args.add("debounceMs=${settings.debounceMs}")
         args.add("startupDelaySec=${settings.startupDelaySeconds}")
 
