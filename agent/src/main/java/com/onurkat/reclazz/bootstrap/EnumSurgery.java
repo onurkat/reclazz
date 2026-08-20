@@ -139,7 +139,7 @@ public final class EnumSurgery {
                 if (constantField != null) {
                     UnsafeAccess.putStatic(constantField, constant);
                 } else {
-                    FieldStore.putStaticExtField(enumClass.getName().replace('.', '/'),
+                    FieldStore.putStaticExtField(enumClass,
                             names.get(i), "L" + enumClass.getName().replace('.', '/') + ";", constant);
                 }
                 appended.add(names.get(i));

@@ -459,7 +459,7 @@ public class StructuralReloader {
      * unrelated edit from emptying a cache.
      */
     private static java.util.Set<String> uninitialisedStatics(
-            StructuralAnalyzer.StructuralDiff diff, byte[] newBytecode, String internalName) {
+            StructuralAnalyzer.StructuralDiff diff, byte[] newBytecode, Class<?> owner) {
         java.util.Set<String> pending = new java.util.LinkedHashSet<>();
         try {
             new org.objectweb.asm.ClassReader(newBytecode).accept(
@@ -471,8 +471,11 @@ public class StructuralReloader {
                             boolean isStatic =
                                     (access & org.objectweb.asm.Opcodes.ACC_STATIC) != 0;
                             String key = name + ":" + descriptor;
+                            // owner null (class not loaded) makes every added
+                            // static count as pending; the reload fails right
+                            // after this anyway, so it costs nothing.
                             if (isStatic && diff.getAddedFields().contains(key)
-                                    && !FieldStore.isStaticInitialised(internalName, name, descriptor)) {
+                                    && !FieldStore.isStaticInitialised(owner, name, descriptor)) {
                                 pending.add(key);
                             }
                             return null;
@@ -489,7 +492,7 @@ public class StructuralReloader {
      * Give the added static fields their initial values, and say plainly which
      * ones kept null or zero and why.
      */
-    private void initialiseAddedStatics(String className, String internalName,
+    private void initialiseAddedStatics(String className, Class<?> targetClass,
                                         CompanionGenerator.CompanionResult companion,
                                         MethodHandles.Lookup companionLookup,
                                         Class<?> companionClass,
@@ -504,7 +507,7 @@ public class StructuralReloader {
             String name = key.substring(0, key.indexOf(':'));
             String desc = key.substring(key.indexOf(':') + 1);
             Object value = StaticInitialiserSlicer.narrowConstant(desc, entry.getValue());
-            if (FieldStore.initialiseStaticOnce(internalName, name, desc, value)) {
+            if (FieldStore.initialiseStaticOnce(targetClass, name, desc, value)) {
                 done.add(name + " = " + describe(value));
             }
         }
@@ -658,12 +661,17 @@ public class StructuralReloader {
             // Generate companion class. Added statics that have not been given
             // a value yet are worked out first, because the companion carries
             // the code that gives them one.
+            // Resolved once here: the added-static bookkeeping and the enum
+            // check both need the loaded class, and the storage is now keyed
+            // by it. Null means "not loaded", handled by each callee and by
+            // the explicit guard a few lines down.
+            Class<?> loadedClass = findLoadedClass(className);
             java.util.Set<String> staticsNeedingValue =
-                    uninitialisedStatics(diff, newBytecode, internalName);
+                    uninitialisedStatics(diff, newBytecode, loadedClass);
             // Taken before anything is redefined, for the same reason as every
             // other check of this kind.
             EnumConstantChange.Change enumChange =
-                    EnumConstantChange.check(findLoadedClass(className), newBytecode);
+                    EnumConstantChange.check(loadedClass, newBytecode);
             CompanionGenerator.CompanionResult companion = CompanionGenerator.generate(
                     internalName, newBytecode, diff, version, staticsNeedingValue,
                     pinnedMethods.keySet());
@@ -797,7 +805,7 @@ public class StructuralReloader {
                     EnumConstantAppender.applyOrExplain(className, findLoadedClass(className),
                             newBytecode, enumChange, instrumentation);
                 } else if (!addedStatics.isEmpty()) {
-                    initialiseAddedStatics(className, internalName, companion,
+                    initialiseAddedStatics(className, targetClass, companion,
                             companionLookup, companionClass, staticsNeedingValue);
                 }
                 StatusReporter.info("Added fields are set on new instances; "

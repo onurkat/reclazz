@@ -277,11 +277,19 @@ public class CompanionGenerator implements Opcodes {
                         // assumption that adding a static field was unusual; it
                         // is not, and the throw killed the thread after the
                         // reload had already reported success.
-                        mv.visitLdcInsn(originalClass);
+                        // The owner Class as a constant, not its name: the
+                        // storage is keyed by Class so it collects with the
+                        // class instead of pinning its loader. LDC of a class
+                        // constant resolves through the companion's own loader,
+                        // which is the reloaded class's loader, to that exact
+                        // Class. The rewrite only fires when owner equals the
+                        // reloaded class (see the guard above), so this is
+                        // always a class the companion can resolve.
+                        mv.visitLdcInsn(Type.getObjectType(originalClass));
                         mv.visitLdcInsn(name);
                         mv.visitLdcInsn(descriptor);
                         mv.visitMethodInsn(INVOKESTATIC, FIELD_STORE, "getStaticExtField",
-                                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;",
+                                "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;",
                                 false);
                         unbox(mv, Type.getType(descriptor));
                         return;
@@ -290,12 +298,13 @@ public class CompanionGenerator implements Opcodes {
                         // Stack: value -> ()
                         Type fieldType = Type.getType(descriptor);
                         box(mv, fieldType);
-                        mv.visitLdcInsn(originalClass);
+                        // Owner Class constant, see the GETSTATIC note above.
+                        mv.visitLdcInsn(Type.getObjectType(originalClass));
                         mv.visitLdcInsn(name);
                         mv.visitLdcInsn(descriptor);
-                        // Reorder to (className, fieldName, desc, boxedValue)
+                        // Stack now (boxedValue, ownerClass, name, desc)
                         mv.visitMethodInsn(INVOKESTATIC, FIELD_STORE, "putStaticExtFieldSwapped",
-                                "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V",
+                                "(Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/String;Ljava/lang/String;)V",
                                 false);
                         return;
                     }

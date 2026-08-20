@@ -397,22 +397,4 @@ public final class ReclazzBootstrap {
                 className.replace('/', '.'), name, fieldDescriptor(fieldType)).asType(type);
     }
 
-    private static MethodHandle companionStaticGetter(String className, String name,
-                                                       Class<?> fieldType, MethodType type) throws Throwable {
-        MethodHandle get = MethodHandles.lookup().findStatic(
-                com.onurkat.reclazz.bootstrap.FieldStore.class, "getStaticExtField",
-                MethodType.methodType(Object.class, String.class, String.class, String.class));
-        return MethodHandles.insertArguments(get, 0,
-                className.replace('/', '.'), name, fieldDescriptor(fieldType)).asType(type);
-    }
-
-    private static MethodHandle companionStaticSetter(String className, String name,
-                                                       Class<?> fieldType, MethodType type) throws Throwable {
-        MethodHandle put = MethodHandles.lookup().findStatic(
-                com.onurkat.reclazz.bootstrap.FieldStore.class, "putStaticExtFieldSwapped",
-                MethodType.methodType(void.class, Object.class, String.class,
-                        String.class, String.class));
-        return MethodHandles.insertArguments(put, 1,
-                className.replace('/', '.'), name, fieldDescriptor(fieldType)).asType(type);
-    }
 }
