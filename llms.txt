@@ -42,10 +42,13 @@ ground a Java-only reload does not.
 
 ## What it does not do
 
-- An **enum constant added on the end** is applied to the running JVM on any JDK
-  17 or newer: `values()` and `valueOf` return it, switches compiled before it
+- An **enum constant added on the end** is applied to the running JVM on JDK 17
+  through 25: `values()` and `valueOf` return it, switches compiled before it
   existed take their default branch, and the EnumMap and EnumSet instances built
-  before the reload accept it. Inserting, removing or reordering constants
+  before the reload accept it. Adding a constant means writing a final field,
+  which has no supported alternative and needs an access JDK 26 refuses by
+  default; there Reclazz declines and says so, and
+  `--sun-misc-unsafe-memory-access=allow` gives it back. Inserting, removing or reordering constants
   renumbers every ordinal after the change, including any `@Enumerated` column
   already written to a database, so that is refused and explained rather than
   half-applied.
@@ -65,14 +68,15 @@ ground a Java-only reload does not.
   `-XX:+AllowEnhancedClassRedefinition`, objects created before the reload
   included. On a stock JDK the JVM refuses it; the rest of the class still
   reloads and Reclazz names the interface rather than reporting plain success.
-- A field added to a **JPA entity** is not picked up by the persistence
-  mapping, on any JVM. Hibernate builds its metamodel and entity persisters
-  once, when the SessionFactory is created, and a class redefinition is not
-  something it listens for; the database has no column for the field either.
-  The class itself reloads, and Reclazz names the field and says it is neither
-  saved nor loaded rather than reporting a plain success. Refreshing the
-  mapping would mean rebuilding the SessionFactory, which is a restart of the
-  persistence layer under another name.
+- A field added to a **JPA entity** is picked up by the persistence mapping when
+  you opt in with `jpaRefresh=true`, and only on JetBrains Runtime or DCEVM with
+  `ddl-auto` at update, create or create-drop: Reclazz rebuilds the persistence
+  unit, the schema action creates the column, and repositories injected before
+  the rebuild keep working. In every other configuration it is not picked up,
+  because Hibernate builds its metamodel once when the SessionFactory is created
+  and the database has no column for the field; the class still reloads, and
+  Reclazz names the field, says it is neither saved nor loaded, and reads your
+  `ddl-auto` to say whether a restart is enough or the column has to exist first.
 - Reflective visibility of newly added members is full on JetBrains Runtime or
   DCEVM, and limited on a stock JVM, where added members live on a companion
   class.
@@ -84,7 +88,9 @@ change, or says that nothing would.
 
 ## Verified, not assumed
 
-- SAP Commerce 2211: 20 of 20 integration scenarios on a live server.
+- SAP Commerce 2211-jdk21.8, the Java 21 and Spring 6.2 line that every
+  installation must be on to keep building after 31 August 2026: 20 of 20
+  integration scenarios on a live server.
 - Spring Boot 2.7 and 3.3: class reload, structural reload, bean refresh, cache
   eviction, rebound properties, logger levels, a new endpoint without a restart.
 - Java 17 and 21, and JetBrains Runtime 25.
