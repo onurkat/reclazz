@@ -152,11 +152,11 @@ class StaticInitialiserTest {
         runInitialiser(Fixture.class, added);
 
         Object cache = FieldStore.getStaticExtField(
-                internalNameOf(Fixture.class), "CACHE", "Ljava/util/Map;");
+                Fixture.class, "CACHE", "Ljava/util/Map;");
         assertInstanceOf(ConcurrentHashMap.class, cache,
                 "the field must hold what its initialiser builds, not null");
         assertEquals(7, FieldStore.getStaticExtField(
-                internalNameOf(Fixture.class), "counter", "I"),
+                Fixture.class, "counter", "I"),
                 "and a computed int must be the computed value, not zero");
     }
 
@@ -177,7 +177,7 @@ class StaticInitialiserTest {
                 "slicing exists so that re-running the block never happens; "
                 + "a replay of <clinit> would make this 2");
         assertInstanceOf(HashMap.class, FieldStore.getStaticExtField(
-                internalNameOf(SideEffect.class), "LOOKUP", "Ljava/util/Map;"),
+                SideEffect.class, "LOOKUP", "Ljava/util/Map;"),
                 "and the field it was asked about still gets its value");
     }
 
@@ -192,7 +192,7 @@ class StaticInitialiserTest {
      */
     @Test
     void aFieldIsInitialisedOnceAndThenLeftWhereTheApplicationPutIt() {
-        String owner = "demo/Repeated";
+        Class<?> owner = RepeatedOwner.class;
 
         assertTrue(FieldStore.initialiseStaticOnce(owner, "CACHE", "Ljava/util/Map;", new HashMap<>()));
 
@@ -215,7 +215,7 @@ class StaticInitialiserTest {
      */
     @Test
     void anOrdinaryWriteAlsoCountsAsInitialised() {
-        String owner = "demo/Written";
+        Class<?> owner = WrittenOwner.class;
         assertFalse(FieldStore.isStaticInitialised(owner, "flag", "Z"));
 
         FieldStore.putStaticExtField(owner, "flag", "Z", true);
@@ -233,7 +233,7 @@ class StaticInitialiserTest {
      */
     @Test
     void aNullWriteStillCountsAsInitialised() {
-        String owner = "demo/Nulled";
+        Class<?> owner = NulledOwner.class;
         FieldStore.putStaticExtField(owner, "name", "Ljava/lang/String;", null);
 
         assertTrue(FieldStore.isStaticInitialised(owner, "name", "Ljava/lang/String;"),
@@ -285,6 +285,13 @@ class StaticInitialiserTest {
             timesRun++;
         }
     }
+
+    // Distinct owners for the once-only bookkeeping tests: the added-static
+    // store is keyed by Class, so each test needs its own class or the state
+    // one leaves would answer the next.
+    static class RepeatedOwner {}
+    static class WrittenOwner {}
+    static class NulledOwner {}
 
     private static StaticInitialiserSlicer.Plan planFor(Class<?> c, String... keys)
             throws IOException {

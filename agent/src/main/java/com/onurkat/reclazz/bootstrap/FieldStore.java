@@ -139,7 +139,7 @@ public final class FieldStore {
     }
 
     /**
-     * Values for static fields added after startup, keyed by class and field.
+     * Values for static fields added after startup, per owning class.
      *
      * Instance fields added by a reload live in the {@code __reclazz$ext}
      * array on each object. A static field has no object to hang off, and the
@@ -148,12 +148,47 @@ public final class FieldStore {
      * a constant, a cache, a feature flag. The field is not in the loaded
      * class's schema, so that access threw NoSuchFieldError and killed the
      * thread, after the reload had already reported success.
+     *
+     * <p>Keyed on the owning {@code Class} through a {@link ClassValue}, for
+     * the same reason {@link #extFieldCache} is: a global map keyed by class
+     * name would hold both the entry and, through the stored value (an
+     * appended enum constant is an <em>instance</em> of the class), the class
+     * and its whole classloader alive for the life of the JVM. On a webapp
+     * loader that Tomcat discards on redeploy that is a leak of the entire app.
+     * A {@code ClassValue} lives on the class and dies with it, so the storage
+     * is collected exactly when the class it belongs to is. The inner map is
+     * keyed by {@code fieldName + ":" + desc}: the class is already the outer
+     * key, so the name no longer has to carry it, and the two spellings a class
+     * name arrives in ({@code demo/Foo} vs {@code demo.Foo}) can no longer
+     * split one field's storage in two, because the {@code Class} is one
+     * identity.
      */
-    private static final java.util.concurrent.ConcurrentHashMap<String, Object> staticValues =
-            new java.util.concurrent.ConcurrentHashMap<>();
+    private static final ClassValue<ConcurrentHashMap<String, Object>> staticValuesByClass =
+            new ClassValue<>() {
+                @Override
+                protected ConcurrentHashMap<String, Object> computeValue(Class<?> type) {
+                    return new ConcurrentHashMap<>();
+                }
+            };
 
-    private static String staticKey(String className, String fieldName, String desc) {
-        return layoutKey(className) + "#" + fieldName + ":" + desc;
+    /**
+     * Static field keys written at least once for a class, whatever the value.
+     *
+     * A null write removes the entry from the value map, so presence there
+     * cannot answer "has this field ever been set". The initialiser needs that
+     * answer and nothing else does. Held per-class in a {@link ClassValue} for
+     * the same collect-with-the-class reason as {@link #staticValuesByClass}.
+     */
+    private static final ClassValue<java.util.Set<String>> staticsWrittenByClass =
+            new ClassValue<>() {
+                @Override
+                protected java.util.Set<String> computeValue(Class<?> type) {
+                    return ConcurrentHashMap.newKeySet();
+                }
+            };
+
+    private static String staticKey(String fieldName, String desc) {
+        return fieldName + ":" + desc;
     }
 
     /**
@@ -162,31 +197,25 @@ public final class FieldStore {
      * Returns the JVM default for the descriptor when nothing has been
      * written yet, which is what a real static field of that type would hold
      * before its initialiser ran. Never null for a primitive: the caller
-     * unboxes immediately.
+     * unboxes immediately. A null owner (never emitted by the companion, which
+     * loads the class constant) falls back to the default rather than throwing.
      */
-    public static Object getStaticExtField(String className, String fieldName, String desc) {
-        Object value = staticValues.get(staticKey(className, fieldName, desc));
+    public static Object getStaticExtField(Class<?> owner, String fieldName, String desc) {
+        if (owner == null) return defaultValue(desc);
+        Object value = staticValuesByClass.get(owner).get(staticKey(fieldName, desc));
         return value != null ? value : defaultValue(desc);
     }
 
-    /**
-     * Static keys that have been written at least once, whatever the value.
-     *
-     * A null write removes the entry from {@link #staticValues}, so presence
-     * there cannot answer "has this field ever been set". The initialiser
-     * needs that answer and nothing else does.
-     */
-    private static final java.util.Set<String> staticsEverWritten =
-            java.util.concurrent.ConcurrentHashMap.newKeySet();
-
     /** Write a static field added after startup. */
-    public static void putStaticExtField(String className, String fieldName, String desc, Object value) {
-        String key = staticKey(className, fieldName, desc);
-        staticsEverWritten.add(key);
+    public static void putStaticExtField(Class<?> owner, String fieldName, String desc, Object value) {
+        if (owner == null) return;
+        String key = staticKey(fieldName, desc);
+        staticsWrittenByClass.get(owner).add(key);
+        ConcurrentHashMap<String, Object> values = staticValuesByClass.get(owner);
         if (value == null) {
-            staticValues.remove(key);
+            values.remove(key);
         } else {
-            staticValues.put(key, value);
+            values.put(key, value);
         }
     }
 
@@ -203,17 +232,19 @@ public final class FieldStore {
      *
      * @return true when this call is what set the field
      */
-    public static boolean initialiseStaticOnce(String className, String fieldName,
+    public static boolean initialiseStaticOnce(Class<?> owner, String fieldName,
                                                 String desc, Object value) {
-        String key = staticKey(className, fieldName, desc);
-        if (!staticsEverWritten.add(key)) return false;
-        if (value != null) staticValues.put(key, value);
+        if (owner == null) return false;
+        String key = staticKey(fieldName, desc);
+        if (!staticsWrittenByClass.get(owner).add(key)) return false;
+        if (value != null) staticValuesByClass.get(owner).put(key, value);
         return true;
     }
 
     /** Whether an added static field has been written or initialised yet. */
-    public static boolean isStaticInitialised(String className, String fieldName, String desc) {
-        return staticsEverWritten.contains(staticKey(className, fieldName, desc));
+    public static boolean isStaticInitialised(Class<?> owner, String fieldName, String desc) {
+        if (owner == null) return false;
+        return staticsWrittenByClass.get(owner).contains(staticKey(fieldName, desc));
     }
 
     /**
@@ -221,9 +252,9 @@ public final class FieldStore {
      * order the value already sits in on the operand stack at a PUTSTATIC.
      * Emitting a swap for a possibly-wide value is fiddlier than an overload.
      */
-    public static void putStaticExtFieldSwapped(Object value, String className,
+    public static void putStaticExtFieldSwapped(Object value, Class<?> owner,
                                                  String fieldName, String desc) {
-        putStaticExtField(className, fieldName, desc, value);
+        putStaticExtField(owner, fieldName, desc, value);
     }
 
     /** JVM default value for a field descriptor (boxed for primitives). */

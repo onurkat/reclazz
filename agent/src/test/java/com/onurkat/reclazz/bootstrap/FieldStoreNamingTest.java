@@ -46,11 +46,24 @@ class FieldStoreNamingTest {
         assertEquals(1, FieldStore.getFieldCount("demo.DuplicateProbe"));
     }
 
+    /**
+     * The spelling problem cannot reach a static field at all: its storage is
+     * keyed by the owning {@code Class}, one identity with no string form to
+     * disagree on. The companion loads that class as a constant and the store
+     * uses it directly, so a write and a read of the same class are the same
+     * field by construction, and two different classes are two different
+     * fields even when the field name matches.
+     */
     @Test
-    void aStaticFieldIsAlsoOneFieldUnderEitherSpelling() {
-        FieldStore.putStaticExtField("demo/StaticProbe", "count", "I", 7);
+    void aStaticFieldIsKeyedByItsOwningClassNotItsSpelling() {
+        FieldStore.putStaticExtField(StaticProbe.class, "count", "I", 7);
+        assertEquals(7, FieldStore.getStaticExtField(StaticProbe.class, "count", "I"),
+                "the same class round-trips the same field");
 
-        assertEquals(7, FieldStore.getStaticExtField("demo.StaticProbe", "count", "I"),
-                "the same field, whichever way the caller spells its class");
+        assertEquals(0, FieldStore.getStaticExtField(OtherProbe.class, "count", "I"),
+                "a same-named field on a different class is a different field");
     }
+
+    static class StaticProbe {}
+    static class OtherProbe {}
 }

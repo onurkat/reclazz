@@ -135,9 +135,9 @@ class AddedFieldInitialisationTest {
 
     @Test
     void theStaticStoreRoundTrips() {
-        FieldStore.putStaticExtField("demo.Config", "zones", "Ljava/util/List;", List.of("UTC"));
+        FieldStore.putStaticExtField(Config.class, "zones", "Ljava/util/List;", List.of("UTC"));
         assertEquals(List.of("UTC"),
-                FieldStore.getStaticExtField("demo.Config", "zones", "Ljava/util/List;"));
+                FieldStore.getStaticExtField(Config.class, "zones", "Ljava/util/List;"));
     }
 
     /**
@@ -147,10 +147,14 @@ class AddedFieldInitialisationTest {
      */
     @Test
     void anUnwrittenStaticReadsAsTheTypeDefault() {
-        assertEquals(0, FieldStore.getStaticExtField("demo.Nothing", "count", "I"));
-        assertEquals(false, FieldStore.getStaticExtField("demo.Nothing", "flag", "Z"));
-        assertNull(FieldStore.getStaticExtField("demo.Nothing", "name", "Ljava/lang/String;"));
+        assertEquals(0, FieldStore.getStaticExtField(Nothing.class, "count", "I"));
+        assertEquals(false, FieldStore.getStaticExtField(Nothing.class, "flag", "Z"));
+        assertNull(FieldStore.getStaticExtField(Nothing.class, "name", "Ljava/lang/String;"));
     }
+
+    // Owners for the static-store round-trip tests: storage is keyed by Class.
+    static class Config {}
+    static class Nothing {}
 
     @Test
     void theCompanionRoutesAddedStaticsToTheStore() throws IOException {
