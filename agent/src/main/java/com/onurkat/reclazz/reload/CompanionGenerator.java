@@ -172,8 +172,21 @@ public class CompanionGenerator implements Opcodes {
             // Skip constructors and class initializers
             if ("<init>".equals(name) || "<clinit>".equals(name)) return null;
 
-            // Skip methods that should not be trampolined
-            if (TransformExclusions.shouldSkipMethod(originalClass, name, descriptor, access)) {
+            // Skip methods that should not be trampolined. Lambda bodies are
+            // the exception: the load-time transform skips them because
+            // trampolining a method the LambdaMetafactory resolves by direct
+            // MethodHandle broke the link, but the companion does not
+            // trampoline anything, it carries plain copies, and the copy is
+            // exactly what the re-pointed lambda handle in a reloaded body
+            // resolves against. Without it, editing a lambda into a method
+            // was NoSuchMethodError at first call (measured; the handle
+            // named a companion method that was never emitted).
+            boolean lambdaBody = name.startsWith("lambda$");
+            if (!lambdaBody
+                    && TransformExclusions.shouldSkipMethod(originalClass, name, descriptor, access)) {
+                return null;
+            }
+            if (lambdaBody && (access & (ACC_NATIVE | ACC_ABSTRACT)) != 0) {
                 return null;
             }
 
@@ -202,8 +215,12 @@ public class CompanionGenerator implements Opcodes {
                 siteKey = name + ":" + descHash;
             }
 
-            // Record the method handle key mapping
-            methodHandleKeys.put(siteKey, companionMethodName + companionDescriptor);
+            // Record the method handle key mapping. Not for lambda bodies:
+            // they have no trampoline site in the original class to retarget,
+            // only the copy here that lambda handles are re-pointed at.
+            if (!lambdaBody) {
+                methodHandleKeys.put(siteKey, companionMethodName + companionDescriptor);
+            }
 
             // Create the method in the companion class (always static)
             int companionAccess = ACC_PUBLIC | ACC_STATIC;
@@ -212,7 +229,7 @@ public class CompanionGenerator implements Opcodes {
 
             // Return a method visitor that rewrites the method body
             return new CompanionMethodAdapter(mv, originalClass, companionName,
-                    addedFields, isStatic);
+                    addedFields, diff.getAddedMethods(), isStatic);
         }
     }
 
@@ -225,15 +242,96 @@ public class CompanionGenerator implements Opcodes {
         private final String originalClass;
         private final String companionName;
         private final Set<String> addedFields;
+        private final Set<String> addedMethods;
         private final boolean wasStatic;
 
         CompanionMethodAdapter(MethodVisitor mv, String originalClass, String companionName,
                                 Set<String> addedFields, boolean wasStatic) {
+            this(mv, originalClass, companionName, addedFields, Set.of(), wasStatic);
+        }
+
+        CompanionMethodAdapter(MethodVisitor mv, String originalClass, String companionName,
+                                Set<String> addedFields, Set<String> addedMethods,
+                                boolean wasStatic) {
             super(ASM9, mv);
             this.originalClass = originalClass;
             this.companionName = companionName;
             this.addedFields = addedFields;
+            this.addedMethods = addedMethods;
             this.wasStatic = wasStatic;
+        }
+
+        /**
+         * Re-point method-handle constants that name this class's own methods
+         * at the companion, so a lambda in a reloaded body links.
+         *
+         * <p>javac compiles a lambda to a synthetic {@code lambda$...} method
+         * plus an {@code invokedynamic} whose bootstrap arguments carry a
+         * MethodHandle to it. The instruction copies into the companion
+         * verbatim, so the handle kept naming the original class; for a lambda
+         * added by a reload the method is not there (nothing can add one), and
+         * LambdaMetafactory answered
+         * {@code NoSuchMethodError: demo.Api.lambda$cacheops$0} out of code
+         * whose source looked perfectly ordinary. Every {@code lambda$} handle
+         * is re-pointed, not only the added ones: the synthetic is private and
+         * never overridden, so dispatch cannot be wrong, and the companion's
+         * copy is the newest body where the original still has the old one. A
+         * method reference to an added method ({@code this::newHelper}) has
+         * the same missing-method shape and is re-pointed by the added-methods
+         * set. Handles to methods that exist on the loaded class keep their
+         * owner: a virtual method reference must keep virtual dispatch.
+         *
+         * <p>A hidden class may reference its own name in its constant pool
+         * ({@code defineHiddenClass} resolves the self-reference), which is
+         * what makes the companion a valid owner here. Instance methods live
+         * in the companion as statics with the receiver prepended, so the
+         * handle's kind and descriptor are lifted the same way.
+         */
+        @Override
+        public void visitInvokeDynamicInsn(String name, String descriptor, Handle bsm,
+                                           Object... bootstrapMethodArguments) {
+            Object[] args = bootstrapMethodArguments;
+            Object[] rewritten = null;
+            for (int i = 0; i < args.length; i++) {
+                if (!(args[i] instanceof Handle handle)) continue;
+                if (!handle.getOwner().equals(originalClass)) continue;
+                boolean isLambdaBody = handle.getName().startsWith("lambda$");
+                boolean isAddedMethod = addedMethods.contains(
+                        handle.getName() + ":" + handle.getDesc());
+                if (!isLambdaBody && !isAddedMethod) continue;
+
+                Handle lifted;
+                if (handle.getTag() == H_INVOKESTATIC) {
+                    lifted = new Handle(H_INVOKESTATIC, companionName,
+                            handle.getName(), handle.getDesc(), false);
+                } else {
+                    // Instance impl (a lambda capturing this, or an instance
+                    // method reference): the companion's copy is static with
+                    // the receiver as its first parameter, which is the other
+                    // implMethod shape a lambda linker accepts.
+                    lifted = new Handle(H_INVOKESTATIC, companionName, handle.getName(),
+                            "(L" + originalClass + ";" + handle.getDesc().substring(1), false);
+                }
+                if (rewritten == null) rewritten = args.clone();
+                rewritten[i] = lifted;
+            }
+
+            // A handle re-pointed at the companion resolves (a hidden class
+            // may reference itself), but LambdaMetafactory then spins a proxy
+            // that calls the implementation BY NAME, and a hidden class has no
+            // resolvable name: ClassNotFoundException at the lambda's first
+            // call (measured on JDK 21). Those sites link through Reclazz's
+            // own factory instead, which uses the already-resolved handle and
+            // never a name.
+            Handle effectiveBsm = bsm;
+            if (rewritten != null
+                    && bsm.getOwner().equals("java/lang/invoke/LambdaMetafactory")) {
+                effectiveBsm = new Handle(H_INVOKESTATIC,
+                        "com/onurkat/reclazz/bootstrap/LambdaFactory",
+                        bsm.getName(), bsm.getDesc(), false);
+            }
+            super.visitInvokeDynamicInsn(name, descriptor, effectiveBsm,
+                    rewritten != null ? rewritten : args);
         }
 
         @Override

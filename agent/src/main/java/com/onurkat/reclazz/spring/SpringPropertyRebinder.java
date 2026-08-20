@@ -142,14 +142,16 @@ public final class SpringPropertyRebinder {
 
             // Asked to rebind one of these, the post-processor returns without
             // complaint and without doing anything, so the check has to happen
-            // here. Reporting it as rebound would be the worst outcome: the
-            // developer moves on believing the new value is live.
+            // here. There is nothing to write a new value into, but there is a
+            // bean definition to build a new instance from: the Environment
+            // already holds the changed keys at this point, so destroying and
+            // re-creating the singleton binds the new values through the same
+            // constructor path startup used, and the stale-reference sweep
+            // re-points the fields that held the old instance.
             if (isConstructorBound(bean.getValue())) {
-                RestartLedger.note(bean.getKey(),
-                        "properties under \"" + prefix + "\" that only a constructor can take");
-                StatusReporter.warn(bean.getKey() + " takes its properties through its "
-                        + "constructor, so the values it already holds cannot be replaced. "
-                        + "A restart is what applies them.");
+                if (recreateConstructorBound(context, bean.getKey(), prefix)) {
+                    rebound.add(bean.getKey());
+                }
                 continue;
             }
 
@@ -170,8 +172,9 @@ public final class SpringPropertyRebinder {
      * nothing to write a new value into.
      *
      * A record is the common shape, and an explicitly annotated constructor
-     * the other. Both are asking for immutability, so the honest answer is
-     * that this value changes at a restart.
+     * the other. Both are asking for immutability, and immutability is kept:
+     * the instance is never mutated, it is replaced, the way every other
+     * immutable value gets a new state.
      */
     static boolean isConstructorBound(Object bean) {
         Class<?> type = userClass(bean.getClass());
@@ -188,6 +191,50 @@ public final class SpringPropertyRebinder {
             }
         }
         return false;
+    }
+
+    /**
+     * Replace a constructor-bound properties bean with one built from the
+     * updated Environment, and re-point every field that held the old one.
+     *
+     * <p>The failure mode is the state this path used to be the only answer
+     * for: the old instance keeps serving and the log says a restart applies
+     * the change. What can no longer happen silently is the middle ground,
+     * where the bean is rebuilt but its holders keep the old object; the sweep
+     * that heals class-reload refreshes runs here too, and holders it cannot
+     * reach (a value copied out of the bean into a local or a derived field)
+     * were never reachable by any rebind either.
+     */
+    private static boolean recreateConstructorBound(Object context, String beanName, String prefix) {
+        try {
+            Object[] pair = SpringBeanReloader.destroyAndRefreshBean(context, beanName);
+            if (pair == null || pair[1] == null) {
+                // Not a singleton, or the factory would not rebuild it.
+                RestartLedger.note(beanName,
+                        "properties under \"" + prefix + "\" that only a constructor can take");
+                StatusReporter.warn(beanName + " takes its properties through its constructor "
+                        + "and could not be rebuilt in place. A restart is what applies them.");
+                return false;
+            }
+            if (pair[0] != null && pair[0] != pair[1]) {
+                java.util.IdentityHashMap<Object, Object> replaced = new java.util.IdentityHashMap<>();
+                replaced.put(pair[0], pair[1]);
+                int healed = SpringBeanReloader.healStaleReferences(
+                        java.util.List.of(context), replaced);
+                StatusReporter.success(beanName + " rebuilt through its constructor with the "
+                        + "new values" + (healed > 0
+                        ? "; re-pointed " + healed + " reference(s) to it" : ""));
+            }
+            return true;
+        } catch (Throwable t) {
+            RestartLedger.note(beanName,
+                    "properties under \"" + prefix + "\" that only a constructor can take");
+            StatusReporter.warn("Rebuilding " + beanName + " failed ("
+                    + (t.getMessage() == null ? t.getClass().getSimpleName() : t.getMessage())
+                    + "); the values it already holds cannot be replaced. "
+                    + "A restart is what applies them.");
+            return false;
+        }
     }
 
     /** The prefix the bean asked for, or "" when it binds the root. */

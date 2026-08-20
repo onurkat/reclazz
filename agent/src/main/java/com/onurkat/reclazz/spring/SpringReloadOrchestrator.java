@@ -35,6 +35,7 @@ public class SpringReloadOrchestrator {
     private final SpringAsyncReloader asyncReloader;
     private final SpringDataReloader dataReloader;
     private final SpringSecurityReloader securityReloader;
+    private final SpringOperationSourceReloader operationSourceReloader;
 
     public SpringReloadOrchestrator(PlatformContext platformContext) {
         this.beanReloader = new SpringBeanReloader(platformContext);
@@ -46,6 +47,7 @@ public class SpringReloadOrchestrator {
         this.asyncReloader = new SpringAsyncReloader(platformContext);
         this.dataReloader = new SpringDataReloader(platformContext);
         this.securityReloader = new SpringSecurityReloader(platformContext);
+        this.operationSourceReloader = new SpringOperationSourceReloader(platformContext);
     }
 
     /**
@@ -134,11 +136,20 @@ public class SpringReloadOrchestrator {
                     // are updated, a brand new one is not, and saying only
                     // that the scan ran would leave the developer refreshing a
                     // 404 wondering which of the two of us is wrong.
-                    if (isStructural && addedMethods) {
+                    //
+                    // Only the added methods that actually carry a mapping
+                    // annotation count here. A reload that adds a private
+                    // helper, or the lambda$ synthetics an edited body brings
+                    // with it, used to end in "a handler method ... needs a
+                    // restart" about handlers that never existed (measured:
+                    // every lambda edit in a controller printed it).
+                    java.util.Set<String> addedHandlers =
+                            SpringMvcReloader.mappedMethodsAmong(addedMethodSigs, newBytecode);
+                    if (isStructural && !addedHandlers.isEmpty()) {
                         // The scan cannot see a method that lives in the
                         // companion, so it is given a class that can be read.
                         boolean mapped = mvcReloader.registerAddedEndpoints(
-                                reloadedClass, addedMethodSigs, newBytecode);
+                                reloadedClass, addedHandlers, newBytecode);
                         if (mapped) {
                             StatusReporter.success("Handler methods added by this reload are mapped.");
                         } else {
@@ -155,6 +166,12 @@ public class SpringReloadOrchestrator {
 
         // 3. Cache eviction
         cacheReloader.reloadCaches(reloadedClass);
+
+        // 3b. Transaction/cache annotation metadata. Eviction above empties
+        // the cached VALUES; this clears the cached ANSWER to "what does the
+        // annotation on this method say", which redefinition changes without
+        // changing the Method identity the answer is filed under.
+        operationSourceReloader.reloadOperationSources(reloadedClass, annotationsChanged);
 
         // 4. Scheduler re-registration
         schedulerReloader.reloadScheduledMethods(reloadedClass);
