@@ -30,6 +30,7 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
         var debounceMs: Long = 500,
         var startupDelaySeconds: Int = 30,
         var verbose: Boolean = false,
+        var jpaRefresh: Boolean = false,
         var autoDetectJdk: Boolean = true,
         var portFilePath: String = "",
         var agentPort: Int = 0,

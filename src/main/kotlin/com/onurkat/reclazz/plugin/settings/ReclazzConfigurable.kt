@@ -32,6 +32,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
     private var debounceMsField = 500L
     private var startupDelayField = 30
     private var verboseCheckbox = false
+    private var jpaRefreshCheckbox = false
     private var autoDetectJdkCheckbox = true
     private var portFilePathField = ""
     private var agentPortField = 0
@@ -53,6 +54,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
         debounceMsField = settings.debounceMs
         startupDelayField = settings.startupDelaySeconds
         verboseCheckbox = settings.verbose
+        jpaRefreshCheckbox = settings.jpaRefresh
         autoDetectJdkCheckbox = settings.autoDetectJdk
         portFilePathField = settings.portFilePath
         agentPortField = settings.agentPort
@@ -185,6 +187,14 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                 row {
                     checkBox("Verbose logging (for bug reports)")
                         .bindSelected(::verboseCheckbox)
+                }
+                row {
+                    checkBox("Refresh JPA mapping when an entity field changes (opt-in)")
+                        .bindSelected(::jpaRefreshCheckbox)
+                        .comment("Rebuilds the persistence unit so a new @Entity field is mapped, " +
+                                "on JetBrains Runtime or DCEVM with ddl-auto at update/create/create-drop. " +
+                                "In any other setup the field is named in the log instead. Open persistence " +
+                                "contexts from before the rebuild are closed.")
                 }
             }
 
@@ -345,6 +355,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                 debounceMsField != settings.debounceMs ||
                 startupDelayField != settings.startupDelaySeconds ||
                 verboseCheckbox != settings.verbose ||
+                jpaRefreshCheckbox != settings.jpaRefresh ||
                 autoDetectJdkCheckbox != settings.autoDetectJdk ||
                 portFilePathField != settings.portFilePath ||
                 agentPortField != settings.agentPort
@@ -362,6 +373,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                 debounceMs = debounceMsField,
                 startupDelaySeconds = startupDelayField,
                 verbose = verboseCheckbox,
+                jpaRefresh = jpaRefreshCheckbox,
                 autoDetectJdk = autoDetectJdkCheckbox,
                 portFilePath = portFilePathField,
                 agentPort = agentPortField
@@ -382,6 +394,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
         debounceMsField = settings.debounceMs
         startupDelayField = settings.startupDelaySeconds
         verboseCheckbox = settings.verbose
+        jpaRefreshCheckbox = settings.jpaRefresh
         autoDetectJdkCheckbox = settings.autoDetectJdk
         portFilePathField = settings.portFilePath
         agentPortField = settings.agentPort
