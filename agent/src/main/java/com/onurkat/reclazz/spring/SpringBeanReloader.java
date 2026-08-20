@@ -167,7 +167,12 @@ public class SpringBeanReloader {
     }
 
     /** @return {oldInstance, newInstance} for singletons, else null */
-    private Object[] destroyAndRefreshBean(Object appContext, String beanName) throws Exception {
+    /**
+     * Package-private and static: the property rebinder and the security
+     * reloader recreate beans by name through this same door, so a bean is
+     * destroyed and rebuilt in exactly one way everywhere.
+     */
+    static Object[] destroyAndRefreshBean(Object appContext, String beanName) throws Exception {
         Object beanFactory = SpringBeans.getBeanFactory(appContext);
 
         Method isSingleton = beanFactory.getClass().getMethod("isSingleton", String.class);
@@ -241,8 +246,9 @@ public class SpringBeanReloader {
         });
     }
 
-    private int healStaleReferences(java.util.List<Object> contexts,
-                                    java.util.IdentityHashMap<Object, Object> replacements) {
+    /** Package-private and static for the same reason as {@link #destroyAndRefreshBean}. */
+    static int healStaleReferences(java.util.List<Object> contexts,
+                                   java.util.IdentityHashMap<Object, Object> replacements) {
         // Only fields whose declared type could possibly hold one of the
         // replaced instances are worth reading. Assignability is checked
         // against the field's declared type, so an interface- or
@@ -279,9 +285,9 @@ public class SpringBeanReloader {
         return healed;
     }
 
-    private int swapFields(Object bean,
-                           java.util.IdentityHashMap<Object, Object> replacements,
-                           java.util.List<Class<?>> staleTypes) {
+    private static int swapFields(Object bean,
+                                  java.util.IdentityHashMap<Object, Object> replacements,
+                                  java.util.List<Class<?>> staleTypes) {
         int swapped = 0;
         for (java.lang.reflect.Field f : candidateFields(bean.getClass())) {
             if (!couldHold(f.getType(), staleTypes)) continue;

@@ -6,7 +6,81 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- A lambda edited into a reloaded method body now links. javac gives every
+  lambda a synthetic `lambda$...` method plus an `invokedynamic` that names it,
+  and on a stock JDK both halves broke: the synthetic cannot be added to the
+  loaded class, and the companion, which carries every other body, skipped
+  `lambda$` methods outright, so the first call answered
+  `NoSuchMethodError: demo.Api.lambda$added1$0` out of a source line that
+  looked perfectly ordinary. The companion now carries the lambda bodies as
+  plain copies, the method-handle constants that name them are re-pointed at
+  the companion, and because `LambdaMetafactory` then spins a proxy that calls
+  the implementation by a name a hidden class does not have (measured:
+  `ClassNotFoundException` at first call on JDK 21), those sites link through
+  the agent's own factory, which uses the already-resolved handle and never a
+  name. Resolving against the original class instead would be quietly wrong,
+  not merely limited: javac numbers the synthetics per class in declaration
+  order, so one added lambda renumbers the rest and a stale name can be a
+  different lambda's body. Measured live on Boot 3.3: a body given a stream
+  with two lambdas, a lambda capturing `this` that reads a field added by the
+  same save, and a method reference to a method added by the same save, all
+  answer correctly on the next request. The honest trade, stated: the object
+  is a reflective proxy rather than a spun class, and a serializable lambda
+  loses its serializability until restart.
+
+- Adding a private helper method to a controller no longer prints "a handler
+  method added by this reload is not visible to the mapping scan and needs a
+  restart". Every added method was treated as a would-be handler, so a helper,
+  or the `lambda$` synthetics an edited body brings along, ended in a restart
+  warning about handlers that never existed; with the lambda fix above, that
+  was every lambda edit in a controller. The added methods are now filtered by
+  their mapping annotations read from the bytecode: no mapping annotation, no
+  claim and no warning. Measured live: a helper-only add reloads without a
+  word from the mapping step, and a real `@GetMapping` add in the same session
+  is mapped and answers. (The suspected mapped-but-404 from the audit notes
+  did not reproduce in five attempts; the 404s came from the measurement
+  racing the reload, and the endpoints answered once the registration they
+  raced had landed.)
+
 ### Added
+
+- An edited `@Transactional` or `@Cacheable` annotation now takes effect on
+  reload. Spring resolves a method's transaction attribute and cache operations
+  once and files the answer under the method, which redefinition does not
+  change, so a `readOnly` flipped to writable kept running read-only and a
+  `@Cacheable` given a disabling condition kept caching, with nothing anywhere
+  reporting it. After a reload the agent clears those metadata caches
+  reflectively; measured live on Boot 3.3: the transaction definition the
+  manager receives follows the annotation on the next call, and a
+  `@Cacheable(condition = "false")` stops serving from the cache immediately.
+  Found and fixed along the way: the cache source renamed its map in Spring
+  Framework 6.1 (`attributeCache` to `operationCache`), and until that was
+  handled the transaction half cleared while the cache half silently did not.
+
+- A Spring Security configuration change is applied to the running filter
+  chain. The `SecurityFilterChain` beans are rebuilt so the `@Bean` method
+  re-runs with the reloaded code, `WebSecurityConfiguration` is rebuilt first
+  because its builder throws `AlreadyBuiltException` on a second build, and the
+  servlet layer's `DelegatingFilterProxy`, which caches the startup proxy in a
+  field no bean reaches, has that cache cleared through Tomcat's internals so
+  the next request resolves the rebuilt proxy. Measured live on Boot 3.3 with
+  embedded Tomcat, both directions: a `permitAll` route answers 401 after the
+  reload makes it `authenticated`, and 200 again after the reverse edit, other
+  routes untouched. Where the pieces cannot be matched safely the old rules
+  keep serving and the log says so; method security (`@PreAuthorize`) keeps its
+  own metadata, is not rebuilt, and is named as needing a restart.
+
+- A constructor-bound `@ConfigurationProperties` bean (a record, typically)
+  now picks up a changed property. There is nothing to write a new value into,
+  so the bean is destroyed and rebuilt through the same constructor binding
+  startup used, against the already-updated Environment, and the fields that
+  held the old instance are re-pointed at the new one. Measured live twice over
+  on Boot 3.3: the endpoint reading the record served v1, then v2, then v3 as
+  the property file was edited, no restart. When the rebuild fails the old
+  instance keeps serving and the message says a restart applies the change,
+  which is exactly what this path used to say always.
 
 - A settings checkbox for the JPA mapping refresh, "Refresh JPA mapping when an
   entity field changes (opt-in)", under General. The feature shipped in 1.0.26

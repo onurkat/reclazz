@@ -197,6 +197,52 @@ public class SpringMvcReloader {
      *
      * @return true when the mappings were registered
      */
+    /**
+     * The subset of {@code addedMethodSigs} that carry an HTTP mapping
+     * annotation in the new bytecode, {@code @GetMapping} through
+     * {@code @RequestMapping}. Deciding by annotation rather than by "was a
+     * method added" is what keeps a private helper, or the {@code lambda$}
+     * synthetics an edited body brings along, from being reported as a
+     * handler that needs a restart.
+     */
+    static java.util.Set<String> mappedMethodsAmong(java.util.Set<String> addedMethodSigs,
+                                                    byte[] newBytecode) {
+        if (addedMethodSigs == null || addedMethodSigs.isEmpty() || newBytecode == null) {
+            return java.util.Set.of();
+        }
+        java.util.Set<String> mapped = new java.util.LinkedHashSet<>();
+        try {
+            new org.objectweb.asm.ClassReader(newBytecode).accept(
+                    new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override
+                        public org.objectweb.asm.MethodVisitor visitMethod(
+                                int access, String name, String descriptor,
+                                String signature, String[] exceptions) {
+                            String key = name + ":" + descriptor;
+                            if (!addedMethodSigs.contains(key)) return null;
+                            return new org.objectweb.asm.MethodVisitor(
+                                    org.objectweb.asm.Opcodes.ASM9) {
+                                @Override
+                                public org.objectweb.asm.AnnotationVisitor visitAnnotation(
+                                        String annotationDesc, boolean visible) {
+                                    if (annotationDesc.startsWith(
+                                            "Lorg/springframework/web/bind/annotation/")
+                                            && annotationDesc.endsWith("Mapping;")) {
+                                        mapped.add(key);
+                                    }
+                                    return null;
+                                }
+                            };
+                        }
+                    }, org.objectweb.asm.ClassReader.SKIP_CODE);
+        } catch (Throwable unreadable) {
+            // A class this cannot read is a class whose handlers cannot be
+            // adapted either; the caller's mapped/failed reporting covers it.
+            return addedMethodSigs;
+        }
+        return mapped;
+    }
+
     public boolean registerAddedEndpoints(Class<?> controllerClass,
                                           java.util.Set<String> addedMethods,
                                           byte[] newBytecode) {
