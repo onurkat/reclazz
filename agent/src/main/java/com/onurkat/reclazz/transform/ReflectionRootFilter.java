@@ -103,6 +103,12 @@ public final class ReflectionRootFilter {
     private final Method registerFields;   // Reflection.registerFieldsToFilter
     private final Method registerMethods;  // Reflection.registerMethodsToFilter
     private final Field reflectionData;    // java.lang.Class#reflectionData
+    // The maps themselves, for the union write. VarHandles, not Fields:
+    // Reflection filters its OWN fields out of core reflection (measured:
+    // getDeclaredField cannot see them), while the Lookup API resolves
+    // members in the JVM, beneath that filter.
+    private final java.lang.invoke.VarHandle fieldFilterMap;
+    private final java.lang.invoke.VarHandle methodFilterMap;
 
     /**
      * Probes the capability once. Any Throwable anywhere in the probe means
@@ -113,6 +119,7 @@ public final class ReflectionRootFilter {
         boolean ok = false;
         Method rf = null, rm = null;
         Field rd = null;
+        java.lang.invoke.VarHandle ffm = null, mfm = null;
         try {
             if (instrumentation == null) {
                 throw new IllegalStateException("no Instrumentation to open modules with");
@@ -133,6 +140,16 @@ public final class ReflectionRootFilter {
             rm.setAccessible(true);
             rd = Class.class.getDeclaredField("reflectionData");
             rd.setAccessible(true);
+            // The maps themselves, because the register methods accept one
+            // call per class and a member REMOVED by a later reload has to
+            // extend an entry that already exists.
+            java.lang.invoke.MethodHandles.Lookup privateLookup =
+                    java.lang.invoke.MethodHandles.privateLookupIn(
+                            reflection, java.lang.invoke.MethodHandles.lookup());
+            ffm = privateLookup.findStaticVarHandle(reflection, "fieldFilterMap",
+                    java.util.Map.class);
+            mfm = privateLookup.findStaticVarHandle(reflection, "methodFilterMap",
+                    java.util.Map.class);
             ok = true;
         } catch (Throwable unsupported) {
             StatusReporter.info("Root-level reflection filtering unavailable on this JVM ("
@@ -142,6 +159,8 @@ public final class ReflectionRootFilter {
         this.registerFields = rf;
         this.registerMethods = rm;
         this.reflectionData = rd;
+        this.fieldFilterMap = ffm;
+        this.methodFilterMap = mfm;
     }
 
     /** Probe once and keep the result for the static entry points. */
@@ -161,6 +180,137 @@ public final class ReflectionRootFilter {
         ReflectionRootFilter filter = installed;
         if (filter != null) {
             filter.registerInjectedMembers(clazz);
+        }
+    }
+
+    /**
+     * Hide the members a reload REMOVED, so scans stop acting on them.
+     *
+     * <p>A stock JDK cannot take a member out of a loaded class, so a removed
+     * field or method stays and every framework scan keeps seeing it: a
+     * removed getter kept being serialised into responses. The bridge cover
+     * takes the names everywhere (including discardable loaders and JVMs
+     * without the root filter), and where the root filter is on, the JDK's
+     * own filter maps are EXTENDED with a direct union write, because their
+     * register methods accept exactly one call per class and that call was
+     * spent on the injected members at first reload.
+     */
+    public static void hideRemovedMembersOn(Class<?> clazz,
+                                            java.util.Set<String> removedFieldNames,
+                                            java.util.Set<String> removedMethodNames) {
+        if (clazz == null) return;
+        boolean any = (removedFieldNames != null && !removedFieldNames.isEmpty())
+                || (removedMethodNames != null && !removedMethodNames.isEmpty());
+        if (!any) return;
+
+        com.onurkat.reclazz.bootstrap.ReflectionBridge.hideRemovedMembers(
+                clazz, removedFieldNames, removedMethodNames);
+
+        ReflectionRootFilter filter = installed;
+        if (filter != null && filter.available && !isDiscardableLoader(clazz)) {
+            filter.extendFilter(clazz, removedFieldNames, removedMethodNames);
+        }
+    }
+
+    /** The removal-hiding undone for names a later save brought back. */
+    public static void unhideRestoredMembersOn(Class<?> clazz,
+                                               java.util.Set<String> fieldNames,
+                                               java.util.Set<String> methodNames) {
+        if (clazz == null) return;
+        boolean any = (fieldNames != null && !fieldNames.isEmpty())
+                || (methodNames != null && !methodNames.isEmpty());
+        if (!any) return;
+
+        com.onurkat.reclazz.bootstrap.ReflectionBridge.unhideRestoredMembers(
+                clazz, fieldNames, methodNames);
+
+        ReflectionRootFilter filter = installed;
+        if (filter != null && filter.available && !isDiscardableLoader(clazz)) {
+            filter.shrinkFilter(clazz, fieldNames, methodNames);
+        }
+    }
+
+    /** Take exactly these names back out of the JDK maps and the record. */
+    private void shrinkFilter(Class<?> clazz,
+                              java.util.Set<String> fieldNames,
+                              java.util.Set<String> methodNames) {
+        Registration record = registrations.get(clazz);
+        synchronized (record) {
+            try {
+                boolean touched = false;
+                if (fieldNames != null && record.fieldNames.removeAll(fieldNames)) {
+                    removeFrom(fieldFilterMap, clazz, fieldNames);
+                    touched = true;
+                }
+                if (methodNames != null && record.methodNames.removeAll(methodNames)) {
+                    removeFrom(methodFilterMap, clazz, methodNames);
+                    touched = true;
+                }
+                if (touched) reflectionData.set(clazz, null);
+            } catch (Throwable t) {
+                StatusReporter.warn("Could not unhide restored member(s) of "
+                        + clazz.getName() + ": " + t);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void removeFrom(java.lang.invoke.VarHandle mapHandle, Class<?> clazz,
+                                   java.util.Set<String> names) {
+        synchronized (ReflectionRootFilter.class) {
+            java.util.Map<Class<?>, java.util.Set<String>> current =
+                    (java.util.Map<Class<?>, java.util.Set<String>>) mapHandle.getVolatile();
+            if (current == null) return;
+            java.util.Set<String> existing = current.get(clazz);
+            if (existing == null) return;
+            java.util.Set<String> kept = new LinkedHashSet<>(existing);
+            kept.removeAll(names);
+            java.util.Map<Class<?>, java.util.Set<String>> fresh = new java.util.HashMap<>(current);
+            if (kept.isEmpty()) fresh.remove(clazz); else fresh.put(clazz, java.util.Set.copyOf(kept));
+            mapHandle.setVolatile(fresh);
+        }
+    }
+
+    /** Union-write into the JDK filter maps, past the once-only register API. */
+    private void extendFilter(Class<?> clazz,
+                              java.util.Set<String> fieldNames,
+                              java.util.Set<String> methodNames) {
+        Registration record = registrations.get(clazz);
+        synchronized (record) {
+            try {
+                if (fieldNames != null && !fieldNames.isEmpty()) {
+                    unionInto(fieldFilterMap, clazz, fieldNames);
+                    record.fieldNames.addAll(fieldNames);
+                }
+                if (methodNames != null && !methodNames.isEmpty()) {
+                    unionInto(methodFilterMap, clazz, methodNames);
+                    record.methodNames.addAll(methodNames);
+                }
+                record.registered = true;
+                reflectionData.set(clazz, null);
+            } catch (Throwable t) {
+                // The bridge cover above still hides the names at rewritten
+                // call sites; only the meta-reflection route keeps seeing them.
+                StatusReporter.warn("Could not extend the reflection filter for "
+                        + clazz.getName() + ": " + t);
+            }
+        }
+    }
+
+    /** Replace the map with a copy whose entry for {@code clazz} is the union. */
+    @SuppressWarnings("unchecked")
+    private static void unionInto(java.lang.invoke.VarHandle mapHandle, Class<?> clazz,
+                                  java.util.Set<String> names) {
+        synchronized (ReflectionRootFilter.class) {
+            java.util.Map<Class<?>, java.util.Set<String>> current =
+                    (java.util.Map<Class<?>, java.util.Set<String>>) mapHandle.getVolatile();
+            java.util.Map<Class<?>, java.util.Set<String>> fresh =
+                    current == null ? new java.util.HashMap<>() : new java.util.HashMap<>(current);
+            java.util.Set<String> union = new LinkedHashSet<>(names);
+            java.util.Set<String> existing = fresh.get(clazz);
+            if (existing != null) union.addAll(existing);
+            fresh.put(clazz, java.util.Set.copyOf(union));
+            mapHandle.setVolatile(fresh);
         }
     }
 

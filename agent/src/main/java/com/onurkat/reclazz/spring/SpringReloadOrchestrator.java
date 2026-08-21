@@ -48,6 +48,21 @@ public class SpringReloadOrchestrator {
         this.dataReloader = new SpringDataReloader(platformContext);
         this.securityReloader = new SpringSecurityReloader(platformContext);
         this.operationSourceReloader = new SpringOperationSourceReloader(platformContext);
+        this.newBeanRegistrar = new SpringNewBeanRegistrar(platformContext, mvcReloader);
+    }
+
+    private final SpringNewBeanRegistrar newBeanRegistrar;
+
+    /**
+     * A brand-new class file whose class the JVM has never loaded: register it
+     * as a bean when it carries a stereotype.
+     *
+     * @return true when a bean was registered and the ordinary reload path
+     *         has nothing left to do for this file
+     */
+    public boolean registerNewBeanClass(String className, byte[] bytecode) {
+        return newBeanRegistrar.registerIfComponent(className, bytecode)
+                == SpringNewBeanRegistrar.Outcome.REGISTERED;
     }
 
     /**

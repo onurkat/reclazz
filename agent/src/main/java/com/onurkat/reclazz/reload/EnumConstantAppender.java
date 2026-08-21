@@ -60,6 +60,32 @@ public final class EnumConstantAppender {
                                           Instrumentation instrumentation) {
         if (change == null) return false;
 
+        // A removal from the end is the append's mirror: nothing renumbers,
+        // so the ordinal argument that refuses every other removal does not
+        // apply, and the surgery is the shrink instead of the grow.
+        List<String> removedTail = EnumConstantChange.removedTailNames(loaded, newBytecode);
+        if (!removedTail.isEmpty()) {
+            EnumSurgery.Outcome outcome = EnumSurgery.removeFromEnd(loaded, removedTail);
+            if (!outcome.applied()) {
+                StatusReporter.warn("Enum " + className + " could not drop " + removedTail
+                        + ": " + outcome.declinedBecause() + ". values() and valueOf() keep "
+                        + "the old set until a restart. Everything else in this class reloaded.");
+                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        change.describe() + ", which could not be applied to this JVM");
+                return false;
+            }
+            // The mapper caches still carry the removed constant: they would
+            // keep serialising it and keep accepting its name.
+            int mappers = JacksonEnumCaches.flushAfterAppend();
+            EnumConstantChange.reportTailRemoved(className, removedTail, mappers);
+            if (implementsHybrisEnumValue(loaded)) {
+                StatusReporter.info("This is a SAP Commerce enumtype: the EnumerationValue "
+                        + "item for " + removedTail + " still exists in the database and is "
+                        + "yours to remove (ImpEx or HAC) when nothing references it.");
+            }
+            return true;
+        }
+
         if (!EnumConstantChange.isAppendOnly(loaded, newBytecode)) {
             EnumConstantChange.reportNotAppendOnly(className, change);
             return false;

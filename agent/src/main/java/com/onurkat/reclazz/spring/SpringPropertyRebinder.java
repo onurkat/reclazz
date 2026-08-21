@@ -28,9 +28,11 @@ import java.util.Map;
  * whose prefix is affected is put back through the binding post-processor, the
  * same one that filled it in at startup.
  *
- * What cannot be done this way is said rather than glossed over. A bean bound
- * through its constructor has no field to rebind, and a {@code @Value} field
- * was injected once and copied; both are recorded as needing a restart.
+ * Beyond the post-processor's reach, two more moves: a bean bound through its
+ * constructor is destroyed and rebuilt against the updated Environment, and a
+ * {@code @Value} placeholder field is re-resolved and written directly. What
+ * remains out of reach is said rather than glossed over: a SpEL
+ * {@code @Value}, and a {@code @Value} constructor parameter.
  */
 public final class SpringPropertyRebinder {
 
@@ -48,25 +50,167 @@ public final class SpringPropertyRebinder {
         this.applicationContexts = applicationContexts;
     }
 
+    /** What a property save reached: bound beans, and fields injected directly. */
+    public record Applied(List<String> rebound, int valueFields) {
+        public boolean tookEffect() {
+            return !rebound.isEmpty() || valueFields > 0;
+        }
+    }
+
     /**
      * @param changed the keys this save changed, with their new values
-     * @return the {@code @ConfigurationProperties} beans that took them
+     * @return the {@code @ConfigurationProperties} beans that took them, and
+     *         how many {@code @Value} fields were re-injected
      */
-    public List<String> apply(Map<String, String> changed) {
+    public Applied apply(Map<String, String> changed) {
         List<String> rebound = new ArrayList<>();
-        if (changed.isEmpty()) return rebound;
+        int valueFields = 0;
+        if (changed.isEmpty()) return new Applied(rebound, 0);
 
         for (Object context : applicationContexts) {
             try {
                 if (!updateEnvironment(context, changed)) continue;
                 rebound.addAll(rebind(context, changed));
+                valueFields += reinjectValueFields(context, changed);
             } catch (Throwable t) {
                 // One context that cannot be reached is not a reason to skip
                 // the others: a Spring Boot application has one, a server has
                 // dozens and most of them have no Environment at all.
             }
         }
-        return rebound;
+        if (valueFields > 0) {
+            StatusReporter.success("Re-injected " + valueFields
+                    + " @Value field(s) reading the changed propert"
+                    + (changed.size() == 1 ? "y" : "ies"));
+        }
+        return new Applied(rebound, valueFields);
+    }
+
+    /**
+     * Write the new value into every singleton field whose {@code @Value}
+     * placeholder reads a changed key.
+     *
+     * <p>Spring resolves {@code @Value} once, at injection time, and nothing
+     * re-reads it: the Environment could hold the new value forever and the
+     * field would keep the old one. The fields are found by sweeping the live
+     * singletons, matching the placeholder text against the changed keys, and
+     * resolving through the bean factory's own embedded-value resolver, so the
+     * default syntax and nesting behave exactly as they did at startup.
+     *
+     * <p>What is left alone, on purpose: a SpEL expression ({@code #{...}}),
+     * because re-evaluating arbitrary expressions is running application code
+     * at a moment it did not choose; and a {@code @Value} constructor
+     * parameter, which has no field to write into, the same immutability the
+     * constructor-bound properties path answers by rebuilding the bean.
+     */
+    private static int reinjectValueFields(Object context, Map<String, String> changed) {
+        int injected = 0;
+        try {
+            Object beanFactory = SpringBeans.getBeanFactory(context);
+            Method resolveEmbedded = SpringBeans.findMethod(beanFactory.getClass(),
+                    "resolveEmbeddedValue", String.class);
+            Method getTypeConverter = findMethod(beanFactory.getClass(), "getTypeConverter");
+            if (resolveEmbedded == null || getTypeConverter == null) return 0;
+
+            ClassLoader loader = context.getClass().getClassLoader();
+            @SuppressWarnings("unchecked")
+            Class<? extends java.lang.annotation.Annotation> valueAnnotation =
+                    (Class<? extends java.lang.annotation.Annotation>) Class.forName(
+                            "org.springframework.beans.factory.annotation.Value", true, loader);
+            Method valueMember = valueAnnotation.getMethod("value");
+
+            Method getSingletonNames = SpringBeans.findMethod(beanFactory.getClass(), "getSingletonNames");
+            Method getSingleton = SpringBeans.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+            if (getSingletonNames == null || getSingleton == null) return 0;
+
+            Object typeConverter = getTypeConverter.invoke(beanFactory);
+            Method convert = SpringBeans.findMethod(typeConverter.getClass(),
+                    "convertIfNecessary", Object.class, Class.class);
+            if (convert != null) convert.setAccessible(true);
+
+            for (String name : (String[]) getSingletonNames.invoke(beanFactory)) {
+                Object bean;
+                try {
+                    bean = getSingleton.invoke(beanFactory, name);
+                } catch (Throwable notNow) {
+                    continue;
+                }
+                if (bean == null) continue;
+                Object target = unwrapAopProxy(bean);
+                injected += reinjectInto(target, changed, valueAnnotation, valueMember,
+                        beanFactory, resolveEmbedded, typeConverter, convert);
+            }
+        } catch (Throwable notSpringShaped) {
+            return injected;
+        }
+        return injected;
+    }
+
+    private static int reinjectInto(Object bean, Map<String, String> changed,
+                                    Class<? extends java.lang.annotation.Annotation> valueAnnotation,
+                                    Method valueMember, Object beanFactory,
+                                    Method resolveEmbedded, Object typeConverter,
+                                    Method convert) {
+        int injected = 0;
+        for (Class<?> c = userClass(bean.getClass()); c != null && c != Object.class;
+                c = c.getSuperclass()) {
+            for (java.lang.reflect.Field field : c.getDeclaredFields()) {
+                try {
+                    java.lang.annotation.Annotation value = field.getAnnotation(valueAnnotation);
+                    if (value == null) continue;
+                    String expression = String.valueOf(valueMember.invoke(value));
+                    if (!referencesChangedKey(expression, changed)) continue;
+                    if (expression.contains("#{")) continue;   // SpEL: stated policy above
+
+                    Object resolved = resolveEmbedded.invoke(beanFactory, expression);
+                    Object converted = convert != null
+                            ? convert.invoke(typeConverter, resolved, field.getType())
+                            : resolved;
+                    field.setAccessible(true);
+                    field.set(bean, converted);
+                    injected++;
+                } catch (Throwable oneField) {
+                    // A field that cannot take the value keeps the one it has;
+                    // the count reports only what really changed.
+                }
+            }
+        }
+        return injected;
+    }
+
+    /** Whether the placeholder text reads any of the changed keys. */
+    static boolean referencesChangedKey(String expression, Map<String, String> changed) {
+        if (expression == null || !expression.contains("${")) return false;
+        for (String key : changed.keySet()) {
+            if (expression.contains("${" + key + "}")
+                    || expression.contains("${" + key + ":")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** The bean behind an AOP proxy, or the bean itself when there is none. */
+    private static Object unwrapAopProxy(Object bean) {
+        try {
+            Object current = bean;
+            for (int depth = 0; depth < 5; depth++) {
+                Method getTargetSource = findMethod(current.getClass(), "getTargetSource");
+                if (getTargetSource == null || !current.getClass().getName().contains("$")) {
+                    return current;
+                }
+                Object targetSource = getTargetSource.invoke(current);
+                if (targetSource == null) return current;
+                Method getTarget = findMethod(targetSource.getClass(), "getTarget");
+                if (getTarget == null) return current;
+                Object target = getTarget.invoke(targetSource);
+                if (target == null || target == current) return current;
+                current = target;
+            }
+            return current;
+        } catch (Throwable notAProxy) {
+            return bean;
+        }
     }
 
     /**

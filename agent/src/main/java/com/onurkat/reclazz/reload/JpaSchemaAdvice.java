@@ -148,7 +148,7 @@ final class JpaSchemaAdvice {
         }
     }
 
-    private static String settingOf(Object factory) {
+    static String settingOf(Object factory) {
         try {
             Object properties = factory.getClass().getMethod("getProperties").invoke(factory);
             if (!(properties instanceof Map<?, ?> map)) return null;

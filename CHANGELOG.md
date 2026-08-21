@@ -6,6 +6,98 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- A brand-new component class becomes a live Spring bean on any JDK.
+  Component scanning runs once at startup, so a class created afterwards
+  loaded fine and its bean simply never existed; a fresh class is also the one
+  place the stock-JDK wall does not stand, because nothing about it lives in a
+  companion. When a never-loaded class file carries one of Spring's stereotype
+  annotations, the agent registers its definition in the context whose
+  classloader defines it and instantiates it through the full lifecycle,
+  autowired constructors included; a new controller's mappings are registered
+  the same moment. Measured live: two files dropped into a running
+  application, "New bean registered" twice, and the new endpoint answered 200
+  with its constructor-injected dependency wired. A failed creation removes
+  the definition again and says so; a name collision defers to the existing
+  bean's own reloader. Found and fixed along the way: the agent's
+  find-loaded-class helper answered "loaded" by loading, which had hidden this
+  whole class of features.
+
+- A brand-new `@Entity` class is mapped without a restart, on a stock
+  JDK, when `jpaRefresh=true`. The persistence unit's managed-class list is
+  scanned once at startup and the rebuild reuses it (measured: the rebuild ran
+  and the fresh metamodel still missed the class), so the new class is first
+  added to the unit info, then the unit is rebuilt and verified to carry it.
+  Measured live on Boot 3.3 with H2: "rebuilt persistence unit 'default' in
+  44ms and the new mapping carries it. The column was created by
+  hbm2ddl.auto=update". With several persistence units the agent declines and
+  says which ambiguity stopped it; ddl-auto is read from the unit about to be
+  rebuilt.
+
+- Members a reload removes disappear from reflection. A stock JDK cannot take
+  a member out of a loaded class, so removed fields and methods stayed visible
+  to every scan and kept being acted on; measured: a removed getter kept being
+  serialised into JSON responses. Removed names now join the same hiding the
+  agent's own injected members use, at the reflection root where available
+  (the JDK's filter maps are extended with a direct union write, past their
+  once-per-class registration API, reached through VarHandles because
+  Reflection filters its own fields out of core reflection) and at the
+  call-site bridge everywhere else. Measured live: the response lost the
+  removed getter's key on the next request. A method name is only hidden when
+  no overload of it survives, and old code already holding the member still
+  runs.
+
+- A changed compile-time constant is named instead of silently half-applying.
+  javac copies a `static final` ConstantValue into every use site, so after a
+  reload every OTHER class keeps the old number, and no tool can fix that from
+  the class that changed. The agent now diffs the ConstantValue attributes
+  against the previous bytecode and warns with both values, stating that the
+  class's own uses are current and inlined call sites keep the old value until
+  their classes are rebuilt. Measured live: constant flipped 7 to 11, the
+  warning named both, and the class's own endpoint served 11.
+
+- A `@Value` placeholder field picks up a changed property. Spring resolves
+  `@Value` once at injection and nothing re-reads it, so the Environment could
+  hold the new value forever while the field kept the old one. On a property
+  save the live singletons are swept, every field whose placeholder reads a
+  changed key is re-resolved through the bean factory's own embedded-value
+  resolver and written in place, AOP proxies unwrapped to their targets first.
+  Measured live: the endpoint served the old value, the file was edited, and
+  the next request served the new one, with "Re-injected 1 @Value field(s)" in
+  the log. Left alone on purpose and stated: SpEL expressions (re-evaluating
+  arbitrary code at a moment it did not choose) and `@Value` constructor
+  parameters.
+
+- The last enum constant can be removed on a running JVM. Removal was refused
+  wholesale because taking a constant out renumbers everything after it; the
+  tail has nothing after it, so the survivors keep their ordinals and the
+  append's machinery runs in reverse: the private array shrinks, the caches
+  clear, `values()` stops returning the constant and `valueOf` throws for its
+  name, which is what removal means. Measured live both on a plain JVM and as
+  an integration scenario on SAP Commerce; a middle removal is still refused
+  with the ordinal explanation, a tail that does not match declines untouched,
+  and an enum is never emptied. Stated where it is done: objects and
+  collections already holding the constant keep it, and a database row storing
+  the name now fails `valueOf`.
+
+- A saved `*-backoffice-config.xml` resets the running backoffice's
+  configuration caches. cockpitng reads the view configuration once and
+  answers from the caches inside its configuration service; the agent now
+  classifies the file, finds every `CockpitConfigurationService` implementing
+  cockpitng's own `Resettable` contract and calls its `reset()`, never
+  `resetToDefaults()`, which would erase the customisations users made.
+  Measured live on SAP Commerce: "Backoffice configuration cache reset
+  (4 service(s))" on save. The honest edge is stated in the log: where the
+  running backoffice reads configuration from the packaged module archive
+  rather than the extension folder, the packaged copy answers until the next
+  build.
+
+- Three integration scenarios hold the new ground on a live SAP Commerce
+  server: a reloaded body full of lambdas (23-scenario suite, all green), an
+  edited `@Cacheable` condition taking effect, and the enum tail removal
+  round-tripping back through an append when the baseline is restored.
+
 ### Fixed
 
 - A lambda edited into a reloaded method body now links. javac gives every
@@ -58,6 +150,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Found and fixed along the way: the cache source renamed its map in Spring
   Framework 6.1 (`attributeCache` to `operationCache`), and until that was
   handled the transaction half cleared while the cache half silently did not.
+  SAP Commerce then measured two deeper layers the Boot proof never hit. The
+  CGLIB proxy class captures its `Method` objects at startup, and a
+  pre-change `Method` keeps its JDK-level annotation parse forever
+  (`Executable`'s cache has no redefinition guard), so the sources are now
+  refilled proactively with fresh post-redefinition `Method` objects, whose
+  equal keys serve the stale lookups too. And Spring's static annotation
+  scanner caches, keyed by an equals-equal `Method`, had to be reset BEFORE
+  that refill, not after: measured in order on a live server, the refill
+  parsed through the poisoned scanner, cached the stale answer, and the late
+  reset changed nothing because nothing re-parses a cached operation. The
+  integration scenario that held this red through three fixes is now green
+  on the 23-scenario suite.
 
 - A Spring Security configuration change is applied to the running filter
   chain. The `SecurityFilterChain` beans are rebuilt so the `@Bean` method

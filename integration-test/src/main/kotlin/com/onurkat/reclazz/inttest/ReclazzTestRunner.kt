@@ -73,6 +73,9 @@ fun main() {
         SyntaxErrorRecoveryTest(config, agentClient, httpVerifier),    // 18
         LargeClassReloadTest(config, agentClient, httpVerifier),       // 19
         AnnotationChangeTest(config, agentClient, httpVerifier),       // 20
+        LambdaReloadTest(config, agentClient, httpVerifier),           // 21
+        CacheableConditionTest(config, agentClient, httpVerifier),     // 22
+        EnumTailRemoveTest(config, agentClient, httpVerifier),         // 23
     )
 
     // V1 template restore mappings
@@ -89,6 +92,8 @@ fun main() {
                 to "EventTestService_v1.java.txt",
         "${config.srcDir}/com/onurkat/reclazztest/services/TestDao.java"
                 to "TestDao_v1.java.txt",
+        "${config.srcDir}/com/onurkat/reclazztest/services/TestStatus.java"
+                to "TestStatus_v1.java.txt",
         "${config.srcDir}/com/onurkat/reclazztest/interceptors/TestValidateInterceptor.java"
                 to "TestValidateInterceptor_v1.java.txt",
         "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java"

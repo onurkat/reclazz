@@ -30,6 +30,14 @@ public enum ChangeKind {
     /** {@code *-spring.xml}, including {@code *-web-spring.xml}. */
     SPRING_XML,
 
+    /**
+     * {@code *-backoffice-config.xml}, the cockpitng view configuration. The
+     * running backoffice merges these once and answers from a cache; the
+     * reload resets that cache through cockpitng's own {@code Resettable}
+     * contract so the next view open re-reads the configuration.
+     */
+    BACKOFFICE_CONFIG,
+
     /** {@code *-items.xml} and {@code *-beans.xml}, which drive code generation. */
     CODEGEN_XML,
 
@@ -84,6 +92,7 @@ public enum ChangeKind {
         // Order matters against the codegen suffixes below only in the sense
         // that a name cannot end with two of them; kept explicit anyway.
         if (fileName.endsWith("-spring.xml")) return SPRING_XML;
+        if (fileName.endsWith("-backoffice-config.xml")) return BACKOFFICE_CONFIG;
         if (fileName.endsWith("-items.xml") || fileName.endsWith("-beans.xml")) return CODEGEN_XML;
 
         // Before the generic properties rule: a locales file is a properties

@@ -770,6 +770,53 @@ public class StructuralReloader {
             com.onurkat.reclazz.transform.ReflectionRootFilter
                     .registerInjectedMembersOn(targetClass);
 
+            // A name this reload brings BACK stops being hidden first, so a
+            // remove-then-restore round trip lands where it started.
+            if (!diff.getAddedFields().isEmpty() || !diff.getAddedMethods().isEmpty()) {
+                java.util.Set<String> restoredFieldNames = new java.util.LinkedHashSet<>();
+                for (String key : diff.getAddedFields()) {
+                    restoredFieldNames.add(key.substring(0, key.indexOf(':')));
+                }
+                java.util.Set<String> restoredMethodNames = new java.util.LinkedHashSet<>();
+                for (String key : diff.getAddedMethods()) {
+                    restoredMethodNames.add(key.substring(0, key.indexOf(':')));
+                }
+                com.onurkat.reclazz.transform.ReflectionRootFilter
+                        .unhideRestoredMembersOn(targetClass, restoredFieldNames, restoredMethodNames);
+            }
+
+            // Members this reload REMOVED stay on the loaded class (a stock
+            // JDK will not take them out), and a scan that keeps seeing them
+            // keeps acting on them: a removed getter kept being serialised.
+            // Hide them the way the injected members are hidden. A method
+            // name is only hidden when no overload of it survives, because
+            // the JDK filter works by name and would take the survivor too.
+            if (!diff.getRemovedFieldSigs().isEmpty() || !diff.getRemovedMethodSigs().isEmpty()) {
+                java.util.Set<String> removedFieldNames = new java.util.LinkedHashSet<>();
+                for (var f : diff.getRemovedFieldSigs()) {
+                    removedFieldNames.add(f.name());
+                }
+                java.util.Set<String> survivingMethodNames = new java.util.LinkedHashSet<>();
+                for (var m : diff.getNewMethods()) {
+                    survivingMethodNames.add(m.name());
+                }
+                java.util.Set<String> removedMethodNames = new java.util.LinkedHashSet<>();
+                for (var m : diff.getRemovedMethodSigs()) {
+                    if (!survivingMethodNames.contains(m.name())) {
+                        removedMethodNames.add(m.name());
+                    }
+                }
+                com.onurkat.reclazz.transform.ReflectionRootFilter
+                        .hideRemovedMembersOn(targetClass, removedFieldNames, removedMethodNames);
+                if (!removedFieldNames.isEmpty() || !removedMethodNames.isEmpty()) {
+                    StatusReporter.info("Removed member(s) hidden from reflection: "
+                            + java.util.stream.Stream.concat(
+                                    removedFieldNames.stream(), removedMethodNames.stream())
+                                    .collect(java.util.stream.Collectors.joining(", "))
+                            + ". Scans no longer see them; old code holding them still runs.");
+                }
+            }
+
             // Two different limits, and they used to be reported as one.
             //
             // An instance field added by a reload is initialised on objects
@@ -810,6 +857,15 @@ public class StructuralReloader {
                 }
                 StatusReporter.info("Added fields are set on new instances; "
                         + "objects that already existed keep the default (null/0/false).");
+            }
+
+            // A pure removal never enters the added-fields branch above, so a
+            // tail removal (the one removal that moves no ordinal) is handed
+            // to the same decider, which applies it or refuses with the same
+            // sentences the other engine uses.
+            if (isEnum(newBytecode) && enumChange != null && diff.getAddedFields().isEmpty()) {
+                EnumConstantAppender.applyOrExplain(className, findLoadedClass(className),
+                        newBytecode, enumChange, instrumentation);
             }
 
             // Update metadata in TransformContext

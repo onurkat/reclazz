@@ -236,6 +236,80 @@ class ReflectionRootFilterTest {
         return new java.lang.ref.WeakReference<>(loader);
     }
 
+    /**
+     * A member a reload REMOVES arrives after the class's one registration
+     * was spent on the injected members, so it reaches the JDK maps through
+     * the union write. This holds that the extension lands (the name
+     * disappears from scans) and that the earlier hiding survives it.
+     */
+    @Test
+    void aRemovedMemberIsHiddenByExtendingTheExistingRegistration() {
+        ReflectionRootFilter filter = new ReflectionRootFilter(instrumentation);
+        assumeTrue(filter.isAvailable(), "no root filter, nothing to extend");
+        ReflectionRootFilter.install(instrumentation);
+
+        filter.registerInjectedMembers(RemovalHost.class);
+        assertTrue(fieldNames(RemovalHost.class).contains("legacyField"),
+                "before the removal the field is an ordinary member");
+
+        ReflectionRootFilter.hideRemovedMembersOn(RemovalHost.class,
+                Set.of("legacyField"), Set.of("legacyMethod"));
+
+        assertFalse(fieldNames(RemovalHost.class).contains("legacyField"),
+                "a removed field must vanish from scans");
+        assertFalse(methodNames(RemovalHost.class).contains("legacyMethod"),
+                "and a removed method with it");
+        assertEquals(List.of(), reclazzNames(fieldNames(RemovalHost.class)),
+                "the injected members registered first must stay hidden too");
+        assertTrue(methodNames(RemovalHost.class).contains("keeper"),
+                "members that were not removed keep showing");
+    }
+
+    /**
+     * The remove-then-restore round trip: hiding must be undoable, or the
+     * integration suite's own baseline restore 404s the endpoint it just
+     * brought back (measured before the unhide path existed).
+     */
+    @Test
+    void aRestoredMemberBecomesVisibleAgain() {
+        ReflectionRootFilter filter = new ReflectionRootFilter(instrumentation);
+        assumeTrue(filter.isAvailable(), "no root filter, nothing to unhide");
+        ReflectionRootFilter.install(instrumentation);
+
+        filter.registerInjectedMembers(RestoreHost.class);
+        ReflectionRootFilter.hideRemovedMembersOn(RestoreHost.class,
+                Set.of("comeback"), Set.of("comebackMethod"));
+        assertFalse(fieldNames(RestoreHost.class).contains("comeback"), "hidden first");
+
+        ReflectionRootFilter.unhideRestoredMembersOn(RestoreHost.class,
+                Set.of("comeback"), Set.of("comebackMethod"));
+
+        assertTrue(fieldNames(RestoreHost.class).contains("comeback"),
+                "a restored field must be visible again");
+        assertTrue(methodNames(RestoreHost.class).contains("comebackMethod"),
+                "and a restored method with it");
+        assertEquals(List.of(), reclazzNames(fieldNames(RestoreHost.class)),
+                "the injected members must stay hidden through the round trip");
+    }
+
+    static class RestoreHost {
+        private Object[] __reclazz$ext = new Object[8];
+        private static final MethodHandles.Lookup __reclazz$lookup = MethodHandles.lookup();
+        @SuppressWarnings("unused")
+        private String comeback = "x";
+        public String comebackMethod() { return "x"; }
+    }
+
+    /** Carries injected members plus a member a later reload "removes". */
+    static class RemovalHost {
+        private Object[] __reclazz$ext = new Object[8];
+        private static final MethodHandles.Lookup __reclazz$lookup = MethodHandles.lookup();
+        @SuppressWarnings("unused")
+        private String legacyField = "old";
+        public String legacyMethod() { return "old"; }
+        public String keeper() { return "still-here"; }
+    }
+
     private static List<String> fieldNames(Class<?> c) {
         return Arrays.stream(c.getDeclaredFields()).map(Field::getName).toList();
     }

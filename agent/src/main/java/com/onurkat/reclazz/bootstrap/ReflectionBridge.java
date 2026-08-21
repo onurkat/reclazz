@@ -67,6 +67,60 @@ public final class ReflectionBridge {
     }
 
     /**
+     * Names a reload REMOVED from a class, hidden the same way the injected
+     * members are. The loaded class keeps the member (a stock JDK will not
+     * take it out), but the source no longer has it, and a scan that still
+     * sees it acts on it: a removed getter kept being serialised. Held per
+     * class in a {@link ClassValue} so the record dies with the class.
+     * Index 0 is field names, 1 is method names.
+     */
+    private static final ClassValue<java.util.Set<String>[]> REMOVED_NAMES =
+            new ClassValue<>() {
+                @Override
+                @SuppressWarnings("unchecked")
+                protected java.util.Set<String>[] computeValue(Class<?> type) {
+                    return new java.util.Set[] {
+                            java.util.concurrent.ConcurrentHashMap.newKeySet(),
+                            java.util.concurrent.ConcurrentHashMap.newKeySet(),
+                    };
+                }
+            };
+
+    /** Record removed names so the bridge stops showing them. */
+    public static void hideRemovedMembers(Class<?> clazz,
+                                          java.util.Set<String> fieldNames,
+                                          java.util.Set<String> methodNames) {
+        if (clazz == null) return;
+        java.util.Set<String>[] removed = REMOVED_NAMES.get(clazz);
+        if (fieldNames != null) removed[0].addAll(fieldNames);
+        if (methodNames != null) removed[1].addAll(methodNames);
+    }
+
+    /**
+     * A member the source REMOVED and a later save brought BACK stops being
+     * hidden, or the restore would 404 its endpoint forever (measured: the
+     * integration suite's own baseline restore did exactly that).
+     */
+    public static void unhideRestoredMembers(Class<?> clazz,
+                                             java.util.Set<String> fieldNames,
+                                             java.util.Set<String> methodNames) {
+        if (clazz == null) return;
+        java.util.Set<String>[] removed = REMOVED_NAMES.get(clazz);
+        if (fieldNames != null) removed[0].removeAll(fieldNames);
+        if (methodNames != null) removed[1].removeAll(methodNames);
+    }
+
+    private static boolean hiddenMethod(Method m) {
+        return isInternal(m.getName())
+                || REMOVED_NAMES.get(m.getDeclaringClass())[1].contains(m.getName());
+    }
+
+    private static boolean hiddenField(Field f) {
+        return isInternal(f.getName())
+                || REMOVED_NAMES.get(f.getDeclaringClass())[0].contains(f.getName());
+    }
+
+    /**
      * Both hide methods return the array unchanged when there is nothing to
      * strip. Reflection over members is hot enough that allocating a copy per
      * call, for the many classes Reclazz never touched, would be a poor trade.
@@ -74,14 +128,14 @@ public final class ReflectionBridge {
     private static Method[] hideInternal(Method[] methods) {
         int keep = 0;
         for (Method m : methods) {
-            if (!isInternal(m.getName())) keep++;
+            if (!hiddenMethod(m)) keep++;
         }
         if (keep == methods.length) return methods;
 
         Method[] visible = new Method[keep];
         int i = 0;
         for (Method m : methods) {
-            if (!isInternal(m.getName())) visible[i++] = m;
+            if (!hiddenMethod(m)) visible[i++] = m;
         }
         return visible;
     }
@@ -89,14 +143,14 @@ public final class ReflectionBridge {
     private static Field[] hideInternal(Field[] fields) {
         int keep = 0;
         for (Field f : fields) {
-            if (!isInternal(f.getName())) keep++;
+            if (!hiddenField(f)) keep++;
         }
         if (keep == fields.length) return fields;
 
         Field[] visible = new Field[keep];
         int i = 0;
         for (Field f : fields) {
-            if (!isInternal(f.getName())) visible[i++] = f;
+            if (!hiddenField(f)) visible[i++] = f;
         }
         return visible;
     }

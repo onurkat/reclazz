@@ -101,6 +101,16 @@ class XmlChangeDetectionTest {
                 "web contexts use this name and must not fall through");
     }
 
+    @Test
+    void backofficeConfigGoesToTheCockpitCacheReset() {
+        assertEquals(ChangeKind.BACKOFFICE_CONFIG,
+                ChangeKind.of("generacb2bbackoffice-backoffice-config.xml"));
+        assertNotEquals(ChangeKind.BACKOFFICE_CONFIG, ChangeKind.of("a-spring.xml"),
+                "the suffix rules must not bleed into each other");
+        assertNotEquals(ChangeKind.BACKOFFICE_CONFIG, ChangeKind.of("backoffice-config.properties"),
+                "only the XML convention counts");
+    }
+
     /**
      * The three XML kinds share a suffix and must not be confused: a
      * beans.xml sent to the Spring reloader would be parsed as a bean
