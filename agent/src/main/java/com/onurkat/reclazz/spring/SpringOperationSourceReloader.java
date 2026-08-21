@@ -61,6 +61,19 @@ public class SpringOperationSourceReloader {
     public int reloadOperationSources(Class<?> reloadedClass, boolean annotationsChanged) {
         if (reloadedClass == null) return 0;
 
+        // FIRST, before any re-parse below: the operation sources parse
+        // through Spring's own annotation machinery, whose static caches
+        // (AnnotationsScanner and friends) key by an equals-equal Method that
+        // survives redefinition. Measured on SAP Commerce, in order: the
+        // scanner cache was poisoned pre-reload through the CGLIB proxy's
+        // startup-captured Method objects, the repopulation below then parsed
+        // THROUGH that poison and cached stale operations, and clearing the
+        // scanner afterwards changed nothing because nothing re-parses a
+        // cached operation. Direct JDK reflection on the same Method read the
+        // new annotation the whole time, which is what pinned it on Spring's
+        // caches rather than the redefinition.
+        clearSpringAnnotationCaches(reloadedClass);
+
         // Named per source, because the two can succeed independently and a
         // combined line was measured claiming a clear that had not happened.
         java.util.Set<String> cleared = new java.util.LinkedHashSet<>();
@@ -76,6 +89,19 @@ public class SpringOperationSourceReloader {
                         if (clearAttributeCache(source)) {
                             cleared.add(type.contains("transaction") ? "transaction" : "cache");
                         }
+                        // Clearing alone was measured insufficient on SAP
+                        // Commerce: the interceptor asks with the Method
+                        // objects the CGLIB proxy class captured at startup,
+                        // and a pre-change Method keeps its JDK-level
+                        // annotation parse forever (Executable's cache has no
+                        // redefinition guard), so the re-parse answered the
+                        // old annotation out of an object nothing refreshes.
+                        // The cache keys compare methods by equality, not
+                        // identity, so filling the cache here with FRESH
+                        // Method objects (post-redefinition roots, current
+                        // annotations) makes every stale-Method lookup a hit
+                        // on a fresh value that never re-parses.
+                        repopulateFor(source, reloadedClass);
                     } catch (Throwable ignored) {
                         // A source that cannot be read keeps its cache; the
                         // stale-metadata window stays what it was before this
@@ -90,6 +116,57 @@ public class SpringOperationSourceReloader {
                     + " annotation metadata re-read for " + reloadedClass.getName());
         }
         return cleared.size();
+    }
+
+    /**
+     * Ask the source about every public method of the reloaded class, with
+     * Method objects taken fresh from the redefined class, so the answers
+     * cached are parsed from the current annotations. Which asking method the
+     * source has decides which kind it is; a source with neither is left to
+     * repopulate on its own.
+     */
+    private static void repopulateFor(Object source, Class<?> reloadedClass) {
+        java.lang.reflect.Method ask =
+                SpringBeans.findMethod(source.getClass(), "getCacheOperations",
+                        java.lang.reflect.Method.class, Class.class);
+        if (ask == null) {
+            ask = SpringBeans.findMethod(source.getClass(), "getTransactionAttribute",
+                    java.lang.reflect.Method.class, Class.class);
+        }
+        if (ask == null) return;
+        for (java.lang.reflect.Method method : reloadedClass.getDeclaredMethods()) {
+            if (!java.lang.reflect.Modifier.isPublic(method.getModifiers())) continue;
+            if (method.isSynthetic()) continue;
+            try {
+                ask.invoke(source, method, reloadedClass);
+            } catch (Throwable oneMethod) {
+                // A method the source will not answer for stays lazily
+                // resolved, exactly as it was before this existed.
+            }
+        }
+    }
+
+    /**
+     * {@code AnnotationUtils.clearCache()} and
+     * {@code ReflectionUtils.clearCache()}, resolved against the reloaded
+     * class's own Spring. Both are public statics Spring ships for exactly
+     * this, both repopulate on the next lookup, and a Spring that removed
+     * them makes this a no-op.
+     */
+    private static void clearSpringAnnotationCaches(Class<?> reloadedClass) {
+        ClassLoader loader = reloadedClass.getClassLoader();
+        if (loader == null) return;
+        for (String utility : new String[] {
+                "org.springframework.core.annotation.AnnotationUtils",
+                "org.springframework.util.ReflectionUtils"}) {
+            try {
+                Class.forName(utility, false, loader)
+                        .getMethod("clearCache").invoke(null);
+            } catch (Throwable notThere) {
+                // No Spring on this loader, or no such reset: nothing cached
+                // there to go stale either.
+            }
+        }
     }
 
     /**

@@ -174,6 +174,93 @@ public final class EnumSurgery {
     }
 
     /**
+     * Take constants off the end of a loaded enum.
+     *
+     * <p>The append's exact mirror, allowed for the mirror-image reason: the
+     * survivors keep their ordinals, so nothing indexed by ordinal moves. The
+     * private array is shrunk and the two caches on {@code Class} cleared, so
+     * {@code values()} stops returning the constant and {@code valueOf} stops
+     * accepting its name. What is deliberately not touched: the removed
+     * instance itself, which any object or collection built earlier may still
+     * hold; the static field on the loaded class, which a stock JDK will not
+     * remove and old code may still read; and switch tables, whose extra slot
+     * is simply never indexed by code that no longer has the constant.
+     *
+     * @param names the constants to drop, in declaration order, which must be
+     *              exactly the current tail of the enum
+     */
+    public static Outcome removeFromEnd(Class<?> enumClass, List<String> names) {
+        if (enumClass == null || !enumClass.isEnum() || names == null || names.isEmpty()) {
+            return Outcome.declined("nothing to remove");
+        }
+        if (!UnsafeAccess.isAvailable()) {
+            return Outcome.declined("this JVM does not expose the memory access this needs");
+        }
+
+        Object[] initialised = enumClass.getEnumConstants();
+        if (initialised == null || initialised.length == 0) {
+            return Outcome.declined("the enum has no constants yet, so there is nothing to remove");
+        }
+
+        Field valuesField = findValuesArray(enumClass);
+        if (valuesField == null) {
+            return Outcome.declined("the enum's private constant array was not found "
+                    + "(this JDK names it differently)");
+        }
+        Field constantsCache = declaredField(Class.class, "enumConstants");
+        Field directoryCache = declaredField(Class.class, "enumConstantDirectory");
+        if (constantsCache == null || directoryCache == null) {
+            return Outcome.declined("java.lang.Class does not have the expected enum caches");
+        }
+
+        try {
+            Object[] existing = (Object[]) UnsafeAccess.getStatic(valuesField);
+            if (existing == null) {
+                return Outcome.declined("the enum's constant array is empty after initialisation");
+            }
+            if (!existing.getClass().getComponentType().equals(enumClass)) {
+                return Outcome.declined("the enum's constant array is not the expected type");
+            }
+            if (existing.length <= names.size()) {
+                return Outcome.declined("removing " + names + " would leave the enum with no "
+                        + "constants, which no JVM will run");
+            }
+            // The tail has to be exactly what the caller believes it is, or
+            // the wrong constants disappear. Checked before anything is
+            // written, like everything else here.
+            int firstRemoved = existing.length - names.size();
+            for (int i = 0; i < names.size(); i++) {
+                String liveName = ((Enum<?>) existing[firstRemoved + i]).name();
+                if (!liveName.equals(names.get(i))) {
+                    return Outcome.declined("the running enum's tail is not " + names
+                            + "; nothing was changed");
+                }
+            }
+
+            Object[] shrunk = (Object[]) Array.newInstance(enumClass, firstRemoved);
+            System.arraycopy(existing, 0, shrunk, 0, firstRemoved);
+            UnsafeAccess.putStatic(valuesField, shrunk);
+
+            UnsafeAccess.putObject(enumClass, constantsCache, null);
+            UnsafeAccess.putObject(enumClass, directoryCache, null);
+
+            // Same publication guarantee as the append: a thread calling
+            // values() or valueOf() concurrently gets a happens-before edge to
+            // the shrunk array and the cleared caches.
+            UnsafeAccess.storeFence();
+        } catch (UnsafeAccess.MemoryAccessUnavailable e) {
+            return Outcome.declined("this JVM does not allow the memory access an enum "
+                    + "removal needs. JDK 26 refuses it by default; starting the JVM with "
+                    + "--sun-misc-unsafe-memory-access=allow gives it back for as long as "
+                    + "that flag exists. Nothing was changed");
+        } catch (Throwable t) {
+            return Outcome.declined("the constant could not be removed: " + t);
+        }
+
+        return new Outcome(names, null);
+    }
+
+    /**
      * Grow every switch table that was sized for the old constant count.
      *
      * <p>javac compiles a switch over an enum into a lookup through a synthetic

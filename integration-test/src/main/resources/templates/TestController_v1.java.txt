@@ -112,4 +112,20 @@ public class TestController {
     public String dao() {
         return testDao.query();
     }
+
+    @RequestMapping(value = "/enum-status", method = RequestMethod.GET)
+    public String enumStatus() {
+        final StringBuilder sb = new StringBuilder();
+        for (final com.onurkat.reclazztest.services.TestStatus s
+                : com.onurkat.reclazztest.services.TestStatus.values()) {
+            sb.append(s.name()).append(":").append(s.ordinal()).append(",");
+        }
+        try {
+            com.onurkat.reclazztest.services.TestStatus.valueOf("ARCHIVED");
+            sb.append("ARCHIVED=OK");
+        } catch (IllegalArgumentException e) {
+            sb.append("ARCHIVED=GONE");
+        }
+        return sb.toString();
+    }
 }

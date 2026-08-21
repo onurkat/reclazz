@@ -507,6 +507,18 @@ public class ReclazzAgent {
                     }
                 }
                 case SPRING_XML -> handleSpringXmlChange(event);
+                case BACKOFFICE_CONFIG -> {
+                    StatusReporter.info("Backoffice config changed: "
+                            + event.getPath().getFileName() + " [" + event.getModuleName() + "]");
+                    int reset = com.onurkat.reclazz.hybris.backoffice.BackofficeConfigReloader
+                            .reload(event.getPath().getFileName().toString(),
+                                    platformContext.getAllApplicationContexts());
+                    if (reset == 0) {
+                        StatusReporter.info("No running backoffice holds this configuration "
+                                + "(the backoffice web context is not up, or this is not a "
+                                + "backoffice server). Nothing to reset.");
+                    }
+                }
                 case CODEGEN_XML -> handleCodegenXmlChange(event);
                 case PROPERTIES -> handlePropertiesChange(event);
                 case LOGGING_CONFIG -> handleLoggingConfigChange(event);
@@ -562,6 +574,21 @@ public class ReclazzAgent {
             }
 
             long startTime = System.currentTimeMillis();
+
+            com.onurkat.reclazz.reload.ConstantChangeWarning.check(
+                    internalName, className, bytecode);
+
+            // A class the JVM has never loaded is exactly the case where the
+            // stock-JDK wall does not stand: everything about it is real. If
+            // it carries a Spring stereotype it becomes a live bean here, and
+            // the ordinary reload machinery has nothing left to do for it.
+            if (!alreadyLoaded(className)) {
+                if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
+                    return;
+                }
+                com.onurkat.reclazz.reload.JpaMappingRefresh.maybeMapNewEntity(
+                        className, bytecode, platformContext.getAllApplicationContexts());
+            }
 
             ClassReloader.ReloadResult reloadResult;
             if (structuralReloader != null && transformContext != null
@@ -682,6 +709,20 @@ public class ReclazzAgent {
             // Per-class isolation: one class failing (possibly with an Error,
             // e.g. VerifyError from companion generation on a nested class)
             // must not abort the rest of the batch.
+            com.onurkat.reclazz.reload.ConstantChangeWarning.check(
+                    internalName, className, bytecode);
+
+            // Same as the single-file path: a never-loaded stereotype class
+            // becomes a live bean and is done.
+            if (!alreadyLoaded(className)) {
+                if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
+                    successCount++;
+                    continue;
+                }
+                com.onurkat.reclazz.reload.JpaMappingRefresh.maybeMapNewEntity(
+                        className, bytecode, platformContext.getAllApplicationContexts());
+            }
+
             ClassReloader.ReloadResult reloadResult;
             try {
                 if (structuralReloader != null && transformContext != null
@@ -863,10 +904,13 @@ public class ReclazzAgent {
         // rather than the Environment, and the branch above is what applies
         // them there. Reaching into a hundred web contexts to add a source
         // nothing reads would be work for its own sake.
-        java.util.List<String> rebound = (platformContext instanceof HybrisPlatformContext)
-                ? java.util.List.<String>of()
+        com.onurkat.reclazz.spring.SpringPropertyRebinder.Applied applied =
+                (platformContext instanceof HybrisPlatformContext)
+                ? new com.onurkat.reclazz.spring.SpringPropertyRebinder.Applied(
+                        java.util.List.of(), 0)
                 : new com.onurkat.reclazz.spring.SpringPropertyRebinder(
                         platformContext.getAllApplicationContexts()).apply(changed);
+        java.util.List<String> rebound = applied.rebound();
         if (!rebound.isEmpty()) {
             StatusReporter.success("Rebound " + rebound.size() + " @ConfigurationProperties bean(s): "
                     + (rebound.size() > 5 ? rebound.subList(0, 5) + " …" : rebound.toString()));
@@ -874,7 +918,7 @@ public class ReclazzAgent {
 
         // Warning about a restart after the change has been applied would tell
         // the developer to do the one thing this just saved them.
-        if (!rebound.isEmpty()) return;
+        if (applied.tookEffect()) return;
         if (levelsApplied > 0 && changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey)) {
             return;
         }
@@ -1018,6 +1062,23 @@ public class ReclazzAgent {
             return;
         }
         reloader.handle(event);
+    }
+
+
+    /**
+     * Whether the JVM has ALREADY loaded a class of this name, asked without
+     * loading it. {@code ClassLookup.findLoadedClass} answers a different
+     * question despite its name: it resolves through {@code Class.forName}
+     * and thereby loads the class it is asked about, which is fine for the
+     * reload paths (their classes are loaded by definition) and exactly wrong
+     * for "is this file a brand-new class", where the asking must not change
+     * the answer.
+     */
+    private static boolean alreadyLoaded(String className) {
+        for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+            if (className.equals(loaded.getName())) return true;
+        }
+        return false;
     }
 
     private static Class<?> findLoadedClass(String className) {

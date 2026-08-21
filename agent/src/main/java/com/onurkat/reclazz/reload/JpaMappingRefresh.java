@@ -53,7 +53,7 @@ import java.util.Map;
  *       class's private field.</li>
  * </ul>
  */
-final class JpaMappingRefresh {
+public final class JpaMappingRefresh {
 
     /**
      * Appended to the warning only when everything else qualifies and the
@@ -76,6 +76,163 @@ final class JpaMappingRefresh {
      * existing warning already says, except the opt-in hint in the single case
      * where the flag is genuinely all that is missing.
      */
+    /**
+     * A brand-new entity class: the one JPA case the stock-JDK wall does not
+     * touch, because everything about a fresh class is real and Hibernate's
+     * reflection sees all of it. No enhanced-redefinition VM is required, so
+     * this path deliberately skips that check. The factory to rebuild cannot
+     * be found by "which unit manages this entity" (none does yet); with
+     * exactly one persistence unit the answer is obvious, and with several
+     * the honest move is to decline and name the ambiguity.
+     */
+    public static void applyForNewEntity(String className, Class<?> entityClass) {
+        try {
+            if (!optedIn()) {
+                com.onurkat.reclazz.ui.StatusReporter.info("New entity " + className
+                        + " is on the classpath but no persistence unit maps it."
+                        + OPT_IN_HINT);
+                return;
+            }
+            Object factoryBean = soleFactoryBean();
+            if (factoryBean == null) {
+                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                        + " found, but there is not exactly one persistence unit to "
+                        + "rebuild, and guessing would map it into the wrong one. "
+                        + "A restart maps it.");
+                return;
+            }
+            // The setting is read off the unit about to be rebuilt. The usual
+            // lookup walks "the factory managing this entity", which for a
+            // NEW entity is by definition nobody (measured: it answered unset
+            // while the property said update).
+            String ddlAuto = JpaSchemaAdvice.settingOf(nativeFactoryField(factoryBean).get(factoryBean));
+            if (!ddlAutoQualifies(ddlAuto)) {
+                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                        + " needs its table, and hbm2ddl.auto="
+                        + (ddlAuto == null ? "unset" : ddlAuto)
+                        + " will not create it during a rebuild; the mapping is left "
+                        + "for a restart after the table exists.");
+                return;
+            }
+            // The unit's managed-class list was scanned once at startup and
+            // the rebuild reuses it, so the new class has to be added to the
+            // unit info first (measured: without this the rebuild ran and the
+            // fresh metamodel still did not carry the entity).
+            if (!addManagedClass(factoryBean, className)) {
+                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                        + " could not be added to the persistence unit's managed classes; "
+                        + "a restart maps it.");
+                return;
+            }
+            Result result = rebuild(className, entityClass,
+                    new JpaEntityChange.Change(java.util.List.of("its first mapping"), java.util.List.of()), factoryBean, ddlAuto);
+            if (!result.refreshed()) {
+                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                        + " could not be mapped:" + result.appendix());
+            }
+        } catch (Throwable t) {
+            Throwable root = t;
+            while (root.getCause() != null) root = root.getCause();
+            com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                    + " could not be mapped: " + root);
+        }
+    }
+
+    /**
+     * The new-class entry point: when the bytecode carries {@code @Entity},
+     * resolve the class through a context classloader and map it. Quiet for
+     * everything else.
+     */
+    public static void maybeMapNewEntity(String className, byte[] bytecode,
+                                         java.util.List<Object> contexts) {
+        try {
+            if (className == null || bytecode == null || className.contains("$")) return;
+            if (!carriesEntityAnnotation(bytecode)) return;
+            for (Object context : contexts) {
+                try {
+                    ClassLoader loader = (ClassLoader) context.getClass()
+                            .getMethod("getClassLoader").invoke(context);
+                    if (loader == null) continue;
+                    Class<?> entityClass = Class.forName(className, false, loader);
+                    applyForNewEntity(className, entityClass);
+                    return;
+                } catch (Throwable notHere) {
+                    // the next context may resolve it
+                }
+            }
+        } catch (Throwable never) {
+            // A probe that cannot run maps nothing and breaks nothing.
+        }
+    }
+
+    private static boolean carriesEntityAnnotation(byte[] bytecode) {
+        final boolean[] found = new boolean[1];
+        try {
+            new org.objectweb.asm.ClassReader(bytecode).accept(
+                    new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override
+                        public org.objectweb.asm.AnnotationVisitor visitAnnotation(
+                                String descriptor, boolean visible) {
+                            if (descriptor.equals("Ljakarta/persistence/Entity;")
+                                    || descriptor.equals("Ljavax/persistence/Entity;")) {
+                                found[0] = true;
+                            }
+                            return null;
+                        }
+                    }, org.objectweb.asm.ClassReader.SKIP_CODE);
+        } catch (Throwable unreadable) {
+            return false;
+        }
+        return found[0];
+    }
+
+    /** Put the class on the unit info the rebuild will read. */
+    private static boolean addManagedClass(Object factoryBean, String className) {
+        try {
+            for (Class<?> c = factoryBean.getClass(); c != null; c = c.getSuperclass()) {
+                Field info;
+                try {
+                    info = c.getDeclaredField("persistenceUnitInfo");
+                } catch (NoSuchFieldException next) {
+                    continue;
+                }
+                info.setAccessible(true);
+                Object unitInfo = info.get(factoryBean);
+                if (unitInfo == null) return false;
+                @SuppressWarnings("unchecked")
+                java.util.List<String> managed = (java.util.List<String>) unitInfo.getClass()
+                        .getMethod("getManagedClassNames").invoke(unitInfo);
+                if (!managed.contains(className)) managed.add(className);
+                return true;
+            }
+        } catch (Throwable t) {
+            return false;
+        }
+        return false;
+    }
+
+    /** The one factory bean across every context, or null when it is not one. */
+    private static Object soleFactoryBean() {
+        Object found = null;
+        for (Object context : ApplicationContextHolder.getAllContexts()) {
+            try {
+                Class<?> beanType = Class.forName(
+                        "org.springframework.orm.jpa.AbstractEntityManagerFactoryBean",
+                        false, context.getClass().getClassLoader());
+                Method getBeansOfType = context.getClass().getMethod("getBeansOfType", Class.class);
+                Object beans = getBeansOfType.invoke(context, beanType);
+                if (!(beans instanceof Map<?, ?> map)) continue;
+                for (Object bean : map.values()) {
+                    if (found != null && found != bean) return null;   // ambiguous
+                    found = bean;
+                }
+            } catch (Throwable ignored) {
+                // A context without Spring ORM offers nothing.
+            }
+        }
+        return found;
+    }
+
     static Result apply(String className, Class<?> entityClass, JpaEntityChange.Change change) {
         try {
             if (!vmQualifies()) return Result.DECLINED;

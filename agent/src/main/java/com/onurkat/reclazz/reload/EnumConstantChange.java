@@ -141,6 +141,52 @@ public final class EnumConstantChange {
         return after.subList(existing, after.size());
     }
 
+    /**
+     * Whether this change only takes constants off the end.
+     *
+     * <p>The refusal of removal is about ordinals: taking a constant out of
+     * the middle renumbers everything after it. Taking the LAST constant off
+     * moves nothing, the survivors keep the ordinals they had, and every
+     * ordinal-indexed structure stays right. It is the append's exact mirror,
+     * and it is allowed for the mirror-image reason. At least one constant
+     * has to survive: the JVM will not have an enum with none, and neither
+     * will this.
+     */
+    public static boolean isTailRemovalOnly(Class<?> loaded, byte[] newBytecode) {
+        if (loaded == null || newBytecode == null || !loaded.isEnum()) return false;
+
+        List<String> before = liveConstants(loaded);
+        if (before == null) return false;
+        List<String> after;
+        try {
+            after = new ArrayList<>(constantsIn(newBytecode));
+        } catch (RuntimeException e) {
+            return false;
+        }
+        if (after.isEmpty() || after.size() >= before.size()) return false;
+        return before.subList(0, after.size()).equals(after);
+    }
+
+    /** The constants this version drops from the end, in declaration order. */
+    public static List<String> removedTailNames(Class<?> loaded, byte[] newBytecode) {
+        if (!isTailRemovalOnly(loaded, newBytecode)) return List.of();
+        List<String> before = liveConstants(loaded);
+        int surviving = constantsIn(newBytecode).size();
+        return new ArrayList<>(before.subList(surviving, before.size()));
+    }
+
+    /** The success report for a tail removal, with its honest edges. */
+    public static void reportTailRemoved(String className, List<String> names, int mappers) {
+        com.onurkat.reclazz.ui.StatusReporter.success("Enum " + className + " dropped "
+                + names + " from the end: values() and valueOf() no longer include "
+                + (names.size() == 1 ? "it" : "them") + ", and no ordinal moved."
+                + (mappers > 0 ? " Jackson enum caches flushed on " + mappers
+                        + " ObjectMapper(s)." : ""));
+        com.onurkat.reclazz.ui.StatusReporter.info("Objects and collections that already "
+                + "hold the constant keep it, and a database row storing the name now "
+                + "fails valueOf, which is what removal means.");
+    }
+
     /** Check and say so. */
     public static void reportIfChanged(String className, Class<?> loaded, byte[] newBytecode) {
         report(className, check(loaded, newBytecode));
@@ -179,11 +225,11 @@ public final class EnumConstantChange {
         }
     }
 
-    /** Said when the change was more than an append, which cannot be applied. */
+    /** Said when the change moves ordinals, which cannot be applied. */
     public static void reportNotAppendOnly(String className, Change change) {
         com.onurkat.reclazz.ui.StatusReporter.warn("Enum " + className + " " + change.describe()
-                + ". Only constants added on the end can be applied to a running JVM: inserting, "
-                + "removing or reordering renumbers the constants after the change, and everything "
+                + ". Only the end of an enum can change on a running JVM, added or removed: "
+                + "anything else renumbers the constants after the change, and everything "
                 + "indexed by ordinal is then wrong, including any @Enumerated column already in "
                 + "your database. Restart to pick this up. Everything else in this class reloaded.");
         com.onurkat.reclazz.agent.RestartLedger.note(className,
