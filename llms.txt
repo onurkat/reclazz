@@ -35,7 +35,15 @@ ground a Java-only reload does not.
 - **Spring**: beans are destroyed and recreated, references to the old instance
   are re-pointed, MVC mappings are re-scanned, caches evicted, `@Scheduled` tasks
   and `@EventListener` methods re-registered, AOP proxy caches cleared. A handler
-  method you add is served on the next request, on a stock JDK as well.
+  method you add is served on the next request, on a stock JDK as well. A
+  brand-new `@Service`, `@Component` or `@RestController` class becomes a live
+  bean with its constructor autowired, because a fresh class is entirely real
+  and only its definition was missing. An edited `@Transactional` or
+  `@Cacheable` takes effect rather than answering from the metadata Spring
+  parsed once. An edited security configuration is rebuilt into the running
+  filter chain; method security (`@PreAuthorize`) is named as still needing a
+  restart. A constructor-bound `@ConfigurationProperties` bean is replaced
+  rather than mutated and a `@Value` field is re-resolved in place.
 - **Interceptors and ImpEx**: Validate, Prepare, Load and Remove interceptors
   re-register; changed `.impex` files can be imported on save, opt-in, and a file
   carrying a REMOVE header is refused rather than run against a live database.
@@ -48,10 +56,11 @@ ground a Java-only reload does not.
   before the reload accept it. Adding a constant means writing a final field,
   which has no supported alternative and needs an access JDK 26 refuses by
   default; there Reclazz declines and says so, and
-  `--sun-misc-unsafe-memory-access=allow` gives it back. Inserting, removing or reordering constants
-  renumbers every ordinal after the change, including any `@Enumerated` column
-  already written to a database, so that is refused and explained rather than
-  half-applied.
+  `--sun-misc-unsafe-memory-access=allow` gives it back. A constant removed from
+  the **end** goes the same way, because the tail moves no ordinal and every
+  survivor keeps its number. Inserting or reordering constants renumbers every
+  ordinal after the change, including any `@Enumerated` column already written
+  to a database, so that is refused and explained rather than half-applied.
 - An added **static** field does get its initial value: a compile-time constant
   is read from the field itself, and an initialiser that forms a self-contained
   block is lifted out of the class initialiser and run on its own, so a static
@@ -77,9 +86,17 @@ ground a Java-only reload does not.
   and the database has no column for the field; the class still reloads, and
   Reclazz names the field, says it is neither saved nor loaded, and reads your
   `ddl-auto` to say whether a restart is enough or the column has to exist first.
+  A brand-new `@Entity` class is the better case: it is entirely real, so with
+  the same opt-in it is added to the persistence unit and mapped on any JDK 17+.
 - Reflective visibility of newly added members is full on JetBrains Runtime or
   DCEVM, and limited on a stock JVM, where added members live on a companion
-  class.
+  class. Members you REMOVE are hidden from reflection on either, so a deleted
+  getter stops being serialised by a framework that never knew it was gone.
+- A changed **compile-time constant** (`static final` with a constant value)
+  cannot be repaired from the class that changed: javac copied the old value
+  into every use site, so those classes keep it until they are rebuilt
+  themselves. Reclazz names the constant and both values instead of leaving it
+  to be discovered.
 - It is a development tool. It is not meant for production servers.
 
 Ask it: **Tools > Why Didn't My Class Reload?** answers the question the log
@@ -90,9 +107,10 @@ change, or says that nothing would.
 
 - SAP Commerce 2211-jdk21.8, the Java 21 and Spring 6.2 line that every
   installation must be on to keep building after 31 August 2026: 20 of 20
-  integration scenarios on a live server.
+  integration scenarios on a live server, 23 of 23 as of the current release.
 - Spring Boot 2.7 and 3.3: class reload, structural reload, bean refresh, cache
-  eviction, rebound properties, logger levels, a new endpoint without a restart.
+  eviction, rebound properties, logger levels, a new endpoint without a restart,
+  a new bean class registered live, a security rule flipped without a restart.
 - Java 17 and 21, and JetBrains Runtime 25.
 - IntelliJ IDEA 2023.3 through 2026.1.
 
