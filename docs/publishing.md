@@ -60,7 +60,35 @@ directly publishes it as `reclazz-X.Y.Z-signed.zip` and breaks the run.
 The last two steps used to live only in whoever was doing the release.
 1.0.8 went to the Marketplace and got its tag, and the GitHub release was
 simply forgotten, so for a while the repository's newest release was one
-version behind what people were installing.
+version behind what people were installing. It happened again, and worse:
+1.0.24, 1.0.25 and 1.0.26 all shipped without one, and the repository's
+newest release read 1.0.23 while users were installing 1.0.26. The backfill
+is possible (the tags are the source of truth, and a rebuild from the tag
+carries the same code under a fresh signature), but the artifact that
+actually shipped is gone once a later build overwrites `build/distributions`.
+Do this step in the same sitting as the publish.
+
+## Then hide what it supersedes
+
+```bash
+# what the Marketplace currently offers, hidden versions excluded
+curl -s "https://plugins.jetbrains.com/api/plugins/33498/updates?size=100" |
+  python3 -c "import json,sys;[print(u['version'], u['compatibleVersions']) for u in json.load(sys.stdin)]"
+```
+
+Hiding is a UI action: plugins.jetbrains.com > the plugin > Versions > hide.
+There is no upload-token endpoint for it, so it cannot be scripted with the
+token the publish step uses.
+
+Hide, never delete. Deleting is irreversible and takes the rollback path with
+it; hiding keeps the artifact and the history that explains how a defect was
+found. Keep the git tag either way, because it is what answers "what was the
+source at this version".
+
+A version is safe to hide when the new one covers the same IDE range, which
+the `compatibleVersions` above shows directly. When the ranges differ, the
+older version is the only thing some users can install, and hiding it strands
+them.
 
 ## Release notes live in two files
 
