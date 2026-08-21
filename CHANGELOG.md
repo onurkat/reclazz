@@ -4,9 +4,70 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [Unreleased]
+## [1.0.27] - 2026-08-21
 
 ### Added
+
+- An edited `@Transactional` or `@Cacheable` annotation now takes effect on
+  reload. Spring resolves a method's transaction attribute and cache operations
+  once and files the answer under the method, which redefinition does not
+  change, so a `readOnly` flipped to writable kept running read-only and a
+  `@Cacheable` given a disabling condition kept caching, with nothing anywhere
+  reporting it. After a reload the agent clears those metadata caches
+  reflectively; measured live on Boot 3.3: the transaction definition the
+  manager receives follows the annotation on the next call, and a
+  `@Cacheable(condition = "false")` stops serving from the cache immediately.
+  Found and fixed along the way: the cache source renamed its map in Spring
+  Framework 6.1 (`attributeCache` to `operationCache`), and until that was
+  handled the transaction half cleared while the cache half silently did not.
+  SAP Commerce then measured two deeper layers the Boot proof never hit. The
+  CGLIB proxy class captures its `Method` objects at startup, and a
+  pre-change `Method` keeps its JDK-level annotation parse forever
+  (`Executable`'s cache has no redefinition guard), so the sources are now
+  refilled proactively with fresh post-redefinition `Method` objects, whose
+  equal keys serve the stale lookups too. And Spring's static annotation
+  scanner caches, keyed by an equals-equal `Method`, had to be reset BEFORE
+  that refill, not after: measured in order on a live server, the refill
+  parsed through the poisoned scanner, cached the stale answer, and the late
+  reset changed nothing because nothing re-parses a cached operation. The
+  integration scenario that held this red through three fixes is now green
+  on the 23-scenario suite.
+
+- A Spring Security configuration change is applied to the running filter
+  chain. The `SecurityFilterChain` beans are rebuilt so the `@Bean` method
+  re-runs with the reloaded code, `WebSecurityConfiguration` is rebuilt first
+  because its builder throws `AlreadyBuiltException` on a second build, and the
+  servlet layer's `DelegatingFilterProxy`, which caches the startup proxy in a
+  field no bean reaches, has that cache cleared through Tomcat's internals so
+  the next request resolves the rebuilt proxy. Measured live on Boot 3.3 with
+  embedded Tomcat, both directions: a `permitAll` route answers 401 after the
+  reload makes it `authenticated`, and 200 again after the reverse edit, other
+  routes untouched. Where the pieces cannot be matched safely the old rules
+  keep serving and the log says so; method security (`@PreAuthorize`) keeps its
+  own metadata, is not rebuilt, and is named as needing a restart.
+
+- A constructor-bound `@ConfigurationProperties` bean (a record, typically)
+  now picks up a changed property. There is nothing to write a new value into,
+  so the bean is destroyed and rebuilt through the same constructor binding
+  startup used, against the already-updated Environment, and the fields that
+  held the old instance are re-pointed at the new one. Measured live twice over
+  on Boot 3.3: the endpoint reading the record served v1, then v2, then v3 as
+  the property file was edited, no restart. When the rebuild fails the old
+  instance keeps serving and the message says a restart applies the change,
+  which is exactly what this path used to say always.
+
+- A settings checkbox for the JPA mapping refresh, "Refresh JPA mapping when an
+  entity field changes (opt-in)", under General. The feature shipped in 1.0.26
+  as the agent argument `jpaRefresh=true` but nothing in the IDE wrote it, so it
+  could only be turned on by editing agent arguments by hand. The checkbox is
+  persisted like every other setting and flows through the one args builder all
+  three injection paths share, run configurations, direct attach and the SAP
+  Commerce wrapper.conf install, so switching it on reaches the agent wherever
+  it starts. The comment states the requirement plainly: it rebuilds the
+  persistence unit on JetBrains Runtime or DCEVM with `ddl-auto` at
+  update/create/create-drop, names the field in the log otherwise, and closes
+  persistence contexts open from before the rebuild.
+
 
 - A brand-new component class becomes a live Spring bean on any JDK.
   Component scanning runs once at startup, so a class created afterwards
@@ -135,68 +196,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   did not reproduce in five attempts; the 404s came from the measurement
   racing the reload, and the endpoints answered once the registration they
   raced had landed.)
-
-### Added
-
-- An edited `@Transactional` or `@Cacheable` annotation now takes effect on
-  reload. Spring resolves a method's transaction attribute and cache operations
-  once and files the answer under the method, which redefinition does not
-  change, so a `readOnly` flipped to writable kept running read-only and a
-  `@Cacheable` given a disabling condition kept caching, with nothing anywhere
-  reporting it. After a reload the agent clears those metadata caches
-  reflectively; measured live on Boot 3.3: the transaction definition the
-  manager receives follows the annotation on the next call, and a
-  `@Cacheable(condition = "false")` stops serving from the cache immediately.
-  Found and fixed along the way: the cache source renamed its map in Spring
-  Framework 6.1 (`attributeCache` to `operationCache`), and until that was
-  handled the transaction half cleared while the cache half silently did not.
-  SAP Commerce then measured two deeper layers the Boot proof never hit. The
-  CGLIB proxy class captures its `Method` objects at startup, and a
-  pre-change `Method` keeps its JDK-level annotation parse forever
-  (`Executable`'s cache has no redefinition guard), so the sources are now
-  refilled proactively with fresh post-redefinition `Method` objects, whose
-  equal keys serve the stale lookups too. And Spring's static annotation
-  scanner caches, keyed by an equals-equal `Method`, had to be reset BEFORE
-  that refill, not after: measured in order on a live server, the refill
-  parsed through the poisoned scanner, cached the stale answer, and the late
-  reset changed nothing because nothing re-parses a cached operation. The
-  integration scenario that held this red through three fixes is now green
-  on the 23-scenario suite.
-
-- A Spring Security configuration change is applied to the running filter
-  chain. The `SecurityFilterChain` beans are rebuilt so the `@Bean` method
-  re-runs with the reloaded code, `WebSecurityConfiguration` is rebuilt first
-  because its builder throws `AlreadyBuiltException` on a second build, and the
-  servlet layer's `DelegatingFilterProxy`, which caches the startup proxy in a
-  field no bean reaches, has that cache cleared through Tomcat's internals so
-  the next request resolves the rebuilt proxy. Measured live on Boot 3.3 with
-  embedded Tomcat, both directions: a `permitAll` route answers 401 after the
-  reload makes it `authenticated`, and 200 again after the reverse edit, other
-  routes untouched. Where the pieces cannot be matched safely the old rules
-  keep serving and the log says so; method security (`@PreAuthorize`) keeps its
-  own metadata, is not rebuilt, and is named as needing a restart.
-
-- A constructor-bound `@ConfigurationProperties` bean (a record, typically)
-  now picks up a changed property. There is nothing to write a new value into,
-  so the bean is destroyed and rebuilt through the same constructor binding
-  startup used, against the already-updated Environment, and the fields that
-  held the old instance are re-pointed at the new one. Measured live twice over
-  on Boot 3.3: the endpoint reading the record served v1, then v2, then v3 as
-  the property file was edited, no restart. When the rebuild fails the old
-  instance keeps serving and the message says a restart applies the change,
-  which is exactly what this path used to say always.
-
-- A settings checkbox for the JPA mapping refresh, "Refresh JPA mapping when an
-  entity field changes (opt-in)", under General. The feature shipped in 1.0.26
-  as the agent argument `jpaRefresh=true` but nothing in the IDE wrote it, so it
-  could only be turned on by editing agent arguments by hand. The checkbox is
-  persisted like every other setting and flows through the one args builder all
-  three injection paths share, run configurations, direct attach and the SAP
-  Commerce wrapper.conf install, so switching it on reaches the agent wherever
-  it starts. The comment states the requirement plainly: it rebuilds the
-  persistence unit on JetBrains Runtime or DCEVM with `ddl-auto` at
-  update/create/create-drop, names the field in the log otherwise, and closes
-  persistence contexts open from before the rebuild.
 
 ## [1.0.26] - 2026-08-20
 
