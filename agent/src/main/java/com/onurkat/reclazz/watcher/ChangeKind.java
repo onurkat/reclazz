@@ -45,10 +45,11 @@ public enum ChangeKind {
     PROPERTIES,
 
     /**
-     * Static text the platform holds in a cache of its own:
-     * {@code <ext>-locales_<iso>.properties} for type and enum names, and the
-     * {@code labels_<iso>.properties} files under a backoffice labels folder.
-     * These are not platform configuration and must never be pushed into it;
+     * Static text a framework holds in a cache of its own:
+     * {@code <ext>-locales_<iso>.properties} for SAP Commerce type and enum
+     * names, the {@code labels_<iso>.properties} files under a backoffice
+     * labels folder, and Spring's own {@code messages[_<iso>].properties}
+     * bundles. These are not configuration and must never be pushed into it;
      * the cache is dropped so the next read picks the file up.
      */
     LOCALIZATION,
@@ -97,7 +98,7 @@ public enum ChangeKind {
 
         // Before the generic properties rule: a locales file is a properties
         // file by extension and nothing like one in meaning.
-        if (isLocalesFile(fileName)) return LOCALIZATION;
+        if (isLocalesFile(fileName) || isMessageBundle(fileName)) return LOCALIZATION;
 
         if (fileName.endsWith(".properties") || fileName.endsWith(".yml")
                 || fileName.endsWith(".yaml")) {
@@ -148,5 +149,23 @@ public enum ChangeKind {
     /** {@code <ext>-locales_<iso>.properties}, the platform's own convention. */
     private static boolean isLocalesFile(String fileName) {
         return fileName.endsWith(".properties") && fileName.contains("-locales_");
+    }
+
+    /**
+     * {@code messages.properties} and its per-locale siblings, which is what
+     * {@code spring.messages.basename} defaults to.
+     *
+     * <p>Deliberately only that default. A message bundle can be called
+     * anything, and the way to know which is to ask the running
+     * {@code MessageSource} for its basenames, which the classifier has no
+     * access to and should not: it decides by name alone so it stays
+     * testable. Getting this wrong in the other direction is the one that
+     * costs something, because a configuration file classified as text would
+     * stop being rebound, so the rule is narrow on purpose.
+     */
+    private static boolean isMessageBundle(String fileName) {
+        if (!fileName.endsWith(".properties")) return false;
+        String stem = fileName.substring(0, fileName.length() - ".properties".length());
+        return stem.equals("messages") || stem.startsWith("messages_");
     }
 }

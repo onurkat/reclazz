@@ -19,13 +19,26 @@ import java.lang.reflect.Field;
  * {@code UnsupportedOperationException} for a final field, with or without
  * {@code setAccessible}, for instance and static fields alike.
  *
- * <h2>This door is closing</h2>
+ * <h2>This door is closing, and there is a second one</h2>
  *
  * <p>JEP 471 deprecated these methods for removal and is phasing them out: a
  * warning from JDK 24, an exception by default in JDK 26, removal after that.
  * The behaviour can be brought forward today with
  * {@code --sun-misc-unsafe-memory-access=deny}, which is how the handling here
  * was tested rather than reasoned about.
+ *
+ * <p>What that schedule ends is {@code sun.misc.Unsafe}. It is not what the
+ * JDK uses for these operations itself: that is {@code jdk.internal.misc.Unsafe},
+ * which is not deprecated, is not governed by that flag, and is merely not
+ * exported. An agent can open it, and this one already opens
+ * {@code jdk.internal.reflect} the same way. So a refusal here is a fallback
+ * rather than an ending, and {@link InternalUnsafe} is where it goes.
+ *
+ * <p>The order is deliberate. {@code sun.misc.Unsafe} is tried first because
+ * it needs no module surgery and every JDK in service today answers on it; the
+ * second door opens only after the first has actually refused, so an
+ * application on a JDK that refuses nothing never has a JDK-internal package
+ * opened on its behalf.
  *
  * <p>So every accessor assumes it can fail. The first refusal is remembered, so
  * that a JVM which has closed this door is asked once and not once per reload,
@@ -35,14 +48,15 @@ import java.lang.reflect.Field;
  * lost, including method bodies that had nothing to do with the enum, and a JDK
  * internal put in front of the developer as if it meant something to them.
  */
-final class UnsafeAccess {
+public final class UnsafeAccess {
 
     private static final sun.misc.Unsafe UNSAFE = find();
 
     /**
-     * Set the first time this JVM refuses. Not probed at startup on purpose:
-     * probing is itself a call, and on JDK 24 and 25 a call is what prints the
-     * warning. An application that never reloads an enum should never see it.
+     * Set the first time this JVM refuses the first door. Not probed at
+     * startup on purpose: probing is itself a call, and on JDK 24 and 25 a
+     * call is what prints the warning. An application that never reloads an
+     * enum should never see it.
      */
     private static volatile boolean denied = false;
 
@@ -66,47 +80,72 @@ final class UnsafeAccess {
         }
     }
 
-    static boolean isAvailable() {
-        return UNSAFE != null && !denied;
+    /**
+     * The Instrumentation the fallback needs, handed over at startup.
+     *
+     * <p>Nothing is opened here. The module surgery happens the first time the
+     * first door is actually refused, which on every JDK in service today is
+     * never.
+     */
+    public static void useForFallback(java.lang.instrument.Instrumentation inst) {
+        InternalUnsafe.useForFallback(inst);
     }
 
-    /** Whether this JVM has already refused, which is worth saying differently. */
+    static boolean isAvailable() {
+        return (UNSAFE != null && !denied) || InternalUnsafe.isAvailable();
+    }
+
+    /** Whether both doors are shut, which is worth saying differently. */
     static boolean isDenied() {
-        return denied;
+        return !isAvailable();
     }
 
     static Object allocateInstance(Class<?> type) throws InstantiationException {
-        try {
-            return UNSAFE.allocateInstance(type);
-        } catch (InstantiationException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw refused(t);
+        if (firstDoorOpen()) {
+            try {
+                return UNSAFE.allocateInstance(type);
+            } catch (InstantiationException e) {
+                throw e;
+            } catch (Throwable t) {
+                fellBack(t);
+            }
         }
+        return InternalUnsafe.allocateInstance(type);
     }
 
     static Object getStatic(Field field) {
-        try {
-            return UNSAFE.getObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field));
-        } catch (Throwable t) {
-            throw refused(t);
+        if (firstDoorOpen()) {
+            try {
+                return UNSAFE.getObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field));
+            } catch (Throwable t) {
+                fellBack(t);
+            }
         }
+        return InternalUnsafe.getStatic(field);
     }
 
     static void putStatic(Field field, Object value) {
-        try {
-            UNSAFE.putObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field), value);
-        } catch (Throwable t) {
-            throw refused(t);
+        if (firstDoorOpen()) {
+            try {
+                UNSAFE.putObject(UNSAFE.staticFieldBase(field), UNSAFE.staticFieldOffset(field), value);
+                return;
+            } catch (Throwable t) {
+                fellBack(t);
+            }
         }
+        InternalUnsafe.putStatic(field, value);
     }
 
     static void putObject(Object target, Field field, Object value) {
-        try {
-            UNSAFE.putObject(target, UNSAFE.objectFieldOffset(field), value);
-        } catch (Throwable t) {
-            throw refused(t);
+        if (firstDoorOpen()) {
+            try {
+                UNSAFE.putObject(target, UNSAFE.objectFieldOffset(field), value);
+                return;
+            } catch (Throwable t) {
+                fellBack(t);
+            }
         }
+        InternalUnsafe.putObject(target, field, value);
     }
 
     /**
@@ -118,36 +157,64 @@ final class UnsafeAccess {
      * 471's deprecation; it is guarded the same way only for uniformity.
      */
     static void storeFence() {
-        try {
-            UNSAFE.storeFence();
-        } catch (Throwable t) {
-            throw refused(t);
+        if (firstDoorOpen()) {
+            try {
+                UNSAFE.storeFence();
+                return;
+            } catch (Throwable t) {
+                fellBack(t);
+            }
         }
+        InternalUnsafe.storeFence();
     }
 
     static void putInt(Object target, Field field, int value) {
-        try {
-            UNSAFE.putInt(target, UNSAFE.objectFieldOffset(field), value);
-        } catch (Throwable t) {
-            throw refused(t);
+        if (firstDoorOpen()) {
+            try {
+                UNSAFE.putInt(target, UNSAFE.objectFieldOffset(field), value);
+                return;
+            } catch (Throwable t) {
+                fellBack(t);
+            }
         }
+        InternalUnsafe.putInt(target, field, value);
     }
 
     /** The array an EnumMap or EnumSet captured when it was built. */
     static Object getObject(Object target, Field field) {
-        try {
-            return UNSAFE.getObject(target, UNSAFE.objectFieldOffset(field));
-        } catch (Throwable t) {
+        if (firstDoorOpen()) {
+            try {
+                return UNSAFE.getObject(target, UNSAFE.objectFieldOffset(field));
+            } catch (Throwable t) {
+                fellBack(t);
+            }
+        }
+        return InternalUnsafe.getObject(target, field);
+    }
+
+    /** Whether the first door is worth trying: present, and not already refused. */
+    private static boolean firstDoorOpen() {
+        return UNSAFE != null && !denied;
+    }
+
+    /**
+     * The first door has refused. That is permanent for this JVM, so it is
+     * remembered: asking again cannot succeed and every ask is another warning
+     * in the developer's log. Then the second door is tried, and only if that
+     * one is shut too does the caller get a refusal.
+     */
+    private static void fellBack(Throwable t) {
+        denied = true;
+        if (!InternalUnsafe.isAvailable()) {
             throw refused(t);
         }
     }
 
     /**
-     * A refusal is permanent for this JVM, so it is remembered: asking again
-     * cannot succeed and every ask is another warning in the developer's log.
+     * The refusal callers see, with the JDK's own internal name kept out of
+     * it. Package-private because the second door reports through it too.
      */
-    private static MemoryAccessUnavailable refused(Throwable cause) {
-        denied = true;
+    static MemoryAccessUnavailable refused(Throwable cause) {
         return new MemoryAccessUnavailable(cause);
     }
 }

@@ -119,4 +119,93 @@ class SpringPropertyRebinderTest {
         }
         return count;
     }
+
+    /**
+     * A {@code @Value} constructor parameter has no field to write into: by
+     * the time the bean exists the value is already inside whatever the
+     * constructor did with it. That used to be reported as out of reach, next
+     * to a path that answers the identical shape for
+     * {@code @ConfigurationProperties} by rebuilding the bean. It is the same
+     * answer here, so what has to be right is the decision about which beans
+     * get rebuilt: rebuilding one that did not read a changed key throws away
+     * a live instance for nothing.
+     */
+    @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+    @java.lang.annotation.Target(java.lang.annotation.ElementType.PARAMETER)
+    @interface Value {
+        String value();
+    }
+
+    static class ReadsTimeout {
+        ReadsTimeout(@Value("${demo.timeout}") int timeout) {
+        }
+    }
+
+    static class ReadsTimeoutWithDefault {
+        ReadsTimeoutWithDefault(@Value("${demo.timeout:5000}") int timeout) {
+        }
+    }
+
+    static class ReadsSomethingElse {
+        ReadsSomethingElse(@Value("${demo.other}") String other) {
+        }
+    }
+
+    static class ReadsThroughSpel {
+        ReadsThroughSpel(@Value("#{${demo.timeout} * 2}") int doubled) {
+        }
+    }
+
+    static class ReadsNothing {
+        ReadsNothing(String plain) {
+        }
+    }
+
+    /** The annotated constructor is not the one Spring would pick. */
+    static class AnnotatedOnASecondConstructor {
+        AnnotatedOnASecondConstructor() {
+        }
+
+        AnnotatedOnASecondConstructor(@Value("${demo.timeout}") int timeout) {
+        }
+    }
+
+    private static boolean takes(Class<?> type) throws Exception {
+        return SpringPropertyRebinder.takesChangedValue(type,
+                Map.of("demo.timeout", "250"), Value.class, Value.class.getMethod("value"));
+    }
+
+    @Test
+    void aConstructorReadingAChangedKeyIsRebuilt() throws Exception {
+        assertTrue(takes(ReadsTimeout.class));
+        assertTrue(takes(ReadsTimeoutWithDefault.class),
+                "a default in the placeholder does not stop it reading the key");
+        assertTrue(takes(AnnotatedOnASecondConstructor.class),
+                "which constructor Spring picked is not recorded anywhere reachable, "
+                + "so every one of them is looked at");
+    }
+
+    @Test
+    void aConstructorReadingSomethingElseIsLeftAlone() throws Exception {
+        assertFalse(takes(ReadsSomethingElse.class));
+        assertFalse(takes(ReadsNothing.class));
+    }
+
+    /**
+     * The same policy the field path states: re-evaluating an arbitrary
+     * expression is running application code at a moment it did not choose,
+     * and a rebuild would do exactly that through the constructor.
+     */
+    @Test
+    void aSpelParameterIsLeftAloneLikeASpelField() throws Exception {
+        assertFalse(takes(ReadsThroughSpel.class));
+    }
+
+    /** What the save reached decides whether a restart warning is printed at all. */
+    @Test
+    void aRebuiltBeanCountsAsTakingEffect() {
+        assertTrue(new SpringPropertyRebinder.Applied(List.of(), 0, List.of("clientConfig"))
+                .tookEffect(), "a rebuilt bean is a value that is live");
+        assertFalse(new SpringPropertyRebinder.Applied(List.of(), 0, List.of()).tookEffect());
+    }
 }

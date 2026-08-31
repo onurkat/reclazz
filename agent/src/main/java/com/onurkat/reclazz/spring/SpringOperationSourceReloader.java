@@ -182,10 +182,25 @@ public class SpringOperationSourceReloader {
      * that moves further away makes this a no-op, never an error.
      */
     static boolean clearAttributeCache(Object source) {
+        return clearMetadataCache(source, "attributeCache", "operationCache");
+    }
+
+    /**
+     * The same finder, told which names to try.
+     *
+     * <p>Spring Security keeps the same kind of map under a third name again
+     * ({@code cachedAttributes}), and its method-security refresh needs
+     * exactly this walk: up the hierarchy, by name, with the shape fallback
+     * for the next rename. Passing the names in is what keeps one finder
+     * instead of two that drift apart.
+     */
+    static boolean clearMetadataCache(Object source, String... names) {
         if (source == null) return false;
         for (Class<?> c = source.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
-            Field field = mapField(c, "attributeCache");
-            if (field == null) field = mapField(c, "operationCache");
+            Field field = null;
+            for (String name : names) {
+                if (field == null) field = mapField(c, name);
+            }
             if (field == null) {
                 Field byShape = null;
                 for (Field candidate : c.getDeclaredFields()) {

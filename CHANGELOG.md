@@ -4,6 +4,194 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Added
+
+- Enum constant appends survive JDK 26. Writing a final field is what adding a
+  constant needs, and the door it used, `sun.misc.Unsafe`, is being closed on a
+  published schedule: an exception by default in JDK 26, removal after that.
+  What that schedule closes is that one class. `jdk.internal.misc.Unsafe` is
+  what the JDK uses for the same operations itself, is not deprecated, and is
+  not governed by `--sun-misc-unsafe-memory-access`; it is only unexported, and
+  an agent can open it, which this one already does for `jdk.internal.reflect`.
+  So a refusal is now a fallback rather than an ending. Measured on JDK 21 from
+  a class on the bootstrap class path, which is where these live: before the
+  open, `InaccessibleObjectException`; after it, a `static final` field written,
+  in the same test run where core reflection answers `IllegalAccessException`
+  and a VarHandle answers `UnsupportedOperationException` for that same field.
+  The order is deliberate: `sun.misc.Unsafe` is still tried first, and the
+  second door opens only after the first has actually refused, so an
+  application on a JDK that refuses nothing never has a JDK-internal package
+  opened on its behalf. The flag is now a way to keep this quiet rather than
+  the only way to keep it working, and the messages say so.
+
+- Method security is re-read on reload. `@PreAuthorize` and friends are
+  enforced by interceptors that resolve the annotation once and file the answer
+  under the method and its class, neither of which redefinition changes, so an
+  edited expression kept being enforced as it was written with nothing
+  reporting it: a rule tightened at 11am was still the 9am rule at noon. That
+  is the staleness `@Transactional` had, one framework over, and it gets the
+  same answer. It runs for every reloaded class rather than only for security
+  configurations, because the edit that needs it is an annotation on a service,
+  which is not a security configuration class and reached nothing before.
+
+  Two things a live Boot 3.3 / Security 6.3 server said that unit tests could
+  not. Asking for the concrete interceptor type answers nothing: the bean
+  registered as `preAuthorizeAuthorizationMethodInterceptor` is a
+  `DeferringMethodInterceptor` holding a `SingletonSupplier` of the real one,
+  so the first version of this found no beans and reported nothing, twice over
+  correct and completely useless. `AuthorizationAdvisor` is the interface the
+  wrapper does implement, and asking for it returns exactly the five
+  method-security interceptors. And clearing turned out to be half the job:
+  after the clear, the very next call filled the map back up with the OLD
+  expression, because the re-resolution reads the annotation off the `Method`
+  the AOP invocation carries, captured when the proxy was built and never
+  re-parsed, while a freshly taken `Method` for the same method reads the new
+  value. So the map is refilled from fresh `Method` objects, whose equal keys
+  are what the stale lookup finds: the same move the `@Transactional` fix
+  needed, for the same reason. `@Secured` and the JSR-250 annotations resolve
+  without caching, so their answer is computed and stored under the framework's
+  own `MethodClassKey`.
+
+  Measured end to end against Boot 3.3 with the agent attached: with the
+  decision already cached, `@PreAuthorize("hasRole('ADMIN')")` edited to
+  `hasRole('USER')` turns a denied call into a served one on the next request,
+  `@Secured("ROLE_ADMIN")` to `ROLE_USER` likewise, and tightening either back
+  denies again. The walk reads and clears nothing outside
+  `org.springframework.security`, which is a stronger bound than the field-name
+  list it replaced, because it survives the next rename.
+
+- A bean that takes a changed `@Value` through its constructor is rebuilt,
+  measured on the same live server: a `demo.greeting` edited in a watched
+  properties file changes what the endpoint answers, without a restart. A
+  constructor parameter has no field to write into: by the time the bean
+  exists, the value is already inside whatever the constructor did with it.
+  That was reported as out of reach, next to a path that answers the identical
+  shape for constructor-bound `@ConfigurationProperties` by rebuilding the
+  bean. It is the same answer here, and the same care: the singleton is
+  destroyed and re-created against an Environment that already holds the new
+  value, and the stale-reference sweep re-points what held the old instance. A
+  SpEL `@Value` is still left alone on purpose, because re-evaluating an
+  arbitrary expression is running application code at a moment it did not
+  choose. `@ConfigurationProperties` beans are skipped here, since rebuilding
+  one would throw away the instance the rebind path just filled in.
+
+- A removed method's existing callers keep the implementation they had, and
+  the class stays redefinable afterwards. The second half of that sentence is
+  the one the live suite added, after the first half broke two scenarios that
+  had passed for a year. On the ordinary path the raw payload goes to
+  `redefineClasses` and the registered transformer runs during the
+  redefinition, re-recording the class's members FROM that payload, which
+  carries the removed method because the JVM will not let it leave. A
+  pre-transformed payload is passed through untouched, so that recording never
+  happened and the class was left recorded without a member it still has.
+  Restoring the method in a later save then read as ADDING one, and a class
+  carrying an added member cannot be redefined at all: the constructor-body
+  refresh stopped landing from that point on, and a field added afterwards read
+  its default even on objects built after the reload. The schema the payload
+  leaves behind is now recorded when the redefinition lands, which is what the
+  transformer would have done, and the two scenarios pass again.
+
+- A removed method's existing callers keep the implementation they had. The
+  JVM will not let a method leave a loaded class, so the payload carries it
+  either way and the only question is what is in it; it was a stub that threw,
+  and whether a caller met that stub depended on history nobody can see. A call
+  site an earlier reload had retargeted kept the last reloaded body, a refused
+  redefinition kept everything, and a site that had never been reloaded threw
+  `UnsupportedOperationException` on the application's own thread: measured on
+  Spring Boot, a removed getter turning its JSON endpoint into an HTTP 500. One
+  edit, three outcomes, and the worst of them breaks a live request for a change
+  the developer made deliberately. The previous implementation is now spliced
+  into the payload through the same machinery the superclass salvage uses, so
+  all three paths end the same way, and it is the way the documentation already
+  described: hidden from every scan immediately, still running for code that
+  already holds it, settled at the next restart when the caller either compiles
+  without the method or does not compile at all. Measured live: the endpoint
+  that returned 500 now answers what it answered before the save.
+
+- The sources that inlined a changed compile-time constant are found and
+  named, and rebuilt where Reclazz is the compiler. javac copies a constant
+  into every use site and leaves no symbolic reference, so the dependents are
+  unreachable from the class that changed; the tool said exactly that and
+  stopped, leaving the developer to work out which files it meant. The
+  bytecode cannot answer that, but the project can: the dependents are the
+  sources that name the constant, and the sources are on disk. They are now
+  listed by name, and with `autoCompile` they go through the same queue and
+  the same compile-and-swap a save goes through. Measured live on Boot 3.3:
+  editing `MAX_RETRIES` from 3 to 7 rebuilt and hot-swapped both files that
+  read it, and the endpoint answered 7 without a restart.
+
+  The match is the constant's name as a word, which is loose on purpose: a
+  file named without inlining anything recompiles to identical bytes and the
+  watcher's content hash drops it, so a false positive costs one javac pass
+  while a miss costs a wrong value in a running server. Found while measuring
+  it, and fixed with it: the class this matters most on was the one that
+  produced no warning at all. A holder whose only members are constants is
+  never loaded, because every use of it was inlined, so the transformer never
+  saw it and there was nothing cached to compare a save against. What each
+  class file last declared is now remembered on the way past, so the first
+  save of such a holder names the constants it declares and every save after
+  that is an exact diff.
+
+- A saved message bundle is re-read outside SAP Commerce. Spring caches a
+  bundle after the first lookup, and the answer to a saved
+  `messages.properties` was "may require a restart to take effect", a guess
+  printed as a fact. `ReloadableResourceBundleMessageSource` ships the reset
+  and now gets it, ancestors included, because a Boot application stacks more
+  than one source and clearing the front one leaves what was resolved through
+  it. `ResourceBundleMessageSource`, which is what Boot autoconfigures and
+  therefore what most applications have, ships no reset at all: this was
+  written expecting one and the live server answered that no such method
+  exists anywhere up its hierarchy. It is reset by emptying its own caches and
+  the JDK `ResourceBundle` cache underneath them, since the maps alone refill
+  from the same bundle object. Measured on Boot 3.3: an edited bundle changes
+  what the endpoint answers on the next request. The classifier learned
+  Spring's default basename to go with it, and only that: a bundle can be
+  called anything, and a configuration file misread as text would quietly stop
+  being rebound, so the rule is narrow on purpose.
+
+- Method-security metadata is refilled whether or not there was anything to
+  clear. An empty cache is not a safe state: the first call after a reload
+  resolves through the `Method` the AOP invocation carries, which is the stale
+  one, so a cache nobody had filled yet filled itself with the old expression
+  exactly like a cleared one did. Measured: with the guarded method never
+  called before the edit, the very first call after it now gets the new rule.
+  The warning that went with the old behaviour said the interceptors "held no
+  cached answer to clear", which after this can only mean no cache was found
+  at all, and it says that instead.
+
+- A constructor the JVM will not redefine is said out loud when it costs a
+  value. Once a class carries members added since startup, `redefineClasses`
+  refuses it, so a field added by a later save reads its default even on
+  objects created after the reload. That went to a verbose-only line, and the
+  live suite is where the cost showed: an hour spent on a field reading 0 with
+  nothing anywhere saying why. The case where the developer is about to see a
+  wrong value now names the fields and the reason; the rest goes to the restart
+  ledger, where it can be asked for instead of scrolled past.
+
+### Changed
+
+- The `WebSecurityConfigurerAdapter` message says what actually waits for a
+  restart. An adapter builds its chains inside `WebSecurity` rather than as
+  beans, so there is nothing to destroy and re-create, and taking that builder
+  apart blind is not something to do to a live application's security rules
+  with no version of the API left to verify against. So that stays a restart,
+  deliberately. What was wrong was the scope: it claimed every security change
+  needs one, while method security on that same generation is re-read like any
+  other. The message now names the half that waits, the half that is already
+  live, and the move to a `SecurityFilterChain` bean that makes both reloadable.
+
+- Three messages that said something was impossible when it was not. The enum
+  append notice claimed writing a final field "has no supported alternative"
+  and that the flag "is what keeps this working on JDK 26", both now qualified
+  by the fallback. The filter-chain rebuild's line about method security
+  needing a restart is gone, because the refresh above runs before it. And
+  `HierarchyRevert` read as though JetBrains Runtime refuses an interface
+  change too: what was measured there is the superclass, and "attempted to
+  change superclass or interfaces" is the JVM's one message for both halves,
+  which is not the same as a measurement of the other one.
+
 ## [1.0.27] - 2026-08-21
 
 ### Added

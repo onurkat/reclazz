@@ -47,7 +47,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Add instance fields | **Yes** — set on objects created after the reload | Yes (restart) | Yes |
 | Add static fields | **Yes** — the field gets its initial value: constants, and initialisers that stand on their own | Yes (restart) | Yes, but the initialiser is not re-run |
 | Added static field whose initialiser is entangled with the rest of `<clinit>` | Reads as null/0, and names the field and the reason | Yes (restart) | Reads as null/0 |
-| Add enum values (on the end) | **Yes on JDK 17-25**: `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it. What nothing can find: an array your own code sized with `values().length` before the reload still has the old length, and indexing it by the new constant's ordinal throws. JDK 26 refuses the memory access this needs, so Reclazz declines and says so; `--sun-misc-unsafe-memory-access=allow` gives it back | Yes (restart) | Yes |
+| Add enum values (on the end) | **Yes on JDK 17-25**: `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it. What nothing can find: an array your own code sized with `values().length` before the reload still has the old length, and indexing it by the new constant's ordinal throws. JDK 26 refuses the `sun.misc.Unsafe` access this needs, so Reclazz falls back to the JDK's own `jdk.internal.misc.Unsafe`, which JEP 471 does not cover, by opening that package with the agent's own `redefineModule`; `--sun-misc-unsafe-memory-access=allow` keeps the first door open and silences the warning | Yes (restart) | Yes |
 | Remove the LAST enum value | **Yes on JDK 17-25** — the tail moves no ordinal, so `values()` and `valueOf` drop it while every survivor keeps its number | Yes (restart) | Yes |
 | Insert or reorder enum values | No — that renumbers every ordinal after the change, including `@Enumerated` columns already in your database. Reclazz refuses and says why | Yes (restart) | Yes |
 | Add / remove an interface | **Yes on JetBrains Runtime or DCEVM**, existing objects included; on a stock JDK it is refused by the JVM and Reclazz names the interface | Yes (restart) | Yes |
@@ -65,12 +65,13 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | New `@Entity` class picks up a mapping | **Yes, opt-in** (`jpaRefresh=true`) on **any JDK 17+**: a fresh class is entirely real, so Reclazz adds it to the persistence unit and rebuilds (measured at 44ms), and `ddl-auto` at update/create creates its table. Several persistence units make it decline and name the ambiguity rather than guess | Yes (restart) | Yes |
 | New `@Service` / `@Component` / `@Controller` class | **Yes (any JDK 17+)** — the bean is registered, its constructor autowired, and a new controller's mappings served on the next request | Yes (restart) | Yes |
 | Edited `@Transactional` / `@Cacheable` annotation | **Yes** — the cached metadata is re-read, so a flipped `readOnly` or a new `condition` actually applies | Yes (restart) | Yes |
-| Spring Security rules | **Yes** — the filter chain is rebuilt and swapped into the live proxy; method security (`@PreAuthorize`) is named as still needing a restart | Yes (restart) | Yes, via a separate plugin |
+| Spring Security rules | **Yes** — the filter chain is rebuilt and swapped into the live proxy, and method security (`@PreAuthorize`, `@Secured` and friends) is re-read on the service class that carries it, not only on the security configuration: the resolved-once metadata is cleared and refilled from fresh `Method` objects, because the stale one the proxy carries would answer with the expression it read at startup | Yes (restart) | Yes, via a separate plugin |
 | `@Value` field picks up a changed property | **Yes** — re-resolved and written in place (a SpEL `@Value` is left alone and said) | Yes (restart) | Yes |
 | Constructor-bound `@ConfigurationProperties` (a record) | **Yes** — the bean is rebuilt through the same constructor binding and its holders re-pointed | Yes (restart) | Yes |
 | A lambda added to an edited method body | **Yes (any JDK 17+)** — the synthetic body travels with the companion and links through Reclazz's own factory. The object is a reflective proxy rather than a spun class, and a serializable lambda loses serializability until restart | Yes (restart) | Yes |
-| Members you deleted stop being visible | **Yes** — a removed field or method is hidden from reflection, so a deleted getter stops being serialised. Old code already holding it still runs | Yes (restart) | Yes |
-| Changed compile-time constant (`static final`) | Named in the log: javac inlined the old value into every other class, so those keep it until rebuilt. **No tool can reach them from here** | Yes (restart) | Same limitation, undocumented |
+| Members you deleted stop being visible | **Yes** — a removed field or method is hidden from reflection, so a deleted getter stops being serialised. Old code already holding it keeps the implementation it had, one outcome rather than three: a live caller is never made to throw for a removal you made on purpose | Yes (restart) | Yes |
+| Changed compile-time constant (`static final`) | **Named, and the dependents found**: javac inlines the value and leaves no reference behind, so the changed class cannot reach them, but the sources that read it can be found and are listed by name. With `autoCompile` they are rebuilt and hot-swapped, so the new value is live without a restart. A constants-only holder is covered too, though the JVM never loads it | Yes (restart) | Same limitation, undocumented |
+| Message bundle (`messages.properties`) | **Yes** — the message source's cache is dropped, the JDK `ResourceBundle` cache with it, so the next lookup reads the file | Yes (restart) | Yes |
 | Template reload (Thymeleaf, Freemarker) | **Yes** | Yes | Yes |
 | SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
 | SAP Commerce: ImpEx auto-import | **Yes** | No | No |
@@ -107,7 +108,10 @@ than either.
 - **Spring Security rebuild**: an edited `@EnableWebSecurity` configuration is
   applied to the running filter chain, so a rule that was `permitAll` starts
   answering 401 on the next request without a restart. Method security
-  (`@PreAuthorize`) keeps its own metadata and is named as still needing one
+  (`@PreAuthorize`, `@Secured` and friends) is a separate cache, resolved once
+  per method and keyed by something redefinition does not change; it is cleared
+  and refilled on every reload, so an edited expression on a service is
+  enforced as written on the next request
 - **New bean classes**: a brand-new `@Service`, `@Component` or `@RestController`
   file becomes a live bean on any JDK 17+, dependencies injected and mappings
   registered, instead of waiting for the next restart's component scan
@@ -117,16 +121,19 @@ than either.
 ### Core
 
 - **Hot class reload**: Redefines classes in the running JVM via Instrumentation API
-- **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. An added *static* field gets its initial value too: a compile-time constant comes straight off the field, and an initialiser that forms a self-contained block is lifted out of `<clinit>` and run on its own, so the rest of the static block is never re-executed. Where the two cannot be separated the field reads as null/0 and the log names it and the reason. An enum value added on the end goes live on JDK 17-25, and so does one removed from the end, which moves no ordinal (see the comparison table for the exact scope); inserting or reordering values is refused with the reason. A member the save *removes* stops being visible to reflection, so scans stop acting on it. A changed compile-time constant is named, because javac inlined the old value into every other class and no tool can reach those from here. JBR/DCEVM additionally gives full reflective visibility of new members
+- **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. An added *static* field gets its initial value too: a compile-time constant comes straight off the field, and an initialiser that forms a self-contained block is lifted out of `<clinit>` and run on its own, so the rest of the static block is never re-executed. Where the two cannot be separated the field reads as null/0 and the log names it and the reason. An enum value added on the end goes live on JDK 17-25, and so does one removed from the end, which moves no ordinal (see the comparison table for the exact scope); inserting or reordering values is refused with the reason. A member the save *removes* stops being visible to reflection, so scans stop acting on it, while code that already holds it keeps running the implementation it had. A changed compile-time constant is named together with the sources that inlined it, found by looking for it in the watched modules; with `autoCompile` those sources are rebuilt and hot-swapped, so the new value takes effect. JBR/DCEVM additionally gives full reflective visibility of new members
 - **Property changes**: a changed key goes into the running Environment and the
   `@ConfigurationProperties` beans whose prefix it touches are rebound, so a
   timeout or a feature flag takes effect without a restart. A bean bound through
   its constructor (a record, or `@ConstructorBinding`) is replaced rather than
   mutated: destroyed, rebuilt through the same constructor binding against the
   updated Environment, and the references holding it re-pointed. A `@Value`
-  placeholder field is re-resolved and written in place. A SpEL `@Value` and a
-  `@Value` constructor parameter are the two that still wait for a restart, and
-  Reclazz says so rather than reporting them as applied
+  placeholder field is re-resolved and written in place, and a bean that takes
+  a changed `@Value` through its constructor is rebuilt the same way the
+  constructor-bound properties bean is. A SpEL `@Value` is the one that still
+  waits for a restart, because re-evaluating an arbitrary expression is running
+  application code at a moment it did not choose, and Reclazz says so rather
+  than reporting it as applied
 - **Logging configuration**: `logging.level.<logger>` in a properties file, or a
   saved `logback.xml` / `log4j2.xml`, is applied to the running logging context.
   Raising a logger to debug is one of the most common reasons to restart a
@@ -448,7 +455,7 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 | Spring bean logic | Yes | None |
 | New Spring beans (@Component) | **Yes** — a new stereotype class is registered and wired, and `*-spring.xml` still works for XML-defined beans | None |
 | Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | None |
-| Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved | A SpEL `@Value` and a `@Value` constructor parameter keep their startup values |
+| Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved, beans taking a changed `@Value` through their constructor rebuilt | A SpEL `@Value` keeps its startup value |
 | Log levels and logging config | Yes (`logging.level.*`, `logback.xml`, `log4j2.xml`) | Appenders are rebuilt, so a reconfigure resets the context |
 | Superclass changes | No | None |
 

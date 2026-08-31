@@ -77,4 +77,91 @@ class ConstantChangeWarningTest {
         writer.visitEnd();
         return writer.toByteArray();
     }
+
+    /**
+     * The class this warning matters most on is the one it used to miss
+     * entirely. A holder whose only members are constants is never loaded:
+     * every use of it was inlined, so nothing at runtime refers to it, so the
+     * transformer never sees it and there is no cached previous version to
+     * compare against. Measured on a live Spring Boot server, editing exactly
+     * such a class produced no warning at all.
+     *
+     * <p>With nothing to compare against, guessing which constant moved would
+     * be a guess; naming the ones it declares is not, and it is enough to go
+     * looking for the sources that read them.
+     */
+    @Test
+    void aNeverLoadedHolderIsReportedWithoutABaseline() {
+        ConstantChangeWarning.forget();
+        byte[] holder = constantHolder("Limits", "MAX_RETRIES", 3);
+
+        List<String> names = ConstantChangeWarning.check(
+                "Limits", "Limits", holder, false);
+
+        assertEquals(List.of("MAX_RETRIES"), names);
+    }
+
+    /** A class the JVM holds has a cache behind it; silence there is right. */
+    @Test
+    void aLoadedClassWithNoBaselineSaysNothing() {
+        ConstantChangeWarning.forget();
+        byte[] holder = constantHolder("Loaded", "MAX_RETRIES", 3);
+
+        assertTrue(ConstantChangeWarning.check("Loaded", "Loaded", holder, true).isEmpty(),
+                "an evicted cache must not turn into a warning about every constant");
+    }
+
+    /**
+     * The save after the first one has something to compare against, so it
+     * answers with what actually moved rather than everything declared.
+     */
+    @Test
+    void theSecondSaveOfAHolderIsAnExactDiff() {
+        ConstantChangeWarning.forget();
+        ConstantChangeWarning.check("Limits2", "Limits2",
+                constantHolder("Limits2", "MAX_RETRIES", 3), false);
+
+        List<String> names = ConstantChangeWarning.check("Limits2", "Limits2",
+                constantHolder("Limits2", "MAX_RETRIES", 9), false);
+
+        assertEquals(List.of("MAX_RETRIES"), names);
+    }
+
+    /** And a save that changed nothing about the constants says nothing. */
+    @Test
+    void aHolderSavedWithTheSameValuesIsSilent() {
+        ConstantChangeWarning.forget();
+        ConstantChangeWarning.check("Limits3", "Limits3",
+                constantHolder("Limits3", "MAX_RETRIES", 3), false);
+
+        assertTrue(ConstantChangeWarning.check("Limits3", "Limits3",
+                constantHolder("Limits3", "MAX_RETRIES", 3), false).isEmpty(),
+                "a recompile that moved no value must not send anybody rebuilding");
+    }
+
+    /** A class with no compile-time constants has nothing to do with any of this. */
+    @Test
+    void aClassWithoutConstantsIsNeverReported() {
+        ConstantChangeWarning.forget();
+        org.objectweb.asm.ClassWriter writer =
+                new org.objectweb.asm.ClassWriter(org.objectweb.asm.ClassWriter.COMPUTE_FRAMES);
+        writer.visit(org.objectweb.asm.Opcodes.V17, org.objectweb.asm.Opcodes.ACC_PUBLIC,
+                "Plain", null, "java/lang/Object", null);
+        writer.visitEnd();
+
+        assertTrue(ConstantChangeWarning.check("Plain", "Plain", writer.toByteArray(), false)
+                .isEmpty());
+    }
+
+    private static byte[] constantHolder(String name, String field, int value) {
+        org.objectweb.asm.ClassWriter writer =
+                new org.objectweb.asm.ClassWriter(org.objectweb.asm.ClassWriter.COMPUTE_FRAMES);
+        writer.visit(org.objectweb.asm.Opcodes.V17, org.objectweb.asm.Opcodes.ACC_PUBLIC,
+                name, null, "java/lang/Object", null);
+        writer.visitField(org.objectweb.asm.Opcodes.ACC_PUBLIC
+                | org.objectweb.asm.Opcodes.ACC_STATIC
+                | org.objectweb.asm.Opcodes.ACC_FINAL, field, "I", null, value).visitEnd();
+        writer.visitEnd();
+        return writer.toByteArray();
+    }
 }

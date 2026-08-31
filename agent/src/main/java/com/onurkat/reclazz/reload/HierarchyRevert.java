@@ -18,8 +18,12 @@ import java.util.Set;
  *
  * <p>No JVM applies a changed superclass to a loaded class; that was measured
  * on a stock JDK, on JetBrains Runtime, and on JetBrains Runtime with enhanced
- * class redefinition, and all three answer "attempted to change superclass or
- * interfaces". So the hierarchy is not the question. The question is what
+ * class redefinition, and all three refuse it. The refusal they print,
+ * "attempted to change superclass or interfaces", is the JVM's one message for
+ * both halves and says nothing about the other one: an added interface is a
+ * different case, applied by enhanced redefinition and refused only on a stock
+ * JDK, which is why it is reported separately rather than through here. So the
+ * hierarchy is not the question. The question is what
  * happens to everything else in the file.
  *
  * <p>It used to be thrown away. One line changed in the extends clause and the

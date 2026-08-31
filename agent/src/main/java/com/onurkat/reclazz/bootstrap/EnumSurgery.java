@@ -163,9 +163,11 @@ public final class EnumSurgery {
             UnsafeAccess.storeFence();
         } catch (UnsafeAccess.MemoryAccessUnavailable e) {
             return Outcome.declined("this JVM does not allow the memory access an enum "
-                    + "append needs. JDK 26 refuses it by default; starting the JVM with "
-                    + "--sun-misc-unsafe-memory-access=allow gives it back for as long as "
-                    + "that flag exists. Nothing was changed");
+                    + "append needs, through either door: JDK 26 refuses it by default and "
+                    + "jdk.internal.misc could not be opened here to fall back on. "
+                    + "Starting the JVM with --sun-misc-unsafe-memory-access=allow gives "
+                    + "the first one back for as long as that flag exists. Nothing was "
+                    + "changed");
         } catch (Throwable t) {
             return Outcome.declined("the constant could not be built: " + t);
         }
@@ -250,9 +252,11 @@ public final class EnumSurgery {
             UnsafeAccess.storeFence();
         } catch (UnsafeAccess.MemoryAccessUnavailable e) {
             return Outcome.declined("this JVM does not allow the memory access an enum "
-                    + "removal needs. JDK 26 refuses it by default; starting the JVM with "
-                    + "--sun-misc-unsafe-memory-access=allow gives it back for as long as "
-                    + "that flag exists. Nothing was changed");
+                    + "removal needs, through either door: JDK 26 refuses it by default and "
+                    + "jdk.internal.misc could not be opened here to fall back on. "
+                    + "Starting the JVM with --sun-misc-unsafe-memory-access=allow gives "
+                    + "the first one back for as long as that flag exists. Nothing was "
+                    + "changed");
         } catch (Throwable t) {
             return Outcome.declined("the constant could not be removed: " + t);
         }

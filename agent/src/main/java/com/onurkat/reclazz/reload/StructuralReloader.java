@@ -248,6 +248,26 @@ public class StructuralReloader {
     }
 
     /**
+     * The removal payload, plus the schema the loaded class ends up with.
+     *
+     * <p>The metadata is the part that was missed the first time, and the live
+     * suite is what found it. On the ordinary path the raw payload goes to
+     * {@code redefineClasses} and the registered transformer runs during the
+     * redefinition, re-recording the class's members FROM that payload, which
+     * carries the removed method because the JVM will not let it leave. A
+     * pre-transformed payload is passed through untouched, so that recording
+     * never happened and the class was left recorded without a member it still
+     * has. Restoring the method in a later save then read as adding one, and a
+     * class carrying an added member cannot be redefined at all: the
+     * constructor-body refresh stopped landing from that point on, and a field
+     * added afterwards read its default on new objects. Two of the twenty-three
+     * live scenarios failed on exactly that, having passed for a year.
+     */
+    private record RemovalPrep(byte[] payload, String refusal,
+                               TransformContext.ClassMetadata schema) {
+    }
+
+    /**
      * Build the redefine payload for a reload with pinned methods.
      *
      * <p>The first per-method salvage skipped the entangled method in the
@@ -305,6 +325,86 @@ public class StructuralReloader {
         }
     }
 
+    /** The removed methods a payload can carry a previous body for. */
+    private static java.util.Set<String> removableMethodKeys(
+            StructuralAnalyzer.StructuralDiff diff) {
+        java.util.Set<String> keys = new java.util.LinkedHashSet<>();
+        for (var m : diff.getRemovedMethodSigs()) {
+            if ("<init>".equals(m.name()) || "<clinit>".equals(m.name())) continue;
+            // A body that is not there in the first place has nothing to keep.
+            if ((m.access() & (Modifier.ABSTRACT | Modifier.NATIVE)) != 0) continue;
+            keys.add(m.name() + ":" + m.descriptor());
+        }
+        return keys;
+    }
+
+    /**
+     * The redefine payload for a save that removes methods, with those
+     * methods' previous implementations spliced back in.
+     *
+     * <p>The JVM will not let a method leave a loaded class, so the payload
+     * has to carry it either way; the only question is what is in it.
+     * {@link com.onurkat.reclazz.transform.AddedMemberStripper} puts a stub
+     * there that throws, and for a while that was what an existing caller
+     * met: measured on Spring Boot, a removed getter turned its JSON endpoint
+     * into an HTTP 500 on the next request. Worse than the crash was the
+     * inconsistency, because the same edit did something else entirely when
+     * an earlier reload had already retargeted the call site, and something
+     * else again when the redefinition was refused. Three outcomes for one
+     * edit, decided by history the developer cannot see.
+     *
+     * <p>So there is one outcome now, and it is the one the documentation
+     * already promised: code that already holds the method keeps running the
+     * implementation it had. What removal means immediately is that every
+     * scan stops seeing the member, which is where removal actually matters
+     * (serialisation, mapping, injection); what it means for a direct call is
+     * settled at the next restart, when the caller either compiles without it
+     * or does not compile at all.
+     *
+     * <p>Same route as the pinned-superclass payload, for the same reason:
+     * the splice works on transformed bytes, so the payload is reshaped,
+     * transformed and spliced up front, and a refusal anywhere leaves the
+     * stub behaviour exactly as it was.
+     */
+    private RemovalPrep prepareRemovalPayload(String internalName,
+                                              StructuralAnalyzer.StructuralDiff diff,
+                                              byte[] newBytecode,
+                                              Class<?> loadedClass) {
+        if (transformer == null) {
+            return new RemovalPrep(null, "no transformer is registered to prepare the payload", null);
+        }
+        byte[] lastKnownGood =
+                com.onurkat.reclazz.transform.TransformedClassCache.get(internalName);
+        if (lastKnownGood == null) {
+            return new RemovalPrep(null,
+                    "no last-known-good bytecode is cached for this class", null);
+        }
+        try {
+            byte[] stripped = com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
+                    newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
+                    diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
+            // doTransform records metadata as a side effect and this payload
+            // is not the class the reload installs, so the record from before
+            // is put back: a refusal below must leave no trace.
+            TransformContext.ClassMetadata before = context.getMetadata(internalName);
+            byte[] transformed = transformer.doTransform(internalName, stripped,
+                    loadedClass == null ? null : loadedClass.getClassLoader());
+            // What the transformer recorded from the payload IS the schema the
+            // loaded class is about to have. It is put back only if the
+            // redefinition lands, so a refusal here leaves no trace.
+            TransformContext.ClassMetadata fromPayload = context.getMetadata(internalName);
+            context.putMetadata(internalName, before);
+            PinnedMethodSplice.Result spliced = PinnedMethodSplice.apply(
+                    transformed, lastKnownGood, removableMethodKeys(diff));
+            if (!spliced.applied()) {
+                return new RemovalPrep(null, spliced.reason(), null);
+            }
+            return new RemovalPrep(spliced.bytecode(), null, fromPayload);
+        } catch (Exception e) {
+            return new RemovalPrep(null, "preparing the removal payload failed: " + e, null);
+        }
+    }
+
     /**
      * Say what a removed method's existing callers will actually meet.
      *
@@ -344,12 +444,19 @@ public class StructuralReloader {
         }
         if (!failing.isEmpty()) {
             StatusReporter.warn("Removed method(s) detected in " + className + ": " + failing
-                    + ". Existing callers will now fail with UnsupportedOperationException "
-                    + "naming the removed method. Restore the method or restart.");
+                    + ". The previous implementation could not be kept for "
+                    + (failing.size() == 1 ? "it" : "them") + ", so an existing caller "
+                    + "meets an UnsupportedOperationException naming the method. Restore "
+                    + "the method or restart.");
+            com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    "removed method(s) " + failing + " whose existing callers now throw");
         }
         if (!keeping.isEmpty()) {
             StatusReporter.warn("Removed method(s) detected in " + className + ": " + keeping
-                    + ". Existing callers keep the previous implementation until restart.");
+                    + ". They are hidden from reflection now, so scans stop acting on "
+                    + (keeping.size() == 1 ? "it" : "them")
+                    + "; code that already holds " + (keeping.size() == 1 ? "it" : "them")
+                    + " keeps the previous implementation until restart.");
         }
     }
 
@@ -901,6 +1008,7 @@ public class StructuralReloader {
             // new field existed, so the field it was supposed to initialise
             // came back null.
             boolean redefinePayloadApplied = false;
+            boolean removedBodiesKept = false;
             {
                 // RAW bytes on the ordinary path: the registered
                 // ReclazzTransformer runs during redefineClasses and injects
@@ -916,10 +1024,39 @@ public class StructuralReloader {
                                         newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
                                         diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs())
                                 : newBytecode;
+
+                // A removed method's callers keep what they had. The reshape
+                // above re-adds the member the JVM will not let us delete and
+                // gives it a throwing stub, and that stub used to be what an
+                // existing caller met. This puts the previous implementation
+                // there instead, so the removal is what it is documented to
+                // be: hidden from every scan, still running for code that
+                // already holds it.
+                RemovalPrep kept = null;
+                if (pinnedRedefinePayload == null && diff.isStructural()
+                        && !removableMethodKeys(diff).isEmpty()) {
+                    kept = prepareRemovalPayload(internalName, diff, newBytecode,
+                            findLoadedClass(className));
+                    if (kept.payload() != null) {
+                        redefinePayload = kept.payload();
+                        removedBodiesKept = true;
+                    } else if (config.isVerbose()) {
+                        StatusReporter.info("Removed method(s) in " + className
+                                + " could not keep their previous implementation ("
+                                + kept.refusal() + ").");
+                    }
+                }
+
                 try {
                     instrumentation.redefineClasses(
                             new java.lang.instrument.ClassDefinition(targetClass, redefinePayload));
                     redefinePayloadApplied = true;
+                    // The loaded class now holds what the payload holds,
+                    // removed methods included, and the record has to say so
+                    // or the next save reads restoring one as adding one.
+                    if (removedBodiesKept && kept.schema() != null) {
+                        context.putMetadata(internalName, kept.schema());
+                    }
                 } catch (UnsupportedOperationException expected) {
                     // Once a class has gained members they live in a companion,
                     // not in the loaded class, so the bytecode handed back here
@@ -931,18 +1068,42 @@ public class StructuralReloader {
                     // a warning with the raw exception attached told users their
                     // edit had failed, on the one surface they watch, every time
                     // they touched a class they had previously added a method to.
-                    if (config.isVerbose()) {
+                    //
+                    // Silence has a cost of its own, and the live suite is where
+                    // it was paid: a field added to a class that had already
+                    // gained a member read 0 on an object built after the
+                    // reload, which is exactly the thing this refresh exists to
+                    // prevent, with nothing anywhere saying why. So the case
+                    // where the developer is about to see a wrong value is said
+                    // out loud, and the rest goes to the ledger, where it can be
+                    // asked for instead of scrolling past.
+                    java.util.List<String> addedFieldNames = new ArrayList<>();
+                    for (String key : diff.getAddedFields()) {
+                        addedFieldNames.add(key.substring(0, key.indexOf(':')));
+                    }
+                    if (!addedFieldNames.isEmpty()) {
+                        StatusReporter.warn("Added field(s) " + addedFieldNames + " in " + className
+                                + " read their default even on objects created after this reload: "
+                                + "the class carries member(s) added since startup, so the JVM "
+                                + "refuses the redefinition that would install the new "
+                                + "constructor. Everything else in this save reloaded. A restart "
+                                + "runs the initialiser.");
+                    } else if (config.isVerbose()) {
                         StatusReporter.info("Constructor bodies not refreshed for " + className
                                 + ": the class carries members added after startup. "
                                 + "Everything else reloaded.");
                     }
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "a constructor the JVM would not redefine, because the class "
+                                    + "carries member(s) added since startup");
                 } catch (Throwable t) {
                     StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + t);
                 }
             }
 
             if (!diff.getRemovedMethodSigs().isEmpty()) {
-                reportRemovedMethods(className, targetClass, diff, redefinePayloadApplied);
+                reportRemovedMethods(className, targetClass, diff,
+                        redefinePayloadApplied && !removedBodiesKept);
             }
 
             boolean springBean = isSpringBean(targetClass);
