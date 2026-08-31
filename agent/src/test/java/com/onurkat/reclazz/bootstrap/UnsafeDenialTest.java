@@ -25,6 +25,15 @@ import static org.junit.jupiter.api.Assertions.*;
  * {@code UnsupportedOperationException} for a final field, with or without
  * {@code setAccessible}, instance and static alike.
  *
+ * <p>What the schedule closes is that one class. {@code jdk.internal.misc.Unsafe}
+ * is what the JDK uses for the same operations itself, is not deprecated, and
+ * is not governed by {@code --sun-misc-unsafe-memory-access}; it is only
+ * unexported, which an agent can change. Measured on JDK 21 from a class on
+ * the bootstrap class path, which is where these live: before the open,
+ * {@code InaccessibleObjectException}; after it, a static final field written.
+ * So a refusal is a fallback rather than an ending, and these tests hold the
+ * order of the two doors as much as the handling of the first one's refusal.
+ *
  * <p>What was wrong was not the dependency but the failure. Run today with
  * {@code --sun-misc-unsafe-memory-access=deny}, which is JDK 26's behaviour
  * brought forward, the refusal escaped as:
@@ -39,6 +48,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * change, the unrelated method reloaded and the enum declined with a sentence
  * naming the policy and the flag.
  */
+@org.junit.jupiter.api.TestMethodOrder(org.junit.jupiter.api.MethodOrderer.OrderAnnotation.class)
 class UnsafeDenialTest {
 
     /**
@@ -48,8 +58,7 @@ class UnsafeDenialTest {
      */
     @Test
     void availabilityIsNotProbedEagerly() throws IOException {
-        String source = java.nio.file.Files.readString(java.nio.file.Path.of(
-                "src/main/java/com/onurkat/reclazz/bootstrap/UnsafeAccess.java"));
+        String source = source("UnsafeAccess");
 
         int findEnd = source.indexOf("static boolean isAvailable()");
         String beforeFirstUse = source.substring(0, findEnd);
@@ -61,31 +70,133 @@ class UnsafeDenialTest {
         }
     }
 
-    /** A refusal has to be permanent, or every reload asks again and warns again. */
+    /** A refusal of the first door has to be permanent, or every reload asks again. */
     @Test
-    void aRefusalIsRememberedAndTurnsAvailabilityOff() throws IOException {
-        String source = java.nio.file.Files.readString(java.nio.file.Path.of(
-                "src/main/java/com/onurkat/reclazz/bootstrap/UnsafeAccess.java"));
+    void aRefusalIsRememberedAndTurnsTheFirstDoorOff() throws IOException {
+        String source = source("UnsafeAccess");
 
         assertTrue(source.contains("denied = true"), "the refusal has to be recorded");
         assertTrue(source.contains("UNSAFE != null && !denied"),
-                "and availability has to consult it");
+                "and the first door has to consult it");
     }
 
     /**
-     * Every accessor has to convert the refusal, or the JDK's own wording
-     * reaches the developer as the reason their reload failed.
+     * Every accessor has to hand a refusal to the fallback, and the fallback
+     * has to convert what it cannot do, or the JDK's own wording reaches the
+     * developer as the reason their reload failed.
      */
     @Test
-    void everyAccessorConvertsTheRefusal() throws IOException {
-        String source = java.nio.file.Files.readString(java.nio.file.Path.of(
-                "src/main/java/com/onurkat/reclazz/bootstrap/UnsafeAccess.java"));
+    void everyAccessorFallsBackAndTheFallbackConverts() throws IOException {
+        String access = source("UnsafeAccess");
+        String internal = source("InternalUnsafe");
 
-        int accessors = source.split("UNSAFE\\.", -1).length - 1;
-        int conversions = source.split("throw refused\\(t\\)", -1).length - 1;
-        assertTrue(conversions >= 6,
-                "each accessor needs its own conversion; found " + conversions
+        int accessors = access.split("UNSAFE\\.", -1).length - 1;
+        int fallbacks = access.split("fellBack\\(t\\)", -1).length - 1;
+        assertTrue(fallbacks >= 6,
+                "each accessor needs its own fallback; found " + fallbacks
                 + " for " + accessors + " Unsafe calls");
+
+        assertTrue(access.contains("if (!InternalUnsafe.isAvailable()) {"),
+                "and a refusal only reaches the caller when the second door is shut too");
+
+        int conversions = internal.split("throw UnsafeAccess.refused\\(", -1).length - 1;
+        assertTrue(conversions >= 6,
+                "the second door converts its own refusals; found " + conversions);
+    }
+
+    /**
+     * The order is the whole design. Opening a JDK-internal package is not
+     * free of consequence, and an application on a JDK that refuses nothing
+     * must never have one opened on its behalf, so availability has to
+     * short-circuit on the first door.
+     */
+    @Test
+    void theSecondDoorIsOnlyAskedAfterTheFirstRefuses() throws IOException {
+        String source = source("UnsafeAccess");
+
+        assertTrue(source.contains("(UNSAFE != null && !denied) || InternalUnsafe.isAvailable()"),
+                "the first door has to be the short-circuit, not the second");
+        assertTrue(source.contains("public static void useForFallback("),
+                "the Instrumentation has to be handed over rather than looked up: "
+                + "these classes are on the bootstrap loader and cannot see the agent");
+    }
+
+    /** Handing the Instrumentation over must not open anything by itself. */
+    @Test
+    void theHandoverOpensNothing() throws IOException {
+        String internal = source("InternalUnsafe");
+
+        int handover = internal.indexOf("static void useForFallback(");
+        int probe = internal.indexOf("static synchronized boolean isAvailable()");
+        assertTrue(handover > 0 && probe > handover, "the handover comes first and does nothing");
+        String body = internal.substring(handover, probe);
+        assertFalse(body.contains("redefineModule"),
+                "the module open belongs to the first real need, not to startup");
+    }
+
+    /**
+     * The JDK renamed these in 12 and could rename them again; a rename must
+     * be a decline, never an exception escaping into a reload.
+     */
+    @Test
+    void bothSpellingsOfTheAccessorsAreTried() throws IOException {
+        String internal = source("InternalUnsafe");
+
+        assertTrue(internal.contains("either(type, \"getReference\", \"getObject\""),
+                "getObject is what JDK 11 and earlier call it");
+        assertTrue(internal.contains("either(type, \"putReference\", \"putObject\""));
+        assertTrue(internal.contains("catch (Throwable notThisJvm)"),
+                "a JDK that moved one of these declines rather than throwing");
+    }
+
+    /**
+     * The claim this whole fallback rests on, run rather than reasoned about:
+     * given an Instrumentation, {@code jdk.internal.misc} opens and the field
+     * that JEP 471 was going to take away gets written.
+     *
+     * <p>The class under it is a {@code static final} with a
+     * {@code ConstantValue}, which is the shape an enum's {@code $VALUES}
+     * field has and the shape every supported API refuses: core reflection
+     * answers {@code IllegalAccessException} and a VarHandle answers
+     * {@code UnsupportedOperationException}, both asserted here so the
+     * comparison is in the same run as the claim.
+     *
+     * <p>Ordered first because the second door resolves once per JVM and
+     * caches the outcome: a test that asked before the handover would answer
+     * for every test after it.
+     */
+    @Test
+    @org.junit.jupiter.api.Order(1)
+    void theSecondDoorWritesWhatEverySupportedApiRefuses() throws Exception {
+        UnsafeAccess.useForFallback(net.bytebuddy.agent.ByteBuddyAgent.install());
+        assertTrue(InternalUnsafe.isAvailable(),
+                "jdk.internal.misc has to open to a bootstrap-loaded class");
+
+        java.lang.reflect.Field field = Holder.class.getDeclaredField("VALUE");
+        field.setAccessible(true);
+        assertThrows(IllegalAccessException.class, () -> field.set(null, "reflection"),
+                "core reflection is the first supported alternative, and it refuses");
+        assertThrows(UnsupportedOperationException.class,
+                () -> java.lang.invoke.MethodHandles
+                        .privateLookupIn(Holder.class, java.lang.invoke.MethodHandles.lookup())
+                        .unreflectVarHandle(field).set("varhandle"),
+                "a VarHandle is the second, and it refuses too");
+
+        InternalUnsafe.putStatic(field, "written");
+        assertEquals("written", field.get(null),
+                "the JDK's own Unsafe writes it, which is what keeps the enum work "
+                + "alive past the sun.misc removal");
+        assertEquals("written", InternalUnsafe.getStatic(field), "and reads it back");
+    }
+
+    /** A final static with a ConstantValue: the shape $VALUES has. */
+    static final class Holder {
+        static final String VALUE = "before";
+    }
+
+    private static String source(String simpleName) throws IOException {
+        return java.nio.file.Files.readString(java.nio.file.Path.of(
+                "src/main/java/com/onurkat/reclazz/bootstrap/" + simpleName + ".java"));
     }
 
     /**
@@ -95,8 +206,7 @@ class UnsafeDenialTest {
      */
     @Test
     void theFirstReadIsInsideTheGuard() throws IOException {
-        String source = java.nio.file.Files.readString(java.nio.file.Path.of(
-                "src/main/java/com/onurkat/reclazz/bootstrap/EnumSurgery.java"));
+        String source = source("EnumSurgery");
 
         int tryAt = source.indexOf("List<String> appended = new ArrayList<>();");
         int firstRead = source.indexOf("UnsafeAccess.getStatic(valuesField)");

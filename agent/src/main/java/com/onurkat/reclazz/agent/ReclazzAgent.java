@@ -150,6 +150,12 @@ public class ReclazzAgent {
 
     private static volatile AgentConfig agentConfig;
 
+    /**
+     * How to rebuild the sources that inlined a changed constant, or null when
+     * the project's own build owns compilation and Reclazz only names them.
+     */
+    private static volatile java.util.function.Consumer<Map<String, List<Path>>> constantRebuild;
+
     private static synchronized void initialize(String agentArgs) {
         if (running) {
             StatusReporter.warn("Reclazz agent already initialized, skipping duplicate init.");
@@ -180,6 +186,11 @@ public class ReclazzAgent {
             try {
                 installBootstrapJar();
                 bootstrapInstalled = true;
+                // The enum work writes final fields, and the door it uses is
+                // on a removal schedule. The second door is a JDK-internal
+                // package this Instrumentation can open; handing it over costs
+                // nothing and opens nothing until the first door refuses.
+                com.onurkat.reclazz.bootstrap.UnsafeAccess.useForFallback(instrumentation);
                 StatusReporter.info("Bootstrap classes installed on bootstrap classloader");
             } catch (Exception e) {
                 bootstrapInstalled = false;
@@ -418,6 +429,28 @@ public class ReclazzAgent {
                                 springOrchestrator, interceptorReloader, impexImporter, config));
             });
 
+            // Rebuilding a constant's dependents is the same work as saving
+            // them, so it goes through the same queue and the same drain
+            // rather than a second compile path that would drift from it.
+            // Only when Reclazz is the compiler: otherwise the project's build
+            // owns the output directory, and writing into it behind that
+            // build's back is not ours to do.
+            if (config.isAutoCompile() && compiler != null) {
+                constantRebuild = byModule -> {
+                    synchronized (pendingJavaChanges) {
+                        for (var moduleEntry : byModule.entrySet()) {
+                            for (Path file : moduleEntry.getValue()) {
+                                pendingJavaChanges.put(file, new ChangeEvent(
+                                        file, ChangeEvent.Type.MODIFIED,
+                                        moduleEntry.getKey(), null));
+                            }
+                        }
+                    }
+                    reloadExecutor.submit(() -> handleJavaBatch(
+                            compiler, reloader, springOrchestrator, interceptorReloader));
+                };
+            }
+
             watcherExecutor = Executors.newSingleThreadExecutor(r -> {
                 Thread t = new Thread(r, "Reclazz-Watcher");
                 t.setDaemon(true);
@@ -575,8 +608,7 @@ public class ReclazzAgent {
 
             long startTime = System.currentTimeMillis();
 
-            com.onurkat.reclazz.reload.ConstantChangeWarning.check(
-                    internalName, className, bytecode);
+            chaseChangedConstants(internalName, className, bytecode);
 
             // A class the JVM has never loaded is exactly the case where the
             // stock-JDK wall does not stand: everything about it is real. If
@@ -647,6 +679,22 @@ public class ReclazzAgent {
         }
     }
 
+    /**
+     * Warn about a changed compile-time constant, then go and find what
+     * inlined it. The search walks a source tree, so it runs on its own
+     * thread; this call returns before it starts looking.
+     */
+    private static void chaseChangedConstants(String internalName, String className,
+                                              byte[] bytecode) {
+        List<String> changed = com.onurkat.reclazz.reload.ConstantChangeWarning.check(
+                internalName, className, bytecode, alreadyLoaded(className));
+        if (changed.isEmpty()) return;
+
+        PlatformContext platform = platformContext;
+        com.onurkat.reclazz.reload.ConstantDependents.chase(className, changed,
+                platform == null ? Map.of() : platform.getSourceDirs(), constantRebuild);
+    }
+
     private static void handleJavaBatch(IncrementalCompiler compiler,
                                         ClassReloader reloader,
                                         SpringReloadOrchestrator springOrchestrator,
@@ -709,8 +757,7 @@ public class ReclazzAgent {
             // Per-class isolation: one class failing (possibly with an Error,
             // e.g. VerifyError from companion generation on a nested class)
             // must not abort the rest of the batch.
-            com.onurkat.reclazz.reload.ConstantChangeWarning.check(
-                    internalName, className, bytecode);
+            chaseChangedConstants(internalName, className, bytecode);
 
             // Same as the single-file path: a never-loaded stereotype class
             // becomes a live bean and is done.
@@ -1004,8 +1051,12 @@ public class ReclazzAgent {
         StatusReporter.info("Localization file changed: " + fileName);
 
         if (!(platformContext instanceof HybrisPlatformContext)) {
-            // Only SAP Commerce keeps these in a cache Reclazz can reach.
-            StatusReporter.warn("Localization changes may require a restart to take effect.");
+            // Spring caches a message bundle after the first lookup and ships
+            // the reset for it, so this is a cache to drop rather than a
+            // restart to ask for.
+            com.onurkat.reclazz.spring.SpringMessageSourceReloader.report(fileName,
+                    new com.onurkat.reclazz.spring.SpringMessageSourceReloader(platformContext)
+                            .reload());
             return;
         }
 

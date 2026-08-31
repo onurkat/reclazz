@@ -188,6 +188,15 @@ public class SpringReloadOrchestrator {
         // changing the Method identity the answer is filed under.
         operationSourceReloader.reloadOperationSources(reloadedClass, annotationsChanged);
 
+        // 3c. The same cache, one framework over. Method security resolves
+        // @PreAuthorize once per method and keeps the answer under a key that
+        // redefinition does not change, so an edited expression keeps being
+        // enforced as it was written. This runs for every class, not only for
+        // security configurations: the edit that needs it is an annotation on
+        // a service method, which never reaches the filter-chain rebuild at
+        // step 9 because such a class is not a security configuration.
+        securityReloader.refreshMethodSecurity(reloadedClass);
+
         // 4. Scheduler re-registration
         schedulerReloader.reloadScheduledMethods(reloadedClass);
 

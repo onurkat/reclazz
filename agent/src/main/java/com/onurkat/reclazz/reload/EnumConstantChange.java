@@ -220,8 +220,11 @@ public final class EnumConstantChange {
                     + " prints a sun.misc.Unsafe deprecation warning for this and names Reclazz; "
                     + "it is expected. Writing a final field is what adding a constant needs "
                     + "and has no supported alternative. Starting the JVM with "
-                    + "--sun-misc-unsafe-memory-access=allow silences it, and is what keeps this "
-                    + "working on JDK 26, where the access is refused by default.");
+                    + "--sun-misc-unsafe-memory-access=allow silences it. On JDK 26, where that "
+                    + "access is refused by default, Reclazz falls back to the JDK's own "
+                    + "jdk.internal.misc.Unsafe, which the deprecation does not cover, so the "
+                    + "flag is a way to keep this quiet rather than the only way to keep it "
+                    + "working.");
         }
     }
 

@@ -15,7 +15,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.instrument.Instrumentation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,26 +24,29 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * What happens to a removed method's existing callers is three different
- * behaviours, and the reloader used to describe only one of them.
+ * What happens to a removed method's existing callers, which is now one thing
+ * and used to be three.
  *
- * <p>Measured: when the constructor-body redefinition lands, it installs
- * AddedMemberStripper's stub over the removed method's renamed fallback, so
- * a call site never retargeted to a companion throws
- * {@code UnsupportedOperationException: Reclazz: <name> was removed by a
- * reload} (on Spring Boot 3.3.4 that turned a JSON endpoint into HTTP 500).
- * A site that WAS retargeted by an earlier reload keeps dispatching to that
- * companion body and never reaches the stub, so its callers keep the last
- * reloaded implementation (the SAP Commerce integration run's remove-method
- * scenario passes for exactly this reason). And when the redefinition is
- * refused, every caller keeps what it had. The single warning said
- * "existing callers will continue using the previous implementation" in all
- * three cases, which is false in the first one: a developer reading it would
- * go looking for why their endpoint returns 500 while the tool tells them
- * the old code is still running.
+ * <p>The JVM will not let a method leave a loaded class, so the payload
+ * carries it either way and the only question is what is in it. It was
+ * AddedMemberStripper's stub, which throws, and whether a caller met that stub
+ * depended on history the developer cannot see: a call site retargeted to a
+ * companion by an earlier reload kept the last reloaded body, a refused
+ * redefinition kept everything, and a site that had never been reloaded threw
+ * {@code UnsupportedOperationException} (measured on Spring Boot 3.3.4: a
+ * removed getter turned its JSON endpoint into HTTP 500). One edit, three
+ * outcomes, and the worst of them kills a live request on the developer's own
+ * server for a change they made deliberately.
  *
- * <p>These tests replay the cases through the production reload chain and
- * hold the message against the behaviour that actually occurred.
+ * <p>Now the previous implementation is spliced into the payload, so all three
+ * paths end the same way and the way they end is the one the README already
+ * promised: the member is hidden from reflection immediately, so every scan
+ * stops acting on it, and code that already holds it keeps running. What a
+ * direct call means is settled at the next restart, where the caller either
+ * compiles without the method or does not compile at all.
+ *
+ * <p>These tests replay each of the three histories through the production
+ * reload chain and hold them to the same answer.
  */
 class RemovedMethodWarningTest extends TransformTestBase {
 
@@ -141,9 +143,11 @@ class RemovedMethodWarningTest extends TransformTestBase {
                     + "fallback is never reached");
 
             String warning = String.join("\n", rig.warnings());
-            assertTrue(warning.contains("keep the previous implementation until restart"),
+            assertTrue(warning.contains("keeps the previous implementation until restart"),
                     "the warning must describe the kept case, got: " + warning);
-            assertFalse(warning.contains("Existing callers will now fail"),
+            assertTrue(warning.contains("hidden from reflection"),
+                    "and what removal does apply immediately: " + warning);
+            assertFalse(warning.contains("UnsupportedOperationException"),
                     "a throw that does not happen must not be claimed: " + warning);
         } finally {
             teardown(rig);
@@ -170,14 +174,14 @@ class RemovedMethodWarningTest extends TransformTestBase {
     }
 
     /**
-     * A method that was never reloaded before its removal: its call sites
-     * fall back to the renamed method the stub replaced, so callers throw.
-     * The message has to say so, because "callers keep the previous
-     * implementation" sends the developer looking for a bug that is not
-     * there while their calls are failing.
+     * A method that was never reloaded before its removal. Its call sites fall
+     * back to the renamed method, which is exactly where the throwing stub
+     * used to land, and this is the case that turned a live endpoint into an
+     * HTTP 500. The previous implementation is spliced there instead, so the
+     * call still answers what it answered before the save.
      */
     @Test
-    void aNeverReloadedMethodsCallersThrowAndTheMessageSaysSo() throws Exception {
+    void aNeverReloadedMethodsCallersKeepItsBody() throws Exception {
         Rig rig = rig("RemovedNoExtra",
                 "public class RemovedNoExtra {\n" +
                 "    public String keep() { return \"keep-v1\"; }\n" +
@@ -190,22 +194,18 @@ class RemovedMethodWarningTest extends TransformTestBase {
                             "    public String keep() { return \"keep-v2\"; }\n" +
                             "}")).get("RemovedNoExtra"));
             assertTrue(result.isSuccess(), String.valueOf(result.getError()));
-            assertEquals("keep-v2", rig.keep().invoke(rig.instance()));
+            assertEquals("keep-v2", rig.keep().invoke(rig.instance()),
+                    "the rest of the save still applies");
 
-            var thrown = assertThrows(InvocationTargetException.class,
-                    () -> rig.gone().invoke(rig.instance()),
-                    "with the stub installed, existing callers throw; this is the "
-                    + "measured behaviour the message must match");
-            assertInstanceOf(UnsupportedOperationException.class, thrown.getCause());
-            assertTrue(thrown.getCause().getMessage().contains("gone"),
-                    "the error names the removed method: " + thrown.getCause().getMessage());
+            assertEquals("gone-v1", rig.gone().invoke(rig.instance()),
+                    "this is the call that used to throw UnsupportedOperationException "
+                    + "on a live server for a removal the developer made on purpose");
 
             String warning = String.join("\n", rig.warnings());
-            assertTrue(warning.contains("Existing callers will now fail"),
-                    "the warning must describe the throwing case, got: " + warning);
-            assertTrue(warning.contains("Restore the method or restart"), warning);
-            assertFalse(warning.contains("keep the previous implementation"),
-                    "the old universal sentence is the false one here: " + warning);
+            assertTrue(warning.contains("keeps the previous implementation until restart"),
+                    "the warning must describe the kept case, got: " + warning);
+            assertFalse(warning.contains("UnsupportedOperationException"),
+                    "nothing throws here any more: " + warning);
         } finally {
             teardown(rig);
         }
@@ -266,7 +266,7 @@ class RemovedMethodWarningTest extends TransformTestBase {
                     + "which is what the message claims");
 
             String warning = String.join("\n", rig.warnings());
-            assertTrue(warning.contains("keep the previous implementation until restart"),
+            assertTrue(warning.contains("keeps the previous implementation until restart"),
                     "the warning must describe the refused case, got: " + warning);
             assertFalse(warning.contains("Existing callers will now fail"),
                     "claiming a throw that does not happen is the same mistake "

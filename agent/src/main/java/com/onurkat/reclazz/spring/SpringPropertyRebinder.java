@@ -28,11 +28,14 @@ import java.util.Map;
  * whose prefix is affected is put back through the binding post-processor, the
  * same one that filled it in at startup.
  *
- * Beyond the post-processor's reach, two more moves: a bean bound through its
- * constructor is destroyed and rebuilt against the updated Environment, and a
- * {@code @Value} placeholder field is re-resolved and written directly. What
- * remains out of reach is said rather than glossed over: a SpEL
- * {@code @Value}, and a {@code @Value} constructor parameter.
+ * Beyond the post-processor's reach, three more moves: a bean bound through its
+ * constructor is destroyed and rebuilt against the updated Environment, a
+ * {@code @Value} placeholder field is re-resolved and written directly, and a
+ * bean that takes a changed {@code @Value} through its constructor is rebuilt
+ * the same way the constructor-bound properties bean is. What remains out of
+ * reach is said rather than glossed over: a SpEL {@code @Value}, because
+ * re-evaluating arbitrary expressions is running application code at a moment
+ * it did not choose.
  */
 public final class SpringPropertyRebinder {
 
@@ -50,28 +53,38 @@ public final class SpringPropertyRebinder {
         this.applicationContexts = applicationContexts;
     }
 
-    /** What a property save reached: bound beans, and fields injected directly. */
-    public record Applied(List<String> rebound, int valueFields) {
+    /**
+     * What a property save reached: bound beans, fields injected directly, and
+     * beans rebuilt because their constructor is where the value goes in.
+     */
+    public record Applied(List<String> rebound, int valueFields, List<String> rebuilt) {
+        public Applied(List<String> rebound, int valueFields) {
+            this(rebound, valueFields, List.of());
+        }
+
         public boolean tookEffect() {
-            return !rebound.isEmpty() || valueFields > 0;
+            return !rebound.isEmpty() || valueFields > 0 || !rebuilt.isEmpty();
         }
     }
 
     /**
      * @param changed the keys this save changed, with their new values
-     * @return the {@code @ConfigurationProperties} beans that took them, and
-     *         how many {@code @Value} fields were re-injected
+     * @return the {@code @ConfigurationProperties} beans that took them, how
+     *         many {@code @Value} fields were re-injected, and the beans
+     *         rebuilt for a {@code @Value} constructor parameter
      */
     public Applied apply(Map<String, String> changed) {
         List<String> rebound = new ArrayList<>();
+        List<String> rebuilt = new ArrayList<>();
         int valueFields = 0;
-        if (changed.isEmpty()) return new Applied(rebound, 0);
+        if (changed.isEmpty()) return new Applied(rebound, 0, rebuilt);
 
         for (Object context : applicationContexts) {
             try {
                 if (!updateEnvironment(context, changed)) continue;
                 rebound.addAll(rebind(context, changed));
                 valueFields += reinjectValueFields(context, changed);
+                rebuilt.addAll(recreateValueConstructorBeans(context, changed));
             } catch (Throwable t) {
                 // One context that cannot be reached is not a reason to skip
                 // the others: a Spring Boot application has one, a server has
@@ -83,7 +96,11 @@ public final class SpringPropertyRebinder {
                     + " @Value field(s) reading the changed propert"
                     + (changed.size() == 1 ? "y" : "ies"));
         }
-        return new Applied(rebound, valueFields);
+        if (!rebuilt.isEmpty()) {
+            StatusReporter.success("Rebuilt " + rebuilt.size() + " bean(s) that take a changed "
+                    + "@Value through their constructor: " + rebuilt);
+        }
+        return new Applied(rebound, valueFields, rebuilt);
     }
 
     /**
@@ -99,9 +116,10 @@ public final class SpringPropertyRebinder {
      *
      * <p>What is left alone, on purpose: a SpEL expression ({@code #{...}}),
      * because re-evaluating arbitrary expressions is running application code
-     * at a moment it did not choose; and a {@code @Value} constructor
-     * parameter, which has no field to write into, the same immutability the
-     * constructor-bound properties path answers by rebuilding the bean.
+     * at a moment it did not choose. A {@code @Value} constructor parameter
+     * has no field to write into and is not left alone either; it is answered
+     * by {@link #recreateValueConstructorBeans}, the same way the
+     * constructor-bound properties bean is.
      */
     private static int reinjectValueFields(Object context, Map<String, String> changed) {
         int injected = 0;
@@ -176,6 +194,136 @@ public final class SpringPropertyRebinder {
             }
         }
         return injected;
+    }
+
+    /**
+     * Rebuild every singleton that takes a changed {@code @Value} through its
+     * constructor.
+     *
+     * <p>A constructor parameter has no field to write the new value into: by
+     * the time the bean exists the value has already been passed in, and
+     * whatever the constructor did with it (stored it, derived something from
+     * it, handed it to a client it built) is not something a field write can
+     * undo. That is the same shape as a constructor-bound
+     * {@code @ConfigurationProperties} bean, and it gets the same answer:
+     * the instance is not mutated, it is replaced. Destroying and re-creating
+     * the singleton runs the constructor Spring ran at startup, this time
+     * against an Environment that already holds the new value, and the
+     * stale-reference sweep re-points the holders of the old instance.
+     *
+     * <p>Beans the post-processor already rebound are skipped: a
+     * {@code @ConfigurationProperties} class is {@link #rebind}'s to handle,
+     * and rebuilding it here as well would throw away the instance that path
+     * just filled in.
+     */
+    private static List<String> recreateValueConstructorBeans(Object context,
+                                                              Map<String, String> changed) {
+        List<String> rebuilt = new ArrayList<>();
+        try {
+            Object beanFactory = SpringBeans.getBeanFactory(context);
+            Method getSingletonNames = SpringBeans.findMethod(beanFactory.getClass(), "getSingletonNames");
+            Method getSingleton = SpringBeans.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+            if (getSingletonNames == null || getSingleton == null) return rebuilt;
+
+            ClassLoader loader = context.getClass().getClassLoader();
+            @SuppressWarnings("unchecked")
+            Class<? extends java.lang.annotation.Annotation> valueAnnotation =
+                    (Class<? extends java.lang.annotation.Annotation>) Class.forName(
+                            "org.springframework.beans.factory.annotation.Value", true, loader);
+            Method valueMember = valueAnnotation.getMethod("value");
+
+            Class<? extends java.lang.annotation.Annotation> propertiesAnnotation = null;
+            try {
+                @SuppressWarnings("unchecked")
+                Class<? extends java.lang.annotation.Annotation> found =
+                        (Class<? extends java.lang.annotation.Annotation>) Class.forName(
+                                ANNOTATION, true, loader);
+                propertiesAnnotation = found;
+            } catch (Throwable notSpringBoot) {
+                // No @ConfigurationProperties on this loader, so no bean here
+                // can be one, and nothing needs skipping.
+            }
+
+            for (String name : (String[]) getSingletonNames.invoke(beanFactory)) {
+                Object bean;
+                try {
+                    bean = getSingleton.invoke(beanFactory, name);
+                } catch (Throwable notNow) {
+                    continue;
+                }
+                if (bean == null) continue;
+
+                Class<?> type = userClass(unwrapAopProxy(bean).getClass());
+                if (propertiesAnnotation != null && type.getAnnotation(propertiesAnnotation) != null) {
+                    continue;
+                }
+                if (!takesChangedValue(type, changed, valueAnnotation, valueMember)) continue;
+
+                if (rebuildSingleton(context, name, type)) rebuilt.add(name);
+            }
+        } catch (Throwable notSpringShaped) {
+            return rebuilt;
+        }
+        return rebuilt;
+    }
+
+    /**
+     * Whether any constructor of this class takes a {@code @Value} reading one
+     * of the changed keys.
+     *
+     * <p>Every constructor is looked at rather than only the one Spring
+     * picked: which one that was is not recorded anywhere reachable, and a
+     * class whose only annotated parameter sits on a constructor Spring did
+     * not use rebuilds through the one it did, which is the same instance it
+     * would have built anyway.
+     */
+    static boolean takesChangedValue(Class<?> type, Map<String, String> changed,
+                                     Class<? extends java.lang.annotation.Annotation> valueAnnotation,
+                                     Method valueMember) {
+        for (java.lang.reflect.Constructor<?> constructor : type.getDeclaredConstructors()) {
+            for (java.lang.annotation.Annotation[] parameter : constructor.getParameterAnnotations()) {
+                for (java.lang.annotation.Annotation annotation : parameter) {
+                    if (!valueAnnotation.isInstance(annotation)) continue;
+                    try {
+                        String expression = String.valueOf(valueMember.invoke(annotation));
+                        if (expression.contains("#{")) continue;   // SpEL: stated policy above
+                        if (referencesChangedKey(expression, changed)) return true;
+                    } catch (Throwable oneParameter) {
+                        // A parameter whose annotation cannot be read is not a
+                        // reason to rebuild the bean.
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /** Replace the singleton and re-point what held it, or say why it stayed. */
+    private static boolean rebuildSingleton(Object context, String beanName, Class<?> type) {
+        try {
+            Object[] pair = SpringBeanReloader.destroyAndRefreshBean(context, beanName);
+            if (pair == null || pair[1] == null) {
+                RestartLedger.note(beanName,
+                        "a @Value constructor parameter that could not be rebuilt in place");
+                StatusReporter.warn(beanName + " takes a changed @Value through its constructor "
+                        + "and could not be rebuilt in place. A restart is what applies it.");
+                return false;
+            }
+            if (pair[0] != null && pair[0] != pair[1]) {
+                java.util.IdentityHashMap<Object, Object> replaced = new java.util.IdentityHashMap<>();
+                replaced.put(pair[0], pair[1]);
+                SpringBeanReloader.healStaleReferences(java.util.List.of(context), replaced);
+            }
+            return true;
+        } catch (Throwable t) {
+            RestartLedger.note(beanName,
+                    "a @Value constructor parameter that could not be rebuilt in place");
+            StatusReporter.warn("Rebuilding " + beanName + " (" + type.getSimpleName()
+                    + ") failed (" + (t.getMessage() == null ? t.getClass().getSimpleName() : t.getMessage())
+                    + "); the value it was given at startup is the one it keeps. "
+                    + "A restart is what applies the new one.");
+            return false;
+        }
     }
 
     /** Whether the placeholder text reads any of the changed keys. */
