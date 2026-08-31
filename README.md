@@ -412,7 +412,7 @@ from the code. What that means concretely:
 
 | Environment | Version | Covered |
 |---|---|---|
-| SAP Commerce | 2211-jdk21.8 (Java 21, Spring 6.2) | 20/20 integration scenarios on a live server |
+| SAP Commerce | 2211-jdk21.8 (Java 21, Spring 6.2) | 21/23 integration scenarios on a live server. The two that do not pass are named rather than hidden: the ImpEx scenario needs `autoImpex=true` in the agent arguments, and an enum scenario has a 404 flake in the harness that predates the current release |
 | Spring Boot | 3.3 | class reload, structural reload, bean refresh, cache, MVC, properties, logging |
 | Spring Boot | 2.7 | the same six, including a new endpoint mapped without a restart |
 | JDK | SapMachine 17 and 21, JBR 25 | companion-class engine on both, plus native enhanced redefinition |
@@ -449,7 +449,7 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 |---|---|---|
 | Method body changes | Yes | None |
 | Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. A new Spring MVC endpoint is an exception: it is mapped without a restart |
-| Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class |
+| Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Once a class carries members added since startup, the JVM refuses the redefinition that installs the new constructor, so a field added after that reads its default even on new objects; Reclazz names the fields and the reason rather than leaving you to find the value |
 | Remove methods/fields | **Yes** | Hidden from reflection so scans stop seeing them; existing callers keep the previous implementation until they are hot-recompiled |
 | Change annotations | **Yes** | None |
 | Spring bean logic | Yes | None |
