@@ -35,6 +35,13 @@ import static org.junit.jupiter.api.Assertions.*;
  * against what the JVM actually holds; the second walks the sequence the live
  * suite walks, remove then restore then add a field, and asks the object what
  * it got.
+ *
+ * <p>The other half of keeping that record honest is not here on purpose. A
+ * removed member is hidden from reflection, and undoing that when a save
+ * brings the name back is what lets a restored endpoint be mapped again; the
+ * hiding runs through the root-level filter the agent installs with an
+ * Instrumentation this rig does not have, so it cannot be observed here at
+ * all. The live suite is what covers it, and it is what found it.
  */
 class RemovalThenAddFieldTest extends TransformTestBase {
 
@@ -169,5 +176,68 @@ class RemovalThenAddFieldTest extends TransformTestBase {
         ClassReloader.ReloadResult result = reloader.reload(
                 name, compile(new SourceFile(name, source)).get(name));
         assertTrue(result.isSuccess(), String.valueOf(result.getError()));
+    }
+
+
+    /**
+     * A method removed and then brought back is visible to reflection again.
+     *
+     * <p>This is the one that shipped. Removal hides the member, because the
+     * JVM will not let it leave the loaded class and a scan that keeps seeing
+     * it keeps acting on it. Undoing that when a save brings the name back was
+     * gated on the diff calling the member added, and once the record keeps
+     * what the class actually has, it is not added: the gate never fired and
+     * the member stayed hidden for good. On a live server the endpoint a save
+     * had just restored answered 404, in a different scenario on each run,
+     * which is what made it look like harness flake.
+     *
+     * <p>Asked through {@link com.onurkat.reclazz.bootstrap.ReflectionBridge},
+     * which is what an instrumented call site asks. The root-level filter that
+     * carries the same hiding into plain reflection needs the JDK's own maps
+     * and refuses a throwaway classloader, so it cannot be observed in a rig
+     * that defines its classes in one; the store underneath it has neither
+     * restriction and answers the same question.
+     */
+    @Test
+    void aRestoredMethodIsVisibleToReflectionAgain() throws Exception {
+        String name = "RestoredVisible";
+        String withBoth = "public class RestoredVisible {\n"
+                + "    public String keep() { return \"keep\"; }\n"
+                + "    public String comesBack() { return \"back\"; }\n"
+                + "}";
+
+        TransformContext context = new TransformContext();
+        context.addWatched(name);
+        ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
+
+        byte[] transformed = transformer.transform(TransformTestBase.class.getClassLoader(),
+                name, null, null, compile(new SourceFile(name, withBoth)).get(name));
+        Map<String, byte[]> loadMap = new LinkedHashMap<>();
+        loadMap.put(name, transformed);
+        Class<?> cls = defineAndLoad(loadMap, name);
+        assertNotNull(com.onurkat.reclazz.bootstrap.ReflectionBridge
+                .getDeclaredMethod(cls, "comesBack"));
+
+        StructuralReloader reloader = new StructuralReloader(
+                instrumentation, context, AgentConfig.parse(null), null);
+        reloader.setTransformer(transformer);
+        instrumentation.addTransformer(transformer, true);
+        try {
+            reload(reloader, name, "public class RestoredVisible {\n"
+                    + "    public String keep() { return \"keep\"; }\n"
+                    + "}");
+            assertThrows(NoSuchMethodException.class,
+                    () -> com.onurkat.reclazz.bootstrap.ReflectionBridge
+                            .getDeclaredMethod(cls, "comesBack"),
+                    "a removed member is hidden, which is what stops scans acting on it");
+
+            reload(reloader, name, withBoth);
+            assertNotNull(com.onurkat.reclazz.bootstrap.ReflectionBridge
+                            .getDeclaredMethod(cls, "comesBack"),
+                    "and bringing it back has to undo that, or the scan that maps an "
+                    + "endpoint cannot see the handler the save just restored");
+        } finally {
+            instrumentation.removeTransformer(transformer);
+        }
     }
 }

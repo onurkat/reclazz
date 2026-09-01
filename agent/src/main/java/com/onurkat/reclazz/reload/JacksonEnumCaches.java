@@ -12,8 +12,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 /**
- * Flushes Jackson's per-mapper enum caches after an enum append, so JSON
- * carries the new constant instead of failing on it.
+ * Flushes Jackson's per-mapper caches after a reload changed what a class
+ * serialises to, so JSON carries the new shape instead of the old one.
  *
  * <p>Jackson builds an enum's serializer and deserializer once per
  * ObjectMapper and keeps them: the serializer holds an array of names indexed
@@ -31,6 +31,24 @@ import java.util.Map;
  *                                 for Enum class: [HIGH, LOW]
  *   old constants, both ways      fine
  * </pre>
+ *
+ * <p>An enum is not the only shape Jackson caches. A serializer is built once
+ * per class per mapper from the properties it found, so a field added to a
+ * response DTO is missing from the JSON even though the class reloaded, and
+ * nothing anywhere says why. Measured on Spring Boot 3.3.4, stock JDK 21,
+ * after adding a field and its getter to a DTO whose endpoint had already
+ * been called once:
+ *
+ * <pre>
+ *   the reload                    Structural reload: demo.Dto (+1 method +1 field)
+ *   the endpoint, before flush    {"name":"alpha"}
+ *   the endpoint, after flush     {"name":"alpha","count":7}
+ * </pre>
+ *
+ * <p>So the same flush runs after any structural reload, not only after an
+ * enum change. It says nothing when it does: a cache that rebuilds lazily and
+ * correctly is not news, and the enum path keeps its own sentence because
+ * there the constant was previously failing outright.
  *
  * <p>The repair is to flush the two caches and the root-deserializer map on
  * every ObjectMapper registered as a Spring bean, all through reflection:
@@ -53,7 +71,7 @@ final class JacksonEnumCaches {
      *
      * @return how many mappers were flushed; 0 when Jackson or Spring is absent
      */
-    static int flushAfterAppend() {
+    static int flush() {
         Map<Object, Boolean> seen = new IdentityHashMap<>();
         int flushed = 0;
         for (Object context : ApplicationContextHolder.getAllContexts()) {

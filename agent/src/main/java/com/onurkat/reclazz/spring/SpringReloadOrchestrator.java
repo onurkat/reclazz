@@ -36,6 +36,8 @@ public class SpringReloadOrchestrator {
     private final SpringDataReloader dataReloader;
     private final SpringSecurityReloader securityReloader;
     private final SpringOperationSourceReloader operationSourceReloader;
+    private final SpringInjectionMetadataReloader injectionMetadataReloader;
+    private final SpringControllerAdviceReloader exceptionHandlerReloader;
 
     public SpringReloadOrchestrator(PlatformContext platformContext) {
         this.beanReloader = new SpringBeanReloader(platformContext);
@@ -48,6 +50,8 @@ public class SpringReloadOrchestrator {
         this.dataReloader = new SpringDataReloader(platformContext);
         this.securityReloader = new SpringSecurityReloader(platformContext);
         this.operationSourceReloader = new SpringOperationSourceReloader(platformContext);
+        this.injectionMetadataReloader = new SpringInjectionMetadataReloader(platformContext);
+        this.exceptionHandlerReloader = new SpringControllerAdviceReloader(platformContext);
         this.newBeanRegistrar = new SpringNewBeanRegistrar(platformContext, mvcReloader);
     }
 
@@ -117,6 +121,17 @@ public class SpringReloadOrchestrator {
         if (reloadedClass == null) return;
 
         if (isSpringBean(reloadedClass)) {
+            // 0. What the container thinks this class needs injected, before
+            // anything re-creates it. Spring answers that once per bean and
+            // keeps it, so adding @Autowired to a field that was already there
+            // reloaded, refreshed the bean, and left the field null: measured
+            // on Boot 3.3, with nothing anywhere saying why. The refresh below
+            // is what asks the cache, so emptying it after would be a reload
+            // too late.
+            if (isStructural || annotationsChanged) {
+                injectionMetadataReloader.reload();
+            }
+
             // 1. Bean refresh — pass the actual Class object: its own
             // classloader is the only reliable way to match bean types
             // across contexts with different classloaders.
@@ -181,6 +196,16 @@ public class SpringReloadOrchestrator {
 
         // 3. Cache eviction
         cacheReloader.reloadCaches(reloadedClass);
+
+        // 3a. Which exceptions a controller advice handles. Spring scans the
+        // advice beans once at startup and caches each controller's handlers
+        // on first use, so adding @ExceptionHandler to a method that was
+        // already there reached nothing: measured on Boot 3.3, the endpoint
+        // kept answering the default error body.
+        if ((isStructural || annotationsChanged)
+                && SpringControllerAdviceReloader.carriesAdvice(reloadedClass)) {
+            exceptionHandlerReloader.reload();
+        }
 
         // 3b. Transaction/cache annotation metadata. Eviction above empties
         // the cached VALUES; this clears the cached ANSWER to "what does the
