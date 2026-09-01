@@ -181,6 +181,10 @@ public class ReclazzAgent {
         }
         try {
             AgentConfig config = AgentConfig.parse(agentArgs);
+            // Before anything else prints: the first lines of a session are
+            // the banner and the capability report, and they should be laid
+            // out the same way as everything after them.
+            StatusReporter.setWrapMode(config.getWrapOutput());
             agentConfig = config;
 
             // Check JVM capabilities

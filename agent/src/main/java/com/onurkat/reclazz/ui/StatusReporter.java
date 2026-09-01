@@ -115,8 +115,41 @@ public class StatusReporter {
 
     private static void log(String colorCode, String level, String message) {
         String time = LocalTime.now().format(TIME_FMT);
-        String formatted = String.format("%s [%s] [%s] %s", PREFIX, time, level, message);
-        System.out.println(color(colorCode, formatted));
+        String head = String.format("%s [%s] [%s] ", PREFIX, time, level);
+
+        // Laid out for a terminal, left alone for anything else. Redirected
+        // output is a log file somebody greps, and a phrase broken across two
+        // lines is a phrase their grep will not find; the window it would have
+        // been laid out for is not there to read it either.
+        if (!laysOut()) {
+            System.out.println(color(colorCode, head + message));
+            return;
+        }
+        for (String line : MessageWrap.wrap(head, message, MessageWrap.terminalWidth())) {
+            System.out.println(color(colorCode, line));
+        }
+    }
+
+    /**
+     * Whether to lay a long message out rather than leave it on one line.
+     *
+     * <p>Auto asks whether standard output is a terminal, and answers no
+     * inside an application server even when a person is watching its console,
+     * which is why the setting exists. Being wrong towards one line is the
+     * cheaper mistake: an unwrapped paragraph is ugly, a wrapped one is
+     * unsearchable.
+     */
+    private static boolean laysOut() {
+        if ("always".equals(wrapMode)) return true;
+        if ("never".equals(wrapMode)) return false;
+        return System.console() != null;
+    }
+
+    private static volatile String wrapMode = "auto";
+
+    /** Set from the agent arguments during start-up. */
+    public static void setWrapMode(String mode) {
+        wrapMode = mode == null ? "auto" : mode;
     }
 
     private static String color(String code, String text) {
