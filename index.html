@@ -651,7 +651,7 @@
         },
         "license": "https://github.com/onurkat/reclazz/blob/main/LICENSE",
         "codeRepository": "https://github.com/onurkat/reclazz",
-        "softwareVersion": "1.0.23",
+        "softwareVersion": "1.0.29",
         "isAccessibleForFree": true,
         "applicationSubCategory": "IDE Plugin",
         "softwareRequirements": "JDK 17 or newer; IntelliJ IDEA 2023.3 through 2026.1",
@@ -995,7 +995,7 @@
             <div class="feature-card reveal">
                 <div class="feature-icon">&#128736;</div>
                 <h3 data-i18n="features.structural.title">Structural Changes</h3>
-                <p data-i18n="features.structural.desc">Add or remove methods and instance fields, and change annotations, on any JDK 17+. No patched JVM required. An added static field gets its initial value too, without re-running the rest of the static block. An enum value added on the end is applied to the running JVM on JDK 17 through 25, and on JDK 26 Reclazz says how to give the access back.</p>
+                <p data-i18n="features.structural.desc">Add or remove methods and instance fields, and change annotations, on any JDK 17+. No patched JVM required. An added static field gets its initial value too, without re-running the rest of the static block. An enum value added on the end is applied to the running JVM, JDK 26 included: what that release closes is sun.misc.Unsafe, and the JDK&#39;s own Unsafe does the same writes. A changed compile-time constant is named together with the files that inlined it, and rebuilt where Reclazz is the compiler.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon">&#128196;</div>
@@ -1015,12 +1015,17 @@
             <div class="feature-card reveal">
                 <div class="feature-icon green">&#128737;</div>
                 <h3 data-i18n="features.aop.title">AOP &amp; Events</h3>
-                <p data-i18n="features.aop.desc">Clears AOP proxy caches for @Aspect classes. Re-registers @EventListener methods. Refreshes @Async processing.</p>
+                <p data-i18n="features.aop.desc">Clears AOP proxy caches for @Aspect classes and parses an edited pointcut again, instead of leaving every proxy matching the old expression. The one half a restart is still needed for is named: a bean already proxied keeps the advice it was built with until it is itself reloaded. Re-registers @EventListener methods. Refreshes @Async processing.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon cyan">&#128218;</div>
                 <h3 data-i18n="features.data.title">Spring Data &amp; Security</h3>
-                <p data-i18n="features.data.desc">Refreshes Repository beans. Detects @EnableWebSecurity and SecurityConfigurer changes. Full Spring ecosystem support.</p>
+                <p data-i18n="features.data.desc">Refreshes Repository beans. An edited @EnableWebSecurity configuration is rebuilt into the running filter chain, and method security (@PreAuthorize, @Secured) is re-read on the service class that carries it, not only on the security configuration.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#128260;</div>
+                <h3 data-i18n="features.caches.title">What The Frameworks Cached</h3>
+                <p data-i18n="features.caches.desc">A reload is only half the job. Every framework answers from what it worked out about your class once, at startup, and nothing tells it otherwise. So an @Autowired you add to an existing field actually injects, a constraint you add is enforced on the next request, an @ExceptionHandler, @InitBinder or @ModelAttribute you add runs, an edited @Aspect pointcut is parsed again, and Jackson stops serialising the shape it first saw. Each one was measured on a running server, before and after.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon">&#9889;</div>
@@ -1402,7 +1407,7 @@ const translations = {
         'features.scheduler.title': 'Zamanlay\u0131c\u0131 Yenileme',
         'features.scheduler.desc': '@Scheduled g\u00F6revlerini iptal edip yeniden kaydeder. De\u011Fi\u015Fen cron ifadeleri an\u0131nda uygulan\u0131r.',
         'features.structural.title': 'Yap\u0131sal De\u011Fi\u015Fiklikler',
-        'features.structural.desc': 'Her JDK 17+ s\u00FCr\u00FCm\u00FCnde metot ve \u00F6rnek alan\u0131 ekleyin, kald\u0131r\u0131n, anotasyon de\u011Fi\u015Ftirin. Yamal\u0131 bir JVM gerekmez. Eklenen statik alan ba\u015Flang\u0131\u00E7 de\u011Ferini de al\u0131r, statik blo\u011Fun geri kalan\u0131 yeniden \u00E7al\u0131\u015Fmadan. Sona eklenen bir enum de\u011Feri, \u00E7al\u0131\u015Fan JVM\'e JDK 17 ile 25 aras\u0131nda uygulan\u0131r; JDK 26\'da ise Reclazz eri\u015Fimi nas\u0131l geri verece\u011Finizi s\u00F6yler.',
+        'features.structural.desc': 'Her JDK 17+ s\\u00FCr\\u00FCm\\u00FCnde metot ve \\u00F6rnek alan\\u0131 ekleyin, kald\\u0131r\\u0131n, anotasyon de\\u011Fi\\u015Ftirin. Yamal\\u0131 bir JVM gerekmez. Eklenen statik alan ba\\u015Flang\\u0131\\u00E7 de\\u011Ferini de al\\u0131r, statik blo\\u011Fun geri kalan\\u0131 yeniden \\u00E7al\\u0131\\u015Fmadan. Sona eklenen bir enum de\\u011Feri \\u00E7al\\u0131\\u015Fan JVM'e uygulan\\u0131r, JDK 26 dahil: o s\\u00FCr\\u00FCm\\u00FCn kapatt\\u0131\\u011F\\u0131 \\u015Fey sun.misc.Unsafe ve JDK'n\\u0131n kendi Unsafe'i ayn\\u0131 yazmay\\u0131 yap\\u0131yor. De\\u011Fi\\u015Fen bir derleme zaman\\u0131 sabiti, onu inline eden dosyalarla birlikte adland\\u0131r\\u0131l\\u0131r ve derleyici Reclazz ise yeniden derlenir.',
         'features.templates.title': '\u015Eablon Yeniden Y\u00FCkleme',
         'features.templates.desc': 'Thymeleaf veya Freemarker \u015Fablonunu d\u00FCzenledi\u011Finizde bir sonraki render\u0027da ge\u00E7erli olur; \u00F6nbellek a\u00E7\u0131k kalabilir.',
         'features.props.title': 'Property ve Log De\u011Fi\u015Fiklikleri',
@@ -1410,9 +1415,11 @@ const translations = {
         'features.diag.title': 'Kendini A\u00E7\u0131kl\u0131yor',
         'features.diag.desc': 'Hi\u00E7bir \u015Fey olmad\u0131\u011F\u0131nda nedenini sorun: build o s\u0131n\u0131fa u\u011Framam\u0131\u015Ft\u0131r, s\u0131n\u0131f Reclazz\'\u0131n izlemedi\u011Fi bir yere derleniyordur, \u00FCretilen byte\'lar ayn\u0131 \u00E7\u0131km\u0131\u015Ft\u0131r ya da JVM s\u0131n\u0131f\u0131 hen\u00FCz y\u00FCklememi\u015Ftir. Bunlar\u0131n hi\u00E7biri hata \u00FCretmez, log\'un bo\u015F olmas\u0131n\u0131n sebebi budur. \u0130kinci soru da \u015Fu: neyin i\u00E7in h\u00E2l\u00E2 restart gerekiyor. Bu oturumun geride b\u0131rakt\u0131klar\u0131n\u0131 listeler, hi\u00E7bir \u015Fey yoksa onu da a\u00E7\u0131k\u00E7a s\u00F6yler.',
         'features.aop.title': 'AOP & Olaylar',
-        'features.aop.desc': '@Aspect s\u0131n\u0131flar\u0131 i\u00E7in AOP proxy \u00F6nbelleklerini temizler. @EventListener metotlar\u0131n\u0131 yeniden kaydeder. @Async i\u015Flemeyi yeniler.',
+        'features.aop.desc': '@Aspect s\\u0131n\\u0131flar\\u0131 i\\u00E7in AOP proxy \\u00F6nbelleklerini temizler ve d\\u00FCzenlenen bir pointcut'\\u0131 yeniden ayr\\u0131\\u015Ft\\u0131r\\u0131r; eskiden her proxy eski ifadeyle e\\u015Fle\\u015Fmeye devam ediyordu. H\\u00E2l\\u00E2 restart gerektiren tek yar\\u0131 da a\\u00E7\\u0131k\\u00E7a s\\u00F6ylenir: zaten proxy'lenmi\\u015F bir bean, kendisi yeniden y\\u00FCklenene kadar kuruldu\\u011Fu advice'\\u0131 ta\\u015F\\u0131r. @EventListener metotlar\\u0131n\\u0131 yeniden kaydeder, @Async i\\u015Flemesini tazeler.',
         'features.data.title': 'Spring Data & G\u00FCvenlik',
-        'features.data.desc': 'Repository bean\'leri yeniler. @EnableWebSecurity ve SecurityConfigurer de\u011Fi\u015Fikliklerini alg\u0131lar. T\u00FCm Spring ekosistemi deste\u011Fi.',
+        'features.data.desc': 'Repository bean'lerini yeniler. D\\u00FCzenlenen bir @EnableWebSecurity yap\\u0131land\\u0131rmas\\u0131 \\u00E7al\\u0131\\u015Fan filter chain'e uygulan\\u0131r; method security (@PreAuthorize, @Secured) ise yaln\\u0131z g\\u00FCvenlik yap\\u0131land\\u0131rmas\\u0131nda de\\u011Fil, onu ta\\u015F\\u0131yan servis s\\u0131n\\u0131f\\u0131nda yeniden okunur.',
+        'features.caches.title': 'Framework'lerin Cache'ledi\\u011Fi',
+        'features.caches.desc': 'Yeniden y\\u00FCkleme i\\u015Fin yaln\\u0131z yar\\u0131s\\u0131. Her framework, s\\u0131n\\u0131f\\u0131n\\u0131z hakk\\u0131nda bir kez, a\\u00E7\\u0131l\\u0131\\u015Fta hesaplad\\u0131\\u011F\\u0131 cevab\\u0131 saklar ve kimse ona de\\u011Fi\\u015Fti\\u011Fini s\\u00F6ylemez. Art\\u0131k mevcut bir alana ekledi\\u011Finiz @Autowired ger\\u00E7ekten enjekte ediliyor, ekledi\\u011Finiz bir k\\u0131s\\u0131t bir sonraki istekte uygulan\\u0131yor, ekledi\\u011Finiz @ExceptionHandler, @InitBinder veya @ModelAttribute \\u00E7al\\u0131\\u015F\\u0131yor, d\\u00FCzenledi\\u011Finiz @Aspect pointcut'\\u0131 yeniden ayr\\u0131\\u015Ft\\u0131r\\u0131l\\u0131yor ve Jackson ilk g\\u00F6rd\\u00FC\\u011F\\u00FC \\u015Fekli d\\u00F6nd\\u00FCrmeyi b\\u0131rak\\u0131yor. Her biri \\u00E7al\\u0131\\u015Fan bir sunucuda, \\u00F6ncesi ve sonras\\u0131 \\u00F6l\\u00E7\\u00FCld\\u00FC.',
         'features.hotswap.title': 'Anl\u0131k Hot-Swap',
         'features.hotswap.desc': '\u00C7al\u0131\u015Fan JVM\'deki s\u0131n\u0131flar\u0131 Instrumentation API ile yeniden tan\u0131mlar. ~50ms\'de uygulan\u0131r. S\u0131f\u0131r kesinti.',
         'features.privacy.title': '100% Yerel & Gizli',

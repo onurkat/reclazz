@@ -41,9 +41,24 @@ ground a Java-only reload does not.
   and only its definition was missing. An edited `@Transactional` or
   `@Cacheable` takes effect rather than answering from the metadata Spring
   parsed once. An edited security configuration is rebuilt into the running
-  filter chain; method security (`@PreAuthorize`) is named as still needing a
-  restart. A constructor-bound `@ConfigurationProperties` bean is replaced
-  rather than mutated and a `@Value` field is re-resolved in place.
+  filter chain, and method security (`@PreAuthorize`, `@Secured`) is re-read on
+  the service class that carries it. A constructor-bound
+  `@ConfigurationProperties` bean is replaced rather than mutated, a `@Value`
+  field is re-resolved in place, and a bean that takes a changed `@Value`
+  through its constructor is rebuilt the same way.
+- **What the frameworks cached about the class**: a reload is only half the job,
+  because each framework answers from what it worked out about that class once,
+  at startup. An `@Autowired` added to a field that was already there injects,
+  and `@Resource`, `@PostConstruct` and `@PreDestroy` with it. A constraint
+  added to a field is enforced on the next request. An `@ExceptionHandler`,
+  `@InitBinder` or `@ModelAttribute` added to an existing method runs. An edited
+  `@Aspect` pointcut is parsed again, with the half that still waits named: a
+  bean already proxied keeps the advice it was built with until it is itself
+  reloaded. And Jackson stops serialising the shape it first saw, so a property
+  renamed with `@JsonProperty` and a getter you removed both reach the response.
+  A getter you *add* is the stock-JDK wall rather than a cache, and is not
+  claimed. Each of these was measured on a running Spring Boot 3.3 server before
+  it was written and again after.
 - **Interceptors and ImpEx**: Validate, Prepare, Load and Remove interceptors
   re-register; changed `.impex` files can be imported on save, opt-in, and a file
   carrying a REMOVE header is refused rather than run against a live database.
@@ -54,9 +69,11 @@ ground a Java-only reload does not.
   through 25: `values()` and `valueOf` return it, switches compiled before it
   existed take their default branch, and the EnumMap and EnumSet instances built
   before the reload accept it. Adding a constant means writing a final field,
-  which has no supported alternative and needs an access JDK 26 refuses by
-  default; there Reclazz declines and says so, and
-  `--sun-misc-unsafe-memory-access=allow` gives it back. A constant removed from
+  which has no supported alternative; JDK 26 refuses the `sun.misc.Unsafe`
+  access it used, so Reclazz falls back to the JDK's own
+  `jdk.internal.misc.Unsafe`, which that deprecation does not cover.
+  `--sun-misc-unsafe-memory-access=allow` keeps the first door open and silences
+  the warning, rather than being the only way to keep this working. A constant removed from
   the **end** goes the same way, because the tail moves no ordinal and every
   survivor keeps its number. Inserting or reordering constants renumbers every
   ordinal after the change, including any `@Enumerated` column already written
