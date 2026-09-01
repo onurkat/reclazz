@@ -52,14 +52,24 @@ public class SpringEventReloader {
 
             Method getBean = appContext.getClass().getMethod("getBean", String.class);
 
+            // The old adapters have to go first, and precisely. Re-processing
+            // ADDS listeners: it re-scans the beans and registers what it
+            // finds, so without this the class's listener is registered a
+            // second time and every event is handled twice from then on.
+            // Measured: one publish called the method once before a reload and
+            // twice after, for a listener whose side effects are the whole
+            // reason it exists. The old code looked for a removeAllListeners
+            // that does not exist, decided it would be too aggressive anyway,
+            // and removed nothing.
+            //
+            // Too aggressive was the right worry about the wrong method. Only
+            // the adapters for THIS class are removed, matched on the method
+            // they hold, and removeApplicationListener clears the multicaster's
+            // per-event-type cache as it goes, which is the half a direct set
+            // removal would have missed.
             if (multicasterNames != null && multicasterNames.length > 0) {
                 Object multicaster = getBean.invoke(appContext, multicasterNames[0]);
-
-                // Remove all ApplicationListenerMethodAdapter instances for this class
-                try {
-                    Method removeAll = multicaster.getClass().getMethod("removeAllListeners");
-                    // This is too aggressive; instead just log that re-registration was attempted
-                } catch (NoSuchMethodException ignored) {}
+                removeAdaptersFor(multicaster, reloadedClass);
             }
 
             // Re-process the bean to register new @EventListener methods
@@ -81,6 +91,66 @@ public class SpringEventReloader {
             StatusReporter.warn("Spring event listener reload failed: " + e.getMessage());
         }
         return false;
+    }
+
+    /**
+     * Take out every {@code @EventListener} adapter that belongs to this class.
+     *
+     * <p>An adapter holds the {@code Method} it calls, which is what says whose
+     * it is: redefinition keeps the Class object, so the method an adapter
+     * registered before the reload still reports the same declaring class. The
+     * name is compared rather than the Class, so an adapter left behind by a
+     * previous classloader is matched too.
+     *
+     * @return how many were removed
+     */
+    static int removeAdaptersFor(Object multicaster, Class<?> reloadedClass) {
+        int removed = 0;
+        try {
+            Object retriever = readField(multicaster, "defaultRetriever");
+            if (retriever == null) return 0;
+            Object listeners = readField(retriever, "applicationListeners");
+            if (!(listeners instanceof java.util.Collection<?> collection)) return 0;
+
+            Method remove = SpringBeans.findMethod(multicaster.getClass(),
+                    "removeApplicationListener",
+                    Class.forName("org.springframework.context.ApplicationListener",
+                            false, multicaster.getClass().getClassLoader()));
+            if (remove == null) return 0;
+
+            // Copied first: removing from the live set while walking it is how
+            // a reload turns into a ConcurrentModificationException.
+            for (Object listener : new java.util.ArrayList<>(collection)) {
+                if (listener == null) continue;
+                if (!listener.getClass().getName().endsWith("ApplicationListenerMethodAdapter")) {
+                    continue;
+                }
+                Object method = readField(listener, "method");
+                if (!(method instanceof Method held)) continue;
+                if (!held.getDeclaringClass().getName().equals(reloadedClass.getName())) continue;
+                remove.invoke(multicaster, listener);
+                removed++;
+            }
+        } catch (Throwable notThisShape) {
+            // A multicaster that cannot be read keeps its listeners, which is
+            // the behaviour that came before this.
+        }
+        return removed;
+    }
+
+    private static Object readField(Object target, String name) {
+        for (Class<?> c = target.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
+            try {
+                java.lang.reflect.Field field = c.getDeclaredField(name);
+                field.setAccessible(true);
+                return field.get(target);
+            } catch (NoSuchFieldException keepWalking) {
+                // the next class up may declare it
+            } catch (Throwable notReadable) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private boolean hasEventListenerAnnotation(Class<?> clazz) {
