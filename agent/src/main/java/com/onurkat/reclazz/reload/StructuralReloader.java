@@ -1009,6 +1009,21 @@ public class StructuralReloader {
             com.onurkat.reclazz.transform.ReflectionRootFilter
                     .unhideRestoredMembersOn(targetClass, declaredFieldNames, declaredMethodNames);
 
+            // A method this reload added is in the companion, which the call
+            // sites reach and reflection does not. Anything a framework
+            // discovers by looking at the class therefore misses it, and
+            // misses it silently: the reload succeeds and the annotation the
+            // developer just wrote does nothing.
+            for (AddedMethodVisibility.Unseen unseen
+                    : AddedMethodVisibility.check(newBytecode, diff.getNewMethods())) {
+                StatusReporter.warn(className + "." + unseen.method() + " was added, and "
+                        + unseen.reason() + ". Calls to it from your own code work; a restart "
+                        + "is what puts it where the framework can see it.");
+                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        "added method " + unseen.method() + " that only a restart makes visible "
+                        + "to framework scans");
+            }
+
             // Members this reload REMOVED stay on the loaded class (a stock
             // JDK will not take them out), and a scan that keeps seeing them
             // keeps acting on them: a removed getter kept being serialised.
