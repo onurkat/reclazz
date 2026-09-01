@@ -220,6 +220,11 @@ public class ClassReloader {
             }
         }
 
+        // Counted here rather than per class, because the cost the developer
+        // pays is per save: one save that redefines eight classes is one thing
+        // they did, and the warning reads as the number of times they did it.
+        MetaspaceWatch.afterReload();
+
         return results;
     }
 
