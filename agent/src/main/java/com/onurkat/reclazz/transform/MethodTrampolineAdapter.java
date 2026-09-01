@@ -61,10 +61,23 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
     public MethodTrampolineAdapter(ClassVisitor cv, TransformContext context,
                                    java.util.Set<String> originalAnnotations) {
+        this(cv, context, originalAnnotations, null);
+    }
+
+    public MethodTrampolineAdapter(ClassVisitor cv, TransformContext context,
+                                   java.util.Set<String> originalAnnotations,
+                                   Long originalSerialVersionUid) {
         super(ASM9, cv);
         this.context = context;
         this.originalAnnotations = originalAnnotations;
+        this.originalSerialVersionUid = originalSerialVersionUid;
     }
+
+    /**
+     * The UID this class had before any of this, or null when it declared one
+     * or none was meaningful. See {@link SerialVersionUid}.
+     */
+    private final Long originalSerialVersionUid;
 
     @Override
     public void visit(int version, int access, String name, String signature,
@@ -171,6 +184,19 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
     @Override
     public void visitEnd() {
+        // The number this class would have had. Every member added below
+        // changes the one the JVM would compute, and the generated <clinit>
+        // changes it again, so anything serialized without the agent stops
+        // being readable with it. Writing it down is what a developer who
+        // cared about this would have done by hand.
+        if (originalSerialVersionUid != null) {
+            // Synthetic, because it is: the developer did not write it, and a
+            // framework listing the class's fields should not be shown it. The
+            // serialization machinery reads it either way, by name and shape.
+            super.visitField(ACC_PRIVATE | ACC_STATIC | ACC_FINAL | ACC_SYNTHETIC,
+                    "serialVersionUID", "J", null, originalSerialVersionUid);
+        }
+
         // Add __reclazz$ext field (only for non-interface classes)
         if (!isInterface) {
             super.visitField(ACC_PRIVATE | ACC_SYNTHETIC, EXT_FIELD,
