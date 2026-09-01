@@ -738,6 +738,68 @@ public class StructuralReloader {
     }
 
     /**
+     * The added instance fields whose value the constructor sets.
+     *
+     * <p>The distinction is what makes the warning worth printing. An added
+     * field with no initialiser reads null on a live object and reads null on
+     * a new one, so nothing surprising has happened and there is nothing to
+     * say. An added field WITH an initialiser reads the developer's value on
+     * every object built from now on and null on every object that already
+     * exists, and for a Spring singleton every object is one that already
+     * exists. That is the case that produces a NullPointerException on a line
+     * that reads as though it cannot produce one, which is measured in
+     * AddedFieldInitialiserTest.
+     *
+     * <p>Read from the constructors rather than guessed: a field is counted
+     * when some {@code <init>} assigns it, which is exactly what javac emits
+     * for an initialiser and for an assignment in the constructor body alike.
+     * Both leave a live object without the value, so both are worth naming.
+     */
+    private static java.util.List<String> initialisedInstanceFields(
+            StructuralAnalyzer.StructuralDiff diff, byte[] newBytecode) {
+        java.util.Set<String> added = new java.util.LinkedHashSet<>();
+        java.util.List<String> assigned = new java.util.ArrayList<>();
+        try {
+            new org.objectweb.asm.ClassReader(newBytecode).accept(
+                    new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override
+                        public org.objectweb.asm.FieldVisitor visitField(
+                                int access, String name, String descriptor,
+                                String signature, Object value) {
+                            boolean isStatic =
+                                    (access & org.objectweb.asm.Opcodes.ACC_STATIC) != 0;
+                            if (!isStatic && diff.getAddedFields().contains(name + ":" + descriptor)) {
+                                added.add(name);
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        public org.objectweb.asm.MethodVisitor visitMethod(
+                                int access, String name, String descriptor,
+                                String signature, String[] exceptions) {
+                            if (!"<init>".equals(name)) return null;
+                            return new org.objectweb.asm.MethodVisitor(
+                                    org.objectweb.asm.Opcodes.ASM9) {
+                                @Override
+                                public void visitFieldInsn(int opcode, String owner,
+                                                            String fieldName, String fieldDesc) {
+                                    if (opcode == org.objectweb.asm.Opcodes.PUTFIELD
+                                            && added.contains(fieldName)
+                                            && !assigned.contains(fieldName)) {
+                                        assigned.add(fieldName);
+                                    }
+                                }
+                            };
+                        }
+                    }, 0);
+        } catch (Exception ignored) {
+            // Nothing to report is better than failing the reload over a message.
+        }
+        return assigned;
+    }
+
+    /**
      * Say why a watched class cannot be reloaded structurally.
      *
      * The companion engine needs two fields in the class, and they can only be
@@ -1017,8 +1079,22 @@ public class StructuralReloader {
                     initialiseAddedStatics(className, targetClass, companion,
                             companionLookup, companionClass, staticsNeedingValue);
                 }
-                StatusReporter.info("Added fields are set on new instances; "
-                        + "objects that already existed keep the default (null/0/false).");
+                java.util.List<String> initialised =
+                        initialisedInstanceFields(diff, newBytecode);
+                if (initialised.isEmpty()) {
+                    StatusReporter.info("Added fields are set on new instances; "
+                            + "objects that already existed keep the default (null/0/false).");
+                } else {
+                    // Naming them is the whole value of the line. A developer
+                    // who added one field wants to know that one field is
+                    // empty, not that a category of thing behaves a way.
+                    StatusReporter.warn(initialised + " " + (initialised.size() == 1 ? "has" : "have")
+                            + " an initialiser that will not have run on objects that already "
+                            + "existed: a field's initialiser is constructor code, and those "
+                            + "objects were constructed before the field was written. They read "
+                            + "null/0/false until they are rebuilt. Instances created from now on "
+                            + "get the value.");
+                }
             }
 
             // A pure removal never enters the added-fields branch above, so a
