@@ -176,7 +176,7 @@ public class ReclazzAgent {
 
     private static synchronized void initialize(String agentArgs) {
         if (running) {
-            StatusReporter.warn("Reclazz agent already initialized, skipping duplicate init.");
+            StatusReporter.warn("Reclazz agent already initialised, skipping duplicate init.");
             return;
         }
         try {
@@ -898,7 +898,7 @@ public class ReclazzAgent {
         StatusReporter.info("Spring XML changed: " + event.getPath().getFileName());
         com.onurkat.reclazz.spring.xml.SpringXmlReloader reloader = springXmlReloader;
         if (reloader == null) {
-            StatusReporter.warn("Spring XML reload not available — agent not fully initialized");
+            StatusReporter.warn("Spring XML reload not available — agent not fully initialised");
             return;
         }
         reloader.reload(event.getPath());
@@ -993,6 +993,9 @@ public class ReclazzAgent {
         }
         StatusReporter.warn("Values a bean read once at startup still need a restart; "
                 + "nothing here reads them again on its own.");
+        RestartLedger.note(changed.keySet().toString(),
+                "changed, and a bean that read the value once at startup is still holding "
+                + "the old one");
     }
 
     /**

@@ -78,6 +78,9 @@ public final class MetaspaceWatch {
                     + "still running the old code keep working. That cost is the JVM's, not "
                     + "Reclazz's, and nothing but a restart clears it. Restarting now is cheaper "
                     + "than an OutOfMemoryError in the middle of something.");
+            RestartLedger.note("this session",
+                    "metaspace is " + crossed + "% full after " + count + " reloads, and the "
+                    + "JVM does not return what redefining a class costs");
         } catch (Throwable cannotTell) {
             // A memory pool that will not say what it holds produces no claim.
         }
