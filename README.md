@@ -449,6 +449,16 @@ have been run.
 
 Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument` API. Structural reload (add/remove methods and instance fields) works on every vendor below. The difference is reflective visibility, not whether the change takes effect.
 
+There is a second number, and it is about the compiler rather than the runtime.
+Instrumentation reads and writes class files, and this build reads them up to
+**Java 27**. Running on a newer JDK is fine; compiling *to* one is what is not,
+because the bytecode library learns a class file version after the JDK that
+introduced it ships. In that window the application runs and method body
+changes still reload, since the JVM reads those classes and that path does not
+go through the library, while adding or removing members is off. Reclazz says
+so once, in Java releases rather than header numbers, with the two ways out:
+compile with an older `--release` while you develop, or update Reclazz.
+
 | JDK Provider | Method Body | Structural Reload | Reflective Visibility of New Members |
 |---|---|---|---|
 | **JetBrains Runtime (JBR)** | Yes | Yes (enhanced redefinition) | Full: reflection sees new members |

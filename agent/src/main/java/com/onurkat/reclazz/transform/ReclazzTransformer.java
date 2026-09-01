@@ -77,6 +77,15 @@ public class ReclazzTransformer implements ClassFileTransformer {
         }
 
         try {
+            // Before anything reads them: a class file from a compiler newer
+            // than the bundled bytecode library cannot be parsed, and the
+            // parse failure would be reported once per class, in the
+            // library's terms. Said once instead, in the developer's.
+            if (ClassFileVersionGuard.tooNew(classfileBuffer)) {
+                ClassFileVersionGuard.note(className, classfileBuffer);
+                return null;
+            }
+
             // Skip interfaces: interface fields must be PUBLIC STATIC FINAL,
             // which conflicts with our PRIVATE SYNTHETIC infrastructure fields
             // (__reclazz$lookup, __reclazz$ext). Adding such a field to an

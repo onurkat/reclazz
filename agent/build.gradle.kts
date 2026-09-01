@@ -22,10 +22,10 @@ dependencies {
     // runs somebody else's application, so 25 MB of classes to save sixty
     // lines was the wrong trade. It stays as a test dependency because the
     // tests use its agent attach helper, which never ships.
-    implementation("org.ow2.asm:asm:9.8")
-    implementation("org.ow2.asm:asm-commons:9.8")
-    implementation("org.ow2.asm:asm-tree:9.8")
-    implementation("org.ow2.asm:asm-util:9.8")
+    implementation("org.ow2.asm:asm:9.10.1")
+    implementation("org.ow2.asm:asm-commons:9.10.1")
+    implementation("org.ow2.asm:asm-tree:9.10.1")
+    implementation("org.ow2.asm:asm-util:9.10.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("net.bytebuddy:byte-buddy:1.18.5") {
