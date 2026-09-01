@@ -47,7 +47,7 @@ class JacksonEnumCachesTest {
 
     @Test
     void withoutJacksonOrSpringTheFlushDoesNothingAndSaysNothing() {
-        assertEquals(0, JacksonEnumCaches.flushAfterAppend(),
+        assertEquals(0, JacksonEnumCaches.flush(),
                 "no contexts registered: an application without Spring must be untouched");
 
         ApplicationContextHolder.register(new Object() {
@@ -55,7 +55,7 @@ class JacksonEnumCachesTest {
                 return Map.of();
             }
         });
-        assertEquals(0, JacksonEnumCaches.flushAfterAppend(),
+        assertEquals(0, JacksonEnumCaches.flush(),
                 "a context whose classloader has no Jackson has no cache to flush");
     }
 
@@ -103,7 +103,7 @@ class JacksonEnumCachesTest {
             context.getClass().getField("mapper").set(context, mapper);
             ApplicationContextHolder.register(context);
 
-            assertEquals(1, JacksonEnumCaches.flushAfterAppend(),
+            assertEquals(1, JacksonEnumCaches.flush(),
                     "one mapper bean, flushed once, and the same mapper via a second "
                     + "context must not be counted twice");
 
@@ -162,7 +162,7 @@ class JacksonEnumCachesTest {
             context.getClass().getField("mapper").set(context, mapper);
             ApplicationContextHolder.register(context);
 
-            assertEquals(0, JacksonEnumCaches.flushAfterAppend());
+            assertEquals(0, JacksonEnumCaches.flush());
             Object serCache = read(read(mapper, "_serializerProvider"), "_serializerCache");
             assertFalse((boolean) serCache.getClass().getField("flushed").get(serCache),
                     "everything is located before anything is touched: a mapper that "

@@ -25,6 +25,21 @@ noticing.
 The suite drives the `reclazztest` extension, which has to be deployed
 into your Hybris installation first. See `../reclazztest/README.md`.
 
+### The agent needs two flags
+
+The suite writes `.java` files and waits for the agent to compile them, and one
+scenario saves an `.impex` and waits for the import. Neither is on by default,
+so the agent has to be started with both:
+
+```
+-javaagent:/path/to/reclazz-agent.jar=hybrisHome=...,autoCompile=true,autoImpex=true
+```
+
+Without `autoCompile` the very first scenario fails with "Timeout waiting for
+COMPILE event", which reads like a broken agent and is a missing flag. Without
+`autoImpex` the ImpEx scenario is the only one that fails, which reads like a
+defect and is the same thing.
+
 With the server running and Reclazz attached:
 
 ```bash

@@ -115,6 +115,26 @@ public final class ReflectionBridge {
                 || REMOVED_NAMES.get(m.getDeclaringClass())[1].contains(m.getName());
     }
 
+    /**
+     * Whether a name asked for directly is one this class no longer has.
+     *
+     * <p>The array accessors have hidden removed members since the feature
+     * existed; the by-name ones only ever checked for Reclazz's own injected
+     * members, so a removed member stayed answerable to anybody who asked for
+     * it by name. That is not an unusual way to ask: it is what a bean
+     * property lookup does, what Jackson does resolving an accessor, and what
+     * Spring's findMethod does. Half a member being gone is worse than either
+     * whole answer, because which half a framework meets decides whether the
+     * removal took, and nothing says which one it used.
+     */
+    static boolean hiddenName(Class<?> clazz, String name, boolean field) {
+        if (isInternal(name)) return true;
+        for (Class<?> c = clazz; c != null; c = c.getSuperclass()) {
+            if (REMOVED_NAMES.get(c)[field ? 0 : 1].contains(name)) return true;
+        }
+        return false;
+    }
+
     private static boolean hiddenField(Field f) {
         return isInternal(f.getName())
                 || REMOVED_NAMES.get(f.getDeclaringClass())[0].contains(f.getName());
@@ -205,7 +225,7 @@ public final class ReflectionBridge {
      */
     public static Method getDeclaredMethod(Class<?> clazz, String name, Class<?>... parameterTypes)
             throws NoSuchMethodException {
-        if (isInternal(name)) throw new NoSuchMethodException(name);
+        if (hiddenName(clazz, name, false)) throw new NoSuchMethodException(name);
         String key = clazz.getName().replace('.', '/');
         Members state = stateFor(clazz);
 
@@ -228,7 +248,7 @@ public final class ReflectionBridge {
      */
     public static Field getDeclaredField(Class<?> clazz, String name)
             throws NoSuchFieldException {
-        if (isInternal(name)) throw new NoSuchFieldException(name);
+        if (hiddenName(clazz, name, true)) throw new NoSuchFieldException(name);
         String key = clazz.getName().replace('.', '/');
         Members state = stateFor(clazz);
 
@@ -304,7 +324,7 @@ public final class ReflectionBridge {
      */
     public static Method getMethod(Class<?> clazz, String name, Class<?>... parameterTypes)
             throws NoSuchMethodException {
-        if (isInternal(name)) throw new NoSuchMethodException(name);
+        if (hiddenName(clazz, name, false)) throw new NoSuchMethodException(name);
         Members state = stateFor(clazz);
         if (state != null) {
             for (Method m : state.addedMethods) {
@@ -320,7 +340,7 @@ public final class ReflectionBridge {
 
     /** The public counterpart of {@link #getDeclaredField}. */
     public static Field getField(Class<?> clazz, String name) throws NoSuchFieldException {
-        if (isInternal(name)) throw new NoSuchFieldException(name);
+        if (hiddenName(clazz, name, true)) throw new NoSuchFieldException(name);
         Members state = stateFor(clazz);
         if (state != null) {
             for (Field f : state.addedFields) {

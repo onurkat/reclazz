@@ -532,14 +532,36 @@ public class StructuralReloader {
         // server means installing standalone JBR and repointing the server's
         // own JVM, and JBR is not an SAP-supported runtime, which a team
         // deserves to know before rather than after.
-        String wayOut = isHybris
-                ? "JBR or DCEVM with -XX:+AllowEnhancedClassRedefinition applies this without "
-                  + "a restart, but for this server that means changing its JVM: install "
-                  + "standalone JetBrains Runtime, point the wrapper's java at it, and add the "
-                  + "flag to tomcat.javaoptions. Note JBR is not an SAP-supported JVM."
-                : "JetBrains Runtime or DCEVM with -XX:+AllowEnhancedClassRedefinition applies "
-                  + "this without one; for an application launched from IntelliJ, the IDE "
-                  + "already bundles JBR, so it is a run-configuration JVM change.";
+        // Only an ADDED interface has a way out. DCEVM documents its one
+        // unsupported operation as the hierarchy change, and counts removing an
+        // interface as exactly that, alongside changing the superclass. Sending
+        // someone to a different JVM for something that JVM also refuses is
+        // worse than saying nothing, and on a hybris server it is worse again,
+        // because taking that advice means running the platform on a runtime
+        // SAP does not support. So a removal says restart, and only a removal
+        // mixed with an addition mentions the flag at all.
+        String wayOut;
+        if (removed.isEmpty()) {
+            wayOut = isHybris
+                    ? "JBR or DCEVM with -XX:+AllowEnhancedClassRedefinition applies an added "
+                      + "interface without a restart, but for this server that means changing "
+                      + "its JVM: install standalone JetBrains Runtime, point the wrapper's java "
+                      + "at it, and add the flag to tomcat.javaoptions. Note JBR is not an "
+                      + "SAP-supported JVM."
+                    : "JetBrains Runtime or DCEVM with -XX:+AllowEnhancedClassRedefinition "
+                      + "applies an added interface without one; for an application launched "
+                      + "from IntelliJ, the IDE already bundles JBR, so it is a "
+                      + "run-configuration JVM change.";
+        } else if (added.isEmpty()) {
+            wayOut = "No JVM removes an interface from a loaded class: DCEVM counts that as a "
+                    + "hierarchy change and refuses it the same way it refuses a changed "
+                    + "superclass, so a restart is the only thing that applies it.";
+        } else {
+            wayOut = "An added interface is applied without a restart by JetBrains Runtime or "
+                    + "DCEVM with -XX:+AllowEnhancedClassRedefinition; the removal is not, on "
+                    + "any JVM, because removing an interface is a hierarchy change. A restart "
+                    + "applies that half.";
+        }
         StatusReporter.warn(className + " " + what + ", and this JVM will not change the "
                 + "interfaces of a loaded class. Everything else in this class reloaded, so "
                 + "an instanceof or a cast against " + (added.isEmpty() ? "it" : added.get(0))
@@ -877,20 +899,29 @@ public class StructuralReloader {
             com.onurkat.reclazz.transform.ReflectionRootFilter
                     .registerInjectedMembersOn(targetClass);
 
-            // A name this reload brings BACK stops being hidden first, so a
+            // A name this save declares stops being hidden, so a
             // remove-then-restore round trip lands where it started.
-            if (!diff.getAddedFields().isEmpty() || !diff.getAddedMethods().isEmpty()) {
-                java.util.Set<String> restoredFieldNames = new java.util.LinkedHashSet<>();
-                for (String key : diff.getAddedFields()) {
-                    restoredFieldNames.add(key.substring(0, key.indexOf(':')));
-                }
-                java.util.Set<String> restoredMethodNames = new java.util.LinkedHashSet<>();
-                for (String key : diff.getAddedMethods()) {
-                    restoredMethodNames.add(key.substring(0, key.indexOf(':')));
-                }
-                com.onurkat.reclazz.transform.ReflectionRootFilter
-                        .unhideRestoredMembersOn(targetClass, restoredFieldNames, restoredMethodNames);
+            //
+            // Driven by what the source declares NOW, not by what the diff
+            // calls added, and the difference is a bug the live suite found
+            // twice. Since the removal payload records the schema the loaded
+            // class actually has, a removed method stays in the record, so
+            // bringing it back is not an addition and an "added" gate never
+            // fires: the member stayed hidden from reflection for good, the
+            // MVC scan could not see the handler, and the endpoint the save
+            // had just restored answered 404. Declared names are the honest
+            // question anyway, and passing one that was never hidden costs a
+            // set lookup that finds nothing.
+            java.util.Set<String> declaredFieldNames = new java.util.LinkedHashSet<>();
+            for (var f : diff.getNewFields()) {
+                declaredFieldNames.add(f.name());
             }
+            java.util.Set<String> declaredMethodNames = new java.util.LinkedHashSet<>();
+            for (var m : diff.getNewMethods()) {
+                declaredMethodNames.add(m.name());
+            }
+            com.onurkat.reclazz.transform.ReflectionRootFilter
+                    .unhideRestoredMembersOn(targetClass, declaredFieldNames, declaredMethodNames);
 
             // Members this reload REMOVED stay on the loaded class (a stock
             // JDK will not take them out), and a scan that keeps seeing them
@@ -981,6 +1012,43 @@ public class StructuralReloader {
                     diff.getNewAnnotations()));
 
             boolean isStructural = diff.isStructural();
+
+            // Jackson builds a class's serializer once per mapper and keeps it,
+            // so a change to what that class serialises to reaches the JSON
+            // only when the cache is dropped. Measured on Boot 3.3, stock JDK
+            // 21, on a DTO whose endpoint had already been called: renaming a
+            // property with @JsonProperty changed nothing at all in the
+            // response until this ran.
+            //
+            // Both kinds of change qualify and for different reasons. An
+            // annotation change is the one Jackson can actually see, since
+            // redefinition puts the new annotations on the loaded class. A
+            // structural change is thinner than it looks on a stock JDK: an
+            // ADDED getter lives in the companion and reflection cannot see it
+            // either way, which was measured too and is the wall, not a cache;
+            // but a REMOVED one is hidden from reflection now, and a mapper
+            // holding the old serializer would keep writing it.
+            //
+            // It says nothing when it runs: a cache that rebuilds lazily and
+            // correctly is not news. The enum path keeps its own sentence,
+            // because there the constant was failing outright.
+            if (isStructural || diff.isAnnotationsChanged()) {
+                int mappers = JacksonEnumCaches.flush();
+
+                // Bean Validation resolves a class's constraints once and keeps
+                // them, so adding @NotBlank to a field of a request body
+                // reloaded and changed nothing: measured on Boot 3.3, the
+                // request that should now be rejected was still accepted. Here
+                // rather than in the Spring orchestrator, because that runs
+                // only for classes that are beans and a request body is not.
+                int constraints = com.onurkat.reclazz.spring.SpringValidatorReloader.flush();
+
+                if (config.isVerbose()) {
+                    StatusReporter.info("Framework caches flushed: " + mappers
+                            + " Jackson mapper(s), " + constraints + " constraint cache(s)");
+                }
+            }
+
             if (isStructural) {
                 StatusReporter.info("Structural reload: " + className +
                         " (v" + version + ", " + diff.getSummary() + ")");
@@ -1164,6 +1232,18 @@ public class StructuralReloader {
         return com.onurkat.reclazz.agent.ClassLookup.findLoadedClass(className, instrumentation);
     }
 
+    /**
+     * Whether the container has an instance of this class to look after.
+     *
+     * <p>By the annotation's own name, and the list has to include the
+     * stereotypes that are only stereotypes through a meta-annotation.
+     * {@code @ControllerAdvice} is a {@code @Component} one level up, and
+     * reading direct annotations misses that: measured on Boot 3.3, adding
+     * {@code @ExceptionHandler} to an advice class reached none of the Spring
+     * reloaders at all, because the class was not counted as a bean and the
+     * whole orchestrator was skipped. The reload said it had succeeded, which
+     * it had, and the endpoint went on answering the default error body.
+     */
     private boolean isSpringBean(Class<?> clazz) {
         try {
             for (var annotation : clazz.getAnnotations()) {
@@ -1174,6 +1254,8 @@ public class StructuralReloader {
                          annotName.endsWith(".Repository") ||
                          annotName.endsWith(".Controller") ||
                          annotName.endsWith(".RestController") ||
+                         annotName.endsWith(".ControllerAdvice") ||
+                         annotName.endsWith(".RestControllerAdvice") ||
                          annotName.endsWith(".Configuration") ||
                          annotName.endsWith(".Bean"))) {
                     return true;
