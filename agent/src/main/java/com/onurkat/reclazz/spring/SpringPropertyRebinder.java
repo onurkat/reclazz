@@ -91,6 +91,11 @@ public final class SpringPropertyRebinder {
                 // dozens and most of them have no Environment at all.
             }
         }
+        // A pool takes a size or a timeout and cannot take a URL. Asked after
+        // the rebind, because the rebind is what makes the properties objects
+        // current and the pool's disagreement with them is the whole signal.
+        new SpringDataSourceCheck(applicationContexts).report(changed);
+
         if (valueFields > 0) {
             StatusReporter.success("Re-injected " + valueFields
                     + " @Value field(s) reading the changed propert"
