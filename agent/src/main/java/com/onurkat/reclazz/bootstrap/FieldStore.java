@@ -91,16 +91,28 @@ public final class FieldStore {
      * Returns the (possibly new) array.
      */
     public static Object[] setField(Object[] extArray, int index, Object value) {
-        if (extArray == null) {
-            extArray = new Object[Math.max(8, index + 1)];
+        // Always a new array, never a write into the one that was there.
+        //
+        // Object.clone copies fields, this array's reference included, so a
+        // clone and its original share one store. Writing in place therefore
+        // wrote through: measured, setting a reload-added field on the clone
+        // changed the original's value, silently and with no way to see it
+        // from the source. Copying on write gives the two objects separate
+        // stores from the first write onwards, which is what a shallow copy of
+        // a field means everywhere else.
+        //
+        // The cost is one small array per write of an added field. Reads are
+        // untouched, and a field added by a reload is not usually written in a
+        // loop.
+        int size = extArray == null
+                ? Math.max(8, index + 1)
+                : Math.max(extArray.length, index + 1);
+        Object[] copy = new Object[size];
+        if (extArray != null) {
+            System.arraycopy(extArray, 0, copy, 0, extArray.length);
         }
-        if (index >= extArray.length) {
-            Object[] newArray = new Object[Math.max(extArray.length * 2, index + 1)];
-            System.arraycopy(extArray, 0, newArray, 0, extArray.length);
-            extArray = newArray;
-        }
-        extArray[index] = value;
-        return extArray;
+        copy[index] = value;
+        return copy;
     }
 
     /**

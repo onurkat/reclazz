@@ -199,7 +199,19 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
         // Add __reclazz$ext field (only for non-interface classes)
         if (!isInterface) {
-            super.visitField(ACC_PRIVATE | ACC_SYNTHETIC, EXT_FIELD,
+            // TRANSIENT, because this array is runtime state and not part of
+            // what the object means. Without it, default serialization walks
+            // into Reclazz's own storage: an object whose reload-added field
+            // holds anything unserializable, which is most things worth
+            // holding, threw NotSerializableException naming a class the
+            // developer never put there. Measured on a plain Serializable
+            // class with one added field. It also stopped internals from
+            // travelling inside the application's own persisted data.
+            //
+            // What a deserialized object gets for a reload-added field is the
+            // type default, which is what an object created before that reload
+            // already gets, so the two agree.
+            super.visitField(ACC_PRIVATE | ACC_TRANSIENT | ACC_SYNTHETIC, EXT_FIELD,
                     "[Ljava/lang/Object;", null, null);
         }
 
