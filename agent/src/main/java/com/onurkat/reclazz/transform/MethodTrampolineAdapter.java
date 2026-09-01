@@ -134,16 +134,32 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         trampolineMethods.add(info);
 
         // Write the renamed original method. Keep the original access flags
-        // (just remove SYNCHRONIZED — moved to the trampoline) and add
-        // ACC_SYNTHETIC so frameworks filter the renamed copy out. We must
-        // NOT downgrade to ACC_PRIVATE: private methods are statically bound
-        // by the JVM verifier, so findVirtual on a private renamed method
-        // skips virtual dispatch and always calls the declaring-class copy.
-        // That breaks inheritance: e.g., Container.identity called on an
+        // and add ACC_SYNTHETIC so frameworks filter the renamed copy out. We
+        // must NOT downgrade to ACC_PRIVATE: private methods are statically
+        // bound by the JVM verifier, so findVirtual on a private renamed
+        // method skips virtual dispatch and always calls the declaring-class
+        // copy. That breaks inheritance: e.g., Container.identity called on an
         // IntContainer instance would invoke Container's renamed method
         // instead of IntContainer's override. Keeping the original
         // visibility lets the JVM resolve the most-derived renamed copy.
-        int renamedAccess = (access & ~ACC_SYNCHRONIZED) | ACC_SYNTHETIC;
+        //
+        // SYNCHRONIZED is kept here as well, not moved to the trampoline. It
+        // was moved, on the reading that every call goes through the
+        // trampoline, and that is exactly what this engine stops being true:
+        // a call site inside a watched class is rewritten to dispatch to the
+        // renamed body, which is the point of it, and a body without the flag
+        // takes no monitor. Measured on Spring Boot 3.3.4, stock JDK 21, with
+        // no reload at all, two concurrent calls to a synchronized method of a
+        // watched class: 6.3 seconds without the agent, 3.3 with it. Attaching
+        // Reclazz was quietly removing mutual exclusion from the application's
+        // own code, from startup.
+        //
+        // Both copies carry it now, which is safe because a monitor is
+        // reentrant: a call through the trampoline locks the receiver and
+        // re-enters on the body, and a rewritten call site locks it once. For
+        // a static method the flag locks the declaring class, the same monitor
+        // the original had.
+        int renamedAccess = access | ACC_SYNTHETIC;
         MethodVisitor mv = super.visitMethod(renamedAccess, renamedName, descriptor, signature, exceptions);
         // Apply call site and field access adapters within the renamed method body
         MethodVisitor fieldAdapter = new FieldAccessAdapter(mv, context, className, declaredFinalFieldKeys);

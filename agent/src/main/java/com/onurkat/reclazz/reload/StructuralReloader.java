@@ -230,6 +230,30 @@ public class StructuralReloader {
         }
     }
 
+    /** The methods this version declares synchronized, for the warning above. */
+    private static java.util.List<String> synchronizedMethodNames(byte[] bytecode) {
+        java.util.List<String> names = new ArrayList<>();
+        try {
+            new org.objectweb.asm.ClassReader(bytecode).accept(
+                    new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
+                        @Override
+                        public org.objectweb.asm.MethodVisitor visitMethod(
+                                int access, String name, String descriptor,
+                                String signature, String[] exceptions) {
+                            if ((access & org.objectweb.asm.Opcodes.ACC_SYNCHRONIZED) != 0
+                                    && !"<init>".equals(name) && !"<clinit>".equals(name)
+                                    && !names.contains(name)) {
+                                names.add(name);
+                            }
+                            return null;
+                        }
+                    }, org.objectweb.asm.ClassReader.SKIP_CODE);
+        } catch (RuntimeException unreadable) {
+            // A class that cannot be read produces no claim.
+        }
+        return names;
+    }
+
     private static String simpleName(String internalName) {
         if (internalName == null) return "its previous superclass";
         return internalName.substring(internalName.lastIndexOf('/') + 1).replace('$', '.');
@@ -1012,6 +1036,31 @@ public class StructuralReloader {
                     diff.getNewAnnotations()));
 
             boolean isStructural = diff.isStructural();
+
+            // A synchronized method whose body has moved to the companion no
+            // longer takes the receiver's monitor: the companion holds it as a
+            // static method, and a static method's own synchronized flag would
+            // lock the companion class rather than the object. Measured on
+            // Boot 3.3: two concurrent calls to a synchronized method took 6.3
+            // seconds before a structural reload of its class and 3.2 after.
+            //
+            // Said rather than fixed, deliberately. Wrapping a copied body in
+            // monitorenter and monitorexit is the correct repair and it is not
+            // one to get subtly wrong: an unbalanced exit is a VerifyError at
+            // best and a lock held forever at worst. Until that is written and
+            // measured, losing mutual exclusion silently is the part worth
+            // ending.
+            if (isStructural) {
+                java.util.List<String> guarded = synchronizedMethodNames(newBytecode);
+                if (!guarded.isEmpty()) {
+                    StatusReporter.warn("synchronized method(s) " + guarded + " in " + className
+                            + " no longer exclude each other: this save moved their bodies to a "
+                            + "companion, which cannot hold the object's monitor. Whatever they "
+                            + "guard is unguarded until a restart.");
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "synchronized method(s) " + guarded + " that no longer exclude");
+                }
+            }
 
             // Jackson builds a class's serializer once per mapper and keeps it,
             // so a change to what that class serialises to reaches the JSON
