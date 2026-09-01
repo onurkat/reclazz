@@ -249,6 +249,9 @@ public final class SpringXmlReloader {
         StatusReporter.warn("Note: existing @Autowired consumers won't see '" + add.beanName
                 + "' until they're re-resolved or the server is restarted. "
                 + "Consumers that use applicationContext.getBeansOfType(...) at runtime will pick it up immediately.");
+        com.onurkat.reclazz.agent.RestartLedger.note(add.beanName,
+                "was added, and beans injected before it are still holding what they were "
+                + "injected with");
     }
 
     // ─── Reflection helpers for setter lookup + primitive coercion ────────────

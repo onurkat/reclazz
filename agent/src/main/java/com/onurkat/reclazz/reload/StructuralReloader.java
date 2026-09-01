@@ -66,6 +66,9 @@ public class StructuralReloader {
                 // while the ORM kept serving cached instances.
                 StatusReporter.warn("Hibernate cache invalidation unavailable ("
                         + e + ") — reloaded entities may serve cached data until restart");
+                com.onurkat.reclazz.agent.RestartLedger.note("the Hibernate second-level cache",
+                        "could not be invalidated, so a reloaded entity may still be served "
+                        + "from it");
             }
         }
     }
@@ -833,6 +836,9 @@ public class StructuralReloader {
                     + "so only method bodies can be reloaded; adding or removing members "
                     + "needs a restart. JPA entities hit this because the "
                     + "EntityManagerFactory loads them during startup.");
+            com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    "was loaded before Reclazz could instrument it, so members cannot be "
+                    + "added to it or removed from it");
         }
     }
 

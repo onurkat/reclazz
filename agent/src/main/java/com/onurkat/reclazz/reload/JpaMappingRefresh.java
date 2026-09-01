@@ -99,6 +99,9 @@ public final class JpaMappingRefresh {
                         + " found, but there is not exactly one persistence unit to "
                         + "rebuild, and guessing would map it into the wrong one. "
                         + "A restart maps it.");
+                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        "is a new entity, and there is not exactly one persistence unit to "
+                        + "map it into");
                 return;
             }
             // The setting is read off the unit about to be rebuilt. The usual
@@ -112,6 +115,9 @@ public final class JpaMappingRefresh {
                         + (ddlAuto == null ? "unset" : ddlAuto)
                         + " will not create it during a rebuild; the mapping is left "
                         + "for a restart after the table exists.");
+                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        "is a new entity whose table hbm2ddl.auto="
+                        + (ddlAuto == null ? "unset" : ddlAuto) + " will not create");
                 return;
             }
             // The unit's managed-class list was scanned once at startup and
@@ -122,6 +128,9 @@ public final class JpaMappingRefresh {
                 com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
                         + " could not be added to the persistence unit's managed classes; "
                         + "a restart maps it.");
+                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        "is a new entity that could not be added to the persistence unit's "
+                        + "managed classes");
                 return;
             }
             Result result = rebuild(className, entityClass,
