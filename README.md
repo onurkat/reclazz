@@ -408,6 +408,7 @@ If the server is already running without the `-javaagent` flag:
 | `structuralReload` | `true` | Enable structural reload engine |
 | `jpaRefresh` | `false` | Rebuild the persistence unit when a reloaded entity gains or loses a persistent field. Requires JBR/DCEVM and `ddl-auto` at update/create/create-drop; closes persistence contexts open at the moment of the rebuild |
 | `verbose` | `false` | Verbose console output |
+| `wrapOutput` | `auto` | Lay long messages out for a fixed-width view, breaking on words and indenting the rest under the first line. `auto` does it when standard output is a terminal, which an application server's is not even when somebody is watching its console, so set `always` there. `never` keeps every message on one line, which is what a log file that gets grepped wants |
 
 Example:
 

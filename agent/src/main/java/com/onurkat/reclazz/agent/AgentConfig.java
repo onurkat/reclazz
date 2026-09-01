@@ -26,7 +26,7 @@ public class AgentConfig {
     private static final Set<String> KNOWN_KEYS = Set.of(
             "hybrisHome", "watchExtensions", "autoCompile", "autoImpex",
             "impexAllowRemove",
-            "debounceMs", "verbose", "statusPort", "portFile",
+            "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
             "excludePatterns", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
             "platform", "watchDirs", "jpaRefresh"
@@ -55,6 +55,19 @@ public class AgentConfig {
     private boolean autoCompile = false;
     private long debounceMs = 500;
     private boolean verbose = false;
+
+    /**
+     * Whether to lay long messages out for a fixed-width view: "auto" wraps
+     * when standard output is a terminal, "always" and "never" say so outright.
+     *
+     * <p>It is a setting rather than a guess because the guess cannot be made
+     * from here. An application server writes to a console a person is reading
+     * AND to a file somebody greps, and the two want opposite things: a
+     * paragraph laid out in a shape, or a phrase left on one line where a
+     * search can find it. Auto keeps the searchable shape wherever it cannot
+     * tell, which is the safe half to be wrong on.
+     */
+    private String wrapOutput = "auto";
     private int statusPort = 0;
     private Path portFile;
     private List<String> excludePatterns = new ArrayList<>();
@@ -121,6 +134,15 @@ public class AgentConfig {
             }
         }
 
+        if (params.containsKey("wrapOutput")) {
+            String value = String.valueOf(params.get("wrapOutput")).trim().toLowerCase();
+            // "true"/"false" are what a developer types out of habit for a
+            // setting that reads like a boolean, and refusing them would be
+            // pedantry rather than safety.
+            if (value.equals("always") || value.equals("true")) config.wrapOutput = "always";
+            else if (value.equals("never") || value.equals("false")) config.wrapOutput = "never";
+            else config.wrapOutput = "auto";
+        }
         if (params.containsKey("verbose")) {
             config.verbose = Boolean.parseBoolean(params.get("verbose"));
         }
@@ -199,6 +221,8 @@ public class AgentConfig {
     public boolean isAutoCompile() { return autoCompile; }
     public long getDebounceMs() { return debounceMs; }
     public boolean isVerbose() { return verbose; }
+
+    public String getWrapOutput() { return wrapOutput; }
     public int getStatusPort() { return statusPort; }
     public Path getPortFile() { return portFile; }
     public List<String> getExcludePatterns() { return Collections.unmodifiableList(excludePatterns); }
