@@ -545,6 +545,17 @@ gets its own copy rather than sharing the original's. After deserialization it
 reads its type default, which is what an object built before that reload reads
 too.
 
+**Each reload costs metaspace that is never returned.** Around 8.5 KB, measured
+over 60 reloads. This is the JVM's cost rather than Reclazz's: redefining a
+class makes the JVM keep the previous version, so that threads still running
+the old code keep working, and a bare `redefineClasses` loop with no agent at
+all measured 10.6 KB per redefinition on the same JDK. Reclazz's own companion
+classes are collected, one for one with the reloads. It is only worth thinking
+about where metaspace is capped, which on SAP Commerce it is: a day of heavy
+editing is a few MB, and Reclazz warns when the pool passes 85% full so that a
+long session ends in a restart you chose rather than an `OutOfMemoryError` you
+did not.
+
 **`synchronized` survives, with one exception.** Both the dispatch and the moved
 body take the monitor, so mutual exclusion holds from startup. A structural
 reload that moves a synchronized method's body to a companion class is the case
