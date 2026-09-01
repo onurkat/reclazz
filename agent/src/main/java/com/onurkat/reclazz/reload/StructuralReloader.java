@@ -832,6 +832,22 @@ public class StructuralReloader {
         if (loaded == null) return;
 
         if (uninstrumentedReported.add(className)) {
+            // Two different reasons produce an uninstrumented class, and
+            // guessing the common one would be telling this developer
+            // something untrue: a restart is exactly what will not help when
+            // the class file is simply newer than this build can read.
+            if (com.onurkat.reclazz.transform.ClassFileVersionGuard.wasSkipped(className)) {
+                // ledger-exempt: this one names a restart to rule it out. The
+                // ledger answers "what would a restart fix", and the answer
+                // here is nothing, so an entry would be a wrong answer rather
+                // than a missing one.
+                StatusReporter.warn(className + " is compiled to a class file version this "
+                        + "build cannot read, so it was never instrumented and members cannot "
+                        + "be added to it or removed from it. A restart changes nothing here; "
+                        + "compiling with an older --release, or a Reclazz that knows this "
+                        + "version, does.");
+                return;
+            }
             StatusReporter.warn(className + " was loaded before Reclazz could instrument it, "
                     + "so only method bodies can be reloaded; adding or removing members "
                     + "needs a restart. JPA entities hit this because the "
