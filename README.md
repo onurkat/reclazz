@@ -53,6 +53,11 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Add / remove an interface | **Yes on JetBrains Runtime or DCEVM**, existing objects included; on a stock JDK it is refused by the JVM and Reclazz names the interface | Yes (restart) | Yes |
 | Change superclass | No — `redefineClasses` rejects it on every JVM, JBR included. The method bodies in the same save are still applied, and the log says the class keeps its old superclass until a restart | Yes (restart) | Yes, by loading classes itself instead of redefining them |
 | Spring bean refresh | **Yes** (singleton destroy + recreate) | Yes (restart) | Yes |
+| `@Autowired` added to an existing field | **Yes** — Spring resolves a bean's injection points once and keeps them, so this used to reload, re-create the bean and leave the field null. `@Resource`, `@PostConstruct` and `@PreDestroy` come with it | Yes (restart) | Yes |
+| A constraint added to a field (`@NotBlank`) | **Yes** — enforced on the next request, instead of the request that should now be rejected being accepted | Yes (restart) | Yes |
+| `@ExceptionHandler` / `@InitBinder` / `@ModelAttribute` | **Yes** on a method that was already there, instead of the endpoint going on answering the framework's default | Yes (restart) | Yes |
+| Edited `@Aspect` pointcut | **Yes, re-parsed** — and the half that still waits is named: a bean already proxied keeps the advice it was built with until it is itself reloaded | Yes (restart) | Yes |
+| Jackson picks up a changed shape | **Yes** — a property renamed with `@JsonProperty`, and a getter you removed, reach the JSON. A getter you *add* is the stock-JDK wall rather than a cache, and is not claimed | Yes (restart) | Yes |
 | MVC mapping re-scan | **Yes** | Yes (restart) | Yes |
 | Cache eviction | **Yes** | Yes (restart) | Yes |
 | `@Scheduled` re-register | **Yes** | Yes (restart) | Yes |
@@ -117,6 +122,11 @@ than either.
   registered, instead of waiting for the next restart's component scan
 - **Annotation metadata**: an edited `@Transactional` or `@Cacheable` takes
   effect, not just the method body it sits on
+- **What the frameworks cached about your class**: a reload is only half the
+  job, because each framework answers from what it worked out about that class
+  once, at startup. An `@Autowired` you add injects, a constraint you add is
+  enforced, an `@ExceptionHandler` or `@InitBinder` you add runs, an edited
+  pointcut is parsed again, and Jackson stops serialising the old shape
 
 ### Core
 
