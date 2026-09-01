@@ -49,6 +49,8 @@ git tag -a vX.Y.Z -m 'Reclazz X.Y.Z' && git push origin main --follow-tags
 cp build/distributions/reclazz-X.Y.Z-signed.zip /tmp/reclazz-X.Y.Z.zip
 gh release create vX.Y.Z /tmp/reclazz-X.Y.Z.zip \
   --title 'Reclazz X.Y.Z' --notes-file <notes from the changelog>
+
+git worktree add /tmp/reclazz-site gh-pages    # then edit, commit, push
 ```
 
 The copy is the point of that first line. Every release since 1.0.0
@@ -67,6 +69,48 @@ is possible (the tags are the source of truth, and a rebuild from the tag
 carries the same code under a fresh signature), but the artifact that
 actually shipped is gone once a later build overwrites `build/distributions`.
 Do this step in the same sitting as the publish.
+
+## The site is a branch of this repository
+
+reclazz.com is GitHub Pages serving the `gh-pages` branch of this repo, which
+is why it is easy to miss: everything else in a release happens on `main`, and
+nothing in the build touches that branch or fails without it.
+
+```bash
+git worktree add /tmp/reclazz-site gh-pages
+```
+
+Three things go stale there, in this order of visibility:
+
+- `"softwareVersion"` in the JSON-LD block of `index.html`, which is the number
+  a search engine reads.
+- The feature cards, which carry the capability claims and the sentences about
+  what still needs a restart. A claim that stopped being true is worse than a
+  missing one, so correct those rather than only adding.
+- `llms.txt`, which is the same content for anything reading the site as a
+  model rather than a page.
+
+`index.html` keeps English inline and Turkish in a `translations` object keyed
+by `data-i18n`, so a new card needs both halves. This check catches the half
+that is easy to forget:
+
+```bash
+python3 - <<'EOF'
+import re
+s = open("index.html", encoding="utf-8").read()
+keys = set(re.findall(r'data-i18n="([^"]+)"', s))
+block = re.search(r"const translations = \{(.*?)\n\};", s, re.S).group(1)
+missing = sorted(keys - set(re.findall(r"^\s*'([^']+)':", block, re.M)))
+print("missing Turkish:", missing or "none")
+EOF
+```
+
+Do this in the same sitting as the publish, for the reason the GitHub release
+is in the same sitting: it depends on somebody remembering. It was forgotten
+through 1.0.24 to 1.0.29, and the page advertised 1.0.23 while the Marketplace
+shipped 1.0.29. That gap is worst exactly when it matters most: 1.0.29 fixes a
+defect in 1.0.28, and a reader of the site would have had no way to know the
+version they were installing had one.
 
 ## Then hide what it supersedes
 
