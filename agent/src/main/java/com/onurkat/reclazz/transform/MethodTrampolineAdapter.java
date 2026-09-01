@@ -289,6 +289,25 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
         mv.visitCode();
 
+        // Give the trampoline the line its method starts on. It dispatches
+        // rather than running the developer's statements, so it has no lines
+        // of its own and was getting none, and the result was that the frame
+        // carrying the readable name carried no source position:
+        //
+        //   without the agent  at Thrower.boom(Thrower.java:3)
+        //   with it            at Thrower.__reclazz$v0$boom$9edc617f(Thrower.java:3)
+        //                      at Thrower.boom(Unknown Source)
+        //
+        // The line survived, on the one frame whose name means nothing to the
+        // developer who wrote the method. Claiming it here puts a position
+        // back on the frame they recognise, which is the one their IDE offers
+        // to jump from and the one a log reader reads.
+        if (info.firstLine >= 0) {
+            Label position = new Label();
+            mv.visitLabel(position);
+            mv.visitLineNumber(info.firstLine, position);
+        }
+
         Type methodType = Type.getMethodType(info.descriptor);
         Type[] argTypes = methodType.getArgumentTypes();
         Type returnType = methodType.getReturnType();
@@ -426,6 +445,15 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         final String descHash;
         final boolean isStatic;
         final boolean isSynchronized;
+
+        /**
+         * The line the method's first statement is on, so the trampoline can
+         * claim it too. Without it the frame naming the developer's method
+         * reads "Unknown Source" and stops being something an IDE can jump
+         * from. -1 when the class was compiled without debug information,
+         * where there is nothing to claim.
+         */
+        int firstLine = -1;
         final List<ParamRecord> parameters = new ArrayList<>();
         final List<AnnotationRecord> visibleAnnotations = new ArrayList<>();
         final List<AnnotationRecord> invisibleAnnotations = new ArrayList<>();
@@ -471,6 +499,17 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         public void visitParameter(String name, int access) {
             info.parameters.add(new ParamRecord(name, access));
             super.visitParameter(name, access);
+        }
+
+        /**
+         * The first one visited, which is the first statement rather than the
+         * lowest number: that is where a reader who follows the frame wants to
+         * land, and where an exception thrown on entry actually comes from.
+         */
+        @Override
+        public void visitLineNumber(int line, Label start) {
+            if (info.firstLine < 0) info.firstLine = line;
+            super.visitLineNumber(line, start);
         }
 
         @Override

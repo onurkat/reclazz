@@ -505,6 +505,51 @@ Reclazz works with any JDK 17+ that supports the standard `java.lang.instrument`
 +---------------------------------------------------+
 ```
 
+### What attaching the agent changes about your classes
+
+Reclazz rewrites every watched class at load time, whether or not you ever
+reload anything. Most of that is invisible, and it is worth writing down which
+parts are not.
+
+**Nothing about reflection.** A method keeps its annotations, its generic
+signature, its `throws` clause and its parameter names, so Spring still decides
+to proxy it and Jackson still sees `List<Order>` rather than a raw list. Every
+member Reclazz injects is marked synthetic, which is what keeps it out of the
+framework scans that skip synthetic members.
+
+**Stack traces gain a frame.** A call into a watched method shows two frames:
+the dispatch under your own method name, and above it the moved body under an
+internal one.
+
+```
+at com.acme.OrderService.__reclazz$v0$place$9edc617f(OrderService.java:42)
+at com.acme.OrderService.place(OrderService.java:42)
+```
+
+Both carry the real file and line, so the trace still says where the failure
+was and your IDE can still jump from the frame you recognise. The extra line is
+the cost of the dispatch the reload engine is built on. One thing does not
+recover: a log pattern that prints the calling method name (`%M` in Log4j2)
+reads it off the moved body, so it prints the internal name. The logger name,
+the line number and the class name are all unaffected.
+
+**`serialVersionUID` is pinned.** Injecting members would change the number the
+JVM computes for a class that does not declare one, which would make anything
+serialized before the agent unreadable after it. Reclazz computes the number
+your class would have had and writes it in, so serialized data and mixed
+clusters keep working.
+
+**Fields added by a reload are runtime-only.** A field that appears in a reload
+lives beside the object rather than in it. It is not serialized, and a `clone()`
+gets its own copy rather than sharing the original's. After deserialization it
+reads its type default, which is what an object built before that reload reads
+too.
+
+**`synchronized` survives, with one exception.** Both the dispatch and the moved
+body take the monitor, so mutual exclusion holds from startup. A structural
+reload that moves a synchronized method's body to a companion class is the case
+that does not hold, and Reclazz warns by name when it happens.
+
 ## Project Structure
 
 ```
