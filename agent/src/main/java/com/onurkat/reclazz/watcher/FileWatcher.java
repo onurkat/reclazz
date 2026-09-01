@@ -36,6 +36,33 @@ public class FileWatcher {
     private final AgentConfig config;
     private final WatchService watchService;
     private final Map<WatchKey, WatchedDirectory> watchKeyMap = new ConcurrentHashMap<>();
+
+    /**
+     * Directories whose watch went away with them, kept so they can be picked
+     * up again when they come back.
+     *
+     * <p>A clean build deletes the output tree and rebuilds it, which is a
+     * thing developers do several times an hour. On Linux the watch is on the
+     * inode, so the key is invalidated for good and this code dropped it and
+     * never looked again: every later edit went unnoticed, and if the tree was
+     * the only watched one the loop stopped outright, having said one line
+     * during the noisiest part of a build. macOS hides this, because the JDK
+     * has no native file-watching there and falls back to polling, which
+     * re-reads the directory and never notices it left.
+     */
+    private final Map<Path, WatchedDirectory> lostDirectories = new ConcurrentHashMap<>();
+
+    /** When the first directory went missing, or 0 while none are. */
+    private volatile long missingSince = 0;
+
+    /** Whether the developer has been told; said once, not once per cycle. */
+    private volatile boolean missingReported = false;
+
+    /**
+     * Long enough that an ordinary clean build finishes without a word.
+     * Not final so a test can ask what happens after it without waiting.
+     */
+    static long missingGraceMs = 30_000;
     private static final int MAX_DEDUP_ENTRIES = 5000;
     private final Map<Path, Long> lastModifiedMap = new ConcurrentHashMap<>();
     /**
@@ -256,6 +283,85 @@ public class FileWatcher {
      *
      * Package-private for test access.
      */
+    /**
+     * Watch again anything that has come back, and say so if it has not.
+     *
+     * <p>Silent when it works, because a clean build is not an event: the
+     * directory goes, comes back a few seconds later, and is watched again
+     * with the files it came back with treated as changes, which is what they
+     * are. It speaks only when something has stayed gone long enough that it
+     * is no longer a build, since at that point nothing is being watched and
+     * the developer is about to spend an afternoon wondering why their edits
+     * do nothing.
+     *
+     * <p>Package-private for test access.
+     */
+    /**
+     * A watch that has gone invalid, which on Linux is what deleting the
+     * directory does and is permanent for that key.
+     *
+     * <p>Package-private for test access: cancelling a key produces exactly
+     * the same invalidation on any operating system, which is the only way to
+     * exercise this from macOS, where the JDK polls and never sees a directory
+     * leave.
+     */
+    void noteLostDirectory(WatchedDirectory lost) {
+        if (lost == null) return;
+        lostDirectories.put(lost.directory(), lost);
+        if (missingSince == 0) missingSince = System.currentTimeMillis();
+    }
+
+    /** Whether this directory is currently missing its watch. */
+    boolean isLost(Path directory) {
+        return lostDirectories.containsKey(directory);
+    }
+
+    void recoverLostDirectories(Map<Path, PendingEvent> pendingEvents) {
+        if (!lostDirectories.isEmpty()) {
+            for (WatchedDirectory lost : new java.util.ArrayList<>(lostDirectories.values())) {
+                if (!Files.isDirectory(lost.directory())) continue;
+                try {
+                    registerRecursive(lost.directory(), lost.moduleName(), lost.sourceRoot());
+                    lostDirectories.remove(lost.directory());
+                    // What arrived while nothing was watching is a change that
+                    // has not been seen yet, which is what these events say.
+                    enqueueExistingFiles(lost.directory(), lost.moduleName(),
+                            lost.sourceRoot(), pendingEvents);
+                } catch (IOException notYet) {
+                    // Half-built directories come and go during a build; the
+                    // next cycle is a second away.
+                }
+            }
+        }
+
+        if (lostDirectories.isEmpty()) {
+            if (missingReported) {
+                StatusReporter.success("Watched directories are back and being watched again.");
+            }
+            missingSince = 0;
+            missingReported = false;
+            return;
+        }
+
+        // At least the grace period, not strictly more: the boundary should be
+        // the same answer every time it is asked rather than depending on
+        // which millisecond the question lands in.
+        boolean overdue = missingSince != 0
+                && System.currentTimeMillis() - missingSince >= missingGraceMs;
+        if (overdue && !missingReported) {
+            missingReported = true;
+            StatusReporter.warn(lostDirectories.size() + " watched director"
+                    + (lostDirectories.size() == 1 ? "y has" : "ies have")
+                    + " been gone for over " + (missingGraceMs / 1000) + " seconds: "
+                    + lostDirectories.keySet() + ". Nothing in "
+                    + (lostDirectories.size() == 1 ? "it" : "them")
+                    + " is being watched, so edits there will not reload. A clean build takes "
+                    + "them away and brings them back within seconds and this is not that; "
+                    + "check the path, or that the build still writes there. They will be "
+                    + "picked up on their own the moment they exist again.");
+        }
+    }
+
     void handleOverflow(WatchedDirectory watchedDir, Map<Path, PendingEvent> pendingEvents) {
         StatusReporter.warn("File event overflow in " + watchedDir.directory()
                 + " — re-scanning directory to recover dropped changes");
@@ -352,13 +458,16 @@ public class FileWatcher {
 
                 boolean valid = key.reset();
                 if (!valid) {
-                    watchKeyMap.remove(key);
-                    if (watchKeyMap.isEmpty()) {
-                        StatusReporter.warn("All watch directories became invalid. Stopping watcher.");
-                        break;
-                    }
+                    // Remembered rather than forgotten: the directory is
+                    // usually on its way back, and the watcher stays alive
+                    // even when every one of them has gone, because a clean
+                    // build takes them all and a watcher that stops there is
+                    // a watcher that stops for the rest of the day.
+                    noteLostDirectory(watchKeyMap.remove(key));
                 }
             }
+
+            recoverLostDirectories(pendingEvents);
 
             // Dispatch events whose debounce period has elapsed
             if (!pendingEvents.isEmpty()) {
