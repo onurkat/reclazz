@@ -303,6 +303,18 @@ read-only status questions and triggers nothing; it makes no outbound network
 connection of any kind. Nothing about your code or your machine leaves the
 machine.
 
+Running under the agent also does not hand the application anything it did not
+have. The engine keeps each watched class's own lookup, which carries private
+access to that class, and its holder sits on the bootstrap classloader where
+every line of code in the process can reach it. Only the engine's own classes,
+named by identity before the application starts, are given it: application code
+asking is refused, which matters because code that can evaluate a submitted
+expression or reach a static method through a deserialized object cannot write
+a class file into a watched directory, and should not get there by another
+route. Reload-added field values are readable and writable through the same
+bootstrap classes, because the code the agent generates calls them, and they
+reach only the values Reclazz itself stores.
+
 ### SAP Commerce (Hybris)
 
 Edit `hybris/config/local.properties`:

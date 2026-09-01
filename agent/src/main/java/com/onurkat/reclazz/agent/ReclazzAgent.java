@@ -112,6 +112,24 @@ public class ReclazzAgent {
         initialize(agentArgs);
     }
 
+    /**
+     * Name the classes allowed to read a captured lookup, then close the list.
+     *
+     * <p>First thing either entry point does, so it is done before any
+     * application class has run and there is no window in which something else
+     * could add itself. {@code X.class} loads a class without initialising it,
+     * so naming them here does not start the engine early.
+     */
+    private static void trustEngineCallers() {
+        com.onurkat.reclazz.bootstrap.LookupCapture.trust(
+                com.onurkat.reclazz.transform.ReflectionRootFilter.class);
+        com.onurkat.reclazz.bootstrap.LookupCapture.trust(
+                com.onurkat.reclazz.reload.StructuralReloader.class);
+        com.onurkat.reclazz.bootstrap.LookupCapture.trust(
+                com.onurkat.reclazz.bootstrap.ProtectedCallResolver.class);
+        com.onurkat.reclazz.bootstrap.LookupCapture.seal();
+    }
+
     /** True when we arrived through the Attach API rather than -javaagent. */
     private static volatile boolean attached;
 
@@ -510,6 +528,10 @@ public class ReclazzAgent {
             Files.copy(is, tempJar, StandardCopyOption.REPLACE_EXISTING);
             tempJar.toFile().deleteOnExit();
             instrumentation.appendToBootstrapClassLoaderSearch(new JarFile(tempJar.toFile()));
+            // The bootstrap classes exist as of this line, so this is the
+            // earliest the trusted-caller list can be named, and it is still
+            // inside premain: no application class has run.
+            trustEngineCallers();
         }
     }
 
