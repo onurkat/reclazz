@@ -4,6 +4,96 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.29] - 2026-09-01
+
+### Fixed
+
+- A member removed and then restored stayed hidden from reflection, so an
+  endpoint a save had just brought back answered 404. Shipped in 1.0.28 and
+  found by the integration suite on the run after it: the undo was gated on the
+  diff calling the member added, and 1.0.28's own fix, which correctly keeps a
+  removed method in the record because the JVM will not let it leave the loaded
+  class, made it not added. The question is what the source declares now, which
+  is the honest one anyway. If you are on 1.0.28 and have seen a restored
+  endpoint 404, this is why.
+
+- A removed member was hidden from `getDeclaredMethods()` and still answered
+  `getDeclaredMethod(name)`. The array accessors have hidden removed members
+  since the feature existed; the by-name ones only ever checked for Reclazz's
+  own injected members. Asking by name is not unusual: it is what a bean
+  property lookup does, what Jackson does resolving an accessor, and what
+  Spring's `findMethod` does. Half a member being gone is worse than either
+  whole answer, because which half a framework meets decides whether the removal
+  took and nothing says which one it used.
+
+- The interface message no longer sends anyone to a different JVM for a change
+  that JVM also refuses. DCEVM documents its one unsupported operation as the
+  hierarchy change and counts removing an interface as exactly that, alongside
+  changing the superclass, so only an added interface names the flag now. On a
+  SAP Commerce server that advice was expensive as well as wrong: taking it
+  meant running the platform on a runtime SAP does not support.
+
+### Added
+
+Seven things a framework had cached and nobody was telling it about. Each was
+measured on a live Spring Boot 3.3.4 server before it was written and again
+after.
+
+- **`@Autowired` added to a field that was already there now injects.** Spring
+  resolves a bean's injection points once and keeps them, so the class reloaded,
+  the annotation was on it, the bean was destroyed and re-created, and the field
+  was still null, with nothing saying why. `@Resource`, `@PostConstruct` and
+  `@PreDestroy` come with it, and a `@Autowired` moved onto a constructor too.
+  Four caches over two post-processors, and they are not on the same class:
+  `@PostConstruct` lives on a superclass of the one that caches `@Resource`, so
+  stopping at the declaring class finds one and misses the other.
+
+- **A constraint added to a field is enforced.** Bean Validation resolves a
+  class's constraints once, so adding `@NotBlank` left the request that should
+  now be rejected being accepted: measured, `POST` with an empty value answered
+  200 before and 400 after, and 200 again when the constraint is taken back off.
+
+- **`@ExceptionHandler`, `@InitBinder` and `@ModelAttribute` added to an
+  existing method take effect.** Three caches on two beans, and three separate
+  traps. The advice maps are built once and never lazily, so emptying one
+  without Spring's own initialiser would leave the application with no advice at
+  all, which is worse than the stale handler; nothing is touched unless that
+  initialiser is found first. The exception resolver is not a bean, because Boot
+  builds it inside a composite. And the handler adapter's initialiser prepends
+  to the body-advice list rather than replacing it, so calling it twice would
+  run a `ResponseBodyAdvice` twice for every response; the list is put back
+  exactly as it was.
+
+- **An edited pointcut is parsed again.** Only the "was this bean advised"
+  record was being cleared, not the parsed advisors, so editing an `@Aspect`
+  expression did nothing at all, restart aside. Both are cleared now, and the
+  half a restart is still needed for is said out loud rather than left to be
+  discovered: a bean already proxied keeps the advice it was built with until it
+  is itself reloaded.
+
+- **Jackson stops serialising the old shape.** The mapper caches a class's
+  serializer, so a property renamed with `@JsonProperty` and a removed getter
+  both reached the JSON only after the caches were dropped. An added getter is a
+  different thing and is not claimed here: it lives in the companion and
+  reflection cannot see it, which is the stock-JDK wall rather than a cache.
+
+- **A `@ControllerAdvice` class is a Spring bean.** It is a `@Component` one
+  level up, and only direct annotations were being read, so those classes were
+  reaching none of the Spring reloaders at all.
+
+- The integration suite's two required agent flags are written down.
+  `autoCompile=true` and `autoImpex=true` are both needed, and without the first
+  the very first scenario fails with a timeout that reads like a broken agent
+  rather than a missing flag.
+
+### Changed
+
+- A constructor the JVM will not redefine is said out loud when it costs a
+  value. Once a class carries members added since startup, `redefineClasses`
+  refuses it, so a field added by a later save reads its default even on objects
+  created after the reload. That went to a verbose-only line, and an hour was
+  spent on a field reading 0 with nothing anywhere saying why.
+
 ## [1.0.28] - 2026-08-31
 
 ### Added
