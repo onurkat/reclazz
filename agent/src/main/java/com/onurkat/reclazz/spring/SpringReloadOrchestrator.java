@@ -37,9 +37,11 @@ public class SpringReloadOrchestrator {
     private final SpringSecurityReloader securityReloader;
     private final SpringOperationSourceReloader operationSourceReloader;
     private final SpringInjectionMetadataReloader injectionMetadataReloader;
+    private final PlatformContext platformContext;
     private final SpringControllerAdviceReloader exceptionHandlerReloader;
 
     public SpringReloadOrchestrator(PlatformContext platformContext) {
+        this.platformContext = platformContext;
         this.beanReloader = new SpringBeanReloader(platformContext);
         this.mvcReloader = new SpringMvcReloader(platformContext);
         this.cacheReloader = new SpringCacheReloader(platformContext);
@@ -150,6 +152,15 @@ public class SpringReloadOrchestrator {
             // on a runtime that could have served it. Re-scanning a single
             // controller is cheap and produces the same registry twice over.
             if (isController(reloadedClass)) {
+                // What Spring worked out about this handler's PARAMETERS, which
+                // re-registering the mapping does not touch: the name, the
+                // default and whether a parameter is required are cached per
+                // MethodParameter, and that key compares the method and the
+                // index, so a fresh one finds the stale answer. Measured on
+                // Boot 3.3, changing a defaultValue changed nothing.
+                SpringArgumentResolverCaches.flush(
+                        platformContext.getAllApplicationContexts());
+
                 boolean mvcReloaded = mvcReloader.reloadMappings(reloadedClass);
 
                 // The scan runs on every controller reload and says so only
