@@ -324,7 +324,7 @@ public final class SpringPropertyRebinder {
             RestartLedger.note(beanName,
                     "a @Value constructor parameter that could not be rebuilt in place");
             StatusReporter.warn("Rebuilding " + beanName + " (" + type.getSimpleName()
-                    + ") failed (" + (t.getMessage() == null ? t.getClass().getSimpleName() : t.getMessage())
+                    + ") failed (" + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? t.getClass().getSimpleName() : com.onurkat.reclazz.ui.Failures.describe(t))
                     + "); the value it was given at startup is the one it keeps. "
                     + "A restart is what applies the new one.");
             return false;
@@ -458,7 +458,7 @@ public final class SpringPropertyRebinder {
             } catch (Throwable t) {
                 RestartLedger.note(bean.getKey(),
                         "properties under \"" + prefix + "\" that could not be rebound");
-                StatusReporter.warn("Could not rebind " + bean.getKey() + ": " + t.getMessage());
+                StatusReporter.warn("Could not rebind " + bean.getKey() + ": " + com.onurkat.reclazz.ui.Failures.describe(t));
             }
         }
         return rebound;
@@ -527,7 +527,7 @@ public final class SpringPropertyRebinder {
             RestartLedger.note(beanName,
                     "properties under \"" + prefix + "\" that only a constructor can take");
             StatusReporter.warn("Rebuilding " + beanName + " failed ("
-                    + (t.getMessage() == null ? t.getClass().getSimpleName() : t.getMessage())
+                    + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? t.getClass().getSimpleName() : com.onurkat.reclazz.ui.Failures.describe(t))
                     + "); the values it already holds cannot be replaced. "
                     + "A restart is what applies them.");
             return false;

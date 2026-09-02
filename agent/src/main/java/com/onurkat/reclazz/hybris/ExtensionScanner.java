@@ -132,7 +132,7 @@ public class ExtensionScanner {
                 }
             }
         } catch (Exception e) {
-            StatusReporter.error("Failed to parse localextensions.xml: " + e.getMessage());
+            StatusReporter.error("Failed to parse localextensions.xml: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 
@@ -193,7 +193,7 @@ public class ExtensionScanner {
                         }
                     });
         } catch (IOException | UncheckedIOException e) {
-            StatusReporter.warn("Extension scan incomplete under " + root + ": " + e.getMessage());
+            StatusReporter.warn("Extension scan incomplete under " + root + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 
@@ -291,7 +291,7 @@ public class ExtensionScanner {
                         } catch (Exception ignored) {}
                     });
         } catch (IOException | UncheckedIOException e) {
-            StatusReporter.warn("Custom extension scan incomplete under " + customDir + ": " + e.getMessage());
+            StatusReporter.warn("Custom extension scan incomplete under " + customDir + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 

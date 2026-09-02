@@ -59,7 +59,7 @@ public class SpringDataReloader {
             StatusReporter.success("Spring Data repository refreshed: " + reloadedClass.getName());
             return true;
         } catch (Exception e) {
-            StatusReporter.warn("Spring Data repository reload failed: " + e.getMessage());
+            StatusReporter.warn("Spring Data repository reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return false;
         }
     }

@@ -225,7 +225,7 @@ public class StructuralReloader {
                     pinnedMethods, pinnedRedefinePayload);
 
         } catch (Exception e) {
-            StatusReporter.error("Structural reload error for " + className + ": " + e.getMessage());
+            StatusReporter.error("Structural reload error for " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
             if (config.isVerbose()) {
                 e.printStackTrace();
             }
@@ -682,7 +682,7 @@ public class StructuralReloader {
                 // warning about one field rather than a failed reload.
                 StatusReporter.warn("Initialiser for added static field(s) in " + className
                         + " threw " + t.getClass().getSimpleName()
-                        + (t.getMessage() == null ? "" : ": " + t.getMessage())
+                        + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? "" : ": " + com.onurkat.reclazz.ui.Failures.describe(t))
                         + ". Those fields read as null/0.");
                 com.onurkat.reclazz.agent.RestartLedger.note(className,
                         "an added static field's initialiser threw, so it reads as null/0");
@@ -979,7 +979,7 @@ public class StructuralReloader {
                     newTargets.put(siteKey, mh);
                 } catch (Exception e) {
                     StatusReporter.warn("Failed to resolve companion method: " +
-                            methodName + descriptor + ": " + e.getMessage());
+                            methodName + descriptor + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
                 }
             }
 
@@ -1509,7 +1509,7 @@ public class StructuralReloader {
                 }
             } catch (Exception e) {
                 if (config.isVerbose()) {
-                    StatusReporter.warn("Failed to forge Method " + methodName + ": " + e.getMessage());
+                    StatusReporter.warn("Failed to forge Method " + methodName + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
                 }
             }
         }
@@ -1539,7 +1539,7 @@ public class StructuralReloader {
                 }
             } catch (Exception e) {
                 if (config.isVerbose()) {
-                    StatusReporter.warn("Failed to forge Field " + fieldName + ": " + e.getMessage());
+                    StatusReporter.warn("Failed to forge Field " + fieldName + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
                 }
             }
         }

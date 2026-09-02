@@ -60,7 +60,7 @@ public class SpringCacheReloader {
             }
             return evicted;
         } catch (Exception e) {
-            StatusReporter.warn("Spring cache eviction failed: " + e.getMessage());
+            StatusReporter.warn("Spring cache eviction failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return false;
         }
     }

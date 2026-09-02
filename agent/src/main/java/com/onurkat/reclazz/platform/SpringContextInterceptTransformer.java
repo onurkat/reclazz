@@ -44,7 +44,7 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
             StatusReporter.info("Instrumented AbstractApplicationContext.refresh() for context capture");
             return cw.toByteArray();
         } catch (Exception e) {
-            StatusReporter.warn("Failed to instrument AbstractApplicationContext: " + e.getMessage());
+            StatusReporter.warn("Failed to instrument AbstractApplicationContext: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return null;
         }
     }

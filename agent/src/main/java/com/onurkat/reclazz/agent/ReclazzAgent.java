@@ -216,7 +216,7 @@ public class ReclazzAgent {
                 StatusReporter.info("Bootstrap classes installed on bootstrap classloader");
             } catch (Exception e) {
                 bootstrapInstalled = false;
-                StatusReporter.error("Failed to install bootstrap JAR: " + e.getMessage());
+                StatusReporter.error("Failed to install bootstrap JAR: " + com.onurkat.reclazz.ui.Failures.describe(e));
                 if (enableStructural) {
                     StatusReporter.warn("Structural reload disabled — falling back to method-body-only mode");
                     enableStructural = false;
@@ -252,7 +252,7 @@ public class ReclazzAgent {
                             new com.onurkat.reclazz.transform.TemplateInterceptTransformer(), false);
                 }
             } catch (Exception e) {
-                StatusReporter.warn("Failed to register Spring context transformer: " + e.getMessage());
+                StatusReporter.warn("Failed to register Spring context transformer: " + com.onurkat.reclazz.ui.Failures.describe(e));
             }
 
             // Initialize platform context
@@ -268,7 +268,7 @@ public class ReclazzAgent {
                     StatusReporter.info("Discovered " + found + " live Spring web context(s) from running Tomcat");
                 }
             } catch (Throwable t) {
-                StatusReporter.warn("Live web-context discovery failed: " + t.getMessage());
+                StatusReporter.warn("Live web-context discovery failed: " + com.onurkat.reclazz.ui.Failures.describe(t));
             }
 
             // Start status server for plugin communication. If the user didn't
@@ -290,7 +290,7 @@ public class ReclazzAgent {
                     java.nio.file.Files.createDirectories(defaultDir);
                     effectivePortFile = defaultDir.resolve("agent.port");
                 } catch (Exception e) {
-                    StatusReporter.warn("Could not create default port-file directory " + defaultDir + ": " + e.getMessage());
+                    StatusReporter.warn("Could not create default port-file directory " + defaultDir + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
                 }
             }
             if (effectivePortFile != null || effectivePort > 0) {
@@ -301,7 +301,7 @@ public class ReclazzAgent {
                         StatusReporter.info("Status server port file: " + effectivePortFile);
                     }
                 } catch (Exception e) {
-                    StatusReporter.warn("Failed to start status server: " + e.getMessage());
+                    StatusReporter.warn("Failed to start status server: " + com.onurkat.reclazz.ui.Failures.describe(e));
                 }
             }
 
@@ -501,7 +501,7 @@ public class ReclazzAgent {
             StatusReporter.info("Press Ctrl+C or stop the server to deactivate.");
 
         } catch (Exception e) {
-            StatusReporter.error("Failed to initialize Reclazz: " + e.getMessage());
+            StatusReporter.error("Failed to initialize Reclazz: " + com.onurkat.reclazz.ui.Failures.describe(e));
             StatusReporter.error("  Stack trace: " + e);
             if (statusServer != null) {
                 try { statusServer.stop(); } catch (Exception ignored) {}
@@ -701,7 +701,7 @@ public class ReclazzAgent {
                 }
             }
         } catch (Exception e) {
-            StatusReporter.error("Failed to read class file " + classFile + ": " + e.getMessage());
+            StatusReporter.error("Failed to read class file " + classFile + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 

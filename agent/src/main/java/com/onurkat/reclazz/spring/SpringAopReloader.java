@@ -74,7 +74,7 @@ public class SpringAopReloader {
             }
             return cleared;
         } catch (Exception e) {
-            StatusReporter.warn("Spring AOP reload failed: " + e.getMessage());
+            StatusReporter.warn("Spring AOP reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return false;
         }
     }

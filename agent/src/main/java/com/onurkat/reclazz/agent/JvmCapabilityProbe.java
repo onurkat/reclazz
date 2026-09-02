@@ -206,7 +206,7 @@ public class JvmCapabilityProbe {
         } catch (Exception e) {
             // Any error during probe (e.g., class format error, linkage error)
             // likely means structural changes aren't supported
-            StatusReporter.info("Capability probe inconclusive: " + e.getMessage());
+            StatusReporter.info("Capability probe inconclusive: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return null; // Let fallback logic decide
         } catch (Error e) {
             // JVM-level errors (e.g., "attempted to add a method"). This is

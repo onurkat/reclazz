@@ -66,7 +66,7 @@ public final class TomcatContextScanner {
                 }
             }
         } catch (Throwable t) {
-            StatusReporter.warn("Tomcat context scan failed: " + t.getMessage());
+            StatusReporter.warn("Tomcat context scan failed: " + com.onurkat.reclazz.ui.Failures.describe(t));
         }
         return registered;
     }

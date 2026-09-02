@@ -84,7 +84,7 @@ public class InterceptorReloader {
             StatusReporter.warn("Hybris platform classes not available. " +
                     "Interceptor reload will take effect after server start.");
         } catch (Exception e) {
-            StatusReporter.error("Failed to reload interceptor " + className + ": " + e.getMessage());
+            StatusReporter.error("Failed to reload interceptor " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 
@@ -138,7 +138,7 @@ public class InterceptorReloader {
         } catch (ClassNotFoundException e) {
             // InterceptorMapping class not available - that's OK
         } catch (Exception e) {
-            StatusReporter.warn("Could not refresh InterceptorMappings: " + e.getMessage());
+            StatusReporter.warn("Could not refresh InterceptorMappings: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 
