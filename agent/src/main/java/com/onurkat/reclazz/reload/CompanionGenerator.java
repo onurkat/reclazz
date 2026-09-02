@@ -90,18 +90,8 @@ public class CompanionGenerator implements Opcodes {
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES) {
-            @Override
-            protected String getCommonSuperClass(String type1, String type2) {
-                // Companion class name and hidden classes may not be resolvable via
-                // Class.forName during frame computation. Fall back to Object safely.
-                try {
-                    return super.getCommonSuperClass(type1, type2);
-                } catch (Exception e) {
-                    return "java/lang/Object";
-                }
-            }
-        };
+        ClassWriter writer = new com.onurkat.reclazz.transform.SafeClassWriter(
+                ClassWriter.COMPUTE_FRAMES);
 
         // Companion extends Object, implements nothing
         writer.visit(V17, ACC_PUBLIC | ACC_SYNTHETIC, companionName, null,

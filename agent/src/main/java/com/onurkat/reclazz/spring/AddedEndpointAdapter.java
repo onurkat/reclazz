@@ -94,7 +94,7 @@ public final class AddedEndpointAdapter {
 
     private static byte[] generate(String adapterInternal, String controllerInternal,
                                    List<MethodNode> handlers, ClassNode source) {
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new com.onurkat.reclazz.transform.SafeClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         writer.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
                 adapterInternal, null, "java/lang/Object", null);
 
