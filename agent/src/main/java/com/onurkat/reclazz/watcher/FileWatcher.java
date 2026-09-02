@@ -52,6 +52,59 @@ public class FileWatcher {
      */
     private final Map<Path, WatchedDirectory> lostDirectories = new ConcurrentHashMap<>();
 
+    /**
+     * Files this session has already seen change, with the mtime they were
+     * last seen at, checked directly instead of waiting for the JDK to notice.
+     *
+     * <p>macOS has no native file watching in the JDK, so
+     * {@code FileSystems.getDefault().newWatchService()} is
+     * {@code sun.nio.fs.PollingWatchService}, which walks its registered
+     * directories on a two-second cycle. Measured on this machine, writing a
+     * class file and timing until the watcher was handed the event: 611ms to
+     * 1301ms depending on where in the cycle the write landed, and in the
+     * agent's own trace, 1.9 seconds of a 2.45-second save-to-live. The
+     * SensitivityWatchEventModifier that used to shorten that cycle is ignored
+     * by modern JDKs; measured with and without it, the numbers were identical
+     * to the millisecond.
+     *
+     * <p>What a developer actually does is edit the same few files over and
+     * over, so those files are stat-ed directly on a short cycle. It costs a
+     * handful of syscalls rather than a walk of the tree, the first change to
+     * any file still waits for the JDK, and every one after it does not.
+     */
+    private final Map<Path, WatchedFile> hotFiles = new ConcurrentHashMap<>();
+
+    /** A file worth checking directly, and what it looked like last time. */
+    private record WatchedFile(long modifiedAt, long lastChangedAt,
+                               String moduleName, String sourceRoot) {}
+
+    /** Enough for the handful of files an edit-run-edit loop touches. */
+    private static final int MAX_HOT_FILES = 64;
+
+    /**
+     * After this long without changing, a file is not what is being worked on.
+     * Not final so a test can reach the expiry without waiting for it.
+     */
+    static long hotForMs = 5 * 60 * 1000;
+
+    /** How often the hot files are checked. */
+    static final long HOT_SCAN_MS = 150;
+
+    /**
+     * Only where the JDK polls; a native watcher is already faster than this.
+     * Not final so a test can exercise the path on a machine that has one.
+     */
+    boolean jdkPolls = watchServicePolls();
+
+    private static boolean watchServicePolls() {
+        try {
+            return FileSystems.getDefault().newWatchService()
+                    .getClass().getSimpleName().contains("Polling");
+        } catch (Exception cannotTell) {
+            return false;
+        }
+    }
+
     /** When the first directory went missing, or 0 while none are. */
     private volatile long missingSince = 0;
 
@@ -362,6 +415,59 @@ public class FileWatcher {
         }
     }
 
+    /**
+     * Remember a file as one being worked on, so the next change to it is
+     * noticed directly rather than on the JDK's cycle.
+     */
+    void markHot(Path file, String moduleName, String sourceRoot) {
+        if (!jdkPolls || file == null) return;
+        long now = System.currentTimeMillis();
+        if (hotFiles.size() >= MAX_HOT_FILES) {
+            hotFiles.entrySet().removeIf(e -> now - e.getValue().lastChangedAt() >= hotForMs);
+            if (hotFiles.size() >= MAX_HOT_FILES) {
+                hotFiles.entrySet().stream()
+                        .min(java.util.Comparator.comparingLong(e -> e.getValue().lastChangedAt()))
+                        .ifPresent(oldest -> hotFiles.remove(oldest.getKey()));
+            }
+        }
+        hotFiles.put(file, new WatchedFile(modifiedAt(file), now, moduleName, sourceRoot));
+    }
+
+    /**
+     * Check the files being worked on, and enqueue what has changed.
+     *
+     * <p>Package-private for test access.
+     */
+    void scanHotFiles(Map<Path, PendingEvent> pendingEvents) {
+        if (hotFiles.isEmpty()) return;
+        long now = System.currentTimeMillis();
+        for (Map.Entry<Path, WatchedFile> entry : hotFiles.entrySet()) {
+            Path file = entry.getKey();
+            WatchedFile seen = entry.getValue();
+            // At least that long, not more than it: a boundary that depends on
+            // which millisecond the question lands in gives a different answer
+            // to the same state.
+            if (now - seen.lastChangedAt() >= hotForMs) {
+                hotFiles.remove(file);
+                continue;
+            }
+            long modified = modifiedAt(file);
+            if (modified == 0 || modified == seen.modifiedAt()) continue;
+
+            hotFiles.put(file, new WatchedFile(modified, now, seen.moduleName(), seen.sourceRoot()));
+            pendingEvents.put(file, new PendingEvent(now, file, ChangeEvent.Type.MODIFIED,
+                    seen.moduleName(), seen.sourceRoot()));
+        }
+    }
+
+    private static long modifiedAt(Path file) {
+        try {
+            return Files.getLastModifiedTime(file).toMillis();
+        } catch (IOException gone) {
+            return 0;
+        }
+    }
+
     void handleOverflow(WatchedDirectory watchedDir, Map<Path, PendingEvent> pendingEvents) {
         StatusReporter.warn("File event overflow in " + watchedDir.directory()
                 + " — re-scanning directory to recover dropped changes");
@@ -401,7 +507,8 @@ public class FileWatcher {
         long debounceMs = config.getDebounceMs();
 
         while (active) {
-            long waitMs = pendingEvents.isEmpty() ? 1000 : Math.min(debounceMs, 100);
+            long idleWait = (jdkPolls && !hotFiles.isEmpty()) ? HOT_SCAN_MS : 1000;
+            long waitMs = pendingEvents.isEmpty() ? idleWait : Math.min(debounceMs, 100);
             WatchKey key = watchService.poll(waitMs, TimeUnit.MILLISECONDS);
 
             if (key != null) {
@@ -467,6 +574,7 @@ public class FileWatcher {
                 }
             }
 
+            scanHotFiles(pendingEvents);
             recoverLostDirectories(pendingEvents);
 
             // Dispatch events whose debounce period has elapsed
@@ -478,6 +586,7 @@ public class FileWatcher {
                     PendingEvent pending = entry.getValue();
                     if (now - pending.timestamp >= debounceMs) {
                         it.remove();
+                        markHot(pending.path(), pending.moduleName(), pending.sourceRoot());
                         dispatchEvent(pending);
                     }
                 }
