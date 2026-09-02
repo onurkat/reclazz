@@ -76,6 +76,11 @@ public class ReclazzTransformer implements ClassFileTransformer {
             return null;
         }
 
+        // Recorded whatever happens below, including the paths that decline to
+        // instrument: what matters later is that this class is in the JVM, and
+        // separately whether it came out with the transform's members.
+        context.markSeen(className);
+
         try {
             // Before anything reads them: a class file from a compiler newer
             // than the bundled bytecode library cannot be parsed, and the
@@ -132,6 +137,11 @@ public class ReclazzTransformer implements ClassFileTransformer {
             // of every transform, load-time and redefine alike, so the cache
             // always holds what the transformer most recently produced.
             TransformedClassCache.put(className, transformed);
+
+            // Recorded separately from the cache, which is an LRU and forgets:
+            // a call site generated later has to know whether this class really
+            // carries the renamed bodies, and "it did once" is not an answer.
+            context.markTransformed(className);
 
             return transformed;
         } catch (Exception e) {

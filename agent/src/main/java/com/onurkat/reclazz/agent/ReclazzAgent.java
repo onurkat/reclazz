@@ -342,6 +342,17 @@ public class ReclazzAgent {
                 // watched classes that are already loaded AND were transformed,
                 // which only exists when initialize runs after classes went
                 // through the transformer.
+                // Attaching to a running JVM means the watched classes are
+                // already loaded, and the transformer will never be shown
+                // them. Recorded here so a call site generated later knows
+                // they are in the JVM without the transform's members.
+                for (Class<?> alreadyLoaded : instrumentation.getAllLoadedClasses()) {
+                    String internal = alreadyLoaded.getName().replace('.', '/');
+                    if (transformContext.isWatched(internal)) {
+                        transformContext.markSeen(internal);
+                    }
+                }
+
                 com.onurkat.reclazz.transform.ReflectionRootFilter.install(instrumentation);
                 for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
                     String internal = loaded.getName().replace('.', '/');

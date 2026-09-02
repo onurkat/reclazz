@@ -65,6 +65,57 @@ public class TransformContext {
     }
 
     /**
+     * Classes that went through the transformer and came out instrumented.
+     *
+     * <p>Being watched is not the same as having been instrumented, and the
+     * difference is not academic: a class loaded before the agent could reach
+     * it is watched and untouched, and so is one whose own transform failed.
+     * Code generated for a watched class must not assume the members the
+     * transform adds are present on another one just because it is watched too.
+     */
+    private final java.util.Set<String> transformed =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /** Say that this class now carries the members the transform adds. */
+    public void markTransformed(String internalName) {
+        if (internalName != null) transformed.add(internalName);
+    }
+
+    /**
+     * Classes the JVM has already loaded, whether or not they came out
+     * instrumented.
+     *
+     * <p>The pair is what makes the answer decidable. Seen and transformed is
+     * safe. Seen and not transformed is the dangerous one: the class is in the
+     * JVM without the members the transform adds, and nothing will add them
+     * now. Not seen at all is safe for the opposite reason, since a watched
+     * class that has not loaded yet will go through the transformer when it
+     * does.
+     */
+    private final java.util.Set<String> seen =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /** Say that this class is in the JVM, however it got there. */
+    public void markSeen(String internalName) {
+        if (internalName != null) seen.add(internalName);
+    }
+
+    /**
+     * Whether this class is already in the JVM without the transform's
+     * members, which is when code generated for another class must not assume
+     * they are there.
+     */
+    public boolean isLoadedUninstrumented(String internalName) {
+        return internalName != null && seen.contains(internalName)
+                && !transformed.contains(internalName);
+    }
+
+    /** Whether this class carries them, rather than merely being watched. */
+    public boolean wasTransformed(String internalName) {
+        return internalName != null && transformed.contains(internalName);
+    }
+
+    /**
      * Check if a class (by internal name) should be transformed.
      * O(1) HashSet lookup.
      */
