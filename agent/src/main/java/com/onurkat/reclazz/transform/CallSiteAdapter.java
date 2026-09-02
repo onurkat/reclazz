@@ -40,7 +40,23 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
                 super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
                 return;
             }
-            if (context.isWatched(owner) && !TransformExclusions.shouldSkipCallTarget(owner)) {
+            // The parent must actually have the renamed body, not merely be
+            // in a watched directory. A class loaded before the agent could
+            // reach it is watched and untouched, and so is one whose transform
+            // failed; rewriting into either names a method that is not there,
+            // and nothing says so until the line runs:
+            //
+            //   NoSuchMethodError: GeneratedBadge.__reclazz$v0$createItem$2c9e...
+            //       at Badge.__reclazz$v0$createItem$2c9e...(Badge.java:19)
+            //
+            // Reported from a SAP Commerce project, where every jalo item
+            // class extends a generated one that is loaded while the type
+            // system is built. The class being transformed right now counts as
+            // instrumented: it is about to be, and its own private calls are
+            // rewritten in the same pass.
+            boolean safeToRewrite = owner.equals(currentClass)
+                    || (context.isWatched(owner) && !context.isLoadedUninstrumented(owner));
+            if (safeToRewrite && !TransformExclusions.shouldSkipCallTarget(owner)) {
                 String descHash = descHash(descriptor);
                 String renamedName = "__reclazz$v0$" + name + "$" + descHash;
                 super.visitMethodInsn(opcode, owner, renamedName, descriptor, isInterface);

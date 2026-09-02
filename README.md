@@ -327,7 +327,7 @@ tomcat.generaloptions=-javaagent:/path/to/reclazz-agent.jar ${tomcat.generalopti
 
 Reclazz auto-detects the Hybris home directory from `platform.home`, `HYBRIS_BIN_DIR`, or the classpath. Start the server and run `ant build`. Reclazz hot-swaps the compiled classes automatically.
 
-Put it in `local.properties`, not in `tomcat/conf/wrapper.conf` directly. A platform rebuild regenerates that file from the properties and silently drops anything added to it by hand, so the agent stops being attached and the only symptom is that saving a file does nothing. `local.properties` survives the rebuild, which is what puts the line back into the regenerated file.
+Put it in `local.properties` rather than editing `tomcat/conf/wrapper.conf` by hand: `ant server` regenerates that file from the properties, and a line added directly to it is gone after the next rebuild with no symptom except that saving a file stops doing anything.
 
 Hybris-specific features:
 - **items.xml and beans.xml regeneration**: Saving a `*-items.xml` or `*-beans.xml`
