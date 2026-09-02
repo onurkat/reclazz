@@ -315,7 +315,7 @@ public class CodegenReloader {
             }
             return true;
         } catch (Exception e) {
-            StatusReporter.error("Codegen: failed to invoke ant: " + e.getMessage());
+            StatusReporter.error("Codegen: failed to invoke ant: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return false;
         }
     }

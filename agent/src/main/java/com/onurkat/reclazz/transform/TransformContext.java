@@ -60,7 +60,7 @@ public class TransformContext {
                 }
             });
         } catch (IOException e) {
-            StatusReporter.warn("Failed to scan class directory: " + classesDir + ": " + e.getMessage());
+            StatusReporter.warn("Failed to scan class directory: " + classesDir + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 

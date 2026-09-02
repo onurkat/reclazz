@@ -72,7 +72,7 @@ public class SpringSchedulerReloader {
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Spring scheduler reload failed: " + e.getMessage());
+            StatusReporter.warn("Spring scheduler reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
         return false;
     }

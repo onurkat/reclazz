@@ -84,7 +84,7 @@ public class SpringBeanReloader {
             applyDependentsAndHealing(contexts, refreshedNames, replacements);
 
         } catch (Exception e) {
-            StatusReporter.error("Failed to refresh Spring bean for " + className + ": " + e.getMessage());
+            StatusReporter.error("Failed to refresh Spring bean for " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 
@@ -135,7 +135,7 @@ public class SpringBeanReloader {
                     new java.util.LinkedHashSet<>(batchRefreshedNames),
                     new java.util.IdentityHashMap<>(batchReplacements));
         } catch (Exception e) {
-            StatusReporter.error("Deferred Spring refresh failed: " + e.getMessage());
+            StatusReporter.error("Deferred Spring refresh failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
         } finally {
             batchRefreshedNames.clear();
             batchReplacements.clear();
@@ -345,7 +345,7 @@ public class SpringBeanReloader {
                                 progress = true;
                                 StatusReporter.info("Dependent bean re-wired: " + dep);
                             } catch (Exception e) {
-                                StatusReporter.warn("Could not re-wire dependent bean '" + dep + "': " + e.getMessage());
+                                StatusReporter.warn("Could not re-wire dependent bean '" + dep + "': " + com.onurkat.reclazz.ui.Failures.describe(e));
                             }
                         }
                     }

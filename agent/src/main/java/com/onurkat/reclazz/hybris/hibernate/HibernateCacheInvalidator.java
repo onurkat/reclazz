@@ -50,7 +50,7 @@ public class HibernateCacheInvalidator {
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Hibernate cache invalidation skipped: " + e.getMessage());
+            StatusReporter.warn("Hibernate cache invalidation skipped: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 

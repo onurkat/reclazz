@@ -61,7 +61,7 @@ public class SpringAsyncReloader {
                 return true;
             }
         } catch (Exception e) {
-            StatusReporter.warn("Spring async reload failed: " + e.getMessage());
+            StatusReporter.warn("Spring async reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
         return false;
     }

@@ -47,7 +47,7 @@ public class BackofficeWidgetReloader {
             // Backoffice not on classpath — no-op
             return false;
         } catch (Exception e) {
-            StatusReporter.warn("Backoffice widget reload failed: " + e.getMessage());
+            StatusReporter.warn("Backoffice widget reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return false;
         }
     }

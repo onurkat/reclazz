@@ -73,7 +73,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                     Files.writeString(portFile, String.valueOf(actualPort));
                 }
             } catch (IOException e) {
-                StatusReporter.warn("Failed to write port file: " + e.getMessage());
+                StatusReporter.warn("Failed to write port file: " + com.onurkat.reclazz.ui.Failures.describe(e));
             }
         }
 
@@ -123,7 +123,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                 StatusReporter.info(reportLine);
             }
         } catch (Exception e) {
-            StatusReporter.warn("Could not answer " + trimmed + ": " + e.getMessage());
+            StatusReporter.warn("Could not answer " + trimmed + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 
@@ -210,7 +210,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                 // Expected — accept() timed out, loop back to check running flag
             } catch (IOException e) {
                 if (running) {
-                    StatusReporter.error("StatusServer accept error: " + e.getMessage());
+                    StatusReporter.error("StatusServer accept error: " + com.onurkat.reclazz.ui.Failures.describe(e));
                 }
             }
         }

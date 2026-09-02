@@ -103,7 +103,7 @@ public class SpringMvcReloader {
 
             return true;
         } catch (Exception e) {
-            StatusReporter.warn("Spring MVC mapping re-scan failed: " + e.getMessage());
+            StatusReporter.warn("Spring MVC mapping re-scan failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
             return false;
         }
     }

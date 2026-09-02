@@ -65,7 +65,7 @@ public class TemplateReloader {
                 // rather than reporting a failure the user cannot act on.
             } catch (Throwable t) {
                 StatusReporter.warn("Could not clear template cache on "
-                        + engine.getClass().getName() + ": " + t.getMessage());
+                        + engine.getClass().getName() + ": " + com.onurkat.reclazz.ui.Failures.describe(t));
                 return false;
             }
         }

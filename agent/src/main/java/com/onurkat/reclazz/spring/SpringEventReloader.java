@@ -88,7 +88,7 @@ public class SpringEventReloader {
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Spring event listener reload failed: " + e.getMessage());
+            StatusReporter.warn("Spring event listener reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
         return false;
     }

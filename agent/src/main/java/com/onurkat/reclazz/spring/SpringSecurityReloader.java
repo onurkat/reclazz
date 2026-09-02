@@ -115,7 +115,7 @@ public class SpringSecurityReloader {
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Spring Security reload check failed: " + e.getMessage());
+            StatusReporter.warn("Spring Security reload check failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
         return false;
     }
@@ -151,7 +151,7 @@ public class SpringSecurityReloader {
             // is a stale ruleset, not an open door. Say exactly that.
             StatusReporter.warn("Security filter chain rebuild failed ("
                     + t.getClass().getSimpleName()
-                    + (t.getMessage() == null ? "" : ": " + t.getMessage())
+                    + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? "" : ": " + com.onurkat.reclazz.ui.Failures.describe(t))
                     + "). The previous security rules are still enforced; "
                     + "a restart applies the new ones.");
             com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),

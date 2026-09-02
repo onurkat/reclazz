@@ -204,7 +204,7 @@ public class FileWatcher {
             registerDirectories();
             pollLoop();
         } catch (IOException e) {
-            StatusReporter.error("FileWatcher error: " + e.getMessage());
+            StatusReporter.error("FileWatcher error: " + com.onurkat.reclazz.ui.Failures.describe(e));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -491,7 +491,7 @@ public class FileWatcher {
                 }
             });
         } catch (IOException e) {
-            StatusReporter.warn("Failed to scan new directory " + root + ": " + e.getMessage());
+            StatusReporter.warn("Failed to scan new directory " + root + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 
@@ -541,7 +541,7 @@ public class FileWatcher {
                                     enqueueExistingFiles(changedFile, watchedDir.moduleName,
                                             watchedDir.sourceRoot, pendingEvents);
                                 } catch (IOException e) {
-                                    StatusReporter.error("Failed to watch new directory: " + e.getMessage());
+                                    StatusReporter.error("Failed to watch new directory: " + com.onurkat.reclazz.ui.Failures.describe(e));
                                 }
                             }
                             continue;
@@ -648,7 +648,7 @@ public class FileWatcher {
             try {
                 changeHandler.accept(changeEvent);
             } catch (Exception e) {
-                StatusReporter.error("Error in change handler: " + e.getMessage());
+                StatusReporter.error("Error in change handler: " + com.onurkat.reclazz.ui.Failures.describe(e));
             }
         }
     }
@@ -739,7 +739,7 @@ public class FileWatcher {
             });
         } catch (IOException e) {
             StatusReporter.warn("Pre-populate hash walk failed for " + classRoot
-                    + ": " + e.getMessage());
+                    + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
         return count[0];
     }

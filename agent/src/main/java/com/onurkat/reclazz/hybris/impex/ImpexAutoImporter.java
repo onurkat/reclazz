@@ -170,7 +170,7 @@ public class ImpexAutoImporter {
             StatusReporter.warn("Hybris import classes not available. " +
                     "ImpEx auto-import requires running server.");
         } catch (Exception e) {
-            StatusReporter.error("Failed to import ImpEx " + impexFile.getFileName() + ": " + e.getMessage());
+            StatusReporter.error("Failed to import ImpEx " + impexFile.getFileName() + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
 }
