@@ -611,10 +611,13 @@ editing is a few MB, and Reclazz warns when the pool passes 85% full so that a
 long session ends in a restart you chose rather than an `OutOfMemoryError` you
 did not.
 
-**`synchronized` survives, with one exception.** Both the dispatch and the moved
-body take the monitor, so mutual exclusion holds from startup. A structural
-reload that moves a synchronized method's body to a companion class is the case
-that does not hold, and Reclazz warns by name when it happens.
+**`synchronized` survives.** Both the dispatch and the moved body take the
+monitor, so mutual exclusion holds from startup, and a structural reload keeps
+it: the body copied into the companion is wrapped in the monitor the original
+took, the receiver for an instance method and the class for a static one, and
+released on the way out including the exceptional one. Measured with two
+threads through a method that holds for 300ms, before and after a structural
+reload: 609ms and 615ms, against 305ms when the wrapping was not there.
 
 ## Project Structure
 

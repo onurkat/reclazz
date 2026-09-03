@@ -218,8 +218,17 @@ public class CompanionGenerator implements Opcodes {
                     companionDescriptor, null, exceptions);
 
             // Return a method visitor that rewrites the method body
-            return new CompanionMethodAdapter(mv, originalClass, companionName,
+            MethodVisitor body = new CompanionMethodAdapter(mv, originalClass, companionName,
                     addedFields, diff.getAddedMethods(), isStatic);
+
+            // A synchronized method loses its monitor on the way here: the
+            // companion holds every body as a static method, where the flag
+            // would lock the companion class rather than the object. The body
+            // is wrapped so it takes the monitor the original took.
+            if ((access & ACC_SYNCHRONIZED) != 0) {
+                body = new SynchronizedBodyAdapter(body, isStatic, originalClass);
+            }
+            return body;
         }
     }
 

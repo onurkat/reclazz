@@ -23,6 +23,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   class has this shape, so on SAP Commerce this affected item creation
   generally.
 
+- **A structural reload removed mutual exclusion from `synchronized` methods.**
+  The other half of the same problem, and the one that was reported rather than
+  repaired at the time. A reload copies the body into the companion, which holds
+  every body as a static method, where the flag would take the companion class's
+  monitor rather than the object's. The body is wrapped now in the monitor the
+  original took, the receiver for an instance method and the declaring class for
+  a static one, released on every way out including the exceptional one.
+  Measured with two threads through a method that holds for 300ms, before and
+  after a structural reload: 618ms then 305ms before this, 609ms then 615ms
+  after it.
+
 - **Attaching the agent removed mutual exclusion from `synchronized` methods.**
   The flag was moved to the trampoline on the reading that every call goes
   through it, which is exactly what the call-site rewriting stops being true.
