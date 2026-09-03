@@ -95,14 +95,19 @@ object ReloadNotifications {
      * instead of a reminder.
      */
     fun offerToEnable(project: Project, isHybris: Boolean) {
+        // The title carries the state and the body says what to do with it.
+        // It was the other way round, title "Reclazz" and body "Reclazz is off
+        // for this project", which the IDE renders in the status bar as its
+        // title and body joined: "Reclazz: Reclazz is off for this project."
         val content = if (isHybris) {
-            "SAP Commerce project detected. Reclazz is off for this project."
+            "SAP Commerce project detected. Enable it to hot-reload this project's classes."
         } else {
-            "Reclazz is off for this project."
+            "Enable it to hot-reload this project's classes without restarting."
         }
         NotificationGroupManager.getInstance()
             .getNotificationGroup(GROUP_ID)
-            .createNotification("Reclazz", content, NotificationType.INFORMATION)
+            .createNotification("Reclazz is off for this project", content,
+                NotificationType.INFORMATION)
             .addAction(NotificationAction.createSimpleExpiring("Enable Reclazz") {
                 ReclazzActivation.enable(project)
             })

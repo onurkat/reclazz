@@ -77,18 +77,25 @@ class ReclazzStartup : ProjectActivity {
         // Marketplace review run for its full ten minute budget. The
         // introduction is still one click away, on the notification.
         val appState = ReclazzAppState.getInstance()
+        val projectKey = project.basePath ?: project.name
         if (!appState.state.welcomeShown) {
             // Marked before showing: a crash or a force-quit while the
             // notification is up should not make the user meet this twice.
             appState.state.welcomeShown = true
             ReloadNotifications.welcome(project, isHybris, settings.state.enabled)
+
+            // The welcome already says Reclazz is off and carries the button
+            // that turns it on, so the per-project offer below would be the
+            // same offer again, stacked underneath it. Seen in a sandbox IDE
+            // on a first run: two balloons, one above the other, both saying
+            // Reclazz was off and both with an Enable Reclazz button.
+            offeredProjects.add(projectKey)
         }
 
         if (!settings.state.enabled) {
             // Enablement is per project but the welcome is per installation,
             // so a second project would otherwise be silently inert. Offer
             // it once per project per session — an offer, not a reminder.
-            val projectKey = project.basePath ?: project.name
             if (offeredProjects.add(projectKey)) {
                 ReloadNotifications.offerToEnable(project, isHybris)
             }
