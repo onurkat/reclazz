@@ -101,16 +101,29 @@ tasks.jar {
     // ran last, and the thin one is missing the shaded ASM the
     // agent loads at premain. That fails at runtime, not at build time.
     archiveClassifier.set("thin")
+
+    // And deliberately not an agent manifest. It carried one, which made this
+    // jar look exactly like the thing to attach while being the one thing that
+    // cannot work: the JVM read Premain-Class, ran premain, the agent went
+    // looking for ASM, and the process died in native code after printing the
+    // Reclazz banner, which reads as Reclazz having killed the JVM.
+    //
+    //   [Reclazz] Agent loaded via -javaagent (premain)
+    //   FATAL ERROR in native method: processing of -javaagent failed
+    //
+    // Without the attributes the JVM refuses it in one line naming the reason,
+    // and the jar that does work is the one the agent manifest is on.
     manifest {
-        attributes(
-            "Premain-Class" to "com.onurkat.reclazz.agent.ReclazzAgent",
-            "Agent-Class" to "com.onurkat.reclazz.agent.ReclazzAgent",
-            "Can-Redefine-Classes" to "true",
-            "Can-Retransform-Classes" to "true",
-            "Can-Set-Native-Method-Prefix" to "true",
-            "Implementation-Version" to project.version
-        )
+        attributes("Implementation-Version" to project.version)
     }
+}
+
+// The jar a developer attaches is the point of this module, so the ordinary
+// build produces it. It did not: `./gradlew clean build`, which is what the
+// README says to run, left only the thin jar in build/libs, and the first
+// thing anyone does with a jar called agent-<version> is attach it.
+tasks.named("assemble") {
+    dependsOn(tasks.named("shadowJar"))
 }
 
 tasks.shadowJar {
