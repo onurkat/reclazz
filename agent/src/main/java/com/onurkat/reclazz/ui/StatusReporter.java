@@ -38,17 +38,50 @@ public class StatusReporter {
     private static final List<StatusListener> listeners = new CopyOnWriteArrayList<>();
 
     static {
+        colorsEnabled = colorsAllowed(System.getenv("TERM"),
+                System.getProperty("os.name", ""), System.getenv("NO_COLOR"));
+    }
+
+    /**
+     * Whether to colour the output at all.
+     *
+     * <p>Colour here is a second copy of something the line already says: every
+     * line carries its level as text, INFO, WARN, ERR and the rest, so a reader
+     * who cannot see the colour is not reading a different message. That is
+     * what makes turning it off safe, and there is a settled way to ask.
+     *
+     * <p>NO_COLOR is that way. Its convention is that the variable being
+     * present and not empty is the request, whatever the value, and it is what
+     * somebody sets when the colours are unreadable against their theme, when
+     * they cannot distinguish them, when a screen reader is announcing the
+     * escape sequences, or when the output is being captured by something that
+     * will keep them forever.
+     *
+     * @param term    the TERM variable, or null
+     * @param osName  the os.name property
+     * @param noColor the NO_COLOR variable, or null
+     */
+    static boolean colorsAllowed(String term, String osName, String noColor) {
+        // Asked not to, by the convention that exists for asking.
+        if (noColor != null && !noColor.isEmpty()) return false;
+
         // Disable colors only for explicitly dumb terminals.
         // System.console() is null inside application servers (e.g. Hybris via ant),
         // but stdout may still be a terminal that supports ANSI colors.
-        String term = System.getenv("TERM");
-        if ("dumb".equals(term)) {
-            colorsEnabled = false;
-        }
+        if ("dumb".equals(term)) return false;
+
         // On Windows without TERM set, disable colors (cmd.exe doesn't support ANSI by default)
-        if (term == null && System.getProperty("os.name", "").toLowerCase().contains("win")) {
-            colorsEnabled = false;
-        }
+        return !(term == null && osName != null
+                && osName.toLowerCase(java.util.Locale.ROOT).contains("win"));
+    }
+
+    /** Tests set the decision they are testing; nothing in the agent calls this. */
+    static void setColorsEnabled(boolean enabled) {
+        colorsEnabled = enabled;
+    }
+
+    static boolean colorsEnabled() {
+        return colorsEnabled;
     }
 
     public static void addListener(StatusListener listener) {
