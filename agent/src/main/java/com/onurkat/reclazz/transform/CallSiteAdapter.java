@@ -22,10 +22,19 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
     private final TransformContext context;
     private final String currentClass;
 
+    /** The loader defining the class being transformed, for reading its parents. */
+    private final ClassLoader loader;
+
     public CallSiteAdapter(MethodVisitor mv, TransformContext context, String currentClass) {
+        this(mv, context, currentClass, null);
+    }
+
+    public CallSiteAdapter(MethodVisitor mv, TransformContext context, String currentClass,
+                           ClassLoader loader) {
         super(ASM9, mv);
         this.context = context;
         this.currentClass = currentClass;
+        this.loader = loader;
     }
 
     @Override
@@ -54,12 +63,31 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
             // system is built. The class being transformed right now counts as
             // instrumented: it is about to be, and its own private calls are
             // rewritten in the same pass.
-            boolean safeToRewrite = owner.equals(currentClass)
-                    || (context.isWatched(owner) && !context.isLoadedUninstrumented(owner));
-            if (safeToRewrite && !TransformExclusions.shouldSkipCallTarget(owner)) {
+            String target;
+            if (owner.equals(currentClass)) {
+                target = currentClass;
+            } else {
+                String declaring = SuperCallTarget.declaringClass(loader, owner, name, descriptor);
+                // A chain that cannot be read leaves the older behaviour in
+                // place, which is to trust the owner javac named. Guessing the
+                // other way is not the safe half: refusing to rewrite a call
+                // into a parent that does have the renamed copy sends it
+                // through the parent's trampoline, which dispatches back into
+                // this override, forever.
+                target = declaring != null ? declaring : owner;
+            }
+
+            boolean hasRenamedCopy = (target.equals(currentClass)
+                        || (context.isWatched(target) && !context.isLoadedUninstrumented(target)))
+                    && !TransformExclusions.shouldSkipCallTarget(target);
+
+            if (hasRenamedCopy) {
                 String descHash = descHash(descriptor);
                 String renamedName = "__reclazz$v0$" + name + "$" + descHash;
-                super.visitMethodInsn(opcode, owner, renamedName, descriptor, isInterface);
+                // Against the class that declares it, which is a superclass of
+                // this one and so a legal owner for invokespecial, rather than
+                // against whichever superclass javac happened to name.
+                super.visitMethodInsn(opcode, target, renamedName, descriptor, isInterface);
                 return;
             }
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
