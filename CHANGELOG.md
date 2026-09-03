@@ -4,7 +4,7 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
-## [1.0.30] - 2026-09-03
+## [1.1.0] - 2026-09-03
 
 ### Fixed
 

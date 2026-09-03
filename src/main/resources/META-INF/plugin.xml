@@ -69,6 +69,23 @@
             <li><b>100% local and private</b>: no telemetry, no analytics, no outbound network requests. The one socket it opens is bound to loopback</li>
         </ul>
 
+        <h3>What it does not change about your application</h3>
+        <p>
+            An agent rewrites your classes to make reloading possible, which is a
+            reasonable thing to be nervous about. These are the answers, each of them
+            measured on a running JVM rather than reasoned about, and each of them a bug
+            that was found and fixed rather than a promise made up front.
+        </p>
+        <ul>
+            <li><b>synchronized still excludes.</b> Two threads through a method that holds for 300ms take about 600ms, before a reload and after a structural one that moves the body into the engine's companion class. It also releases when the body throws, which is the half that would otherwise hang rather than fail.</li>
+            <li><b>serialVersionUID is unchanged.</b> The injected members would change the number the JVM computes, so data serialized without the agent would stop being readable with it, and a node running under Reclazz could not exchange objects with one that is not. The original number is computed and written back.</li>
+            <li><b>Reflection sees what it saw.</b> Annotations, generic signatures, throws clauses and parameter names are all still on the method under its own name, which is what Spring reads to decide whether to proxy and what Jackson reads to build a List of the right thing. Everything the agent injects is synthetic, so framework scans skip it.</li>
+            <li><b>Stack traces still name your method and your line.</b> A watched frame costs one extra frame with an internal name; the one you recognise keeps its file and line, so your IDE can still jump from it.</li>
+            <li><b>Your application cannot reach the engine's internals.</b> The lookups the agent holds carry private access to your classes, and only the engine's own classes, named before your application starts, can ask for them.</li>
+            <li><b>If it is wrong about one class, you exclude that class.</b> excludeClasses leaves a package or a class uninstrumented, so a class the engine cannot handle costs you that class rather than the agent. Method body changes still reload there, since that is the JVM's own redefinition.</li>
+            <li><b>It stays small.</b> Measured on a live SAP Commerce server after a full test run: 2.2 MB across all of the agent's own objects, growing with how many classes it has seen rather than with how many times you have reloaded them.</li>
+        </ul>
+
         <h3>How It Works</h3>
         <ol>
             <li>Reclazz asks once whether to turn on. It ships switched off, because enabling it puts an agent into the JVM that runs your code</li>
@@ -90,7 +107,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-        <h3>1.0.30</h3>
+        <h3>1.1.0</h3>
         <ul>
             <li><b>Fixes a NoSuchMethodError on SAP Commerce item creation.</b> A super call into a parent that inherits the method rather than declaring it was rewritten against that parent, which never had the renamed copy. Every hybris item class has that shape, so this affected item creation generally, including ImpEx imports.</li>
             <li><b>synchronized methods keep mutual exclusion.</b> Attaching the agent was removing it, measured at 6.3 seconds without the agent against 3.3 with it for two concurrent calls, with no reload involved.</li>
