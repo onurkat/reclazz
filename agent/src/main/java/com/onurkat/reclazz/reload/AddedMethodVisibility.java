@@ -66,6 +66,37 @@ public final class AddedMethodVisibility {
             "RequestMapping", "GetMapping", "PostMapping",
             "PutMapping", "DeleteMapping", "PatchMapping");
 
+    /**
+     * Methods already named, so the same one is not named again on the next
+     * save.
+     *
+     * <p>The warning is true every time the class reloads, and after the first
+     * time it is not information. Measured over an integration run: the same
+     * two getters on one class were reported fifty-four times, along with four
+     * other methods thirty-six to thirty-eight times each, and every repeated
+     * warning in the whole log was this one. A developer editing a class all
+     * afternoon gets the same sentence on every save, which is how a log stops
+     * being read.
+     */
+    private static final java.util.Set<String> alreadySaid =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /** Beyond this the session has bigger problems than a repeated line. */
+    private static final int MAX_REMEMBERED = 512;
+
+    /**
+     * @return true the first time this method is named, false afterwards
+     */
+    public static boolean sayOnce(String className, String method) {
+        if (alreadySaid.size() >= MAX_REMEMBERED) return true;
+        return alreadySaid.add(className + "." + method);
+    }
+
+    /** Tests need a clean session; nothing in the agent calls this. */
+    static void resetForTests() {
+        alreadySaid.clear();
+    }
+
     private AddedMethodVisibility() {
     }
 

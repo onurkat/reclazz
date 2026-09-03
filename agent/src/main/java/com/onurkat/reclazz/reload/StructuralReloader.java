@@ -1047,6 +1047,15 @@ public class StructuralReloader {
             // developer just wrote does nothing.
             for (AddedMethodVisibility.Unseen unseen
                     : AddedMethodVisibility.check(newBytecode, diff.getNewMethods())) {
+                // True on every reload of the class, and information on the
+                // first one. The ledger still counts each occurrence, so
+                // asking later still knows how long this has been the case.
+                if (!AddedMethodVisibility.sayOnce(className, unseen.method())) {
+                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                            "added method " + unseen.method() + " that only a restart makes "
+                            + "visible to framework scans");
+                    continue;
+                }
                 StatusReporter.warn(className + "." + unseen.method() + " was added, and "
                         + unseen.reason() + ". Calls to it from your own code work; a restart "
                         + "is what puts it where the framework can see it.");
