@@ -21,6 +21,10 @@ import java.lang.reflect.Method;
  */
 public class InterceptorReloader {
 
+    /** Said once: the platform's absence is a fact about the session. */
+    private static final java.util.concurrent.atomic.AtomicBoolean
+            platformMissingReported = new java.util.concurrent.atomic.AtomicBoolean();
+
     /**
      * Reload an interceptor after its class has been hot-swapped.
      *
@@ -81,8 +85,15 @@ public class InterceptorReloader {
             refreshInterceptorMappings(appContext, className);
 
         } catch (ClassNotFoundException e) {
-            StatusReporter.warn("Hybris platform classes not available. " +
-                    "Interceptor reload will take effect after server start.");
+            // The platform is either reachable from here or it is not, for the
+            // whole session, so this is one fact rather than one per reload.
+            // It was said on every interceptor reload: forty-three times in a
+            // single integration run, which is how a true sentence becomes
+            // something nobody reads.
+            if (platformMissingReported.compareAndSet(false, true)) {
+                StatusReporter.warn("Hybris platform classes not available. " +
+                        "Interceptor reload will take effect after server start.");
+            }
         } catch (Exception e) {
             StatusReporter.error("Failed to reload interceptor " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
