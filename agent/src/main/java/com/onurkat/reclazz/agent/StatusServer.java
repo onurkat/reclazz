@@ -238,7 +238,13 @@ public class StatusServer implements StatusReporter.StatusListener {
     private static final String DIAGNOSE = "DIAGNOSE";
     private static final String PENDING = "PENDING";
 
-    private static String escapeJson(String value) {
+    /**
+     * Package-private rather than private: what this returns is the line the
+     * IDE parses, and a DIAGNOSE argument comes back inside it, so the
+     * escaping is the thing that keeps a client from writing a status line of
+     * its own choosing. StatusSocketSurfaceTest is what holds it to that.
+     */
+    static String escapeJson(String value) {
         if (value == null) return "";
         if (value.length() > MAX_MESSAGE_LENGTH) {
             value = value.substring(0, MAX_MESSAGE_LENGTH) + "...(truncated)";
