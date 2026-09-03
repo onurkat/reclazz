@@ -4,6 +4,137 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.0.30] - 2026-09-03
+
+### Fixed
+
+- **A `super` call into a parent that does not declare the method threw
+  `NoSuchMethodError`.** Reported from an SAP Commerce project as an ImpEx
+  import aborting on `GeneratedBadge.__reclazz$v0$createItem$...`. A super call
+  cannot be left alone in an instrumented class, since the parent's method is a
+  trampoline and calling it dispatches back into the override forever, so it is
+  rewritten to the parent's renamed body. javac writes the direct superclass as
+  the owner and lets the JVM resolve upwards, so that owner is frequently not
+  the class that has the method: `GeneratedBadge` inherits `createItem` from the
+  platform's own `Item`. Instrumenting it would not have helped, because a class
+  gets renamed copies only of the methods it declares. The chain is walked now,
+  by reading class files through the defining loader rather than loading them,
+  and the rewrite goes to the class that declares the method. Every hybris item
+  class has this shape, so on SAP Commerce this affected item creation
+  generally.
+
+- **Attaching the agent removed mutual exclusion from `synchronized` methods.**
+  The flag was moved to the trampoline on the reading that every call goes
+  through it, which is exactly what the call-site rewriting stops being true.
+  Measured with no reload at all, two concurrent calls to a synchronized method:
+  6.3 seconds without the agent, 3.3 with it. Both copies carry the flag now,
+  which is safe because a monitor is reentrant.
+
+- **Attaching the agent changed a class's `serialVersionUID`.** The injected
+  members change the number the JVM computes for a class that does not declare
+  one, so anything serialized before the agent could not be read after, and a
+  cluster node running with it could not exchange objects with one running
+  without. The original number is computed from the pre-transform bytes and
+  written into the class.
+
+- **A reload-added field broke serialization and was shared with clones.** The
+  array those fields live in was an ordinary field, so default serialization
+  walked into it and threw `NotSerializableException` naming a class the
+  developer never put there; it is transient now. `Object.clone` copied its
+  reference, so a clone and its original shared one store and a write through
+  either was a write to both; writes copy instead.
+
+- **A clean build ended the watch for the rest of the session.** On Linux the
+  watch is registered against the inode, so deleting the output tree
+  invalidates it permanently; the directory was dropped and never looked at
+  again, and when it was the only watched tree the watcher stopped outright.
+  Directories are remembered and picked up again the moment they exist, with
+  what the build wrote treated as changed. A directory gone for over thirty
+  seconds is reported, since that is no longer a build.
+
+- **The stack frame naming your own method had no line number.** The moved body
+  kept the line table, the dispatch that carries the readable name was given
+  none, so the frame an IDE offers to jump from read `Unknown Source`.
+
+- **`@EventListener` was registered a second time on every reload**, so a
+  reloaded listener fired twice, then three times.
+
+- **A changed `@RequestParam` default did not apply**, because Spring resolves a
+  parameter's name and default once and keys the cache by something a fresh
+  `MethodParameter` equals.
+
+- **A datasource URL change was reported as applied while the pool kept the old
+  one.** The properties objects really were rebound and the pool really did keep
+  the old URL; the only line printed was the one that reads as success. The pool
+  is asked what it is using, and only a real disagreement is reported, which
+  keeps the tuning knobs that *are* applied quiet.
+
+- **`./gradlew clean build` produced only a jar that cannot work.** It left
+  `agent-<version>-thin.jar`, which carried an agent manifest without the shaded
+  bytecode library, so attaching it printed the Reclazz banner and then killed
+  the JVM in native code. The ordinary build produces the real agent jar now,
+  and the thin one no longer claims to be one.
+
+### Security
+
+- **Application code could ask the agent for a watched class's own
+  `MethodHandles.lookup()`.** That value carries private access to the class,
+  and on a classpath application `privateLookupIn` turns one into private access
+  to everything else on the classpath. The holder sits on the bootstrap
+  classloader, so anything able to call a static method could ask: an expression
+  language evaluating a submitted string, a deserialization gadget. None of
+  those can write a class file into a watched directory, which is the boundary
+  the README draws. The engine now names the classes allowed to ask, by
+  identity, before the application starts.
+
+### Changed
+
+- **Save to live is about four times faster on macOS**, 2447ms to 612ms
+  measured end to end at the default settings. The JDK has no native file
+  watching there and polls its watched directories on a two-second cycle, which
+  was 1.9 seconds of that. The files you are actually editing are checked
+  directly on a short cycle, a handful of stat calls rather than a walk of the
+  tree; the first change to any file still waits for the JDK, and where the JDK
+  watches natively none of this is used.
+
+- **Class files up to Java 27 are read** (ASM 9.10.1, up from 9.8 and Java 25).
+  Where the compiler is still newer than the library, that is said once, in
+  Java releases rather than header numbers, with both ways out.
+
+- **Long messages are laid out for a terminal**, broken on words and indented
+  under the first line, with `wrapOutput=always|never|auto` for output that is
+  not a terminal but is being read by someone anyway.
+
+### Added
+
+- **A method you add that a framework was going to find is named.** Added
+  methods live in the companion, which call sites reach and reflection does not,
+  so an added `@Bean` is not a bean, an added `@Scheduled` never runs and an
+  added getter is not serialized. A new `@RequestMapping` is the exception and
+  really does answer. Rather than the reload looking like it worked, Reclazz
+  says which method and what will not happen.
+
+- **An added field with an initialiser names the field.** A field's initialiser
+  is constructor code, so objects that already exist read null, and for a Spring
+  singleton every object is one that already exists. The line was an INFO that
+  named nothing; it is a warning that names the fields, and only for the case
+  that is surprising.
+
+- **Failures are named by type.** `getMessage()` is null for a plain
+  `IllegalStateException`, null for a reflective call that threw with the real
+  cause inside it, and the path with no reason for the file exceptions, which is
+  where `FileWatcher error: null` came from.
+
+- **Everything that says a restart is needed reaches the restart ledger**, so
+  "do I still need to restart?" stops answering as though it were complete.
+
+- **A warning before metaspace runs out.** Redefining a class costs metaspace
+  the JVM never returns: measured at 10.6 KB per redefinition with no agent
+  involved at all, against Reclazz's 8.5 KB per reload, whose companion classes
+  are collected one for one. Where metaspace is capped, and on SAP Commerce it
+  is, the pool is checked after each reload and reported once at 85% and once at
+  95%.
+
 ## [1.0.29] - 2026-09-01
 
 ### Fixed
