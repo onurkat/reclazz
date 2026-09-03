@@ -1159,30 +1159,13 @@ public class StructuralReloader {
 
             boolean isStructural = diff.isStructural();
 
-            // A synchronized method whose body has moved to the companion no
-            // longer takes the receiver's monitor: the companion holds it as a
-            // static method, and a static method's own synchronized flag would
-            // lock the companion class rather than the object. Measured on
-            // Boot 3.3: two concurrent calls to a synchronized method took 6.3
-            // seconds before a structural reload of its class and 3.2 after.
-            //
-            // Said rather than fixed, deliberately. Wrapping a copied body in
-            // monitorenter and monitorexit is the correct repair and it is not
-            // one to get subtly wrong: an unbalanced exit is a VerifyError at
-            // best and a lock held forever at worst. Until that is written and
-            // measured, losing mutual exclusion silently is the part worth
-            // ending.
-            if (isStructural) {
-                java.util.List<String> guarded = synchronizedMethodNames(newBytecode);
-                if (!guarded.isEmpty()) {
-                    StatusReporter.warn("synchronized method(s) " + guarded + " in " + className
-                            + " no longer exclude each other: this save moved their bodies to a "
-                            + "companion, which cannot hold the object's monitor. Whatever they "
-                            + "guard is unguarded until a restart.");
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
-                            "synchronized method(s) " + guarded + " that no longer exclude");
-                }
-            }
+            // A synchronized method whose body moves to the companion used to
+            // stop excluding: the companion holds every body as a static
+            // method, where the flag would take the companion class's monitor
+            // rather than the object's. SynchronizedBodyAdapter wraps the
+            // copied body in the monitor the original took, so there is
+            // nothing to warn about; SynchronizedSurvivesReloadTest measures
+            // the instance case, the static case and the throwing one.
 
             // Jackson builds a class's serializer once per mapper and keeps it,
             // so a change to what that class serialises to reaches the JSON
