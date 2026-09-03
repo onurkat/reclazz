@@ -277,11 +277,16 @@ public class StructuralAnalyzer {
 
         public String getSummary() {
             StringBuilder sb = new StringBuilder();
-            if (!addedMethods.isEmpty()) sb.append("+").append(addedMethods.size()).append(" method(s) ");
-            if (!removedMethods.isEmpty()) sb.append("-").append(removedMethods.size()).append(" method(s) ");
-            if (!addedFields.isEmpty()) sb.append("+").append(addedFields.size()).append(" field(s) ");
-            if (!removedFields.isEmpty()) sb.append("-").append(removedFields.size()).append(" field(s) ");
+            if (!addedMethods.isEmpty()) sb.append("+").append(count(addedMethods.size(), "method"));
+            if (!removedMethods.isEmpty()) sb.append("-").append(count(removedMethods.size(), "method"));
+            if (!addedFields.isEmpty()) sb.append("+").append(count(addedFields.size(), "field"));
+            if (!removedFields.isEmpty()) sb.append("-").append(count(removedFields.size(), "field"));
             return sb.toString().trim();
+        }
+
+        /** "1 method " or "2 methods ", trailing space, trimmed by the caller. */
+        private static String count(int n, String noun) {
+            return com.onurkat.reclazz.ui.Plural.of(n, noun) + " ";
         }
     }
 }

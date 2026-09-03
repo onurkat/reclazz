@@ -104,7 +104,9 @@ public final class ConstantChangeWarning {
             // looking for even without knowing which of them moved.
             if (!loadedInJvm) {
                 names.addAll(now.keySet());
-                StatusReporter.warn(className + " declares compile-time constant(s) "
+                StatusReporter.warn(className + " declares "
+                        + com.onurkat.reclazz.ui.Plural.word(names.size(),
+                                "compile-time constant ", "compile-time constants ")
                         + names + " and the JVM has never loaded it, which is what happens "
                         + "when every use of them was inlined. There is nothing to compare "
                         + "this save against, so rather than guess which of them moved, "

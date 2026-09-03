@@ -143,7 +143,9 @@ public class InterceptorReloader {
             }
 
             if (refreshed > 0) {
-                StatusReporter.info("Refreshed " + refreshed + " InterceptorMapping bean(s) for " + interceptorClassName);
+                StatusReporter.info("Refreshed "
+                        + com.onurkat.reclazz.ui.Plural.of(refreshed, "InterceptorMapping bean")
+                        + " for " + interceptorClassName);
             }
 
         } catch (ClassNotFoundException e) {

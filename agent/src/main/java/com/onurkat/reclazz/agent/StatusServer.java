@@ -354,7 +354,8 @@ public class StatusServer implements StatusReporter.StatusListener {
                 long n = dropped.incrementAndGet();
                 if (n == 1 || n % 1000 == 0) {
                     StatusReporter.warn("Status client is not keeping up — dropped "
-                            + n + " event(s). Reload is unaffected.");
+                            + com.onurkat.reclazz.ui.Plural.of(n, "event")
+                            + ". Reload is unaffected.");
                 }
             }
             return true;

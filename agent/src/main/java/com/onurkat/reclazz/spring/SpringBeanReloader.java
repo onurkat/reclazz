@@ -105,8 +105,8 @@ public class SpringBeanReloader {
         if (!replacements.isEmpty()) {
             int healed = healStaleReferences(contexts, replacements);
             if (healed > 0) {
-                StatusReporter.info("Re-pointed " + healed +
-                        " stale reference(s) to refreshed bean instance(s)");
+                StatusReporter.info("Re-pointed " + com.onurkat.reclazz.ui.Plural.of(healed, "stale reference")
+                        + " to refreshed bean instances");
             }
         }
     }

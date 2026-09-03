@@ -42,7 +42,7 @@ class ReloadLogPanel(private val project: Project) : Disposable {
         Disposer.register(this, consoleView)
 
         if (manager.isConnected) {
-            consoleView.print("[Reclazz] Agent connected (${manager.reloadCount} reloads)\n", ConsoleViewContentType.SYSTEM_OUTPUT)
+            consoleView.print("[Reclazz] Agent connected (" + plural(manager.reloadCount, "reload") + ")\n", ConsoleViewContentType.SYSTEM_OUTPUT)
         } else {
             consoleView.print("[Reclazz] Waiting for agent connection...\n", ConsoleViewContentType.SYSTEM_OUTPUT)
         }

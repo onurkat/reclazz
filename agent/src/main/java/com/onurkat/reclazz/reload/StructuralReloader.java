@@ -14,6 +14,7 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.transform.CallSiteAdapter;
 import com.onurkat.reclazz.transform.TransformContext;
 
+import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.invoke.MethodHandle;
@@ -470,17 +471,21 @@ public class StructuralReloader {
             }
         }
         if (!failing.isEmpty()) {
-            StatusReporter.warn("Removed method(s) detected in " + className + ": " + failing
+            StatusReporter.warn(Plural.word(failing.size(), "A removed method", "Removed methods")
+                    + " detected in " + className + ": " + failing
                     + ". The previous implementation could not be kept for "
                     + (failing.size() == 1 ? "it" : "them") + ", so an existing caller "
                     + "meets an UnsupportedOperationException naming the method. Restore "
                     + "the method or restart.");
             com.onurkat.reclazz.agent.RestartLedger.note(className,
-                    "removed method(s) " + failing + " whose existing callers now throw");
+                    Plural.word(failing.size(), "removed method ", "removed methods ")
+                            + failing + " whose existing callers now throw");
         }
         if (!keeping.isEmpty()) {
-            StatusReporter.warn("Removed method(s) detected in " + className + ": " + keeping
-                    + ". They are hidden from reflection now, so scans stop acting on "
+            StatusReporter.warn(Plural.word(keeping.size(), "A removed method", "Removed methods")
+                    + " detected in " + className + ": " + keeping
+                    + Plural.word(keeping.size(), ". It is", ". They are")
+                    + " hidden from reflection now, so scans stop acting on "
                     + (keeping.size() == 1 ? "it" : "them")
                     + "; code that already holds " + (keeping.size() == 1 ? "it" : "them")
                     + " keeps the previous implementation until restart.");
@@ -680,7 +685,7 @@ public class StructuralReloader {
                 // The initialiser threw where <clinit> would have thrown at
                 // startup. The class is otherwise reloaded, so this is a
                 // warning about one field rather than a failed reload.
-                StatusReporter.warn("Initialiser for added static field(s) in " + className
+                StatusReporter.warn("Initialiser for an added static field in " + className
                         + " threw " + t.getClass().getSimpleName()
                         + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? "" : ": " + com.onurkat.reclazz.ui.Failures.describe(t))
                         + ". Those fields read as null/0.");
@@ -690,7 +695,8 @@ public class StructuralReloader {
         }
 
         if (!done.isEmpty()) {
-            StatusReporter.info("Initialised added static field(s): " + String.join(", ", done));
+            StatusReporter.info(Plural.word(done.size(), "Initialised added static field: ",
+                    "Initialised added static fields: ") + String.join(", ", done));
         }
 
         java.util.List<String> refused = new java.util.ArrayList<>();
@@ -700,10 +706,12 @@ public class StructuralReloader {
             refused.add(key.substring(0, key.indexOf(':')) + " (" + entry.getValue() + ")");
         }
         if (!refused.isEmpty()) {
-            StatusReporter.warn("Added static field(s) read as null/0 until restart: "
+            StatusReporter.warn(Plural.word(refused.size(), "Added static field reads",
+                    "Added static fields read") + " as null/0 until restart: "
                     + String.join(", ", refused));
             com.onurkat.reclazz.agent.RestartLedger.note(className,
-                    "added static field(s) " + refused + " that read as null/0");
+                    Plural.word(refused.size(), "an added static field ", "added static fields ")
+                            + refused + " that read as null/0");
         }
     }
 
@@ -1088,11 +1096,15 @@ public class StructuralReloader {
                 com.onurkat.reclazz.transform.ReflectionRootFilter
                         .hideRemovedMembersOn(targetClass, removedFieldNames, removedMethodNames);
                 if (!removedFieldNames.isEmpty() || !removedMethodNames.isEmpty()) {
-                    StatusReporter.info("Removed member(s) hidden from reflection: "
+                    int hidden = removedFieldNames.size() + removedMethodNames.size();
+                    StatusReporter.info(Plural.word(hidden, "Removed member", "Removed members")
+                            + " hidden from reflection: "
                             + java.util.stream.Stream.concat(
                                     removedFieldNames.stream(), removedMethodNames.stream())
                                     .collect(java.util.stream.Collectors.joining(", "))
-                            + ". Scans no longer see them; old code holding them still runs.");
+                            + Plural.word(hidden,
+                                    ". Scans no longer see it; old code holding it still runs.",
+                                    ". Scans no longer see them; old code holding them still runs."));
                 }
             }
 
@@ -1167,6 +1179,7 @@ public class StructuralReloader {
                     diff.getNewAnnotations()));
 
             boolean isStructural = diff.isStructural();
+            String shape = null;
 
             // A synchronized method whose body moves to the companion used to
             // stop excluding: the companion holds every body as a static
@@ -1206,15 +1219,26 @@ public class StructuralReloader {
                 // only for classes that are beans and a request body is not.
                 int constraints = com.onurkat.reclazz.spring.SpringValidatorReloader.flush();
 
-                if (config.isVerbose()) {
-                    StatusReporter.info("Framework caches flushed: " + mappers
-                            + " Jackson mapper(s), " + constraints + " constraint cache(s)");
+                // Only when something was actually dropped. Under verbose this
+                // printed "Framework caches flushed: 0 Jackson mapper(s), 0
+                // constraint cache(s)" on every save of a class no framework
+                // had ever cached, which is the sentence directly above saying
+                // it says nothing when it runs, and then saying it anyway.
+                if (config.isVerbose() && (mappers > 0 || constraints > 0)) {
+                    StatusReporter.info("Framework caches flushed: "
+                            + Plural.of(mappers, "Jackson mapper") + ", "
+                            + Plural.of(constraints, "constraint cache"));
                 }
             }
 
             if (isStructural) {
-                StatusReporter.info("Structural reload: " + className +
-                        " (v" + version + ", " + diff.getSummary() + ")");
+                // The shape of the change travels with the result so the single
+                // STRC line can carry it. Printing it here as well produced two
+                // adjacent lines opening with the same four words, one with the
+                // shape and one with the timing, for one event: watched live,
+                // "Structural reload: app.Greeter (v1, +1 method)" and
+                // "Structural reload: app.Greeter (29ms)" in the same second.
+                shape = "v" + version + ", " + diff.getSummary();
                 // Invalidate Hibernate L2 cache for structurally changed classes (Hybris only)
                 if (isHybris && hibernateInvalidator != null) {
                     try {
@@ -1272,7 +1296,7 @@ public class StructuralReloader {
                         redefinePayload = kept.payload();
                         removedBodiesKept = true;
                     } else if (config.isVerbose()) {
-                        StatusReporter.info("Removed method(s) in " + className
+                        StatusReporter.info("Removed methods in " + className
                                 + " could not keep their previous implementation ("
                                 + kept.refusal() + ").");
                     }
@@ -1313,9 +1337,10 @@ public class StructuralReloader {
                         addedFieldNames.add(key.substring(0, key.indexOf(':')));
                     }
                     if (!addedFieldNames.isEmpty()) {
-                        StatusReporter.warn("Added field(s) " + addedFieldNames + " in " + className
+                        StatusReporter.warn(Plural.word(addedFieldNames.size(), "Added field ", "Added fields ")
+                                + addedFieldNames + " in " + className
                                 + " read their default even on objects created after this reload: "
-                                + "the class carries member(s) added since startup, so the JVM "
+                                + "the class carries members added since startup, so the JVM "
                                 + "refuses the redefinition that would install the new "
                                 + "constructor. Everything else in this save reloaded. A restart "
                                 + "runs the initialiser.");
@@ -1326,7 +1351,7 @@ public class StructuralReloader {
                     }
                     com.onurkat.reclazz.agent.RestartLedger.note(className,
                             "a constructor the JVM would not redefine, because the class "
-                                    + "carries member(s) added since startup");
+                                    + "carries members added since startup");
                 } catch (Throwable t) {
                     StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + t);
                 }
@@ -1364,6 +1389,7 @@ public class StructuralReloader {
             result.setMethodsAdded(!diff.getAddedMethods().isEmpty());
             result.setAddedMethodSigs(diff.getAddedMethods());
             result.setNewBytecode(newBytecode);
+            result.setShape(shape);
             if (diff.isAnnotationOnly()) {
                 StatusReporter.info("Annotation change on " + className
                         + " — re-scanning the frameworks that read it");

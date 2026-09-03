@@ -97,13 +97,18 @@ public final class SpringPropertyRebinder {
         new SpringDataSourceCheck(applicationContexts).report(changed);
 
         if (valueFields > 0) {
-            StatusReporter.success("Re-injected " + valueFields
-                    + " @Value field(s) reading the changed propert"
+            StatusReporter.success("Re-injected "
+                    + com.onurkat.reclazz.ui.Plural.of(valueFields, "@Value field")
+                    + " reading the changed propert"
                     + (changed.size() == 1 ? "y" : "ies"));
         }
         if (!rebuilt.isEmpty()) {
-            StatusReporter.success("Rebuilt " + rebuilt.size() + " bean(s) that take a changed "
-                    + "@Value through their constructor: " + rebuilt);
+            StatusReporter.success("Rebuilt "
+                    + com.onurkat.reclazz.ui.Plural.of(rebuilt.size(), "bean")
+                    + com.onurkat.reclazz.ui.Plural.word(rebuilt.size(),
+                            " that takes a changed @Value through its constructor: ",
+                            " that take a changed @Value through their constructor: ")
+                    + rebuilt);
         }
         return new Applied(rebound, valueFields, rebuilt);
     }
@@ -520,7 +525,7 @@ public final class SpringPropertyRebinder {
                         java.util.List.of(context), replaced);
                 StatusReporter.success(beanName + " rebuilt through its constructor with the "
                         + "new values" + (healed > 0
-                        ? "; re-pointed " + healed + " reference(s) to it" : ""));
+                        ? "; re-pointed " + com.onurkat.reclazz.ui.Plural.of(healed, "reference") + " to it" : ""));
             }
             return true;
         } catch (Throwable t) {

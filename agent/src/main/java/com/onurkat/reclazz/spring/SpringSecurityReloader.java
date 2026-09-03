@@ -199,8 +199,9 @@ public class SpringSecurityReloader {
         swapped += swapIntoLiveProxies(appContext, current);
 
         if (swapped > 0) {
-            StatusReporter.success("Security filter chain rebuilt: " + swapped
-                    + " chain(s) now enforce the reloaded configuration.");
+            StatusReporter.success("Security filter chain rebuilt: " + com.onurkat.reclazz.ui.Plural.of(swapped, "chain")
+                    + com.onurkat.reclazz.ui.Plural.word(swapped, " now enforces", " now enforce")
+                    + " the reloaded configuration.");
             // Method security is not part of the chain and is not rebuilt
             // here. It is refreshed for every reloaded class, before this
             // runs, by refreshMethodSecurity; saying anything about it here
@@ -455,9 +456,11 @@ public class SpringSecurityReloader {
             if (staleIndexes.size() != missing.size()) {
                 // Guessing which rules go where is the one thing a security
                 // swap must never do; the mismatch is reported, not resolved.
-                StatusReporter.warn("Filter chain swap declined: " + staleIndexes.size()
-                        + " stale chain(s) in the live proxy but " + missing.size()
-                        + " rebuilt bean(s) to place. The old rules keep serving.");
+                StatusReporter.warn("Filter chain swap declined: "
+                        + com.onurkat.reclazz.ui.Plural.of(staleIndexes.size(), "stale chain")
+                        + " in the live proxy but "
+                        + com.onurkat.reclazz.ui.Plural.of(missing.size(), "rebuilt bean")
+                        + " to place. The old rules keep serving.");
                 return 0;
             }
 

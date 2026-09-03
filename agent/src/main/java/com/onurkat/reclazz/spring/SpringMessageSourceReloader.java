@@ -143,8 +143,9 @@ public class SpringMessageSourceReloader {
     /** The line to print, given what {@link #reload()} reached. */
     public static void report(String fileName, int reset) {
         if (reset > 0) {
-            StatusReporter.success(fileName + " re-read: " + reset + " message source(s) "
-                    + "dropped their cache, so the next lookup reads the file.");
+            StatusReporter.success(fileName + " re-read: " + com.onurkat.reclazz.ui.Plural.of(reset, "message source")
+                    + com.onurkat.reclazz.ui.Plural.word(reset, " dropped its cache", " dropped their cache")
+                    + ", so the next lookup reads the file.");
             return;
         }
         StatusReporter.warn(fileName + " changed, but no message source here exposes a "

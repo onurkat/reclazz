@@ -135,7 +135,29 @@ public class StatusReporter {
     }
 
     public static void structuralReload(String className, long timeMs) {
-        String msg = String.format("Structural reload: %s (%dms)", className, timeMs);
+        structuralReload(className, timeMs, null);
+    }
+
+    /**
+     * @param shape what changed, as "v1, +1 method", or null when the caller
+     *              does not have it. It goes in the same parentheses as the
+     *              timing: one event that used to print two lines opening with
+     *              the same four words now prints one that says both.
+     */
+    public static void structuralReload(String className, long timeMs, String shape) {
+        // A negative timing means the caller did not measure this one, which
+        // is the batch path reloading a whole directory under one clock. It
+        // used to print "(-1ms)", which reads as a broken measurement rather
+        // than an absent one. Reloaded() has always guarded for it; this did not.
+        StringBuilder detail = new StringBuilder();
+        if (shape != null && !shape.isEmpty()) detail.append(shape);
+        if (timeMs >= 0) {
+            if (detail.length() > 0) detail.append(", ");
+            detail.append(timeMs).append("ms");
+        }
+        String msg = detail.length() == 0
+                ? String.format("Structural reload: %s", className)
+                : String.format("Structural reload: %s (%s)", className, detail);
         log(GREEN + BOLD, "STRC", msg);
         notifyListeners("STRUCTURAL_RELOAD", msg);
     }
