@@ -587,6 +587,18 @@ gets its own copy rather than sharing the original's. After deserialization it
 reads its type default, which is what an object built before that reload reads
 too.
 
+**What the agent itself holds is bounded and does not grow with reloading.**
+Measured on a live SAP Commerce server after a full integration run, with a
+heap histogram: 95,996 objects and 2.2 MB across all of Reclazz's own classes.
+It scales with how many classes were transformed rather than with how many
+times they were reloaded, which was measured the same way, twenty-nine reloads
+apart: every count identical. The largest part is the record of each
+transformed class's method and field signatures, which is what a structural
+reload diffs against. The last-known-good bytecode cache is capped at 8 MB
+deflated and evicts by least-recently-used, and the per-class reflection state
+lives in a `ClassValue`, so it dies with the class rather than pinning its
+classloader.
+
 **Each reload costs metaspace that is never returned.** Around 8.5 KB, measured
 over 60 reloads. This is the JVM's cost rather than Reclazz's: redefining a
 class makes the JVM keep the previous version, so that threads still running
