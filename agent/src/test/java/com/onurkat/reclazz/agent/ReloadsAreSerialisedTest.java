@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.agent;
 
-import org.junit.jupiter.api.Assumptions;
+import com.onurkat.reclazz.AgentSources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -33,8 +33,7 @@ class ReloadsAreSerialisedTest {
 
     @Test
     void theReloadExecutorHasOneThread() throws IOException {
-        Path agent = sourceFile();
-        Assumptions.assumeTrue(agent != null, "agent sources not reachable from the test's cwd");
+        Path agent = AgentSources.root().resolve("com/onurkat/reclazz/agent/ReclazzAgent.java");
 
         String creation = Files.readAllLines(agent).stream()
                 .filter(line -> line.contains("reloadExecutor = Executors."))
@@ -54,12 +53,4 @@ class ReloadsAreSerialisedTest {
      * IntelliJ plugin under the same {@code src/main/java}, and a scan that
      * finds the wrong tree passes without reading anything.
      */
-    private static Path sourceFile() {
-        for (String candidate : new String[]{"src/main/java", "agent/src/main/java",
-                "../agent/src/main/java"}) {
-            Path path = Path.of(candidate).resolve("com/onurkat/reclazz/agent/ReclazzAgent.java");
-            if (Files.isRegularFile(path)) return path;
-        }
-        return null;
-    }
 }

@@ -176,7 +176,7 @@ public final class ProtectedCallResolver {
         MethodHandles.Lookup captured = LookupCapture.get(target);
         if (captured != null) return captured;
         try {
-            Field lookupField = target.getDeclaredField("__reclazz$lookup");
+            Field lookupField = target.getDeclaredField(InjectedNames.LOOKUP_FIELD);
             lookupField.setAccessible(true);
             return (MethodHandles.Lookup) lookupField.get(null);
         } catch (Throwable t) {

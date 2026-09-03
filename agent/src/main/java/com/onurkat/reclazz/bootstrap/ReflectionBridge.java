@@ -60,7 +60,7 @@ public final class ReflectionBridge {
      * into JDK internals, and building the context failed. Every OCC
      * response became an empty 400 for as long as the agent was attached.
      */
-    private static final String INTERNAL_PREFIX = "__reclazz$";
+    private static final String INTERNAL_PREFIX = InjectedNames.PREFIX;
 
     static boolean isInternal(String memberName) {
         return memberName.startsWith(INTERNAL_PREFIX);

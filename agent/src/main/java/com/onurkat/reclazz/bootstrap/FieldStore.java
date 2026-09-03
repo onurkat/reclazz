@@ -38,7 +38,7 @@ public final class FieldStore {
         @Override
         protected Object computeValue(Class<?> type) {
             try {
-                java.lang.reflect.Field field = type.getDeclaredField("__reclazz$ext");
+                java.lang.reflect.Field field = type.getDeclaredField(InjectedNames.EXT_FIELD);
                 field.setAccessible(true);
                 return field;
             } catch (NoSuchFieldException notYet) {

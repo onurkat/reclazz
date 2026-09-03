@@ -28,12 +28,12 @@ public final class ReclazzBootstrap {
     public static CallSite bootstrapMethod(MethodHandles.Lookup lookup, String name,
                                             MethodType type, String targetClass,
                                             String descHash) throws Throwable {
-        String siteKey = name + ":" + descHash;
+        String siteKey = InjectedNames.siteKey(name, descHash);
         Class<?> ownerClass = null;
         MethodHandles.Lookup ownerLookup = null;
 
         // Initial resolution: find the renamed original method __reclazz$v0$<name>$<hash>
-        String renamedMethod = "__reclazz$v0$" + name + "$" + descHash;
+        String renamedMethod = InjectedNames.renamed(name, descHash);
 
         MethodHandle initialTarget;
         MethodHandle publicCall = null;
@@ -197,11 +197,11 @@ public final class ReclazzBootstrap {
     public static CallSite bootstrapStaticMethod(MethodHandles.Lookup lookup, String name,
                                                    MethodType type, String targetClass,
                                                    String descHash) throws Throwable {
-        String siteKey = "static:" + name + ":" + descHash;
+        String siteKey = InjectedNames.staticSiteKey(name, descHash);
         Class<?> ownerClass = null;
         MethodHandles.Lookup ownerLookup = null;
 
-        String renamedMethod = "__reclazz$v0$" + name + "$" + descHash;
+        String renamedMethod = InjectedNames.renamed(name, descHash);
 
         MethodHandle initialTarget;
         try {

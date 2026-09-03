@@ -54,7 +54,7 @@ public final class TransformExclusions {
      */
     public static boolean shouldSkipField(String owner, String name, String desc, int access) {
         // Our injected fields
-        if (name.startsWith("__reclazz$")) return true;
+        if (com.onurkat.reclazz.bootstrap.InjectedNames.isInjected(name)) return true;
 
         // Inner class outer reference
         if (name.startsWith("this$")) return true;

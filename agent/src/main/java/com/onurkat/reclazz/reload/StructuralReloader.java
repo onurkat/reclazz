@@ -461,8 +461,9 @@ public class StructuralReloader {
         for (var m : diff.getRemovedMethodSigs()) {
             if ("<init>".equals(m.name()) || "<clinit>".equals(m.name())) continue;
             // ACC_STATIC and Modifier.STATIC share the value 0x0008.
-            String siteKey = ((m.access() & Modifier.STATIC) != 0 ? "static:" : "")
-                    + m.name() + ":" + CallSiteAdapter.descHash(m.descriptor());
+            String siteKey = com.onurkat.reclazz.bootstrap.InjectedNames.siteKey(
+                    m.name(), CallSiteAdapter.descHash(m.descriptor()),
+                    (m.access() & Modifier.STATIC) != 0);
             boolean companionServes = DispatchTable.hasCompanionTarget(targetClass, siteKey);
             if (payloadApplied && !companionServes) {
                 failing.add(m.name());
@@ -947,7 +948,7 @@ public class StructuralReloader {
             if (classLookup == null) {
                 java.lang.reflect.Field lookupField;
                 try {
-                    lookupField = targetClass.getDeclaredField("__reclazz$lookup");
+                    lookupField = targetClass.getDeclaredField(com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD);
                 } catch (NoSuchFieldException e) {
                     // The loaded class carries no reclazz infrastructure: it was
                     // loaded BEFORE the agent attached, so the load-time transform
@@ -1586,8 +1587,8 @@ public class StructuralReloader {
         // Try to find in the newTargets map by exact site key match.
         // Site keys use format "name:descHash" (instance) or "static:name:descHash" (static).
         String descHash = CallSiteAdapter.descHash(descriptor);
-        String instanceKey = methodName + ":" + descHash;
-        String staticKey = "static:" + methodName + ":" + descHash;
+        String instanceKey = com.onurkat.reclazz.bootstrap.InjectedNames.siteKey(methodName, descHash);
+        String staticKey = com.onurkat.reclazz.bootstrap.InjectedNames.staticSiteKey(methodName, descHash);
         MethodHandle target = newTargets.get(instanceKey);
         if (target != null) return target;
         target = newTargets.get(staticKey);

@@ -72,10 +72,10 @@ import java.util.Set;
  */
 public final class ReflectionRootFilter {
 
-    private static final String INTERNAL_PREFIX = "__reclazz$";
-    private static final String RENAMED_PREFIX = "__reclazz$v0$";
-    private static final String EXT_FIELD = "__reclazz$ext";
-    private static final String LOOKUP_FIELD = "__reclazz$lookup";
+    private static final String INTERNAL_PREFIX = com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX;
+    private static final String RENAMED_PREFIX = com.onurkat.reclazz.bootstrap.InjectedNames.RENAMED_PREFIX;
+    private static final String EXT_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.EXT_FIELD;
+    private static final String LOOKUP_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD;
 
     /** The instance the agent installed, or null before {@link #install}. */
     private static volatile ReflectionRootFilter installed;

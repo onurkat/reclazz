@@ -120,6 +120,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Where the compiler is still newer than the library, that is said once, in
   Java releases rather than header numbers, with both ways out.
 
+- **The names Reclazz writes into your classes have one owner.** A method
+  whose body moves out is renamed to `__reclazz$v0$<name>$<descHash>`, and a
+  call site finds its implementation by `<name>:<descHash>`. The transformer
+  writes those names and the bootstrap classes read them back at dispatch time,
+  from a different classloader, with nothing checking that the two agree; they
+  were spelled out by hand in five places for the renamed method and six for
+  the site key, with the prefix a string literal in nineteen files. They come
+  from `InjectedNames` now, and a test fails on a twentieth. The prefix is what
+  keeps an injected member out of every framework that walks declared members,
+  which is not a style question: a member without it once fed
+  `MethodHandles$Lookup` to JAXB and turned every OCC response into an empty
+  400.
+
 - **Counts read as English.** The status bar said "Reclazz: 1 reloads" after
   the first reload of a session, and the tool window said
   `Structural reload: app.Greeter (v1, +1 method(s))` about the same event in

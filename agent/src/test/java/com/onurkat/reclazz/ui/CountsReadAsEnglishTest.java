@@ -4,15 +4,13 @@
  */
 package com.onurkat.reclazz.ui;
 
+import com.onurkat.reclazz.AgentSources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -56,18 +54,16 @@ class CountsReadAsEnglishTest {
      */
     @Test
     void noMessageStillSpellsAPluralWithAParenthesis() throws IOException {
-        Path root = sourceRoot();
+        Path root = AgentSources.root();
         List<String> offenders = new ArrayList<>();
 
-        try (Stream<Path> files = Files.walk(root)) {
-            for (Path file : files.filter(p -> p.toString().endsWith(".java")).toList()) {
-                if (file.getFileName().toString().equals("Plural.java")) continue;
-                List<String> lines = Files.readAllLines(file, StandardCharsets.UTF_8);
-                for (int i = 0; i < lines.size(); i++) {
-                    String line = lines.get(i);
-                    if (!looksLikeALiteralPlural(line)) continue;
-                    offenders.add(root.relativize(file) + ":" + (i + 1) + "  " + line.trim());
-                }
+        for (Path file : AgentSources.javaFiles()) {
+            if (file.getFileName().toString().equals("Plural.java")) continue;
+            List<String> lines = AgentSources.lines(file);
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (!looksLikeALiteralPlural(line)) continue;
+                offenders.add(root.relativize(file) + ":" + (i + 1) + "  " + line.trim());
             }
         }
 
@@ -97,21 +93,4 @@ class CountsReadAsEnglishTest {
         return count;
     }
 
-    /**
-     * Located from this test's own class file rather than from the working
-     * directory, because a root guessed wrong is a walk over nothing and a
-     * guard that passes by finding no files at all.
-     */
-    private static Path sourceRoot() {
-        Path here = Path.of("").toAbsolutePath();
-        for (int depth = 0; depth < 6 && here != null; depth++) {
-            Path candidate = here.resolve("agent/src/main/java");
-            if (Files.isRegularFile(candidate.resolve("com/onurkat/reclazz/ui/Plural.java"))) {
-                return candidate;
-            }
-            here = here.getParent();
-        }
-        throw new IllegalStateException("could not locate agent/src/main/java from "
-                + Path.of("").toAbsolutePath());
-    }
 }

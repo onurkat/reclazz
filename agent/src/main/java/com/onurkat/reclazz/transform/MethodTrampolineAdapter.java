@@ -27,8 +27,8 @@ import java.util.Map;
 public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
     private static final String BOOTSTRAP_CLASS = "com/onurkat/reclazz/bootstrap/ReclazzBootstrap";
-    private static final String EXT_FIELD = "__reclazz$ext";
-    private static final String LOOKUP_FIELD = "__reclazz$lookup";
+    private static final String EXT_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.EXT_FIELD;
+    private static final String LOOKUP_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD;
     private static final int INITIAL_EXT_SIZE = 8;
 
     private final TransformContext context;
@@ -152,7 +152,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         // 2. Record info for generating the trampoline replacement
 
         String descHash = CallSiteAdapter.descHash(descriptor);
-        String renamedName = "__reclazz$v0$" + name + "$" + descHash;
+        String renamedName = com.onurkat.reclazz.bootstrap.InjectedNames.renamed(name, descHash);
 
         // Store info for trampoline generation
         boolean isStatic = (access & ACC_STATIC) != 0;
