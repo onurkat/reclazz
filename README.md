@@ -331,12 +331,18 @@ reach only the values Reclazz itself stores.
 Edit `hybris/config/local.properties`:
 
 ```properties
-tomcat.generaloptions=-javaagent:/path/to/reclazz-agent.jar ${tomcat.generaloptions}
+tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar
 ```
+
+`tomcat.javaoptions` is the property the platform leaves empty for exactly this,
+and it is appended to the options the platform builds for itself. Do not write
+`tomcat.generaloptions=... ${tomcat.generaloptions}`: the platform defines that
+one, so referring to it from `local.properties` fails the build with
+`Property tomcat.generaloptions was circularly defined`.
 
 Reclazz auto-detects the Hybris home directory from `platform.home`, `HYBRIS_BIN_DIR`, or the classpath. Start the server and run `ant build`. Reclazz hot-swaps the compiled classes automatically.
 
-Put it in `local.properties` rather than editing `tomcat/conf/wrapper.conf` by hand: `ant server` regenerates that file from the properties, and a line added directly to it is gone after the next rebuild with no symptom except that saving a file stops doing anything.
+Set it as a property rather than by editing `tomcat/conf/wrapper.conf` directly: `ant server` regenerates that file from the properties, so a line added to it by hand is gone after the next rebuild, with no symptom except that saving a file stops doing anything. The IntelliJ plugin writes the same property for you, into a marked block it manages.
 
 Hybris-specific features:
 - **items.xml and beans.xml regeneration**: Saving a `*-items.xml` or `*-beans.xml`

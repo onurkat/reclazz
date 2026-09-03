@@ -438,6 +438,16 @@ public class ReclazzAgent {
             // Set up file watcher
             FileWatcher watcher = new FileWatcher(platformContext, config);
 
+            // Single-threaded, and that is a correctness requirement rather
+            // than a resource decision. A reload does not only redefine a
+            // class: it clears and refills framework state that is shared
+            // across the whole application, injection metadata, mapping
+            // registries, the validator's constraint caches, the security
+            // metadata. None of that is written to be entered twice at once.
+            // Serialising batches here is what lets every one of those
+            // reloaders be written as though it were the only thing running,
+            // which is how they are all written. A pool here would make them
+            // racy without a line of them changing.
             reloadExecutor = Executors.newSingleThreadExecutor(r -> {
                 Thread t = new Thread(r, "Reclazz-Reloader");
                 t.setDaemon(true);
