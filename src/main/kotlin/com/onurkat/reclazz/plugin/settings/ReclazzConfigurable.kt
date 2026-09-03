@@ -303,7 +303,8 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
     private fun testConnection() {
         val manager = ReloadManager.getInstance(project)
         if (manager.isConnected) {
-            ReloadNotifications.info(project, "Reclazz", "Agent is connected (${manager.reloadCount} reloads)")
+            ReloadNotifications.info(project, "Reclazz",
+                "Agent is connected (" + com.onurkat.reclazz.plugin.ui.plural(manager.reloadCount, "reload") + ")")
         } else {
             ReloadNotifications.info(project, "Reclazz", "Connecting to agent...")
             manager.connectToAgent()

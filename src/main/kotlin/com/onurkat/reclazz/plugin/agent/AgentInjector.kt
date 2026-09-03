@@ -9,6 +9,7 @@ import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.configurations.RunnerSettings
 import com.intellij.openapi.diagnostic.Logger
+import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.JdkDetector
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
@@ -16,6 +17,13 @@ import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 class AgentInjector : RunConfigurationExtension() {
 
     private val log = Logger.getInstance(AgentInjector::class.java)
+
+    /**
+     * Projects already told the jar is missing. Once each: a developer who
+     * runs their application five times has one broken installation, not five
+     * of them.
+     */
+    private val missingJarReported = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
 
     override fun isApplicableFor(configuration: RunConfigurationBase<*>): Boolean {
         return ReclazzSettings.getInstance(configuration.project).state.enabled
@@ -29,8 +37,29 @@ class AgentInjector : RunConfigurationExtension() {
         val project = configuration.project
         val settings = ReclazzSettings.getInstance(project).state
 
-        // Find bundled agent JAR from plugin install directory
-        val agentJar = AgentJarLocator.findAgentJar() ?: return
+        // Find bundled agent JAR from plugin install directory.
+        //
+        // Not finding it used to return here and say nothing, which left the
+        // developer with an application that started normally, a Reclazz tool
+        // window saying "Waiting for agent connection..." for as long as they
+        // cared to wait, and the only evidence in idea.log. The jar goes
+        // missing for ordinary reasons: a partial update, a plugin directory
+        // an antivirus quarantined, an installation copied between machines.
+        // Reclazz's whole argument is that it says what did not happen, and
+        // this was the one place it did not.
+        val agentJar = AgentJarLocator.findAgentJar()
+        if (agentJar == null) {
+            if (missingJarReported.add(project.locationHash)) {
+                ReloadNotifications.warn(
+                    project, "Reclazz could not find its agent",
+                    "The agent jar is not where this plugin was installed, so " +
+                    "${configuration.name} is running without it and nothing will hot-reload. " +
+                    "Reinstalling Reclazz puts the jar back. The path it looked at is in " +
+                    "idea.log, under AgentJarLocator."
+                )
+            }
+            return
+        }
 
         // Detect JDK capabilities
         val jdkInfo = if (settings.autoDetectJdk) JdkDetector.detect(project) else null

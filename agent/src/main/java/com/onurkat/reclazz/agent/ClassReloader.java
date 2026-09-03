@@ -359,6 +359,12 @@ public class ClassReloader {
         private boolean methodsAdded;
         private java.util.Set<String> addedMethodSigs = java.util.Set.of();
         private byte[] newBytecode;
+        /**
+         * What the change was, in the words the one reload line prints: "v1,
+         * +1 method". Carried here so the shape and the timing arrive on the
+         * same line instead of on two consecutive ones saying the same event.
+         */
+        private String shape;
         private boolean springMvcReloaded;
 
         private ReloadResult(boolean success, boolean springBean, boolean interceptor,
@@ -397,6 +403,8 @@ public class ClassReloader {
 
         void setStructuralChangeAdvice(String advice) { this.structuralChangeAdvice = advice; }
         public void setSpringMvcReloaded(boolean reloaded) { this.springMvcReloaded = reloaded; }
+        public void setShape(String shape) { this.shape = shape; }
+        public String getShape() { return shape; }
 
         /**
          * Whether the edit moved an annotation. Set separately from the

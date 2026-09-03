@@ -86,6 +86,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the JVM in native code. The ordinary build produces the real agent jar now,
   and the thin one no longer claims to be one.
 
+- **A run configuration started without the agent said nothing about it.** If
+  the agent jar was not where the plugin was installed, the injector returned
+  quietly: the application ran, the tool window waited for a connection that
+  was never coming, and nothing hot-reloaded, with no line anywhere saying why.
+  It is reported once per project now, with the run configuration named, what
+  it means, how to put the jar back, and where in `idea.log` the path it looked
+  at is written.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own
@@ -111,6 +119,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Class files up to Java 27 are read** (ASM 9.10.1, up from 9.8 and Java 25).
   Where the compiler is still newer than the library, that is said once, in
   Java releases rather than header numbers, with both ways out.
+
+- **Counts read as English.** The status bar said "Reclazz: 1 reloads" after
+  the first reload of a session, and the tool window said
+  `Structural reload: app.Greeter (v1, +1 method(s))` about the same event in
+  the same second. Thirty-eight messages across the agent hedged a plural with
+  a parenthesis; they name the thing now, and the count picks the word. A
+  guard on each side, over the agent's sources and over the plugin's compiled
+  output, fails on a new one.
+
+- **One reload prints one line.** The shape of a structural change and the time
+  it took were reported separately, so a save produced two consecutive lines
+  opening with the same four words, one with `(v1, +1 method)` and one with
+  `(29ms)`. They arrive together. A batch reload, which is timed as a whole and
+  passes -1 for the individual class, no longer prints `(-1ms)`.
+
+- **The verbose framework-cache line is printed only when something was
+  flushed.** It reported "0 Jackson mapper(s), 0 constraint cache(s)" on every
+  save of a class no framework had ever cached.
 
 - **Long messages are laid out for a terminal**, broken on words and indented
   under the first line, with `wrapOutput=always|never|auto` for output that is

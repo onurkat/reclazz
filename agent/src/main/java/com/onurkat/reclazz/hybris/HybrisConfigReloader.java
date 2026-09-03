@@ -160,11 +160,13 @@ public class HybrisConfigReloader {
         }
 
         if (!rejected.isEmpty()) {
-            StatusReporter.warn("The platform did not take " + rejected.size()
-                    + " property change(s): " + rejected
+            StatusReporter.warn("The platform did not take "
+                    + com.onurkat.reclazz.ui.Plural.of(rejected.size(), "property change")
+                    + ": " + rejected
                     + ". They need a restart.");
             com.onurkat.reclazz.agent.RestartLedger.note(propertiesFile.getFileName().toString(),
-                    "property change(s) the platform refused: " + rejected);
+                    com.onurkat.reclazz.ui.Plural.word(rejected.size(), "a property change", "property changes")
+                            + " the platform refused: " + rejected);
         }
 
         return applied;

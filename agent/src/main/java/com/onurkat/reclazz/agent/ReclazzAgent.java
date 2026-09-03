@@ -265,7 +265,9 @@ public class ReclazzAgent {
             try {
                 int found = com.onurkat.reclazz.platform.TomcatContextScanner.scanAndRegister();
                 if (found > 0) {
-                    StatusReporter.info("Discovered " + found + " live Spring web context(s) from running Tomcat");
+                    StatusReporter.info("Discovered "
+                            + com.onurkat.reclazz.ui.Plural.of(found, "live Spring web context")
+                            + " from running Tomcat");
                 }
             } catch (Throwable t) {
                 StatusReporter.warn("Live web-context discovery failed: " + com.onurkat.reclazz.ui.Failures.describe(t));
@@ -688,7 +690,8 @@ public class ReclazzAgent {
 
             if (reloadResult.isSuccess()) {
                 if (reloadResult.isStructuralReload()) {
-                    StatusReporter.structuralReload(displayName, elapsed);
+                    StatusReporter.structuralReload(displayName, elapsed,
+                            reloadResult.getShape());
                 } else {
                     StatusReporter.reload(displayName, elapsed);
                 }
@@ -787,6 +790,11 @@ public class ReclazzAgent {
         int failCount = 0;
         // class name -> was it a structural reload (drives event level below)
         java.util.LinkedHashMap<String, Boolean> swappedClasses = new java.util.LinkedHashMap<>();
+        // What each structural change was, in the words the reload line prints.
+        // The batch path is the one autoCompile uses, so it reports most of the
+        // reloads a hybris developer ever sees; leaving the shape behind here
+        // dropped it from every one of them.
+        java.util.LinkedHashMap<String, String> swappedShapes = new java.util.LinkedHashMap<>();
 
         // Dependent cascade + stale-reference healing sweep every singleton
         // in every context, so run them once for the whole batch.
@@ -840,6 +848,9 @@ public class ReclazzAgent {
             if (reloadResult.isSuccess()) {
                 successCount++;
                 swappedClasses.put(className, reloadResult.isStructuralReload());
+                if (reloadResult.getShape() != null) {
+                    swappedShapes.put(className, reloadResult.getShape());
+                }
 
                 if (reloadResult.isSpringBean()) {
                     Class<?> reloadedClass = findLoadedClass(className);
@@ -881,14 +892,16 @@ public class ReclazzAgent {
         if (compiledClasses.size() == 1 && successCount == 1) {
             var only = swappedClasses.entrySet().iterator().next();
             if (only.getValue()) {
-                StatusReporter.structuralReload(only.getKey(), elapsed);
+                StatusReporter.structuralReload(only.getKey(), elapsed,
+                        swappedShapes.get(only.getKey()));
             } else {
                 StatusReporter.reload(only.getKey(), elapsed);
             }
         } else if (compiledClasses.size() > 1) {
             for (var entry : swappedClasses.entrySet()) {
                 if (entry.getValue()) {
-                    StatusReporter.structuralReload(entry.getKey(), -1);
+                    StatusReporter.structuralReload(entry.getKey(), -1,
+                            swappedShapes.get(entry.getKey()));
                 } else {
                     StatusReporter.reload(entry.getKey(), -1);
                 }
@@ -976,7 +989,8 @@ public class ReclazzAgent {
                 return;
             }
             if (!applied.isEmpty()) {
-                StatusReporter.info("Applied " + applied.size() + " property change(s): "
+                StatusReporter.info("Applied "
+                        + com.onurkat.reclazz.ui.Plural.of(applied.size(), "property change") + ": "
                         + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));
                 StatusReporter.info("Values read per request take effect now; "
                         + "anything consumed once at startup still needs a restart.");
@@ -1006,7 +1020,9 @@ public class ReclazzAgent {
                         platformContext.getAllApplicationContexts()).apply(changed);
         java.util.List<String> rebound = applied.rebound();
         if (!rebound.isEmpty()) {
-            StatusReporter.success("Rebound " + rebound.size() + " @ConfigurationProperties bean(s): "
+            StatusReporter.success("Rebound "
+                    + com.onurkat.reclazz.ui.Plural.of(rebound.size(), "@ConfigurationProperties bean")
+                    + ": "
                     + (rebound.size() > 5 ? rebound.subList(0, 5) + " …" : rebound.toString()));
         }
 
@@ -1074,7 +1090,8 @@ public class ReclazzAgent {
                 new com.onurkat.reclazz.reload.LoggingReloader(instrumentation);
         java.util.List<String> applied = reloader.applyLevels(levels);
         if (!applied.isEmpty()) {
-            StatusReporter.success("Logger level(s) applied: "
+            StatusReporter.success(com.onurkat.reclazz.ui.Plural.word(applied.size(),
+                    "Logger level applied: ", "Logger levels applied: ")
                     + (applied.size() > 5 ? applied.subList(0, 5) + " …" : applied.toString()));
         }
         return applied.size();

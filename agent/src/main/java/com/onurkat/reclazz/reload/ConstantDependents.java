@@ -90,17 +90,23 @@ public final class ConstantDependents {
 
             int count = found.count();
             if (rebuild == null) {
-                StatusReporter.warn(count + " source file(s) read " + named
-                        + " and were compiled with the old value: " + found.describe()
+                StatusReporter.warn(com.onurkat.reclazz.ui.Plural.of(count, "source file")
+                        + com.onurkat.reclazz.ui.Plural.word(count, " reads ", " read ") + named
+                        + com.onurkat.reclazz.ui.Plural.word(count, " and was", " and were")
+                        + " compiled with the old value: " + found.describe()
                         + ". Rebuild them and Reclazz picks the new value up; your build "
                         + "recompiles constant dependents when it is asked to compile.");
                 com.onurkat.reclazz.agent.RestartLedger.note(className,
-                        "a changed constant that " + count + " other source file(s) inlined "
-                                + "and have not been rebuilt");
+                        "a changed constant that "
+                                + com.onurkat.reclazz.ui.Plural.of(count, "other source file")
+                                + " inlined and "
+                                + com.onurkat.reclazz.ui.Plural.word(count, "has", "have")
+                                + " not been rebuilt");
                 return;
             }
 
-            StatusReporter.info("Rebuilding " + count + " source file(s) that read " + named
+            StatusReporter.info("Rebuilding " + com.onurkat.reclazz.ui.Plural.of(count, "source file")
+                    + " that read " + named
                     + ": " + found.describe());
             rebuild.accept(found.byModule);
         } catch (Throwable neverBlocksAReload) {

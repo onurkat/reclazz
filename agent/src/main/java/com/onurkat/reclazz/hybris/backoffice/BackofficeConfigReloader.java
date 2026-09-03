@@ -79,8 +79,8 @@ public final class BackofficeConfigReloader {
         }
 
         if (reset > 0) {
-            StatusReporter.success("Backoffice configuration cache reset (" + reset
-                    + " service(s)) for " + fileName + ": the next view open re-reads "
+            StatusReporter.success("Backoffice configuration cache reset ("
+                    + com.onurkat.reclazz.ui.Plural.of(reset, "service") + ") for " + fileName + ": the next view open re-reads "
                     + "the configuration.");
             StatusReporter.info("If the running backoffice reads this configuration from "
                     + "the packaged module archive rather than the extension folder, the "

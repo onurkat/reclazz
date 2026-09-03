@@ -46,7 +46,8 @@ public class SpringMvcReloader {
             // that silently kept its old value looked identical to a reload
             // that had simply not been asked for.
             StatusReporter.warn("MVC mappings not re-scanned for " + controllerClass.getName()
-                    + ": searched " + contexts + " application context(s) and none of them "
+                    + ": searched " + com.onurkat.reclazz.ui.Plural.of(contexts, "application context")
+                    + " and none of them "
                     + (contexts == 0 ? "were captured" : "held it as a handler"));
         }
         return reloaded;

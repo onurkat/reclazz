@@ -45,7 +45,7 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
         ApplicationManager.getApplication().invokeLater {
             if (disposed) return@invokeLater
             if (manager.isConnected) {
-                displayText = "Reclazz: ${manager.reloadCount} reloads"
+                displayText = "Reclazz: " + plural(manager.reloadCount, "reload")
             }
             statusBar.updateWidget(ID())
         }
@@ -65,7 +65,7 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
     override fun getTooltipText(): String {
         val manager = ReloadManager.getInstance(project)
         return if (manager.isConnected) {
-            "Reclazz: Connected — ${manager.reloadCount} reloads"
+            "Reclazz: Connected — " + plural(manager.reloadCount, "reload")
         } else {
             "Reclazz: Not connected"
         }
@@ -91,8 +91,8 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
         displayText = when (event.level) {
             "CONNECTED" -> "Reclazz: Connected"
             "DISCONNECTED" -> "Reclazz: Idle"
-            "RELOAD", "STRUCTURAL_RELOAD" -> "Reclazz: ${manager.reloadCount} reloads"
-            "OK" -> if (event.message.startsWith("Hot-swapped:")) "Reclazz: ${manager.reloadCount} reloads" else displayText
+            "RELOAD", "STRUCTURAL_RELOAD" -> "Reclazz: " + plural(manager.reloadCount, "reload")
+            "OK" -> if (event.message.startsWith("Hot-swapped:")) "Reclazz: " + plural(manager.reloadCount, "reload") else displayText
             "ERROR" -> "Reclazz: Error"
             else -> displayText
         }

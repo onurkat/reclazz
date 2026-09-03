@@ -248,7 +248,7 @@ public final class ReflectionRootFilter {
                 }
                 if (touched) reflectionData.set(clazz, null);
             } catch (Throwable t) {
-                StatusReporter.warn("Could not unhide restored member(s) of "
+                StatusReporter.warn("Could not unhide restored members of "
                         + clazz.getName() + ": " + t);
             }
         }

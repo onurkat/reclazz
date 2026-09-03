@@ -54,10 +54,12 @@ public final class EnumConstantChange {
 
         public String describe() {
             StringBuilder out = new StringBuilder();
-            if (!added.isEmpty()) out.append("gained value(s) ").append(added);
+            if (!added.isEmpty()) out.append(com.onurkat.reclazz.ui.Plural.word(added.size(),
+                    "gained value ", "gained values ")).append(added);
             if (!removed.isEmpty()) {
                 if (out.length() > 0) out.append(" and ");
-                out.append("lost value(s) ").append(removed);
+                out.append(com.onurkat.reclazz.ui.Plural.word(removed.size(),
+                        "lost value ", "lost values ")).append(removed);
             }
             if (reordered) {
                 if (out.length() > 0) out.append(" and ");
@@ -180,8 +182,8 @@ public final class EnumConstantChange {
         com.onurkat.reclazz.ui.StatusReporter.success("Enum " + className + " dropped "
                 + names + " from the end: values() and valueOf() no longer include "
                 + (names.size() == 1 ? "it" : "them") + ", and no ordinal moved."
-                + (mappers > 0 ? " Jackson enum caches flushed on " + mappers
-                        + " ObjectMapper(s)." : ""));
+                + (mappers > 0 ? " Jackson enum caches flushed on "
+                        + com.onurkat.reclazz.ui.Plural.of(mappers, "ObjectMapper") + "." : ""));
         com.onurkat.reclazz.ui.StatusReporter.info("Objects and collections that already "
                 + "hold the constant keep it, and a database row storing the name now "
                 + "fails valueOf, which is what removal means.");
@@ -198,14 +200,16 @@ public final class EnumConstantChange {
         com.onurkat.reclazz.ui.StatusReporter.success("Enum " + className + " gained "
                 + names + " without a restart: values(), valueOf() and new EnumMap/EnumSet see them"
                 + (switchTables > 0
-                        ? ", and " + switchTables + " switch table(s) grew so existing switches "
-                          + "send the new value to their default: the one written in the source, "
+                        ? ", and " + com.onurkat.reclazz.ui.Plural.of(switchTables, "switch table")
+                          + " grew, so existing switches send the new value to their "
+                          + "default: the one written in the source, "
                           + "or, for a switch the compiler proved exhaustive, javac's own "
                           + "MatchException throw. Pattern switches ending in a type pattern "
                           + "match the new value directly"
                         : "")
                 + (jacksonMappers > 0
-                        ? ". " + jacksonMappers + " Jackson ObjectMapper bean(s) had their enum "
+                        ? ". " + com.onurkat.reclazz.ui.Plural.of(jacksonMappers, "Jackson ObjectMapper bean")
+                          + com.onurkat.reclazz.ui.Plural.word(jacksonMappers, " had its enum ", " had their enum ")
                           + "caches flushed, so JSON serialises and deserialises the new value too"
                         : ""));
 

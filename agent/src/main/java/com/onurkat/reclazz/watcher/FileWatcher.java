@@ -753,7 +753,8 @@ public class FileWatcher {
     void dispatchClassesChangedDuringStartup() {
         if (startupChangedClasses.isEmpty()) return;
 
-        StatusReporter.info(startupChangedClasses.size() + " class file(s) changed while the JVM"
+        StatusReporter.info(com.onurkat.reclazz.ui.Plural.of(startupChangedClasses.size(), "class file")
+                + " changed while the JVM"
                 + " was starting — reloading them so the running code matches disk");
         for (var entry : startupChangedClasses.entrySet()) {
             WatchedDirectory dir = entry.getValue();
