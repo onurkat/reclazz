@@ -202,6 +202,7 @@ public class FileWatcher {
             if (!active) return;
 
             registerDirectories();
+            reportUnwatchable();
             pollLoop();
         } catch (IOException e) {
             StatusReporter.error("FileWatcher error: " + com.onurkat.reclazz.ui.Failures.describe(e));
@@ -298,11 +299,71 @@ public class FileWatcher {
     private void registerRecursive(Path root, String moduleName, String sourceRoot) throws IOException {
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-                registerSingle(dir, moduleName, sourceRoot);
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
+                // One directory that cannot be watched does not end the walk,
+                // and does not end the watcher. The registration that fails in
+                // practice is the operating system's own ceiling on how many
+                // directories one user may watch: on Linux that is
+                // fs.inotify.max_user_watches, it is shared with every other
+                // program watching files, and an IDE indexing a large
+                // repository is a heavy consumer of it. A big enough project
+                // reaches it somewhere in the middle of this walk, and until
+                // now that threw, which was caught where the watcher starts,
+                // which meant the poll loop never ran at all: one line during
+                // start-up and then nothing ever reloading again.
+                //
+                // Watching most of the tree is worth having. What is not worth
+                // having is not being told, which is what the count below is
+                // for.
+                try {
+                    registerSingle(dir, moduleName, sourceRoot);
+                } catch (IOException cannotWatch) {
+                    noteUnwatchable(dir, cannotWatch);
+                }
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    /** Directories the operating system would not let this session watch. */
+    private final java.util.List<Path> unwatchable = new java.util.ArrayList<>();
+
+    private volatile IOException firstRegistrationFailure;
+
+    /**
+     * Record a directory the operating system would not let this session
+     * watch. Package-private, because what happens after one of these is the
+     * part worth testing and the failure itself is the operating system's to
+     * produce.
+     */
+    void noteUnwatchable(Path directory, IOException cause) {
+        unwatchable.add(directory);
+        if (firstRegistrationFailure == null) firstRegistrationFailure = cause;
+    }
+
+    /**
+     * Say what could not be watched, once, with the thing that fixes it.
+     *
+     * <p>Package-private for test access.
+     */
+    void reportUnwatchable() {
+        if (unwatchable.isEmpty()) return;
+
+        Path first = unwatchable.get(0);
+        StatusReporter.warn(unwatchable.size() + " director"
+                + (unwatchable.size() == 1 ? "y" : "ies") + " could not be watched, starting at "
+                + first + ". Edits under "
+                + (unwatchable.size() == 1 ? "it" : "them") + " will not reload; everything else "
+                + "is watched normally. This is almost always the operating system's limit on "
+                + "how many directories one user may watch, which is shared with every other "
+                + "program doing it: on Linux raise fs.inotify.max_user_watches, or narrow what "
+                + "Reclazz watches with watchDirs or excludePatterns. The failure was "
+                + com.onurkat.reclazz.ui.Failures.describe(firstRegistrationFailure) + ".");
+    }
+
+    /** How many directories were refused, for tests and diagnostics. */
+    int unwatchableCount() {
+        return unwatchable.size();
     }
 
     private void registerSingle(Path dir, String moduleName, String sourceRoot) throws IOException {
