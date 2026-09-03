@@ -67,11 +67,26 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
     public MethodTrampolineAdapter(ClassVisitor cv, TransformContext context,
                                    java.util.Set<String> originalAnnotations,
                                    Long originalSerialVersionUid) {
+        this(cv, context, originalAnnotations, originalSerialVersionUid, null);
+    }
+
+    /**
+     * @param loader the loader defining this class, which is how its parents
+     *               are read when a super call has to be resolved to the class
+     *               that actually declares the method
+     */
+    public MethodTrampolineAdapter(ClassVisitor cv, TransformContext context,
+                                   java.util.Set<String> originalAnnotations,
+                                   Long originalSerialVersionUid,
+                                   ClassLoader loader) {
         super(ASM9, cv);
         this.context = context;
         this.originalAnnotations = originalAnnotations;
         this.originalSerialVersionUid = originalSerialVersionUid;
+        this.loader = loader;
     }
+
+    private final ClassLoader loader;
 
     /**
      * The UID this class had before any of this, or null when it declared one
@@ -120,7 +135,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
             // Wrap with adapters for field access + call site rewriting within constructor body
             MethodVisitor fieldAdapter = new FieldAccessAdapter(mv, context, className, declaredFinalFieldKeys);
-            MethodVisitor callAdapter = new CallSiteAdapter(fieldAdapter, context, className);
+            MethodVisitor callAdapter = new CallSiteAdapter(fieldAdapter, context, className, loader);
             return new InitInjector(callAdapter, descriptor);
         }
 
@@ -129,7 +144,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
             // Still apply call site and field access adapters within the body
             MethodVisitor fieldAdapter = new FieldAccessAdapter(mv, context, className, declaredFinalFieldKeys);
-            return new CallSiteAdapter(fieldAdapter, context, className);
+            return new CallSiteAdapter(fieldAdapter, context, className, loader);
         }
 
         // This method should be trampolined:
@@ -176,7 +191,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         MethodVisitor mv = super.visitMethod(renamedAccess, renamedName, descriptor, signature, exceptions);
         // Apply call site and field access adapters within the renamed method body
         MethodVisitor fieldAdapter = new FieldAccessAdapter(mv, context, className, declaredFinalFieldKeys);
-        MethodVisitor callAdapter = new CallSiteAdapter(fieldAdapter, context, className);
+        MethodVisitor callAdapter = new CallSiteAdapter(fieldAdapter, context, className, loader);
         // Capture parameter names + annotations for trampoline replay so frameworks
         // like Spring (@RequestParam, @PathVariable) can find them via reflection.
         return new MetadataRecordingMethodVisitor(callAdapter, info);

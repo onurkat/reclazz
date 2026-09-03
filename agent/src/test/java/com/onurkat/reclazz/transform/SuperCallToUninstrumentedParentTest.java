@@ -6,7 +6,12 @@ package com.onurkat.reclazz.transform;
 
 import com.onurkat.reclazz.agent.AgentConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,6 +45,24 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class SuperCallToUninstrumentedParentTest extends TransformTestBase {
 
+    @TempDir
+    Path onDisk;
+
+    /**
+     * A loader that can read these classes as resources, which is what the
+     * agent has in a running JVM and what resolving a super call to the class
+     * that declares it depends on. Without it the test would exercise the
+     * fallback rather than the rule.
+     */
+    private ClassLoader loaderOver(Map<String, byte[]> classes) throws Exception {
+        for (Map.Entry<String, byte[]> entry : classes.entrySet()) {
+            Path file = onDisk.resolve(entry.getKey() + ".class");
+            Files.write(file, entry.getValue());
+        }
+        return new URLClassLoader(new URL[]{onDisk.toUri().toURL()},
+                TransformTestBase.class.getClassLoader());
+    }
+
     private static final String PARENT = "public class Parent {\n"
             + "    public String describe() { return \"parent\"; }\n"
             + "}";
@@ -69,8 +92,7 @@ class SuperCallToUninstrumentedParentTest extends TransformTestBase {
         ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
 
         byte[] child = transformer.transform(
-                TransformTestBase.class.getClassLoader(), "Child", null, null,
-                compiled.get("Child"));
+                loaderOver(compiled), "Child", null, null, compiled.get("Child"));
         assertNotNull(child, "the child is watched, so it should have been transformed");
 
         Map<String, byte[]> loaded = new LinkedHashMap<>();
@@ -98,8 +120,7 @@ class SuperCallToUninstrumentedParentTest extends TransformTestBase {
                 TransformTestBase.class.getClassLoader(), "Parent", null, null,
                 compiled.get("Parent"));
         byte[] child = transformer.transform(
-                TransformTestBase.class.getClassLoader(), "Child", null, null,
-                compiled.get("Child"));
+                loaderOver(compiled), "Child", null, null, compiled.get("Child"));
         assertNotNull(parent);
         assertNotNull(child);
 
@@ -112,5 +133,58 @@ class SuperCallToUninstrumentedParentTest extends TransformTestBase {
         assertEquals("child of parent", childClass.getMethod("describe").invoke(instance),
                 "a super call into an instrumented parent must reach the parent's body once, "
                         + "not dispatch back into the override");
+    }
+
+    /**
+     * The shape the report actually had, which is not the one above.
+     *
+     * <p>{@code Badge extends GeneratedBadge} and calls {@code super.createItem},
+     * but GeneratedBadge does not declare createItem: it is inherited from the
+     * platform's own Item, several classes up and never instrumented. javac
+     * writes the direct superclass as the owner of the call and lets the JVM
+     * resolve it upwards, so rewriting the name against that owner names a
+     * method that class was never going to have. Instrumenting GeneratedBadge
+     * would not have helped either: a class gets renamed copies of the methods
+     * it declares, and it declares no createItem.
+     */
+    @Test
+    void aSuperCallToAMethodTheParentInheritsRatherThanDeclares() throws Exception {
+        Map<String, byte[]> compiled = compile(
+                new SourceFile("Grand", "public class Grand {\n"
+                        + "    public String describe() { return \"grand\"; }\n"
+                        + "}"),
+                new SourceFile("Middle", "public class Middle extends Grand {\n"
+                        + "}"),
+                new SourceFile("Leaf", "public class Leaf extends Middle {\n"
+                        + "    @Override public String describe() {\n"
+                        + "        return \"leaf of \" + super.describe();\n"
+                        + "    }\n"
+                        + "}"));
+
+        // Grand is the platform: outside the watched tree entirely. Middle and
+        // Leaf are the extension, both watched and both instrumented.
+        TransformContext context = new TransformContext();
+        context.addWatched("Middle");
+        context.addWatched("Leaf");
+        ReclazzTransformer transformer = new ReclazzTransformer(context, AgentConfig.parse(null));
+
+        ClassLoader readable = loaderOver(compiled);
+        byte[] middle = transformer.transform(
+                readable, "Middle", null, null, compiled.get("Middle"));
+        byte[] leaf = transformer.transform(
+                readable, "Leaf", null, null, compiled.get("Leaf"));
+        assertNotNull(middle);
+        assertNotNull(leaf);
+
+        Map<String, byte[]> loaded = new LinkedHashMap<>();
+        loaded.put("Grand", compiled.get("Grand"));
+        loaded.put("Middle", middle);
+        loaded.put("Leaf", leaf);
+        Class<?> leafClass = defineAndLoad(loaded, "Leaf");
+
+        Object instance = leafClass.getDeclaredConstructor().newInstance();
+        assertEquals("leaf of grand", leafClass.getMethod("describe").invoke(instance),
+                "the super call was rewritten against a class that does not declare the "
+                        + "method it names");
     }
 }
