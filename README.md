@@ -181,9 +181,18 @@ Download the latest release from [github.com/onurkat/reclazz/releases](https://g
 ```bash
 git clone https://github.com/onurkat/reclazz.git
 cd reclazz
-./gradlew clean build
-# Install: Settings > Plugins > gear icon > Install Plugin from Disk > build/distributions/reclazz-*.zip
+
+# The agent, to attach with -javaagent. This is the jar every example below uses.
+./gradlew clean build          # -> agent/build/libs/agent-<version>.jar
+
+# The IntelliJ plugin, if you want the IDE integration as well.
+./gradlew buildPlugin          # -> build/distributions/reclazz-<version>.zip
+# Install: Settings > Plugins > gear icon > Install Plugin from Disk
 ```
+
+`build/libs` also holds `agent-<version>-thin.jar`, which is the module's own
+classes without the bytecode library shaded in. It is not the agent and cannot
+be attached as one.
 
 ## Usage
 
