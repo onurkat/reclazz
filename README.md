@@ -417,7 +417,8 @@ If the server is already running without the `-javaagent` flag:
 | `watchDirs` | auto-detect | Semicolon-separated paths to watch for .class changes |
 | `hybrisHome` | auto-detect | Path to `hybris/` directory (Hybris mode) |
 | `watchExtensions` | all | Semicolon-separated extension names (Hybris mode) |
-| `excludePatterns` | (none) | Semicolon-separated glob patterns to ignore |
+| `excludePatterns` | (none) | Semicolon-separated globs matched against **file names**, to keep files from being watched. It does not affect instrumentation, which happens at load time whether a file is ever edited or not |
+| `excludeClasses` | (none) | Semicolon-separated globs matched against **class names**, to leave classes uninstrumented: `excludeClasses=com.acme.jalo.*`. The way out when instrumentation itself is the problem, instead of detaching the agent and losing every other class with it. An excluded class loads exactly as it would without Reclazz, so method body changes still reload, which is the JVM's own redefinition; adding or removing members does not, and says this is why. A `*` matches dots, so naming a package covers everything under it |
 | `autoCompile` | `false` | Internal compilation mode (compile on save) |
 | `autoImpex` | `false` | Auto-import ImpEx files (Hybris mode) |
 | `impexAllowRemove` | `false` | Allow an auto-imported ImpEx to contain `REMOVE` headers |

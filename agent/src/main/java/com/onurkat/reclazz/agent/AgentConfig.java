@@ -27,7 +27,7 @@ public class AgentConfig {
             "hybrisHome", "watchExtensions", "autoCompile", "autoImpex",
             "impexAllowRemove",
             "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
-            "excludePatterns", "startupDelaySec",
+            "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
             "platform", "watchDirs", "jpaRefresh"
     );
@@ -71,6 +71,27 @@ public class AgentConfig {
     private int statusPort = 0;
     private Path portFile;
     private List<String> excludePatterns = new ArrayList<>();
+
+    /**
+     * Classes to leave uninstrumented, by fully qualified name.
+     *
+     * <p>The way out when instrumentation itself is the problem. It happens:
+     * a class the transform cannot handle, a framework whose own bytecode
+     * tricks do not survive being rewritten, a bug in this agent. Until this
+     * existed the only escape was detaching the agent, which is what a
+     * developer who hit one class did, and it costs them every other class too.
+     * `excludePatterns` did not help, because it excludes files from being
+     * watched, and instrumentation is not watching: it happens at load time
+     * whether the file ever changes or not.
+     *
+     * <p>An excluded class loads exactly as it would without Reclazz. Method
+     * body changes still reload, since that is the JVM's own redefinition and
+     * needs nothing from the agent; adding or removing members does not, and
+     * says so with this as the reason.
+     */
+    private List<String> excludeClasses = new ArrayList<>();
+
+    private final List<java.util.regex.Pattern> compiledExcludeClasses = new ArrayList<>();
     private List<Pattern> compiledExcludePatterns = new ArrayList<>();
     private int startupDelaySec = 30;
     private boolean structuralReload = true;
@@ -159,6 +180,16 @@ public class AgentConfig {
             config.portFile = Paths.get(params.get("portFile"));
         }
 
+        if (params.containsKey("excludeClasses")) {
+            for (String pattern : params.get("excludeClasses").split(";")) {
+                String trimmed = pattern.trim();
+                if (!trimmed.isEmpty()) {
+                    config.excludeClasses.add(trimmed);
+                    config.compiledExcludeClasses.add(
+                            java.util.regex.Pattern.compile(globToRegex(trimmed)));
+                }
+            }
+        }
         if (params.containsKey("excludePatterns")) {
             String[] patterns = params.get("excludePatterns").split(";");
             for (String pattern : patterns) {
@@ -242,6 +273,26 @@ public class AgentConfig {
      * Check if a file path matches any exclude pattern.
      * Patterns are matched against the filename using pre-compiled glob patterns.
      */
+    /**
+     * Whether this class should be left alone by the transform.
+     *
+     * @param className either the internal name or the binary name; both are
+     *                  matched against the pattern as a binary name, since
+     *                  that is what a developer writes
+     */
+    public boolean isClassExcluded(String className) {
+        if (className == null || compiledExcludeClasses.isEmpty()) return false;
+        String binary = className.replace('/', '.');
+        for (java.util.regex.Pattern compiled : compiledExcludeClasses) {
+            if (compiled.matcher(binary).matches()) return true;
+        }
+        return false;
+    }
+
+    public List<String> getExcludeClasses() {
+        return Collections.unmodifiableList(excludeClasses);
+    }
+
     public boolean isExcluded(String fileName) {
         for (Pattern compiled : compiledExcludePatterns) {
             if (compiled.matcher(fileName).matches()) {

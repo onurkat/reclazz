@@ -836,6 +836,15 @@ public class StructuralReloader {
             // guessing the common one would be telling this developer
             // something untrue: a restart is exactly what will not help when
             // the class file is simply newer than this build can read.
+            // Nothing for the restart ledger: a restart does not change an
+            // exclusion, editing the setting does, and the message says so.
+            if (com.onurkat.reclazz.transform.ExcludedClasses.wasExcluded(className)) {
+                StatusReporter.warn(className + " is matched by excludeClasses, so it was left "
+                        + "uninstrumented on purpose and members cannot be added to it or "
+                        + "removed from it. Method body changes still reload. Narrow the "
+                        + "pattern if this class was not the one you meant to exclude.");
+                return;
+            }
             if (com.onurkat.reclazz.transform.ClassFileVersionGuard.wasSkipped(className)) {
                 // ledger-exempt: this one names a restart to rule it out. The
                 // ledger answers "what would a restart fix", and the answer
