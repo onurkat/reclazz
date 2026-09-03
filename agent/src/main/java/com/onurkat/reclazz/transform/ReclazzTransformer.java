@@ -81,6 +81,15 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // separately whether it came out with the transform's members.
         context.markSeen(className);
 
+        // Asked for by name: the way out when instrumentation itself is the
+        // problem. Marked as seen first and deliberately, so that a super call
+        // from a class that IS instrumented is not rewritten into this one:
+        // it has no renamed bodies and never will.
+        if (config.isClassExcluded(className)) {
+            ExcludedClasses.note(className);
+            return null;
+        }
+
         try {
             // Before anything reads them: a class file from a compiler newer
             // than the bundled bytecode library cannot be parsed, and the
