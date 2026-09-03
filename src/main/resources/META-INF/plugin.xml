@@ -90,6 +90,21 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.0.30</h3>
+        <ul>
+            <li><b>Fixes a NoSuchMethodError on SAP Commerce item creation.</b> A super call into a parent that inherits the method rather than declaring it was rewritten against that parent, which never had the renamed copy. Every hybris item class has that shape, so this affected item creation generally, including ImpEx imports.</li>
+            <li><b>synchronized methods keep mutual exclusion.</b> Attaching the agent was removing it, measured at 6.3 seconds without the agent against 3.3 with it for two concurrent calls, with no reload involved.</li>
+            <li><b>serialVersionUID is unchanged by the agent</b>, so data serialized without it stays readable with it, and a node running under Reclazz can still exchange objects with one that is not.</li>
+            <li><b>A reload-added field no longer breaks serialization</b> or gets shared between an object and its clone.</li>
+            <li><b>A clean build no longer ends the watch.</b> On Linux, deleting the output tree invalidated the watch permanently and the watcher stopped for the rest of the session.</li>
+            <li><b>Save to live is about four times faster on macOS</b>, 2447ms to 612ms, by checking the files you are editing directly instead of waiting out the JDK's two-second polling cycle.</li>
+            <li><b>Application code can no longer obtain a watched class's private-access lookup</b> from the agent.</li>
+            <li><b>Class files up to Java 27 are read</b>, and a compiler newer than that is explained once rather than failing per class.</li>
+            <li><b>A method you add that a framework was going to find is named</b>, instead of the reload looking like it worked while the added @Bean, @Scheduled or getter does nothing.</li>
+            <li><b>An added field with an initialiser names the field</b> that will read null on objects that already exist.</li>
+            <li>Failures are named by type rather than by whatever getMessage returned, the stack frame carrying your method name has its line number back, @EventListener stops registering twice per reload, a changed @RequestParam default applies, and a datasource URL the pool did not take is no longer reported as applied.</li>
+        </ul>
+
         <h3>1.0.29</h3>
         <ul>
             <li><b>Fixes a 1.0.28 defect:</b> a member you removed and then restored stayed hidden from reflection, so an endpoint a save had just brought back answered 404. If you are on 1.0.28 and have seen that, this is the fix</li>
