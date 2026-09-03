@@ -588,6 +588,21 @@ gets its own copy rather than sharing the original's. After deserialization it
 reads its type default, which is what an object built before that reload reads
 too.
 
+**A call into a watched class costs about 1.4 nanoseconds more.** Measured with
+and without the agent on the same code: a method that only increments a field
+went from 0.3ns to 1.7ns per call, and one that concatenates two strings went
+from 19.4ns to 19.2ns, which is to say the cost disappears into anything that
+does work. It is the same whether the caller is watched, where its call site is
+rewritten, or not, where the call goes through the dispatch. After a structural
+reload, once the JIT has recompiled what the redefinition threw away, calls stay
+in the same few-nanosecond range.
+
+**Startup cost is below this machine's own variation.** Six SAP Commerce boots
+with the agent ranged from 91 to 99 seconds; two warm boots without it were 97.4
+and 97.9. Instrumenting every watched class at load time is real work, and on a
+platform that takes a minute and a half to start it is not something you can see
+from outside.
+
 **What the agent itself holds is bounded and does not grow with reloading.**
 Measured on a live SAP Commerce server after a full integration run, with a
 heap histogram: 95,996 objects and 2.2 MB across all of Reclazz's own classes.
