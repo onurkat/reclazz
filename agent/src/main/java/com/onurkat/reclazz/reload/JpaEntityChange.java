@@ -59,7 +59,7 @@ public final class JpaEntityChange {
             "Ljakarta/persistence/Transient;", "Ljavax/persistence/Transient;");
 
     /** Members Reclazz injects. They are ours, and no mapping should see them. */
-    private static final String INJECTED_PREFIX = "__reclazz$";
+    private static final String INJECTED_PREFIX = com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX;
 
     private JpaEntityChange() {
     }

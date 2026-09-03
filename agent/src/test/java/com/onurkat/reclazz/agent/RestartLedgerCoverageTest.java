@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.agent;
 
-import org.junit.jupiter.api.Assumptions;
+import com.onurkat.reclazz.AgentSources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -65,15 +64,10 @@ class RestartLedgerCoverageTest {
 
     @Test
     void everyWarningThatMentionsARestartIsRemembered() throws IOException {
-        Path root = sourceRoot();
-        Assumptions.assumeTrue(root != null, "agent sources not reachable from the test's cwd");
-
         List<String> unremembered = new ArrayList<>();
-        try (Stream<Path> files = Files.walk(root)) {
-            for (Path file : files.filter(p -> p.toString().endsWith(".java")).toList()) {
-                if (file.getFileName().toString().equals("RestartLedger.java")) continue;
-                unremembered.addAll(scan(file));
-            }
+        for (Path file : AgentSources.javaFiles()) {
+            if (file.getFileName().toString().equals("RestartLedger.java")) continue;
+            unremembered.addAll(scan(file));
         }
 
         assertEquals(List.of(), unremembered,
@@ -109,24 +103,4 @@ class RestartLedgerCoverageTest {
         return found;
     }
 
-    /**
-     * The agent's sources, wherever the test was launched from.
-     *
-     * <p>Checked by finding a file that has to be in them rather than by the
-     * directory existing: the repository root holds the IntelliJ plugin under
-     * the same {@code src/main/java}, and the first version of this test found
-     * that one, scanned a tree with no warnings in it and passed without
-     * looking at anything. A scan that cannot fail is worse than no scan, so
-     * the root is not accepted until it proves what it is.
-     */
-    private static Path sourceRoot() {
-        for (String candidate : new String[]{"src/main/java", "agent/src/main/java",
-                "../agent/src/main/java"}) {
-            Path path = Path.of(candidate);
-            if (Files.isRegularFile(path.resolve("com/onurkat/reclazz/agent/RestartLedger.java"))) {
-                return path;
-            }
-        }
-        return null;
-    }
 }

@@ -74,7 +74,7 @@ public final class PinnedMethodSplice {
             int colon = key.indexOf(':');
             String name = key.substring(0, colon);
             String descriptor = key.substring(colon + 1);
-            String renamed = "__reclazz$v0$" + name + "$" + CallSiteAdapter.descHash(descriptor);
+            String renamed = com.onurkat.reclazz.bootstrap.InjectedNames.renamed(name, CallSiteAdapter.descHash(descriptor));
 
             MethodNode oldBody = find(cached, renamed, descriptor);
             MethodNode oldTrampoline = find(cached, name, descriptor);

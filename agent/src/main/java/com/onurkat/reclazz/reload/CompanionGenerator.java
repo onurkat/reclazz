@@ -197,12 +197,12 @@ public class CompanionGenerator implements Opcodes {
             if (isStatic) {
                 companionMethodName = name;
                 companionDescriptor = descriptor;
-                siteKey = "static:" + name + ":" + descHash;
+                siteKey = com.onurkat.reclazz.bootstrap.InjectedNames.staticSiteKey(name, descHash);
             } else {
                 // Convert instance method to static: prepend receiver type
                 companionMethodName = name;
                 companionDescriptor = "(L" + originalClass + ";" + descriptor.substring(1);
-                siteKey = name + ":" + descHash;
+                siteKey = com.onurkat.reclazz.bootstrap.InjectedNames.siteKey(name, descHash);
             }
 
             // Record the method handle key mapping. Not for lambda bodies:

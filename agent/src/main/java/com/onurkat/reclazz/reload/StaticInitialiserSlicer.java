@@ -59,7 +59,7 @@ import java.util.*;
 public final class StaticInitialiserSlicer implements Opcodes {
 
     /** The synthetic method a companion carries when there is code to run. */
-    public static final String INIT_METHOD = "__reclazz$initStatics";
+    public static final String INIT_METHOD = com.onurkat.reclazz.bootstrap.InjectedNames.INIT_METHOD;
 
     private StaticInitialiserSlicer() {
     }

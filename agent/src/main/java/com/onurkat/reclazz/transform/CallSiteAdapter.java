@@ -83,7 +83,7 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
 
             if (hasRenamedCopy) {
                 String descHash = descHash(descriptor);
-                String renamedName = "__reclazz$v0$" + name + "$" + descHash;
+                String renamedName = com.onurkat.reclazz.bootstrap.InjectedNames.renamed(name, descHash);
                 // Against the class that declares it, which is a superclass of
                 // this one and so a legal owner for invokespecial, rather than
                 // against whichever superclass javac happened to name.

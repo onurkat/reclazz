@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.ui;
 
-import org.junit.jupiter.api.Assumptions;
+import com.onurkat.reclazz.AgentSources;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,15 +39,10 @@ class RawMessagesAreNotReportedTest {
 
     @Test
     void aFailureIsAlwaysDescribedRatherThanQuoted() throws IOException {
-        Path root = sourceRoot();
-        Assumptions.assumeTrue(root != null, "agent sources not reachable from the test's cwd");
-
         List<String> raw = new ArrayList<>();
-        try (Stream<Path> files = Files.walk(root)) {
-            for (Path file : files.filter(p -> p.toString().endsWith(".java")).toList()) {
-                if (file.getFileName().toString().equals("Failures.java")) continue;
-                raw.addAll(scan(file));
-            }
+        for (Path file : AgentSources.javaFiles()) {
+            if (file.getFileName().toString().equals("Failures.java")) continue;
+            raw.addAll(scan(file));
         }
 
         assertEquals(List.of(), raw,
@@ -78,20 +72,4 @@ class RawMessagesAreNotReportedTest {
         return found;
     }
 
-    /**
-     * Identified by a file that has to be in it. The repository root holds the
-     * IntelliJ plugin under the same {@code src/main/java}, and a scan that
-     * finds the wrong tree passes without reading anything, which is worse
-     * than no scan at all.
-     */
-    private static Path sourceRoot() {
-        for (String candidate : new String[]{"src/main/java", "agent/src/main/java",
-                "../agent/src/main/java"}) {
-            Path path = Path.of(candidate);
-            if (Files.isRegularFile(path.resolve("com/onurkat/reclazz/ui/Failures.java"))) {
-                return path;
-            }
-        }
-        return null;
-    }
 }

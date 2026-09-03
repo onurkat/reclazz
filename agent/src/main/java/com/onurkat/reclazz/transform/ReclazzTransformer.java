@@ -178,7 +178,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
                 public org.objectweb.asm.FieldVisitor visitField(
                         int access, String name, String descriptor,
                         String signature, Object value) {
-                    if ("__reclazz$lookup".equals(name)) found[0] = true;
+                    if (com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD.equals(name)) found[0] = true;
                     return null;
                 }
             }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
