@@ -432,6 +432,7 @@ If the server is already running without the `-javaagent` flag:
 | `jpaRefresh` | `false` | Rebuild the persistence unit when a reloaded entity gains or loses a persistent field. Requires JBR/DCEVM and `ddl-auto` at update/create/create-drop; closes persistence contexts open at the moment of the rebuild |
 | `verbose` | `false` | Verbose console output |
 | `wrapOutput` | `auto` | Lay long messages out for a fixed-width view, breaking on words and indenting the rest under the first line. `auto` does it when standard output is a terminal, which an application server's is not even when somebody is watching its console, so set `always` there. `never` keeps every message on one line, which is what a log file that gets grepped wants |
+| `NO_COLOR` (environment) | (unset) | Not an agent argument but honoured like one: set it to anything non-empty and Reclazz emits no colour. Every line carries its level as text anyway, so nothing is lost by turning it off |
 
 Example:
 
