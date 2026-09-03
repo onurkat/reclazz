@@ -312,7 +312,11 @@ keep it to your own build output on your own machine, which is what local
 development is. The agent opens one socket, bound to loopback, that answers two
 read-only status questions and triggers nothing; it makes no outbound network
 connection of any kind. Nothing about your code or your machine leaves the
-machine.
+machine. What it will say, to anyone who can reach loopback on that host, is
+class names, the paths those classes were built to, and the list of things this
+session would need a restart for. On your own machine that is you; on a shared
+development server it is anyone with an account there, so treat it as readable
+by them.
 
 Running under the agent also does not hand the application anything it did not
 have. The engine keeps each watched class's own lookup, which carries private
