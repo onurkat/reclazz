@@ -267,6 +267,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **The session report says what watching costs.** On a platform where the JDK
+  has no native file watching, which is macOS, it walks every registered
+  directory and stats every file about twice a second whether or not anybody is
+  editing, and the cost is linear in the files rather than the directories.
+  Measured against a real SAP Commerce extension tree, 953 directories holding
+  18,680 files: 9% of one core, steady across four consecutive thirty-second
+  windows, with nothing being edited. Roughly 1% of a core per two thousand
+  watched files, all day, and until now it was invisible. The report carries the
+  file count and the figure, and points at the two settings that shorten the
+  walk.
+
 - **A third question the agent can be asked: how is this going.** The other two
   are about a particular thing, why that class did not reload and what a restart
   would still change, and neither answers the plainest one. A developer whose
@@ -290,11 +301,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **The README described the JDK's polling as a two-second cycle.** Measured on
+  SapMachine 21: it notices a change about half a second later, and the same
+  half second whether one directory is registered or nine hundred, so the tree
+  costs CPU rather than latency. The end-to-end numbers beside it were measured
+  and stand; the mechanism sentence did not.
+
 - **Save to live is about four times faster on macOS**, 2447ms to 612ms
   measured end to end at the default settings. The JDK has no native file
-  watching there and polls its watched directories on a two-second cycle, which
-  was 1.9 seconds of that. The files you are actually editing are checked
-  directly on a short cycle, a handful of stat calls rather than a walk of the
+  watching there: it walks its registered directories and stats every file, and
+  notices a change about half a second later. The files you are actually
+  editing are checked directly on a short cycle, a handful of stat calls rather than a walk of the
   tree; the first change to any file still waits for the JDK, and where the JDK
   watches natively none of this is used.
 

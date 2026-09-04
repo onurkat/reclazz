@@ -141,6 +141,40 @@ class SessionReportTest {
                 () -> "and what that number means for them: " + said);
     }
 
+    /**
+     * What watching costs, in the one place a developer would look for it.
+     * Where the JDK has no native watching it walks every file under every
+     * registered directory about twice a second, whether or not anybody is
+     * editing: measured against a real extension tree, 953 directories holding
+     * 18,680 files, that is 9.0% of one core across four consecutive thirty
+     * second windows, and the live server's own watcher agreed once its JFR
+     * figure was read as a share of all twelve cores rather than of one. A stat
+     * loop running all day for a developer who may not be editing anything is
+     * worth saying out loud.
+     */
+    @Test
+    void whatTheWatchingCostsIsSaidWhereTheJdkHasToPoll() {
+        String said = SessionReport.lines(953, 0, 0, 18_680, true).toString();
+
+        assertTrue(said.contains("18680 files"), () -> said);
+        assertTrue(said.contains("twice a second"),
+                () -> "the mechanism, so the count means something: " + said);
+        assertTrue(said.contains("9.3% of one core"),
+                () -> "and what it costs, calibrated on a real tree of this size: " + said);
+        assertTrue(said.contains("watchExtensions"),
+                () -> "and the knob that shortens the walk: " + said);
+    }
+
+    /** Where the operating system tells it, there is nothing to warn about. */
+    @Test
+    void aJdkThatIsToldSaysNothingAboutCost() {
+        String said = SessionReport.lines(953, 0, 0, 18_680, false).toString();
+
+        assertTrue(said.contains("18680 files"), () -> said);
+        assertFalse(said.contains("twice a second"),
+                () -> "Linux and Windows are told by the kernel and pay none of this: " + said);
+    }
+
     @Test
     void aQuietWatcherIsNotAWatcherWithNothingToSay() {
         String said = reportOf(0, 0, 0);
