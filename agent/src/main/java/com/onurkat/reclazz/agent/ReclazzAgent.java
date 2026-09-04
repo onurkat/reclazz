@@ -432,7 +432,9 @@ public class ReclazzAgent {
                 statusServer.setHealthReporter(() -> SessionReport.lines(
                         watcher.watchedDirectoryCount(),
                         watcher.unwatchableCount(),
-                        RestartLedger.size()));
+                        RestartLedger.size(),
+                        watcher.watchedFileCount(),
+                        watcher.polls()));
             }
 
             // Single-threaded, and that is a correctness requirement rather

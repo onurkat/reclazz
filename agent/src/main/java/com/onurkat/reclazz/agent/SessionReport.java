@@ -96,6 +96,18 @@ public final class SessionReport {
      *                           explains a directory that never reloads
      */
     public static List<String> lines(int watchedDirectories, int unwatchable, int needingRestart) {
+        return lines(watchedDirectories, unwatchable, needingRestart, -1, false);
+    }
+
+    /**
+     * @param watchedFiles how many files sit under those directories, or -1
+     *                     when nobody counted
+     * @param polling      whether this JDK walks and stats them rather than
+     *                     being told by the operating system, which is what
+     *                     makes the number cost anything
+     */
+    public static List<String> lines(int watchedDirectories, int unwatchable, int needingRestart,
+                                     int watchedFiles, boolean polling) {
         List<String> report = new ArrayList<>();
         int reloads = bodyReloads.get() + structuralReloads.get();
 
@@ -119,10 +131,26 @@ public final class SessionReport {
 
         if (watchedDirectories >= 0) {
             report.add(Plural.of(watchedDirectories, "directory", "directories") + " watched"
+                    + (watchedFiles >= 0 ? ", holding " + Plural.of(watchedFiles, "file") : "")
                     + (unwatchable > 0
-                            ? ", and " + unwatchable + " that could not be, which is where a save "
-                              + "that reloads nothing would be coming from"
+                            ? ", and " + unwatchable + " directories that could not be, which is "
+                              + "where a save that reloads nothing would be coming from"
                             : "") + ".");
+            if (polling && watchedFiles > 0) {
+                // Calibrated on two measurements that agree once they are in
+                // the same units: a harness registering a real extension tree,
+                // 953 directories holding 18,680 files, burned 9.0% of one core
+                // across four consecutive thirty-second windows, and the live
+                // server's own watcher thread reported 0.79% in JFR, which is a
+                // share of all twelve cores on this machine and so 9.5% of one.
+                // That is a stat loop running all day for a developer who may
+                // not be editing anything, which is worth a sentence and a
+                // pointer at the two settings that shorten the walk.
+                report.add("This JDK has no native file watching, so it walks every one of them "
+                        + "about twice a second whether or not you are editing, at roughly "
+                        + String.format("%.1f", watchedFiles / 2000.0)
+                        + "% of one core. watchExtensions and excludePatterns shorten the walk.");
+            }
         }
 
         long last = lastChangeAt.get();

@@ -132,7 +132,7 @@ than either.
 ### Core
 
 - **Hot class reload**: Redefines classes in the running JVM via Instrumentation API
-- **Save to live**: measured end to end on macOS at the default settings, from writing the class file to the running application serving it, 612ms median. The JDK has no native file watching on macOS and polls its watched directories on a two-second cycle, which was 1.9 seconds of a 2.45-second save; the files you are actually editing are checked directly instead, a handful of stat calls rather than a walk of the tree. The first change to any file still waits for the JDK, every one after it does not, and where the JDK watches natively (Linux, Windows) none of this is needed or used
+- **Save to live**: measured end to end on macOS at the default settings, from writing the class file to the running application serving it, 612ms median. The JDK has no native file watching on macOS: it walks its registered directories and stats every file, and on SapMachine 21 here it notices a change about half a second later, whether one directory is registered or nine hundred. The files you are actually editing are checked directly instead, a handful of stat calls rather than a walk of the tree. The first change to any file still waits for the JDK, every one after it does not, and where the JDK watches natively (Linux, Windows) none of this is needed or used
 - **Structural changes**: Add/remove methods and instance fields on any JDK 17+ (companion-class engine). An added instance field is initialised on objects created after the reload; objects that already existed keep the type default. An added *static* field gets its initial value too: a compile-time constant comes straight off the field, and an initialiser that forms a self-contained block is lifted out of `<clinit>` and run on its own, so the rest of the static block is never re-executed. Where the two cannot be separated the field reads as null/0 and the log names it and the reason. An enum value added on the end goes live on JDK 17-25, and so does one removed from the end, which moves no ordinal (see the comparison table for the exact scope); inserting or reordering values is refused with the reason. A member the save *removes* stops being visible to reflection, so scans stop acting on it, while code that already holds it keeps running the implementation it had. A changed compile-time constant is named together with the sources that inlined it, found by looking for it in the watched modules; with `autoCompile` those sources are rebuilt and hot-swapped, so the new value takes effect. JBR/DCEVM additionally gives full reflective visibility of new members
 - **Property changes**: a changed key goes into the running Environment and the
   `@ConfigurationProperties` beans whose prefix it touches are rebound, so a
@@ -193,6 +193,17 @@ cd reclazz
 `build/libs` also holds `agent-<version>-thin.jar`, which is the module's own
 classes without the bytecode library shaded in. It is not the agent and cannot
 be attached as one.
+
+What watching costs, on a platform where the JDK has to poll: the walk is linear
+in the number of files under the watched directories, not in the directories
+themselves. Measured against a real SAP Commerce extension tree, 953 directories
+holding 18,680 files, the JDK's own watcher thread used 9% of one core across
+four consecutive thirty-second windows with nobody editing anything, and the
+running server's watcher agreed. That is roughly 1% of a core per two thousand
+watched files, all day, and `Tools > How Is Reclazz Doing?` now reports the file
+count and that figure so it is not invisible. `watchExtensions` and
+`excludePatterns` are what shorten the walk. On Linux and Windows the kernel
+tells the JDK instead and none of this is paid at all.
 
 While it is running, `Tools > How Is Reclazz Doing?` asks the agent what it has
 actually done: how long it has been up, what it has reloaded and what failed,
