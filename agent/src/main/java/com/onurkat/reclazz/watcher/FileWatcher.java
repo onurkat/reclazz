@@ -204,8 +204,23 @@ public class FileWatcher {
             registerDirectories();
             reportUnwatchable();
             pollLoop();
+
+            // The loop ends when active goes false, which is a stop somebody
+            // asked for. Ending while it is still true is the loop giving up,
+            // and it used to return from here as quietly as a clean shutdown.
+            if (active) {
+                com.onurkat.reclazz.util.Supervised.stoppedUnexpectedly("The file watcher",
+                        "Nothing will reload until this application is restarted.");
+            }
         } catch (IOException e) {
-            StatusReporter.error("FileWatcher error: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            // Named for what it costs rather than for where it happened. This
+            // returns, so the watcher is over: "FileWatcher error" read like
+            // one error among many, in a session that would never reload again.
+            StatusReporter.error("The file watcher stopped: "
+                    + com.onurkat.reclazz.ui.Failures.describe(e)
+                    + ". Nothing will reload until this application is restarted.");
+            com.onurkat.reclazz.agent.RestartLedger.note("The file watcher",
+                    "it stopped during this session with " + e.getClass().getSimpleName());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

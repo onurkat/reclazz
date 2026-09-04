@@ -69,7 +69,9 @@ public final class ConstantDependents {
         if (constantNames.isEmpty() || sourceDirs == null || sourceDirs.isEmpty()) return;
 
         Thread worker = new Thread(
-                () -> run(className, constantNames, sourceDirs, rebuild), "Reclazz-Constants");
+                com.onurkat.reclazz.util.Supervised.once("The scan for inlined constants",
+                        () -> run(className, constantNames, sourceDirs, rebuild)),
+                "Reclazz-Constants");
         worker.setDaemon(true);
         worker.start();
     }

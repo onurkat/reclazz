@@ -475,9 +475,10 @@ public class ReclazzAgent {
                         pendingJavaChanges.put(event.getPath(), event);
                     }
                 }
-                reloadExecutor.submit(() ->
-                        handleChange(event, compiler, reloader,
-                                springOrchestrator, interceptorReloader, impexImporter, config));
+                reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(
+                        "Handling " + event.getPath().getFileName(),
+                        () -> handleChange(event, compiler, reloader,
+                                springOrchestrator, interceptorReloader, impexImporter, config)));
             });
 
             // Rebuilding a constant's dependents is the same work as saving
@@ -497,8 +498,9 @@ public class ReclazzAgent {
                             }
                         }
                     }
-                    reloadExecutor.submit(() -> handleJavaBatch(
-                            compiler, reloader, springOrchestrator, interceptorReloader));
+                    reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once("Rebuilding constant dependents",
+                            () -> handleJavaBatch(compiler, reloader,
+                                    springOrchestrator, interceptorReloader)));
                 };
             }
 
@@ -509,7 +511,15 @@ public class ReclazzAgent {
             });
 
             running = true;
-            watcherExecutor.submit(watcher::startWatching);
+            // submit() hands anything thrown to a Future nobody holds. The
+            // watcher dying that way is a session where saving a file does
+            // nothing, for as long as the server is up, with the IDE still
+            // showing a connected agent because the heartbeat is another
+            // thread.
+            watcherExecutor.submit(com.onurkat.reclazz.util.Supervised.forever(
+                    "The file watcher",
+                    "Nothing will reload until this application is restarted.",
+                    watcher::startWatching));
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 running = false;
