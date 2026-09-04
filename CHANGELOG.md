@@ -187,6 +187,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   anything: whatever killed a watcher will kill its replacement, and a loop that
   respawns forever is worse than a sentence.
 
+- **The heartbeat stopped for good the first time it threw, and the status
+  server could stop accepting while its port stayed open.** `scheduleAtFixedRate`
+  cancels every future execution the first time its task throws, and says
+  nothing; the IDE then stops hearing from an agent that is perfectly well,
+  decides it has gone, and drops a connection it did not need to drop. The
+  accept loop was worse: it catches the socket exceptions inside its own loop,
+  so it survived those, and anything else ended the thread while the
+  `ServerSocket` stayed bound. The port file went on pointing at a port that was
+  open and that nobody was accepting on, so the IDE's reconnect found something
+  to connect to, forever, and never got in. A failed beat now costs one beat, a
+  failed connection costs one connection, and a loop that ends while it was
+  meant to be running says so.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own
