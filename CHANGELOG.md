@@ -265,6 +265,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   refuse when two match, or treat a null value as an error keep their own code:
   those are different questions wearing similar clothes.
 
+### Added
+
+- **A third question the agent can be asked: how is this going.** The other two
+  are about a particular thing, why that class did not reload and what a restart
+  would still change, and neither answers the plainest one. A developer whose
+  saves feel slow had no number of their own, only the one in this README,
+  measured on somebody else's machine; a developer who thought nothing was
+  reloading could not tell a watcher that never saw their directory from reloads
+  landing on code they were not exercising. `HEALTH` on the socket, and
+  Tools > How Is Reclazz Doing? in the IDE: how long the agent has been up and
+  which release it is, what it has reloaded split into structural and method
+  bodies, what failed, what a save costs at the median, the 95th and the worst,
+  how many directories are watched and how many could not be, when anything last
+  changed, and how much is waiting on a restart. Counted as it happens, so
+  asking costs nothing, and the timings are a bounded ring rather than a leak in
+  somebody else's process.
+
+  What it says about itself matters as much: a session that has reloaded nothing
+  says so rather than reporting a median of zero, and the latency line names how
+  many reloads it speaks for, because most of them on SAP Commerce go through
+  the batch path, which times the batch and not the classes in it. Measured on
+  the live server: 353 of 379.
+
 ### Changed
 
 - **Save to live is about four times faster on macOS**, 2447ms to 612ms
