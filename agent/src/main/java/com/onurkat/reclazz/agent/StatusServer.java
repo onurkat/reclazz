@@ -70,7 +70,12 @@ public class StatusServer implements StatusReporter.StatusListener {
                 if (Files.exists(portFile) && Files.isSymbolicLink(portFile)) {
                     StatusReporter.warn("Port file is a symlink — refusing to write: " + portFile);
                 } else {
-                    Files.writeString(portFile, String.valueOf(actualPort));
+                    // Written whole: the IDE polls this file with no lock
+                    // between us, and a reader arriving mid-write gets whatever
+                    // prefix has landed. "586" parses perfectly well and is not
+                    // the port this agent is listening on.
+                    com.onurkat.reclazz.util.AtomicWrite.string(
+                            portFile, String.valueOf(actualPort));
                 }
             } catch (IOException e) {
                 StatusReporter.warn("Failed to write port file: " + com.onurkat.reclazz.ui.Failures.describe(e));
