@@ -227,6 +227,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   count of refused lines is what tells a developer their import failed; the
   detail is in HAC, where the platform already decides who may look at it.
 
+- **A translation saved outside a Spring message source reached nobody.**
+  `ResourceBundle.getBundle` memoises per classloader, base name and locale and
+  never looks at the file again, so every framework cache above it can be
+  emptied and the next lookup is still answered from that one, with the text as
+  it was when the application first asked. Reclazz was clearing it, but only as
+  the last step of refreshing a Spring `MessageSource`, which means it happened
+  when there was such a bean to find. Bean Validation's `ValidationMessages`,
+  SAP Commerce's own bundles, and any code that calls `getBundle` itself all sit
+  under that cache and none of them is a Spring bean. It is cleared on every
+  localization change now, for each classloader a bundle could have been loaded
+  through.
+
+- **`ValidationMessages.properties` was treated as configuration.** Bean
+  Validation fixes that name, and an application that rewords a constraint puts
+  it exactly there, so the mistake cost something in both directions at once:
+  the new wording never reached the validator, and the keys, which are things
+  like `jakarta.validation.constraints.NotBlank.message`, were pushed into the
+  running property system as though somebody had set them there. A save that
+  silently keeps serving the old sentence is the worst shape a translation bug
+  has, because the old sentence is real text in a real language and nothing
+  looks broken.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own
