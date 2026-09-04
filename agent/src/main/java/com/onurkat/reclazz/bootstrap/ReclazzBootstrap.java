@@ -12,6 +12,13 @@ import java.lang.invoke.*;
  * that dispatches through MutableCallSite, allowing atomic re-targeting on reload.
  *
  * BOOTSTRAP CLASS: Must have ZERO dependencies outside java.lang.invoke.* and java.lang.reflect.*.
+ *
+ * <p>Every public method here has no Java caller and none of them is dead. They
+ * are named in the {@code Handle} the transformer writes into an
+ * invokedynamic instruction, so the only thing that calls them is bytecode this
+ * agent generated, and every tool that looks for callers will report them as
+ * unused. Deleting one produces a class that verifies, links, and then throws
+ * on the first call to a reloaded method.
  */
 public final class ReclazzBootstrap {
 

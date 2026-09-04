@@ -42,13 +42,4 @@ public class TransformVerifier {
         }
     }
 
-    /**
-     * Verify and log warnings if issues found.
-     */
-    public static void verifyAndLog(String className, byte[] bytecode) {
-        String error = verify(className, bytecode);
-        if (error != null) {
-            StatusReporter.warn(error);
-        }
-    }
 }

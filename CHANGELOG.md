@@ -212,6 +212,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the README draws. The engine now names the classes allowed to ask, by
   identity, before the application starts.
 
+### Removed
+
+- **A second reload engine that nothing called.** `ClassReloader.reloadBatch`,
+  eighty-five lines, redefined a whole map of classes in one call. Two tests
+  asserted the order of the comparisons inside it, describing it as the path
+  startup catch-up takes, and it is not: nothing in the agent, the plugin or the
+  integration suite ever called it. Dead code is one thing; dead code with
+  guards over it is worse, because it reads as maintained, and the last round's
+  reasoning about what a large build does to a running server started from the
+  fact that a method called `reloadBatch` existed. Gone, with the assertions
+  that were about it, leaving the ones about the path that runs.
+
+- **Eighteen other methods with no caller**, from a controller-advice
+  delegation and a bytecode verifier that nothing verified with, down to
+  getters for a hybris config directory and an agent's own instrumentation.
+  About 200 lines.
+
+- Two that look exactly the same to any tool and are load-bearing now say so:
+  every bootstrap method in `ReclazzBootstrap`, and `LambdaFactory.altMetafactory`,
+  are named in bytecode this agent generates rather than called from Java.
+  Removing one produces a class that verifies, links, and throws on first use.
+
 ### Changed
 
 - **Save to live is about four times faster on macOS**, 2447ms to 612ms

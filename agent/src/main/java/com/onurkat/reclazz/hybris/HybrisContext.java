@@ -54,20 +54,6 @@ public class HybrisContext {
 
     public Path getHybrisHome() { return hybrisHome; }
     public Path getPlatformHome() { return platformHome; }
-    public Path getConfigDir() { return configDir; }
     public Map<String, ExtensionInfo> getExtensions() { return extensions; }
 
-    /**
-     * Get the local.properties file path.
-     */
-    public Path getLocalProperties() {
-        return configDir.resolve("local.properties");
-    }
-
-    /**
-     * Get the localextensions.xml file path.
-     */
-    public Path getLocalExtensions() {
-        return configDir.resolve("localextensions.xml");
-    }
 }

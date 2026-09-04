@@ -10,8 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.instrument.Instrumentation;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -160,31 +158,4 @@ class FallbackReloadTest extends TransformTestBase {
                 () -> "the class is the thing the developer has to find: " + result.getError());
     }
 
-    @Test
-    void aBatchReportsEachClassSeparately() throws Exception {
-        Class<?> one = defineAndLoad(compile(new SourceFile("FallbackBatchOne",
-                "public class FallbackBatchOne { public static String v() { return \"a\"; } }")),
-                "FallbackBatchOne");
-        Class<?> two = defineAndLoad(compile(new SourceFile("FallbackBatchTwo",
-                "public class FallbackBatchTwo { public static String v() { return \"a\"; } }")),
-                "FallbackBatchTwo");
-
-        Map<String, byte[]> batch = new LinkedHashMap<>();
-        batch.put("FallbackBatchOne", compile(new SourceFile("FallbackBatchOne",
-                "public class FallbackBatchOne { public static String v() { return \"b\"; } }"))
-                .get("FallbackBatchOne"));
-        batch.put("FallbackBatchTwo", compile(new SourceFile("FallbackBatchTwo",
-                "public class FallbackBatchTwo { public static String v() { return \"c\"; } }"))
-                .get("FallbackBatchTwo"));
-
-        Map<String, ClassReloader.ReloadResult> results = reloader().reloadBatch(batch);
-
-        assertEquals(2, results.size());
-        assertTrue(results.get("FallbackBatchOne").isSuccess(),
-                () -> "" + results.get("FallbackBatchOne").getError());
-        assertTrue(results.get("FallbackBatchTwo").isSuccess(),
-                () -> "" + results.get("FallbackBatchTwo").getError());
-        assertEquals("b", invokeStatic(one, "v"));
-        assertEquals("c", invokeStatic(two, "v"));
-    }
 }

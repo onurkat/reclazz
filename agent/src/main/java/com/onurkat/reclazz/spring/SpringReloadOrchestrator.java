@@ -282,13 +282,6 @@ public class SpringReloadOrchestrator {
         beanReloader.refreshBean(className);
     }
 
-    /**
-     * Re-scan MVC mappings for a controller class.
-     */
-    public boolean reloadMvcMappings(Class<?> controllerClass) {
-        return mvcReloader.reloadMappings(controllerClass);
-    }
-
     private boolean isSpringBean(Class<?> clazz) {
         try {
             for (var annotation : clazz.getAnnotations()) {

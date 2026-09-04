@@ -84,8 +84,13 @@ class EnumConstantChangeTest {
      * loaded class that already matches the payload. Both call sites compare
      * first for that reason.
      */
+    /**
+     * The claim about a second, batch reload path came out with the path: it
+     * was never called by anything, and this was asserting the ordering inside
+     * a method nothing ran, which is how dead code comes to look maintained.
+     */
     @Test
-    void bothReloadEnginesCompareBeforeRedefining() throws IOException {
+    void theReloadEngineComparesBeforeRedefining() throws IOException {
         String classReloader = java.nio.file.Files.readString(java.nio.file.Path.of(
                 "src/main/java/com/onurkat/reclazz/agent/ClassReloader.java"));
 
@@ -94,11 +99,6 @@ class EnumConstantChangeTest {
         assertTrue(checkAt > 0, "the JetBrains Runtime path is the one that was silent");
         assertTrue(checkAt < redefineAt,
                 "checking after the redefine hides it on exactly the VM that accepts it");
-
-        int batchCheck = classReloader.indexOf("EnumConstantChange.check(existingClass, bytecode)");
-        int batchRedefine = classReloader.indexOf("definitions.toArray");
-        assertTrue(batchCheck > 0 && batchCheck < batchRedefine,
-                "startup catch-up reloads go through the batch path");
     }
 
     /** One sentence, so the two engines cannot drift apart. */

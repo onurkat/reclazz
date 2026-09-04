@@ -32,14 +32,6 @@ public class ChangeEvent {
     public Path getPath() { return path; }
     public Type getType() { return type; }
     public String getModuleName() { return moduleName; }
-    public String getSourceRoot() { return sourceRoot; }
-
-    /**
-     * Backward compatibility alias for getModuleName().
-     * In Hybris context, the module name is the extension name.
-     */
-    public String getExtensionName() { return moduleName; }
-
     @Override
     public String toString() {
         return type + " " + path + " [" + moduleName + "/" + sourceRoot + "]";
