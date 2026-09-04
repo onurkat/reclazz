@@ -200,6 +200,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   failed connection costs one connection, and a loop that ends while it was
   meant to be running says so.
 
+- **The files Reclazz writes into a SAP Commerce installation were replaced in
+  two steps.** `Files.writeString` truncates the target and then writes into it,
+  so between those two things the file on disk is empty, and if the IDE is
+  killed or the disk is full it stays that way. These are not Reclazz's files:
+  they are `95-local.properties` and the generated wrapper configs, and a
+  truncated `wrapper.conf` is a server that will not start. The backup does not
+  answer it, because it is taken once, the first time Reclazz touches a file it
+  did not create, and every later write goes at a live file carrying weeks of
+  the user's own edits. Measured with a concurrent reader over the same shape:
+  the old write was caught mid-flight by 96 of 353 reads. The content goes to a
+  temporary file beside the target and is moved onto it now, so a reader sees
+  either the old file or the new one.
+
+  The agent's port file had the same shape and a sharper edge: the IDE polls it
+  with no lock between the two processes, and "586" is a perfectly parseable
+  port number that nothing is listening on.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own

@@ -211,7 +211,7 @@ object HybrisAgentInstaller {
             ) {
                 Files.deleteIfExists(target)
             } else {
-                Files.writeString(target, cleaned)
+                writeAtomically(target, cleaned)
             }
             platformHome(project)?.let { removeLegacyWrapperBlocks(it) }
             Result.Success("Removed Reclazz from ${target.fileName}. Restart the server to apply.")
@@ -327,7 +327,7 @@ object HybrisAgentInstaller {
             if (target.fileName.toString() == HybrisPropertyFiles.RECLAZZ_PROPERTIES && cleaned.isBlank()) {
                 Files.deleteIfExists(target)
             } else {
-                Files.writeString(target, cleaned)
+                writeAtomically(target, cleaned)
             }
         } catch (e: Exception) {
             log.warn("Rollback of ${target.fileName} failed: ${e.message}")
@@ -453,7 +453,7 @@ object HybrisAgentInstaller {
         }
 
         val content = if (cleaned.isBlank()) block else cleaned.trimEnd('\n', '\r') + "\n\n" + block
-        Files.writeString(target, content)
+        writeAtomically(target, content)
     }
 
     /**
@@ -469,7 +469,7 @@ object HybrisAgentInstaller {
                 if (!Files.isRegularFile(file)) continue
                 val content = Files.readString(file)
                 if (!content.contains(MARKER_BEGIN)) continue
-                Files.writeString(file, removeMarkerBlock(content))
+                writeAtomically(file, removeMarkerBlock(content))
                 log.info("Removed legacy Reclazz block from $name")
             } catch (e: Exception) {
                 log.warn("Could not clean legacy block in $name: ${e.message}")
