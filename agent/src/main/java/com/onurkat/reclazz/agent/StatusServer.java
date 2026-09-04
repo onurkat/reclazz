@@ -198,11 +198,20 @@ public class StatusServer implements StatusReporter.StatusListener {
                 ClientConnection conn = new ClientConnection(clientSocket);
                 clients.add(conn);
 
+                // "agent" is additive: a reader that does not know the field
+                // ignores it, which is how a plugin older than this agent keeps
+                // working. It is here because PROTOCOL_VERSION has been 1 since
+                // the beginning and answers a different question. What a
+                // developer needs to know is which release is answering on this
+                // port, since the jar a server attached and the plugin in the
+                // IDE are updated by two different acts.
                 String welcomeJson = String.format(
-                        "{\"level\":\"CONNECTED\",\"message\":\"%s\",\"timestamp\":\"%s\",\"version\":%d}",
+                        "{\"level\":\"CONNECTED\",\"message\":\"%s\",\"timestamp\":\"%s\","
+                                + "\"version\":%d,\"agent\":\"%s\"}",
                         escapeJson("Agent status server connected"),
                         Instant.now().toString(),
-                        PROTOCOL_VERSION
+                        PROTOCOL_VERSION,
+                        escapeJson(AgentVersion.get())
                 );
                 conn.send(welcomeJson);
 

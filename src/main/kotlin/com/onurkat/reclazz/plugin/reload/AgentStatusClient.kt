@@ -17,7 +17,13 @@ data class AgentEvent(
     val message: String,
     val timestamp: String,
     val type: String = "",
-    val version: Int = 0
+    val version: Int = 0,
+    /**
+     * Which release of the agent is answering, when it says. Empty from any
+     * agent older than 1.1.0, which is the point: the field is additive and
+     * its absence is itself an answer.
+     */
+    val agentVersion: String = ""
 )
 
 class AgentStatusClient(
@@ -157,7 +163,8 @@ class AgentStatusClient(
             val timestamp = fields["timestamp"] ?: ""
             val type = fields["type"] ?: ""
             val version = fields["version"]?.toIntOrNull() ?: 0
-            AgentEvent(level, message, timestamp, type, version)
+            val agentVersion = fields["agent"] ?: ""
+            AgentEvent(level, message, timestamp, type, version, agentVersion)
         } catch (e: Exception) {
             log.debug("Failed to parse agent event: ${e.message} — payload: ${json.take(200)}")
             null

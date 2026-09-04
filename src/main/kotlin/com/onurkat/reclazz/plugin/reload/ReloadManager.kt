@@ -141,7 +141,8 @@ class ReloadManager(private val project: Project) : Disposable {
             "CONNECTED" -> {
                 isConnected = true
                 lastError = null
-                log.info("Connected to Reclazz agent")
+                log.info("Connected to Reclazz agent ${event.agentVersion.ifEmpty { "(version not reported)" }}")
+                reportVersionMismatchOnce(event.agentVersion)
             }
             "RELOAD", "STRUCTURAL_RELOAD" -> {
                 // Both light (method-body) and heavy (structural / companion
@@ -156,6 +157,23 @@ class ReloadManager(private val project: Project) : Disposable {
         }
         notifyListeners(event)
     }
+
+    /**
+     * Said in the tool window rather than as a balloon, and once per session:
+     * it is context for everything else that appears there, not an event.
+     */
+    private fun reportVersionMismatchOnce(agentVersion: String) {
+        if (versionMismatchReported) return
+        val pluginVersion = com.intellij.ide.plugins.PluginManager.getInstance()
+            .findEnabledPlugin(com.onurkat.reclazz.plugin.agent.AgentJarLocator.RECLAZZ_PLUGIN_ID)
+            ?.version ?: return
+        val said = AgentVersionMatch.describe(pluginVersion, agentVersion) ?: return
+        versionMismatchReported = true
+        postLocalMessage("WARN", said)
+    }
+
+    @Volatile
+    private var versionMismatchReported = false
 
     /**
      * Write a line into the Reclazz tool window without an agent behind it.

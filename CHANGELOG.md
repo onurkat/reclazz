@@ -143,6 +143,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   service and a wrong guess would put wrong characters in the database; it says
   the file is not UTF-8 and what to do instead.
 
+- **A mistyped agent argument was not ignored, it corrupted the one before
+  it.** The argument string is split on a comma only when a name the agent
+  knows follows it, deliberately, so that a value may contain a comma of its
+  own. The consequence nobody would guess is that an unknown key never becomes
+  an argument at all: it joins the value of the argument before it.
+  `hybrisHome=/srv/hybris,debouceMs=200` parses as one setting whose hybrisHome
+  is `/srv/hybris,debouceMs=200`, a path that does not exist, and what the
+  developer is then told is about their platform rather than about their typo.
+  In front of `portFile` it means the agent writes its port where nothing reads
+  it and the IDE never connects. The parse is unchanged, because splitting on
+  every comma would take the commas out of values that are allowed them and
+  refusing to start over a stale config line is a worse trade than a warning.
+  Unrecognised names are now listed at startup, with what happened to them and
+  what this version does accept.
+
+- **The plugin threw away the version the agent told it.** The socket has
+  carried a protocol version since the beginning and it has always been 1,
+  because the protocol has not changed; the plugin logged it to `idea.log` and
+  went on. What differs in practice is the release: the plugin updates with the
+  IDE, while the jar a server attaches is the one its start script names, so
+  the ordinary state after an upgrade is a new plugin talking to last month's
+  agent with the fixes in the release notes absent from what is running. The
+  agent sends its release now, in a field older plugins ignore, and a mismatch
+  is said once in the tool window along with the fact that it is the server
+  restarting, not the plugin updating, that changes it.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own
