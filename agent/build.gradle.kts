@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("jacoco")
     id("com.gradleup.shadow") version "8.3.5"
 }
 
@@ -65,6 +66,54 @@ tasks.test {
         showCauses = true
         showStackTraces = true
     }
+}
+
+// What the tests actually reach, in this process.
+//
+// Written down because "I think that is covered" was the only answer available
+// before, and for an agent that runs inside somebody else's JVM the untested
+// paths are the ones that surface as a stack trace in their log rather than as
+// a red line here.
+//
+// Read it knowing what it cannot see. Fourteen of these tests launch a child
+// JVM with the real agent on the command line, because that is the only honest
+// way to check what an agent does at startup, under load, or across a clean
+// build. None of that work is instrumented, so a class exercised only there
+// reads as nought per cent: SynchronizedBodyAdapter and ExcludedClasses both
+// do, and both are tested. The number is a floor under this process, not a
+// measure of the suite.
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+// A floor, not a target. It sits a little under where the suite actually is
+// (55% of instructions, 43% of branches when this was written) so ordinary
+// refactoring has room, and a change that quietly stops running a few hundred
+// instructions does not pass as green. Most of what is uncovered here is
+// uncovered on purpose: the Spring and hybris reloaders need a live container
+// and are exercised by the integration suite, which does not report into this.
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.jacocoTestReport)
+    violationRules {
+        rule {
+            limit {
+                counter = "INSTRUCTION"
+                minimum = "0.52".toBigDecimal()
+            }
+            limit {
+                counter = "BRANCH"
+                minimum = "0.41".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(tasks.jacocoTestCoverageVerification)
 }
 
 // Build a standalone bootstrap JAR from compiled bootstrap classes only (no shading, pure JDK)

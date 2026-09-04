@@ -94,6 +94,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   it means, how to put the jar back, and where in `idea.log` the path it looked
   at is written.
 
+- **A refused structural change said the JVM could not redefine classes.** On
+  the fallback path, the one every unwatched class reloads through, a stock JDK
+  refuses an added method with `UnsupportedOperationException: class
+  redefinition failed: attempted to add a method`. That message was replaced
+  with "Class redefinition not supported by this JVM", which is wrong about the
+  JVM and throws away the sentence that says which change to undo. The clause
+  below it, which reads the message to decide whether the refusal was
+  structural, could never run for the commonest refusal there is. The JVM's own
+  words are reported now, and the classifier is a named function with its own
+  test.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own
@@ -119,6 +130,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **Class files up to Java 27 are read** (ASM 9.10.1, up from 9.8 and Java 25).
   Where the compiler is still newer than the library, that is said once, in
   Java releases rather than header numbers, with both ways out.
+
+- **Coverage is measured.** `:agent:check` now runs JaCoCo with a floor under
+  it, at 52% of instructions and 41% of branches against the 55% and 43% the
+  suite reaches, so ordinary refactoring has room and a change that quietly
+  stops running a few hundred instructions cannot pass as green. Reading it
+  found `ClassReloader`, 715 instructions and no test at all, which is the
+  engine every unwatched class reloads through; writing those tests found the
+  message defect above. The figure counts only what runs in the test process,
+  and fourteen of these tests launch a child JVM with the real agent, so a
+  class exercised only there reads as nought.
 
 - **The names Reclazz writes into your classes have one owner.** A method
   whose body moves out is renamed to `__reclazz$v0$<name>$<descHash>`, and a
