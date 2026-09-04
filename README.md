@@ -194,6 +194,13 @@ cd reclazz
 classes without the bytecode library shaded in. It is not the agent and cannot
 be attached as one.
 
+`./gradlew :agent:check` runs the unit suite and a coverage floor with it;
+`:agent:jacocoTestReport` writes the report to
+`agent/build/reports/jacoco/test/html`. The figure counts only what runs in the
+test process. Fourteen of the tests launch a child JVM with the real agent
+attached, which is the only honest way to check startup, behaviour under load,
+or a clean build, and none of that is instrumented.
+
 ## Usage
 
 ### Spring Boot

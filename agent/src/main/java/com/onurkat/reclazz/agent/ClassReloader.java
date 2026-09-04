@@ -104,7 +104,20 @@ public class ClassReloader {
             return ReloadResult.success(isSpringBean, isInterceptor);
 
         } catch (UnsupportedOperationException e) {
-            ReloadResult result = ReloadResult.failure("Class redefinition not supported by this JVM", true);
+            // This is the JVM refusing one change, not the JVM saying it cannot
+            // redefine anything. HotSpot throws it with "class redefinition
+            // failed: attempted to add a method", which is the whole
+            // explanation, and it used to be replaced with "Class redefinition
+            // not supported by this JVM": wrong about the JVM, and it threw
+            // away the one sentence that said what to change. It also meant the
+            // message matching below never ran for the commonest refusal there
+            // is, because this catch comes first.
+            String said = e.getMessage();
+            ReloadResult result = ReloadResult.failure(
+                    said != null && !said.isBlank()
+                            ? said
+                            : "Class redefinition not supported by this JVM",
+                    true);
             result.setStructuralChangeAdvice(buildStructuralChangeAdvice());
             return result;
 
@@ -127,13 +140,7 @@ public class ClassReloader {
 
         } catch (Exception e) {
             String msg = e.getMessage();
-            boolean structural = msg != null && (
-                    msg.contains("attempted to add") ||
-                    msg.contains("attempted to delete") ||
-                    msg.contains("attempted to change") ||
-                    msg.contains("class modifiers") ||
-                    msg.contains("hierarchy") ||
-                    msg.contains("superclass"));
+            boolean structural = describesAStructuralRefusal(msg);
             ReloadResult result = ReloadResult.failure(msg, structural);
             if (structural) {
                 result.setStructuralChangeAdvice(buildStructuralChangeAdvice());
@@ -226,6 +233,24 @@ public class ClassReloader {
         MetaspaceWatch.afterReload();
 
         return results;
+    }
+
+    /**
+     * Whether a JVM's refusal is about the shape of the class rather than
+     * about the reload machinery.
+     *
+     * <p>Pure, and package-visible, because it is a decision made from a
+     * string the JVM chose and there is no way to reach it through the reload
+     * path without a JVM that refuses in each of these ways.
+     */
+    static boolean describesAStructuralRefusal(String jvmMessage) {
+        if (jvmMessage == null) return false;
+        return jvmMessage.contains("attempted to add")
+                || jvmMessage.contains("attempted to delete")
+                || jvmMessage.contains("attempted to change")
+                || jvmMessage.contains("class modifiers")
+                || jvmMessage.contains("hierarchy")
+                || jvmMessage.contains("superclass");
     }
 
     private String buildStructuralChangeAdvice() {
