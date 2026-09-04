@@ -169,6 +169,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   is said once in the tool window along with the fact that it is the server
   restarting, not the plugin updating, that changes it.
 
+- **The file watcher could die and take the session with it, silently.** Its
+  loop is handed to an executor with `submit`, which captures anything thrown
+  into a `Future`, and nobody holds these futures. A runtime exception anywhere
+  in it ended the thread, went into an object discarded on the next line, and
+  left a session where saving a file does nothing at all, for as long as the
+  server stays up. The IDE went on showing a connected agent, because the
+  heartbeat runs on a different thread and it was fine. The two clean exits had
+  the same shape: an `IOException` was reported as "FileWatcher error", which
+  reads as one error among many rather than as the end of reloading, and a loop
+  that ended while it was still meant to be running said nothing at all. Work
+  that should run for the life of a session is wrapped now, catches `Throwable`
+  because an Error is what such a task dies of, and says what it costs rather
+  than where it happened: nothing will reload until the application is
+  restarted. It reaches the restart ledger too, so the answer to "do I still
+  need to restart?" includes the largest possible reason. It does not restart
+  anything: whatever killed a watcher will kill its replacement, and a loop that
+  respawns forever is worse than a sentence.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own
