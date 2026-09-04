@@ -48,7 +48,7 @@ public class SpringDataReloader {
             // Destroy and recreate the repository bean
             Object beanFactory = SpringBeans.getBeanFactory(appContext);
 
-            Method destroySingleton = SpringBeans.findMethod(beanFactory.getClass(),
+            Method destroySingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
                     "destroySingleton", String.class);
             if (destroySingleton != null) {
                 destroySingleton.invoke(beanFactory, beanName);

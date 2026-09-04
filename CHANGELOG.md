@@ -234,6 +234,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   are named in bytecode this agent generates rather than called from Java.
   Removing one produces a class that verifies, links, and throws on first use.
 
+- **One way to reach into a class the agent did not compile against.** "Find
+  the method or field this framework declares somewhere up the hierarchy and
+  open it" was written six times under five names, across the Spring, hybris and
+  reload packages, and the copies had drifted. Four let anything other than a
+  missing member escape, so a JVM that would not open a field turned "this
+  version does not have it" into a failed reload; one turned the same thing into
+  a null. One did not walk at all: it used `getMethod`, so it saw public methods
+  inherited from interfaces that the walking copies missed and missed the
+  private ones they found, and twelve call sites were relying on that difference
+  without it being written down anywhere. The shared one is a superset of all
+  six, and its policy is stated once. The reads that look for a field by shape,
+  refuse when two match, or treat a null value as an error keep their own code:
+  those are different questions wearing similar clothes.
+
 ### Changed
 
 - **Save to live is about four times faster on macOS**, 2447ms to 612ms

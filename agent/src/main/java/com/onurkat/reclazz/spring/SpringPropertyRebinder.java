@@ -135,9 +135,9 @@ public final class SpringPropertyRebinder {
         int injected = 0;
         try {
             Object beanFactory = SpringBeans.getBeanFactory(context);
-            Method resolveEmbedded = SpringBeans.findMethod(beanFactory.getClass(),
+            Method resolveEmbedded = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
                     "resolveEmbeddedValue", String.class);
-            Method getTypeConverter = findMethod(beanFactory.getClass(), "getTypeConverter");
+            Method getTypeConverter = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getTypeConverter");
             if (resolveEmbedded == null || getTypeConverter == null) return 0;
 
             ClassLoader loader = context.getClass().getClassLoader();
@@ -147,12 +147,12 @@ public final class SpringPropertyRebinder {
                             "org.springframework.beans.factory.annotation.Value", true, loader);
             Method valueMember = valueAnnotation.getMethod("value");
 
-            Method getSingletonNames = SpringBeans.findMethod(beanFactory.getClass(), "getSingletonNames");
-            Method getSingleton = SpringBeans.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+            Method getSingletonNames = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
+            Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
             if (getSingletonNames == null || getSingleton == null) return 0;
 
             Object typeConverter = getTypeConverter.invoke(beanFactory);
-            Method convert = SpringBeans.findMethod(typeConverter.getClass(),
+            Method convert = com.onurkat.reclazz.util.Reflect.findMethod(typeConverter.getClass(),
                     "convertIfNecessary", Object.class, Class.class);
             if (convert != null) convert.setAccessible(true);
 
@@ -231,8 +231,8 @@ public final class SpringPropertyRebinder {
         List<String> rebuilt = new ArrayList<>();
         try {
             Object beanFactory = SpringBeans.getBeanFactory(context);
-            Method getSingletonNames = SpringBeans.findMethod(beanFactory.getClass(), "getSingletonNames");
-            Method getSingleton = SpringBeans.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+            Method getSingletonNames = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
+            Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
             if (getSingletonNames == null || getSingleton == null) return rebuilt;
 
             ClassLoader loader = context.getClass().getClassLoader();
@@ -353,13 +353,13 @@ public final class SpringPropertyRebinder {
         try {
             Object current = bean;
             for (int depth = 0; depth < 5; depth++) {
-                Method getTargetSource = findMethod(current.getClass(), "getTargetSource");
+                Method getTargetSource = com.onurkat.reclazz.util.Reflect.findMethod(current.getClass(), "getTargetSource");
                 if (getTargetSource == null || !current.getClass().getName().contains("$")) {
                     return current;
                 }
                 Object targetSource = getTargetSource.invoke(current);
                 if (targetSource == null) return current;
-                Method getTarget = findMethod(targetSource.getClass(), "getTarget");
+                Method getTarget = com.onurkat.reclazz.util.Reflect.findMethod(targetSource.getClass(), "getTarget");
                 if (getTarget == null) return current;
                 Object target = getTarget.invoke(targetSource);
                 if (target == null || target == current) return current;
@@ -381,12 +381,12 @@ public final class SpringPropertyRebinder {
      * what happened and is undone by the restart that reloads the file anyway.
      */
     boolean updateEnvironment(Object context, Map<String, String> changed) throws Exception {
-        Method getEnvironment = findMethod(context.getClass(), "getEnvironment");
+        Method getEnvironment = com.onurkat.reclazz.util.Reflect.findMethod(context.getClass(), "getEnvironment");
         if (getEnvironment == null) return false;
         Object environment = getEnvironment.invoke(context);
         if (environment == null) return false;
 
-        Method getPropertySources = findMethod(environment.getClass(), "getPropertySources");
+        Method getPropertySources = com.onurkat.reclazz.util.Reflect.findMethod(environment.getClass(), "getPropertySources");
         if (getPropertySources == null) return false;
         Object sources = getPropertySources.invoke(environment);
 
@@ -575,16 +575,6 @@ public final class SpringPropertyRebinder {
             if (key.startsWith(prefix)) return true;
         }
         return false;
-    }
-
-    private static Method findMethod(Class<?> type, String name) {
-        try {
-            Method method = type.getMethod(name);
-            method.setAccessible(true);
-            return method;
-        } catch (Throwable notThere) {
-            return null;
-        }
     }
 
     private static Object invokeIfPresent(Object target, String method, String argument) {

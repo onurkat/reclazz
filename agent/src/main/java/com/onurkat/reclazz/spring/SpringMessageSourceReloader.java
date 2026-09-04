@@ -72,7 +72,7 @@ public class SpringMessageSourceReloader {
     /** True when this source will not answer from its cache any more. */
     static boolean clear(Object messageSource) {
         for (String reset : RESETS) {
-            Method method = SpringBeans.findMethod(messageSource.getClass(), reset);
+            Method method = com.onurkat.reclazz.util.Reflect.findMethod(messageSource.getClass(), reset);
             if (method == null) continue;
             try {
                 method.invoke(messageSource);
@@ -128,7 +128,7 @@ public class SpringMessageSourceReloader {
 
     /** The loader the source reads its bundles with, or its own. */
     private static ClassLoader bundleLoader(Object messageSource) {
-        Method getter = SpringBeans.findMethod(messageSource.getClass(), "getBundleClassLoader");
+        Method getter = com.onurkat.reclazz.util.Reflect.findMethod(messageSource.getClass(), "getBundleClassLoader");
         if (getter != null) {
             try {
                 Object loader = getter.invoke(messageSource);

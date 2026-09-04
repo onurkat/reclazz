@@ -107,12 +107,12 @@ public class SpringEventReloader {
     static int removeAdaptersFor(Object multicaster, Class<?> reloadedClass) {
         int removed = 0;
         try {
-            Object retriever = readField(multicaster, "defaultRetriever");
+            Object retriever = com.onurkat.reclazz.util.Reflect.readField(multicaster, "defaultRetriever");
             if (retriever == null) return 0;
-            Object listeners = readField(retriever, "applicationListeners");
+            Object listeners = com.onurkat.reclazz.util.Reflect.readField(retriever, "applicationListeners");
             if (!(listeners instanceof java.util.Collection<?> collection)) return 0;
 
-            Method remove = SpringBeans.findMethod(multicaster.getClass(),
+            Method remove = com.onurkat.reclazz.util.Reflect.findMethod(multicaster.getClass(),
                     "removeApplicationListener",
                     Class.forName("org.springframework.context.ApplicationListener",
                             false, multicaster.getClass().getClassLoader()));
@@ -125,7 +125,7 @@ public class SpringEventReloader {
                 if (!listener.getClass().getName().endsWith("ApplicationListenerMethodAdapter")) {
                     continue;
                 }
-                Object method = readField(listener, "method");
+                Object method = com.onurkat.reclazz.util.Reflect.readField(listener, "method");
                 if (!(method instanceof Method held)) continue;
                 if (!held.getDeclaringClass().getName().equals(reloadedClass.getName())) continue;
                 remove.invoke(multicaster, listener);
@@ -136,21 +136,6 @@ public class SpringEventReloader {
             // the behaviour that came before this.
         }
         return removed;
-    }
-
-    private static Object readField(Object target, String name) {
-        for (Class<?> c = target.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
-            try {
-                java.lang.reflect.Field field = c.getDeclaredField(name);
-                field.setAccessible(true);
-                return field.get(target);
-            } catch (NoSuchFieldException keepWalking) {
-                // the next class up may declare it
-            } catch (Throwable notReadable) {
-                return null;
-            }
-        }
-        return null;
     }
 
     private boolean hasEventListenerAnnotation(Class<?> clazz) {

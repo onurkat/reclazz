@@ -189,7 +189,7 @@ public class SpringControllerAdviceReloader {
         }
         Method init = null;
         for (String name : INITIALISERS) {
-            init = SpringBeans.findMethod(resolver.getClass(), name);
+            init = com.onurkat.reclazz.util.Reflect.findMethod(resolver.getClass(), name);
             if (init != null) break;
         }
 
