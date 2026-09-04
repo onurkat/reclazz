@@ -11,7 +11,7 @@ accept.
 
 | Component | Version | Licence | Why it is here |
 |---|---|---|---|
-| [ASM](https://asm.ow2.io/) | 9.8 | BSD 3-Clause | Reads and rewrites bytecode: call sites, field access, added members, companion classes |
+| [ASM](https://asm.ow2.io/) | 9.10.1 | BSD 3-Clause | Reads and rewrites bytecode: call sites, field access, added members, companion classes |
 
 One library. Byte Buddy used to be the second, and it was removed once it came
 to this table and could not answer the question at the top of it: it was

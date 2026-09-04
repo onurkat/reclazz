@@ -15,17 +15,15 @@ is and is not allowed.
 Third-party components
 --------------------------------------------------------------------------
 
-The distributed agent jar shades and relocates the following libraries:
-
-  Byte Buddy (https://bytebuddy.net/)
-    Copyright Rafael Winterhalter
-    Licensed under the Apache License, Version 2.0
-    Relocated to com.onurkat.reclazz.shaded.bytebuddy
+The distributed agent jar shades and relocates one library:
 
   ASM (https://asm.ow2.io/)
-    Copyright INRIA, France Telecom
+    Copyright (c) 2000-2011 INRIA, France Telecom
     Licensed under the 3-Clause BSD License
     Relocated to com.onurkat.reclazz.shaded.asm
+
+Byte Buddy was shaded here until version 1.1.0 and is not any more. It is a
+test dependency now and does not ship. THIRD-PARTY.md says why.
 
 The IntelliJ IDEA plugin builds against the IntelliJ Platform
 (https://github.com/JetBrains/intellij-community), Copyright JetBrains
