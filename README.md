@@ -194,6 +194,13 @@ cd reclazz
 classes without the bytecode library shaded in. It is not the agent and cannot
 be attached as one.
 
+While it is running, `Tools > How Is Reclazz Doing?` asks the agent what it has
+actually done: how long it has been up, what it has reloaded and what failed,
+what a save costs at the median and the 95th on your machine rather than on
+mine, how many directories it is watching and how many it could not, and how
+much is waiting on a restart. `Tools > Why Didn't My Class Reload?` and
+`Tools > What Still Needs a Restart?` answer the two narrower questions.
+
 `./gradlew :agent:check` runs the unit suite and a coverage floor with it;
 `:agent:jacocoTestReport` writes the report to
 `agent/build/reports/jacoco/test/html`. The figure counts only what runs in the

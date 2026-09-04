@@ -202,6 +202,7 @@
         <ul>
             <li>A log level takes effect when you save it. On SAP Commerce the levels live in the property files rather than a log4j2.xml, and those now reach the running logger; on Spring Boot so do <code>logging.level.*</code> and a saved <code>logback.xml</code> or <code>log4j2.xml</code></li>
             <li>A changed property is applied to the Spring Boot beans that read it, so a timeout or a feature flag no longer waits for a restart. Beans bound through a constructor cannot take a new value, and Reclazz says so instead of reporting it as applied</li>
+            <li><b>Tools &gt; How Is Reclazz Doing?</b> asks the running agent what it has actually done: how long it has been up, what it has reloaded and what failed, what a save costs at the median and the 95th on your machine rather than on somebody else's, how many directories it is watching and how many it could not, and how much is waiting on a restart</li>
             <li><b>Tools &gt; Why Didn't My Class Reload?</b> answers the question the log cannot: the build did not reach the class, it is built somewhere Reclazz does not watch, the bytes came out identical, or the JVM has not loaded it yet. None of those produce an error, which is why nothing was in the log</li>
             <li><b>Tools &gt; What Still Needs a Restart?</b> lists what this session did that a restart would change, and says so plainly when there is nothing</li>
         </ul>
@@ -409,6 +410,12 @@
                 class="com.onurkat.reclazz.plugin.reload.PendingRestartAction"
                 text="What Still Needs a Restart?"
                 description="Ask the running agent what a restart would still change">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
+        <action id="Reclazz.SessionReport"
+                class="com.onurkat.reclazz.plugin.reload.SessionReportAction"
+                text="How Is Reclazz Doing?"
+                description="Ask the running agent what it has reloaded, how long saves take, and what it is watching">
             <add-to-group group-id="ToolsMenu" anchor="last"/>
         </action>
         <action id="Reclazz.Disconnect"

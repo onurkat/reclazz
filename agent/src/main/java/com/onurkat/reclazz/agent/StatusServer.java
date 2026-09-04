@@ -28,8 +28,8 @@ import java.util.concurrent.TimeUnit;
  *
  * Protocol: one JSON object per line, terminated by newline.
  *
- * Clients may send one line back: {@code DIAGNOSE <class name>} or
- * {@code PENDING}. Both read state the agent already broadcasts and return
+ * Clients may send one line back: {@code DIAGNOSE <class name>},
+ * {@code PENDING} or {@code HEALTH}. Both read state the agent already broadcasts and return
  * text, so they add no reach into the process, and the socket is loopback-only
  * as before. Anything else is ignored rather than answered, so a stray
  * connection cannot make the agent talk.
@@ -50,6 +50,9 @@ public class StatusServer implements StatusReporter.StatusListener {
 
     /** Answers DIAGNOSE, when the agent has one to give. */
     private volatile java.util.function.Function<String, List<String>> diagnoser;
+
+    /** Answers HEALTH. Falls back to what SessionReport knows on its own. */
+    private volatile java.util.function.Supplier<List<String>> health;
 
     public StatusServer(int port, Path portFile) {
         this.requestedPort = port;
@@ -113,6 +116,14 @@ public class StatusServer implements StatusReporter.StatusListener {
     }
 
     /**
+     * Where the session report gets the numbers only the agent knows: how many
+     * directories the watcher registered, and how many it could not.
+     */
+    public void setHealthReporter(java.util.function.Supplier<List<String>> health) {
+        this.health = health;
+    }
+
+    /**
      * Runs a client's command and sends the answer to every client, so the
      * report lands in the reload log the developer is already looking at.
      */
@@ -124,6 +135,21 @@ public class StatusServer implements StatusReporter.StatusListener {
         try {
             if (trimmed.equalsIgnoreCase(PENDING)) {
                 for (String reportLine : RestartLedger.digest()) {
+                    StatusReporter.info(reportLine);
+                }
+                return;
+            }
+            if (trimmed.equalsIgnoreCase(HEALTH)) {
+                // The third question, and the plainest: how is this going. The
+                // other two answer why a class did not reload and what still
+                // needs a restart, and neither of them tells a developer whose
+                // saves feel slow what a save actually costs on their machine,
+                // or tells one who thinks nothing is reloading whether the
+                // watcher ever saw their directory.
+                java.util.function.Supplier<List<String>> answering = health;
+                for (String reportLine : answering == null
+                        ? SessionReport.lines(-1, 0, RestartLedger.size())
+                        : answering.get()) {
                     StatusReporter.info(reportLine);
                 }
                 return;
@@ -286,6 +312,7 @@ public class StatusServer implements StatusReporter.StatusListener {
     private static final int MAX_COMMAND_LENGTH = 512;
     private static final String DIAGNOSE = "DIAGNOSE";
     private static final String PENDING = "PENDING";
+    private static final String HEALTH = "HEALTH";
 
     /**
      * Package-private rather than private: what this returns is the line the

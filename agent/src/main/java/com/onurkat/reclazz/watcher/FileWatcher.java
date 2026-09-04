@@ -376,8 +376,17 @@ public class FileWatcher {
                 + com.onurkat.reclazz.ui.Failures.describe(firstRegistrationFailure) + ".");
     }
 
+    /**
+     * How many directories this watcher is actually holding a key for, which is
+     * the number that separates "nothing reloads" from "nothing I changed was
+     * being watched".
+     */
+    public int watchedDirectoryCount() {
+        return watchKeyMap.size();
+    }
+
     /** How many directories were refused, for tests and diagnostics. */
-    int unwatchableCount() {
+    public int unwatchableCount() {
         return unwatchable.size();
     }
 

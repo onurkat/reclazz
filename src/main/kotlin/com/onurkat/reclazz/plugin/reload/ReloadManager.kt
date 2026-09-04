@@ -208,6 +208,14 @@ class ReloadManager(private val project: Project) : Disposable {
         return statusClient?.send("PENDING") ?: false
     }
 
+    /**
+     * Ask the running agent how the session is going. The answer arrives as
+     * ordinary log lines in the tool window, the same way the other two do.
+     */
+    fun sessionReport(): Boolean {
+        return statusClient?.send("HEALTH") ?: false
+    }
+
     private fun notifyListeners(event: AgentEvent) {
         for (listener in eventListeners) {
             try {

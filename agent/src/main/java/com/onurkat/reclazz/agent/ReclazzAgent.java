@@ -162,6 +162,9 @@ public class ReclazzAgent {
             // out the same way as everything after them.
             StatusReporter.setWrapMode(config.getWrapOutput());
             agentConfig = config;
+            // Before anything else is timed against it: the report's clock is
+            // the agent's, not the first moment somebody asks for the report.
+            SessionReport.sessionStarted(java.time.Instant.now());
 
             // After the wrap mode is set, so a long list of names is laid out,
             // and before anything acts on the configuration, so that a setting
@@ -421,6 +424,16 @@ public class ReclazzAgent {
 
             // Set up file watcher
             FileWatcher watcher = new FileWatcher(platformContext, config);
+
+            // Here rather than beside the diagnoser above, because the numbers
+            // that separate "nothing reloads" from "nothing I changed was being
+            // watched" belong to the watcher, and it does not exist until now.
+            if (statusServer != null) {
+                statusServer.setHealthReporter(() -> SessionReport.lines(
+                        watcher.watchedDirectoryCount(),
+                        watcher.unwatchableCount(),
+                        RestartLedger.size()));
+            }
 
             // Single-threaded, and that is a correctness requirement rather
             // than a resource decision. A reload does not only redefine a
@@ -695,9 +708,11 @@ public class ReclazzAgent {
 
             if (reloadResult.isSuccess()) {
                 if (reloadResult.isStructuralReload()) {
+                    SessionReport.reloaded(true, elapsed);
                     StatusReporter.structuralReload(displayName, elapsed,
                             reloadResult.getShape());
                 } else {
+                    SessionReport.reloaded(false, elapsed);
                     StatusReporter.reload(displayName, elapsed);
                 }
 
@@ -719,6 +734,7 @@ public class ReclazzAgent {
                     StatusReporter.success("Interceptor reloaded: " + displayName);
                 }
             } else {
+                SessionReport.failed();
                 StatusReporter.error("Hot-swap failed for " + displayName + ": " + reloadResult.getError());
                 // A structural failure does not always carry advice: the ones
                 // raised with their own explanation have nothing to add. Printing
@@ -783,6 +799,7 @@ public class ReclazzAgent {
             }
 
             IncrementalCompiler.CompileResult result = compiler.compileBatch(files, moduleName);
+            SessionReport.compiled(files.size());
             if (!result.isSuccess()) {
                 StatusReporter.error("Compilation failed:");
                 result.getErrors().forEach(err -> StatusReporter.error("  " + err));
@@ -902,17 +919,21 @@ public class ReclazzAgent {
         if (compiledClasses.size() == 1 && successCount == 1) {
             var only = swappedClasses.entrySet().iterator().next();
             if (only.getValue()) {
+                SessionReport.reloaded(true, elapsed);
                 StatusReporter.structuralReload(only.getKey(), elapsed,
                         swappedShapes.get(only.getKey()));
             } else {
+                SessionReport.reloaded(false, elapsed);
                 StatusReporter.reload(only.getKey(), elapsed);
             }
         } else if (compiledClasses.size() > 1) {
             for (var entry : swappedClasses.entrySet()) {
                 if (entry.getValue()) {
+                    SessionReport.reloaded(true, -1);
                     StatusReporter.structuralReload(entry.getKey(), -1,
                             swappedShapes.get(entry.getKey()));
                 } else {
+                    SessionReport.reloaded(false, -1);
                     StatusReporter.reload(entry.getKey(), -1);
                 }
             }
