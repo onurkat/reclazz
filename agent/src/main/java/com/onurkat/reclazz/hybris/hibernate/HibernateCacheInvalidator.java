@@ -32,7 +32,7 @@ public class HibernateCacheInvalidator {
             try {
                 Class<?> entityClass = Class.forName(className, false,
                         sessionFactory.getClass().getClassLoader());
-                Method evictEntityData = findMethod(cache.getClass(), "evictEntityData", Class.class);
+                Method evictEntityData = com.onurkat.reclazz.util.Reflect.findMethod(cache.getClass(), "evictEntityData", Class.class);
                 if (evictEntityData != null) {
                     evictEntityData.invoke(cache, entityClass);
                     StatusReporter.info("Hibernate L2 cache evicted for: " + className);
@@ -43,7 +43,7 @@ public class HibernateCacheInvalidator {
             }
 
             // Fallback: evict all entity data
-            Method evictAll = findMethod(cache.getClass(), "evictAllRegions");
+            Method evictAll = com.onurkat.reclazz.util.Reflect.findMethod(cache.getClass(), "evictAllRegions");
             if (evictAll != null) {
                 evictAll.invoke(cache);
                 StatusReporter.info("Hibernate L2 cache fully evicted after reload of: " + className);
@@ -72,17 +72,4 @@ public class HibernateCacheInvalidator {
         }
     }
 
-    private Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
-        Class<?> current = clazz;
-        while (current != null) {
-            try {
-                Method m = current.getDeclaredMethod(name, paramTypes);
-                m.setAccessible(true);
-                return m;
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            }
-        }
-        return null;
-    }
 }

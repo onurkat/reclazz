@@ -156,7 +156,7 @@ final class SpringReflection {
 
     static void registerBeanDefinition(Object factory, String name, Object bd) throws Exception {
         Class<?> bdCls = loadClass(CLS_BD, factory.getClass().getClassLoader());
-        Method m = findMethod(factory.getClass(), "registerBeanDefinition", String.class, bdCls);
+        Method m = com.onurkat.reclazz.util.Reflect.findMethod(factory.getClass(), "registerBeanDefinition", String.class, bdCls);
         if (m == null) throw new NoSuchMethodException("registerBeanDefinition");
         m.invoke(factory, name, bd);
     }
@@ -169,7 +169,7 @@ final class SpringReflection {
 
     static void destroySingleton(Object factory, String name) {
         try {
-            Method m = findMethod(factory.getClass(), "destroySingleton", String.class);
+            Method m = com.onurkat.reclazz.util.Reflect.findMethod(factory.getClass(), "destroySingleton", String.class);
             if (m != null) m.invoke(factory, name);
         } catch (Throwable ignored) {}
     }
@@ -177,7 +177,7 @@ final class SpringReflection {
     /** Returns the already-instantiated singleton, or null if not yet created. */
     static Object getExistingSingleton(Object factory, String name) {
         try {
-            Method m = findMethod(factory.getClass(), "getSingleton", String.class);
+            Method m = com.onurkat.reclazz.util.Reflect.findMethod(factory.getClass(), "getSingleton", String.class);
             if (m != null) return m.invoke(factory, name);
         } catch (Throwable ignored) {}
         return null;
@@ -380,20 +380,6 @@ final class SpringReflection {
         } catch (Throwable t) {
             return null;
         }
-    }
-
-    private static Method findMethod(Class<?> cls, String name, Class<?>... paramTypes) {
-        Class<?> current = cls;
-        while (current != null) {
-            try {
-                Method m = current.getDeclaredMethod(name, paramTypes);
-                m.setAccessible(true);
-                return m;
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            }
-        }
-        return null;
     }
 
     static String rootCause(Throwable t) {

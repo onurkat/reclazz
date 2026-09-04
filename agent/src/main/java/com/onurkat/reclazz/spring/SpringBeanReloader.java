@@ -180,13 +180,13 @@ public class SpringBeanReloader {
 
         if (singleton) {
             Object oldInstance = null;
-            Method getSingleton = SpringBeans.findMethod(beanFactory.getClass(),
+            Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
                     "getSingleton", String.class);
             if (getSingleton != null) {
                 oldInstance = getSingleton.invoke(beanFactory, beanName);
             }
 
-            Method destroySingleton = SpringBeans.findMethod(beanFactory.getClass(),
+            Method destroySingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
                     "destroySingleton", String.class);
             if (destroySingleton != null) {
                 destroySingleton.invoke(beanFactory, beanName);
@@ -263,8 +263,8 @@ public class SpringBeanReloader {
         for (Object appContext : contexts) {
             try {
                 Object beanFactory = SpringBeans.getBeanFactory(appContext);
-                Method getSingletonNames = SpringBeans.findMethod(beanFactory.getClass(), "getSingletonNames");
-                Method getSingleton = SpringBeans.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+                Method getSingletonNames = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
+                Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
                 if (getSingletonNames == null || getSingleton == null) continue;
 
                 String[] names = (String[]) getSingletonNames.invoke(beanFactory);
@@ -329,7 +329,7 @@ public class SpringBeanReloader {
             for (Object appContext : contexts) {
                 try {
                     Object beanFactory = SpringBeans.getBeanFactory(appContext);
-                    Method getDependentBeans = SpringBeans.findMethod(beanFactory.getClass(),
+                    Method getDependentBeans = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
                             "getDependentBeans", String.class);
                     if (getDependentBeans == null) continue;
 

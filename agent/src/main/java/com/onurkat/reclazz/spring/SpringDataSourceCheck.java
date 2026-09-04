@@ -95,7 +95,7 @@ public class SpringDataSourceCheck {
             String wanted = changed.get(pair[1]);
             if (wanted == null || stale.contains(pair[1])) continue;
 
-            Method getter = SpringBeans.findMethod(dataSource.getClass(), pair[0]);
+            Method getter = com.onurkat.reclazz.util.Reflect.findMethod(dataSource.getClass(), pair[0]);
             if (getter == null) continue;
             try {
                 Object live = getter.invoke(dataSource);

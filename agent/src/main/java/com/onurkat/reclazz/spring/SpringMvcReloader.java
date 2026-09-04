@@ -85,7 +85,7 @@ public class SpringMvcReloader {
             // not look at supertypes. Asking the concrete class for it threw
             // NoSuchMethodException on every single re-scan, which the catch
             // below reported and then swallowed as a returned false.
-            Method detectMethod = findMethodInHierarchy(
+            Method detectMethod = com.onurkat.reclazz.util.Reflect.findMethod(
                     handlerMapping.getClass(), "detectHandlerMethods", Object.class);
             if (detectMethod == null) {
                 StatusReporter.warn("MVC re-scan cannot proceed for " + controllerClass.getName()
@@ -130,18 +130,6 @@ public class SpringMvcReloader {
                         + " (" + e.getClass().getSimpleName() + "); a stale mapping may survive");
             }
         }
-    }
-
-    /** Looks up a method on a type or any of its supertypes. */
-    private static Method findMethodInHierarchy(Class<?> type, String name, Class<?>... params) {
-        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
-            try {
-                return c.getDeclaredMethod(name, params);
-            } catch (NoSuchMethodException ignored) {
-                // keep walking
-            }
-        }
-        return null;
     }
 
     /**
@@ -282,7 +270,7 @@ public class SpringMvcReloader {
                     newBytecode, addedMethods, ADAPTER_VERSION.incrementAndGet());
             if (adapter == null) return false;
 
-            Method detect = findMethodInHierarchy(
+            Method detect = com.onurkat.reclazz.util.Reflect.findMethod(
                     handlerMapping.getClass(), "detectHandlerMethods", Object.class);
             if (detect == null) return false;
             detect.setAccessible(true);
@@ -357,7 +345,7 @@ public class SpringMvcReloader {
                 // Object, not RequestMappingInfo. Asking for the concrete type
                 // threw NoSuchMethodException on every call, and the catch
                 // below used to swallow it in silence.
-                Method unregisterMethod = findMethodInHierarchy(
+                Method unregisterMethod = com.onurkat.reclazz.util.Reflect.findMethod(
                         handlerMapping.getClass(), "unregisterMapping", Object.class);
                 if (unregisterMethod == null) {
                     StatusReporter.warn("MVC unregister unavailable on "

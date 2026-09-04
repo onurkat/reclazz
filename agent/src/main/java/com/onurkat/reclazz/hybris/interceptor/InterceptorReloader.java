@@ -125,7 +125,7 @@ public class InterceptorReloader {
                 try {
                     // Get the mapping bean and check if its interceptor matches
                     Object mapping = getBean.invoke(appContext, beanName);
-                    Method getInterceptor = findGetterMethod(mapping.getClass(), "getInterceptor");
+                    Method getInterceptor = com.onurkat.reclazz.util.Reflect.findMethod(mapping.getClass(), "getInterceptor");
                     if (getInterceptor != null) {
                         Object interceptor = getInterceptor.invoke(mapping);
                         if (interceptor != null &&
@@ -153,20 +153,6 @@ public class InterceptorReloader {
         } catch (Exception e) {
             StatusReporter.warn("Could not refresh InterceptorMappings: " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
-    }
-
-    private Method findGetterMethod(Class<?> clazz, String name) {
-        Class<?> current = clazz;
-        while (current != null) {
-            try {
-                Method m = current.getDeclaredMethod(name);
-                m.setAccessible(true);
-                return m;
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            }
-        }
-        return null;
     }
 
     private Method findDestroyMethod(Object beanFactory) {

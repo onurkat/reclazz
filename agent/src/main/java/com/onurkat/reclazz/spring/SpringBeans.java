@@ -71,22 +71,4 @@ final class SpringBeans {
         }
     }
 
-    /**
-     * Look up a (possibly inherited, possibly non-public) method and make
-     * it accessible. Spring's internal classes hide plenty of what we need.
-     */
-    static Method findMethod(Class<?> clazz, String name, Class<?>... paramTypes) {
-        for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
-            try {
-                Method m = current.getDeclaredMethod(name, paramTypes);
-                m.setAccessible(true);
-                return m;
-            } catch (NoSuchMethodException e) {
-                // try the superclass
-            } catch (Exception e) {
-                return null;
-            }
-        }
-        return null;
-    }
 }

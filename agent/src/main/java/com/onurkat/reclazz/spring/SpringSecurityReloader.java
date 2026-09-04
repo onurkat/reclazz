@@ -786,7 +786,7 @@ public class SpringSecurityReloader {
         if (reloadedClass == null) return 0;
 
         for (String name : METHOD_SECURITY_ASK_METHODS) {
-            java.lang.reflect.Method ask = SpringBeans.findMethod(source.getClass(), name,
+            java.lang.reflect.Method ask = com.onurkat.reclazz.util.Reflect.findMethod(source.getClass(), name,
                     java.lang.reflect.Method.class, Class.class);
             if (ask == null) continue;
             int answered = 0;

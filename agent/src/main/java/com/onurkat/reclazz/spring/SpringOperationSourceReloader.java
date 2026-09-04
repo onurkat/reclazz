@@ -127,10 +127,10 @@ public class SpringOperationSourceReloader {
      */
     private static void repopulateFor(Object source, Class<?> reloadedClass) {
         java.lang.reflect.Method ask =
-                SpringBeans.findMethod(source.getClass(), "getCacheOperations",
+                com.onurkat.reclazz.util.Reflect.findMethod(source.getClass(), "getCacheOperations",
                         java.lang.reflect.Method.class, Class.class);
         if (ask == null) {
-            ask = SpringBeans.findMethod(source.getClass(), "getTransactionAttribute",
+            ask = com.onurkat.reclazz.util.Reflect.findMethod(source.getClass(), "getTransactionAttribute",
                     java.lang.reflect.Method.class, Class.class);
         }
         if (ask == null) return;
