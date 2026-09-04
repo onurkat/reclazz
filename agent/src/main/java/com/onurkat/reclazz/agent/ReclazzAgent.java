@@ -645,8 +645,21 @@ public class ReclazzAgent {
 
         StatusReporter.info("Class file changed: " + classFile.getFileName() + " [" + moduleName + "]");
 
+        // Reading the file is its own step, with its own message. The try that
+        // used to start here ran to the end of the Spring orchestration, so
+        // anything a framework reloader threw was reported as "Failed to read
+        // class file", about a file that had been read fine and a class that
+        // had reloaded.
+        byte[] bytecode;
         try {
-            byte[] bytecode = Files.readAllBytes(classFile);
+            bytecode = Files.readAllBytes(classFile);
+        } catch (java.io.IOException e) {
+            StatusReporter.error("Failed to read class file " + classFile + ": "
+                    + com.onurkat.reclazz.ui.Failures.describe(e));
+            return;
+        }
+
+        try {
             String internalName = className.replace('.', '/');
 
             if (transformContext != null && !transformContext.isWatched(internalName)
@@ -724,8 +737,13 @@ public class ReclazzAgent {
                     StatusReporter.warn(advice);
                 }
             }
-        } catch (Exception e) {
-            StatusReporter.error("Failed to read class file " + classFile + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+        } catch (Throwable t) {
+            // Throwable, because a reloader asking an unknown framework a
+            // question answers with a NoClassDefFoundError as readily as with
+            // an exception, and this runs on the watcher's thread: letting one
+            // out is how a session stops reloading without saying anything.
+            StatusReporter.error("Reload of " + displayName + " did not finish: "
+                    + com.onurkat.reclazz.ui.Failures.describe(t));
         }
     }
 

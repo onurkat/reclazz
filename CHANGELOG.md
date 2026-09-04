@@ -105,6 +105,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   words are reported now, and the classifier is a named function with its own
   test.
 
+- **One framework reloader failing stopped the nine after it.** Every reloaded
+  Spring bean goes through ten steps: evict the caches, drop the cached answer
+  to what an annotation says, re-register the scheduled methods, the event
+  listeners, the AOP proxies, the async methods, the repositories, the security
+  configuration. They ran as a bare sequence. Each of them asks a class the
+  agent did not compile against what it has, in an application whose Spring
+  version the agent has never seen, so a missing optional module answers with a
+  `NoClassDefFoundError`, and an Error is not an Exception: it walked out past
+  every remaining step and reached a catch that told the developer their class
+  file could not be read. It could, and the class had reloaded. Each step runs
+  on its own now, is named when it fails, and says so once rather than on every
+  save. A new framework integration is a name and a lambda in that list.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own

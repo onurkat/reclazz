@@ -10,19 +10,20 @@ import com.onurkat.reclazz.ui.StatusReporter;
 /**
  * Coordinates all Spring-related reloaders in the correct order.
  *
- * Execution order:
- * 1. Bean singleton refresh (destroys + recreates the bean)
- * 2. MVC re-scan (@RequestMapping re-registration)
- * 3. Cache eviction (@Cacheable/@CacheEvict/@CachePut)
- * 4. Scheduler re-registration (@Scheduled)
- * 5. Event listener re-registration (@EventListener)
- * 6. AOP proxy cache clear (@Aspect)
- * 7. Async re-processing (@Async)
- * 8. Data repository refresh (Spring Data)
- * 9. Security config notification (@EnableWebSecurity)
+ * <p>The opening moves are bespoke and stay written out: what the container
+ * thinks the bean needs injected has to be dropped before anything re-creates
+ * it, the bean is refreshed, and the MVC mappings are re-scanned with the
+ * added method signatures and the new bytecode in hand. They produce results
+ * that later parts of the same method read.
  *
- * Each reloader is a no-op if the relevant Spring module is not on the classpath
- * or the reloaded class does not use the relevant annotations.
+ * <p>Everything after that is a list. See {@link #buildSteps()}: ten steps of
+ * the same shape, each told which class reloaded and left to decide whether it
+ * has anything to do, and each run on its own so that one throwing is one step
+ * that did not happen rather than the end of the sequence. A new framework
+ * integration is a name and a lambda in that list.
+ *
+ * <p>Each reloader is a no-op if the relevant Spring module is not on the
+ * classpath or the reloaded class does not use the relevant annotations.
  */
 public class SpringReloadOrchestrator {
 
@@ -39,6 +40,7 @@ public class SpringReloadOrchestrator {
     private final SpringInjectionMetadataReloader injectionMetadataReloader;
     private final PlatformContext platformContext;
     private final SpringControllerAdviceReloader exceptionHandlerReloader;
+    private final java.util.List<ReloadSteps.Step> afterTheBeanIsBack;
 
     public SpringReloadOrchestrator(PlatformContext platformContext) {
         this.platformContext = platformContext;
@@ -55,6 +57,8 @@ public class SpringReloadOrchestrator {
         this.injectionMetadataReloader = new SpringInjectionMetadataReloader(platformContext);
         this.exceptionHandlerReloader = new SpringControllerAdviceReloader(platformContext);
         this.newBeanRegistrar = new SpringNewBeanRegistrar(platformContext, mvcReloader);
+        // Last, because every step refers to a reloader above it.
+        this.afterTheBeanIsBack = buildSteps();
     }
 
     private final SpringNewBeanRegistrar newBeanRegistrar;
@@ -205,51 +209,70 @@ public class SpringReloadOrchestrator {
             }
         }
 
-        // 3. Cache eviction
-        cacheReloader.reloadCaches(reloadedClass);
+        // Steps 3 to 9, each on its own. They share a shape (a class went in,
+        // a framework was told) and they share a failure mode: every one asks
+        // a class it did not compile against what it has, in an application
+        // whose Spring version this agent has never seen. As a bare sequence
+        // one of them throwing skipped all the ones after it.
+        ReloadSteps.runAll(afterTheBeanIsBack,
+                new ReloadSteps.Reloaded(className, reloadedClass, isStructural, annotationsChanged));
+    }
 
-        // 3a. Which exceptions a controller advice handles. Spring scans the
-        // advice beans once at startup and caches each controller's handlers
-        // on first use, so adding @ExceptionHandler to a method that was
-        // already there reached nothing: measured on Boot 3.3, the endpoint
-        // kept answering the default error body.
-        if ((isStructural || annotationsChanged)
-                && SpringControllerAdviceReloader.carriesAdvice(reloadedClass)) {
-            exceptionHandlerReloader.reload();
-        }
+    /**
+     * What every reloaded bean goes through once its own refresh is done, in
+     * order. A new framework integration is a name and a lambda here.
+     *
+     * <p>Built once rather than per reload: the reloaders are stateless about
+     * the class and hold their own caches, and a save that touches twenty
+     * classes should not build twenty of these.
+     */
+    private java.util.List<ReloadSteps.Step> buildSteps() {
+        return java.util.List.of(
+            new ReloadSteps.Step("Cache eviction",
+                    r -> cacheReloader.reloadCaches(r.type())),
 
-        // 3b. Transaction/cache annotation metadata. Eviction above empties
-        // the cached VALUES; this clears the cached ANSWER to "what does the
-        // annotation on this method say", which redefinition changes without
-        // changing the Method identity the answer is filed under.
-        operationSourceReloader.reloadOperationSources(reloadedClass, annotationsChanged);
+            // Which exceptions a controller advice handles. Spring scans the
+            // advice beans once at startup and caches each controller's
+            // handlers on first use, so adding @ExceptionHandler to a method
+            // that was already there reached nothing: measured on Boot 3.3,
+            // the endpoint kept answering the default error body.
+            new ReloadSteps.Step("Controller advice re-scan", r -> {
+                if ((r.structural() || r.annotationsChanged())
+                        && SpringControllerAdviceReloader.carriesAdvice(r.type())) {
+                    exceptionHandlerReloader.reload();
+                }
+            }),
 
-        // 3c. The same cache, one framework over. Method security resolves
-        // @PreAuthorize once per method and keeps the answer under a key that
-        // redefinition does not change, so an edited expression keeps being
-        // enforced as it was written. This runs for every class, not only for
-        // security configurations: the edit that needs it is an annotation on
-        // a service method, which never reaches the filter-chain rebuild at
-        // step 9 because such a class is not a security configuration.
-        securityReloader.refreshMethodSecurity(reloadedClass);
+            // Transaction/cache annotation metadata. Eviction above empties
+            // the cached VALUES; this clears the cached ANSWER to "what does
+            // the annotation on this method say", which redefinition changes
+            // without changing the Method identity the answer is filed under.
+            new ReloadSteps.Step("Transaction and cache metadata",
+                    r -> operationSourceReloader.reloadOperationSources(
+                            r.type(), r.annotationsChanged())),
 
-        // 4. Scheduler re-registration
-        schedulerReloader.reloadScheduledMethods(reloadedClass);
+            // The same cache, one framework over. Method security resolves
+            // @PreAuthorize once per method and keeps the answer under a key
+            // that redefinition does not change, so an edited expression keeps
+            // being enforced as it was written. This runs for every class, not
+            // only for security configurations: the edit that needs it is an
+            // annotation on a service method, which never reaches the
+            // filter-chain rebuild below because such a class is not one.
+            new ReloadSteps.Step("Method security metadata",
+                    r -> securityReloader.refreshMethodSecurity(r.type())),
 
-        // 5. Event listener re-registration
-        eventReloader.reloadEventListeners(reloadedClass);
-
-        // 6. AOP proxy cache clear
-        aopReloader.reloadAopProxies(reloadedClass);
-
-        // 7. Async re-processing
-        asyncReloader.reloadAsyncMethods(reloadedClass);
-
-        // 8. Data repository refresh
-        dataReloader.reloadRepository(reloadedClass);
-
-        // 9. Security config notification
-        securityReloader.reloadSecurityConfig(reloadedClass);
+            new ReloadSteps.Step("Scheduler re-registration",
+                    r -> schedulerReloader.reloadScheduledMethods(r.type())),
+            new ReloadSteps.Step("Event listener re-registration",
+                    r -> eventReloader.reloadEventListeners(r.type())),
+            new ReloadSteps.Step("AOP proxy cache clear",
+                    r -> aopReloader.reloadAopProxies(r.type())),
+            new ReloadSteps.Step("Async re-processing",
+                    r -> asyncReloader.reloadAsyncMethods(r.type())),
+            new ReloadSteps.Step("Data repository refresh",
+                    r -> dataReloader.reloadRepository(r.type())),
+            new ReloadSteps.Step("Security configuration",
+                    r -> securityReloader.reloadSecurityConfig(r.type())));
     }
 
     /**
