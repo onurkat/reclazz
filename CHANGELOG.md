@@ -118,6 +118,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   on its own now, is named when it fails, and says so once rather than on every
   save. A new framework integration is a name and a lambda in that list.
 
+- **The status socket's encoding was whatever the two machines happened to
+  agree on.** It carries the agent's own words to the IDE, and both ends built
+  their streams with no charset, which means the default one, in two different
+  JVMs. The IDE's is UTF-8; the application's belongs to whoever wrote its start
+  script, and SAP Commerce installations do set `-Dfile.encoding=ISO-8859-1`.
+  Reproduced: "Reloaded com.acme.Sipariş (Masaüstü)" left an ISO-8859-1 agent
+  and reached a UTF-8 reader as "Sipari?" and "Masa�st�". Nothing
+  failed; the developer read nonsense in their tool window, on their machine and
+  not on anybody else's. Both ends name UTF-8 now, and a test runs one of them
+  in a child JVM whose default is not UTF-8, because that is the only place the
+  question can be answered.
+
+- **A source file that was not UTF-8 was read as no source file at all.**
+  `Files.readString` is UTF-8 whatever the machine, which is right, and is not a
+  safe assumption about a file Reclazz did not write. A Java source saved as
+  ISO-8859-9, ordinary in a Turkish repository, threw `MalformedInputException:
+  Input length = 1`. Two scans read sources and only look for ASCII in them, so
+  they fall back to a byte-per-character decoding: the package-declaration
+  parse, and the scan for files that inlined a changed constant, which had been
+  answering "no mention" for every file it could not decode and leaving them out
+  of the warning that exists to name them. ImpEx deliberately does not fall
+  back, because its content is re-encoded and handed to the platform's import
+  service and a wrong guess would put wrong characters in the database; it says
+  the file is not UTF-8 and what to do instead.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own

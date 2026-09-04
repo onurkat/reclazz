@@ -83,7 +83,10 @@ class AgentStatusClient(
         val s = socket ?: return false
         return try {
             val out = s.getOutputStream()
-            out.write((command + "\n").toByteArray())
+            // Stated rather than defaulted. The other end of this socket is a
+            // JVM whose default charset belongs to whoever wrote the start
+            // script, so both directions name UTF-8 and neither inherits one.
+            out.write((command + "\n").toByteArray(Charsets.UTF_8))
             out.flush()
             true
         } catch (_: Exception) {
@@ -104,7 +107,7 @@ class AgentStatusClient(
                     retryDelay = 1000L
                     wasConnected = true
 
-                    BufferedReader(InputStreamReader(s.getInputStream())).use { reader ->
+                    BufferedReader(InputStreamReader(s.getInputStream(), Charsets.UTF_8)).use { reader ->
                         while (running) {
                             val line = try {
                                 reader.readLine() ?: break

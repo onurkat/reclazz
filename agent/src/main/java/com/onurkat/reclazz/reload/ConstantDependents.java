@@ -177,7 +177,10 @@ public final class ConstantDependents {
 
     private static boolean mentions(Path file, List<Pattern> patterns) {
         try {
-            String source = Files.readString(file);
+            // A source that is not UTF-8 used to land in the catch below and
+            // count as "does not mention it", so a file that had inlined the
+            // changed constant was left out of the warning about exactly that.
+            String source = com.onurkat.reclazz.util.SourceText.readForScanning(file);
             for (Pattern pattern : patterns) {
                 if (pattern.matcher(source).find()) return true;
             }
