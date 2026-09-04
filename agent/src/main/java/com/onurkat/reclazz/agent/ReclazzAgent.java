@@ -187,6 +187,12 @@ public class ReclazzAgent {
             StatusReporter.setWrapMode(config.getWrapOutput());
             agentConfig = config;
 
+            // After the wrap mode is set, so a long list of names is laid out,
+            // and before anything acts on the configuration, so that a setting
+            // the developer thinks they passed is corrected before its absence
+            // is felt.
+            config.reportUnknownKeys();
+
             // Check JVM capabilities
             reportCapabilities();
 

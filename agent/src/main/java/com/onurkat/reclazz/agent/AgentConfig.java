@@ -241,8 +241,87 @@ public class AgentConfig {
             }
         }
 
+        config.unknownKeys = unknownKeysIn(params, agentArgs);
         return config;
     }
+
+    /**
+     * What was passed that this agent does not know, and what that cost.
+     *
+     * <p>Unrecognised keys were dropped, and dropping is not what happens to
+     * them. The splitter breaks the argument string on a comma only when a
+     * KNOWN key follows it, so that a value may contain a comma of its own,
+     * which means an unknown key does not become an argument: it becomes part
+     * of the value of the argument before it.
+     * {@code hybrisHome=/srv/hybris,debouceMs=200} parses as one setting whose
+     * hybrisHome is {@code /srv/hybris,debouceMs=200}, a path that does not
+     * exist, and the developer is told something about their platform rather
+     * than about their typo.
+     *
+     * <p>Three things arrive this way and none is rare: a typo, an argument
+     * copied from notes older than the jar, and a jar older than the argument,
+     * which is the ordinary state of a SAP Commerce server whose
+     * {@code wrapper.conf} was written by a newer plugin and whose staged jar
+     * has not been refreshed. Where it lands decides how bad it is: in front of
+     * {@code portFile} it means the agent writes its port somewhere nobody
+     * reads and the IDE never connects.
+     *
+     * <p>The parse is left alone. Splitting on every comma that looks like an
+     * argument would take the commas out of the values that are allowed them,
+     * and refusing to start over a stale line in a config file is a worse trade
+     * than a warning. So this only says what happened.
+     */
+    static java.util.List<String> unknownKeysIn(Map<String, String> params, String agentArgs) {
+        java.util.Set<String> unknown = new java.util.LinkedHashSet<>();
+
+        // The ones that did become an argument of their own: a key at the very
+        // start, or one following another unknown.
+        for (String key : params.keySet()) {
+            if (!KNOWN_KEYS.contains(key)) unknown.add(key);
+        }
+
+        // And the ones that were swallowed into the value before them.
+        if (agentArgs != null) {
+            java.util.regex.Matcher m = SWALLOWED.matcher(agentArgs);
+            while (m.find()) {
+                String key = m.group(1);
+                if (!KNOWN_KEYS.contains(key)) unknown.add(key);
+            }
+        }
+
+        java.util.List<String> sorted = new java.util.ArrayList<>(unknown);
+        java.util.Collections.sort(sorted);
+        return sorted;
+    }
+
+    /** A comma, then something shaped like an argument name, then an equals. */
+    private static final Pattern SWALLOWED =
+            Pattern.compile(",([A-Za-z][A-Za-z0-9_.-]*)=");
+
+    /** Names them, in the one place that knows what the accepted ones are. */
+    public void reportUnknownKeys() {
+        if (unknownKeys.isEmpty()) return;
+        java.util.List<String> accepted = new java.util.ArrayList<>(KNOWN_KEYS);
+        java.util.Collections.sort(accepted);
+        com.onurkat.reclazz.ui.StatusReporter.warn(
+                com.onurkat.reclazz.ui.Plural.word(unknownKeys.size(),
+                        "This agent argument is not one this version knows: ",
+                        "These agent arguments are not ones this version knows: ")
+                        + String.join(", ", unknownKeys)
+                        + com.onurkat.reclazz.ui.Plural.word(unknownKeys.size(),
+                                ". It was not ignored: unless it came first, it became part of "
+                                        + "the value of the argument before it. ",
+                                ". They were not ignored: unless one came first, each became "
+                                        + "part of the value of the argument before it. ")
+                        + "This version accepts: " + String.join(", ", accepted) + ".");
+    }
+
+    /** For tests, and for the startup line that names them. */
+    public java.util.List<String> getUnknownKeys() {
+        return Collections.unmodifiableList(unknownKeys);
+    }
+
+    private java.util.List<String> unknownKeys = java.util.List.of();
 
     public Path getHybrisHome() { return hybrisHome; }
     public Set<String> getWatchExtensions() { return Collections.unmodifiableSet(watchExtensions); }
