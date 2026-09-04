@@ -170,12 +170,29 @@ public class ImpexAutoImporter {
             boolean hasError = (Boolean) isError.invoke(result);
 
             if (hasError) {
-                Method getErrorMessage = result.getClass().getMethod("getUnresolvedLines");
-                Object unresolvedLines = getErrorMessage.invoke(result);
-                StatusReporter.error("ImpEx import had errors. Check unresolvedLines.");
-                if (unresolvedLines != null) {
-                    StatusReporter.error("  Unresolved: " + unresolvedLines);
-                }
+                // How many lines were refused, and not what was in them.
+                //
+                // getUnresolvedLines() hands back the platform's own rows, and
+                // printing them printed the data: an ImpEx that loads customers
+                // carries names, e-mail addresses and postal addresses, and
+                // this line put them in the server console, over the status
+                // socket, into the IDE tool window, and from there into any log
+                // a developer exports and attaches to a ticket. Nobody chose
+                // that, and under the GDPR and the KVKK it is processing that
+                // nothing declares and nothing minimises.
+                //
+                // The count is what tells the developer their import failed.
+                // The detail is in HAC, where the platform already decides who
+                // may look at it.
+                int refused = countOf(result);
+                StatusReporter.error("ImpEx import had errors: "
+                        + (refused < 0
+                                ? "some lines were not resolved"
+                                : com.onurkat.reclazz.ui.Plural.of(refused, "line")
+                                  + " could not be resolved")
+                        + " in " + impexFile.getFileName()
+                        + ". The lines themselves are not printed here, because an ImpEx "
+                        + "carries data about people; HAC shows them under ImpEx Import.");
             } else {
                 StatusReporter.success("ImpEx imported: " + impexFile.getFileName());
             }
@@ -187,4 +204,26 @@ public class ImpexAutoImporter {
             StatusReporter.error("Failed to import ImpEx " + impexFile.getFileName() + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
         }
     }
+    /**
+     * How many lines the platform refused, without touching what is in them.
+     *
+     * <p>A count is safe from any shape the platform returns; a
+     * {@code toString} is not, and this agent is compiled against no version of
+     * it in particular.
+     *
+     * @return the number of unresolved lines, or -1 when this platform does not
+     *         answer in a way that can be counted
+     */
+    private static int countOf(Object result) {
+        try {
+            Object lines = result.getClass().getMethod("getUnresolvedLines").invoke(result);
+            if (lines instanceof java.util.Collection<?> collection) return collection.size();
+            if (lines == null) return 0;
+            return -1;
+        } catch (Throwable notAvailable) {
+            return -1;
+        }
+    }
+
+
 }

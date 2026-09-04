@@ -217,6 +217,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   with no lock between the two processes, and "586" is a perfectly parseable
   port number that nothing is listening on.
 
+- **A failed ImpEx import printed the rows that failed.** The platform's
+  `getUnresolvedLines()` hands back its own rows, and printing them printed the
+  data: an ImpEx that loads customers carries names, e-mail addresses and postal
+  addresses, and that line put them in the server console, over the status
+  socket, into the IDE tool window, and from there into any log a developer
+  exports and attaches to a ticket. Nobody chose that, and under the GDPR and
+  the KVKK it is processing that nothing declares and nothing minimises. The
+  count of refused lines is what tells a developer their import failed; the
+  detail is in HAC, where the platform already decides who may look at it.
+
 ### Security
 
 - **Application code could ask the agent for a watched class's own
@@ -267,6 +277,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **A guard that nothing leaves your machine.** The welcome dialog says "no
+  telemetry, no analytics, no outbound", which is true because nobody has
+  written any, and is the kind of thing that stops being true in one commit: a
+  crash reporter, a version check, an update ping. A test reads the built
+  classes and fails on a call that dials out, as calls rather than as types, so
+  the status server can go on handling the loopback connections it accepts while
+  nothing gains the ability to open one. For a developer whose employer has to
+  answer for what leaves the building, "we read the source once" is not an
+  answer.
+
 - **The session report says what watching costs.** On a platform where the JDK
   has no native file watching, which is macOS, it walks every registered
   directory and stats every file about twice a second whether or not anybody is
@@ -300,6 +320,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the live server: 353 of 379.
 
 ### Changed
+
+- **The agent jar carried no licence and no notice.** It redistributes a
+  hundred and fifty relocated ASM classes and ASM's BSD terms ask for its
+  copyright notice to travel with them; the build put the licence files in the
+  plugin zip and not in the jar, under a comment saying the licence terms travel
+  with the thing they license. The README tells people to build that jar and
+  attach it, and plenty of them never see the zip. It carries `LICENSE`,
+  `NOTICE` and `THIRD-PARTY.md` under `META-INF` now.
+
+- **The NOTICE claimed a library that stopped shipping and the inventory named
+  the wrong version.** It said the agent shades Byte Buddy, which it has not
+  since this release, and `THIRD-PARTY.md` named ASM 9.8 against a build that
+  resolves 9.10.1. A compliance review reads those two files and little else. A
+  test now checks both directions against the built jar: nothing shaded goes
+  unnamed, and nothing named is absent.
 
 - **The README described the JDK's polling as a two-second cycle.** Measured on
   SapMachine 21: it notices a change about half a second later, and the same

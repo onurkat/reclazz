@@ -55,6 +55,12 @@ tasks.test {
     dependsOn(tasks.named("shadowJar"))
     systemProperty("reclazz.agent.jar",
             tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    // Declared as an input, not merely depended on. A test that reads the built
+    // jar and is not told the jar is an input passes on the last run's result:
+    // the licence guard did exactly that, staying green against a jar whose
+    // NOTICE had been changed to claim a library that is not in it.
+    inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile)
+            .withPropertyName("agentJar")
     // Allow tests to self-attach the JVM via ByteBuddyAgent.install() so the
     // hot-swap reload path (Instrumentation.redefineClasses) can be exercised
     // end-to-end inside the test process.
@@ -178,6 +184,15 @@ tasks.named("assemble") {
 tasks.shadowJar {
     dependsOn(bootstrapJar)
     archiveClassifier.set("")
+
+    // The licence terms travel with the thing they license, and this jar is a
+    // thing on its own: the README tells people to build it and attach it with
+    // -javaagent, and plenty of them will never see the plugin zip that carries
+    // these files. It redistributes 150 relocated ASM classes, and ASM's BSD
+    // licence asks for its copyright notice to come along. It did not.
+    from(rootProject.file("LICENSE")) { into("META-INF") }
+    from(rootProject.file("NOTICE")) { into("META-INF") }
+    from(rootProject.file("THIRD-PARTY.md")) { into("META-INF") }
     relocate("org.objectweb.asm", "com.onurkat.reclazz.shaded.asm")
     exclude("org/slf4j/**")
     exclude("META-INF/services/org.slf4j.*")
