@@ -32,7 +32,6 @@ public class ExtensionInfo {
 
     public String getName() { return name; }
     public Path getPath() { return path; }
-    public List<String> getRequiredExtensions() { return requiredExtensions; }
     public boolean hasCoreModule() { return hasCoreModule; }
     public boolean hasWebModule() { return hasWebModule; }
     public boolean isCustom() { return isCustom; }

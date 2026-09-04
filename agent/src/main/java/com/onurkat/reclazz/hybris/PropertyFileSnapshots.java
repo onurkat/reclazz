@@ -78,21 +78,6 @@ public final class PropertyFileSnapshots {
         return changed;
     }
 
-    /**
-     * Keys the last save removed from the file. Nothing can un-set them in a
-     * running server, so the honest thing is to name them.
-     */
-    public java.util.List<String> removedByLastRead(Path file, Map<String, String> previous) {
-        Map<String, String> now = lastSeen.get(file);
-        if (previous == null || now == null) return java.util.List.of();
-
-        java.util.List<String> removed = new java.util.ArrayList<>();
-        for (String key : previous.keySet()) {
-            if (!now.containsKey(key)) removed.add(key);
-        }
-        return removed;
-    }
-
     /** The version currently recorded, or null when the file is unknown. */
     public Map<String, String> current(Path file) {
         return lastSeen.get(file);

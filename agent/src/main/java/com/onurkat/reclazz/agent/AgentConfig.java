@@ -324,7 +324,6 @@ public class AgentConfig {
     private java.util.List<String> unknownKeys = java.util.List.of();
 
     public Path getHybrisHome() { return hybrisHome; }
-    public Set<String> getWatchExtensions() { return Collections.unmodifiableSet(watchExtensions); }
     public boolean isWatchAllExtensions() { return watchAllExtensions; }
     public boolean isAutoImpex() { return autoImpex; }
     public boolean isImpexAllowRemove() { return impexAllowRemove; }

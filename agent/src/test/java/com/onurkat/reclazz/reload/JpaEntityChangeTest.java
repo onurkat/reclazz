@@ -110,8 +110,14 @@ class JpaEntityChangeTest {
                 + "compare before redefineClasses rather than after");
     }
 
+    /**
+     * This used to check a second, batch reload path as well, and that path
+     * was never called by anything: a guard over dead code, passing on the
+     * strength of two strings still being present in a file. The method is
+     * gone; the ordering that matters is the one on the path that runs.
+     */
     @Test
-    void bothReloadEnginesCompareBeforeRedefining() throws IOException {
+    void theReloadEngineComparesBeforeRedefining() throws IOException {
         String classReloader = java.nio.file.Files.readString(java.nio.file.Path.of(
                 "src/main/java/com/onurkat/reclazz/agent/ClassReloader.java"));
 
@@ -121,11 +127,6 @@ class JpaEntityChangeTest {
         assertTrue(checkAt < redefineAt,
                 "checking after the redefine makes the warning disappear on exactly "
                 + "the VM where the field does land");
-
-        int batchCheck = classReloader.indexOf("JpaEntityChange.check(existingClass, bytecode)");
-        int batchRedefine = classReloader.indexOf("definitions.toArray");
-        assertTrue(batchCheck > 0 && batchCheck < batchRedefine,
-                "the batch path reloads whole directories at startup and needs the same order");
     }
 
     /** The message has to name the field and both things the developer must do. */

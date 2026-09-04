@@ -110,11 +110,6 @@ public class TransformContext {
                 && !transformed.contains(internalName);
     }
 
-    /** Whether this class carries them, rather than merely being watched. */
-    public boolean wasTransformed(String internalName) {
-        return internalName != null && transformed.contains(internalName);
-    }
-
     /**
      * Check if a class (by internal name) should be transformed.
      * O(1) HashSet lookup.

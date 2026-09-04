@@ -85,6 +85,15 @@ public final class LambdaFactory {
      * extra flags are accepted and ignored: the object built here implements
      * the functional interface and nothing else.
      */
+    /**
+     * The variant with marker interfaces, bridges and serializable lambdas.
+     *
+     * <p>No Java caller, and not dead: the companion generator rewrites the
+     * bootstrap handle keeping {@code bsm.getName()}, so a call site javac
+     * linked through {@code LambdaMetafactory.altMetafactory} arrives here
+     * under the same name. Removing it turns any lambda of that shape in a
+     * reloaded class into a NoSuchMethodError at its first call.
+     */
     public static CallSite altMetafactory(MethodHandles.Lookup caller, String invokedName,
                                           MethodType invokedType, Object... args) {
         return metafactory(caller, invokedName, invokedType,

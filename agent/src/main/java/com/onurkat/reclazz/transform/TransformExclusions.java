@@ -69,15 +69,6 @@ public final class TransformExclusions {
     }
 
     /**
-     * Check if a bootstrap method handle is a LambdaMetafactory bootstrap.
-     * These should NOT be rewritten — they're JVM's own lambda plumbing.
-     */
-    public static boolean isLambdaBootstrap(Handle bsm) {
-        if (bsm == null) return false;
-        return "java/lang/invoke/LambdaMetafactory".equals(bsm.getOwner());
-    }
-
-    /**
      * Check if a method call target should be skipped for cross-class rewriting.
      */
     public static boolean shouldSkipCallTarget(String owner) {

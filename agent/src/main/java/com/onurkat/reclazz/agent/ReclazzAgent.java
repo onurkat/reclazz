@@ -133,32 +133,8 @@ public class ReclazzAgent {
     /** True when we arrived through the Attach API rather than -javaagent. */
     private static volatile boolean attached;
 
-    public static boolean isAttached() {
-        return attached;
-    }
-
-    public static Instrumentation getInstrumentation() {
-        return instrumentation;
-    }
-
-    public static boolean isRunning() {
-        return running;
-    }
-
     public static JvmCapabilityProbe.ProbeResult getProbeResult() {
         return probeResult;
-    }
-
-    public static TransformContext getTransformContext() {
-        return transformContext;
-    }
-
-    public static StructuralReloader getStructuralReloader() {
-        return structuralReloader;
-    }
-
-    public static PlatformContext getPlatformContext() {
-        return platformContext;
     }
 
     /** The parsed agent arguments, or null before {@link #premain} has run. */
