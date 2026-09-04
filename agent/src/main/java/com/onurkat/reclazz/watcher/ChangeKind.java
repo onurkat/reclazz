@@ -166,6 +166,23 @@ public enum ChangeKind {
     private static boolean isMessageBundle(String fileName) {
         if (!fileName.endsWith(".properties")) return false;
         String stem = fileName.substring(0, fileName.length() - ".properties".length());
-        return stem.equals("messages") || stem.startsWith("messages_");
+        return stem.equals("messages") || stem.startsWith("messages_")
+                || isValidationBundle(stem);
+    }
+
+    /**
+     * {@code ValidationMessages.properties} and its per-locale siblings.
+     *
+     * <p>Not a convention like the one above: Bean Validation fixes this name,
+     * and an application that rewords a constraint puts it exactly there. It
+     * was classified as configuration, which is the mistake that costs
+     * something in both directions at once. The new wording did not reach the
+     * validator, so the developer saw the old sentence and assumed they had the
+     * key wrong; and the keys, which are things like
+     * {@code jakarta.validation.constraints.NotBlank.message}, were pushed into
+     * the running property system as though somebody had set them there.
+     */
+    private static boolean isValidationBundle(String stem) {
+        return stem.equals("ValidationMessages") || stem.startsWith("ValidationMessages_");
     }
 }

@@ -1150,6 +1150,19 @@ public class ReclazzAgent {
 
         StatusReporter.info("Localization file changed: " + fileName);
 
+        // First, and whatever the platform. ResourceBundle.getBundle memoises
+        // per classloader, base name and locale and never looks at the file
+        // again, so every framework cache above it can be emptied and the next
+        // lookup is still answered from this one. It was only being cleared as
+        // the last step of refreshing a Spring MessageSource, which means it
+        // happened when there was such a bean to find: Bean Validation's
+        // ValidationMessages, the platform's own bundles, and any code that
+        // calls getBundle itself all sit under this cache and none of them is
+        // a Spring bean.
+        com.onurkat.reclazz.util.BundleCache.clear(
+                platformContext == null ? new ClassLoader[0]
+                        : new ClassLoader[]{platformContext.getClass().getClassLoader()});
+
         if (!(platformContext instanceof HybrisPlatformContext)) {
             // Spring caches a message bundle after the first lookup and ships
             // the reset for it, so this is a cache to drop rather than a
