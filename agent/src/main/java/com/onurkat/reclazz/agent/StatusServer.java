@@ -77,7 +77,11 @@ public class StatusServer implements StatusReporter.StatusListener {
             }
         }
 
-        Thread acceptThread = new Thread(this::acceptClients, "Reclazz-StatusServer");
+        Thread acceptThread = new Thread(com.onurkat.reclazz.util.Supervised.forever(
+                "The status server",
+                "The IDE cannot connect to this agent until the application is restarted. "
+                        + "Reloading itself is unaffected.",
+                this::acceptClients), "Reclazz-StatusServer");
         acceptThread.setDaemon(true);
         acceptThread.start();
 
@@ -87,7 +91,12 @@ public class StatusServer implements StatusReporter.StatusListener {
             t.setDaemon(true);
             return t;
         });
-        heartbeatExecutor.scheduleAtFixedRate(this::sendHeartbeat,
+        // Wrapped, because scheduleAtFixedRate cancels every future execution
+        // the first time its task throws, and says nothing about it. The IDE
+        // then stops hearing from an agent that is perfectly well, decides it
+        // has gone, and drops a connection it did not need to drop.
+        heartbeatExecutor.scheduleAtFixedRate(
+                com.onurkat.reclazz.util.Supervised.once("The heartbeat", this::sendHeartbeat),
                 HEARTBEAT_INTERVAL_SECONDS, HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
 
         StatusReporter.addListener(this);
@@ -221,7 +230,27 @@ public class StatusServer implements StatusReporter.StatusListener {
                 if (running) {
                     StatusReporter.error("StatusServer accept error: " + com.onurkat.reclazz.ui.Failures.describe(e));
                 }
+            } catch (Throwable t) {
+                // Anything that is not a socket problem cost this one
+                // connection, and the loop goes round again. It used to end the
+                // thread while the ServerSocket stayed bound, so the port file
+                // pointed at a port that was open and that nobody was accepting
+                // on: the IDE's reconnect found something to connect to,
+                // forever, and never got in.
+                if (running) {
+                    StatusReporter.warn("A status client could not be accepted: "
+                            + com.onurkat.reclazz.ui.Failures.describe(t)
+                            + ". The status server is still listening.");
+                }
             }
+        }
+
+        // Reached only when running went false, which is the shutdown hook.
+        // Anything else that gets here has ended the one way into this agent.
+        if (running) {
+            com.onurkat.reclazz.util.Supervised.stoppedUnexpectedly("The status server",
+                    "The IDE cannot connect to this agent until the application is restarted. "
+                            + "Reloading itself is unaffected.");
         }
     }
 
@@ -232,12 +261,18 @@ public class StatusServer implements StatusReporter.StatusListener {
                 if (!client.send(jsonLine)) {
                     dead.add(client);
                 }
-            } catch (Exception e) {
+            } catch (Throwable t) {
                 dead.add(client);
             }
         }
         for (ClientConnection d : dead) {
-            d.close();
+            try {
+                d.close();
+            } catch (Throwable ignored) {
+                // Closing a connection that is already gone is not news, and
+                // this runs on the heartbeat's thread: a throw here used to
+                // end the schedule for the rest of the session.
+            }
         }
         clients.removeAll(dead);
     }
