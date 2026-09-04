@@ -72,7 +72,21 @@ public class ImpexAutoImporter {
                 return;
             }
 
-            String content = Files.readString(impexFile);
+            String content;
+            try {
+                content = Files.readString(impexFile);
+            } catch (java.nio.charset.MalformedInputException notUtf8) {
+                // Guessing would be worse than refusing. The content is
+                // re-encoded below and handed to the platform's import
+                // service, so a wrong guess at the encoding writes wrong
+                // characters into the database. What the developer saw
+                // instead of this was "Input length = 1".
+                StatusReporter.error("ImpEx not imported: " + impexFile.getFileName()
+                        + " is not UTF-8, and auto-import reads UTF-8 because it hands the"
+                        + " content to the platform re-encoded. Save the file as UTF-8, or"
+                        + " import it from HAC, which reads the encoding you choose there.");
+                return;
+            }
 
             if (content.isBlank()) {
                 StatusReporter.info("ImpEx file is empty, skipping: " + impexFile.getFileName());

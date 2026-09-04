@@ -244,6 +244,30 @@ public class StatusServer implements StatusReporter.StatusListener {
      * escaping is the thing that keeps a client from writing a status line of
      * its own choosing. StatusSocketSurfaceTest is what holds it to that.
      */
+    /**
+     * The encoding this socket speaks, on both ends and whatever the machine.
+     *
+     * <p>It carries the agent's own words to the IDE: class names, file paths,
+     * the text of a failure. Both sides used to build their streams with no
+     * charset, which means the default one, and the two are different JVMs.
+     * The application's may be anything its start script chose, and SAP
+     * Commerce installations do choose: with {@code -Dfile.encoding=ISO-8859-1}
+     * on the server, "Reloaded com.acme.Siparis (Masaustu)" with its Turkish
+     * letters intact left the agent as ISO-8859-1 and arrived in the IDE, whose
+     * JVM is UTF-8, as "Sipari?" and "Masa\uFFFDst\uFFFD". Measured, not feared.
+     *
+     * <p>A protocol between two processes needs a stated encoding, so this is
+     * it, in one place at each end.
+     */
+    static java.io.Writer writerFor(java.io.OutputStream out) {
+        return new java.io.OutputStreamWriter(out, java.nio.charset.StandardCharsets.UTF_8);
+    }
+
+    /** The same, for what a client sends. */
+    static java.io.Reader readerFor(java.io.InputStream in) {
+        return new java.io.InputStreamReader(in, java.nio.charset.StandardCharsets.UTF_8);
+    }
+
     static String escapeJson(String value) {
         if (value == null) return "";
         if (value.length() > MAX_MESSAGE_LENGTH) {
@@ -297,7 +321,7 @@ public class StatusServer implements StatusReporter.StatusListener {
 
         ClientConnection(Socket socket) throws IOException {
             this.socket = socket;
-            this.writer = new PrintWriter(socket.getOutputStream(), true);
+            this.writer = new PrintWriter(writerFor(socket.getOutputStream()), true);
             this.writerThread = new Thread(this::drainLoop, "Reclazz-StatusWriter");
             this.writerThread.setDaemon(true);
             this.writerThread.start();
@@ -313,7 +337,7 @@ public class StatusServer implements StatusReporter.StatusListener {
          */
         private void readLoop() {
             try (java.io.BufferedReader reader = new java.io.BufferedReader(
-                    new java.io.InputStreamReader(socket.getInputStream()))) {
+                    readerFor(socket.getInputStream()))) {
                 String line;
                 while (alive && (line = reader.readLine()) != null) {
                     handleCommand(line);
