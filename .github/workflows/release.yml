@@ -1,0 +1,90 @@
+name: Release
+
+# The step that keeps being forgotten.
+#
+# 1.0.8 shipped to the Marketplace without a GitHub release. So did 1.0.24,
+# 1.0.25 and 1.0.26, and for a while the repository's newest release read
+# 1.0.23 while people were installing 1.0.26. It was written down twice and
+# forgotten anyway, which is what a step that depends on remembering does.
+#
+# So the tag does it. Pushing vX.Y.Z creates the release, takes the notes from
+# that version's section of CHANGELOG.md, and attaches the agent jar.
+#
+# The signed plugin zip is not built here and cannot be: signing needs the
+# private key and the passphrase, which live on the maintainer's machine and
+# are deliberately not in this repository or in its secrets. The release this
+# creates says so, and uploading it afterwards is one command against a release
+# that already exists rather than a release that has to be remembered.
+#
+# The agent jar is the other half. Somebody using Reclazz without IntelliJ, on
+# Eclipse or a plain -javaagent line or in a pipeline, had no download at all:
+# the README told them to clone the repository and run Gradle. Now there is a
+# URL.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: The tag and the build have to agree
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          declared=$(grep -E '^pluginVersion=' gradle.properties | cut -d= -f2)
+          if [ "$tag" != "$declared" ]; then
+            echo "::error::tag $GITHUB_REF_NAME says $tag and gradle.properties says $declared"
+            exit 1
+          fi
+          echo "Releasing $tag."
+
+      - name: Release notes, from the changelog
+        run: |
+          ./scripts/changelog-section.sh "$GITHUB_REF_NAME" > /tmp/notes.md
+          wc -l < /tmp/notes.md
+
+      - name: Build the agent jar
+        run: ./gradlew :agent:shadowJar --no-daemon
+
+      # The name people will link to, without the version in it moving around
+      # between releases in a way that breaks a bookmark.
+      - name: Name it for the tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          cp "agent/build/libs/agent-${tag}.jar" "/tmp/reclazz-agent-${tag}.jar"
+          shasum -a 256 "/tmp/reclazz-agent-${tag}.jar" | tee "/tmp/reclazz-agent-${tag}.jar.sha256"
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          {
+            cat /tmp/notes.md
+            echo
+            echo '---'
+            echo
+            echo '`reclazz-agent-'"$tag"'.jar` is the agent on its own, for use'
+            echo 'without the IntelliJ plugin: add it to a JVM with'
+            echo '`-javaagent:reclazz-agent-'"$tag"'.jar=...`. The IntelliJ plugin'
+            echo 'is on the JetBrains Marketplace, and the signed zip is attached'
+            echo 'here by hand after the Marketplace publish.'
+          } > /tmp/release-notes.md
+
+          gh release create "$GITHUB_REF_NAME" \
+            "/tmp/reclazz-agent-${tag}.jar" \
+            "/tmp/reclazz-agent-${tag}.jar.sha256" \
+            --title "Reclazz $tag" \
+            --notes-file /tmp/release-notes.md
