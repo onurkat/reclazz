@@ -46,9 +46,10 @@ export RECLAZZ_PUBLISH_TOKEN='the marketplace token'
 
 git tag -a vX.Y.Z -m 'Reclazz X.Y.Z' && git push origin main --follow-tags
 
+# The tag creates the release, with the changelog section as its notes and
+# the agent jar attached. This adds the signed plugin zip to it.
 cp build/distributions/reclazz-X.Y.Z-signed.zip /tmp/reclazz-X.Y.Z.zip
-gh release create vX.Y.Z /tmp/reclazz-X.Y.Z.zip \
-  --title 'Reclazz X.Y.Z' --notes-file <notes from the changelog>
+gh release upload vX.Y.Z /tmp/reclazz-X.Y.Z.zip
 
 git worktree add /tmp/reclazz-site gh-pages    # then edit, commit, push
 ```
@@ -58,6 +59,26 @@ attaches `reclazz-X.Y.Z.zip`, and `gh` takes the filename from the path
 you give it. Its `path#label` syntax sets the label shown beside the
 asset, not the name it is stored under, so uploading the signed zip
 directly publishes it as `reclazz-X.Y.Z-signed.zip` and breaks the run.
+
+## What the tag does on its own
+
+`.github/workflows/release.yml` fires on `vX.Y.Z` and creates the release:
+it checks that the tag and `gradle.properties` agree, takes the notes from
+that version's section of `CHANGELOG.md` (`scripts/changelog-section.sh`,
+which fails when there is no such section), builds the agent jar, and
+attaches it with a `.sha256` beside it.
+
+Signing is not in there and cannot be: the private key and its passphrase
+live on your machine and are deliberately not repository secrets. So the
+signed zip is still yours to upload, and that is now `gh release upload`
+against a release that exists rather than `gh release create` against one
+that has to be remembered. Forgetting it leaves a release with the agent
+jar and no plugin zip, which is visible; forgetting the old step left no
+release at all, which is what happened three times.
+
+The agent jar is the other reason for it. Somebody using Reclazz without
+IntelliJ had no download: the README told them to clone the repository and
+run Gradle, which is a strange thing to ask of a person evaluating a tool.
 
 The last two steps used to live only in whoever was doing the release.
 1.0.8 went to the Marketplace and got its tag, and the GitHub release was

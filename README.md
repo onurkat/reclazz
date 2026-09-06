@@ -176,7 +176,18 @@ The plugin bundles the agent JAR, so there is nothing else to download.
 
 ### From GitHub
 
-Download the latest release from [github.com/onurkat/reclazz/releases](https://github.com/onurkat/reclazz/releases), or build from source:
+The agent on its own, which is all you need outside IntelliJ, is attached to
+every release:
+
+```bash
+curl -LO https://github.com/onurkat/reclazz/releases/latest/download/reclazz-agent-<version>.jar
+java -javaagent:reclazz-agent-<version>.jar=platform=spring ...
+```
+
+Each release also carries a `.sha256` beside it. The IntelliJ plugin is on the
+JetBrains Marketplace, and the signed zip is attached to the same release.
+
+Or build both from source:
 
 ```bash
 git clone https://github.com/onurkat/reclazz.git

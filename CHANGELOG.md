@@ -299,6 +299,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **The agent jar is downloadable.** Somebody using Reclazz without IntelliJ,
+  on Eclipse or a plain `-javaagent` line or in a pipeline, had no download at
+  all: the README told them to clone the repository and run Gradle, which is a
+  strange thing to ask of a person deciding whether to try a tool. Every release
+  carries `reclazz-agent-<version>.jar` and a `.sha256` beside it.
+
+- **Pushing the tag creates the GitHub release.** It was a manual step, written
+  down twice with the story of why it matters attached, and forgotten anyway for
+  1.0.24, 1.0.25 and 1.0.26, so the repository's newest release read 1.0.23
+  while people were installing 1.0.26. The tag does it now: it checks that the
+  tag and `gradle.properties` agree, takes the notes from that version's section
+  of the changelog and stops if there is no such section, and attaches the agent
+  jar. Signing stays on the maintainer's machine, where the key is, so the
+  signed plugin zip is still uploaded by hand, but to a release that already
+  exists rather than one that has to be remembered.
+
 - **A guard that nothing leaves your machine.** The welcome dialog says "no
   telemetry, no analytics, no outbound", which is true because nobody has
   written any, and is the kind of thing that stops being true in one commit: a
