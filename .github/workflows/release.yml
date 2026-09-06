@@ -64,7 +64,12 @@ jobs:
         run: |
           tag="${GITHUB_REF_NAME#v}"
           cp "agent/build/libs/agent-${tag}.jar" "/tmp/reclazz-agent-${tag}.jar"
-          shasum -a 256 "/tmp/reclazz-agent-${tag}.jar" | tee "/tmp/reclazz-agent-${tag}.jar.sha256"
+          # From inside the directory, so the file names the jar and not the
+          # path it happened to be built at. Published with an absolute runner
+          # path in it, `shasum -c` looks for /tmp/... on the reader's machine
+          # and reports the file it cannot read rather than checking theirs.
+          ( cd /tmp && shasum -a 256 "reclazz-agent-${tag}.jar" \
+              | tee "reclazz-agent-${tag}.jar.sha256" )
 
       - name: Create the release
         env:
