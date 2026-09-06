@@ -330,7 +330,19 @@
             <li>Refreshes Spring beans, re-scans MVC mappings, evicts caches, re-registers scheduled tasks and event listeners</li>
             <li>Purpose-built SAP Commerce support: extension-aware watching, interceptor reload, ImpEx auto-import, items.xml and beans.xml regeneration</li>
             <li>Validated end to end against a live SAP Commerce 2211 server</li>
-        </ul>
+                    <li><b>Tools &gt; How Is Reclazz Doing?</b> asks the running agent what it has actually done: how long it has been up, what it reloaded and what failed, what a save costs at the median and the 95th on your machine rather than on somebody else's, how many directories it watches and how many it could not, and how much is waiting on a restart.</li>
+            <li><b>A run configuration started without the agent now says so.</b> If the agent jar was not where the plugin was installed, the injector returned quietly: your application ran, the tool window waited for a connection that was never coming, and nothing hot-reloaded, with no line anywhere saying why.</li>
+            <li><b>The status socket says which encoding it speaks.</b> Both ends built their streams with no charset, in two different JVMs, so on a server started with <code>-Dfile.encoding=ISO-8859-1</code>, which SAP Commerce installations do, a class name or a path with non-ASCII letters arrived in the tool window as mojibake.</li>
+            <li><b>The plugin says when it is talking to a different release of the agent.</b> The jar a server attaches is the one its start script names, so the ordinary state after an upgrade is a new plugin and last month's agent, with the fixes in these notes absent from what is running.</li>
+            <li><b>Your SAP Commerce config files are replaced in one step.</b> They were truncated and then rewritten, so an interrupted write left a config that could stop a server from starting. The backup only ever covered the first write.</li>
+            <li><b>The file watcher can no longer die quietly.</b> A runtime exception ended its thread into a Future nobody held, leaving a session where saving a file does nothing for as long as the server is up, while the IDE went on showing a connected agent.</li>
+            <li><b>One framework reloader failing no longer cancels the nine after it.</b> Ten things are told about every reloaded Spring bean, and a missing optional module answered with an Error that walked out past all of them.</li>
+            <li><b>A failed ImpEx import no longer prints the rows that failed.</b> Those rows are your data: an ImpEx that loads customers carries names, e-mail addresses and postal addresses, and they were reaching the console, the tool window and any log you exported.</li>
+            <li><b>A saved translation reaches the reader.</b> The JDK's own ResourceBundle cache was only being cleared when there was a Spring MessageSource to find, so Bean Validation's ValidationMessages, the platform's own bundles and anything calling getBundle directly kept serving the old text. ValidationMessages was also being treated as configuration rather than as translation.</li>
+            <li><b>An agent argument this version does not know is named at startup</b>, along with what happened to it: the parser folds an unrecognised key into the value of the argument before it, so a typo could send the agent's port file somewhere nothing reads.</li>
+            <li><b>Counts read as English.</b> "Reclazz: 1 reloads" in the status bar and "+1 method(s)" in the tool window, about the same event in the same second, are now one line that says what changed and how long it took.</li>
+            <li><b>The agent is downloadable on its own</b>, attached to every GitHub release with a checksum, for use outside IntelliJ.</li>
+</ul>
     ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
