@@ -171,6 +171,25 @@ public class FileWatcher {
 
     /** Set by {@link #requestScan()}, taken by the poll loop. */
     private volatile boolean scanRequested;
+    private final java.util.concurrent.ConcurrentLinkedQueue<java.util.concurrent.CompletableFuture<Void>> scanBarriers =
+            new java.util.concurrent.ConcurrentLinkedQueue<>();
+
+    /** Returns only after the poll loop has delivered all pending files from its scan. */
+    public void scanNow() {
+        if (!active) throw new IllegalStateException("The file watcher is stopped; build remains held");
+        var done = new java.util.concurrent.CompletableFuture<Void>();
+        scanBarriers.add(done);
+        try {
+            done.get(10, TimeUnit.SECONDS);
+        } catch (InterruptedException interrupted) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Build scan interrupted; build remains held", interrupted);
+        } catch (java.util.concurrent.ExecutionException | java.util.concurrent.TimeoutException failure) {
+            throw new IllegalStateException("Build scan did not finish; build remains held", failure);
+        } finally {
+            scanBarriers.remove(done);
+        }
+    }
 
     /** Class files modified after JVM start, found during the baseline walk. */
     private final Map<Path, WatchedDirectory> startupChangedClasses = new ConcurrentHashMap<>();
@@ -277,6 +296,8 @@ public class FileWatcher {
 
     public void stopWatching() {
         active = false;
+        scanBarriers.forEach(barrier -> barrier.completeExceptionally(new IOException("File watcher stopped")));
+        scanBarriers.clear();
         try {
             watchService.close();
         } catch (IOException ignored) {}
@@ -746,22 +767,60 @@ public class FileWatcher {
             scanHotFiles(pendingEvents);
             recoverLostDirectories(pendingEvents);
 
+            List<java.util.concurrent.CompletableFuture<Void>> barriers = new ArrayList<>();
+            for (var barrier = scanBarriers.poll(); barrier != null; barrier = scanBarriers.poll()) barriers.add(barrier);
+            if (!barriers.isEmpty()) {
+                try {
+                    discoverBuildDirectories();
+                    scanWatchedDirectories(pendingEvents, debounceMs);
+                } catch (IOException failure) {
+                    barriers.forEach(barrier -> barrier.completeExceptionally(failure));
+                }
+            }
+
+            // A successful build is settled. Flush already observed events too.
             // Dispatch events whose debounce period has elapsed
             if (!pendingEvents.isEmpty()) {
                 long now = System.currentTimeMillis();
                 List<ChangeEvent> due = new ArrayList<>();
-                for (PendingEvent pending : dueNow(pendingEvents.values(), now, debounceMs)) {
+                for (PendingEvent pending : barriers.isEmpty() ? dueNow(pendingEvents.values(), now, debounceMs)
+                        : new ArrayList<>(pendingEvents.values())) {
                     pendingEvents.remove(pending.path());
                     markHot(pending.path(), pending.moduleName(), pending.sourceRoot());
+                    // A build boundary must not lose a second edit inside the
+                    // ordinary 100ms event suppression window. Hash dedupe remains.
+                    if (!barriers.isEmpty()) lastModifiedMap.remove(pending.path());
                     ChangeEvent event = toChangeEvent(pending);
                     if (event != null) due.add(event);
                 }
                 deliver(due);
             }
 
+            barriers.forEach(barrier -> barrier.complete(null));
+
             if (lastModifiedMap.size() > MAX_DEDUP_ENTRIES) {
                 evictOldEntries();
             }
+        }
+    }
+
+    /** Discover packages created by the build before its native directory events arrive. */
+    private void discoverBuildDirectories() throws IOException {
+        List<WatchedDirectory> roots = new ArrayList<>();
+        var watched = new ArrayList<>(watchKeyMap.values());
+        watched.sort(java.util.Comparator.comparingInt(w -> w.directory().getNameCount()));
+        java.util.Set<Path> registered = new java.util.HashSet<>();
+        for (WatchedDirectory directory : watched) {
+            registered.add(directory.directory());
+            if (roots.stream().noneMatch(root -> directory.directory().startsWith(root.directory()))) roots.add(directory);
+        }
+        for (WatchedDirectory root : roots) {
+            Files.walkFileTree(root.directory(), new SimpleFileVisitor<>() {
+                @Override public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attrs) throws IOException {
+                    if (registered.add(directory)) registerSingle(directory, root.moduleName(), root.sourceRoot());
+                    return FileVisitResult.CONTINUE;
+                }
+            });
         }
     }
 

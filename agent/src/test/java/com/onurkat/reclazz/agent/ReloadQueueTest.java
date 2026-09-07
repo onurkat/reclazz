@@ -40,7 +40,7 @@ class ReloadQueueTest {
     }
 
     private static ChangeEvent classFile(String name) {
-        return new ChangeEvent(Path.of("/w/" + name + ".class"), ChangeEvent.Type.MODIFIED, "m", "classes");
+        return new ChangeEvent(Path.of("/w/" + name + ".class"), ChangeEvent.Type.MODIFIED, "m", "classes").withBytes(new byte[]{1});
     }
 
     @Test

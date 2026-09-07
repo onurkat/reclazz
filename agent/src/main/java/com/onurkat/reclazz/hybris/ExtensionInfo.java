@@ -31,6 +31,7 @@ public class ExtensionInfo {
     }
 
     public String getName() { return name; }
+    public List<String> getRequiredExtensions() { return List.copyOf(requiredExtensions); }
     public Path getPath() { return path; }
     public boolean hasCoreModule() { return hasCoreModule; }
     public boolean hasWebModule() { return hasWebModule; }

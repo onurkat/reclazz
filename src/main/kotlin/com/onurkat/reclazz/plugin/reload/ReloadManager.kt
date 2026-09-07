@@ -199,14 +199,14 @@ class ReloadManager(private val project: Project) : Disposable {
         return statusClient?.send("DIAGNOSE $className") ?: false
     }
 
-    /**
-     * Tell the agent a build has just finished, so its watcher looks at the
-     * output directories now instead of on the JDK's next poll.
-     *
-     * @return false when no agent is connected to tell
-     */
-    fun buildFinished(): Boolean {
-        return statusClient?.send("SCAN") ?: false
+    /** Hold class output until the compiler reports its result. */
+    fun buildStarted(): Boolean = statusClient?.send("BUILD started") ?: false
+
+    fun buildFinished(ok: Boolean): Boolean {
+        val client = statusClient ?: return false
+        val sent = client.send(if (ok) "BUILD ok" else "BUILD failed")
+        client.send("SCAN")
+        return sent
     }
 
     /**

@@ -298,7 +298,35 @@ If you prefer to skip `ant build` entirely, enable **AutoCompile**. In this mode
 4. Test your changes immediately — no ant build, no server restart
 ```
 
-> **Note:** AutoCompile works for single-file changes. For multi-file refactors or changes that affect generated code, use `ant build` instead.
+AutoCompile treats the sources collected in one attempt as a package. All
+modules compile into a temporary directory, in dependency order, before any
+output is published. If compilation fails, the output directories stay
+unchanged and the running classes keep their previous version. The log
+names the compiler error and the number of held source files. Fixing any
+source retries the held sources together with the new save. Deleting a
+blocking source removes it and retries the remaining sources.
+
+While one source is broken, other saves join its held package. Two saves
+collected in separate attempts are separate packages. This is not an
+editor-wide refactoring transaction. Use the normal build tool for generated
+code and resources that depend on build tasks or annotation-processor setup.
+Do not run AutoCompile and an external compiler against the same output tree
+at the same time.
+
+Each successful output file is replaced through a temporary file and rename.
+If publication fails partway through, no agent reload starts, but earlier
+replacements remain on disk. The error names the failed file; fixing the I/O
+problem and saving again retries the package. Class loaders can observe mixed
+old and new files during publication. Reload and framework operations still
+have their existing per-class failure behavior.
+
+For external builds, the IntelliJ plugin holds class changes from build start
+until successful compilation. Errors or cancellation keep them held until the
+next successful build. A lost connection never implies success. `HEALTH`
+reports the held count and time; a missing result produces a warning after
+five minutes. The [BUILD protocol](protocol.md#holding-a-build-until-it-succeeds)
+explains recovery and a Gradle/Maven wrapper. Without BUILD signals, the
+existing file-watching behavior continues.
 
 ### What the Plugin Shows
 

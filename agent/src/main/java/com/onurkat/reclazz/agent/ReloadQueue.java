@@ -11,6 +11,9 @@ import com.onurkat.reclazz.util.Supervised;
 import com.onurkat.reclazz.watcher.ChangeEvent;
 
 import java.nio.file.Path;
+import java.nio.file.Files;
+import java.io.IOException;
+import com.onurkat.reclazz.ui.Failures;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -66,6 +69,15 @@ public final class ReloadQueue {
     static final long BATCH_GRACE_MS = 100;
     static final long BATCH_MAX_WAIT_MS = 1000;
 
+    interface ByteReader { byte[] read(Path path) throws IOException; }
+    private final Object buildLock = new Object();
+    private long generation;
+    private boolean holding;
+    private long heldSince;
+    private boolean holdWarned;
+    private final ByteReader reader;
+    static final long BUILD_WARN_MS = 300_000;
+
     private final Handler handler;
     private final Bracket bracket;
     private final Executor executor;
@@ -99,6 +111,12 @@ public final class ReloadQueue {
 
     ReloadQueue(Handler handler, Bracket bracket, Executor executor, ReloadStall stall,
                 LongSupplier clock, Sleeper sleeper) {
+        this(handler, bracket, executor, stall, clock, sleeper, Files::readAllBytes);
+    }
+
+    ReloadQueue(Handler handler, Bracket bracket, Executor executor, ReloadStall stall,
+                LongSupplier clock, Sleeper sleeper, ByteReader reader) {
+        this.reader = reader;
         this.handler = handler;
         this.bracket = bracket;
         this.executor = executor;
@@ -123,6 +141,7 @@ public final class ReloadQueue {
                             return;
                         }
                         stall.check();
+                        checkBuildHold();
                     }
                 }), "Reclazz-ReloadWatch");
         watch.setDaemon(true);
@@ -139,19 +158,26 @@ public final class ReloadQueue {
      * the files of one save reach the thread as one task.
      */
     public void enqueueClassFile(ChangeEvent event) {
-        synchronized (pendingClassFiles) {
+        synchronized (buildLock) {
             pendingClassFiles.put(event.getPath(), event);
         }
     }
 
     /** Queue the task that reloads whatever class files have been enqueued. */
     public void submitClassBatch(int enqueuedNow) {
+        synchronized (buildLock) { if (holding) return; }
         submit("Reloading " + Plural.of(enqueuedNow, "class file"), this::reloadClassBatch);
     }
 
     /** The HEALTH line for a reload that is holding everything up, or null. */
     public String healthLine() {
-        return stall.healthLine();
+        synchronized (buildLock) {
+            String reload = stall.healthLine();
+            if (!holding) return reload;
+            return "Build holding " + pendingClassFiles.size() + " class files since "
+                    + java.time.Instant.ofEpochMilli(heldSince) + "; waiting for BUILD ok"
+                    + (reload == null ? "" : ". " + reload);
+        }
     }
 
     /** Stop the thread and the watch; nothing queued runs after this. */
@@ -173,10 +199,71 @@ public final class ReloadQueue {
      * and it is given a short while to finish arriving rather than being
      * split into a batch and a tail of singles, each with its own sweep.
      */
-    void reloadClassBatch() {
-        List<ChangeEvent> batch = drainClassFiles();
-        if (batch.isEmpty()) return;          // drained by an earlier task
+    /** Socket-thread state changes must not wait for the reload executor. */
+    public void build(String state, Runnable scan) {
+        long accepted;
+        synchronized (buildLock) {
+            if (state.equalsIgnoreCase("started") || state.equalsIgnoreCase("failed")) {
+                generation++;
+                if (!holding || state.equalsIgnoreCase("started")) {
+                    heldSince = clock.getAsLong();
+                    holdWarned = false;
+                }
+                holding = true;
+                StatusReporter.info("Build " + state.toLowerCase(java.util.Locale.ROOT) + "; holding "
+                        + pendingClassFiles.size() + " class files until BUILD ok");
+                return;
+            }
+            if (!state.equalsIgnoreCase("ok")) return;
+            accepted = holding ? generation : -1;
+        }
+        if (accepted == -1) submit("Scanning build output", scan);
+        else submit("Accepting build output", () -> acceptBuild(accepted, scan));
+    }
 
+    void checkBuildHold() {
+        synchronized (buildLock) {
+            if (holding && !holdWarned && clock.getAsLong() - heldSince >= BUILD_WARN_MS) {
+                holdWarned = true;
+                StatusReporter.warn("Build result missing after five minutes; " + healthLine());
+            }
+        }
+    }
+
+    private void acceptBuild(long accepted, Runnable scan) {
+        synchronized (buildLock) {
+            if (generation != accepted || !holding) return;
+        }
+        // Never hold buildLock while the watcher delivers its scan into this queue.
+        scan.run();
+        List<ChangeEvent> batch;
+        synchronized (buildLock) {
+            if (generation != accepted || !holding) {
+                StatusReporter.info("A later build superseded this success; files remain held");
+                return;
+            }
+            batch = drainClassFiles();
+        }
+        List<ChangeEvent> capture = capture(batch, true);
+        synchronized (buildLock) {
+            if (capture == null || generation != accepted || !holding) {
+                restore(batch);
+                return;
+            }
+            holding = false;
+        }
+        if (!capture.isEmpty()) classBoundary.accept(() -> applyClassBatch(capture));
+    }
+
+    void reloadClassBatch() {
+        List<ChangeEvent> batch;
+        long accepted;
+        synchronized (buildLock) {
+            if (holding) return;
+            accepted = generation;
+            batch = drainClassFiles();
+        }
+        if (batch.isEmpty()) return;
         if (batch.size() > 1) {
             long deadline = clock.getAsLong() + BATCH_MAX_WAIT_MS;
             while (clock.getAsLong() < deadline) {
@@ -186,14 +273,46 @@ public final class ReloadQueue {
                     Thread.currentThread().interrupt();
                     break;
                 }
-                List<ChangeEvent> more = drainClassFiles();
-                if (more.isEmpty()) break;
-                batch.addAll(more);
+                synchronized (buildLock) {
+                    if (holding || generation != accepted) break;
+                    List<ChangeEvent> more = drainClassFiles();
+                    if (more.isEmpty()) break;
+                    batch.addAll(more);
+                }
             }
         }
+        // A path touched twice during the grace period has one latest event.
+        LinkedHashMap<Path, ChangeEvent> latest = new LinkedHashMap<>();
+        for (ChangeEvent event : batch) latest.put(event.getPath(), event);
+        batch = new ArrayList<>(latest.values());
+        List<ChangeEvent> capture = capture(batch, false);
+        synchronized (buildLock) {
+            if (holding || generation != accepted) {
+                restore(batch);
+                return;
+            }
+        }
+        if (!capture.isEmpty()) classBoundary.accept(() -> applyClassBatch(capture));
+    }
 
-        List<ChangeEvent> ready = batch;
-        classBoundary.accept(() -> applyClassBatch(ready));
+    private List<ChangeEvent> capture(List<ChangeEvent> batch, boolean whole) {
+        List<ChangeEvent> capture = new ArrayList<>();
+        for (ChangeEvent event : batch) {
+            try {
+                byte[] bytes = event.getBytes();
+                if (bytes == null) bytes = reader.read(event.getPath());
+                capture.add(event.withBytes(bytes));
+            } catch (IOException failure) {
+                StatusReporter.error("Failed to read class file " + event.getPath() + ": " + Failures.describe(failure));
+                if (whole) return null;
+            }
+        }
+        return List.copyOf(capture);
+    }
+
+    private void restore(List<ChangeEvent> batch) {
+        // Called under buildLock. New arrivals always win over drained entries.
+        for (ChangeEvent event : batch) pendingClassFiles.putIfAbsent(event.getPath(), event);
     }
 
     private void applyClassBatch(List<ChangeEvent> batch) {
@@ -220,7 +339,7 @@ public final class ReloadQueue {
     }
 
     private List<ChangeEvent> drainClassFiles() {
-        synchronized (pendingClassFiles) {
+        synchronized (buildLock) {
             if (pendingClassFiles.isEmpty()) return new ArrayList<>();
             List<ChangeEvent> drained = new ArrayList<>(pendingClassFiles.values());
             pendingClassFiles.clear();

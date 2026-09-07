@@ -19,8 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Covers {@link IncrementalCompiler#compileBatch}: a save-all must compile
  * in as few javac invocations as possible (one per output directory) while
- * still returning every produced class, and a broken file must not discard
- * the classes that did compile.
+ * still returning every produced class, and a broken file holds the complete package without changing its outputs.
  */
 class IncrementalCompilerBatchTest {
 
@@ -114,16 +113,28 @@ class IncrementalCompilerBatchTest {
     }
 
     @Test
-    void aBrokenFileInAnotherOutputGroupKeepsTheGoodGroup() throws Exception {
+    void aBrokenFileInAnotherOutputGroupFailsTheWholeBatch() throws Exception {
         Path good = writeCore("StillGood", " public int ok() { return 1; } ");
         Path brokenWeb = extDir.resolve("web/src/com/example/web/BrokenWeb.java");
         Files.writeString(brokenWeb, "package com.example.web;\npublic class BrokenWeb { nope }\n");
 
         IncrementalCompiler.CompileResult result = compiler.compileBatch(List.of(good, brokenWeb), "myext");
 
-        // Core and web compile as separate javac invocations, so a broken
-        // web file must not throw away the core class that compiled fine.
-        assertTrue(result.getCompiledClasses().containsKey("com.example.StillGood"),
-                "the healthy output group must still be delivered");
+        assertFalse(result.isSuccess(), "one broken group rejects the complete package");
+        assertFalse(Files.exists(extDir.resolve("classes/com/example/StillGood.class")),
+                "the successful group must not publish its output either");
+    }
+
+    @Test
+    void aFailedPackagePreservesThePreviouslyCompiledBytes() throws Exception {
+        Path good = writeCore("Stable", " public int value() { return 1; } ");
+        assertTrue(compiler.compileBatch(List.of(good), "myext").isSuccess());
+        Path output = extDir.resolve("classes/com/example/Stable.class");
+        byte[] before = Files.readAllBytes(output);
+        writeCore("Stable", " public int value() { return 2; } ");
+        Path brokenWeb = extDir.resolve("web/src/com/example/web/BrokenWeb.java");
+        Files.writeString(brokenWeb, "package com.example.web;\npublic class BrokenWeb { nope }\n");
+        compiler.compileBatch(List.of(good, brokenWeb), "myext");
+        assertArrayEquals(before, Files.readAllBytes(output), "failed builds leave real outputs unchanged");
     }
 }

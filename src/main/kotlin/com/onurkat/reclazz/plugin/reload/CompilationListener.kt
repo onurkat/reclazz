@@ -9,38 +9,31 @@ import com.intellij.openapi.project.Project
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
 import java.util.UUID
 
-/**
- * Listens for build completion events and re-attempts agent discovery.
- * Covers the case where the IDE was started before the server — there
- * was no port file at startup, so the initial `connectToAgent()` call
- * found nothing and gave up. After a build (often the one that starts
- * the server), we retry.
- *
- * Path discovery lives in `ReloadManager.readPortFile()`, which checks
- * five candidate locations (explicit port, custom port file, the
- * IntelliJ default under `.idea/reclazz/`, the Hybris default under
- * `<hybris>/.reclazz/`, and the project-root `.reclazz/`). This
- * listener used to hardcode only the IntelliJ default path, which meant
- * Hybris users whose agent wrote its port file to `<hybris>/.reclazz/`
- * never got auto-reconnected after a build.
- */
+/** Build starts hold output; only the compiler's result can release it. */
 class CompilationListener : BuildManagerListener {
+    override fun buildStarted(project: Project, sessionId: UUID, isAutomake: Boolean) {
+        if (ReclazzSettings.getInstance(project).state.enabled) ReloadManager.getInstance(project).buildStarted()
+    }
 
     override fun buildFinished(project: Project, sessionId: UUID, isAutomake: Boolean) {
         if (!ReclazzSettings.getInstance(project).state.enabled) return
-
         val manager = ReloadManager.getInstance(project)
-        if (manager.isConnected) {
-            // The build is over, so the class files are worth looking at
-            // now. On macOS the JDK's file watcher polls on a two-second
-            // cycle; this saves the agent that wait.
-            manager.buildFinished()
-            return
-        }
+        if (!manager.isConnected) manager.connectToAgent()
+    }
+}
 
-        // Defer path resolution to ReloadManager — it knows all candidate
-        // port file locations. connectToAgent() is a no-op if no port file
-        // is found yet, so it's safe to call unconditionally.
-        manager.connectToAgent()
+internal fun buildSucceeded(aborted: Boolean, errors: Int): Boolean = !aborted && errors == 0
+
+class CompilationResultListener : com.intellij.openapi.compiler.CompilationStatusListener {
+    override fun compilationFinished(aborted: Boolean, errors: Int, warnings: Int,
+                                     compileContext: com.intellij.openapi.compiler.CompileContext) {
+        val project = compileContext.project
+        if (!ReclazzSettings.getInstance(project).state.enabled) return
+        ReloadManager.getInstance(project).buildFinished(buildSucceeded(aborted, errors))
+    }
+
+    override fun automakeCompilationFinished(errors: Int, warnings: Int,
+                                             compileContext: com.intellij.openapi.compiler.CompileContext) {
+        compilationFinished(false, errors, warnings, compileContext)
     }
 }

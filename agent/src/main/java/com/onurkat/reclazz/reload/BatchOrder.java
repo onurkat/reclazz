@@ -53,7 +53,8 @@ public final class BatchOrder {
         for (ChangeEvent event : events) {
             Path path = event.getPath();
             try {
-                byte[] bytes = Files.readAllBytes(path);
+                byte[] bytes = event.getBytes();
+                if (bytes == null) bytes = Files.readAllBytes(path);
                 ClassReader reader = new ClassReader(bytes);
                 byName.put(reader.getClassName(), event);
                 referenced.put(event, referencedClasses(reader));

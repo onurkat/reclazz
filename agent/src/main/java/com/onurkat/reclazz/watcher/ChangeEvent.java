@@ -17,17 +17,28 @@ public class ChangeEvent {
         DELETED
     }
 
+    private final byte[] bytes;
     private final Path path;
     private final Type type;
     private final String moduleName;
     private final String sourceRoot; // "src", "web/src", "classes", "web/classes", "resources"
 
     public ChangeEvent(Path path, Type type, String moduleName, String sourceRoot) {
+        this(path, type, moduleName, sourceRoot, null);
+    }
+
+    private ChangeEvent(Path path, Type type, String moduleName, String sourceRoot, byte[] bytes) {
+        this.bytes = bytes == null ? null : bytes.clone();
         this.path = path;
         this.type = type;
         this.moduleName = moduleName;
         this.sourceRoot = sourceRoot;
     }
+
+    public ChangeEvent withBytes(byte[] bytes) {
+        return new ChangeEvent(path, type, moduleName, sourceRoot, bytes);
+    }
+    public byte[] getBytes() { return bytes == null ? null : bytes.clone(); }
 
     public Path getPath() { return path; }
     public Type getType() { return type; }

@@ -81,4 +81,35 @@ class ScanOnRequestTest {
         assertTrue(pending.isEmpty());
     }
 
+    @Test
+    void synchronousScanIncludesANewPackageBeforeItReturns() throws Exception {
+        watcher = new FileWatcher(new NoopPlatformContext(), AgentConfig.parse("startupDelaySec=0,debounceMs=5000"));
+        watcher.registerRecursive(tempDir, "acme", "classes");
+        var delivered = new java.util.concurrent.CountDownLatch(1);
+        var release = new java.util.concurrent.CountDownLatch(1);
+        var seen = new java.util.concurrent.CopyOnWriteArrayList<Path>();
+        watcher.onFileChanges(events -> {
+            seen.addAll(events.stream().map(ChangeEvent::getPath).toList());
+            delivered.countDown();
+            try { assertTrue(release.await(5, java.util.concurrent.TimeUnit.SECONDS)); }
+            catch (InterruptedException e) { throw new RuntimeException(e); }
+        });
+        var thread = new Thread(watcher::startWatching);
+        thread.start();
+        Path nested = Files.createDirectories(tempDir.resolve("new/deep"));
+        Path file = Files.write(nested.resolve("New.class"), new byte[]{1, 2, 3});
+        var scan = java.util.concurrent.CompletableFuture.runAsync(watcher::scanNow);
+        try {
+            assertTrue(delivered.await(5, java.util.concurrent.TimeUnit.SECONDS));
+            assertFalse(scan.isDone(), "scan cannot acknowledge a callback still delivering files");
+            release.countDown();
+            scan.get(5, java.util.concurrent.TimeUnit.SECONDS);
+            assertTrue(seen.contains(file), seen.toString());
+        } finally {
+            release.countDown();
+            watcher.stopWatching();
+            thread.join(2000);
+        }
+    }
+
 }
