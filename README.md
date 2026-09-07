@@ -111,6 +111,10 @@ than either.
 - **AOP Proxy Refresh**: Clears `AbstractAutoProxyCreator` caches for `@Aspect` classes
 - **Async Re-processing**: Re-processes `@Async` beans
 - **Spring Data Refresh**: Destroys and recreates `Repository` beans
+- **A record and a way back**: `sessionLog=<path>` appends every status line,
+  timestamped, to a file; `docs/usage.md` says how to get back from a reload
+  that went wrong and how breakpoints behave in reloaded code; the status
+  socket is documented in `docs/protocol.md` for other IDEs and build tools
 - **Flight Recorder events**: every reload is a `reclazz.Reload` JFR event
   (class, structural or not, duration, what changed) and every failure a
   `reclazz.ReloadFailed` one, so reloads sit on the JVM's own timeline next
