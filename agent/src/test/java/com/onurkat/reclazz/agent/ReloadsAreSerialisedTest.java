@@ -33,10 +33,12 @@ class ReloadsAreSerialisedTest {
 
     @Test
     void theReloadExecutorHasOneThread() throws IOException {
-        Path agent = AgentSources.root().resolve("com/onurkat/reclazz/agent/ReclazzAgent.java");
+        // The thread is made by ReloadQueue.start, which is where the queue
+        // that feeds it lives.
+        Path queue = AgentSources.root().resolve("com/onurkat/reclazz/agent/ReloadQueue.java");
 
-        String creation = Files.readAllLines(agent).stream()
-                .filter(line -> line.contains("reloadExecutor = Executors."))
+        String creation = Files.readAllLines(queue).stream()
+                .filter(line -> line.contains("ExecutorService executor = Executors."))
                 .findFirst()
                 .orElse(null);
 
