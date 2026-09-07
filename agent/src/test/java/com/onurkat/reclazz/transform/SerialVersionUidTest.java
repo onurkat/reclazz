@@ -135,4 +135,30 @@ class SerialVersionUidTest extends TransformTestBase {
         assertFalse(SerialVersionUid.worthWriting(anEnum));
         assertFalse(SerialVersionUid.worthWriting(anInterface));
     }
+
+    /**
+     * The transform asks one question in one read; the three older questions
+     * are what it used to ask, and the answers have to be the same ones.
+     */
+    @Test
+    void oneReadAnswersWhatThreeDid() throws Exception {
+        String[][] shapes = {
+                {"OnePlain", "public class OnePlain implements java.io.Serializable { public int a; }"},
+                {"OneDeclared", "public class OneDeclared implements java.io.Serializable {\n"
+                        + "    private static final long serialVersionUID = 42L; public int a; }"},
+                {"OneEnum", "public enum OneEnum { A, B }"},
+                {"OneIface", "public interface OneIface extends java.io.Serializable { int f(); }"},
+                {"OneRecord", "public record OneRecord(int a) implements java.io.Serializable {}"},
+        };
+        for (String[] shape : shapes) {
+            byte[] raw = compile(new SourceFile(shape[0], shape[1])).get(shape[0]);
+            Long expected = SerialVersionUid.worthWriting(raw) && !SerialVersionUid.alreadyDeclared(raw)
+                    ? SerialVersionUid.computeFrom(raw) : null;
+            assertEquals(expected, SerialVersionUid.forInjection(raw), shape[0]);
+        }
+        assertNotNull(SerialVersionUid.forInjection(
+                compile(new SourceFile("OnePlain", shapes[0][1])).get("OnePlain")),
+                "a plain Serializable class gets a UID written");
+        assertNull(SerialVersionUid.forInjection(new byte[]{1, 2, 3}), "unreadable bytes get nothing");
+    }
 }

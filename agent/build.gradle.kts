@@ -65,6 +65,10 @@ tasks.test {
     // hot-swap reload path (Instrumentation.redefineClasses) can be exercised
     // end-to-end inside the test process.
     jvmArgs("-Djdk.attach.allowAttachSelf=true")
+    // Throughput measurement, opt-in: -Preclazz.bench.jar=<jar> -Preclazz.bench.out=<file>
+    for (key in listOf("reclazz.bench.jar", "reclazz.bench.corpus", "reclazz.bench.out")) {
+        (project.findProperty(key) as String?)?.let { systemProperty(key, it) }
+    }
     testLogging {
         events("passed", "failed", "skipped")
         showStandardStreams = false
