@@ -45,6 +45,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The generic Spring smoke test runs on the shared end-to-end harness like
+  the other eighteen, instead of carrying its own copy of the process
+  launch, the output reader, the fixture compiler and the Spring classpath
+  filter; the filter is the harness's now, and the one other copy of it is
+  gone.
+
 - **One list says which files matter.** The watcher had its own list of
   extensions worth an event and the agent its classification of what to do
   with one, and the two had drifted: the watcher reported every `.xml`
