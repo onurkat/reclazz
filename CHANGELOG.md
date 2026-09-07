@@ -32,6 +32,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- `docs/usage.md` gains "When a Reload Goes Wrong": the way back is the
+  way in (change the file back and save), what `DIAGNOSE`, `PENDING`,
+  `HEALTH` and `sessionLog` answer, and the three ways to take the agent
+  out of the picture without losing the application's state.
+
+### Added
+
 - **`sessionLog=<path>` records the session.** Every status line the agent
   emits is appended to the file with an ISO timestamp and its level, one
   per line, without colour codes or wrapping: what the console shows and
