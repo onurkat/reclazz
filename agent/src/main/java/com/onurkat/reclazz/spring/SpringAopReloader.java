@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
@@ -61,7 +62,8 @@ public class SpringAopReloader {
             }
 
             if (cleared) {
-                StatusReporter.success("AOP advice re-read for aspect " + reloadedClass.getName()
+                ReloadEffects.note("aspect advice re-read");
+                StatusReporter.detail("AOP advice re-read for aspect " + reloadedClass.getName()
                         + ": the pointcut is parsed again, so beans proxied from here on match "
                         + "it as written.");
                 // Said because it is the half a developer will otherwise hunt

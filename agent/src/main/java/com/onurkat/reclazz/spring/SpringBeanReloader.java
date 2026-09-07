@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -67,7 +68,8 @@ public class SpringBeanReloader {
                         replacements.put(pair[0], pair[1]);
                     }
                     refreshedNames.add(beanName);
-                    StatusReporter.success("Spring bean refreshed: " + beanName);
+                    ReloadEffects.note("bean " + beanName + " re-created");
+                    StatusReporter.detail("Spring bean refreshed: " + beanName);
                     totalRefreshed++;
                 }
             }

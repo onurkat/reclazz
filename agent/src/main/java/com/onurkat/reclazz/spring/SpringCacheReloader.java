@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -43,7 +44,8 @@ public class SpringCacheReloader {
             evicted |= reloadCachesIn(appContext, reloadedClass);
         }
         if (evicted) {
-            StatusReporter.success("Spring caches evicted for " + reloadedClass.getName());
+            ReloadEffects.note("caches evicted");
+            StatusReporter.detail("Spring caches evicted for " + reloadedClass.getName());
         }
         return evicted;
     }

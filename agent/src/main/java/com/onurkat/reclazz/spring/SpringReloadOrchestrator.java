@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.ui.RestartLedger;
 
@@ -174,7 +175,8 @@ public class SpringReloadOrchestrator {
                 // worth a line in the log.
                 boolean worthSaying = isStructural || annotationsChanged;
                 if (mvcReloaded && worthSaying) {
-                    StatusReporter.success("Spring MVC mappings re-scanned for " + className);
+                    ReloadEffects.note("mappings re-scanned");
+                    StatusReporter.detail("Spring MVC mappings re-scanned for " + className);
 
                     // A re-scan reads the class through reflection, and a
                     // method this reload added is not there to be read: on a
@@ -197,7 +199,8 @@ public class SpringReloadOrchestrator {
                         boolean mapped = mvcReloader.registerAddedEndpoints(
                                 reloadedClass, addedHandlers, newBytecode);
                         if (mapped) {
-                            StatusReporter.success("Handler methods added by this reload are mapped.");
+                            ReloadEffects.note("added handlers mapped");
+                            StatusReporter.detail("Handler methods added by this reload are mapped.");
                         } else {
                             StatusReporter.warn("A handler method added by this reload is not visible "
                                     + "to the mapping scan and needs a restart. Existing mappings, "

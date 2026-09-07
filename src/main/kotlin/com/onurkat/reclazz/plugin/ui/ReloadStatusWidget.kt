@@ -62,10 +62,16 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
 
     override fun getAlignment(): Float = 0f
 
+    /** The last reload line, which says what the save touched. */
+    @Volatile
+    private var lastReload: String? = null
+
     override fun getTooltipText(): String {
         val manager = ReloadManager.getInstance(project)
         return if (manager.isConnected) {
-            "Reclazz: Connected — " + plural(manager.reloadCount, "reload")
+            val head = "Reclazz: Connected, " + plural(manager.reloadCount, "reload")
+            val last = lastReload
+            if (last == null) head else "$head\nLast: $last"
         } else {
             "Reclazz: Not connected"
         }
@@ -91,7 +97,10 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
         displayText = when (event.level) {
             "CONNECTED" -> "Reclazz: Connected"
             "DISCONNECTED" -> "Reclazz: Idle"
-            "RELOAD", "STRUCTURAL_RELOAD" -> "Reclazz: " + plural(manager.reloadCount, "reload")
+            "RELOAD", "STRUCTURAL_RELOAD" -> {
+                lastReload = event.message
+                "Reclazz: " + plural(manager.reloadCount, "reload")
+            }
             "OK" -> if (event.message.startsWith("Hot-swapped:")) "Reclazz: " + plural(manager.reloadCount, "reload") else displayText
             "ERROR" -> "Reclazz: Error"
             else -> displayText

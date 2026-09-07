@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -65,7 +66,8 @@ public class SpringSchedulerReloader {
                             "postProcessAfterInitialization", Object.class, String.class);
                     postProcess.invoke(processor, bean, beanName);
 
-                    StatusReporter.success("@Scheduled methods re-registered for " + reloadedClass.getName());
+                    ReloadEffects.note("@Scheduled re-registered");
+                    StatusReporter.detail("@Scheduled methods re-registered for " + reloadedClass.getName());
                     return true;
                 }
             } catch (NoSuchMethodException e) {

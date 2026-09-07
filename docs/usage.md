@@ -85,7 +85,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `autoImpex` | `false` | Auto-import changed `.impex` files |
 | `debounceMs` | `500` | Milliseconds to wait before processing changes (batches rapid file writes) |
 | `startupDelaySec` | `30` | Seconds to wait after agent startup before watching files |
-| `verbose` | `false` | Enable verbose logging in the console |
+| `verbose` | `false` | Enable verbose logging in the console, including each framework step's own line after a reload (the reload line carries the summary either way) |
 | `statusPort` | `0` | TCP port for plugin communication (0 = auto-assign) |
 | `portFile` | (none) | Path where agent writes its actual port after binding |
 | `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know |
@@ -210,9 +210,12 @@ If you prefer to skip `ant build` entirely, enable **AutoCompile**. In this mode
 
 - **Tool window:** Bottom panel labeled "Reclazz" shows a detailed log of all events:
   - Compilation results (autoCompile mode)
-  - Hot-swap results with timing
-  - Spring bean refresh events
-  - Interceptor reload events
+  - One line per reload, with the timing and what the save touched:
+    `Reloaded com.acme.OrderService (12ms): bean orderService re-created,
+    mappings re-scanned, caches evicted`. When the save added something that
+    only a restart completes, the line ends with `1 thing now waits on a
+    restart, ask PENDING`. The same line is the status bar widget's tooltip.
+  - Each framework step's own sentence, under `verbose=true`
   - Errors and warnings
 
 - **Notifications:** Balloon notifications for important events (JDK detection, connection status)

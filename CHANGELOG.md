@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- **The reload line says what the save touched.** `Reloaded OrderService
+  (12ms): bean orderService re-created, mappings re-scanned, caches evicted`,
+  and `; 1 thing now waits on a restart, ask PENDING` when the reload added
+  to the restart ledger. Each Spring step used to print its own line after
+  the swap line, so one save of a `@Service` was three agent lines and the
+  answer to "what did it touch" was spread over them; measured in
+  `ReloadSaysWhatChangedTest`, the same save is now two lines (the change
+  detection and the reload), and the step sentences are printed under
+  `verbose=true`. The reload line is emitted after the framework steps rather
+  than before them, so it can carry them; the `RELOAD` and
+  `STRUCTURAL_RELOAD` levels and the prefix of the message are unchanged. The
+  IntelliJ status bar widget's tooltip shows the last reload line.
+
 ### Added
 
 - **An instance field added by a reload gets its initialiser's value on

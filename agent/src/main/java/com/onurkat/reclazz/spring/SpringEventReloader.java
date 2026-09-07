@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -82,7 +83,8 @@ public class SpringEventReloader {
                     Method afterInit = processor.getClass().getMethod(
                             "afterSingletonsInstantiated");
                     afterInit.invoke(processor);
-                    StatusReporter.success("@EventListener methods re-processed for " + reloadedClass.getName());
+                    ReloadEffects.note("@EventListener re-processed");
+                    StatusReporter.detail("@EventListener methods re-processed for " + reloadedClass.getName());
                     return true;
                 } catch (NoSuchMethodException e) {
                     // Try alternative approach

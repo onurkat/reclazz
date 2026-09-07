@@ -116,6 +116,21 @@ public class StatusReporter {
         notifyListeners("OK", message);
     }
 
+    private static volatile boolean verbose;
+
+    public static void setVerbose(boolean on) {
+        verbose = on;
+    }
+
+    /**
+     * A framework step's own sentence about what it did. Under verbose it is
+     * an ordinary line; otherwise the reload line already carries the effect
+     * in a few words, and the sentence would be the second telling.
+     */
+    public static void detail(String message) {
+        if (verbose) info(message);
+    }
+
     public static void warn(String message) {
         log(YELLOW, "WARN", message);
         notifyListeners("WARN", message);
@@ -127,9 +142,19 @@ public class StatusReporter {
     }
 
     public static void reload(String className, long timeMs) {
+        reload(className, timeMs, null);
+    }
+
+    /**
+     * @param effects what the reload touched, as {@link ReloadEffects}
+     *                gathered it, or null/empty for a class no framework step
+     *                had anything to do about
+     */
+    public static void reload(String className, long timeMs, String effects) {
         String msg = timeMs >= 0
                 ? String.format("Reloaded %s (%dms)", className, timeMs)
                 : String.format("Reloaded %s", className);
+        if (effects != null && !effects.isEmpty()) msg += ": " + effects;
         log(GREEN + BOLD, "SWAP", msg);
         notifyListeners("RELOAD", msg);
     }
@@ -145,6 +170,11 @@ public class StatusReporter {
      *              the same four words now prints one that says both.
      */
     public static void structuralReload(String className, long timeMs, String shape) {
+        structuralReload(className, timeMs, shape, null);
+    }
+
+    public static void structuralReload(String className, long timeMs, String shape,
+                                        String effects) {
         // A negative timing means the caller did not measure this one, which
         // is the batch path reloading a whole directory under one clock. It
         // used to print "(-1ms)", which reads as a broken measurement rather
@@ -158,6 +188,7 @@ public class StatusReporter {
         String msg = detail.length() == 0
                 ? String.format("Structural reload: %s", className)
                 : String.format("Structural reload: %s (%s)", className, detail);
+        if (effects != null && !effects.isEmpty()) msg += ": " + effects;
         log(GREEN + BOLD, "STRC", msg);
         notifyListeners("STRUCTURAL_RELOAD", msg);
     }

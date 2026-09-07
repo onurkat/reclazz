@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
@@ -203,7 +204,8 @@ public class SpringSecurityReloader {
         swapped += swapIntoLiveProxies(appContext, current);
 
         if (swapped > 0) {
-            StatusReporter.success("Security filter chain rebuilt: " + Plural.of(swapped, "chain")
+            ReloadEffects.note(Plural.of(swapped, "security chain") + " rebuilt");
+            StatusReporter.detail("Security filter chain rebuilt: " + Plural.of(swapped, "chain")
                     + Plural.word(swapped, " now enforces", " now enforce")
                     + " the reloaded configuration.");
             // Method security is not part of the chain and is not rebuilt
@@ -659,7 +661,8 @@ public class SpringSecurityReloader {
         }
 
         if (cleared > 0) {
-            StatusReporter.success("Method security re-read for " + reloadedClass.getName()
+            ReloadEffects.note("method security re-read");
+            StatusReporter.detail("Method security re-read for " + reloadedClass.getName()
                     + ": @PreAuthorize and friends are enforced as written now.");
         } else if (found) {
             // Not "nothing was cached": an empty cache is refilled above, so

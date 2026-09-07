@@ -22,6 +22,7 @@ import com.onurkat.reclazz.spring.SpringReloadOrchestrator;
 import com.onurkat.reclazz.transform.ReclazzTransformer;
 import com.onurkat.reclazz.transform.ReflectionInterceptTransformer;
 import com.onurkat.reclazz.transform.TransformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.ReloadEvents;
 import com.onurkat.reclazz.ui.SessionLog;
 import com.onurkat.reclazz.ui.StatusReporter;
@@ -205,6 +206,7 @@ public class ReclazzAgent {
             // the banner and the capability report, and they should be laid
             // out the same way as everything after them.
             StatusReporter.setWrapMode(config.getWrapOutput());
+            StatusReporter.setVerbose(config.isVerbose());
             agentConfig = config;
             // Before anything else is said, so the record has the whole session.
             if (config.getSessionLog() != null) {
@@ -815,6 +817,7 @@ public class ReclazzAgent {
             }
 
             long startTime = System.currentTimeMillis();
+            ReloadEffects.begin();
 
             chaseChangedConstants(internalName, className, bytecode);
 
@@ -825,6 +828,7 @@ public class ReclazzAgent {
             if (!alreadyLoaded(className)) {
                 if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
                     recordOutcome(className, true, "registered as a new bean", source);
+                    ReloadEffects.end();
                     return;
                 }
                 JpaMappingRefresh.maybeMapNewEntity(
@@ -844,10 +848,8 @@ public class ReclazzAgent {
                     reloadResult.isSuccess() ? kindOf(reloadResult) : reloadResult.getError(), source);
 
             if (reloadResult.isSuccess()) {
-                reloadLanded(className, reloadResult.isStructuralReload(), elapsed,
-                        reloadResult.getShape(), source);
-
-                // Run Spring reloaders
+                // The framework steps first, the line last, so that the line
+                // can say what the steps did.
                 if (reloadResult.isSpringBean()) {
                     Class<?> reloadedClass = findLoadedClass(className);
                     springOrchestrator.onClassReloaded(className, reloadedClass,
@@ -862,9 +864,14 @@ public class ReclazzAgent {
                 if (reloadResult.isInterceptor() && interceptorReloader != null) {
                     interceptorReloader.reloadInterceptor(className,
                             ((HybrisPlatformContext) platformContext).getHybrisContext());
-                    StatusReporter.success("Interceptor reloaded: " + displayName);
+                    ReloadEffects.note("interceptor re-registered");
+                    StatusReporter.detail("Interceptor reloaded: " + displayName);
                 }
+
+                reloadLanded(className, reloadResult.isStructuralReload(), elapsed,
+                        reloadResult.getShape(), source, ReloadEffects.end());
             } else {
+                ReloadEffects.end();
                 SessionReport.failed();
                 StatusReporter.error("Hot-swap failed for " + displayName + ": " + reloadResult.getError());
                 ReloadEvents.failed(className, reloadResult.getError(), source);
@@ -929,12 +936,12 @@ public class ReclazzAgent {
      * @param source  the class file, or the source file that was compiled
      */
     private static void reloadLanded(String className, boolean structural, long elapsed,
-                                     String shape, String source) {
+                                     String shape, String source, String effects) {
         SessionReport.reloaded(structural, elapsed);
         if (structural) {
-            StatusReporter.structuralReload(displayName(className), elapsed, shape);
+            StatusReporter.structuralReload(displayName(className), elapsed, shape, effects);
         } else {
-            StatusReporter.reload(displayName(className), elapsed);
+            StatusReporter.reload(displayName(className), elapsed, effects);
         }
         ReloadEvents.reloaded(className, structural, elapsed, shape, source);
     }
@@ -1040,6 +1047,7 @@ public class ReclazzAgent {
         // reloads a hybris developer ever sees; leaving the shape behind here
         // dropped it from every one of them.
         java.util.LinkedHashMap<String, String> swappedShapes = new java.util.LinkedHashMap<>();
+        java.util.LinkedHashMap<String, String> swappedEffects = new java.util.LinkedHashMap<>();
 
         // Dependent cascade + stale-reference healing sweep every singleton
         // in every context, so run them once for the whole batch; the JVM
@@ -1075,6 +1083,7 @@ public class ReclazzAgent {
             }
 
             ClassReloader.ReloadResult reloadResult;
+            ReloadEffects.begin();
             try {
                 if (structuralReloader != null && transformContext != null
                         && transformContext.isWatched(internalName)) {
@@ -1111,9 +1120,12 @@ public class ReclazzAgent {
                 if (reloadResult.isInterceptor() && interceptorReloader != null) {
                     interceptorReloader.reloadInterceptor(className,
                             ((HybrisPlatformContext) platformContext).getHybrisContext());
-                    StatusReporter.success("Interceptor reloaded: " + className);
+                    ReloadEffects.note("interceptor re-registered");
+                    StatusReporter.detail("Interceptor reloaded: " + className);
                 }
+                swappedEffects.put(className, ReloadEffects.end());
             } else {
+                ReloadEffects.end();
                 failCount++;
                 StatusReporter.error("Hot-swap failed for " + className + ": " + reloadResult.getError());
                 ReloadEvents.failed(className, reloadResult.getError(), sources.get(className));
@@ -1143,11 +1155,13 @@ public class ReclazzAgent {
         if (compiledClasses.size() == 1 && successCount == 1) {
             var only = swappedClasses.entrySet().iterator().next();
             reloadLanded(only.getKey(), only.getValue(), elapsed,
-                    swappedShapes.get(only.getKey()), sources.get(only.getKey()));
+                    swappedShapes.get(only.getKey()), sources.get(only.getKey()),
+                    swappedEffects.get(only.getKey()));
         } else if (compiledClasses.size() > 1) {
             for (var entry : swappedClasses.entrySet()) {
                 reloadLanded(entry.getKey(), entry.getValue(), -1,
-                        swappedShapes.get(entry.getKey()), sources.get(entry.getKey()));
+                        swappedShapes.get(entry.getKey()), sources.get(entry.getKey()),
+                        swappedEffects.get(entry.getKey()));
             }
             String summary = String.format("Batch summary: %d/%d classes hot-swapped in %dms",
                     successCount, compiledClasses.size(), elapsed);

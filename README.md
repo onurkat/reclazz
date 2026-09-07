@@ -122,6 +122,11 @@ than either.
 - **AOP Proxy Refresh**: Clears `AbstractAutoProxyCreator` caches for `@Aspect` classes
 - **Async Re-processing**: Re-processes `@Async` beans
 - **Spring Data Refresh**: Destroys and recreates `Repository` beans
+- **One line per save that says what it touched**: `Reloaded OrderService
+  (12ms): bean orderService re-created, mappings re-scanned, caches evicted`,
+  and `; 1 thing now waits on a restart, ask PENDING` when the save added
+  something only a restart completes. The steps' own sentences are there under
+  `verbose`
 - **A record and a way back**: `sessionLog=<path>` appends every status line,
   timestamped, to a file; `docs/usage.md` says how to get back from a reload
   that went wrong and how breakpoints behave in reloaded code; the status

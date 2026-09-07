@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -58,7 +59,8 @@ public class SpringDataReloader {
 
             SpringBeans.getBean(appContext, beanName);
 
-            StatusReporter.success("Spring Data repository refreshed: " + reloadedClass.getName());
+            ReloadEffects.note("repository re-created");
+            StatusReporter.detail("Spring Data repository refreshed: " + reloadedClass.getName());
             return true;
         } catch (Exception e) {
             StatusReporter.warn("Spring Data repository reload failed: " + Failures.describe(e));
