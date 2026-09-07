@@ -45,6 +45,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **A save's JVM redefinitions go in one call.** Each `redefineClasses`
+  call is a safepoint and a deoptimisation. Measured on 30 small classes,
+  30 calls took 247 to 284ms and one call with the same 30 definitions 15
+  to 24ms, in a per-class reload that took 350 to 400ms all told: a save of
+  many classes spent most of its time in the redefinitions, one at a time.
+  Inside a batch the structural reloader now defers each class's
+  redefinition and applies them all at the end in one call; the same 30
+  reloads take 91ms, and the end-to-end batch of 30 class files went from
+  268ms to 122ms. The call is all or nothing, so when the JVM refuses any
+  one definition (a class carrying members added since startup is the
+  usual one) every class goes back to its own call and its own outcome,
+  which is exactly what it had before. Between a class's switch and the end
+  of the batch it already serves its new bodies through the companion; what
+  waits is the constructors and the renamed copies, for the length of the
+  batch.
+
 - **The IDE tells the agent when a build has finished, and the agent
   looks.** The first change to a file in a session waits for the JDK's file
   watcher to notice it, and on macOS, where the JDK has no native watcher,

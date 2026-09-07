@@ -1286,7 +1286,6 @@ public class StructuralReloader {
             // after the reload still ran the constructor compiled before the
             // new field existed, so the field it was supposed to initialise
             // came back null.
-            boolean redefinePayloadApplied = false;
             boolean removedBodiesKept = false;
             {
                 // RAW bytes on the ordinary path: the registered
@@ -1326,36 +1325,39 @@ public class StructuralReloader {
                     }
                 }
 
-                try {
-                    instrumentation.redefineClasses(
-                            new java.lang.instrument.ClassDefinition(targetClass, redefinePayload));
-                    redefinePayloadApplied = true;
-                    // The loaded class now holds what the payload holds,
-                    // removed methods included, and the record has to say so
-                    // or the next save reads restoring one as adding one.
-                    if (removedBodiesKept && kept.schema() != null) {
-                        context.putMetadata(internalName, kept.schema());
-                    }
-                } catch (UnsupportedOperationException expected) {
-                    // Once a class has gained members they live in a companion,
-                    // not in the loaded class, so the bytecode handed back here
-                    // no longer matches what the JVM will accept redefining.
-                    // The JVM says "attempted to add a method" and refuses.
-                    //
-                    // That is the companion engine working as designed, and the
-                    // reload itself succeeds a few lines below. Reporting it as
-                    // a warning with the raw exception attached told users their
-                    // edit had failed, on the one surface they watch, every time
-                    // they touched a class they had previously added a method to.
-                    //
-                    // Silence has a cost of its own, and the live suite is where
-                    // it was paid: a field added to a class that had already
-                    // gained a member read 0 on an object built after the
-                    // reload, which is exactly the thing this refresh exists to
-                    // prevent, with nothing anywhere saying why. So the case
-                    // where the developer is about to see a wrong value is said
-                    // out loud, and the rest goes to the ledger, where it can be
-                    // asked for instead of scrolling past.
+                final byte[] payloadToApply = redefinePayload;
+                final boolean keptBodies = removedBodiesKept;
+                final RemovalPrep keptPrep = kept;
+                // What this class does with the outcome, now or at the end of
+                // the batch it is part of. See redefine().
+                RedefineOutcome.Handler afterRedefine = outcome -> {
+                    if (outcome.applied()) {
+                        // The loaded class now holds what the payload holds,
+                        // removed methods included, and the record has to say so
+                        // or the next save reads restoring one as adding one.
+                        if (keptBodies && keptPrep != null && keptPrep.schema() != null) {
+                            context.putMetadata(internalName, keptPrep.schema());
+                        }
+                    } else if (outcome.refused()) {
+                        // Once a class has gained members they live in a companion,
+                        // not in the loaded class, so the bytecode handed back here
+                        // no longer matches what the JVM will accept redefining.
+                        // The JVM says "attempted to add a method" and refuses.
+                        //
+                        // That is the companion engine working as designed, and the
+                        // reload itself succeeds. Reporting it as a warning with the
+                        // raw exception attached told users their edit had failed,
+                        // on the one surface they watch, every time they touched a
+                        // class they had previously added a method to.
+                        //
+                        // Silence has a cost of its own, and the live suite is where
+                        // it was paid: a field added to a class that had already
+                        // gained a member read 0 on an object built after the
+                        // reload, which is exactly the thing this refresh exists to
+                        // prevent, with nothing anywhere saying why. So the case
+                        // where the developer is about to see a wrong value is said
+                        // out loud, and the rest goes to the ledger, where it can be
+                        // asked for instead of scrolling past.
                     java.util.List<String> addedFieldNames = new ArrayList<>();
                     for (String key : diff.getAddedFields()) {
                         addedFieldNames.add(key.substring(0, key.indexOf(':')));
@@ -1376,14 +1378,15 @@ public class StructuralReloader {
                     com.onurkat.reclazz.agent.RestartLedger.note(className,
                             "a constructor the JVM would not redefine, because the class "
                                     + "carries members added since startup");
-                } catch (Throwable t) {
-                    StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + t);
-                }
-            }
-
-            if (!diff.getRemovedMethodSigs().isEmpty()) {
-                reportRemovedMethods(className, targetClass, diff,
-                        redefinePayloadApplied && !removedBodiesKept);
+                    } else {
+                        StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + outcome.failure());
+                    }
+                    if (!diff.getRemovedMethodSigs().isEmpty()) {
+                        reportRemovedMethods(className, targetClass, diff,
+                                outcome.applied() && !keptBodies);
+                    }
+                };
+                redefine(targetClass, payloadToApply, afterRedefine);
             }
 
             boolean springBean = isSpringBean(targetClass);
@@ -1468,6 +1471,121 @@ public class StructuralReloader {
                     + "or a restart.");
             com.onurkat.reclazz.agent.RestartLedger.note(className,
                     what + " did not complete after a reload");
+        }
+    }
+
+    /** What one class's redefinition came to, for that class's own follow-up. */
+    record RedefineOutcome(boolean applied, boolean refused, Throwable failure) {
+        interface Handler {
+            void handle(RedefineOutcome outcome);
+        }
+
+        static RedefineOutcome ok() {
+            return new RedefineOutcome(true, false, null);
+        }
+
+        static RedefineOutcome refusedByTheJvm() {
+            return new RedefineOutcome(false, true, null);
+        }
+
+        static RedefineOutcome failed(Throwable t) {
+            return new RedefineOutcome(false, false, t);
+        }
+    }
+
+    private record PendingRedefinition(Class<?> target, byte[] payload, RedefineOutcome.Handler then) {
+    }
+
+    private int redefineBatchDepth;
+    private final List<PendingRedefinition> pendingRedefinitions = new ArrayList<>();
+
+    /**
+     * Defer the JVM redefinitions of the reloads that follow until
+     * {@link #endBatch()}, which applies them in one call.
+     *
+     * <p>Each {@code redefineClasses} call is a safepoint and a
+     * deoptimisation: measured on 30 small classes, 30 calls took 268 to
+     * 284ms and one call with the same 30 definitions 17 to 24ms, in a
+     * per-class reload that took 360 to 400ms all told. A save of many
+     * classes therefore spends most of its time in the redefinitions, taken
+     * one at a time. Between a class's dispatch switch and its redefinition
+     * the class already serves its new bodies through the companion; what
+     * the redefinition brings is the constructors and the renamed copies, so
+     * deferring it to the end of the batch widens that window from nothing to
+     * the length of the batch and changes nothing else.
+     */
+    public void beginBatch() {
+        redefineBatchDepth++;
+    }
+
+    /** Apply the deferred redefinitions, in one call where the JVM lets us. */
+    public void endBatch() {
+        if (redefineBatchDepth == 0) return;
+        if (--redefineBatchDepth > 0) return;
+        flushRedefinitions();
+    }
+
+    /** Redefine now, or at the end of the batch this reload is part of. */
+    void redefine(Class<?> target, byte[] payload, RedefineOutcome.Handler then) {
+        if (redefineBatchDepth > 0) {
+            pendingRedefinitions.add(new PendingRedefinition(target, payload, then));
+            return;
+        }
+        handleOutcome(then, redefineOne(target, payload));
+    }
+
+    private RedefineOutcome redefineOne(Class<?> target, byte[] payload) {
+        try {
+            instrumentation.redefineClasses(new java.lang.instrument.ClassDefinition(target, payload));
+            return RedefineOutcome.ok();
+        } catch (UnsupportedOperationException refused) {
+            return RedefineOutcome.refusedByTheJvm();
+        } catch (Throwable t) {
+            return RedefineOutcome.failed(t);
+        }
+    }
+
+    /**
+     * One call for the whole batch. The call is all or nothing, so when the
+     * JVM refuses any one definition (a class that carries members added
+     * since startup is the usual one) every class goes back to its own call
+     * and its own outcome, which is exactly what it would have had.
+     */
+    private void flushRedefinitions() {
+        List<PendingRedefinition> pending = new ArrayList<>(pendingRedefinitions);
+        pendingRedefinitions.clear();
+        if (pending.isEmpty()) return;
+        if (pending.size() > 1) {
+            java.lang.instrument.ClassDefinition[] definitions =
+                    new java.lang.instrument.ClassDefinition[pending.size()];
+            for (int i = 0; i < definitions.length; i++) {
+                definitions[i] = new java.lang.instrument.ClassDefinition(
+                        pending.get(i).target(), pending.get(i).payload());
+            }
+            try {
+                instrumentation.redefineClasses(definitions);
+                for (PendingRedefinition each : pending) {
+                    handleOutcome(each.then(), RedefineOutcome.ok());
+                }
+                return;
+            } catch (Throwable oneOfThemWasRefused) {
+                if (config.isVerbose()) {
+                    StatusReporter.info("Redefining " + pending.size() + " classes in one call was refused ("
+                            + oneOfThemWasRefused.getClass().getSimpleName() + "); redefining them one by one");
+                }
+            }
+        }
+        for (PendingRedefinition each : pending) {
+            handleOutcome(each.then(), redefineOne(each.target(), each.payload()));
+        }
+    }
+
+    private static void handleOutcome(RedefineOutcome.Handler then, RedefineOutcome outcome) {
+        try {
+            then.handle(outcome);
+        } catch (Throwable t) {
+            StatusReporter.warn("A reload's follow-up after redefinition failed: "
+                    + com.onurkat.reclazz.ui.Failures.describe(t));
         }
     }
 
