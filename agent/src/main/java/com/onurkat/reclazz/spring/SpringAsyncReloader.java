@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -58,7 +59,8 @@ public class SpringAsyncReloader {
                         "postProcessAfterInitialization", Object.class, String.class);
                 postProcess.invoke(processor, bean, targetBeanName);
 
-                StatusReporter.success("@Async methods re-processed for " + reloadedClass.getName());
+                ReloadEffects.note("@Async re-processed");
+                StatusReporter.detail("@Async methods re-processed for " + reloadedClass.getName());
                 return true;
             }
         } catch (Exception e) {

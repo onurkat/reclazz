@@ -118,8 +118,7 @@ This tests the most common scenario — changing method logic.
 ### Verify
 - Tool window shows:
   ```
-  Hot-swapped: com.example.MyService (XXms)
-  Spring bean refreshed: myService
+  Reloaded com.example.MyService (XXms): bean myService re-created
   ```
 - New singleton instance is created with updated logic
 - Note: existing injected references still point to old instance

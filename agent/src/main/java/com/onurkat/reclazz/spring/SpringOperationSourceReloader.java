@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
@@ -113,7 +114,8 @@ public class SpringOperationSourceReloader {
         }
 
         if (!cleared.isEmpty() && annotationsChanged) {
-            StatusReporter.success(String.join("/", cleared)
+            ReloadEffects.note(String.join("/", cleared) + " metadata re-read");
+            StatusReporter.detail(String.join("/", cleared)
                     + " annotation metadata re-read for " + reloadedClass.getName());
         }
         return cleared.size();
