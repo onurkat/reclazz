@@ -38,7 +38,7 @@ class CallerAndCalleeSavedTogetherTest {
             // Through the watcher, not the start-up catch-up: a save that lands
             // while the agent is still starting is re-dispatched by a different
             // route, and this test is about the route a working session uses.
-            app.awaitOrFail("Content-hash baseline", "the watcher never took its baseline");
+            app.awaitOrFail("] Watching 1 director", "the watcher never said what it watches");
 
             Map<String, String> save = new LinkedHashMap<>();
             save.put("Caller", caller("extra"));

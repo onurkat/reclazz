@@ -53,7 +53,7 @@ class BreakpointsBindToReloadedCodeTest {
 
             app.awaitOrFail("Listening for transport dt_socket", "the JVM did not open a debug port");
             app.awaitOrFail("GREET=v1", "the first version never served");
-            app.awaitOrFail("Content-hash baseline", "the watcher never took its baseline");
+            app.awaitOrFail("] Watching 1 director", "the watcher never said what it watches");
             int port = debugPort(app.output());
 
             app.rewrite("Greeter", greeter("v2"));

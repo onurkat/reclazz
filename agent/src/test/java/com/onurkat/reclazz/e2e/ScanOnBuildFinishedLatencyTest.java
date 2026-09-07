@@ -42,7 +42,7 @@ class ScanOnBuildFinishedLatencyTest {
 
         try (WatchedApp app = builder.start()) {
             app.awaitOrFail("APP_STARTED", "the app did not start under the agent");
-            app.awaitOrFail("Content-hash baseline", "the watcher never took its baseline");
+            app.awaitOrFail("] Watching 1 director", "the watcher never said what it watches");
             int port = Integer.parseInt(Files.readString(portFile).trim());
 
             List<Long> polled = new ArrayList<>();
