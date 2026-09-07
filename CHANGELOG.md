@@ -27,6 +27,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the child's reload, which is what `HierarchyReloadUnderLoadTest` had been
   catching in the full suite and nowhere else.
 
+### Changed
+
+- **A reload that does not come back is reported, and so is its return.**
+  Reloads run one after another on a single thread, on purpose, so one that
+  hangs holds every save made after it, and a queue is silent: the developer
+  sees what they see when the watcher has died, which is that saving does
+  nothing. After 30 seconds the reload is named, with how long it has run and
+  where the reload thread is, once; when it does finish, that is said too,
+  and `HEALTH` names it while it is still running. Nothing is interrupted: a
+  reload halfway through a framework refresh is not something to abandon
+  from outside.
+
+- **The agent's own start-up failing no longer stops the application.**
+  Whatever escapes `premain` ends the JVM before the application's main has
+  run, and the start-up caught `Exception`, so an `Error` there, a class
+  missing from the jar or a static initialiser that threw, was the
+  application not starting. It is caught now, the failure is said with its
+  cause, and the application starts without hot reload.
+
+- **The SAP Commerce code generator's five-minute limit is a limit.** The
+  `ant build` it runs had its output read to the end before the wait with
+  the timeout began, so an ant that hung with its output open held the
+  reload thread for good. The output is pumped on its own thread now and the
+  wait is what bounds the call; on timeout the process is killed and its
+  last lines are kept for the report.
+
 ### Security
 
 - **The bootstrap jar is extracted into an owner-only directory with a random
