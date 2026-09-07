@@ -78,34 +78,90 @@ public class SpringMvcReloader {
                 return false;
             }
 
+            return rescan(handlerMapping, beanName, controllerClass);
+        } catch (Exception e) {
+            StatusReporter.warn("Spring MVC mapping re-scan failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            return false;
+        }
+    }
+
+    /**
+     * Take the controller's mappings out and scan them back in, with nobody
+     * looking in between.
+     *
+     * <p>The two halves used to run with the registry open between them, and
+     * a request that arrived then found no handler for a path that had one a
+     * millisecond earlier and would have one a millisecond later: a 404 for
+     * saving a file. The registry serialises its own writes with a
+     * read-write lock and takes the read side for every lookup, so holding
+     * its write lock across the whole swap makes a request wait for the
+     * re-scan instead of missing it. The lock is reentrant, so the registry's
+     * own locking inside register and unregister still works on this thread.
+     * When the lock cannot be reached, another Spring than the ones this was
+     * read against, the swap runs as before, with the window.
+     */
+    boolean rescan(Object handlerMapping, String beanName, Class<?> controllerClass) throws Exception {
+        // detectHandlerMethods is declared on AbstractHandlerMethodMapping,
+        // not on RequestMappingHandlerMapping, and getDeclaredMethod does
+        // not look at supertypes. Asking the concrete class for it threw
+        // NoSuchMethodException on every single re-scan, which the catch
+        // in the caller reported and then swallowed as a returned false.
+        Method detectMethod = com.onurkat.reclazz.util.Reflect.findMethod(
+                handlerMapping.getClass(), "detectHandlerMethods", Object.class);
+        if (detectMethod == null) {
+            StatusReporter.warn("MVC re-scan cannot proceed for " + controllerClass.getName()
+                    + ": no detectHandlerMethods on " + handlerMapping.getClass().getName()
+                    + " or its supertypes");
+            return false;
+        }
+        detectMethod.setAccessible(true);
+
+        java.util.concurrent.locks.Lock registryWrite = registryWriteLock(handlerMapping);
+        if (registryWrite != null) registryWrite.lock();
+        try {
             unregisterMappings(handlerMapping, controllerClass);
 
-            // detectHandlerMethods is declared on AbstractHandlerMethodMapping,
-            // not on RequestMappingHandlerMapping, and getDeclaredMethod does
-            // not look at supertypes. Asking the concrete class for it threw
-            // NoSuchMethodException on every single re-scan, which the catch
-            // below reported and then swallowed as a returned false.
-            Method detectMethod = com.onurkat.reclazz.util.Reflect.findMethod(
-                    handlerMapping.getClass(), "detectHandlerMethods", Object.class);
-            if (detectMethod == null) {
-                StatusReporter.warn("MVC re-scan cannot proceed for " + controllerClass.getName()
-                        + ": no detectHandlerMethods on " + handlerMapping.getClass().getName()
-                        + " or its supertypes");
-                return false;
-            }
             // Spring caches reflection per Class, and redefineClasses leaves
             // the Class identity alone, so those caches keep handing out the
             // Method objects read at startup with the annotations they had
             // then. The re-scan would faithfully re-register the old mapping.
             clearSpringReflectionCaches(handlerMapping.getClass().getClassLoader());
 
-            detectMethod.setAccessible(true);
             detectMethod.invoke(handlerMapping, beanName);
+        } finally {
+            if (registryWrite != null) registryWrite.unlock();
+        }
+        return true;
+    }
 
-            return true;
-        } catch (Exception e) {
-            StatusReporter.warn("Spring MVC mapping re-scan failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
-            return false;
+    /**
+     * The write side of the mapping registry's lock, or null when it cannot
+     * be found. {@code AbstractHandlerMethodMapping.mappingRegistry} and
+     * {@code MappingRegistry.readWriteLock} are private fields, the same in
+     * Spring 5.3 and 6.x; this is read against both.
+     */
+    static java.util.concurrent.locks.Lock registryWriteLock(Object handlerMapping) {
+        try {
+            Object registry = null;
+            for (Class<?> c = handlerMapping.getClass(); c != null && registry == null; c = c.getSuperclass()) {
+                try {
+                    java.lang.reflect.Field f = c.getDeclaredField("mappingRegistry");
+                    f.setAccessible(true);
+                    registry = f.get(handlerMapping);
+                } catch (NoSuchFieldException notHere) {
+                    // Declared further up.
+                }
+            }
+            if (registry == null) return null;
+            java.lang.reflect.Field lockField = registry.getClass().getDeclaredField("readWriteLock");
+            lockField.setAccessible(true);
+            Object lock = lockField.get(registry);
+            if (lock instanceof java.util.concurrent.locks.ReadWriteLock rw) {
+                return rw.writeLock();
+            }
+            return null;
+        } catch (Exception unreadable) {
+            return null;
         }
     }
 

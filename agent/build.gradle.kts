@@ -45,6 +45,11 @@ dependencies {
     // reflection-only and has no Spring compile dependency.
     testImplementation("org.springframework:spring-beans:5.3.39")
     testImplementation("org.springframework:spring-context:5.3.39")
+    // Spring MVC, its test support and the servlet API, for driving a real
+    // RequestMappingHandlerMapping under load while a controller is re-scanned.
+    testImplementation("org.springframework:spring-webmvc:5.3.39")
+    testImplementation("org.springframework:spring-test:5.3.39")
+    testImplementation("javax.servlet:javax.servlet-api:4.0.1")
 }
 
 tasks.test {

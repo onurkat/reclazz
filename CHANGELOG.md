@@ -29,6 +29,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **A request that arrives while a controller is re-scanned waits for the
+  mapping instead of missing it.** Reloading a controller took its mappings
+  out of Spring's registry and scanned them back in, and a request between
+  the two found no handler for a path that had one a millisecond earlier:
+  a 404 for having saved a file. Driven at eight threads against a real
+  `RequestMappingHandlerMapping` across 200 re-scans, 34,096 of 38,965
+  lookups missed. The registry serialises its writes with a read-write lock
+  and takes the read side for every lookup, so the re-scan now holds that
+  lock across the whole swap: the same run misses nothing, and a request
+  waits the few milliseconds the re-scan takes. The lock is reached through
+  the same two private fields in Spring 5.3 and 6.x; where it cannot be, the
+  swap runs as before.
+
 - **A reload that does not come back is reported, and so is its return.**
   Reloads run one after another on a single thread, on purpose, so one that
   hangs holds every save made after it, and a queue is silent: the developer
