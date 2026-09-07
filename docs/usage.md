@@ -98,6 +98,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `transformDumpDir` | (none) | Write every transformed class file here, for looking at what the agent emitted |
 | `verifyTransform` | `false` | Run the bytecode verifier over every transformed class and print what it says |
 | `sessionLog` | (none) | Append every status line to this file with an ISO timestamp and level, no colour: the session's record, to read back or attach to a report |
+| `reloadBoundary` | `immediate` | `request` waits for synchronous Spring MVC dispatches to finish before applying a class reload batch; requires `-javaagent` at JVM startup. See [Reload between requests](#reload-between-requests) |
 
 Arguments are never removed or renamed within a major version: a line that
 worked with an older 1.x agent works with a newer one. An argument the agent
@@ -109,6 +110,54 @@ another becomes part of that one's value (and is still named). The plugin's own
 test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
+
+### Reload between requests
+
+Add `reloadBoundary=request` to the agent arguments to keep a synchronous
+Spring MVC request from crossing a class reload. For example:
+
+```bash
+java -javaagent:/path/to/reclazz-agent.jar=reloadBoundary=request -jar app.jar
+```
+
+If a request calls a pricing method, pauses, and calls a discount method,
+an ordinary reload can put the first call on the old code and the second
+on the new code. With this option, the request finishes before the reload
+starts. New requests wait while the class batch and its framework follow-up
+run, then enter against the updated code. The default, `immediate`, keeps
+the existing reload behavior and installs no request hook.
+
+The agent waits up to one second for active dispatches to drain. If a long
+request or a breakpoint outlasts that deadline, it prints
+`Request boundary deferred`, reopens admission, and retains the queued edit.
+It then waits for a natural idle boundary instead of repeatedly stopping new
+requests. The next safe opportunity retries automatically, without another
+save. New edits remain queued on the same reload thread. The one-second
+limit covers draining requests, not applying the reload; a slow framework
+follow-up can keep new requests waiting longer. After thirty seconds,
+`HEALTH` reports the waiting work through the existing reload status;
+`sessionLog` records deferrals immediately.
+
+The boundary is the execution of Spring MVC's `FrameworkServlet.processRequest`
+in any application classloader in this JVM. It supports the `javax.servlet`
+and `jakarta.servlet` signatures. Nested forwards/includes on the same thread
+stay within the outer boundary. Normal returns and exceptions both release it.
+AutoCompile still compiles outside the boundary and applies its compiled
+batch inside it.
+
+The guarantee covers successful method-body changes during synchronous MVC
+dispatches. Servlet filters before or after that dispatch, asynchronous MVC
+work, WebFlux, scheduled jobs and other background threads are outside it.
+Resource/configuration reloads are also outside this boundary. It is not a
+database snapshot or an all-or-nothing deployment: structural changes and a
+partially failed batch retain the existing reload limitations.
+
+Use this option at JVM startup. Attach mode, missing bootstrap support, or
+Spring MVC already loaded by an earlier agent refuses initialization rather
+than silently running without protection. A missing or failed MVC hook keeps
+class edits deferred. A non-MVC application therefore should use `immediate`.
+An invalid `reloadBoundary` value refuses initialization. Application startup
+itself is not aborted.
 
 ### Workflow
 

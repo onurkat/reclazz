@@ -6,6 +6,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- **Opt-in class reloads between synchronous Spring MVC requests.**
+  `reloadBoundary=request` waits for active dispatches, then applies the class
+  batch and Spring follow-up before admitting new requests. A one-second
+  drain timeout reopens admission and retains the edit until an idle boundary.
+  External compilation and AutoCompile both use the boundary; AutoCompile
+  compiles before closing admission. The default remains `immediate`.
+  Startup `-javaagent` is required. Missing or failed MVC hooks defer class
+  edits instead of silently disabling protection. Both servlet namespaces,
+  nested dispatches, and exceptional exits are covered. Async work, filters
+  outside the MVC dispatch, background jobs and resource reloads are outside
+  the guarantee. See [usage and limitations](docs/usage.md#reload-between-requests).
+
+  `RequestBoundaryReloadTest` holds a real Spring MVC dispatch across a
+  method-body edit in a child JVM. The two numbers are the code versions
+  observed by successive calls in the same request, not timings.
+
+  | Measurement | Before | After (`request`) |
+  |---|---|---|
+  | Held request's two calls | `1:2`, mixed versions | `1:1`, original version |
+  | Probe after drain timeout | `2:2` | `1:1`, admitted while edit waits |
+  | Request after queued edit applies | `2:2` | `2:2` |
+
 ### Changed
 
 - **The reload line says what the save touched.** `Reloaded OrderService

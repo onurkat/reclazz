@@ -43,6 +43,7 @@ import com.onurkat.reclazz.bootstrap.LookupCapture;
 import com.onurkat.reclazz.bootstrap.MethodForge;
 import com.onurkat.reclazz.bootstrap.ProtectedCallResolver;
 import com.onurkat.reclazz.bootstrap.UnsafeAccess;
+import com.onurkat.reclazz.transform.RequestBoundaryTransformer;
 import com.onurkat.reclazz.hybris.HybrisConfigReloader;
 import com.onurkat.reclazz.hybris.HybrisLocalizationReloader;
 import com.onurkat.reclazz.hybris.PropertyFileSnapshots;
@@ -202,6 +203,10 @@ public class ReclazzAgent {
             Runnable probe = startProbe;
             if (probe != null) probe.run();
             AgentConfig config = AgentConfig.parse(agentArgs);
+            if (config.isRequestBoundary() && attached) {
+                StatusReporter.error("reloadBoundary=request requires -javaagent at JVM startup; no reloads started.");
+                return;
+            }
             // Before anything else prints: the first lines of a session are
             // the banner and the capability report, and they should be laid
             // out the same way as everything after them.
@@ -260,6 +265,22 @@ public class ReclazzAgent {
                     StatusReporter.warn("Structural reload disabled — falling back to method-body-only mode");
                     enableStructural = false;
                 }
+            }
+
+            if (config.isRequestBoundary()) {
+                if (!bootstrapInstalled) {
+                    StatusReporter.error("Request boundary needs the bootstrap jar; no reloads started.");
+                    return;
+                }
+                for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                    if (loaded.getName().equals(RequestBoundaryTransformer.TARGET.replace('/', '.'))) {
+                        StatusReporter.error("Spring MVC loaded before the request hook; no reloads started. "
+                                + "Place Reclazz before agents that load Spring MVC.");
+                        return;
+                    }
+                }
+                instrumentation.addTransformer(new RequestBoundaryTransformer(), false);
+                StatusReporter.info("Request boundary enabled: synchronous MVC class reloads wait for active requests");
             }
 
             // Detect platform and create context
@@ -502,7 +523,7 @@ public class ReclazzAgent {
             reloadQueue = ReloadQueue.start(
                     event -> handleChange(event, compiler, reloader,
                             springOrchestrator, interceptorReloader, impexImporter, config),
-                    batchBracket);
+                    batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
 
             // Register the reload pipeline. Java changes are queued BEFORE
             // the executor task is submitted: while one batch compiles, new
@@ -1036,6 +1057,17 @@ public class ReclazzAgent {
             }
         }
         if (compiledClasses.isEmpty()) return;
+
+        Runnable apply = () -> applyCompiledClasses(compiledClasses, sources, reloader,
+                springOrchestrator, interceptorReloader);
+        if (agentConfig != null && agentConfig.isRequestBoundary()) RequestReloadBoundary.run(apply);
+        else apply.run();
+    }
+
+    private static void applyCompiledClasses(Map<String, byte[]> compiledClasses, Map<String, String> sources,
+                                             ClassReloader reloader,
+                                             SpringReloadOrchestrator springOrchestrator,
+                                             InterceptorReloader interceptorReloader) {
 
         long startTime = System.currentTimeMillis();
         int successCount = 0;

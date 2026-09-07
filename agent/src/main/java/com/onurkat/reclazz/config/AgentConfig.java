@@ -30,7 +30,7 @@ public class AgentConfig {
             "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
-            "platform", "watchDirs", "jpaRefresh", "sessionLog"
+            "platform", "watchDirs", "jpaRefresh", "sessionLog", "reloadBoundary"
     );
 
     // Split on comma followed by a known key= pattern
@@ -110,6 +110,7 @@ public class AgentConfig {
     private boolean jpaRefresh = false;
     /** Where every status line is appended for the record, or null for no record. */
     private Path sessionLog;
+    private boolean requestBoundary;
 
     public static AgentConfig parse(String agentArgs) {
         AgentConfig config = new AgentConfig();
@@ -123,6 +124,14 @@ public class AgentConfig {
             String[] kv = pair.split("=", 2);
             if (kv.length == 2) {
                 params.put(kv[0].trim(), kv[1].trim());
+            }
+        }
+
+        if (params.containsKey("reloadBoundary")) {
+            String boundary = params.get("reloadBoundary").toLowerCase(Locale.ROOT);
+            if (boundary.equals("request")) config.requestBoundary = true;
+            else if (!boundary.equals("immediate")) {
+                throw new IllegalArgumentException("reloadBoundary must be immediate or request");
             }
         }
 
@@ -349,6 +358,7 @@ public class AgentConfig {
     public String getPlatform() { return platform; }
     public List<Path> getWatchDirs() { return Collections.unmodifiableList(watchDirs); }
     public boolean isJpaRefresh() { return jpaRefresh; }
+    public boolean isRequestBoundary() { return requestBoundary; }
 
     public boolean shouldWatchExtension(String extensionName) {
         return watchAllExtensions || watchExtensions.contains(extensionName);
