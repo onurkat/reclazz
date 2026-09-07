@@ -80,6 +80,16 @@ public enum ChangeKind {
      *
      * @param fileName the file name, not the path
      */
+    /**
+     * Whether the watcher should report this file at all: exactly the files
+     * some kind claims. The watcher asks this and the agent asks
+     * {@link #of(java.nio.file.Path)}, so the two cannot disagree about a
+     * file, and adding a kind adds it to both.
+     */
+    public static boolean watched(String fileName) {
+        return of(fileName) != UNKNOWN;
+    }
+
     public static ChangeKind of(String fileName) {
         if (fileName == null) return UNKNOWN;
 

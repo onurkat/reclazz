@@ -67,13 +67,16 @@ class TemplateReloadTest {
     }
 
     @Test
-    void theWatcherAcceptsTemplateExtensions() throws IOException {
-        String source = java.nio.file.Files.readString(sourceOf(
-                "agent/src/main/java/com/onurkat/reclazz/watcher/FileWatcher.java"));
-
+    void theWatcherAcceptsTemplateExtensions() {
+        // The watcher reports what ChangeKind claims, so this is the one
+        // place to ask; it used to read the watcher's own extension list out
+        // of its source, which was the second list that has since gone.
         for (String ext : List.of(".ftl", ".ftlh", ".html", ".htm")) {
-            assertTrue(source.contains("endsWith(\"" + ext + "\")"),
+            String sample = "order" + ext;
+            assertTrue(com.onurkat.reclazz.watcher.ChangeKind.watched(sample),
                     ext + " must be watched, or the change never reaches the reloader");
+            assertEquals(com.onurkat.reclazz.watcher.ChangeKind.TEMPLATE,
+                    com.onurkat.reclazz.watcher.ChangeKind.of(sample), ext + " is a template");
         }
     }
 
