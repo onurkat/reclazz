@@ -6,6 +6,7 @@ package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
+import com.onurkat.reclazz.agent.RestartLedger;
 
 /**
  * Coordinates all Spring-related reloaders in the correct order.
@@ -201,7 +202,7 @@ public class SpringReloadOrchestrator {
                             StatusReporter.warn("A handler method added by this reload is not visible "
                                     + "to the mapping scan and needs a restart. Existing mappings, "
                                     + "including changed ones, are live.");
-                            com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+                            RestartLedger.note(reloadedClass.getName(),
                                     "a handler method added by a reload that the mapping scan cannot see");
                         }
                     }

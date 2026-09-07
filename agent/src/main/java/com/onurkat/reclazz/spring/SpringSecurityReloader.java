@@ -11,6 +11,10 @@ import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Rebuilds the Spring Security filter chain after a security configuration
@@ -108,14 +112,14 @@ public class SpringSecurityReloader {
                         + "friends) is re-read and is live. Moving to a SecurityFilterChain "
                         + "bean, which is what Spring Security 6 requires anyway, is what "
                         + "makes the URL rules reloadable too.");
-                com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+                RestartLedger.note(reloadedClass.getName(),
                         "URL rules in a WebSecurityConfigurerAdapter, which has no chain bean "
                                 + "to rebuild");
                 return true;
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Spring Security reload check failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring Security reload check failed: " + Failures.describe(e));
         }
         return false;
     }
@@ -151,10 +155,10 @@ public class SpringSecurityReloader {
             // is a stale ruleset, not an open door. Say exactly that.
             StatusReporter.warn("Security filter chain rebuild failed ("
                     + t.getClass().getSimpleName()
-                    + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? "" : ": " + com.onurkat.reclazz.ui.Failures.describe(t))
+                    + (Failures.describe(t) == null ? "" : ": " + Failures.describe(t))
                     + "). The previous security rules are still enforced; "
                     + "a restart applies the new ones.");
-            com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+            RestartLedger.note(reloadedClass.getName(),
                     "a security configuration change whose chain rebuild failed");
             return true;
         }
@@ -199,8 +203,8 @@ public class SpringSecurityReloader {
         swapped += swapIntoLiveProxies(appContext, current);
 
         if (swapped > 0) {
-            StatusReporter.success("Security filter chain rebuilt: " + com.onurkat.reclazz.ui.Plural.of(swapped, "chain")
-                    + com.onurkat.reclazz.ui.Plural.word(swapped, " now enforces", " now enforce")
+            StatusReporter.success("Security filter chain rebuilt: " + Plural.of(swapped, "chain")
+                    + Plural.word(swapped, " now enforces", " now enforce")
                     + " the reloaded configuration.");
             // Method security is not part of the chain and is not rebuilt
             // here. It is refreshed for every reloaded class, before this
@@ -215,7 +219,7 @@ public class SpringSecurityReloader {
         StatusReporter.warn("Security filter chain beans were rebuilt but the live "
                 + "FilterChainProxy did not take them. "
                 + "A full restart may be needed for security changes to take effect.");
-        com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+        RestartLedger.note(reloadedClass.getName(),
                 "a security configuration change the filter chain cannot rebuild");
         return true;
     }
@@ -457,9 +461,9 @@ public class SpringSecurityReloader {
                 // Guessing which rules go where is the one thing a security
                 // swap must never do; the mismatch is reported, not resolved.
                 StatusReporter.warn("Filter chain swap declined: "
-                        + com.onurkat.reclazz.ui.Plural.of(staleIndexes.size(), "stale chain")
+                        + Plural.of(staleIndexes.size(), "stale chain")
                         + " in the live proxy but "
-                        + com.onurkat.reclazz.ui.Plural.of(missing.size(), "rebuilt bean")
+                        + Plural.of(missing.size(), "rebuilt bean")
                         + " to place. The old rules keep serving.");
                 return 0;
             }
@@ -665,7 +669,7 @@ public class SpringSecurityReloader {
                     + "annotations and none of the interceptors exposed a metadata cache "
                     + "this version knows, so an edited expression may still be enforced "
                     + "as it was. A restart applies it.");
-            com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+            RestartLedger.note(reloadedClass.getName(),
                     "method-security metadata that could not be re-read");
         }
         return cleared;
@@ -786,7 +790,7 @@ public class SpringSecurityReloader {
         if (reloadedClass == null) return 0;
 
         for (String name : METHOD_SECURITY_ASK_METHODS) {
-            java.lang.reflect.Method ask = com.onurkat.reclazz.util.Reflect.findMethod(source.getClass(), name,
+            java.lang.reflect.Method ask = Reflect.findMethod(source.getClass(), name,
                     java.lang.reflect.Method.class, Class.class);
             if (ask == null) continue;
             int answered = 0;

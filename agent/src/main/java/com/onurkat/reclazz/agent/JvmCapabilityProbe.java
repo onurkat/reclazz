@@ -12,6 +12,7 @@ import java.lang.instrument.ClassDefinition;
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.util.List;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Multi-layer JVM capability detection for enhanced class redefinition support.
@@ -206,7 +207,7 @@ public class JvmCapabilityProbe {
         } catch (Exception e) {
             // Any error during probe (e.g., class format error, linkage error)
             // likely means structural changes aren't supported
-            StatusReporter.info("Capability probe inconclusive: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.info("Capability probe inconclusive: " + Failures.describe(e));
             return null; // Let fallback logic decide
         } catch (Error e) {
             // JVM-level errors (e.g., "attempted to add a method"). This is

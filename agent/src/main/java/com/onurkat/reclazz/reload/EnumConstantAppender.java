@@ -11,6 +11,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.instrument.Instrumentation;
 import java.util.List;
+import com.onurkat.reclazz.agent.RestartLedger;
 
 /**
  * Adds enum constants to a running JVM, or declines and says why.
@@ -70,7 +71,7 @@ public final class EnumConstantAppender {
                 StatusReporter.warn("Enum " + className + " could not drop " + removedTail
                         + ": " + outcome.declinedBecause() + ". values() and valueOf() keep "
                         + "the old set until a restart. Everything else in this class reloaded.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                RestartLedger.note(className,
                         change.describe() + ", which could not be applied to this JVM");
                 return false;
             }
@@ -119,7 +120,7 @@ public final class EnumConstantAppender {
             StatusReporter.warn("Enum " + className + " could not gain " + names + ": "
                     + outcome.declinedBecause() + ". values() and valueOf() keep the old set "
                     + "until a restart. Everything else in this class reloaded.");
-            com.onurkat.reclazz.agent.RestartLedger.note(className,
+            RestartLedger.note(className,
                     change.describe() + ", which could not be applied to this JVM");
             return false;
         }

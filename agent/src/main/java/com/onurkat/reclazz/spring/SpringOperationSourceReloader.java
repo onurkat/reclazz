@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Clears Spring's cached {@code @Transactional} and {@code @Cacheable}
@@ -127,10 +128,10 @@ public class SpringOperationSourceReloader {
      */
     private static void repopulateFor(Object source, Class<?> reloadedClass) {
         java.lang.reflect.Method ask =
-                com.onurkat.reclazz.util.Reflect.findMethod(source.getClass(), "getCacheOperations",
+                Reflect.findMethod(source.getClass(), "getCacheOperations",
                         java.lang.reflect.Method.class, Class.class);
         if (ask == null) {
-            ask = com.onurkat.reclazz.util.Reflect.findMethod(source.getClass(), "getTransactionAttribute",
+            ask = Reflect.findMethod(source.getClass(), "getTransactionAttribute",
                     java.lang.reflect.Method.class, Class.class);
         }
         if (ask == null) return;

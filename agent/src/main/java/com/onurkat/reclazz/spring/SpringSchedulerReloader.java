@@ -8,6 +8,7 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Re-registers @Scheduled methods after class reload.
@@ -72,7 +73,7 @@ public class SpringSchedulerReloader {
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Spring scheduler reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring scheduler reload failed: " + Failures.describe(e));
         }
         return false;
     }

@@ -11,6 +11,9 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Generic Spring MVC reloader that re-scans @RequestMapping methods after reload.
@@ -46,7 +49,7 @@ public class SpringMvcReloader {
             // that silently kept its old value looked identical to a reload
             // that had simply not been asked for.
             StatusReporter.warn("MVC mappings not re-scanned for " + controllerClass.getName()
-                    + ": searched " + com.onurkat.reclazz.ui.Plural.of(contexts, "application context")
+                    + ": searched " + Plural.of(contexts, "application context")
                     + " and none of them "
                     + (contexts == 0 ? "were captured" : "held it as a handler"));
         }
@@ -80,7 +83,7 @@ public class SpringMvcReloader {
 
             return rescan(handlerMapping, beanName, controllerClass);
         } catch (Exception e) {
-            StatusReporter.warn("Spring MVC mapping re-scan failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring MVC mapping re-scan failed: " + Failures.describe(e));
             return false;
         }
     }
@@ -106,7 +109,7 @@ public class SpringMvcReloader {
         // not look at supertypes. Asking the concrete class for it threw
         // NoSuchMethodException on every single re-scan, which the catch
         // in the caller reported and then swallowed as a returned false.
-        Method detectMethod = com.onurkat.reclazz.util.Reflect.findMethod(
+        Method detectMethod = Reflect.findMethod(
                 handlerMapping.getClass(), "detectHandlerMethods", Object.class);
         if (detectMethod == null) {
             StatusReporter.warn("MVC re-scan cannot proceed for " + controllerClass.getName()
@@ -326,7 +329,7 @@ public class SpringMvcReloader {
                     newBytecode, addedMethods, ADAPTER_VERSION.incrementAndGet());
             if (adapter == null) return false;
 
-            Method detect = com.onurkat.reclazz.util.Reflect.findMethod(
+            Method detect = Reflect.findMethod(
                     handlerMapping.getClass(), "detectHandlerMethods", Object.class);
             if (detect == null) return false;
             detect.setAccessible(true);
@@ -401,7 +404,7 @@ public class SpringMvcReloader {
                 // Object, not RequestMappingInfo. Asking for the concrete type
                 // threw NoSuchMethodException on every call, and the catch
                 // below used to swallow it in silence.
-                Method unregisterMethod = com.onurkat.reclazz.util.Reflect.findMethod(
+                Method unregisterMethod = Reflect.findMethod(
                         handlerMapping.getClass(), "unregisterMapping", Object.class);
                 if (unregisterMethod == null) {
                     StatusReporter.warn("MVC unregister unavailable on "

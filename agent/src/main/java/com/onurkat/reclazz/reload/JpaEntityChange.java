@@ -13,6 +13,9 @@ import org.objectweb.asm.Opcodes;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
+import com.onurkat.reclazz.ui.StatusReporter;
 
 /**
  * A persistent field added to or removed from a JPA entity by a reload.
@@ -59,7 +62,7 @@ public final class JpaEntityChange {
             "Ljakarta/persistence/Transient;", "Ljavax/persistence/Transient;");
 
     /** Members Reclazz injects. They are ours, and no mapping should see them. */
-    private static final String INJECTED_PREFIX = com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX;
+    private static final String INJECTED_PREFIX = InjectedNames.PREFIX;
 
     private JpaEntityChange() {
     }
@@ -114,13 +117,13 @@ public final class JpaEntityChange {
         // all of them was wrong twice over: at hbm2ddl.auto=update a restart is
         // the whole fix, and at validate a restart stops the application from
         // starting at all until the column exists.
-        com.onurkat.reclazz.ui.StatusReporter.warn(className + " " + change.describe()
+        StatusReporter.warn(className + " " + change.describe()
                 + ", and the persistence mapping still has the old shape. Hibernate builds it "
                 + "once at startup, so the field is neither saved nor loaded, and the database "
                 + "has no column for it. The class itself reloaded."
                 + JpaSchemaAdvice.forEntity(entityClass)
                 + refresh.appendix());
-        com.onurkat.reclazz.agent.RestartLedger.note(className,
+        RestartLedger.note(className,
                 change.describe() + " as a mapped field, which the persistence mapping has not picked up");
     }
 

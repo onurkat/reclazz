@@ -8,6 +8,8 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Recreates Spring Data repository beans after class reload.
@@ -48,7 +50,7 @@ public class SpringDataReloader {
             // Destroy and recreate the repository bean
             Object beanFactory = SpringBeans.getBeanFactory(appContext);
 
-            Method destroySingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
+            Method destroySingleton = Reflect.findMethod(beanFactory.getClass(),
                     "destroySingleton", String.class);
             if (destroySingleton != null) {
                 destroySingleton.invoke(beanFactory, beanName);
@@ -59,7 +61,7 @@ public class SpringDataReloader {
             StatusReporter.success("Spring Data repository refreshed: " + reloadedClass.getName());
             return true;
         } catch (Exception e) {
-            StatusReporter.warn("Spring Data repository reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring Data repository reload failed: " + Failures.describe(e));
             return false;
         }
     }

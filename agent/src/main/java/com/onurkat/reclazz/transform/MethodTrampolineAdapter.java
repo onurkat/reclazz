@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 
 /**
  * ASM ClassVisitor that rewrites watched classes for invokedynamic dispatch:
@@ -27,8 +28,8 @@ import java.util.Map;
 public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
     private static final String BOOTSTRAP_CLASS = "com/onurkat/reclazz/bootstrap/ReclazzBootstrap";
-    private static final String EXT_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.EXT_FIELD;
-    private static final String LOOKUP_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD;
+    private static final String EXT_FIELD = InjectedNames.EXT_FIELD;
+    private static final String LOOKUP_FIELD = InjectedNames.LOOKUP_FIELD;
     private static final int INITIAL_EXT_SIZE = 8;
 
     private final TransformContext context;
@@ -152,7 +153,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         // 2. Record info for generating the trampoline replacement
 
         String descHash = CallSiteAdapter.descHash(descriptor);
-        String renamedName = com.onurkat.reclazz.bootstrap.InjectedNames.renamed(name, descHash);
+        String renamedName = InjectedNames.renamed(name, descHash);
 
         // Store info for trampoline generation
         boolean isStatic = (access & ACC_STATIC) != 0;

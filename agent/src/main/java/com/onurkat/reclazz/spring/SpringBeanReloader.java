@@ -8,6 +8,9 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Generic Spring bean reloader that works with any Spring application.
@@ -84,7 +87,7 @@ public class SpringBeanReloader {
             applyDependentsAndHealing(contexts, refreshedNames, replacements);
 
         } catch (Exception e) {
-            StatusReporter.error("Failed to refresh Spring bean for " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Failed to refresh Spring bean for " + className + ": " + Failures.describe(e));
         }
     }
 
@@ -105,7 +108,7 @@ public class SpringBeanReloader {
         if (!replacements.isEmpty()) {
             int healed = healStaleReferences(contexts, replacements);
             if (healed > 0) {
-                StatusReporter.info("Re-pointed " + com.onurkat.reclazz.ui.Plural.of(healed, "stale reference")
+                StatusReporter.info("Re-pointed " + Plural.of(healed, "stale reference")
                         + " to refreshed bean instances");
             }
         }
@@ -135,7 +138,7 @@ public class SpringBeanReloader {
                     new java.util.LinkedHashSet<>(batchRefreshedNames),
                     new java.util.IdentityHashMap<>(batchReplacements));
         } catch (Exception e) {
-            StatusReporter.error("Deferred Spring refresh failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Deferred Spring refresh failed: " + Failures.describe(e));
         } finally {
             batchRefreshedNames.clear();
             batchReplacements.clear();
@@ -180,13 +183,13 @@ public class SpringBeanReloader {
 
         if (singleton) {
             Object oldInstance = null;
-            Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
+            Method getSingleton = Reflect.findMethod(beanFactory.getClass(),
                     "getSingleton", String.class);
             if (getSingleton != null) {
                 oldInstance = getSingleton.invoke(beanFactory, beanName);
             }
 
-            Method destroySingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
+            Method destroySingleton = Reflect.findMethod(beanFactory.getClass(),
                     "destroySingleton", String.class);
             if (destroySingleton != null) {
                 destroySingleton.invoke(beanFactory, beanName);
@@ -263,8 +266,8 @@ public class SpringBeanReloader {
         for (Object appContext : contexts) {
             try {
                 Object beanFactory = SpringBeans.getBeanFactory(appContext);
-                Method getSingletonNames = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
-                Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+                Method getSingletonNames = Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
+                Method getSingleton = Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
                 if (getSingletonNames == null || getSingleton == null) continue;
 
                 String[] names = (String[]) getSingletonNames.invoke(beanFactory);
@@ -329,7 +332,7 @@ public class SpringBeanReloader {
             for (Object appContext : contexts) {
                 try {
                     Object beanFactory = SpringBeans.getBeanFactory(appContext);
-                    Method getDependentBeans = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
+                    Method getDependentBeans = Reflect.findMethod(beanFactory.getClass(),
                             "getDependentBeans", String.class);
                     if (getDependentBeans == null) continue;
 
@@ -345,7 +348,7 @@ public class SpringBeanReloader {
                                 progress = true;
                                 StatusReporter.info("Dependent bean re-wired: " + dep);
                             } catch (Exception e) {
-                                StatusReporter.warn("Could not re-wire dependent bean '" + dep + "': " + com.onurkat.reclazz.ui.Failures.describe(e));
+                                StatusReporter.warn("Could not re-wire dependent bean '" + dep + "': " + Failures.describe(e));
                             }
                         }
                     }

@@ -12,6 +12,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Tracks which classes are watched for structural reload transformation.
@@ -60,7 +61,7 @@ public class TransformContext {
                 }
             });
         } catch (IOException e) {
-            StatusReporter.warn("Failed to scan class directory: " + classesDir + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Failed to scan class directory: " + classesDir + ": " + Failures.describe(e));
         }
     }
 

@@ -8,6 +8,7 @@ import org.objectweb.asm.Handle;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 
 /**
  * Rewrites cross-class method invocations on watched classes to invokedynamic,
@@ -83,7 +84,7 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
 
             if (hasRenamedCopy) {
                 String descHash = descHash(descriptor);
-                String renamedName = com.onurkat.reclazz.bootstrap.InjectedNames.renamed(name, descHash);
+                String renamedName = InjectedNames.renamed(name, descHash);
                 // Against the class that declares it, which is a superclass of
                 // this one and so a legal owner for invokespecial, rather than
                 // against whichever superclass javac happened to name.
@@ -148,6 +149,6 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
     }
 
     public static String descHash(String descriptor) {
-        return com.onurkat.reclazz.bootstrap.InjectedNames.descHash(descriptor);
+        return InjectedNames.descHash(descriptor);
     }
 }

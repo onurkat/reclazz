@@ -13,6 +13,7 @@ import javax.tools.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
+import com.onurkat.reclazz.util.SourceText;
 
 /**
  * Compiles individual Java source files incrementally without requiring ant.
@@ -518,7 +519,7 @@ public class IncrementalCompiler {
         try {
             // Not Files.readString: a source that is not UTF-8 threw, and the
             // package declaration this is looking for is ASCII either way.
-            String content = com.onurkat.reclazz.util.SourceText.readForScanning(javaFile);
+            String content = SourceText.readForScanning(javaFile);
             String packageName = null;
             String className = javaFile.getFileName().toString().replace(".java", "");
 

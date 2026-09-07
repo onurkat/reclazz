@@ -10,6 +10,10 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import com.onurkat.reclazz.hybris.PlatformTenant;
+import com.onurkat.reclazz.platform.ApplicationContextHolder;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
 
 /**
  * Auto-imports changed ImpEx files into the running SAP Commerce instance.
@@ -119,7 +123,7 @@ public class ImpexAutoImporter {
             // the misleading "requires running server" warning).
             Object appContext = null;
             Object importService = null;
-            for (Object candidate : com.onurkat.reclazz.platform.ApplicationContextHolder.getAllContexts()) {
+            for (Object candidate : ApplicationContextHolder.getAllContexts()) {
                 try {
                     Method containsBean = candidate.getClass().getMethod("containsBean", String.class);
                     if ((Boolean) containsBean.invoke(candidate, "importService")) {
@@ -142,7 +146,7 @@ public class ImpexAutoImporter {
             // The watcher thread has no tenant — activate the master tenant
             // (Registry loaded via the context's classloader).
             ClassLoader hybrisCl = appContext.getClass().getClassLoader();
-            com.onurkat.reclazz.hybris.PlatformTenant.ensureActive(hybrisCl);
+            PlatformTenant.ensureActive(hybrisCl);
 
             // Create ImpExResource from the file content
             Class<?> streamBasedClass = Class.forName(
@@ -188,7 +192,7 @@ public class ImpexAutoImporter {
                 StatusReporter.error("ImpEx import had errors: "
                         + (refused < 0
                                 ? "some lines were not resolved"
-                                : com.onurkat.reclazz.ui.Plural.of(refused, "line")
+                                : Plural.of(refused, "line")
                                   + " could not be resolved")
                         + " in " + impexFile.getFileName()
                         + ". The lines themselves are not printed here, because an ImpEx "
@@ -201,7 +205,7 @@ public class ImpexAutoImporter {
             StatusReporter.warn("Hybris import classes not available. " +
                     "ImpEx auto-import requires running server.");
         } catch (Exception e) {
-            StatusReporter.error("Failed to import ImpEx " + impexFile.getFileName() + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Failed to import ImpEx " + impexFile.getFileName() + ": " + Failures.describe(e));
         }
     }
     /**

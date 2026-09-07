@@ -8,6 +8,8 @@ import com.onurkat.reclazz.bootstrap.TemplateEngineRegistry;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.transform.TemplateInterceptTransformer;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Drops the parsed-template caches so an edited template is read again.
@@ -16,7 +18,7 @@ import java.lang.reflect.Method;
  * once, kept the result, and will keep serving that result until something
  * tells it not to. Every engine has a method for exactly this, and the work is
  * finding the engine rather than clearing it, which
- * {@link com.onurkat.reclazz.transform.TemplateInterceptTransformer} handles.
+ * {@link TemplateInterceptTransformer} handles.
  *
  * Reflection rather than a compile-time dependency, because the agent must run
  * in applications that have neither engine on the classpath.
@@ -65,7 +67,7 @@ public class TemplateReloader {
                 // rather than reporting a failure the user cannot act on.
             } catch (Throwable t) {
                 StatusReporter.warn("Could not clear template cache on "
-                        + engine.getClass().getName() + ": " + com.onurkat.reclazz.ui.Failures.describe(t));
+                        + engine.getClass().getName() + ": " + Failures.describe(t));
                 return false;
             }
         }

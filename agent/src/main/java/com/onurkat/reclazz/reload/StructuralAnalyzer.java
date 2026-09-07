@@ -13,6 +13,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 import java.util.*;
+import com.onurkat.reclazz.ui.Plural;
 
 /**
  * Analyzes the structural diff between original class metadata and new bytecode.
@@ -286,7 +287,7 @@ public class StructuralAnalyzer {
 
         /** "1 method " or "2 methods ", trailing space, trimmed by the caller. */
         private static String count(int n, String noun) {
-            return com.onurkat.reclazz.ui.Plural.of(n, noun) + " ";
+            return Plural.of(n, noun) + " ";
         }
     }
 }

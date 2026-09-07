@@ -14,6 +14,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import com.onurkat.reclazz.reload.EnumConstantAppender;
+import com.onurkat.reclazz.reload.EnumConstantChange;
+import com.onurkat.reclazz.reload.JpaEntityChange;
+import com.onurkat.reclazz.reload.StructuralReloader;
+import com.onurkat.reclazz.util.BytecodeVersion;
 
 /**
  * Handles class redefinition using the Java Instrumentation API.
@@ -24,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * edits to unwatched classes fall back to the advice built below.
  *
  * <p>For watched classes (the common case — user project code),
- * {@link com.onurkat.reclazz.reload.StructuralReloader} handles structural
+ * {@link StructuralReloader} handles structural
  * changes via the companion-class path on ANY JDK 17+ regardless of vendor.
  *
  * <p>On JBR/DCEVM with {@code -XX:+AllowEnhancedClassRedefinition} this
@@ -57,7 +62,7 @@ public class ClassReloader {
      * Reload a class by its fully qualified name with new bytecode.
      */
     public ReloadResult reload(String className, byte[] newBytecode) {
-        String tooNew = com.onurkat.reclazz.util.BytecodeVersion.rejectionReason(newBytecode);
+        String tooNew = BytecodeVersion.rejectionReason(newBytecode);
         if (tooNew != null) {
             return ReloadResult.failure(className + " " + tooNew, false);
         }
@@ -75,9 +80,9 @@ public class ClassReloader {
             // redefine puts the field on the loaded class, and a comparison
             // made afterwards would find nothing to report.
             var mappingChange =
-                    com.onurkat.reclazz.reload.JpaEntityChange.check(existingClass, newBytecode);
+                    JpaEntityChange.check(existingClass, newBytecode);
             var enumChange =
-                    com.onurkat.reclazz.reload.EnumConstantChange.check(existingClass, newBytecode);
+                    EnumConstantChange.check(existingClass, newBytecode);
 
             // Redefine the existing class
             ClassDefinition definition = new ClassDefinition(existingClass, newBytecode);
@@ -87,10 +92,10 @@ public class ClassReloader {
             // is still not persisted, because Hibernate's mapping was built
             // once at startup and a redefinition is not something it listens
             // for. Said only after the reload actually succeeded.
-            com.onurkat.reclazz.reload.JpaEntityChange.report(className, existingClass, mappingChange);
+            JpaEntityChange.report(className, existingClass, mappingChange);
             // An enhanced-redefinition VM accepts an added enum constant and
             // leaves it null, so success here is exactly where it needs saying.
-            com.onurkat.reclazz.reload.EnumConstantAppender.applyOrExplain(
+            EnumConstantAppender.applyOrExplain(
                     className, existingClass, newBytecode, enumChange, instrumentation);
 
             // Invalidate caches — class may have gained/lost annotations

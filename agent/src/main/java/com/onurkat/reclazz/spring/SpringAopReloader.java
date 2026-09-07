@@ -10,6 +10,8 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Clears Spring AOP proxy caches and recreates proxied beans for @Aspect classes.
@@ -69,12 +71,12 @@ public class SpringAopReloader {
                 StatusReporter.warn("Beans already proxied keep the advice they were built "
                         + "with; save the advised class, or restart, to apply a pointcut that "
                         + "now matches something new.");
-                com.onurkat.reclazz.agent.RestartLedger.note(reloadedClass.getName(),
+                RestartLedger.note(reloadedClass.getName(),
                         "a pointcut change that beans proxied before it still do not match");
             }
             return cleared;
         } catch (Exception e) {
-            StatusReporter.warn("Spring AOP reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring AOP reload failed: " + Failures.describe(e));
             return false;
         }
     }

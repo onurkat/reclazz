@@ -10,6 +10,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.security.ProtectionDomain;
 
 import org.objectweb.asm.*;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * ClassFileTransformer that intercepts AbstractApplicationContext.refresh() to capture
@@ -44,7 +45,7 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
             StatusReporter.info("Instrumented AbstractApplicationContext.refresh() for context capture");
             return cw.toByteArray();
         } catch (Exception e) {
-            StatusReporter.warn("Failed to instrument AbstractApplicationContext: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Failed to instrument AbstractApplicationContext: " + Failures.describe(e));
             return null;
         }
     }

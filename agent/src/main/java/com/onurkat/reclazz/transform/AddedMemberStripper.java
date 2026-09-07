@@ -68,8 +68,8 @@ public final class AddedMemberStripper {
     public static byte[] reshape(byte[] newBytecode,
                                  java.util.Set<String> addedFields,
                                  java.util.Set<String> addedMethods,
-                                 java.util.List<com.onurkat.reclazz.transform.TransformContext.MethodSig> removedMethods,
-                                 java.util.List<com.onurkat.reclazz.transform.TransformContext.FieldSig> removedFields) {
+                                 java.util.List<TransformContext.MethodSig> removedMethods,
+                                 java.util.List<TransformContext.FieldSig> removedFields) {
         byte[] stripped = strip(newBytecode, addedFields, addedMethods);
         if (removedMethods.isEmpty() && removedFields.isEmpty()) return stripped;
 
@@ -96,7 +96,7 @@ public final class AddedMemberStripper {
 
     /** A body that says what happened, for the case it is ever reached. */
     private static void writeStub(org.objectweb.asm.ClassWriter writer,
-                                  com.onurkat.reclazz.transform.TransformContext.MethodSig m) {
+                                  TransformContext.MethodSig m) {
         org.objectweb.asm.MethodVisitor mv =
                 writer.visitMethod(m.access(), m.name(), m.descriptor(), null, null);
         if (mv == null) return;

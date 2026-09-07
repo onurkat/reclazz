@@ -10,6 +10,9 @@ import com.onurkat.reclazz.transform.TransformExclusions;
 import org.objectweb.asm.*;
 
 import java.util.*;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
+import com.onurkat.reclazz.bootstrap.ProtectedCallResolver;
+import com.onurkat.reclazz.transform.SafeClassWriter;
 
 /**
  * Generates a hidden companion class containing method implementations from
@@ -90,7 +93,7 @@ public class CompanionGenerator implements Opcodes {
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 
-        ClassWriter writer = new com.onurkat.reclazz.transform.SafeClassWriter(
+        ClassWriter writer = new SafeClassWriter(
                 ClassWriter.COMPUTE_FRAMES);
 
         // Companion extends Object, implements nothing
@@ -197,12 +200,12 @@ public class CompanionGenerator implements Opcodes {
             if (isStatic) {
                 companionMethodName = name;
                 companionDescriptor = descriptor;
-                siteKey = com.onurkat.reclazz.bootstrap.InjectedNames.staticSiteKey(name, descHash);
+                siteKey = InjectedNames.staticSiteKey(name, descHash);
             } else {
                 // Convert instance method to static: prepend receiver type
                 companionMethodName = name;
                 companionDescriptor = "(L" + originalClass + ";" + descriptor.substring(1);
-                siteKey = com.onurkat.reclazz.bootstrap.InjectedNames.siteKey(name, descHash);
+                siteKey = InjectedNames.siteKey(name, descHash);
             }
 
             // Record the method handle key mapping. Not for lambda bodies:
@@ -415,7 +418,7 @@ public class CompanionGenerator implements Opcodes {
         /**
          * Intercept method invocations and rewrite cross-package calls to
          * {@code invokedynamic} pointing at
-         * {@link com.onurkat.reclazz.bootstrap.ProtectedCallResolver}.
+         * {@link ProtectedCallResolver}.
          *
          * <p>A companion class's static method body contains copies of
          * the target class's original instance-method bytecode. In the

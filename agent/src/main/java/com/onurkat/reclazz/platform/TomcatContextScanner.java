@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Discovers Spring ApplicationContexts of web applications that are
@@ -66,7 +67,7 @@ public final class TomcatContextScanner {
                 }
             }
         } catch (Throwable t) {
-            StatusReporter.warn("Tomcat context scan failed: " + com.onurkat.reclazz.ui.Failures.describe(t));
+            StatusReporter.warn("Tomcat context scan failed: " + Failures.describe(t));
         }
         return registered;
     }

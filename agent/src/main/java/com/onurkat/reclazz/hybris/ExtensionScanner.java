@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.stream.Stream;
 
 import org.w3c.dom.*;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Scans the SAP Commerce installation to discover extensions.
@@ -132,7 +133,7 @@ public class ExtensionScanner {
                 }
             }
         } catch (Exception e) {
-            StatusReporter.error("Failed to parse localextensions.xml: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Failed to parse localextensions.xml: " + Failures.describe(e));
         }
     }
 
@@ -193,7 +194,7 @@ public class ExtensionScanner {
                         }
                     });
         } catch (IOException | UncheckedIOException e) {
-            StatusReporter.warn("Extension scan incomplete under " + root + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Extension scan incomplete under " + root + ": " + Failures.describe(e));
         }
     }
 
@@ -291,7 +292,7 @@ public class ExtensionScanner {
                         } catch (Exception ignored) {}
                     });
         } catch (IOException | UncheckedIOException e) {
-            StatusReporter.warn("Custom extension scan incomplete under " + customDir + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Custom extension scan incomplete under " + customDir + ": " + Failures.describe(e));
         }
     }
 

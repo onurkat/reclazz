@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.bootstrap.UnsafeAccess;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.ui.StatusReporter;
 
 /**
  * An enum constant a reload added, which no JVM will make usable.
@@ -54,11 +58,11 @@ public final class EnumConstantChange {
 
         public String describe() {
             StringBuilder out = new StringBuilder();
-            if (!added.isEmpty()) out.append(com.onurkat.reclazz.ui.Plural.word(added.size(),
+            if (!added.isEmpty()) out.append(Plural.word(added.size(),
                     "gained value ", "gained values ")).append(added);
             if (!removed.isEmpty()) {
                 if (out.length() > 0) out.append(" and ");
-                out.append(com.onurkat.reclazz.ui.Plural.word(removed.size(),
+                out.append(Plural.word(removed.size(),
                         "lost value ", "lost values ")).append(removed);
             }
             if (reordered) {
@@ -179,12 +183,12 @@ public final class EnumConstantChange {
 
     /** The success report for a tail removal, with its honest edges. */
     public static void reportTailRemoved(String className, List<String> names, int mappers) {
-        com.onurkat.reclazz.ui.StatusReporter.success("Enum " + className + " dropped "
+        StatusReporter.success("Enum " + className + " dropped "
                 + names + " from the end: values() and valueOf() no longer include "
                 + (names.size() == 1 ? "it" : "them") + ", and no ordinal moved."
                 + (mappers > 0 ? " Jackson enum caches flushed on "
-                        + com.onurkat.reclazz.ui.Plural.of(mappers, "ObjectMapper") + "." : ""));
-        com.onurkat.reclazz.ui.StatusReporter.info("Objects and collections that already "
+                        + Plural.of(mappers, "ObjectMapper") + "." : ""));
+        StatusReporter.info("Objects and collections that already "
                 + "hold the constant keep it, and a database row storing the name now "
                 + "fails valueOf, which is what removal means.");
     }
@@ -197,10 +201,10 @@ public final class EnumConstantChange {
     /** Said when the constants were actually added to the running JVM. */
     public static void reportAppended(String className, List<String> names, int switchTables,
                                       int jacksonMappers) {
-        com.onurkat.reclazz.ui.StatusReporter.success("Enum " + className + " gained "
+        StatusReporter.success("Enum " + className + " gained "
                 + names + " without a restart: values(), valueOf() and new EnumMap/EnumSet see them"
                 + (switchTables > 0
-                        ? ", and " + com.onurkat.reclazz.ui.Plural.of(switchTables, "switch table")
+                        ? ", and " + Plural.of(switchTables, "switch table")
                           + " grew, so existing switches send the new value to their "
                           + "default: the one written in the source, "
                           + "or, for a switch the compiler proved exhaustive, javac's own "
@@ -208,19 +212,19 @@ public final class EnumConstantChange {
                           + "match the new value directly"
                         : "")
                 + (jacksonMappers > 0
-                        ? ". " + com.onurkat.reclazz.ui.Plural.of(jacksonMappers, "Jackson ObjectMapper bean")
-                          + com.onurkat.reclazz.ui.Plural.word(jacksonMappers, " had its enum ", " had their enum ")
+                        ? ". " + Plural.of(jacksonMappers, "Jackson ObjectMapper bean")
+                          + Plural.word(jacksonMappers, " had its enum ", " had their enum ")
                           + "caches flushed, so JSON serialises and deserialises the new value too"
                         : ""));
 
         // The JVM prints its own warning for this, and it ends with "Please
         // consider reporting this to the maintainers of
-        // com.onurkat.reclazz.bootstrap.UnsafeAccess", which is us. Someone
+        // UnsafeAccess", which is us. Someone
         // reading that has been asked by their JVM to open an issue about a
         // deliberate choice. Answering it in the same breath costs one line
         // and saves them the trip.
         if (Runtime.version().feature() >= 24) {
-            com.onurkat.reclazz.ui.StatusReporter.info("Java " + Runtime.version().feature()
+            StatusReporter.info("Java " + Runtime.version().feature()
                     + " prints a sun.misc.Unsafe deprecation warning for this and names Reclazz; "
                     + "it is expected. Writing a final field is what adding a constant needs "
                     + "and has no supported alternative. Starting the JVM with "
@@ -234,12 +238,12 @@ public final class EnumConstantChange {
 
     /** Said when the change moves ordinals, which cannot be applied. */
     public static void reportNotAppendOnly(String className, Change change) {
-        com.onurkat.reclazz.ui.StatusReporter.warn("Enum " + className + " " + change.describe()
+        StatusReporter.warn("Enum " + className + " " + change.describe()
                 + ". Only the end of an enum can change on a running JVM, added or removed: "
                 + "anything else renumbers the constants after the change, and everything "
                 + "indexed by ordinal is then wrong, including any @Enumerated column already in "
                 + "your database. Restart to pick this up. Everything else in this class reloaded.");
-        com.onurkat.reclazz.agent.RestartLedger.note(className,
+        RestartLedger.note(className,
                 change.describe() + ", which renumbers ordinals and cannot be applied to a running JVM");
     }
 
@@ -247,11 +251,11 @@ public final class EnumConstantChange {
     public static void report(String className, Change change) {
         if (change == null) return;
 
-        com.onurkat.reclazz.ui.StatusReporter.warn("Enum " + className + " " + change.describe()
+        StatusReporter.warn("Enum " + className + " " + change.describe()
                 + ". Enum constants cannot be added to or removed from a running JVM: "
                 + "values() and valueOf() keep the old set until a restart. Everything else "
                 + "in this class reloaded.");
-        com.onurkat.reclazz.agent.RestartLedger.note(className,
+        RestartLedger.note(className,
                 change.describe() + ", which a running JVM cannot apply to an enum");
     }
 

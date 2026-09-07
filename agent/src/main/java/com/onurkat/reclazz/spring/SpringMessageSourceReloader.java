@@ -8,6 +8,9 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Drops the cached messages so a saved bundle is read again.
@@ -72,7 +75,7 @@ public class SpringMessageSourceReloader {
     /** True when this source will not answer from its cache any more. */
     static boolean clear(Object messageSource) {
         for (String reset : RESETS) {
-            Method method = com.onurkat.reclazz.util.Reflect.findMethod(messageSource.getClass(), reset);
+            Method method = Reflect.findMethod(messageSource.getClass(), reset);
             if (method == null) continue;
             try {
                 method.invoke(messageSource);
@@ -128,7 +131,7 @@ public class SpringMessageSourceReloader {
 
     /** The loader the source reads its bundles with, or its own. */
     private static ClassLoader bundleLoader(Object messageSource) {
-        Method getter = com.onurkat.reclazz.util.Reflect.findMethod(messageSource.getClass(), "getBundleClassLoader");
+        Method getter = Reflect.findMethod(messageSource.getClass(), "getBundleClassLoader");
         if (getter != null) {
             try {
                 Object loader = getter.invoke(messageSource);
@@ -143,15 +146,15 @@ public class SpringMessageSourceReloader {
     /** The line to print, given what {@link #reload()} reached. */
     public static void report(String fileName, int reset) {
         if (reset > 0) {
-            StatusReporter.success(fileName + " re-read: " + com.onurkat.reclazz.ui.Plural.of(reset, "message source")
-                    + com.onurkat.reclazz.ui.Plural.word(reset, " dropped its cache", " dropped their cache")
+            StatusReporter.success(fileName + " re-read: " + Plural.of(reset, "message source")
+                    + Plural.word(reset, " dropped its cache", " dropped their cache")
                     + ", so the next lookup reads the file.");
             return;
         }
         StatusReporter.warn(fileName + " changed, but no message source here exposes a "
                 + "cache reset Reclazz knows, so the text a lookup already resolved stays "
                 + "what it was. A restart applies it.");
-        com.onurkat.reclazz.agent.RestartLedger.note(fileName,
+        RestartLedger.note(fileName,
                 "message text a message source did not re-read");
     }
 }

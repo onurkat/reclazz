@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.Plural;
 
 /**
  * Applies edited platform properties to the running server.
@@ -161,11 +163,11 @@ public class HybrisConfigReloader {
 
         if (!rejected.isEmpty()) {
             StatusReporter.warn("The platform did not take "
-                    + com.onurkat.reclazz.ui.Plural.of(rejected.size(), "property change")
+                    + Plural.of(rejected.size(), "property change")
                     + ": " + rejected
                     + ". They need a restart.");
-            com.onurkat.reclazz.agent.RestartLedger.note(propertiesFile.getFileName().toString(),
-                    com.onurkat.reclazz.ui.Plural.word(rejected.size(), "a property change", "property changes")
+            RestartLedger.note(propertiesFile.getFileName().toString(),
+                    Plural.word(rejected.size(), "a property change", "property changes")
                             + " the platform refused: " + rejected);
         }
 

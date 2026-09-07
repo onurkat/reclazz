@@ -12,6 +12,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Puts changed properties into the running Environment and rebinds the beans
@@ -98,14 +101,14 @@ public final class SpringPropertyRebinder {
 
         if (valueFields > 0) {
             StatusReporter.success("Re-injected "
-                    + com.onurkat.reclazz.ui.Plural.of(valueFields, "@Value field")
+                    + Plural.of(valueFields, "@Value field")
                     + " reading the changed propert"
                     + (changed.size() == 1 ? "y" : "ies"));
         }
         if (!rebuilt.isEmpty()) {
             StatusReporter.success("Rebuilt "
-                    + com.onurkat.reclazz.ui.Plural.of(rebuilt.size(), "bean")
-                    + com.onurkat.reclazz.ui.Plural.word(rebuilt.size(),
+                    + Plural.of(rebuilt.size(), "bean")
+                    + Plural.word(rebuilt.size(),
                             " that takes a changed @Value through its constructor: ",
                             " that take a changed @Value through their constructor: ")
                     + rebuilt);
@@ -135,9 +138,9 @@ public final class SpringPropertyRebinder {
         int injected = 0;
         try {
             Object beanFactory = SpringBeans.getBeanFactory(context);
-            Method resolveEmbedded = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
+            Method resolveEmbedded = Reflect.findMethod(beanFactory.getClass(),
                     "resolveEmbeddedValue", String.class);
-            Method getTypeConverter = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getTypeConverter");
+            Method getTypeConverter = Reflect.findMethod(beanFactory.getClass(), "getTypeConverter");
             if (resolveEmbedded == null || getTypeConverter == null) return 0;
 
             ClassLoader loader = context.getClass().getClassLoader();
@@ -147,12 +150,12 @@ public final class SpringPropertyRebinder {
                             "org.springframework.beans.factory.annotation.Value", true, loader);
             Method valueMember = valueAnnotation.getMethod("value");
 
-            Method getSingletonNames = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
-            Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+            Method getSingletonNames = Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
+            Method getSingleton = Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
             if (getSingletonNames == null || getSingleton == null) return 0;
 
             Object typeConverter = getTypeConverter.invoke(beanFactory);
-            Method convert = com.onurkat.reclazz.util.Reflect.findMethod(typeConverter.getClass(),
+            Method convert = Reflect.findMethod(typeConverter.getClass(),
                     "convertIfNecessary", Object.class, Class.class);
             if (convert != null) convert.setAccessible(true);
 
@@ -231,8 +234,8 @@ public final class SpringPropertyRebinder {
         List<String> rebuilt = new ArrayList<>();
         try {
             Object beanFactory = SpringBeans.getBeanFactory(context);
-            Method getSingletonNames = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
-            Method getSingleton = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
+            Method getSingletonNames = Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
+            Method getSingleton = Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
             if (getSingletonNames == null || getSingleton == null) return rebuilt;
 
             ClassLoader loader = context.getClass().getClassLoader();
@@ -329,7 +332,7 @@ public final class SpringPropertyRebinder {
             RestartLedger.note(beanName,
                     "a @Value constructor parameter that could not be rebuilt in place");
             StatusReporter.warn("Rebuilding " + beanName + " (" + type.getSimpleName()
-                    + ") failed (" + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? t.getClass().getSimpleName() : com.onurkat.reclazz.ui.Failures.describe(t))
+                    + ") failed (" + (Failures.describe(t) == null ? t.getClass().getSimpleName() : Failures.describe(t))
                     + "); the value it was given at startup is the one it keeps. "
                     + "A restart is what applies the new one.");
             return false;
@@ -353,13 +356,13 @@ public final class SpringPropertyRebinder {
         try {
             Object current = bean;
             for (int depth = 0; depth < 5; depth++) {
-                Method getTargetSource = com.onurkat.reclazz.util.Reflect.findMethod(current.getClass(), "getTargetSource");
+                Method getTargetSource = Reflect.findMethod(current.getClass(), "getTargetSource");
                 if (getTargetSource == null || !current.getClass().getName().contains("$")) {
                     return current;
                 }
                 Object targetSource = getTargetSource.invoke(current);
                 if (targetSource == null) return current;
-                Method getTarget = com.onurkat.reclazz.util.Reflect.findMethod(targetSource.getClass(), "getTarget");
+                Method getTarget = Reflect.findMethod(targetSource.getClass(), "getTarget");
                 if (getTarget == null) return current;
                 Object target = getTarget.invoke(targetSource);
                 if (target == null || target == current) return current;
@@ -381,12 +384,12 @@ public final class SpringPropertyRebinder {
      * what happened and is undone by the restart that reloads the file anyway.
      */
     boolean updateEnvironment(Object context, Map<String, String> changed) throws Exception {
-        Method getEnvironment = com.onurkat.reclazz.util.Reflect.findMethod(context.getClass(), "getEnvironment");
+        Method getEnvironment = Reflect.findMethod(context.getClass(), "getEnvironment");
         if (getEnvironment == null) return false;
         Object environment = getEnvironment.invoke(context);
         if (environment == null) return false;
 
-        Method getPropertySources = com.onurkat.reclazz.util.Reflect.findMethod(environment.getClass(), "getPropertySources");
+        Method getPropertySources = Reflect.findMethod(environment.getClass(), "getPropertySources");
         if (getPropertySources == null) return false;
         Object sources = getPropertySources.invoke(environment);
 
@@ -463,7 +466,7 @@ public final class SpringPropertyRebinder {
             } catch (Throwable t) {
                 RestartLedger.note(bean.getKey(),
                         "properties under \"" + prefix + "\" that could not be rebound");
-                StatusReporter.warn("Could not rebind " + bean.getKey() + ": " + com.onurkat.reclazz.ui.Failures.describe(t));
+                StatusReporter.warn("Could not rebind " + bean.getKey() + ": " + Failures.describe(t));
             }
         }
         return rebound;
@@ -525,14 +528,14 @@ public final class SpringPropertyRebinder {
                         java.util.List.of(context), replaced);
                 StatusReporter.success(beanName + " rebuilt through its constructor with the "
                         + "new values" + (healed > 0
-                        ? "; re-pointed " + com.onurkat.reclazz.ui.Plural.of(healed, "reference") + " to it" : ""));
+                        ? "; re-pointed " + Plural.of(healed, "reference") + " to it" : ""));
             }
             return true;
         } catch (Throwable t) {
             RestartLedger.note(beanName,
                     "properties under \"" + prefix + "\" that only a constructor can take");
             StatusReporter.warn("Rebuilding " + beanName + " failed ("
-                    + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? t.getClass().getSimpleName() : com.onurkat.reclazz.ui.Failures.describe(t))
+                    + (Failures.describe(t) == null ? t.getClass().getSimpleName() : Failures.describe(t))
                     + "); the values it already holds cannot be replaced. "
                     + "A restart is what applies them.");
             return false;

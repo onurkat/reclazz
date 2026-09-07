@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import java.util.Set;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 
 /**
  * Puts the previous implementation of pinned methods back into a redefine
@@ -74,7 +75,7 @@ public final class PinnedMethodSplice {
             int colon = key.indexOf(':');
             String name = key.substring(0, colon);
             String descriptor = key.substring(colon + 1);
-            String renamed = com.onurkat.reclazz.bootstrap.InjectedNames.renamed(name, CallSiteAdapter.descHash(descriptor));
+            String renamed = InjectedNames.renamed(name, CallSiteAdapter.descHash(descriptor));
 
             MethodNode oldBody = find(cached, renamed, descriptor);
             MethodNode oldTrampoline = find(cached, name, descriptor);

@@ -8,6 +8,8 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Re-registers @EventListener methods after class reload.
@@ -88,7 +90,7 @@ public class SpringEventReloader {
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Spring event listener reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring event listener reload failed: " + Failures.describe(e));
         }
         return false;
     }
@@ -107,12 +109,12 @@ public class SpringEventReloader {
     static int removeAdaptersFor(Object multicaster, Class<?> reloadedClass) {
         int removed = 0;
         try {
-            Object retriever = com.onurkat.reclazz.util.Reflect.readField(multicaster, "defaultRetriever");
+            Object retriever = Reflect.readField(multicaster, "defaultRetriever");
             if (retriever == null) return 0;
-            Object listeners = com.onurkat.reclazz.util.Reflect.readField(retriever, "applicationListeners");
+            Object listeners = Reflect.readField(retriever, "applicationListeners");
             if (!(listeners instanceof java.util.Collection<?> collection)) return 0;
 
-            Method remove = com.onurkat.reclazz.util.Reflect.findMethod(multicaster.getClass(),
+            Method remove = Reflect.findMethod(multicaster.getClass(),
                     "removeApplicationListener",
                     Class.forName("org.springframework.context.ApplicationListener",
                             false, multicaster.getClass().getClassLoader()));
@@ -125,7 +127,7 @@ public class SpringEventReloader {
                 if (!listener.getClass().getName().endsWith("ApplicationListenerMethodAdapter")) {
                     continue;
                 }
-                Object method = com.onurkat.reclazz.util.Reflect.readField(listener, "method");
+                Object method = Reflect.readField(listener, "method");
                 if (!(method instanceof Method held)) continue;
                 if (!held.getDeclaringClass().getName().equals(reloadedClass.getName())) continue;
                 remove.invoke(multicaster, listener);

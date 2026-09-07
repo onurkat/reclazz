@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Evicts Spring caches for classes with @Cacheable, @CacheEvict, or @CachePut annotations.
@@ -60,7 +61,7 @@ public class SpringCacheReloader {
             }
             return evicted;
         } catch (Exception e) {
-            StatusReporter.warn("Spring cache eviction failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring cache eviction failed: " + Failures.describe(e));
             return false;
         }
     }
