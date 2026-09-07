@@ -8,6 +8,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **Spring cache eviction follows observed dependencies.** Editing an
+  unannotated helper now invalidates the cache regions computed through it.
+  Nested cache hits carry dependencies to their callers; unrelated regions
+  remain warm. Cache instances and class identities are tracked separately,
+  including resolver-only caches. External compilation and AutoCompile use
+  the same behavior. Attach, hook failure and bounded-ledger overflow retain
+  conservative annotation fallback. Computations overlapping a reload clear
+  their regions after the outermost synchronous interceptor exits; failed
+  clears retain their records for retry and do not change application results.
+  See [usage and limits](docs/usage.md#cache-dependencies-after-reload).
+
+  Measured with `CacheDependencyReloadTest` in a real Spring 5.3.39 child JVM:
+
+  | Measurement after helper changes from 10 to 20 | Before | After |
+  |---|---:|---:|
+  | Cached price, external compilation | 10 (stale) | 20 |
+  | Outer cached quote, external compilation | 10 (stale) | 20 |
+  | Cached price and quote, AutoCompile | 10 / 10 (stale) | 20 / 20 |
+  | Unrelated description calculations | 1 | 1 |
+
+  The subsequent service edit returns 21 from both caches while the description
+  counter remains 1. `CacheComputationCrossingReloadTest` holds a first miss
+  across reload: its caller gets 10, and the following call gets 20, for both
+  ordinary and `sync=true` caching. The existing dispatch test measured a
+  settled companion call at 2.96 ns before this feature and 6.10 ns after it
+  in local sample runs. These are observations, not an isolated benchmark
+  or a statistically established overhead estimate.
+
 - **Opt-in class reloads between synchronous Spring MVC requests.**
   `reloadBoundary=request` waits for active dispatches, then applies the class
   batch and Spring follow-up before admitting new requests. A one-second

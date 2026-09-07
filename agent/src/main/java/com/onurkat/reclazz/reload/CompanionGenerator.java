@@ -268,7 +268,14 @@ public class CompanionGenerator implements Opcodes {
             if ((access & ACC_SYNCHRONIZED) != 0) {
                 body = new SynchronizedBodyAdapter(body, isStatic, originalClass);
             }
-            return body;
+            return new MethodVisitor(ASM9, body) {
+                @Override public void visitCode() {
+                    super.visitCode();
+                    mv.visitLdcInsn(Type.getObjectType(originalClass));
+                    mv.visitMethodInsn(INVOKESTATIC, "com/onurkat/reclazz/bootstrap/CacheDependencyLedger",
+                            "hit", "(Ljava/lang/Class;)V", false);
+                }
+            };
         }
     }
 

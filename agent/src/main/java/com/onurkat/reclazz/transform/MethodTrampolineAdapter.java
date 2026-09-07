@@ -195,7 +195,15 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         MethodVisitor callAdapter = new CallSiteAdapter(fieldAdapter, context, className, loader);
         // Capture parameter names + annotations for trampoline replay so frameworks
         // like Spring (@RequestParam, @PathVariable) can find them via reflection.
-        return new MetadataRecordingMethodVisitor(callAdapter, info);
+        MethodVisitor observed = new MethodVisitor(ASM9, callAdapter) {
+            @Override public void visitCode() {
+                super.visitCode();
+                mv.visitLdcInsn(Type.getObjectType(className));
+                mv.visitMethodInsn(INVOKESTATIC, "com/onurkat/reclazz/bootstrap/CacheDependencyLedger",
+                        "hit", "(Ljava/lang/Class;)V", false);
+            }
+        };
+        return new MetadataRecordingMethodVisitor(observed, info);
     }
 
     @Override
