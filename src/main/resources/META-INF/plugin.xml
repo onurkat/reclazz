@@ -448,5 +448,8 @@
         <listener
                 class="com.onurkat.reclazz.plugin.reload.CompilationListener"
                 topic="com.intellij.compiler.server.BuildManagerListener"/>
+        <listener
+                class="com.onurkat.reclazz.plugin.reload.CompilationResultListener"
+                topic="com.intellij.openapi.compiler.CompilationStatusListener"/>
     </projectListeners>
 </idea-plugin>

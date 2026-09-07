@@ -109,6 +109,9 @@ public class ReclazzAgent {
      * drained on the single-threaded reload executor — every drain compiles
      * everything that accumulated while the previous batch was running.
      */
+    // Retries are driven by a new source event, not leftover tasks from one save.
+    private static long javaChangeGeneration;
+    private static long lastJavaAttemptGeneration = -1;
     private static final java.util.LinkedHashMap<Path, ChangeEvent> pendingJavaChanges =
             new java.util.LinkedHashMap<>();
 
@@ -549,6 +552,8 @@ public class ReclazzAgent {
                             springOrchestrator, interceptorReloader, impexImporter, config),
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
 
+            if (statusServer != null) statusServer.setBuildListener(state -> reloadQueue.build(state, watcher::scanNow));
+
             // Register the reload pipeline. Java changes are queued BEFORE
             // the executor task is submitted: while one batch compiles, new
             // events accumulate in the queue and the next drain compiles
@@ -561,10 +566,11 @@ public class ReclazzAgent {
                 int classFiles = 0;
                 for (ChangeEvent event : events) {
                     String fn = event.getPath().getFileName().toString();
-                    if (fn.endsWith(".java") && config.isAutoCompile() && compiler != null
-                            && event.getType() != ChangeEvent.Type.DELETED) {
+                    if (fn.endsWith(".java") && config.isAutoCompile() && compiler != null) {
                         synchronized (pendingJavaChanges) {
-                            pendingJavaChanges.put(event.getPath(), event);
+                            javaChangeGeneration++;
+                            if (event.getType() == ChangeEvent.Type.DELETED) pendingJavaChanges.remove(event.getPath());
+                            else pendingJavaChanges.put(event.getPath(), event);
                         }
                     }
                     if (fn.endsWith(".class") && event.getType() != ChangeEvent.Type.DELETED) {
@@ -593,6 +599,7 @@ public class ReclazzAgent {
                     synchronized (pendingJavaChanges) {
                         for (var moduleEntry : byModule.entrySet()) {
                             for (Path file : moduleEntry.getValue()) {
+                                javaChangeGeneration++;
                                 pendingJavaChanges.put(file, new ChangeEvent(
                                         file, ChangeEvent.Type.MODIFIED,
                                         moduleEntry.getKey(), null));
@@ -840,7 +847,8 @@ public class ReclazzAgent {
         // had reloaded.
         byte[] bytecode;
         try {
-            bytecode = Files.readAllBytes(classFile);
+            bytecode = event.getBytes();
+            if (bytecode == null) bytecode = Files.readAllBytes(classFile);
         } catch (java.io.IOException e) {
             StatusReporter.error("Failed to read class file " + classFile + ": "
                     + Failures.describe(e));
@@ -1039,44 +1047,40 @@ public class ReclazzAgent {
                                         InterceptorReloader interceptorReloader) {
         java.util.List<ChangeEvent> batch;
         synchronized (pendingJavaChanges) {
+            if (lastJavaAttemptGeneration == javaChangeGeneration) return;
+            lastJavaAttemptGeneration = javaChangeGeneration;
+            pendingJavaChanges.keySet().removeIf(path -> !Files.isRegularFile(path));
             if (pendingJavaChanges.isEmpty()) return; // drained by an earlier task
             batch = new java.util.ArrayList<>(pendingJavaChanges.values());
             pendingJavaChanges.clear();
         }
 
-        // Group by module — each module compiles as ONE javac invocation
+        // Group by module; the attempt publishes only after every group succeeds.
         java.util.LinkedHashMap<String, List<Path>> byModule = new java.util.LinkedHashMap<>();
         for (ChangeEvent e : batch) {
             byModule.computeIfAbsent(e.getModuleName(), k -> new java.util.ArrayList<>()).add(e.getPath());
         }
 
-        Map<String, byte[]> compiledClasses = new java.util.LinkedHashMap<>();
-        // class name -> the .java file it was compiled from, for the trail
-        Map<String, String> sources = new java.util.HashMap<>();
-        for (var moduleEntry : byModule.entrySet()) {
-            String moduleName = moduleEntry.getKey();
-            List<Path> files = moduleEntry.getValue();
-            if (files.size() == 1) {
-                StatusReporter.info("Java file changed: " + files.get(0).getFileName() + " [" + moduleName + "]");
-            } else {
-                StatusReporter.info("Java files changed: " + files.size() + " files [" + moduleName + "] — batch compiling");
+        IncrementalCompiler.CompileResult result = compiler.compilePackage(byModule);
+        SessionReport.compiled(batch.size());
+        if (!result.isSuccess()) {
+            StatusReporter.error("Compilation failed:");
+            result.getErrors().forEach(err -> StatusReporter.error("  " + err));
+            Map<Path, ChangeEvent> attempted = new java.util.LinkedHashMap<>();
+            for (ChangeEvent event : batch) attempted.put(event.getPath(), event);
+            com.onurkat.reclazz.compiler.CompileAttempt.retainExisting(pendingJavaChanges, attempted);
+            synchronized (pendingJavaChanges) {
+                StatusReporter.info("Holding " + pendingJavaChanges.size()
+                        + " source files; nothing reloads until compilation succeeds. "
+                        + (result.getErrors().isEmpty() ? "" : result.getErrors().get(0)));
             }
-
-            IncrementalCompiler.CompileResult result = compiler.compileBatch(files, moduleName);
-            SessionReport.compiled(files.size());
-            if (!result.isSuccess()) {
-                StatusReporter.error("Compilation failed:");
-                result.getErrors().forEach(err -> StatusReporter.error("  " + err));
-                continue;
-            }
-            for (Path f : files) {
-                StatusReporter.compile(f.getFileName().toString(), result.getCompileTimeMs());
-            }
-            compiledClasses.putAll(result.getCompiledClasses());
-            for (String compiled : result.getCompiledClasses().keySet()) {
-                sources.put(compiled, sourceOf(compiled, files));
-            }
+            return;
         }
+        Map<String, byte[]> compiledClasses = result.getCompiledClasses();
+        Map<String, String> sources = new java.util.HashMap<>();
+        List<Path> files = batch.stream().map(ChangeEvent::getPath).toList();
+        for (Path file : files) StatusReporter.compile(file.getFileName().toString(), result.getCompileTimeMs());
+        for (String compiled : compiledClasses.keySet()) sources.put(compiled, sourceOf(compiled, files));
         if (compiledClasses.isEmpty()) return;
 
         Runnable apply = () -> applyCompiledClasses(compiledClasses, sources, reloader,

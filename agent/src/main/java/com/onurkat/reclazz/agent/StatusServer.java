@@ -63,6 +63,10 @@ public class StatusServer implements StatusReporter.StatusListener {
 
     /** Acts on SCAN: the watcher looks now instead of waiting for the JDK. */
     private volatile Runnable scanner;
+    private volatile java.util.function.Consumer<String> build;
+    private static final String BUILD = "BUILD";
+
+    public void setBuildListener(java.util.function.Consumer<String> build) { this.build = build; }
 
     public StatusServer(int port, Path portFile) {
         this.requestedPort = port;
@@ -153,6 +157,14 @@ public class StatusServer implements StatusReporter.StatusListener {
         if (trimmed.length() > MAX_COMMAND_LENGTH) return;
 
         try {
+            if (trimmed.regionMatches(true, 0, BUILD + " ", 0, BUILD.length() + 1)) {
+                String state = trimmed.substring(BUILD.length() + 1).strip();
+                if (state.equalsIgnoreCase("started") || state.equalsIgnoreCase("ok") || state.equalsIgnoreCase("failed")) {
+                    java.util.function.Consumer<String> listener = build;
+                    if (listener != null) listener.accept(state);
+                }
+                return;
+            }
             if (trimmed.equalsIgnoreCase(PENDING)) {
                 for (String reportLine : RestartLedger.digest()) {
                     StatusReporter.info(reportLine);

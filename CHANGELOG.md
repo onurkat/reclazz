@@ -7,6 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **A build's output is published whole, or held.** AutoCompile stages all modules before publishing successful output; IntelliJ BUILD signals hold external class changes until a complete byte snapshot is accepted. Newer builds invalidate pending acceptance; missing results keep output held and appear in HEALTH.
+
+  Measured with `AutoCompileHoldsABrokenPackageTest` and
+  `BuildSignalHoldsClassFilesTest` in child JVMs:
+
+  | Measurement | Before | After |
+  |---|---:|---:|
+  | Failed source attempts that changed Service.class (2 cases) | 2 | 0 |
+  | A's live value before external build success (initial value 1) | 2 | 1 |
+
+  After fixing or deleting only the broken source, the held Service reaches
+  value 2. After a successful external build, both held classes reach value 2.
+  AutoCompile publication I/O failures may leave some files replaced on disk;
+  no agent reload starts for that attempt. See [usage and limits](docs/usage.md).
 
 - **Spring cache eviction follows observed dependencies.** Editing an
   unannotated helper now invalidates the cache regions computed through it.

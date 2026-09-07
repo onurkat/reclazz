@@ -112,6 +112,8 @@ than either.
 
 ## Features
 
+- **Build packages**: AutoCompile stages all modules before publishing output. IntelliJ build signals hold class changes until compilation succeeds. Failed attempts remain held for retry; newer builds invalidate pending acceptance. See the [usage guide](docs/usage.md) and [BUILD protocol](docs/protocol.md#holding-a-build-until-it-succeeds).
+
 ### Spring Integration
 
 - **Spring Bean Refresh**: Automatically destroys and recreates singleton beans after class reload

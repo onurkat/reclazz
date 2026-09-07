@@ -13,13 +13,10 @@ import javax.tools.*;
 import java.io.*;
 import java.nio.file.*;
 import java.util.*;
-import com.onurkat.reclazz.util.SourceText;
 
 /**
- * Compiles individual Java source files incrementally without requiring ant.
- *
- * Uses the javax.tools.JavaCompiler API (built into JDK) to compile changed files
- * one at a time, using the full Hybris classpath for dependency resolution.
+ * Compiles source groups into staging with javac and the application classpath.
+ * CompileAttempt owns publication after all groups and modules succeed.
  */
 public class IncrementalCompiler {
 
@@ -52,286 +49,93 @@ public class IncrementalCompiler {
         }
     }
 
-    /**
-     * Compile a single Java source file.
-     *
-     * @param javaFile       Path to the .java file
-     * @param moduleName     Name of the module/extension containing this file
-     * @return CompileResult with compiled bytecode or errors
-     */
+    /** A convenience attempt for callers compiling one module. */
     public CompileResult compile(Path javaFile, String moduleName) {
-        if (context == null) {
-            return compileGeneric(javaFile, moduleName);
-        }
-
-        long startTime = System.currentTimeMillis();
-        List<String> errors = new ArrayList<>();
-
-        try {
-            ExtensionInfo extInfo = context.getExtensions().get(moduleName);
-            if (extInfo == null) {
-                return CompileResult.failure(List.of("Unknown extension: " + moduleName));
-            }
-
-            // Determine output directory based on source root
-            Path outputDir = resolveOutputDir(javaFile, extInfo);
-            Files.createDirectories(outputDir);
-
-            // Build compilation options
-            List<String> options = buildCompilerOptions(extInfo, outputDir);
-
-            // Set up diagnostics collector
-            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-
-            // Set up file manager (try-with-resources to prevent handle leak)
-            boolean success;
-            try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(
-                    diagnostics, Locale.getDefault(), null)) {
-
-                // Get the source file
-                Iterable<? extends JavaFileObject> compilationUnits =
-                        fileManager.getJavaFileObjectsFromPaths(List.of(javaFile));
-
-                // Compile
-                JavaCompiler.CompilationTask task = compiler.getTask(
-                        null, fileManager, diagnostics, options, null, compilationUnits);
-
-                success = task.call();
-            }
-
-            if (!success) {
-                for (Diagnostic<? extends JavaFileObject> diag : diagnostics.getDiagnostics()) {
-                    if (diag.getKind() == Diagnostic.Kind.ERROR) {
-                        String error = String.format("%s:%d: %s",
-                                javaFile.getFileName(),
-                                diag.getLineNumber(),
-                                diag.getMessage(Locale.getDefault()));
-                        errors.add(error);
-                    }
-                }
-                return CompileResult.failure(errors);
-            }
-
-            // Read compiled class files
-            Map<String, byte[]> compiledClasses = collectCompiledClasses(javaFile, outputDir, extInfo);
-
-            long elapsed = System.currentTimeMillis() - startTime;
-            return CompileResult.success(compiledClasses, elapsed);
-
-        } catch (Exception e) {
-            errors.add("Compilation exception: " + e.getMessage());
-            return CompileResult.failure(errors);
-        }
+        return compileBatch(List.of(javaFile), moduleName);
     }
 
-    /**
-     * Compile several Java source files of ONE module in as few javac
-     * invocations as possible (one per output directory). A save-all in the
-     * IDE or a baseline restore touches many files at once; compiling them
-     * one at a time paid the full javac startup cost per file.
-     */
     public CompileResult compileBatch(List<Path> javaFiles, String moduleName) {
-        if (javaFiles.size() == 1) {
-            return compile(javaFiles.get(0), moduleName);
-        }
-        if (context == null) {
-            // Generic platforms: loop (rare bulk-save path, keep it simple)
-            Map<String, byte[]> all = new HashMap<>();
-            long start = System.currentTimeMillis();
-            List<String> errors = new ArrayList<>();
-            for (Path f : javaFiles) {
-                CompileResult r = compileGeneric(f, moduleName);
-                if (!r.isSuccess()) {
-                    errors.addAll(r.getErrors());
-                } else {
-                    all.putAll(r.getCompiledClasses());
-                }
-            }
-            if (!errors.isEmpty()) return CompileResult.failure(errors);
-            return CompileResult.success(all, System.currentTimeMillis() - start);
-        }
-
-        long startTime = System.currentTimeMillis();
-        List<String> errors = new ArrayList<>();
-        try {
-            ExtensionInfo extInfo = context.getExtensions().get(moduleName);
-            if (extInfo == null) {
-                return CompileResult.failure(List.of("Unknown extension: " + moduleName));
-            }
-
-            // Group by output dir: core src -> classes/, web src -> WEB-INF/classes
-            Map<Path, List<Path>> byOutputDir = new LinkedHashMap<>();
-            for (Path f : javaFiles) {
-                byOutputDir.computeIfAbsent(resolveOutputDir(f, extInfo), k -> new ArrayList<>()).add(f);
-            }
-
-            Map<String, byte[]> all = new HashMap<>();
-            for (Map.Entry<Path, List<Path>> group : byOutputDir.entrySet()) {
-                Path outputDir = group.getKey();
-                Files.createDirectories(outputDir);
-                List<String> options = buildCompilerOptions(extInfo, outputDir);
-                DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-
-                boolean success;
-                try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(
-                        diagnostics, Locale.getDefault(), null)) {
-                    Iterable<? extends JavaFileObject> units =
-                            fileManager.getJavaFileObjectsFromPaths(group.getValue());
-                    success = compiler.getTask(null, fileManager, diagnostics, options, null, units).call();
-                }
-
-                if (!success) {
-                    for (Diagnostic<? extends JavaFileObject> diag : diagnostics.getDiagnostics()) {
-                        if (diag.getKind() == Diagnostic.Kind.ERROR) {
-                            String source = diag.getSource() != null
-                                    ? diag.getSource().getName() : "?";
-                            errors.add(String.format("%s:%d: %s",
-                                    source.substring(source.lastIndexOf('/') + 1),
-                                    diag.getLineNumber(),
-                                    diag.getMessage(Locale.getDefault())));
-                        }
-                    }
-                    continue; // other output-dir groups may still succeed
-                }
-
-                for (Path f : group.getValue()) {
-                    all.putAll(collectCompiledClasses(f, outputDir, extInfo));
-                }
-            }
-
-            if (all.isEmpty() && !errors.isEmpty()) {
-                return CompileResult.failure(errors);
-            }
-            // Partial failure: report errors but still deliver what compiled
-            if (!errors.isEmpty()) {
-                StatusReporter.error("Batch compilation had errors:");
-                errors.forEach(err -> StatusReporter.error("  " + err));
-            }
-            return CompileResult.success(all, System.currentTimeMillis() - startTime);
-        } catch (Exception e) {
-            errors.add("Compilation exception: " + e.getMessage());
-            return CompileResult.failure(errors);
-        }
+        return compilePackage(Map.of(moduleName, javaFiles));
     }
 
-    /**
-     * Compile a single Java source file for non-Hybris platforms (Spring Boot, generic).
-     */
-    private CompileResult compileGeneric(Path javaFile, String moduleName) {
-        long startTime = System.currentTimeMillis();
-        List<String> errors = new ArrayList<>();
+    public CompileResult compilePackage(Map<String, List<Path>> modules) {
+        return new CompileAttempt(this).compile(modules);
+    }
 
-        try {
-            // Determine output directory from PlatformContext
-            Path outputDir = null;
-            if (platformContext != null) {
-                var outputDirs = platformContext.getClassOutputDirs();
-                for (var entry : outputDirs.values()) {
-                    if (!entry.isEmpty()) {
-                        outputDir = entry.get(0);
-                        break;
-                    }
-                }
-            }
+    List<String> dependencies(String module) {
+        if (context == null) return List.of();
+        ExtensionInfo extension = context.getExtensions().get(module);
+        if (extension == null) throw new IllegalArgumentException("Unknown extension: " + module);
+        return extension.getRequiredExtensions();
+    }
 
-            if (outputDir == null) {
-                // Fallback: use target/classes or build/classes/java/main
-                Path cwd = Paths.get(System.getProperty("user.dir"));
-                Path mavenDir = cwd.resolve("target").resolve("classes");
-                Path gradleDir = cwd.resolve("build").resolve("classes").resolve("java").resolve("main");
-                if (Files.isDirectory(mavenDir)) {
-                    outputDir = mavenDir;
-                } else if (Files.isDirectory(gradleDir)) {
-                    outputDir = gradleDir;
-                } else {
-                    outputDir = mavenDir;
-                }
-            }
-
-            Files.createDirectories(outputDir);
-
-            // Build simple compiler options
-            List<String> options = new ArrayList<>();
-            options.add("-d");
-            options.add(outputDir.toString());
-            options.add("-classpath");
-            options.add(classpath);
-            String javaVersion = System.getProperty("java.specification.version", "17");
-            options.add("--release");
-            options.add(javaVersion);
-            options.add("-nowarn");
-            // Match the build tool's compile settings: without -g/-parameters
-            // Spring MVC cannot resolve @RequestParam names on recompiled
-            // controllers (IllegalArgumentException: "parameter name
-            // information not available via reflection").
-            options.add("-g");
-            options.add("-parameters");
-
-            // Try to add source path
-            Path sourceRoot = resolveSourceRoot(javaFile);
-            if (sourceRoot != null) {
-                options.add("-sourcepath");
-                options.add(sourceRoot.toString());
-            }
-
-            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
-            boolean success;
-            try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(
-                    diagnostics, Locale.getDefault(), null)) {
-                Iterable<? extends JavaFileObject> compilationUnits =
-                        fileManager.getJavaFileObjectsFromPaths(List.of(javaFile));
-                JavaCompiler.CompilationTask task = compiler.getTask(
-                        null, fileManager, diagnostics, options, null, compilationUnits);
-                success = task.call();
-            }
-
-            if (!success) {
-                for (Diagnostic<? extends JavaFileObject> diag : diagnostics.getDiagnostics()) {
-                    if (diag.getKind() == Diagnostic.Kind.ERROR) {
-                        errors.add(String.format("%s:%d: %s",
-                                javaFile.getFileName(), diag.getLineNumber(),
-                                diag.getMessage(Locale.getDefault())));
-                    }
-                }
-                return CompileResult.failure(errors);
-            }
-
-            // Collect compiled classes
-            Map<String, byte[]> classes = new HashMap<>();
-            String className = resolveClassNameFromSource(javaFile);
-            if (className != null) {
-                String classPath = className.replace('.', File.separatorChar);
-                Path mainClassFile = outputDir.resolve(classPath + ".class");
-                if (Files.exists(mainClassFile)) {
-                    classes.put(className, Files.readAllBytes(mainClassFile));
-                }
-                // Inner classes
-                String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
-                Path classDir = mainClassFile.getParent();
-                if (classDir != null && Files.isDirectory(classDir)) {
-                    try (var stream = Files.list(classDir)) {
-                        stream.filter(p -> {
-                            String name = p.getFileName().toString();
-                            return name.startsWith(simpleClassName + "$") && name.endsWith(".class");
-                        }).forEach(innerClassFile -> {
-                            try {
-                                String innerClassName = className.substring(0, className.lastIndexOf('.') + 1) +
-                                        innerClassFile.getFileName().toString().replace(".class", "");
-                                classes.put(innerClassName, Files.readAllBytes(innerClassFile));
-                            } catch (IOException e) {
-                                StatusReporter.error("Failed to read inner class: " + innerClassFile);
-                            }
-                        });
-                    }
-                }
-            }
-
-            long elapsed = System.currentTimeMillis() - startTime;
-            return CompileResult.success(classes, elapsed);
-        } catch (Exception e) {
-            errors.add("Compilation exception: " + e.getMessage());
-            return CompileResult.failure(errors);
+    Map<Path, List<Path>> groups(String module, List<Path> sources) {
+        Map<Path, List<Path>> groups = new LinkedHashMap<>();
+        ExtensionInfo ext = context == null ? null : context.getExtensions().get(module);
+        if (context != null && ext == null) throw new IllegalArgumentException("Unknown extension: " + module);
+        // The core output is available before a web group compiles against it.
+        List<Path> ordered = new ArrayList<>(sources);
+        if (ext != null) ordered.sort(Comparator.comparing(f -> f.startsWith(ext.getPath().resolve("web/src"))));
+        for (Path source : ordered) {
+            Path output = ext == null ? genericOutput() : resolveOutputDir(source, ext);
+            groups.computeIfAbsent(output, p -> new ArrayList<>()).add(source);
         }
+        return groups;
+    }
+
+    private Path genericOutput() {
+        if (platformContext != null) {
+            for (var dirs : platformContext.getClassOutputDirs().values()) {
+                if (!dirs.isEmpty()) return dirs.get(0);
+            }
+        }
+        Path cwd = Paths.get(System.getProperty("user.dir"));
+        Path maven = cwd.resolve("target/classes");
+        if (Files.isDirectory(maven)) return maven;
+        Path gradle = cwd.resolve("build/classes/java/main");
+        if (Files.isDirectory(gradle)) return gradle;
+        return cwd.resolve("classes");
+    }
+
+    /** Only writes to staging. The attempt owns publication of every module. */
+    List<String> compileStaged(String module, List<Path> files, Path staging, List<Path> preceding) throws IOException {
+        Files.createDirectories(staging);
+        List<String> options;
+        if (context != null) {
+            options = buildCompilerOptions(context.getExtensions().get(module), staging);
+        } else {
+            options = new ArrayList<>(List.of("-d", staging.toString(), "-classpath", classpath,
+                    "--release", System.getProperty("java.specification.version", "17"),
+                    "-nowarn", "-g", "-parameters"));
+            Set<String> roots = new LinkedHashSet<>();
+            for (Path file : files) {
+                Path root = resolveSourceRoot(file);
+                if (root != null) roots.add(root.toString());
+            }
+            if (!roots.isEmpty()) options.addAll(List.of("-sourcepath", String.join(File.pathSeparator, roots)));
+        }
+        int cpIndex = options.indexOf("-classpath") + 1;
+        List<String> cp = new ArrayList<>();
+        for (Path path : preceding) cp.add(path.toString());
+        cp.add(options.get(cpIndex));
+        options.set(cpIndex, String.join(File.pathSeparator, cp));
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        boolean success;
+        try (StandardJavaFileManager manager = compiler.getStandardFileManager(diagnostics, Locale.getDefault(), null)) {
+            success = compiler.getTask(null, manager, diagnostics, options, null,
+                    manager.getJavaFileObjectsFromPaths(files)).call();
+        }
+        List<String> errors = new ArrayList<>();
+        if (!success) {
+            for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
+                if (d.getKind() == Diagnostic.Kind.ERROR) {
+                    String name = d.getSource() == null ? "?" : Paths.get(d.getSource().toUri()).getFileName().toString();
+                    errors.add(name + ":" + d.getLineNumber() + ": " + d.getMessage(Locale.getDefault()));
+                }
+            }
+            if (errors.isEmpty()) errors.add("Compilation failed for " + module);
+        }
+        return errors;
     }
 
     /**
@@ -444,104 +248,6 @@ public class IncrementalCompiler {
         }
 
         return options;
-    }
-
-    /**
-     * Collect the compiled .class files and return their bytecode.
-     * A single .java file may produce multiple .class files (inner classes, anonymous classes).
-     */
-    private Map<String, byte[]> collectCompiledClasses(Path javaFile, Path outputDir, ExtensionInfo extInfo) throws IOException {
-        Map<String, byte[]> classes = new HashMap<>();
-
-        // Determine the expected class file location
-        String className = resolveClassName(javaFile, extInfo);
-        if (className == null) {
-            return classes;
-        }
-
-        // Convert class name to path
-        String classPath = className.replace('.', File.separatorChar);
-        Path mainClassFile = outputDir.resolve(classPath + ".class");
-
-        // Read the main class
-        if (Files.exists(mainClassFile)) {
-            classes.put(className, Files.readAllBytes(mainClassFile));
-        }
-
-        // Find inner classes (ClassName$InnerName.class, ClassName$1.class, etc.)
-        String simpleClassName = className.substring(className.lastIndexOf('.') + 1);
-        Path classDir = mainClassFile.getParent();
-        if (classDir != null && Files.isDirectory(classDir)) {
-            try (var stream = Files.list(classDir)) {
-                stream.filter(p -> {
-                    String name = p.getFileName().toString();
-                    return name.startsWith(simpleClassName + "$") && name.endsWith(".class");
-                }).forEach(innerClassFile -> {
-                    try {
-                        String innerClassName = className.substring(0, className.lastIndexOf('.') + 1) +
-                                innerClassFile.getFileName().toString().replace(".class", "");
-                        classes.put(innerClassName, Files.readAllBytes(innerClassFile));
-                    } catch (IOException e) {
-                        StatusReporter.error("Failed to read inner class: " + innerClassFile);
-                    }
-                });
-            }
-        }
-
-        return classes;
-    }
-
-    /**
-     * Resolve the fully qualified class name from a Java source file path.
-     */
-    private String resolveClassName(Path javaFile, ExtensionInfo extInfo) {
-        String filePath = javaFile.toString();
-
-        // Try to extract package from the source directories
-        String[] sourceRoots = {"src", "web/src", "gensrc", "testsrc"};
-
-        for (String root : sourceRoots) {
-            Path sourceRoot = extInfo.getPath().resolve(root);
-            if (filePath.startsWith(sourceRoot.toString())) {
-                String relative = sourceRoot.relativize(javaFile).toString();
-                // Remove .java extension and convert path separators to dots
-                return relative.replace(".java", "")
-                        .replace(File.separatorChar, '.')
-                        .replace('/', '.');
-            }
-        }
-
-        // Fallback: try to parse the package declaration from the file
-        return resolveClassNameFromSource(javaFile);
-    }
-
-    private String resolveClassNameFromSource(Path javaFile) {
-        try {
-            // Not Files.readString: a source that is not UTF-8 threw, and the
-            // package declaration this is looking for is ASCII either way.
-            String content = SourceText.readForScanning(javaFile);
-            String packageName = null;
-            String className = javaFile.getFileName().toString().replace(".java", "");
-
-            for (String line : content.split("\n")) {
-                line = line.trim();
-                if (line.startsWith("package ")) {
-                    packageName = line.replace("package ", "").replace(";", "").trim();
-                    break;
-                }
-                if (line.startsWith("import ") || line.startsWith("public ") ||
-                        line.startsWith("class ") || line.startsWith("interface ")) {
-                    break; // No package declaration found
-                }
-            }
-
-            if (packageName != null) {
-                return packageName + "." + className;
-            }
-            return className;
-        } catch (IOException e) {
-            return null;
-        }
     }
 
     /**

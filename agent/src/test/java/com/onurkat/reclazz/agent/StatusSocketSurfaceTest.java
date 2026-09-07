@@ -35,6 +35,16 @@ class StatusSocketSurfaceTest {
     }
 
     @Test
+    void buildAcceptsOnlyItsThreeStatesCaseInsensitively() {
+        StatusServer server = server();
+        java.util.List<String> received = new java.util.ArrayList<>();
+        server.setBuildListener(received::add);
+        for (String line : List.of("BUILD started", "BUILD ok", "build OK", "BUILD failed",
+                "BUILD nonsense", "BUILDX ok", "BUILD", "BUILD ok extra")) server.handleCommand(line);
+        assertEquals(List.of("started", "ok", "OK", "failed"), received);
+    }
+
+    @Test
     void anUnknownCommandIsIgnored() {
         StatusServer status = server();
         AtomicInteger asked = new AtomicInteger();
