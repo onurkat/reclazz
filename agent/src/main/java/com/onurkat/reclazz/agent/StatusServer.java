@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.ui.RestartLedger;
+
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.io.IOException;

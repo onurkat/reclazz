@@ -19,7 +19,7 @@ import java.util.zip.CRC32;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import com.onurkat.reclazz.agent.ReclazzAgent;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.hybris.HybrisConfigReloader;
 import com.onurkat.reclazz.platform.HybrisPlatformContext;
 import com.onurkat.reclazz.platform.StartupSignal;

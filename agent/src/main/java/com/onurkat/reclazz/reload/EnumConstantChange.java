@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.bootstrap.UnsafeAccess;
 import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.ui.StatusReporter;

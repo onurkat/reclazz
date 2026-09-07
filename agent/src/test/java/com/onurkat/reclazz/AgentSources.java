@@ -41,7 +41,7 @@ public final class AgentSources {
     private static final int AT_LEAST = 80;
 
     /** A file that has to be in the root, so a wrong directory is not accepted. */
-    private static final String MARKER = "com/onurkat/reclazz/agent/RestartLedger.java";
+    private static final String MARKER = "com/onurkat/reclazz/ui/RestartLedger.java";
 
     private AgentSources() {
     }

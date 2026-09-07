@@ -25,7 +25,7 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import com.onurkat.reclazz.agent.ClassLookup;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.bootstrap.InjectedNames;
 import com.onurkat.reclazz.bootstrap.LookupCapture;
 import com.onurkat.reclazz.spring.SpringValidatorReloader;

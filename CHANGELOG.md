@@ -45,6 +45,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **The restart ledger lives with the status reporter.** It was in `agent`,
+  the composition root, and every reloader that noted a restart pulled
+  `agent` in with it: ten pairs of the agent's packages depended on each
+  other both ways, three of them through the ledger alone. It is reporting,
+  so it sits in `ui` next to `StatusReporter`, and a test now pins the
+  layering that leaves: `ui` references no other package, `util` only
+  `ui`, and `spring`, `hybris` and `compiler` do not reach up into `agent`.
+  The graph is read from the compiled classes, so a javadoc mention does not
+  count and a new reference cannot hide.
+
 - The agent's sources name the project's own classes through imports
   instead of fully qualified names inline: 322 such sites across 59 files,
   now none outside string literals and the bootstrap package, whose classes

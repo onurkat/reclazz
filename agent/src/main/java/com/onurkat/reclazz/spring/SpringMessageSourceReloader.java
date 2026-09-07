@@ -8,7 +8,7 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.util.Reflect;
 

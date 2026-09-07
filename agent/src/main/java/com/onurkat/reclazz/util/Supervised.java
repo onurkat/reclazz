@@ -6,7 +6,7 @@ package com.onurkat.reclazz.util;
 
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.StatusReporter;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 
 /**
  * Work whose death would otherwise be silent, and permanent.

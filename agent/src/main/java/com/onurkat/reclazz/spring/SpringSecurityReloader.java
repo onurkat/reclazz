@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.util.Reflect;
