@@ -224,6 +224,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- `./gradlew :agent:unitTest` runs every test but the 24 end-to-end ones in
+  about twenty seconds, for the inner loop; `:agent:e2eTest` runs just
+  those; `test` is still the gate. The unused `TransformVerifier` is gone;
+  the status server's start-up is a method of its own rather than forty
+  lines inside the agent's initialisation. The README points at the session
+  log, the protocol document and the two new usage sections.
+
 - The JPA rebuild's two conditions, the `jpaRefresh=true` opt-in and
   whether the JVM applies added fields to a loaded class, are handed to
   `JpaMappingRefresh` by the agent at start-up instead of being read off
