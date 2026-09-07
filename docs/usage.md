@@ -313,6 +313,28 @@ The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (b
 
 ---
 
+## Seeing Reloads in JDK Flight Recorder
+
+Every reload is also a Flight Recorder event, so it sits on the same timeline
+as the garbage collections, safepoints and JIT compilations around it. Nothing
+to configure: the events are emitted whenever a recording is running.
+
+```bash
+jcmd <pid> JFR.start name=reclazz settings=default
+# ... save a few files ...
+jcmd <pid> JFR.dump name=reclazz filename=reclazz.jfr
+jfr print --events reclazz.Reload,reclazz.ReloadFailed reclazz.jfr
+```
+
+| Event | Fields |
+|---|---|
+| `reclazz.Reload` | `className`, `structural` (members added or removed, as opposed to bodies changing), `measured` (the measured time, or -1 for one of a batch timed as a whole), `shape` (what changed, as `v2, +1 method`, when known) |
+| `reclazz.ReloadFailed` | `className`, `reason` |
+
+In JDK Mission Control they appear under the **Reclazz** category in the event
+browser. A recording of a slow session, sent along with a report, shows what
+the agent did and when without the console log.
+
 ## Choosing the Right Mode
 
 | Scenario | Recommended Mode |

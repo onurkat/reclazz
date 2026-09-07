@@ -22,6 +22,7 @@ import com.onurkat.reclazz.spring.SpringReloadOrchestrator;
 import com.onurkat.reclazz.transform.ReclazzTransformer;
 import com.onurkat.reclazz.transform.ReflectionInterceptTransformer;
 import com.onurkat.reclazz.transform.TransformContext;
+import com.onurkat.reclazz.ui.ReloadEvents;
 import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.watcher.FileWatcher;
 import com.onurkat.reclazz.watcher.ChangeEvent;
@@ -858,6 +859,7 @@ public class ReclazzAgent {
             } else {
                 SessionReport.failed();
                 StatusReporter.error("Hot-swap failed for " + displayName + ": " + reloadResult.getError());
+                ReloadEvents.failed(className, reloadResult.getError());
                 // A structural failure does not always carry advice: the ones
                 // raised with their own explanation have nothing to add. Printing
                 // it unguarded put the literal word "null" under the message that
@@ -1033,6 +1035,7 @@ public class ReclazzAgent {
             } else {
                 failCount++;
                 StatusReporter.error("Hot-swap failed for " + className + ": " + reloadResult.getError());
+                ReloadEvents.failed(className, reloadResult.getError());
                 // A structural failure does not always carry advice: the ones
                 // raised with their own explanation have nothing to add. Printing
                 // it unguarded put the literal word "null" under the message that

@@ -43,6 +43,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   the child's reload, which is what `HierarchyReloadUnderLoadTest` had been
   catching in the full suite and nowhere else.
 
+### Added
+
+- **Reloads are JDK Flight Recorder events.** `reclazz.Reload` carries the
+  class, whether the change was structural, the measured duration and what
+  changed; `reclazz.ReloadFailed` the class and the reason. They appear
+  under a Reclazz category in JDK Mission Control and in `jfr print`, on the
+  same timeline as the garbage collections, safepoints and compilations
+  around them, so a pause can be placed and a recording of a slow session
+  can be sent instead of a console log. Nothing to configure: they are
+  emitted whenever a recording runs, and a runtime built without
+  `jdk.jfr` switches them off rather than failing a reload. See
+  `docs/usage.md`.
+
 ### Changed
 
 - The JPA rebuild's two conditions, the `jpaRefresh=true` opt-in and

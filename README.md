@@ -111,6 +111,10 @@ than either.
 - **AOP Proxy Refresh**: Clears `AbstractAutoProxyCreator` caches for `@Aspect` classes
 - **Async Re-processing**: Re-processes `@Async` beans
 - **Spring Data Refresh**: Destroys and recreates `Repository` beans
+- **Flight Recorder events**: every reload is a `reclazz.Reload` JFR event
+  (class, structural or not, duration, what changed) and every failure a
+  `reclazz.ReloadFailed` one, so reloads sit on the JVM's own timeline next
+  to GC and safepoints in JDK Mission Control; see `docs/usage.md`
 - **Spring Security rebuild**: an edited `@EnableWebSecurity` configuration is
   applied to the running filter chain, so a rule that was `permitAll` starts
   answering 401 on the next request without a restart. Method security
