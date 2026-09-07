@@ -32,6 +32,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- The promise in `SECURITY.md` that nothing leaves the machine is a test:
+  the shipped sources of the agent and the plugin open no HTTP or other
+  client connection, and the only sockets are the status socket bound to
+  loopback and the plugin's client to it, which names `127.0.0.1`. What the
+  agent prints about a property change is the key, never the value; that
+  was checked by hand and stays as it is.
+
+### Added
+
 - **`scripts/bump-version.sh X.Y.Z` prepares the release commit.** The
   version, the changelog's `[Unreleased]` section dated as `[X.Y.Z]` with a
   fresh `[Unreleased]` above it, and an `<h3>X.Y.Z</h3>` change-notes block
