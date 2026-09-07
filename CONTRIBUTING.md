@@ -44,6 +44,11 @@ Test scaffolding, which ships in no release:
 
 ## Testing
 
+While working, `./gradlew :agent:unitTest` runs everything except the
+end-to-end tests in about twenty seconds; `./gradlew :agent:e2eTest` runs
+just those (each starts a JVM, about a hundred seconds). The gate is still
+the whole suite:
+
 `./gradlew clean build` is the whole gate for a plain clone, and it is
 what CI runs on Linux and Windows. It compiles every module, including
 `integration-test`, so you cannot break that one without noticing even
