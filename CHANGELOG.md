@@ -30,7 +30,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   release and attaches the zip under the name every release has used.
   `--dry-run` prints the steps instead, which is what its test holds it to.
 
+### Added
+
+- **The status socket is documented for clients other than the plugin.**
+  `docs/protocol.md` says where the port file is, what the JSON lines
+  carry, which levels there are, what the four commands answer, and how a
+  Gradle or Maven build can send `SCAN` when it has finished writing class
+  files. `ProtocolContractTest` holds the document to the server: the
+  fields, the levels and the commands it lists are the ones the code has.
+
 ### Fixed
+
+- **An edited constraint is re-read on Spring Boot 2 as well.** The
+  validator's constraint cache was looked for behind
+  `jakarta.validation.ValidatorFactory` only; Spring 5 and Boot 2 hold it
+  behind `javax.validation.ValidatorFactory`, so on those the reload
+  reported the constraints re-read while the old ones kept validating. Both
+  names are asked now.
 
 - **A call site created while its callee's reload had already landed could
   run its initial target once.** The dispatch table published a new call

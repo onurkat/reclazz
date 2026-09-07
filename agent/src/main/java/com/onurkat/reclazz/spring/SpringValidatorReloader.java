@@ -49,7 +49,18 @@ import java.util.Map;
  */
 public final class SpringValidatorReloader {
 
-    private static final String VALIDATOR_FACTORY = "jakarta.validation.ValidatorFactory";
+    /**
+     * Both spellings of the API: Spring 6 and Boot 3 validate through
+     * {@code jakarta.validation}, Spring 5 and Boot 2 through
+     * {@code javax.validation}, and a constraint cache is the same object
+     * under either name. Only the first was asked for, so on a Boot 2
+     * application an edited constraint was reported as re-read and the old
+     * one kept validating.
+     */
+    static final String[] VALIDATOR_FACTORIES = {
+            "jakarta.validation.ValidatorFactory",
+            "javax.validation.ValidatorFactory",
+    };
 
     /** The map that holds a class's constraints, under the one name it has. */
     private static final String METADATA_CACHE = "beanMetaDataCache";
@@ -69,7 +80,8 @@ public final class SpringValidatorReloader {
     public static int flush() {
         int cleared = 0;
         for (Object appContext : ApplicationContextHolder.getAllContexts()) {
-            for (String name : SpringBeans.beanNamesForType(appContext, VALIDATOR_FACTORY)) {
+            for (String factoryType : VALIDATOR_FACTORIES)
+            for (String name : SpringBeans.beanNamesForType(appContext, factoryType)) {
                 Object validator = SpringBeans.getBean(appContext, name);
                 if (validator == null) continue;
                 cleared += clearConstraintCaches(validator);
