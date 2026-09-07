@@ -313,6 +313,18 @@ The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (b
 
 ---
 
+## Debugging Reloaded Code
+
+Breakpoints keep working in code Reclazz has reloaded. On a stock JDK an
+edited method body runs in a companion class named after yours
+(`Greeter$$Reclazz$v1`), and the debugger finds it the way it finds anonymous
+classes and lambdas: it carries the original source file name and the new
+body's line numbers, so a breakpoint on a line of the edited method binds and
+hits, the frame shows `Greeter.greet` in `Greeter.java`, and stepping into
+the method is not filtered out. Set or move the breakpoint after the edit if
+the line you want did not exist before; a breakpoint on a line that the old
+body had and the new one does not has nothing to bind to, as in any rebuild.
+
 ## Seeing Reloads in JDK Flight Recorder
 
 Every reload is also a Flight Recorder event, so it sits on the same timeline

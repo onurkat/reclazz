@@ -99,6 +99,20 @@ public class CompanionGenerator implements Opcodes {
         // Companion extends Object, implements nothing
         writer.visit(V17, ACC_PUBLIC | ACC_SYNTHETIC, companionName, null,
                 "java/lang/Object", null);
+        // The original's SourceFile, so a debugger can map the companion's
+        // line numbers back to the file in the editor. Without it a hidden
+        // class named Greeter$$Reclazz$v1 has lines but no file, JDI answers
+        // AbsentInformationException, and a breakpoint on a line of the new
+        // body can never bind: measured over JDI, exactly the way the IDE asks.
+        String[] source = new String[2];
+        reader.accept(new ClassVisitor(ASM9) {
+            @Override
+            public void visitSource(String file, String debug) {
+                source[0] = file;
+                source[1] = debug;
+            }
+        }, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
+        if (source[0] != null) writer.visitSource(source[0], source[1]);
 
         Map<String, String> methodHandleKeys = new LinkedHashMap<>();
 

@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- **Breakpoints bind in reloaded code on a stock JDK.** An edited method
+  body runs in a companion class, and the companion was written without
+  the original's `SourceFile` attribute: it had the new body's line numbers
+  but no file for a debugger to map them to, JDI answered
+  `AbsentInformationException`, and a breakpoint on a line of the new body
+  could never bind. The companion now carries the source file name. A test
+  attaches over JDI the way the IDE does, finds the companion, sets a
+  breakpoint on a line only the new body has, and waits for it to hit in
+  `Greeter.greet` of `Greeter.java`, in a method the IDE's default step
+  filter does not skip. `docs/usage.md` gains a section on debugging
+  reloaded code.
+
+### Fixed
+
 - **A reload that dies unexpectedly leaves a trail.** When a class-file
   reload ended in an error thrown rather than a failure returned, from the
   constant check, a new-bean registration or the reloader itself, the console
