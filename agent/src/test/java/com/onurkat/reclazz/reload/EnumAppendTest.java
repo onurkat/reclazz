@@ -86,23 +86,43 @@ class EnumAppendTest {
     /**
      * javac compiles an enum switch two ways, and only one of them needs help.
      *
-     * <p>When the enum is in the same compilation unit it emits
-     * {@code ordinal()} into a {@code lookupswitch}, and an unknown ordinal
-     * falls to the default label on its own. When the enum comes from another
-     * file, which is the normal case, it emits a lookup through a synthetic
-     * {@code int[]} sized when that class was initialised, and a new ordinal
-     * indexes past the end.
+     * <p>Through a synthetic {@code int[] $SwitchMap$...} sized when its
+     * holder class was initialised, which a new ordinal indexes past the end
+     * of; or, for an enum in the same compilation unit, as a
+     * {@code lookupswitch} on {@code ordinal()}, where an unknown ordinal falls
+     * to the default label on its own. Which one a same-file switch gets
+     * depends on the compiler: javac 21 emits the lookupswitch, javac 17 the
+     * table. So this does what the reload does, grows whatever tables the
+     * loaded classes hold, and expects the default either way. Compiled with
+     * 21 it used to assume the lookupswitch and failed on every CI run, which
+     * builds with 17, with an ArrayIndexOutOfBoundsException from the table.
      */
     @Test
-    void aSwitchOverAnEnumInTheSameFileNeedsNoHelp() {
+    void aSwitchOverAnEnumInTheSameFileTakesItsDefaultWhicheverShapeJavacChose() throws Exception {
         assertEquals("odendi", SwitchUser.label(Appendable3.PAID));
         EnumSurgery.append(Appendable3.class, List.of("SHIPPED"));
+
+        // The table, when there is one, lives in a synthetic anonymous class
+        // of this outer class, numbered with the others ($4 as it happens).
+        // The reload grows tables in every loaded class; here the candidates
+        // are this file's synthetic classes.
+        List<Class<?>> holders = new java.util.ArrayList<>();
+        holders.add(SwitchUser.class);
+        for (int i = 1; i <= 32; i++) {
+            try {
+                holders.add(Class.forName(EnumAppendTest.class.getName() + "$" + i, false,
+                        EnumAppendTest.class.getClassLoader()));
+            } catch (ClassNotFoundException none) {
+                // Numbering has gaps only at the end.
+            }
+        }
+        int grown = EnumSurgery.growSwitchTables(holders.toArray(new Class<?>[0]), Appendable3.class, 3);
+        assertTrue(grown == 0 || grown == 1, "either no table (lookupswitch) or the one table, grown: " + grown);
+
         @SuppressWarnings({"unchecked", "rawtypes"})
         Enum<?> shipped = Enum.valueOf((Class) Appendable3.class, "SHIPPED");
-
         assertEquals("bilinmeyen", SwitchUser.label((Appendable3) shipped),
-                "a lookupswitch on ordinal() takes its default for a value it has "
-                + "never heard of, which is already the right answer");
+                "a value the switch has never heard of takes the default, on both shapes");
     }
 
     /**

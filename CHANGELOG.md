@@ -45,6 +45,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **CI is green again, and cheaper.** Every run on `main` since 1.0.27 had
+  failed on one test, `EnumAppendTest`, on Linux and Windows alike, while
+  passing on the maintainer's machine: javac 21 compiles a switch over an
+  enum from the same compilation unit to a `lookupswitch` on `ordinal()`,
+  javac 17, which CI builds with, emits the `$SwitchMap` table even then,
+  and the test assumed the first. A CI that is always red costs its minutes
+  and tells nobody anything; the test now grows whatever table the loaded
+  classes hold, as the reload does, and expects the default on either shape.
+  Two trims alongside: the build and the plugin package run in one Gradle
+  invocation instead of paying configuration twice per job, and a change to
+  prose alone (`*.md`, `docs/`, `branding/`) no longer runs the matrix,
+  Windows included, to test code it did not touch.
+
 - **The watcher keeps one record per class file instead of three maps of
   boxed numbers.** The content hash, the baseline modification time and the
   last-seen modification time of every watched class file were three

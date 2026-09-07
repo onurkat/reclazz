@@ -3,8 +3,23 @@ name: Build
 on:
   push:
     branches: [main]
+    # A change to prose builds nothing. Release notes, the changelog and the
+    # docs are the most frequent commits here, and each one ran the whole
+    # matrix, Windows included, to test code it did not touch.
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'branding/**'
+      - 'LICENSE'
+      - 'NOTICE'
   pull_request:
     branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'branding/**'
+      - 'LICENSE'
+      - 'NOTICE'
 
 # Cancel superseded runs of the same branch/PR
 concurrency:
@@ -62,11 +77,11 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Build
-        run: ./gradlew clean build
-
-      - name: Build Plugin
-        run: ./gradlew buildPlugin
+      # One Gradle invocation for both: the second one paid the whole
+      # configuration again, on every job, for a task the first could have
+      # run. The runner is fresh, so there is nothing for clean to clean.
+      - name: Build and test, then package the plugin
+        run: ./gradlew build buildPlugin
 
       # Marketplace runs this on submission; failing here instead means we
       # never find out from a rejection email.
