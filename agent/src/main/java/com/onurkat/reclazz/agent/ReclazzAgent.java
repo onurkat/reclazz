@@ -334,6 +334,13 @@ public class ReclazzAgent {
                 }
             }
 
+            // What the JPA rebuild needs to know, handed over rather than read
+            // back off this class.
+            final JvmCapabilityProbe.ProbeResult probeForJpa = probeResult;
+            com.onurkat.reclazz.reload.JpaMappingRefresh.configure(
+                    config::isJpaRefresh,
+                    () -> probeForJpa != null && probeForJpa.hasEnhancedRedefinition());
+
             // Set up transform context and structural reloader if enabled
             if (enableStructural) {
                 transformContext = new TransformContext();

@@ -45,6 +45,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The JPA rebuild's two conditions, the `jpaRefresh=true` opt-in and
+  whether the JVM applies added fields to a loaded class, are handed to
+  `JpaMappingRefresh` by the agent at start-up instead of being read off
+  the agent class's static state. Nothing there could be tested with the
+  conditions true without starting the agent; now a test flips them, and
+  `reload` no longer names the agent class at all.
+
 - The generic Spring smoke test runs on the shared end-to-end harness like
   the other eighteen, instead of carrying its own copy of the process
   launch, the output reader, the fixture compiler and the Spring classpath
