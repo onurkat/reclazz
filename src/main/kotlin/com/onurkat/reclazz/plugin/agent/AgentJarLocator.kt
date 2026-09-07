@@ -95,12 +95,45 @@ object AgentJarLocator {
         if (!Files.exists(target)) return false
 
         val bundled = findAgentJar() ?: return false
-        val current = target.toFile()
-        if (current.length() == bundled.length()
-            && current.lastModified() >= bundled.lastModified()) {
-            return false
-        }
+        if (stagedCopyMatches(target.toFile(), bundled)) return false
         return stableAgentJar() != null
+    }
+
+    /**
+     * Whether the staged copy is, byte for byte, the bundled jar.
+     *
+     * The check used to be length and modification time, which answers a
+     * different question. A staged file of the right length whose bytes are
+     * wrong, a copy cut short by a full disk that was then touched, a block
+     * the filesystem lost, passed it, and the path written into the server's
+     * properties led every start of that server to "Error opening zip file
+     * or JAR manifest missing" with the IDE reporting the copy as current.
+     * A mismatch of any kind, older build or damaged file, is one answer:
+     * stage it again. Hashing a few megabytes on project open costs
+     * milliseconds; the length is compared first because it is free.
+     */
+    fun stagedCopyMatches(staged: File, bundled: File): Boolean {
+        if (!staged.isFile || !bundled.isFile) return false
+        if (staged.length() != bundled.length()) return false
+        return try {
+            sha256(staged).contentEquals(sha256(bundled))
+        } catch (e: Exception) {
+            log.warn("Could not compare the staged agent jar with the bundled one: ${e.message}")
+            false
+        }
+    }
+
+    private fun sha256(file: File): ByteArray {
+        val digest = java.security.MessageDigest.getInstance("SHA-256")
+        file.inputStream().use { input ->
+            val buffer = ByteArray(64 * 1024)
+            while (true) {
+                val n = input.read(buffer)
+                if (n < 0) break
+                digest.update(buffer, 0, n)
+            }
+        }
+        return digest.digest()
     }
 
     fun stableAgentJar(): File? {
@@ -110,10 +143,7 @@ object AgentJarLocator {
         try {
             Files.createDirectories(target.parent)
             val current = target.toFile()
-            val upToDate = current.exists() &&
-                    current.length() == bundled.length() &&
-                    current.lastModified() >= bundled.lastModified()
-            if (!upToDate) {
+            if (!stagedCopyMatches(current, bundled)) {
                 // Copy via a temporary file and move it into place: a server
                 // may be running against the existing jar, and replacing the
                 // file by moving keeps that JVM on its own inode.

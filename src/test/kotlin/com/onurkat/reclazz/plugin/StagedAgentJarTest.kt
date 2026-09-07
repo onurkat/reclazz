@@ -47,13 +47,13 @@ class StagedAgentJarTest {
     }
 
     /**
-     * Mirrors AgentJarLocator.refreshStagedAgentJar's decision. Kept in step
-     * with it by name; the production copy adds only the file plumbing.
+     * AgentJarLocator.refreshStagedAgentJar's decision, through the same
+     * comparison the production code makes: refresh when there is a staged
+     * copy and it is not, byte for byte, the bundled jar.
      */
     private fun shouldRefresh(staged: File, bundled: File): Boolean {
         if (!staged.exists()) return false
-        return staged.length() != bundled.length() ||
-                staged.lastModified() < bundled.lastModified()
+        return !AgentJarLocator.stagedCopyMatches(staged, bundled)
     }
 
     private fun write(file: File, content: String, lastModified: Long) {
@@ -84,6 +84,22 @@ class StagedAgentJarTest {
 
         assertTrue(shouldRefresh(staged, bundled),
             "an identically sized but newer bundle must still win")
+    }
+
+    /**
+     * The case length and time cannot see: the staged copy is the right size
+     * and newer than the bundle, and its bytes are wrong. A server pointed at
+     * it fails to start with "Error opening zip file", and the old check
+     * called the copy current.
+     */
+    @Test
+    fun `a damaged staged copy of the right size is refreshed`() {
+        write(bundled, "agent payload, intact", 1_000_000)
+        write(staged, "agent payload, intacX", 2_000_000)
+        assertEquals(staged.length(), bundled.length(), "precondition: same size")
+        assertTrue(staged.lastModified() > bundled.lastModified(), "precondition: staged is newer")
+        assertTrue(shouldRefresh(staged, bundled),
+            "a staged copy whose bytes differ from the bundle must be replaced, whatever its date")
     }
 
     /** The common case: nothing changed, so nothing should be copied. */
