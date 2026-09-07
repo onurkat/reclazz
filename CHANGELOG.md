@@ -32,6 +32,30 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- **A call site created while its callee's reload had already landed could
+  run its initial target once.** The dispatch table published a new call
+  site into its map and only then pointed it at the callee's latest
+  companion method, so a second thread bootstrapping the same key in that
+  gap took the site as it was and threw "method not found" for one call;
+  and a reload landing between a bootstrap's read of the latest target and
+  its publication would have missed the site for good. Publication and the
+  first retarget now happen under the same lock the reload takes. A test
+  bootstraps one key from eight threads across four hundred rounds after a
+  retarget and requires no initial target to run.
+
+### Fixed
+
+- **SAP Commerce codegen runs on Windows.** The `ant build` behind an
+  items.xml or beans.xml save looked for `setantenv.sh` and
+  `apache-ant/bin/ant` and ran them through bash, so on Windows, where the
+  platform ships `setantenv.bat` and `ant.bat`, every such save reported
+  that the platform's ant was not found and left codegen to the developer.
+  The launch now picks the pair the operating system has and runs the batch
+  pair through `cmd.exe`; the platform path stays on the process's working
+  directory rather than in the command line, on both.
+
+### Fixed
+
 - **Breakpoints bind in reloaded code on a stock JDK.** An edited method
   body runs in a companion class, and the companion was written without
   the original's `SourceFile` attribute: it had the new body's line numbers

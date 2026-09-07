@@ -122,21 +122,36 @@ public final class DispatchTable {
         }
 
         public MutableCallSite getOrCreateMethodSite(String key, MutableCallSite initial) {
-            MutableCallSite site = methodSites.computeIfAbsent(key, k -> initial);
-            // If a reload already installed a newer target for this key, retarget
-            // the freshly created site immediately so the first invocation goes
-            // to the latest companion method, not the v0 renamed one.
-            if (site == initial) {
-                MethodHandle latest = latestMethodTargets.get(key);
-                if (latest != null) {
-                    try {
-                        site.setTarget(latest);
-                    } catch (Exception ignored) {
-                        // type mismatch — leave the v0 handle in place
+            // Under the same lock as retarget, and the latest target applied
+            // before the site is handed out. Both orders were racy without
+            // it: a second thread bootstrapping the same key could take the
+            // site out of the map between its publication and setTarget and
+            // run its throwing initial target once (measured: one failed call
+            // in a caller-and-callee save, callee reloaded first); and a
+            // retarget landing between this thread's read of the latest
+            // target and its publication missed the site for good. Once per
+            // call site, so the lock costs nothing that recurs.
+            lock.lock();
+            try {
+                MutableCallSite site = methodSites.computeIfAbsent(key, k -> initial);
+                // If a reload already installed a newer target for this key,
+                // retarget the freshly created site before anyone can reach it,
+                // so the first invocation goes to the latest companion method,
+                // not the v0 renamed one.
+                if (site == initial) {
+                    MethodHandle latest = latestMethodTargets.get(key);
+                    if (latest != null) {
+                        try {
+                            site.setTarget(latest);
+                        } catch (Exception ignored) {
+                            // type mismatch — leave the v0 handle in place
+                        }
                     }
                 }
+                return site;
+            } finally {
+                lock.unlock();
             }
-            return site;
         }
 
         public MutableCallSite getOrCreateFieldGetSite(String key, MutableCallSite initial) {
