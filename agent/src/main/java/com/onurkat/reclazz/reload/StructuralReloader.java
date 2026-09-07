@@ -763,6 +763,88 @@ public class StructuralReloader {
     }
 
     /**
+     * Hand the field store the companion methods that compute an added
+     * instance field's initial value, one per field, so the first read of
+     * the field on an object built before the reload gets the value the
+     * initialiser would have given it. Failing here costs the value, not the
+     * reload: the field then reads as the type default, which is what it read
+     * before there was an initialiser to run.
+     */
+    private static void registerInstanceInitialisers(String className, Class<?> targetClass,
+                                                     CompanionGenerator.CompanionResult companion,
+                                                     MethodHandles.Lookup companionLookup,
+                                                     Class<?> companionClass) {
+        Map<String, MethodHandle> handles = new LinkedHashMap<>();
+        for (String key : companion.getInstancePlan().initialisers.keySet()) {
+            String fieldName = key.substring(0, key.indexOf(':'));
+            try {
+                MethodHandle producer = companionLookup.findStatic(companionClass,
+                        InstanceInitialiserSlicer.methodName(fieldName),
+                        MethodType.methodType(Object.class, targetClass));
+                handles.put(key, producer.asType(
+                        MethodType.methodType(Object.class, Object.class)));
+            } catch (ReflectiveOperationException | RuntimeException e) {
+                StatusReporter.warn("The initialiser of added field " + fieldName + " in "
+                        + className + " could not be resolved: " + Failures.describe(e)
+                        + ". Objects that already existed read it as null/0/false.");
+            }
+        }
+        FieldStore.setInstanceInitialisers(targetClass, handles);
+    }
+
+    /**
+     * What an added instance field reads on the objects that already existed,
+     * said at the reload rather than found from a stack trace. A field whose
+     * initialiser was lifted gets its value on first read; one whose
+     * initialiser could not be lifted is named with the reason, because that
+     * is the field that will read null on a line that looks as though it
+     * cannot.
+     */
+    private static void reportInstanceFieldValues(StructuralAnalyzer.StructuralDiff diff,
+                                                  byte[] newBytecode,
+                                                  InstanceInitialiserSlicer.Plan plan) {
+        java.util.List<String> assigned = initialisedInstanceFields(diff, newBytecode);
+        java.util.List<String> lifted = new java.util.ArrayList<>();
+        java.util.List<String> waiting = new java.util.ArrayList<>();
+        for (String name : assigned) {
+            String reason = null;
+            boolean isLifted = false;
+            for (var entry : plan.refused.entrySet()) {
+                if (entry.getKey().startsWith(name + ":")) reason = entry.getValue();
+            }
+            for (String key : plan.initialisers.keySet()) {
+                if (key.startsWith(name + ":")) isLifted = true;
+            }
+            if (isLifted) {
+                lifted.add(name);
+            } else {
+                waiting.add(reason == null ? name : name + " (" + reason + ")");
+            }
+        }
+        if (assigned.isEmpty()) {
+            StatusReporter.info("Added fields are set on new instances; "
+                    + "objects that already existed keep the default (null/0/false).");
+            return;
+        }
+        if (!lifted.isEmpty()) {
+            StatusReporter.info(Plural.word(lifted.size(), "Added field ", "Added fields ")
+                    + String.join(", ", lifted) + (lifted.size() == 1 ? " gets its" : " get their")
+                    + " initialiser's value on first read, on objects that already existed too.");
+        }
+        if (!waiting.isEmpty()) {
+            // Naming them is the whole value of the line. A developer who
+            // added one field wants to know that one field is empty, not that
+            // a category of thing behaves a way.
+            StatusReporter.warn(waiting + " " + (waiting.size() == 1 ? "has" : "have")
+                    + " an initialiser that will not have run on objects that already "
+                    + "existed: a field's initialiser is constructor code, and those "
+                    + "objects were constructed before the field was written. They read "
+                    + "null/0/false until they are rebuilt. Instances created from now on "
+                    + "get the value.");
+        }
+    }
+
+    /**
      * The added instance fields whose value the constructor sets.
      *
      * <p>The distinction is what makes the warning worth printing. An added
@@ -1014,6 +1096,12 @@ public class StructuralReloader {
                 }
             }
 
+            // Before the switch, so no read of an added field on a live object
+            // can slip in between the new bodies going live and the field
+            // learning its value.
+            registerInstanceInitialisers(className, targetClass, companion,
+                    companionLookup, companionClass);
+
             // Re-target all call sites atomically via bootstrap-CL DispatchTable
             DispatchTable.retargetAll(targetClass, companionLookup, newTargets);
 
@@ -1180,22 +1268,7 @@ public class StructuralReloader {
                     initialiseAddedStatics(className, targetClass, companion,
                             companionLookup, companionClass, staticsNeedingValue);
                 }
-                java.util.List<String> initialised =
-                        initialisedInstanceFields(diff, newBytecode);
-                if (initialised.isEmpty()) {
-                    StatusReporter.info("Added fields are set on new instances; "
-                            + "objects that already existed keep the default (null/0/false).");
-                } else {
-                    // Naming them is the whole value of the line. A developer
-                    // who added one field wants to know that one field is
-                    // empty, not that a category of thing behaves a way.
-                    StatusReporter.warn(initialised + " " + (initialised.size() == 1 ? "has" : "have")
-                            + " an initialiser that will not have run on objects that already "
-                            + "existed: a field's initialiser is constructor code, and those "
-                            + "objects were constructed before the field was written. They read "
-                            + "null/0/false until they are rebuilt. Instances created from now on "
-                            + "get the value.");
-                }
+                reportInstanceFieldValues(diff, newBytecode, companion.getInstancePlan());
             }
             });
 

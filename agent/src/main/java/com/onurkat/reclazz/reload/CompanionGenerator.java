@@ -143,9 +143,32 @@ public class CompanionGenerator implements Opcodes {
             adapter.visitEnd();
         }
 
+        // The initial value of an added instance field, computed per object
+        // on first read: one method per field, taking the object and
+        // returning the value boxed. Same adapter, same rewrites.
+        InstanceInitialiserSlicer.Plan instancePlan =
+                InstanceInitialiserSlicer.planFor(newBytecode, addedFieldKeys);
+        for (var entry : instancePlan.initialisers.entrySet()) {
+            String key = entry.getKey();
+            String fieldName = key.substring(0, key.indexOf(':'));
+            Type fieldType = Type.getType(key.substring(key.indexOf(':') + 1));
+            MethodVisitor mv = writer.visitMethod(ACC_PUBLIC | ACC_STATIC,
+                    InstanceInitialiserSlicer.methodName(fieldName),
+                    "(L" + originalClassName + ";)Ljava/lang/Object;", null, null);
+            MethodVisitor adapter = new CompanionMethodAdapter(mv, originalClassName,
+                    companionName, addedFieldKeys, true);
+            adapter.visitCode();
+            entry.getValue().accept(adapter);
+            CompanionMethodAdapter.box(adapter, fieldType);
+            adapter.visitInsn(ARETURN);
+            adapter.visitMaxs(0, 0);
+            adapter.visitEnd();
+        }
+
         writer.visitEnd();
 
-        return new CompanionResult(writer.toByteArray(), companionName, methodHandleKeys, staticPlan);
+        return new CompanionResult(writer.toByteArray(), companionName, methodHandleKeys,
+                staticPlan, instancePlan);
     }
 
     /**
@@ -629,23 +652,28 @@ public class CompanionGenerator implements Opcodes {
         private final String companionName;
         private final Map<String, String> methodHandleKeys;
         private final StaticInitialiserSlicer.Plan staticPlan;
+        private final InstanceInitialiserSlicer.Plan instancePlan;
 
         CompanionResult(byte[] bytecode, String companionName, Map<String, String> methodHandleKeys) {
             this(bytecode, companionName, methodHandleKeys,
-                    StaticInitialiserSlicer.planFor(new byte[0], java.util.Set.of()));
+                    StaticInitialiserSlicer.planFor(new byte[0], java.util.Set.of()),
+                    InstanceInitialiserSlicer.Plan.empty());
         }
 
         CompanionResult(byte[] bytecode, String companionName, Map<String, String> methodHandleKeys,
-                        StaticInitialiserSlicer.Plan staticPlan) {
+                        StaticInitialiserSlicer.Plan staticPlan,
+                        InstanceInitialiserSlicer.Plan instancePlan) {
             this.bytecode = bytecode;
             this.companionName = companionName;
             this.methodHandleKeys = methodHandleKeys;
             this.staticPlan = staticPlan;
+            this.instancePlan = instancePlan;
         }
 
         public byte[] getBytecode() { return bytecode; }
         public String getCompanionName() { return companionName; }
         public Map<String, String> getMethodHandleKeys() { return methodHandleKeys; }
         public StaticInitialiserSlicer.Plan getStaticPlan() { return staticPlan; }
+        public InstanceInitialiserSlicer.Plan getInstancePlan() { return instancePlan; }
     }
 }
