@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.transform;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.objectweb.asm.ClassReader;

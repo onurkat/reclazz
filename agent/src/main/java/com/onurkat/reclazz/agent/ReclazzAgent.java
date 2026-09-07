@@ -4,6 +4,10 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.util.ClassLookup;
+
+import com.onurkat.reclazz.config.AgentConfig;
+
 import com.onurkat.reclazz.ui.RestartLedger;
 
 import com.onurkat.reclazz.compiler.IncrementalCompiler;
@@ -474,6 +478,7 @@ public class ReclazzAgent {
 
             // Set up file watcher
             FileWatcher watcher = new FileWatcher(platformContext, config);
+            watcher.onPropertyFileFound(ReclazzAgent::baselinePropertyFile);
 
             // Here rather than beside the diagnoser above, because the numbers
             // that separate "nothing reloads" from "nothing I changed was being

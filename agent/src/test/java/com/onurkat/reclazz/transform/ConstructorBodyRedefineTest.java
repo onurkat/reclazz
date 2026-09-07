@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.transform;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

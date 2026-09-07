@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.config.AgentConfig;
+
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;

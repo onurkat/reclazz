@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.reload;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.agent.ClassReloader;
 import com.onurkat.reclazz.bootstrap.DispatchTable;
 import com.onurkat.reclazz.bootstrap.FieldStore;
@@ -24,7 +24,7 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import com.onurkat.reclazz.agent.ClassLookup;
+import com.onurkat.reclazz.util.ClassLookup;
 import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.bootstrap.InjectedNames;
 import com.onurkat.reclazz.bootstrap.LookupCapture;

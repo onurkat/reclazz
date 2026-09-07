@@ -45,6 +45,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **The agent's options and the class lookup no longer live in the
+  composition root.** `AgentConfig` moves to `config`, which depends on
+  nothing but `ui`; `ClassLookup` to `util`; and the watcher is handed a
+  callback for the properties files it finds at start-up instead of calling
+  the agent class. With the ledger's move this takes the two-way package
+  dependencies from ten to four, and the layering test now pins that
+  `platform`, `transform` and `watcher` do not know the agent either.
+
 - **The restart ledger lives with the status reporter.** It was in `agent`,
   the composition root, and every reloader that noted a restart pulled
   `agent` in with it: ten pairs of the agent's packages depended on each

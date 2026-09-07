@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.util.ClassLookup;
+
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.instrument.ClassDefinition;

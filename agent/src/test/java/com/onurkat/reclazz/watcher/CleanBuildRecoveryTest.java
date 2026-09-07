@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.watcher;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.platform.NoopPlatformContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
