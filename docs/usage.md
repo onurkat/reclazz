@@ -88,6 +88,26 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `verbose` | `false` | Enable verbose logging in the console |
 | `statusPort` | `0` | TCP port for plugin communication (0 = auto-assign) |
 | `portFile` | (none) | Path where agent writes its actual port after binding |
+| `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know |
+| `excludeClasses` | (none) | Semicolon-separated class name patterns the transform leaves alone; the way out when instrumenting one class is the problem |
+| `impexAllowRemove` | `false` | Let auto-imported ImpEx files run `REMOVE` lines |
+| `jpaRefresh` | `false` | Rebuild the persistence unit when an entity gains a field or a new entity appears (JBR/DCEVM, `ddl-auto` at update/create) |
+| `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
+| `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |
+| `wrapOutput` | `auto` | Wrap console lines to the terminal width: `auto`, `true`, `false` |
+| `transformDumpDir` | (none) | Write every transformed class file here, for looking at what the agent emitted |
+| `verifyTransform` | `false` | Run the bytecode verifier over every transformed class and print what it says |
+
+Arguments are never removed or renamed within a major version: a line that
+worked with an older 1.x agent works with a newer one. An argument the agent
+does not know is named in the console at start-up and ignored, not fatal, so a
+line written for a newer agent still starts an older one. Put such arguments
+first: the line is split at a comma only where a known argument follows, so
+that a value may contain a comma, which means an unknown argument placed after
+another becomes part of that one's value (and is still named). The plugin's own
+test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
+the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
+the agent accepts.
 
 ### Workflow
 

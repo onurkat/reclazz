@@ -32,6 +32,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **Every agent argument is in the table, and the table is held to the
+  agent.** Nine of the nineteen arguments the agent accepts (`watchDirs`,
+  `excludeClasses`, `impexAllowRemove`, `jpaRefresh`, `structuralReload`,
+  `platform`, `wrapOutput`, `transformDumpDir`, `verifyTransform`) were not
+  in `docs/usage.md`. They are now, with the promise written down: an
+  argument is never removed or renamed within a major version, and an
+  unknown one is named and ignored rather than fatal. A test keeps the
+  table equal to what the agent accepts.
+
+### Added
+
 - **The status socket is documented for clients other than the plugin.**
   `docs/protocol.md` says where the port file is, what the JSON lines
   carry, which levels there are, what the four commands answer, and how a
