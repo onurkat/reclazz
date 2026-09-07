@@ -30,6 +30,33 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.jar.JarFile;
+import com.onurkat.reclazz.bootstrap.LookupCapture;
+import com.onurkat.reclazz.bootstrap.MethodForge;
+import com.onurkat.reclazz.bootstrap.ProtectedCallResolver;
+import com.onurkat.reclazz.bootstrap.UnsafeAccess;
+import com.onurkat.reclazz.hybris.HybrisConfigReloader;
+import com.onurkat.reclazz.hybris.HybrisLocalizationReloader;
+import com.onurkat.reclazz.hybris.PropertyFileSnapshots;
+import com.onurkat.reclazz.hybris.backoffice.BackofficeConfigReloader;
+import com.onurkat.reclazz.hybris.codegen.CodegenReloader;
+import com.onurkat.reclazz.platform.TomcatContextScanner;
+import com.onurkat.reclazz.reload.BatchOrder;
+import com.onurkat.reclazz.reload.ConstantChangeWarning;
+import com.onurkat.reclazz.reload.ConstantDependents;
+import com.onurkat.reclazz.reload.JpaMappingRefresh;
+import com.onurkat.reclazz.reload.LoggingReloader;
+import com.onurkat.reclazz.reload.TemplateReloader;
+import com.onurkat.reclazz.spring.SpringMessageSourceReloader;
+import com.onurkat.reclazz.spring.SpringPropertyRebinder;
+import com.onurkat.reclazz.spring.xml.SpringXmlReloader;
+import com.onurkat.reclazz.transform.ReflectionRootFilter;
+import com.onurkat.reclazz.transform.TemplateInterceptTransformer;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.BundleCache;
+import com.onurkat.reclazz.util.ContentChangeGuard;
+import com.onurkat.reclazz.util.Supervised;
+import com.onurkat.reclazz.watcher.ChangeKind;
 
 /**
  * Reclazz Java Agent entry point.
@@ -55,15 +82,15 @@ public class ReclazzAgent {
      * What each platform property file said last time, so a save is read as the
      * edit it was. See PropertyFileSnapshots.
      */
-    private static final com.onurkat.reclazz.hybris.PropertyFileSnapshots propertySnapshots =
-            new com.onurkat.reclazz.hybris.PropertyFileSnapshots();
+    private static final PropertyFileSnapshots propertySnapshots =
+            new PropertyFileSnapshots();
 
     /**
      * Localization saves defer expensive work to whoever reads next, so a save
      * that changed nothing is worth recognising. See handleLocalizationChange.
      */
-    private static final com.onurkat.reclazz.util.ContentChangeGuard localizationGuard =
-            new com.onurkat.reclazz.util.ContentChangeGuard();
+    private static final ContentChangeGuard localizationGuard =
+            new ContentChangeGuard();
     private static volatile boolean running = false;
 
     /**
@@ -98,11 +125,11 @@ public class ReclazzAgent {
     private static volatile JvmCapabilityProbe.ProbeResult probeResult;
     private static volatile TransformContext transformContext;
     private static volatile StructuralReloader structuralReloader;
-    private static final com.onurkat.reclazz.reload.TemplateReloader templateReloader =
-            new com.onurkat.reclazz.reload.TemplateReloader();
+    private static final TemplateReloader templateReloader =
+            new TemplateReloader();
     private static volatile PlatformContext platformContext;
-    private static volatile com.onurkat.reclazz.spring.xml.SpringXmlReloader springXmlReloader;
-    private static volatile com.onurkat.reclazz.hybris.codegen.CodegenReloader codegenReloader;
+    private static volatile SpringXmlReloader springXmlReloader;
+    private static volatile CodegenReloader codegenReloader;
 
     /**
      * Called when agent is loaded at JVM startup via -javaagent.
@@ -134,13 +161,13 @@ public class ReclazzAgent {
      * so naming them here does not start the engine early.
      */
     private static void trustEngineCallers() {
-        com.onurkat.reclazz.bootstrap.LookupCapture.trust(
-                com.onurkat.reclazz.transform.ReflectionRootFilter.class);
-        com.onurkat.reclazz.bootstrap.LookupCapture.trust(
-                com.onurkat.reclazz.reload.StructuralReloader.class);
-        com.onurkat.reclazz.bootstrap.LookupCapture.trust(
-                com.onurkat.reclazz.bootstrap.ProtectedCallResolver.class);
-        com.onurkat.reclazz.bootstrap.LookupCapture.seal();
+        LookupCapture.trust(
+                ReflectionRootFilter.class);
+        LookupCapture.trust(
+                StructuralReloader.class);
+        LookupCapture.trust(
+                ProtectedCallResolver.class);
+        LookupCapture.seal();
     }
 
     /** True when we arrived through the Attach API rather than -javaagent. */
@@ -218,11 +245,11 @@ public class ReclazzAgent {
                 // on a removal schedule. The second door is a JDK-internal
                 // package this Instrumentation can open; handing it over costs
                 // nothing and opens nothing until the first door refuses.
-                com.onurkat.reclazz.bootstrap.UnsafeAccess.useForFallback(instrumentation);
+                UnsafeAccess.useForFallback(instrumentation);
                 StatusReporter.info("Bootstrap classes installed on bootstrap classloader");
             } catch (Exception e) {
                 bootstrapInstalled = false;
-                StatusReporter.error("Failed to install bootstrap JAR: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                StatusReporter.error("Failed to install bootstrap JAR: " + Failures.describe(e));
                 if (enableStructural) {
                     StatusReporter.warn("Structural reload disabled — falling back to method-body-only mode");
                     enableStructural = false;
@@ -255,10 +282,10 @@ public class ReclazzAgent {
                 // reload.
                 if (bootstrapInstalled) {
                     instrumentation.addTransformer(
-                            new com.onurkat.reclazz.transform.TemplateInterceptTransformer(), false);
+                            new TemplateInterceptTransformer(), false);
                 }
             } catch (Exception e) {
-                StatusReporter.warn("Failed to register Spring context transformer: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                StatusReporter.warn("Failed to register Spring context transformer: " + Failures.describe(e));
             }
 
             // Initialize platform context
@@ -269,14 +296,14 @@ public class ReclazzAgent {
             // running Tomcat so web-layer reloads (MVC re-scan, web beans,
             // caches) actually reach them.
             try {
-                int found = com.onurkat.reclazz.platform.TomcatContextScanner.scanAndRegister();
+                int found = TomcatContextScanner.scanAndRegister();
                 if (found > 0) {
                     StatusReporter.info("Discovered "
-                            + com.onurkat.reclazz.ui.Plural.of(found, "live Spring web context")
+                            + Plural.of(found, "live Spring web context")
                             + " from running Tomcat");
                 }
             } catch (Throwable t) {
-                StatusReporter.warn("Live web-context discovery failed: " + com.onurkat.reclazz.ui.Failures.describe(t));
+                StatusReporter.warn("Live web-context discovery failed: " + Failures.describe(t));
             }
 
             // Start status server for plugin communication. If the user didn't
@@ -298,7 +325,7 @@ public class ReclazzAgent {
                     java.nio.file.Files.createDirectories(defaultDir);
                     effectivePortFile = defaultDir.resolve("agent.port");
                 } catch (Exception e) {
-                    StatusReporter.warn("Could not create default port-file directory " + defaultDir + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+                    StatusReporter.warn("Could not create default port-file directory " + defaultDir + ": " + Failures.describe(e));
                 }
             }
             if (effectivePortFile != null || effectivePort > 0) {
@@ -309,7 +336,7 @@ public class ReclazzAgent {
                         StatusReporter.info("Status server port file: " + effectivePortFile);
                     }
                 } catch (Exception e) {
-                    StatusReporter.warn("Failed to start status server: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                    StatusReporter.warn("Failed to start status server: " + Failures.describe(e));
                 }
             }
 
@@ -361,12 +388,12 @@ public class ReclazzAgent {
                     }
                 }
 
-                com.onurkat.reclazz.transform.ReflectionRootFilter.install(instrumentation);
+                ReflectionRootFilter.install(instrumentation);
                 for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
                     String internal = loaded.getName().replace('.', '/');
                     if (transformContext.isWatched(internal)
                             && transformContext.getMetadata(internal) != null) {
-                        com.onurkat.reclazz.transform.ReflectionRootFilter
+                        ReflectionRootFilter
                                 .registerInjectedMembersOn(loaded);
                     }
                 }
@@ -375,7 +402,7 @@ public class ReclazzAgent {
                 structuralReloader.setTransformer(transformer);
                 StatusReporter.success("Structural reload engine active on " +
                         (probeResult != null ? probeResult.getVmDescription() : "standard JVM"));
-                if (!com.onurkat.reclazz.bootstrap.MethodForge.isAvailable()) {
+                if (!MethodForge.isAvailable()) {
                     StatusReporter.info("Reflection patching disabled (JDK 17+ refactored " +
                             "java.lang.reflect.Method internals). Hot-reload still works; " +
                             "only reflective scans of newly-added methods/fields are degraded.");
@@ -418,7 +445,7 @@ public class ReclazzAgent {
             // applies safe changes (property mutations + new-bean adds) in
             // place without destroy+recreate. Unsafe changes become a single
             // "restart required" warning, live context stays untouched.
-            springXmlReloader = new com.onurkat.reclazz.spring.xml.SpringXmlReloader(platformContext);
+            springXmlReloader = new SpringXmlReloader(platformContext);
 
             // Set up Hybris-specific reloaders (only on Hybris platform)
             final InterceptorReloader interceptorReloader;
@@ -435,7 +462,7 @@ public class ReclazzAgent {
                 // reminder is emitted because DB schema changes can't
                 // be applied safely from here.
                 if (platformContext instanceof HybrisPlatformContext) {
-                    codegenReloader = new com.onurkat.reclazz.hybris.codegen.CodegenReloader(
+                    codegenReloader = new CodegenReloader(
                             ((HybrisPlatformContext) platformContext).getHybrisContext());
                 }
             } else {
@@ -478,7 +505,7 @@ public class ReclazzAgent {
             // One thread's worth of saying so when a reload never comes back:
             // the reloads behind it are queued, and a queue is silent.
             reloadStall = new ReloadStall(System::currentTimeMillis, RELOAD_STALL_WARN_MS);
-            Thread stallWatch = new Thread(com.onurkat.reclazz.util.Supervised.forever(
+            Thread stallWatch = new Thread(Supervised.forever(
                     "The reload watch",
                     "A reload that hangs will no longer be reported. Reloading itself is unaffected.",
                     () -> {
@@ -530,7 +557,7 @@ public class ReclazzAgent {
                 }
                 if (classFiles > 0) {
                     submitReload(
-                            "Reloading " + com.onurkat.reclazz.ui.Plural.of(classFiles, "class file"),
+                            "Reloading " + Plural.of(classFiles, "class file"),
                             () -> handleClassBatch(compiler, reloader,
                                     springOrchestrator, interceptorReloader, impexImporter, config));
                 }
@@ -571,7 +598,7 @@ public class ReclazzAgent {
             // nothing, for as long as the server is up, with the IDE still
             // showing a connected agent because the heartbeat is another
             // thread.
-            watcherExecutor.submit(com.onurkat.reclazz.util.Supervised.forever(
+            watcherExecutor.submit(Supervised.forever(
                     "The file watcher",
                     "Nothing will reload until this application is restarted.",
                     watcher::startWatching));
@@ -602,7 +629,7 @@ public class ReclazzAgent {
             // agent failing to start costs hot reload; the application failing
             // to start costs the application, and that is not this tool's
             // call to make.
-            StatusReporter.error("Failed to initialize Reclazz: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Failed to initialize Reclazz: " + Failures.describe(e));
             StatusReporter.error("  The application starts without hot reload.");
             StatusReporter.error("  Stack trace: " + e);
             if (statusServer != null) {
@@ -680,7 +707,7 @@ public class ReclazzAgent {
 
             // What the file is, decided in one testable place; whether we act
             // on it stays here, because that depends on configuration.
-            switch (com.onurkat.reclazz.watcher.ChangeKind.of(event.getPath())) {
+            switch (ChangeKind.of(event.getPath())) {
                 case CLASS_FILE -> {
                     if (event.getType() != ChangeEvent.Type.DELETED) {
                         handleClassFileChange(event, reloader, springOrchestrator, interceptorReloader);
@@ -698,7 +725,7 @@ public class ReclazzAgent {
                 case BACKOFFICE_CONFIG -> {
                     StatusReporter.info("Backoffice config changed: "
                             + event.getPath().getFileName() + " [" + event.getModuleName() + "]");
-                    int reset = com.onurkat.reclazz.hybris.backoffice.BackofficeConfigReloader
+                    int reset = BackofficeConfigReloader
                             .reload(event.getPath().getFileName().toString(),
                                     platformContext.getAllApplicationContexts());
                     if (reset == 0) {
@@ -761,7 +788,7 @@ public class ReclazzAgent {
             bytecode = Files.readAllBytes(classFile);
         } catch (java.io.IOException e) {
             StatusReporter.error("Failed to read class file " + classFile + ": "
-                    + com.onurkat.reclazz.ui.Failures.describe(e));
+                    + Failures.describe(e));
             return;
         }
 
@@ -786,7 +813,7 @@ public class ReclazzAgent {
                 if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
                     return;
                 }
-                com.onurkat.reclazz.reload.JpaMappingRefresh.maybeMapNewEntity(
+                JpaMappingRefresh.maybeMapNewEntity(
                         className, bytecode, platformContext.getAllApplicationContexts());
             }
 
@@ -852,7 +879,7 @@ public class ReclazzAgent {
             // an exception, and this runs on the watcher's thread: letting one
             // out is how a session stops reloading without saying anything.
             StatusReporter.error("Reload of " + displayName + " did not finish: "
-                    + com.onurkat.reclazz.ui.Failures.describe(t));
+                    + Failures.describe(t));
         }
     }
 
@@ -863,12 +890,12 @@ public class ReclazzAgent {
      */
     private static void chaseChangedConstants(String internalName, String className,
                                               byte[] bytecode) {
-        List<String> changed = com.onurkat.reclazz.reload.ConstantChangeWarning.check(
+        List<String> changed = ConstantChangeWarning.check(
                 internalName, className, bytecode, alreadyLoaded(className));
         if (changed.isEmpty()) return;
 
         PlatformContext platform = platformContext;
-        com.onurkat.reclazz.reload.ConstantDependents.chase(className, changed,
+        ConstantDependents.chase(className, changed,
                 platform == null ? Map.of() : platform.getSourceDirs(), constantRebuild);
     }
 
@@ -884,7 +911,7 @@ public class ReclazzAgent {
     private static void submitReload(String what, Runnable work) {
         ReloadStall watch = reloadStall;
         Runnable timed = watch == null ? work : watch.timed(what, work);
-        reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(what, timed));
+        reloadExecutor.submit(Supervised.once(what, timed));
     }
 
     /** The HEALTH report, with the reload that is holding everything up named first. */
@@ -952,7 +979,7 @@ public class ReclazzAgent {
         long startTime = System.currentTimeMillis();
         // Callees before callers, so no caller's new body reaches a callee
         // that still has its old shape. See BatchOrder.
-        java.util.List<ChangeEvent> ordered = com.onurkat.reclazz.reload.BatchOrder.calleesFirst(batch);
+        java.util.List<ChangeEvent> ordered = BatchOrder.calleesFirst(batch);
         // Two brackets: the JVM redefinitions are applied in one call at the
         // end, then the Spring cascade and healing run once over the result.
         StructuralReloader structural = structuralReloader;
@@ -1063,7 +1090,7 @@ public class ReclazzAgent {
                     successCount++;
                     continue;
                 }
-                com.onurkat.reclazz.reload.JpaMappingRefresh.maybeMapNewEntity(
+                JpaMappingRefresh.maybeMapNewEntity(
                         className, bytecode, platformContext.getAllApplicationContexts());
             }
 
@@ -1184,7 +1211,7 @@ public class ReclazzAgent {
 
     private static void handleSpringXmlChange(ChangeEvent event) {
         StatusReporter.info("Spring XML changed: " + event.getPath().getFileName());
-        com.onurkat.reclazz.spring.xml.SpringXmlReloader reloader = springXmlReloader;
+        SpringXmlReloader reloader = springXmlReloader;
         if (reloader == null) {
             StatusReporter.warn("Spring XML reload not available — agent not fully initialised");
             return;
@@ -1205,7 +1232,7 @@ public class ReclazzAgent {
         // difference matters: applying one changes what the whole server reads,
         // and it takes no edit at all to arrive, a checked-out branch will do.
         if (platformContext instanceof HybrisPlatformContext
-                && !com.onurkat.reclazz.hybris.HybrisConfigReloader
+                && !HybrisConfigReloader
                         .isPlatformConfiguration(event.getPath())) {
             StatusReporter.info(fileName + " is not platform configuration, so nothing was applied.");
             return;
@@ -1226,8 +1253,8 @@ public class ReclazzAgent {
             ClassLoader platformLoader = appContext != null
                     ? appContext.getClass().getClassLoader()
                     : platformContext.getClass().getClassLoader();
-            com.onurkat.reclazz.hybris.HybrisConfigReloader configReloader =
-                    new com.onurkat.reclazz.hybris.HybrisConfigReloader(platformLoader, propertySnapshots);
+            HybrisConfigReloader configReloader =
+                    new HybrisConfigReloader(platformLoader, propertySnapshots);
             java.util.List<String> applied = configReloader.apply(event.getPath());
             applyLoggerLevels(event.getPath(), applied);
 
@@ -1240,7 +1267,7 @@ public class ReclazzAgent {
             }
             if (!applied.isEmpty()) {
                 StatusReporter.info("Applied "
-                        + com.onurkat.reclazz.ui.Plural.of(applied.size(), "property change") + ": "
+                        + Plural.of(applied.size(), "property change") + ": "
                         + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));
                 StatusReporter.info("Values read per request take effect now; "
                         + "anything consumed once at startup still needs a restart.");
@@ -1262,16 +1289,16 @@ public class ReclazzAgent {
         // rather than the Environment, and the branch above is what applies
         // them there. Reaching into a hundred web contexts to add a source
         // nothing reads would be work for its own sake.
-        com.onurkat.reclazz.spring.SpringPropertyRebinder.Applied applied =
+        SpringPropertyRebinder.Applied applied =
                 (platformContext instanceof HybrisPlatformContext)
-                ? new com.onurkat.reclazz.spring.SpringPropertyRebinder.Applied(
+                ? new SpringPropertyRebinder.Applied(
                         java.util.List.of(), 0)
-                : new com.onurkat.reclazz.spring.SpringPropertyRebinder(
+                : new SpringPropertyRebinder(
                         platformContext.getAllApplicationContexts()).apply(changed);
         java.util.List<String> rebound = applied.rebound();
         if (!rebound.isEmpty()) {
             StatusReporter.success("Rebound "
-                    + com.onurkat.reclazz.ui.Plural.of(rebound.size(), "@ConfigurationProperties bean")
+                    + Plural.of(rebound.size(), "@ConfigurationProperties bean")
                     + ": "
                     + (rebound.size() > 5 ? rebound.subList(0, 5) + " …" : rebound.toString()));
         }
@@ -1297,8 +1324,8 @@ public class ReclazzAgent {
 
     private static void handleLoggingConfigChange(ChangeEvent event) {
         String fileName = event.getPath().getFileName().toString();
-        com.onurkat.reclazz.reload.LoggingReloader reloader =
-                new com.onurkat.reclazz.reload.LoggingReloader(instrumentation);
+        LoggingReloader reloader =
+                new LoggingReloader(instrumentation);
 
         String framework = reloader.reconfigureFrom(event.getPath());
         if (framework != null) {
@@ -1333,14 +1360,14 @@ public class ReclazzAgent {
         }
 
         java.util.Map<String, String> levels =
-                com.onurkat.reclazz.reload.LoggingReloader.levelsIn(fromFile, changedKeys);
+                LoggingReloader.levelsIn(fromFile, changedKeys);
         if (levels.isEmpty()) return 0;
 
-        com.onurkat.reclazz.reload.LoggingReloader reloader =
-                new com.onurkat.reclazz.reload.LoggingReloader(instrumentation);
+        LoggingReloader reloader =
+                new LoggingReloader(instrumentation);
         java.util.List<String> applied = reloader.applyLevels(levels);
         if (!applied.isEmpty()) {
-            StatusReporter.success(com.onurkat.reclazz.ui.Plural.word(applied.size(),
+            StatusReporter.success(Plural.word(applied.size(),
                     "Logger level applied: ", "Logger levels applied: ")
                     + (applied.size() > 5 ? applied.subList(0, 5) + " …" : applied.toString()));
         }
@@ -1376,7 +1403,7 @@ public class ReclazzAgent {
         // ValidationMessages, the platform's own bundles, and any code that
         // calls getBundle itself all sit under this cache and none of them is
         // a Spring bean.
-        com.onurkat.reclazz.util.BundleCache.clear(
+        BundleCache.clear(
                 platformContext == null ? new ClassLoader[0]
                         : new ClassLoader[]{platformContext.getClass().getClassLoader()});
 
@@ -1384,8 +1411,8 @@ public class ReclazzAgent {
             // Spring caches a message bundle after the first lookup and ships
             // the reset for it, so this is a cache to drop rather than a
             // restart to ask for.
-            com.onurkat.reclazz.spring.SpringMessageSourceReloader.report(fileName,
-                    new com.onurkat.reclazz.spring.SpringMessageSourceReloader(platformContext)
+            SpringMessageSourceReloader.report(fileName,
+                    new SpringMessageSourceReloader(platformContext)
                             .reload());
             return;
         }
@@ -1394,8 +1421,8 @@ public class ReclazzAgent {
         ClassLoader platformLoader = appContext != null
                 ? appContext.getClass().getClassLoader()
                 : platformContext.getClass().getClassLoader();
-        com.onurkat.reclazz.hybris.HybrisLocalizationReloader reloader =
-                new com.onurkat.reclazz.hybris.HybrisLocalizationReloader(
+        HybrisLocalizationReloader reloader =
+                new HybrisLocalizationReloader(
                         platformLoader, instrumentation);
 
         java.nio.file.Path parent = event.getPath().getParent();
@@ -1431,12 +1458,12 @@ public class ReclazzAgent {
 
     /**
      * Unified dispatch for both *-beans.xml and *-items.xml saves —
-     * the {@link com.onurkat.reclazz.hybris.codegen.CodegenReloader}
+     * the {@link CodegenReloader}
      * picks the right kind from the file suffix and customises its
      * post-run reporting accordingly.
      */
     private static void handleCodegenXmlChange(ChangeEvent event) {
-        com.onurkat.reclazz.hybris.codegen.CodegenReloader reloader = codegenReloader;
+        CodegenReloader reloader = codegenReloader;
         if (reloader == null) {
             StatusReporter.info("Codegen XML changed: " + event.getPath().getFileName());
             StatusReporter.warn("Codegen reload requires a Hybris platform — not available here.");

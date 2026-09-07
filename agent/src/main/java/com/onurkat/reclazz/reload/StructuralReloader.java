@@ -24,6 +24,19 @@ import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import com.onurkat.reclazz.agent.ClassLookup;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
+import com.onurkat.reclazz.bootstrap.LookupCapture;
+import com.onurkat.reclazz.spring.SpringValidatorReloader;
+import com.onurkat.reclazz.transform.AddedMemberStripper;
+import com.onurkat.reclazz.transform.ClassFileVersionGuard;
+import com.onurkat.reclazz.transform.ExcludedClasses;
+import com.onurkat.reclazz.transform.ReclazzTransformer;
+import com.onurkat.reclazz.transform.ReflectionRootFilter;
+import com.onurkat.reclazz.transform.TransformedClassCache;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.util.BytecodeVersion;
 
 /**
  * Orchestrates structural class reloading using the companion class pattern.
@@ -44,7 +57,7 @@ public class StructuralReloader {
 
     // Load-time transformer, used to re-transform new bytecode so body-only
     // diffs (incl. constructor bodies) can be applied via redefineClasses.
-    private com.onurkat.reclazz.transform.ReclazzTransformer transformer;
+    private ReclazzTransformer transformer;
 
     // Per-class version counter — thread-safe
     private final ConcurrentHashMap<String, Integer> versionCounters = new ConcurrentHashMap<>();
@@ -67,14 +80,14 @@ public class StructuralReloader {
                 // while the ORM kept serving cached instances.
                 StatusReporter.warn("Hibernate cache invalidation unavailable ("
                         + e + ") — reloaded entities may serve cached data until restart");
-                com.onurkat.reclazz.agent.RestartLedger.note("the Hibernate second-level cache",
+                RestartLedger.note("the Hibernate second-level cache",
                         "could not be invalidated, so a reloaded entity may still be served "
                         + "from it");
             }
         }
     }
 
-    public void setTransformer(com.onurkat.reclazz.transform.ReclazzTransformer transformer) {
+    public void setTransformer(ReclazzTransformer transformer) {
         this.transformer = transformer;
     }
 
@@ -89,7 +102,7 @@ public class StructuralReloader {
         // Before anything is generated or swapped: the JVM cannot load a class
         // file newer than itself, and finding that out halfway through leaves a
         // warning in the middle of a reload that then reports success.
-        String tooNew = com.onurkat.reclazz.util.BytecodeVersion.rejectionReason(newBytecode);
+        String tooNew = BytecodeVersion.rejectionReason(newBytecode);
         if (tooNew != null) {
             return ClassReloader.ReloadResult.failure(className + " " + tooNew, false);
         }
@@ -126,7 +139,7 @@ public class StructuralReloader {
                         loadedForRevert == null ? null : loadedForRevert.getSuperclass());
 
                 if (!reverted.applied()) {
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    RestartLedger.note(className,
                             "changed its superclass, which no JVM will redefine");
                     return ClassReloader.ReloadResult.failure(
                             className + " changed its superclass, and the rest of the class "
@@ -151,7 +164,7 @@ public class StructuralReloader {
                             + ". No JVM applies that to a loaded class, so it still extends "
                             + oldSuper + " until a restart. The method bodies in this save "
                             + "were applied.");
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    RestartLedger.note(className,
                             "changed its superclass, which no JVM will redefine; "
                                     + "method bodies were applied");
                 } else {
@@ -167,7 +180,7 @@ public class StructuralReloader {
                                 .map(e -> e.getKey().substring(0, e.getKey().indexOf(':'))
                                         + " " + e.getValue())
                                 .collect(java.util.stream.Collectors.joining("; "));
-                        com.onurkat.reclazz.agent.RestartLedger.note(className,
+                        RestartLedger.note(className,
                                 "changed its superclass, which no JVM will redefine");
                         return ClassReloader.ReloadResult.failure(
                                 className + " changed its superclass, and the rest of the class "
@@ -189,7 +202,7 @@ public class StructuralReloader {
                             + ", which " + (pinnedMethods.size() == 1 ? "keeps" : "keep")
                             + " the implementation " + (pinnedMethods.size() == 1 ? "it" : "they")
                             + " had.");
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    RestartLedger.note(className,
                             "changed its superclass, which no JVM will redefine; method bodies "
                                     + "were applied, except " + pinnedNames(pinnedMethods)
                                     + ", pinned to the previous implementation");
@@ -226,7 +239,7 @@ public class StructuralReloader {
                     pinnedMethods, pinnedRedefinePayload);
 
         } catch (Exception e) {
-            StatusReporter.error("Structural reload error for " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Structural reload error for " + className + ": " + Failures.describe(e));
             if (config.isVerbose()) {
                 e.printStackTrace();
             }
@@ -325,13 +338,13 @@ public class StructuralReloader {
             return new PinnedPrep(null, "no transformer is registered to prepare the payload");
         }
         byte[] lastKnownGood =
-                com.onurkat.reclazz.transform.TransformedClassCache.get(internalName);
+                TransformedClassCache.get(internalName);
         if (lastKnownGood == null) {
             return new PinnedPrep(null,
                     "no last-known-good bytecode is cached for this class");
         }
         try {
-            byte[] stripped = com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
+            byte[] stripped = AddedMemberStripper.reshape(
                     revertedBytecode, diff.getAddedFields(), diff.getAddedMethods(),
                     diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
             // doTransform records metadata as a side effect, and the stripped
@@ -372,7 +385,7 @@ public class StructuralReloader {
      *
      * <p>The JVM will not let a method leave a loaded class, so the payload
      * has to carry it either way; the only question is what is in it.
-     * {@link com.onurkat.reclazz.transform.AddedMemberStripper} puts a stub
+     * {@link AddedMemberStripper} puts a stub
      * there that throws, and for a while that was what an existing caller
      * met: measured on Spring Boot, a removed getter turned its JSON endpoint
      * into an HTTP 500 on the next request. Worse than the crash was the
@@ -402,13 +415,13 @@ public class StructuralReloader {
             return new RemovalPrep(null, "no transformer is registered to prepare the payload", null);
         }
         byte[] lastKnownGood =
-                com.onurkat.reclazz.transform.TransformedClassCache.get(internalName);
+                TransformedClassCache.get(internalName);
         if (lastKnownGood == null) {
             return new RemovalPrep(null,
                     "no last-known-good bytecode is cached for this class", null);
         }
         try {
-            byte[] stripped = com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
+            byte[] stripped = AddedMemberStripper.reshape(
                     newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
                     diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs());
             // doTransform records metadata as a side effect and this payload
@@ -461,7 +474,7 @@ public class StructuralReloader {
         for (var m : diff.getRemovedMethodSigs()) {
             if ("<init>".equals(m.name()) || "<clinit>".equals(m.name())) continue;
             // ACC_STATIC and Modifier.STATIC share the value 0x0008.
-            String siteKey = com.onurkat.reclazz.bootstrap.InjectedNames.siteKey(
+            String siteKey = InjectedNames.siteKey(
                     m.name(), CallSiteAdapter.descHash(m.descriptor()),
                     (m.access() & Modifier.STATIC) != 0);
             boolean companionServes = DispatchTable.hasCompanionTarget(targetClass, siteKey);
@@ -478,7 +491,7 @@ public class StructuralReloader {
                     + (failing.size() == 1 ? "it" : "them") + ", so an existing caller "
                     + "meets an UnsupportedOperationException naming the method. Restore "
                     + "the method or restart.");
-            com.onurkat.reclazz.agent.RestartLedger.note(className,
+            RestartLedger.note(className,
                     Plural.word(failing.size(), "removed method ", "removed methods ")
                             + failing + " whose existing callers now throw");
         }
@@ -599,7 +612,7 @@ public class StructuralReloader {
                 + "interfaces of a loaded class. Everything else in this class reloaded, so "
                 + "an instanceof or a cast against " + (added.isEmpty() ? "it" : added.get(0))
                 + " still answers the old way until a restart. " + wayOut);
-        com.onurkat.reclazz.agent.RestartLedger.note(className, what.toString()
+        RestartLedger.note(className, what.toString()
                 + ", which a stock JVM cannot apply to a loaded class");
     }
 
@@ -688,9 +701,9 @@ public class StructuralReloader {
                 // warning about one field rather than a failed reload.
                 StatusReporter.warn("Initialiser for an added static field in " + className
                         + " threw " + t.getClass().getSimpleName()
-                        + (com.onurkat.reclazz.ui.Failures.describe(t) == null ? "" : ": " + com.onurkat.reclazz.ui.Failures.describe(t))
+                        + (Failures.describe(t) == null ? "" : ": " + Failures.describe(t))
                         + ". Those fields read as null/0.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                RestartLedger.note(className,
                         "an added static field's initialiser threw, so it reads as null/0");
             }
         }
@@ -710,7 +723,7 @@ public class StructuralReloader {
             StatusReporter.warn(Plural.word(refused.size(), "Added static field reads",
                     "Added static fields read") + " as null/0 until restart: "
                     + String.join(", ", refused));
-            com.onurkat.reclazz.agent.RestartLedger.note(className,
+            RestartLedger.note(className,
                     Plural.word(refused.size(), "an added static field ", "added static fields ")
                             + refused + " that read as null/0");
         }
@@ -847,14 +860,14 @@ public class StructuralReloader {
             // the class file is simply newer than this build can read.
             // Nothing for the restart ledger: a restart does not change an
             // exclusion, editing the setting does, and the message says so.
-            if (com.onurkat.reclazz.transform.ExcludedClasses.wasExcluded(className)) {
+            if (ExcludedClasses.wasExcluded(className)) {
                 StatusReporter.warn(className + " is matched by excludeClasses, so it was left "
                         + "uninstrumented on purpose and members cannot be added to it or "
                         + "removed from it. Method body changes still reload. Narrow the "
                         + "pattern if this class was not the one you meant to exclude.");
                 return;
             }
-            if (com.onurkat.reclazz.transform.ClassFileVersionGuard.wasSkipped(className)) {
+            if (ClassFileVersionGuard.wasSkipped(className)) {
                 // ledger-exempt: this one names a restart to rule it out. The
                 // ledger answers "what would a restart fix", and the answer
                 // here is nothing, so an entry would be a wrong answer rather
@@ -870,7 +883,7 @@ public class StructuralReloader {
                     + "so only method bodies can be reloaded; adding or removing members "
                     + "needs a restart. JPA entities hit this because the "
                     + "EntityManagerFactory loads them during startup.");
-            com.onurkat.reclazz.agent.RestartLedger.note(className,
+            RestartLedger.note(className,
                     "was loaded before Reclazz could instrument it, so members cannot be "
                     + "added to it or removed from it");
         }
@@ -944,11 +957,11 @@ public class StructuralReloader {
             // "loaded before the agent". That is true for the class that
             // really was, and wrong for one whose field is merely filtered.
             MethodHandles.Lookup classLookup =
-                    com.onurkat.reclazz.bootstrap.LookupCapture.get(targetClass);
+                    LookupCapture.get(targetClass);
             if (classLookup == null) {
                 java.lang.reflect.Field lookupField;
                 try {
-                    lookupField = targetClass.getDeclaredField(com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD);
+                    lookupField = targetClass.getDeclaredField(InjectedNames.LOOKUP_FIELD);
                 } catch (NoSuchFieldException e) {
                     // The loaded class carries no reclazz infrastructure: it was
                     // loaded BEFORE the agent attached, so the load-time transform
@@ -997,7 +1010,7 @@ public class StructuralReloader {
                     newTargets.put(siteKey, mh);
                 } catch (Exception e) {
                     StatusReporter.warn("Failed to resolve companion method: " +
-                            methodName + descriptor + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+                            methodName + descriptor + ": " + Failures.describe(e));
                 }
             }
 
@@ -1036,7 +1049,7 @@ public class StructuralReloader {
             // redefinition's reflection-cache invalidation lands on a class
             // whose filter is already on. Idempotent from the second reload on.
             afterSwitch(className, "hiding the injected members from reflection", () -> {
-            com.onurkat.reclazz.transform.ReflectionRootFilter
+            ReflectionRootFilter
                     .registerInjectedMembersOn(targetClass);
 
             // A name this save declares stops being hidden, so a
@@ -1060,7 +1073,7 @@ public class StructuralReloader {
             for (var m : diff.getNewMethods()) {
                 declaredMethodNames.add(m.name());
             }
-            com.onurkat.reclazz.transform.ReflectionRootFilter
+            ReflectionRootFilter
                     .unhideRestoredMembersOn(targetClass, declaredFieldNames, declaredMethodNames);
             });
 
@@ -1076,7 +1089,7 @@ public class StructuralReloader {
                 // first one. The ledger still counts each occurrence, so
                 // asking later still knows how long this has been the case.
                 if (!AddedMethodVisibility.sayOnce(className, unseen.method())) {
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    RestartLedger.note(className,
                             "added method " + unseen.method() + " that only a restart makes "
                             + "visible to framework scans");
                     continue;
@@ -1084,7 +1097,7 @@ public class StructuralReloader {
                 StatusReporter.warn(className + "." + unseen.method() + " was added, and "
                         + unseen.reason() + ". Calls to it from your own code work; a restart "
                         + "is what puts it where the framework can see it.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                RestartLedger.note(className,
                         "added method " + unseen.method() + " that only a restart makes visible "
                         + "to framework scans");
             }
@@ -1112,7 +1125,7 @@ public class StructuralReloader {
                         removedMethodNames.add(m.name());
                     }
                 }
-                com.onurkat.reclazz.transform.ReflectionRootFilter
+                ReflectionRootFilter
                         .hideRemovedMembersOn(targetClass, removedFieldNames, removedMethodNames);
                 if (!removedFieldNames.isEmpty() || !removedMethodNames.isEmpty()) {
                     int hidden = removedFieldNames.size() + removedMethodNames.size();
@@ -1241,7 +1254,7 @@ public class StructuralReloader {
                 // request that should now be rejected was still accepted. Here
                 // rather than in the Spring orchestrator, because that runs
                 // only for classes that are beans and a request body is not.
-                int constraints = com.onurkat.reclazz.spring.SpringValidatorReloader.flush();
+                int constraints = SpringValidatorReloader.flush();
 
                 // Only when something was actually dropped. Under verbose this
                 // printed "Framework caches flushed: 0 Jackson mapper(s), 0
@@ -1298,7 +1311,7 @@ public class StructuralReloader {
                 byte[] redefinePayload = pinnedRedefinePayload != null
                         ? pinnedRedefinePayload
                         : diff.isStructural()
-                                ? com.onurkat.reclazz.transform.AddedMemberStripper.reshape(
+                                ? AddedMemberStripper.reshape(
                                         newBytecode, diff.getAddedFields(), diff.getAddedMethods(),
                                         diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs())
                                 : newBytecode;
@@ -1375,7 +1388,7 @@ public class StructuralReloader {
                                 + ": the class carries members added after startup. "
                                 + "Everything else reloaded.");
                     }
-                    com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    RestartLedger.note(className,
                             "a constructor the JVM would not redefine, because the class "
                                     + "carries members added since startup");
                     } else {
@@ -1466,10 +1479,10 @@ public class StructuralReloader {
             step.run();
         } catch (Throwable t) {
             StatusReporter.warn("Reloading " + className + ": " + what + " did not complete ("
-                    + com.onurkat.reclazz.ui.Failures.describe(t) + "). The new method bodies are "
+                    + Failures.describe(t) + "). The new method bodies are "
                     + "live; what that step does is missing until the next reload of this class "
                     + "or a restart.");
-            com.onurkat.reclazz.agent.RestartLedger.note(className,
+            RestartLedger.note(className,
                     what + " did not complete after a reload");
         }
     }
@@ -1585,12 +1598,12 @@ public class StructuralReloader {
             then.handle(outcome);
         } catch (Throwable t) {
             StatusReporter.warn("A reload's follow-up after redefinition failed: "
-                    + com.onurkat.reclazz.ui.Failures.describe(t));
+                    + Failures.describe(t));
         }
     }
 
     private Class<?> findLoadedClass(String className) {
-        return com.onurkat.reclazz.agent.ClassLookup.findLoadedClass(className, instrumentation);
+        return ClassLookup.findLoadedClass(className, instrumentation);
     }
 
     /**
@@ -1708,7 +1721,7 @@ public class StructuralReloader {
                 }
             } catch (Exception e) {
                 if (config.isVerbose()) {
-                    StatusReporter.warn("Failed to forge Method " + methodName + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+                    StatusReporter.warn("Failed to forge Method " + methodName + ": " + Failures.describe(e));
                 }
             }
         }
@@ -1738,7 +1751,7 @@ public class StructuralReloader {
                 }
             } catch (Exception e) {
                 if (config.isVerbose()) {
-                    StatusReporter.warn("Failed to forge Field " + fieldName + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+                    StatusReporter.warn("Failed to forge Field " + fieldName + ": " + Failures.describe(e));
                 }
             }
         }
@@ -1758,8 +1771,8 @@ public class StructuralReloader {
         // Try to find in the newTargets map by exact site key match.
         // Site keys use format "name:descHash" (instance) or "static:name:descHash" (static).
         String descHash = CallSiteAdapter.descHash(descriptor);
-        String instanceKey = com.onurkat.reclazz.bootstrap.InjectedNames.siteKey(methodName, descHash);
-        String staticKey = com.onurkat.reclazz.bootstrap.InjectedNames.staticSiteKey(methodName, descHash);
+        String instanceKey = InjectedNames.siteKey(methodName, descHash);
+        String staticKey = InjectedNames.staticSiteKey(methodName, descHash);
         MethodHandle target = newTargets.get(instanceKey);
         if (target != null) return target;
         target = newTargets.get(staticKey);
