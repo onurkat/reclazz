@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Reflection-based access to the Spring classes used by the XML reloader.
@@ -156,7 +157,7 @@ final class SpringReflection {
 
     static void registerBeanDefinition(Object factory, String name, Object bd) throws Exception {
         Class<?> bdCls = loadClass(CLS_BD, factory.getClass().getClassLoader());
-        Method m = com.onurkat.reclazz.util.Reflect.findMethod(factory.getClass(), "registerBeanDefinition", String.class, bdCls);
+        Method m = Reflect.findMethod(factory.getClass(), "registerBeanDefinition", String.class, bdCls);
         if (m == null) throw new NoSuchMethodException("registerBeanDefinition");
         m.invoke(factory, name, bd);
     }
@@ -169,7 +170,7 @@ final class SpringReflection {
 
     static void destroySingleton(Object factory, String name) {
         try {
-            Method m = com.onurkat.reclazz.util.Reflect.findMethod(factory.getClass(), "destroySingleton", String.class);
+            Method m = Reflect.findMethod(factory.getClass(), "destroySingleton", String.class);
             if (m != null) m.invoke(factory, name);
         } catch (Throwable ignored) {}
     }
@@ -177,7 +178,7 @@ final class SpringReflection {
     /** Returns the already-instantiated singleton, or null if not yet created. */
     static Object getExistingSingleton(Object factory, String name) {
         try {
-            Method m = com.onurkat.reclazz.util.Reflect.findMethod(factory.getClass(), "getSingleton", String.class);
+            Method m = Reflect.findMethod(factory.getClass(), "getSingleton", String.class);
             if (m != null) return m.invoke(factory, name);
         } catch (Throwable ignored) {}
         return null;

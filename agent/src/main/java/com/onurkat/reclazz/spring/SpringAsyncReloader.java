@@ -8,6 +8,7 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Re-processes @Async beans after class reload.
@@ -61,7 +62,7 @@ public class SpringAsyncReloader {
                 return true;
             }
         } catch (Exception e) {
-            StatusReporter.warn("Spring async reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Spring async reload failed: " + Failures.describe(e));
         }
         return false;
     }

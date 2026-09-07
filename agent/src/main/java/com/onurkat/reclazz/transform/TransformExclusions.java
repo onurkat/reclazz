@@ -6,6 +6,7 @@ package com.onurkat.reclazz.transform;
 
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Opcodes;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 
 /**
  * Determines which methods, fields, and bootstrap handles should be excluded
@@ -54,7 +55,7 @@ public final class TransformExclusions {
      */
     public static boolean shouldSkipField(String owner, String name, String desc, int access) {
         // Our injected fields
-        if (com.onurkat.reclazz.bootstrap.InjectedNames.isInjected(name)) return true;
+        if (InjectedNames.isInjected(name)) return true;
 
         // Inner class outer reference
         if (name.startsWith("this$")) return true;

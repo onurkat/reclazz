@@ -7,6 +7,8 @@ package com.onurkat.reclazz.hybris.hibernate;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Invalidates Hibernate L2 cache for modified entity/DAO classes after structural reload.
@@ -32,7 +34,7 @@ public class HibernateCacheInvalidator {
             try {
                 Class<?> entityClass = Class.forName(className, false,
                         sessionFactory.getClass().getClassLoader());
-                Method evictEntityData = com.onurkat.reclazz.util.Reflect.findMethod(cache.getClass(), "evictEntityData", Class.class);
+                Method evictEntityData = Reflect.findMethod(cache.getClass(), "evictEntityData", Class.class);
                 if (evictEntityData != null) {
                     evictEntityData.invoke(cache, entityClass);
                     StatusReporter.info("Hibernate L2 cache evicted for: " + className);
@@ -43,14 +45,14 @@ public class HibernateCacheInvalidator {
             }
 
             // Fallback: evict all entity data
-            Method evictAll = com.onurkat.reclazz.util.Reflect.findMethod(cache.getClass(), "evictAllRegions");
+            Method evictAll = Reflect.findMethod(cache.getClass(), "evictAllRegions");
             if (evictAll != null) {
                 evictAll.invoke(cache);
                 StatusReporter.info("Hibernate L2 cache fully evicted after reload of: " + className);
             }
 
         } catch (Exception e) {
-            StatusReporter.warn("Hibernate cache invalidation skipped: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Hibernate cache invalidation skipped: " + Failures.describe(e));
         }
     }
 

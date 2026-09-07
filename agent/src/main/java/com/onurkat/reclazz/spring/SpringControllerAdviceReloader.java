@@ -9,6 +9,7 @@ import com.onurkat.reclazz.platform.PlatformContext;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Re-reads what a controller advice contributes: its exception handlers, its
@@ -189,7 +190,7 @@ public class SpringControllerAdviceReloader {
         }
         Method init = null;
         for (String name : INITIALISERS) {
-            init = com.onurkat.reclazz.util.Reflect.findMethod(resolver.getClass(), name);
+            init = Reflect.findMethod(resolver.getClass(), name);
             if (init != null) break;
         }
 

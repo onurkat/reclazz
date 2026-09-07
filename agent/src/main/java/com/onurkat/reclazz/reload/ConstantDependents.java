@@ -15,6 +15,10 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.SourceText;
+import com.onurkat.reclazz.util.Supervised;
 
 /**
  * The sources that inlined a constant, found by the only means there is.
@@ -69,7 +73,7 @@ public final class ConstantDependents {
         if (constantNames.isEmpty() || sourceDirs == null || sourceDirs.isEmpty()) return;
 
         Thread worker = new Thread(
-                com.onurkat.reclazz.util.Supervised.once("The scan for inlined constants",
+                Supervised.once("The scan for inlined constants",
                         () -> run(className, constantNames, sourceDirs, rebuild)),
                 "Reclazz-Constants");
         worker.setDaemon(true);
@@ -92,22 +96,22 @@ public final class ConstantDependents {
 
             int count = found.count();
             if (rebuild == null) {
-                StatusReporter.warn(com.onurkat.reclazz.ui.Plural.of(count, "source file")
-                        + com.onurkat.reclazz.ui.Plural.word(count, " reads ", " read ") + named
-                        + com.onurkat.reclazz.ui.Plural.word(count, " and was", " and were")
+                StatusReporter.warn(Plural.of(count, "source file")
+                        + Plural.word(count, " reads ", " read ") + named
+                        + Plural.word(count, " and was", " and were")
                         + " compiled with the old value: " + found.describe()
                         + ". Rebuild them and Reclazz picks the new value up; your build "
                         + "recompiles constant dependents when it is asked to compile.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                RestartLedger.note(className,
                         "a changed constant that "
-                                + com.onurkat.reclazz.ui.Plural.of(count, "other source file")
+                                + Plural.of(count, "other source file")
                                 + " inlined and "
-                                + com.onurkat.reclazz.ui.Plural.word(count, "has", "have")
+                                + Plural.word(count, "has", "have")
                                 + " not been rebuilt");
                 return;
             }
 
-            StatusReporter.info("Rebuilding " + com.onurkat.reclazz.ui.Plural.of(count, "source file")
+            StatusReporter.info("Rebuilding " + Plural.of(count, "source file")
                     + " that read " + named
                     + ": " + found.describe());
             rebuild.accept(found.byModule);
@@ -182,7 +186,7 @@ public final class ConstantDependents {
             // A source that is not UTF-8 used to land in the catch below and
             // count as "does not mention it", so a file that had inlined the
             // changed constant was left out of the warning about exactly that.
-            String source = com.onurkat.reclazz.util.SourceText.readForScanning(file);
+            String source = SourceText.readForScanning(file);
             for (Pattern pattern : patterns) {
                 if (pattern.matcher(source).find()) return true;
             }

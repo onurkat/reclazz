@@ -8,6 +8,9 @@ import com.onurkat.reclazz.hybris.HybrisContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Handles re-registration of SAP Commerce interceptors after hot-reload.
@@ -95,7 +98,7 @@ public class InterceptorReloader {
                         "Interceptor reload will take effect after server start.");
             }
         } catch (Exception e) {
-            StatusReporter.error("Failed to reload interceptor " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Failed to reload interceptor " + className + ": " + Failures.describe(e));
         }
     }
 
@@ -125,7 +128,7 @@ public class InterceptorReloader {
                 try {
                     // Get the mapping bean and check if its interceptor matches
                     Object mapping = getBean.invoke(appContext, beanName);
-                    Method getInterceptor = com.onurkat.reclazz.util.Reflect.findMethod(mapping.getClass(), "getInterceptor");
+                    Method getInterceptor = Reflect.findMethod(mapping.getClass(), "getInterceptor");
                     if (getInterceptor != null) {
                         Object interceptor = getInterceptor.invoke(mapping);
                         if (interceptor != null &&
@@ -144,14 +147,14 @@ public class InterceptorReloader {
 
             if (refreshed > 0) {
                 StatusReporter.info("Refreshed "
-                        + com.onurkat.reclazz.ui.Plural.of(refreshed, "InterceptorMapping bean")
+                        + Plural.of(refreshed, "InterceptorMapping bean")
                         + " for " + interceptorClassName);
             }
 
         } catch (ClassNotFoundException e) {
             // InterceptorMapping class not available - that's OK
         } catch (Exception e) {
-            StatusReporter.warn("Could not refresh InterceptorMappings: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Could not refresh InterceptorMappings: " + Failures.describe(e));
         }
     }
 

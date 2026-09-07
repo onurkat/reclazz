@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Pattern;
+import com.onurkat.reclazz.ui.Plural;
 
 /**
  * Parses and holds agent configuration from -javaagent args.
@@ -303,12 +304,12 @@ public class AgentConfig {
         if (unknownKeys.isEmpty()) return;
         java.util.List<String> accepted = new java.util.ArrayList<>(KNOWN_KEYS);
         java.util.Collections.sort(accepted);
-        com.onurkat.reclazz.ui.StatusReporter.warn(
-                com.onurkat.reclazz.ui.Plural.word(unknownKeys.size(),
+        StatusReporter.warn(
+                Plural.word(unknownKeys.size(),
                         "This agent argument is not one this version knows: ",
                         "These agent arguments are not ones this version knows: ")
                         + String.join(", ", unknownKeys)
-                        + com.onurkat.reclazz.ui.Plural.word(unknownKeys.size(),
+                        + Plural.word(unknownKeys.size(),
                                 ". It was not ignored: unless it came first, it became part of "
                                         + "the value of the argument before it. ",
                                 ". They were not ignored: unless one came first, each became "

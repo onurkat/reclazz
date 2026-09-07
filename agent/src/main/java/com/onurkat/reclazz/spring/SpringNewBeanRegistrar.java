@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Turns a brand-new component class into a live Spring bean.
@@ -119,7 +120,7 @@ public final class SpringNewBeanRegistrar {
                             clazz.getSimpleName());
 
             Object beanFactory = SpringBeans.getBeanFactory(home);
-            Method containsBeanDefinition = com.onurkat.reclazz.util.Reflect.findMethod(
+            Method containsBeanDefinition = Reflect.findMethod(
                     beanFactory.getClass(), "containsBeanDefinition", String.class);
             if (containsBeanDefinition != null
                     && Boolean.TRUE.equals(containsBeanDefinition.invoke(beanFactory, beanName))) {
@@ -136,7 +137,7 @@ public final class SpringNewBeanRegistrar {
                     true, springLoader);
             Object definition = definitionClass.getConstructor(Class.class).newInstance(clazz);
 
-            Method register = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
+            Method register = Reflect.findMethod(beanFactory.getClass(),
                     "registerBeanDefinition", String.class,
                     Class.forName("org.springframework.beans.factory.config.BeanDefinition",
                             true, springLoader));
@@ -163,7 +164,7 @@ public final class SpringNewBeanRegistrar {
                 return bean != null ? Outcome.REGISTERED : Outcome.DECLINED;
             } catch (Throwable creation) {
                 // The context goes back to exactly what it was.
-                Method remove = com.onurkat.reclazz.util.Reflect.findMethod(beanFactory.getClass(),
+                Method remove = Reflect.findMethod(beanFactory.getClass(),
                         "removeBeanDefinition", String.class);
                 if (remove != null) {
                     try {

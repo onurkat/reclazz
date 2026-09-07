@@ -19,6 +19,8 @@ import java.nio.file.Path;
 import java.security.ProtectionDomain;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * ClassFileTransformer that intercepts watched classes at load time
@@ -154,7 +156,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
 
             return transformed;
         } catch (Exception e) {
-            StatusReporter.error("Transform failed for " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Transform failed for " + className + ": " + Failures.describe(e));
             if (config.isVerbose()) {
                 e.printStackTrace();
             }
@@ -178,7 +180,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
                 public org.objectweb.asm.FieldVisitor visitField(
                         int access, String name, String descriptor,
                         String signature, Object value) {
-                    if (com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD.equals(name)) found[0] = true;
+                    if (InjectedNames.LOOKUP_FIELD.equals(name)) found[0] = true;
                     return null;
                 }
             }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
@@ -231,7 +233,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
             return true;
         } catch (Throwable t) {
             if (config.isVerbose()) {
-                StatusReporter.warn("CheckClassAdapter rejected " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(t));
+                StatusReporter.warn("CheckClassAdapter rejected " + className + ": " + Failures.describe(t));
             }
             return false;
         }
@@ -244,7 +246,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
             org.objectweb.asm.util.CheckClassAdapter.verify(reader, false,
                     new java.io.PrintWriter(System.err));
         } catch (Exception e) {
-            StatusReporter.warn("Bytecode verification warning for " + className + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Bytecode verification warning for " + className + ": " + Failures.describe(e));
         }
     }
 
@@ -255,7 +257,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
             Files.createDirectories(file.getParent());
             Files.write(file, bytecode);
         } catch (IOException e) {
-            StatusReporter.warn("Failed to dump transformed class: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Failed to dump transformed class: " + Failures.describe(e));
         }
     }
 

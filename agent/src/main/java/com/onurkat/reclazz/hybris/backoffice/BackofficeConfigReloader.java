@@ -8,6 +8,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import com.onurkat.reclazz.ui.Plural;
 
 /**
  * Applies a saved {@code *-backoffice-config.xml} to the running backoffice.
@@ -80,7 +81,7 @@ public final class BackofficeConfigReloader {
 
         if (reset > 0) {
             StatusReporter.success("Backoffice configuration cache reset ("
-                    + com.onurkat.reclazz.ui.Plural.of(reset, "service") + ") for " + fileName + ": the next view open re-reads "
+                    + Plural.of(reset, "service") + ") for " + fileName + ": the next view open re-reads "
                     + "the configuration.");
             StatusReporter.info("If the running backoffice reads this configuration from "
                     + "the packaged module archive rather than the extension folder, the "

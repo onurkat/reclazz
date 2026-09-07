@@ -6,6 +6,7 @@ package com.onurkat.reclazz.util;
 
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.StatusReporter;
+import com.onurkat.reclazz.agent.RestartLedger;
 
 /**
  * Work whose death would otherwise be silent, and permanent.
@@ -71,12 +72,12 @@ public final class Supervised {
     /** Also for a run that ends quietly when it was supposed to keep going. */
     public static void stoppedUnexpectedly(String what, String consequence) {
         StatusReporter.error(what + " stopped. " + consequence);
-        com.onurkat.reclazz.agent.RestartLedger.note(what, "it stopped during this session");
+        RestartLedger.note(what, "it stopped during this session");
     }
 
     private static void report(String what, String consequence, Throwable t) {
         StatusReporter.error(what + " stopped: " + Failures.describe(t) + ". " + consequence);
-        com.onurkat.reclazz.agent.RestartLedger.note(what,
+        RestartLedger.note(what,
                 "it stopped during this session with " + t.getClass().getSimpleName());
     }
 }

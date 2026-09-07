@@ -20,6 +20,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.AtomicWrite;
+import com.onurkat.reclazz.util.Supervised;
 
 /**
  * TCP server that broadcasts agent events as JSON lines to connected clients.
@@ -81,15 +85,15 @@ public class StatusServer implements StatusReporter.StatusListener {
                     // between us, and a reader arriving mid-write gets whatever
                     // prefix has landed. "586" parses perfectly well and is not
                     // the port this agent is listening on.
-                    com.onurkat.reclazz.util.AtomicWrite.string(
+                    AtomicWrite.string(
                             portFile, String.valueOf(actualPort));
                 }
             } catch (IOException e) {
-                StatusReporter.warn("Failed to write port file: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                StatusReporter.warn("Failed to write port file: " + Failures.describe(e));
             }
         }
 
-        Thread acceptThread = new Thread(com.onurkat.reclazz.util.Supervised.forever(
+        Thread acceptThread = new Thread(Supervised.forever(
                 "The status server",
                 "The IDE cannot connect to this agent until the application is restarted. "
                         + "Reloading itself is unaffected.",
@@ -108,7 +112,7 @@ public class StatusServer implements StatusReporter.StatusListener {
         // then stops hearing from an agent that is perfectly well, decides it
         // has gone, and drops a connection it did not need to drop.
         heartbeatExecutor.scheduleAtFixedRate(
-                com.onurkat.reclazz.util.Supervised.once("The heartbeat", this::sendHeartbeat),
+                Supervised.once("The heartbeat", this::sendHeartbeat),
                 HEARTBEAT_INTERVAL_SECONDS, HEARTBEAT_INTERVAL_SECONDS, TimeUnit.SECONDS);
 
         StatusReporter.addListener(this);
@@ -182,7 +186,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                 StatusReporter.info(reportLine);
             }
         } catch (Exception e) {
-            StatusReporter.warn("Could not answer " + trimmed + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Could not answer " + trimmed + ": " + Failures.describe(e));
         }
     }
 
@@ -278,7 +282,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                 // Expected — accept() timed out, loop back to check running flag
             } catch (IOException e) {
                 if (running) {
-                    StatusReporter.error("StatusServer accept error: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                    StatusReporter.error("StatusServer accept error: " + Failures.describe(e));
                 }
             } catch (Throwable t) {
                 // Anything that is not a socket problem cost this one
@@ -289,7 +293,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                 // forever, and never got in.
                 if (running) {
                     StatusReporter.warn("A status client could not be accepted: "
-                            + com.onurkat.reclazz.ui.Failures.describe(t)
+                            + Failures.describe(t)
                             + ". The status server is still listening.");
                 }
             }
@@ -298,7 +302,7 @@ public class StatusServer implements StatusReporter.StatusListener {
         // Reached only when running went false, which is the shutdown hook.
         // Anything else that gets here has ended the one way into this agent.
         if (running) {
-            com.onurkat.reclazz.util.Supervised.stoppedUnexpectedly("The status server",
+            Supervised.stoppedUnexpectedly("The status server",
                     "The IDE cannot connect to this agent until the application is restarted. "
                             + "Reloading itself is unaffected.");
         }
@@ -504,7 +508,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                 long n = dropped.incrementAndGet();
                 if (n == 1 || n % 1000 == 0) {
                     StatusReporter.warn("Status client is not keeping up — dropped "
-                            + com.onurkat.reclazz.ui.Plural.of(n, "event")
+                            + Plural.of(n, "event")
                             + ". Reload is unaffected.");
                 }
             }

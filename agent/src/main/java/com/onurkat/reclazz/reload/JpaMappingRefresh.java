@@ -10,6 +10,8 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
+import com.onurkat.reclazz.agent.ReclazzAgent;
+import com.onurkat.reclazz.agent.RestartLedger;
 
 /**
  * Rebuilds the persistence unit after a reload changed an entity's persistent
@@ -88,18 +90,18 @@ public final class JpaMappingRefresh {
     public static void applyForNewEntity(String className, Class<?> entityClass) {
         try {
             if (!optedIn()) {
-                com.onurkat.reclazz.ui.StatusReporter.info("New entity " + className
+                StatusReporter.info("New entity " + className
                         + " is on the classpath but no persistence unit maps it."
                         + OPT_IN_HINT);
                 return;
             }
             Object factoryBean = soleFactoryBean();
             if (factoryBean == null) {
-                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                StatusReporter.warn("New entity " + className
                         + " found, but there is not exactly one persistence unit to "
                         + "rebuild, and guessing would map it into the wrong one. "
                         + "A restart maps it.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                RestartLedger.note(className,
                         "is a new entity, and there is not exactly one persistence unit to "
                         + "map it into");
                 return;
@@ -110,12 +112,12 @@ public final class JpaMappingRefresh {
             // while the property said update).
             String ddlAuto = JpaSchemaAdvice.settingOf(nativeFactoryField(factoryBean).get(factoryBean));
             if (!ddlAutoQualifies(ddlAuto)) {
-                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                StatusReporter.warn("New entity " + className
                         + " needs its table, and hbm2ddl.auto="
                         + (ddlAuto == null ? "unset" : ddlAuto)
                         + " will not create it during a rebuild; the mapping is left "
                         + "for a restart after the table exists.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                RestartLedger.note(className,
                         "is a new entity whose table hbm2ddl.auto="
                         + (ddlAuto == null ? "unset" : ddlAuto) + " will not create");
                 return;
@@ -125,10 +127,10 @@ public final class JpaMappingRefresh {
             // unit info first (measured: without this the rebuild ran and the
             // fresh metamodel still did not carry the entity).
             if (!addManagedClass(factoryBean, className)) {
-                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                StatusReporter.warn("New entity " + className
                         + " could not be added to the persistence unit's managed classes; "
                         + "a restart maps it.");
-                com.onurkat.reclazz.agent.RestartLedger.note(className,
+                RestartLedger.note(className,
                         "is a new entity that could not be added to the persistence unit's "
                         + "managed classes");
                 return;
@@ -136,13 +138,13 @@ public final class JpaMappingRefresh {
             Result result = rebuild(className, entityClass,
                     new JpaEntityChange.Change(java.util.List.of("its first mapping"), java.util.List.of()), factoryBean, ddlAuto);
             if (!result.refreshed()) {
-                com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+                StatusReporter.warn("New entity " + className
                         + " could not be mapped:" + result.appendix());
             }
         } catch (Throwable t) {
             Throwable root = t;
             while (root.getCause() != null) root = root.getCause();
-            com.onurkat.reclazz.ui.StatusReporter.warn("New entity " + className
+            StatusReporter.warn("New entity " + className
                     + " could not be mapped: " + root);
         }
     }
@@ -281,12 +283,12 @@ public final class JpaMappingRefresh {
     }
 
     private static boolean vmQualifies() {
-        var probe = com.onurkat.reclazz.agent.ReclazzAgent.getProbeResult();
+        var probe = ReclazzAgent.getProbeResult();
         return probe != null && probe.hasEnhancedRedefinition();
     }
 
     private static boolean optedIn() {
-        var config = com.onurkat.reclazz.agent.ReclazzAgent.getConfig();
+        var config = ReclazzAgent.getConfig();
         return config != null && config.isJpaRefresh();
     }
 

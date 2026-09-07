@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import com.onurkat.reclazz.spring.AddedEndpointAdapter;
 
 /**
  * Names an added method that the frameworks will not find.
@@ -39,7 +40,7 @@ import java.util.Set;
  *
  * <p>Request mappings are left out on purpose: those are already carried, by
  * handing the mapping scan a small class holding a copy of the method
- * ({@link com.onurkat.reclazz.spring.AddedEndpointAdapter}), so an added
+ * ({@link AddedEndpointAdapter}), so an added
  * endpoint really does answer and warning about it would be wrong.
  *
  * <p>Only reached on the companion path. A JVM with enhanced redefinition puts

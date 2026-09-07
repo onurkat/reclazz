@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import com.onurkat.reclazz.transform.TransformExclusions;
 
 /**
  * The method bodies from a class whose superclass also changed.
@@ -195,7 +196,7 @@ public final class HierarchyRevert {
             // those, a body that needs the new superclass still refuses the
             // whole class, which is the pre-salvage behaviour.
             boolean pinnable = !"<init>".equals(name) && !"<clinit>".equals(name)
-                    && !com.onurkat.reclazz.transform.TransformExclusions
+                    && !TransformExclusions
                             .shouldSkipMethod(className, name, descriptor, access);
             return new BodyRewriter(mv, name, descriptor, pinnable);
         }

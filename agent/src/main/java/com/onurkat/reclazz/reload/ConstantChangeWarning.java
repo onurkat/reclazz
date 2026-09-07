@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import com.onurkat.reclazz.ui.Plural;
 
 /**
  * Says the one thing about a changed compile-time constant no reload can fix.
@@ -105,7 +106,7 @@ public final class ConstantChangeWarning {
             if (!loadedInJvm) {
                 names.addAll(now.keySet());
                 StatusReporter.warn(className + " declares "
-                        + com.onurkat.reclazz.ui.Plural.word(names.size(),
+                        + Plural.word(names.size(),
                                 "compile-time constant ", "compile-time constants ")
                         + names + " and the JVM has never loaded it, which is what happens "
                         + "when every use of them was inlined. There is nothing to compare "

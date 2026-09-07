@@ -17,6 +17,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import com.onurkat.reclazz.transform.SafeClassWriter;
 
 /**
  * Makes a handler method added by a reload reachable to Spring's mapping scan.
@@ -94,7 +95,7 @@ public final class AddedEndpointAdapter {
 
     private static byte[] generate(String adapterInternal, String controllerInternal,
                                    List<MethodNode> handlers, ClassNode source) {
-        ClassWriter writer = new com.onurkat.reclazz.transform.SafeClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         writer.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
                 adapterInternal, null, "java/lang/Object", null);
 

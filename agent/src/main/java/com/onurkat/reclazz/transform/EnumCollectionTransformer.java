@@ -10,6 +10,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
 import java.security.ProtectionDomain;
 import java.util.Set;
+import com.onurkat.reclazz.bootstrap.EnumCollectionHealer;
 
 /**
  * Teaches {@code EnumMap} and {@code EnumSet} to notice that their enum grew.
@@ -65,7 +66,7 @@ public final class EnumCollectionTransformer implements ClassFileTransformer {
     public static synchronized String install(Instrumentation instrumentation) {
         if (installed) return null;
         if (instrumentation == null) return "no instrumentation";
-        if (!com.onurkat.reclazz.bootstrap.EnumCollectionHealer.isSupported()) {
+        if (!EnumCollectionHealer.isSupported()) {
             return "this JDK does not have the EnumMap/EnumSet shapes this needs";
         }
 

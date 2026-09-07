@@ -10,6 +10,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Says which datasource properties a running pool did not take.
@@ -95,7 +96,7 @@ public class SpringDataSourceCheck {
             String wanted = changed.get(pair[1]);
             if (wanted == null || stale.contains(pair[1])) continue;
 
-            Method getter = com.onurkat.reclazz.util.Reflect.findMethod(dataSource.getClass(), pair[0]);
+            Method getter = Reflect.findMethod(dataSource.getClass(), pair[0]);
             if (getter == null) continue;
             try {
                 Object live = getter.invoke(dataSource);

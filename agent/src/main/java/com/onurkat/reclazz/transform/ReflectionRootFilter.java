@@ -15,6 +15,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
+import com.onurkat.reclazz.bootstrap.ReflectionBridge;
 
 /**
  * Hides Reclazz's injected members at the root of reflection, inside the JDK,
@@ -72,10 +74,10 @@ import java.util.Set;
  */
 public final class ReflectionRootFilter {
 
-    private static final String INTERNAL_PREFIX = com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX;
-    private static final String RENAMED_PREFIX = com.onurkat.reclazz.bootstrap.InjectedNames.RENAMED_PREFIX;
-    private static final String EXT_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.EXT_FIELD;
-    private static final String LOOKUP_FIELD = com.onurkat.reclazz.bootstrap.InjectedNames.LOOKUP_FIELD;
+    private static final String INTERNAL_PREFIX = InjectedNames.PREFIX;
+    private static final String RENAMED_PREFIX = InjectedNames.RENAMED_PREFIX;
+    private static final String EXT_FIELD = InjectedNames.EXT_FIELD;
+    private static final String LOOKUP_FIELD = InjectedNames.LOOKUP_FIELD;
 
     /** The instance the agent installed, or null before {@link #install}. */
     private static volatile ReflectionRootFilter installed;
@@ -203,7 +205,7 @@ public final class ReflectionRootFilter {
                 || (removedMethodNames != null && !removedMethodNames.isEmpty());
         if (!any) return;
 
-        com.onurkat.reclazz.bootstrap.ReflectionBridge.hideRemovedMembers(
+        ReflectionBridge.hideRemovedMembers(
                 clazz, removedFieldNames, removedMethodNames);
 
         ReflectionRootFilter filter = installed;
@@ -221,7 +223,7 @@ public final class ReflectionRootFilter {
                 || (methodNames != null && !methodNames.isEmpty());
         if (!any) return;
 
-        com.onurkat.reclazz.bootstrap.ReflectionBridge.unhideRestoredMembers(
+        ReflectionBridge.unhideRestoredMembers(
                 clazz, fieldNames, methodNames);
 
         ReflectionRootFilter filter = installed;

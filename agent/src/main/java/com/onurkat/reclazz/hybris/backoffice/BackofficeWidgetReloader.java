@@ -7,6 +7,7 @@ package com.onurkat.reclazz.hybris.backoffice;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
+import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Reloads SAP Commerce Backoffice widget definitions after structural reload.
@@ -47,7 +48,7 @@ public class BackofficeWidgetReloader {
             // Backoffice not on classpath — no-op
             return false;
         } catch (Exception e) {
-            StatusReporter.warn("Backoffice widget reload failed: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Backoffice widget reload failed: " + Failures.describe(e));
             return false;
         }
     }

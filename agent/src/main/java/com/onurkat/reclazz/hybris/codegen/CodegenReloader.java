@@ -19,6 +19,8 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.util.BoundedProcess;
 
 /**
  * Tier 1 hot-reload for Hybris code generation — handles both
@@ -280,7 +282,7 @@ public class CodegenReloader {
             // wait began, so an ant that hung with its output open held the
             // reload thread for good, and every save after it with it.
             java.util.concurrent.atomic.AtomicInteger lineCount = new java.util.concurrent.atomic.AtomicInteger();
-            com.onurkat.reclazz.util.BoundedProcess.Result run = com.onurkat.reclazz.util.BoundedProcess.run(
+            BoundedProcess.Result run = BoundedProcess.run(
                     pb, java.time.Duration.ofSeconds(300), line -> {
                         lineCount.incrementAndGet();
                         if (line.contains("BUILD FAILED")
@@ -308,7 +310,7 @@ public class CodegenReloader {
             }
             return true;
         } catch (Exception e) {
-            StatusReporter.error("Codegen: failed to invoke ant: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("Codegen: failed to invoke ant: " + Failures.describe(e));
             return false;
         }
     }

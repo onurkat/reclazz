@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
 
 import java.util.*;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 
 /**
  * The initial value of a static field a reload added.
@@ -59,7 +60,7 @@ import java.util.*;
 public final class StaticInitialiserSlicer implements Opcodes {
 
     /** The synthetic method a companion carries when there is code to run. */
-    public static final String INIT_METHOD = com.onurkat.reclazz.bootstrap.InjectedNames.INIT_METHOD;
+    public static final String INIT_METHOD = InjectedNames.INIT_METHOD;
 
     private StaticInitialiserSlicer() {
     }
