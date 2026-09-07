@@ -90,13 +90,49 @@ class ReloadDiagnosticsTest {
     void theLastAttemptIsReportedWhenThereWasOne(@TempDir Path outputDir) throws Exception {
         writeClassFile(outputDir, "com/example/Reloaded.class");
         ReloadDiagnostics diagnostics = diagnosticsOver(outputDir);
-        diagnostics.record("com.example.Reloaded", false, "attempted to change the schema");
+        diagnostics.record("com.example.Reloaded", false, "attempted to change the schema",
+                outputDir.resolve("com/example/Reloaded.class").toString());
 
         String report = String.join("\n", diagnostics.explain("com.example.Reloaded"));
 
         assertTrue(report.contains("failed"), report);
         assertTrue(report.contains("attempted to change the schema"),
                 "the JVM's own words are what a developer can search for. Was:\n" + report);
+        assertTrue(report.contains("from " + outputDir.resolve("com/example/Reloaded.class")),
+                "the attempt names the file it was made from. Was:\n" + report);
+    }
+
+    /**
+     * Two build outputs, one class: the JVM runs one of them, and a reload
+     * that says which one is the difference between an edit that changes
+     * nothing and a developer knowing why.
+     */
+    @Test
+    void theAttemptSaysWhichOfSeveralBuildOutputsItCameFrom(@TempDir Path first, @TempDir Path second)
+            throws Exception {
+        writeClassFile(first, "com/example/Twice.class");
+        Path loaded = writeClassFile(second, "com/example/Twice.class");
+        ReloadDiagnostics diagnostics = new ReloadDiagnostics(new LoadedClassesOnly(),
+                contextOver(first, second), null, Instant.now().minusSeconds(60));
+        diagnostics.record("com.example.Twice", true, "method bodies", loaded.toString());
+
+        String report = String.join("\n", diagnostics.explain("com.example.Twice"));
+
+        assertTrue(report.contains("More than one build output"), report);
+        assertTrue(report.contains("reloaded (method bodies), from " + loaded), report);
+    }
+
+    @Test
+    void anAttemptWithNoKnownSourceDoesNotInventOne(@TempDir Path outputDir) throws Exception {
+        writeClassFile(outputDir, "com/example/Somewhere.class");
+        ReloadDiagnostics diagnostics = diagnosticsOver(outputDir);
+        diagnostics.record("com.example.Somewhere", true, "structural", null);
+
+        String report = String.join("\n", diagnostics.explain("com.example.Somewhere"));
+
+        assertTrue(report.contains("reloaded (structural)"), report);
+        assertFalse(report.contains("from "), report);
+        assertFalse(report.contains("null"), report);
     }
 
     /**
@@ -137,22 +173,27 @@ class ReloadDiagnosticsTest {
         return file;
     }
 
-    private static PlatformContext contextOver(Path outputDir) {
+    private static PlatformContext contextOver(Path... outputDirs) {
         return new PlatformContext() {
             @Override public Platform getPlatformId() { return Platform.GENERIC; }
             @Override public void initialize() {}
             @Override public Map<String, List<Path>> getClassOutputDirs() {
-                return Map.of("main", List.of(outputDir));
+                return Map.of("main", List.of(outputDirs));
             }
             @Override public Map<String, List<Path>> getSourceDirs() { return Map.of(); }
             @Override public Map<String, List<Path>> getResourceDirs() { return Map.of(); }
             @Override public String resolveClasspath() { return ""; }
             @Override public String resolveClassName(Path classFile) {
-                String relative = outputDir.relativize(classFile).toString();
+                String relative = resolveOutputDir(classFile).relativize(classFile).toString();
                 return relative.replace(java.io.File.separatorChar, '.')
                         .replaceAll("\\.class$", "");
             }
-            @Override public Path resolveOutputDir(Path classFile) { return outputDir; }
+            @Override public Path resolveOutputDir(Path classFile) {
+                for (Path dir : outputDirs) {
+                    if (classFile.startsWith(dir)) return dir;
+                }
+                return outputDirs[0];
+            }
             @Override public Object getApplicationContext() { return null; }
         };
     }

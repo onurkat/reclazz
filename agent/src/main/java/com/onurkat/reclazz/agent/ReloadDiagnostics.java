@@ -59,8 +59,14 @@ public final class ReloadDiagnostics {
         this.startedAt = startedAt;
     }
 
-    public void record(String className, boolean success, String detail) {
-        outcomes.put(className, new Outcome(Instant.now(), success, detail));
+    /**
+     * @param source where the bytes came from: the class file, or the source
+     *               file that was compiled. With more than one build output
+     *               holding a class, this is what says which one the JVM is
+     *               actually running. Null when the caller does not know.
+     */
+    public void record(String className, boolean success, String detail, String source) {
+        outcomes.put(className, new Outcome(Instant.now(), success, detail, source));
     }
 
     /**
@@ -180,7 +186,8 @@ public final class ReloadDiagnostics {
         }
         report.add("Last attempt " + ago(outcome.when) + ": "
                 + (outcome.success ? "reloaded" : "failed")
-                + (outcome.detail == null || outcome.detail.isBlank() ? "" : " (" + outcome.detail + ")"));
+                + (outcome.detail == null || outcome.detail.isBlank() ? "" : " (" + outcome.detail + ")")
+                + (outcome.source == null || outcome.source.isBlank() ? "" : ", from " + outcome.source));
     }
 
     private static Instant newestBuild(List<Path> classFiles) {
@@ -283,5 +290,5 @@ public final class ReloadDiagnostics {
         return (seconds / 3600) + "h ago";
     }
 
-    private record Outcome(Instant when, boolean success, String detail) {}
+    private record Outcome(Instant when, boolean success, String detail, String source) {}
 }
