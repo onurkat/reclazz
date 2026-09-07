@@ -412,15 +412,45 @@ public class StatusServer implements StatusReporter.StatusListener {
          * which is also how the connection is noticed as gone.
          */
         private void readLoop() {
-            try (java.io.BufferedReader reader = new java.io.BufferedReader(
+            try (java.io.Reader reader = new java.io.BufferedReader(
                     readerFor(socket.getInputStream()))) {
                 String line;
-                while (alive && (line = reader.readLine()) != null) {
+                while (alive && (line = readBoundedLine(reader)) != null) {
                     handleCommand(line);
                 }
             } catch (Exception closed) {
                 // A client that went away is not an error worth reporting.
             }
+            // Reached on end of stream, on an over-long line, and on any
+            // read failure alike: the client is gone or is not speaking the
+            // protocol, and either way the connection is done.
+            close();
+        }
+
+        /**
+         * One line, or null when the client has closed or has sent more than
+         * a command can be without ending it.
+         *
+         * <p>{@code BufferedReader.readLine} keeps reading until it sees a line
+         * end, holding everything so far, and the size check in
+         * {@link #handleCommand} runs only after that. A client that never
+         * sends the newline could make this JVM, which is the developer's
+         * application server, hold as many bytes as it cared to send. The
+         * socket is loopback-only, so the client is a process on the same
+         * machine, and that is still not a process this agent should let
+         * fill the application's heap. Read a character at a time, stop one
+         * past the cap, and let the caller drop the connection.
+         */
+        private String readBoundedLine(java.io.Reader reader) throws IOException {
+            StringBuilder line = new StringBuilder(64);
+            int c;
+            while ((c = reader.read()) != -1) {
+                if (c == '\n') return line.toString();
+                if (c == '\r') continue;
+                if (line.length() >= MAX_COMMAND_LENGTH) return null;
+                line.append((char) c);
+            }
+            return line.length() == 0 ? null : line.toString();
         }
 
         private void drainLoop() {
