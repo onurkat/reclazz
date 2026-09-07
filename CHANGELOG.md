@@ -29,6 +29,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **The staged agent jar is compared with the bundled one by content.** A
+  SAP Commerce server loads the agent from a copy staged under the user's
+  home directory, and the plugin decided whether that copy was current by
+  its length and modification time. A copy of the right length whose bytes
+  were wrong, cut short by a full disk and then touched, or damaged on disk,
+  counted as current, and every start of the server pointed at it failed
+  with "Error opening zip file or JAR manifest missing" while the IDE said
+  nothing. The copy is now current only when its SHA-256 matches the
+  bundled jar's; an older build and a damaged file are one case, and both
+  are staged again. The test that mirrored the old decision privately now
+  calls the production comparison.
+
 - **A reload whose bookkeeping fails after the switch is reported as what
   it is.** A structural reload switches the class's call sites to the new
   bodies and then does its bookkeeping: registering added fields, showing
