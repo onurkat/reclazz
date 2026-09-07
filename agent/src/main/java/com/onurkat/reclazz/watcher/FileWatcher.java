@@ -710,16 +710,11 @@ public class FileWatcher {
             if (!pendingEvents.isEmpty()) {
                 long now = System.currentTimeMillis();
                 List<ChangeEvent> due = new ArrayList<>();
-                var it = pendingEvents.entrySet().iterator();
-                while (it.hasNext()) {
-                    var entry = it.next();
-                    PendingEvent pending = entry.getValue();
-                    if (now - pending.timestamp >= debounceMs) {
-                        it.remove();
-                        markHot(pending.path(), pending.moduleName(), pending.sourceRoot());
-                        ChangeEvent event = toChangeEvent(pending);
-                        if (event != null) due.add(event);
-                    }
+                for (PendingEvent pending : dueNow(pendingEvents.values(), now, debounceMs)) {
+                    pendingEvents.remove(pending.path());
+                    markHot(pending.path(), pending.moduleName(), pending.sourceRoot());
+                    ChangeEvent event = toChangeEvent(pending);
+                    if (event != null) due.add(event);
                 }
                 deliver(due);
             }
@@ -728,6 +723,44 @@ public class FileWatcher {
                 evictOldEntries();
             }
         }
+    }
+
+    /**
+     * How long a burst may hold up its first file while it keeps arriving.
+     * A build that writes for longer than this still gets its files in
+     * batches of what is due, rather than all at once at the end.
+     */
+    static final long MAX_HOLD_MS = 1000;
+
+    /**
+     * What to dispatch this pass: the events past their debounce, and only
+     * once the whole pending set has been quiet for that long.
+     *
+     * <p>The debounce used to be judged per file, so two files written 30ms
+     * apart by one javac run came due in different passes of this loop and
+     * reached the reload thread as two saves, with the caller in one and the
+     * callee it was compiled against in the other. A save is the files that
+     * land together, so the wait is measured from the newest of them: the
+     * first file waits for the burst to settle, and a single save waits
+     * exactly what it did. {@link #MAX_HOLD_MS} keeps a build that writes
+     * for seconds from holding everything until it stops.
+     */
+    static List<PendingEvent> dueNow(java.util.Collection<PendingEvent> pending, long now, long debounceMs) {
+        List<PendingEvent> due = new ArrayList<>();
+        if (pending.isEmpty()) return due;
+        long newest = Long.MIN_VALUE;
+        long oldest = Long.MAX_VALUE;
+        for (PendingEvent p : pending) {
+            newest = Math.max(newest, p.timestamp());
+            oldest = Math.min(oldest, p.timestamp());
+        }
+        boolean settled = now - newest >= debounceMs;
+        boolean heldLongEnough = now - oldest >= Math.max(MAX_HOLD_MS, debounceMs);
+        if (!settled && !heldLongEnough) return due;
+        for (PendingEvent p : pending) {
+            if (now - p.timestamp() >= debounceMs) due.add(p);
+        }
+        return due;
     }
 
     // Package-private for test access.
