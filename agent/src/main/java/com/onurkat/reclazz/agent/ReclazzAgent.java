@@ -23,6 +23,7 @@ import com.onurkat.reclazz.transform.ReclazzTransformer;
 import com.onurkat.reclazz.transform.ReflectionInterceptTransformer;
 import com.onurkat.reclazz.transform.TransformContext;
 import com.onurkat.reclazz.ui.ReloadEvents;
+import com.onurkat.reclazz.ui.SessionLog;
 import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.watcher.FileWatcher;
 import com.onurkat.reclazz.watcher.ChangeEvent;
@@ -205,6 +206,14 @@ public class ReclazzAgent {
             // out the same way as everything after them.
             StatusReporter.setWrapMode(config.getWrapOutput());
             agentConfig = config;
+            // Before anything else is said, so the record has the whole session.
+            if (config.getSessionLog() != null) {
+                SessionLog record = SessionLog.open(config.getSessionLog(), AgentVersion.get());
+                if (record != null) {
+                    StatusReporter.addListener(record);
+                    StatusReporter.info("Session log: " + record.file());
+                }
+            }
             // Before anything else is timed against it: the report's clock is
             // the agent's, not the first moment somebody asks for the report.
             SessionReport.sessionStarted(java.time.Instant.now());
