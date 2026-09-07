@@ -241,7 +241,7 @@ public class ReclazzAgent {
                 // package this Instrumentation can open; handing it over costs
                 // nothing and opens nothing until the first door refuses.
                 UnsafeAccess.useForFallback(instrumentation);
-                StatusReporter.info("Bootstrap classes installed on bootstrap classloader");
+                if (config.isVerbose()) StatusReporter.info("Bootstrap classes installed on bootstrap classloader");
             } catch (Exception e) {
                 bootstrapInstalled = false;
                 StatusReporter.error("Failed to install bootstrap JAR: " + Failures.describe(e));
@@ -271,7 +271,7 @@ public class ReclazzAgent {
             try {
                 SpringContextInterceptTransformer contextTransformer = new SpringContextInterceptTransformer();
                 instrumentation.addTransformer(contextTransformer, false);
-                StatusReporter.info("Spring context intercept transformer registered");
+                if (config.isVerbose()) StatusReporter.info("Spring context intercept transformer registered");
                 // The rewritten constructor calls the registry, so without the
                 // bootstrap classes this would break the engine it is meant to
                 // reload.
@@ -346,15 +346,15 @@ public class ReclazzAgent {
             if (enableStructural) {
                 transformContext = new TransformContext();
                 transformContext.populateFromPlatformContext(platformContext);
-                StatusReporter.info("Structural reload: watching " + transformContext.getWatchedClassCount() + " class directories");
+                if (config.isVerbose()) StatusReporter.info("Structural reload: watching " + transformContext.getWatchedClassCount() + " class directories");
 
                 ReclazzTransformer transformer = new ReclazzTransformer(transformContext, config);
                 instrumentation.addTransformer(transformer, true);
-                StatusReporter.info("Reclazz ClassFileTransformer registered (retransform-capable)");
+                if (config.isVerbose()) StatusReporter.info("Reclazz ClassFileTransformer registered (retransform-capable)");
 
                 ReflectionInterceptTransformer reflectionTransformer = new ReflectionInterceptTransformer();
                 instrumentation.addTransformer(reflectionTransformer, true);
-                StatusReporter.info("Reflection intercept transformer registered");
+                if (config.isVerbose()) StatusReporter.info("Reflection intercept transformer registered");
 
                 // This transformer only rewrites classes loaded after it was
                 // registered, and nothing retransforms the ones already in
@@ -404,7 +404,7 @@ public class ReclazzAgent {
                 structuralReloader.setTransformer(transformer);
                 StatusReporter.success("Structural reload engine active on " +
                         (probeResult != null ? probeResult.getVmDescription() : "standard JVM"));
-                if (!MethodForge.isAvailable()) {
+                if (!MethodForge.isAvailable() && config.isVerbose()) {
                     StatusReporter.info("Reflection patching disabled (JDK 17+ refactored " +
                             "java.lang.reflect.Method internals). Hot-reload still works; " +
                             "only reflective scans of newly-added methods/fields are degraded.");
@@ -1449,18 +1449,25 @@ public class ReclazzAgent {
         boolean canRedefine = instrumentation.isRedefineClassesSupported();
         boolean canRetransform = instrumentation.isRetransformClassesSupported();
 
-        StatusReporter.info("JVM Capabilities:");
-        StatusReporter.info("  Redefine classes: " + (canRedefine ? "YES" : "NO"));
-        StatusReporter.info("  Retransform classes: " + (canRetransform ? "YES" : "NO"));
-
         probeResult = JvmCapabilityProbe.probe(instrumentation);
 
-        StatusReporter.info("  VM: " + probeResult.getVmDescription());
-        StatusReporter.info("  Detection method: " + probeResult.getDetectionMethod());
+        // The capability block is for the case where something is missing,
+        // and for verbose. On an ordinary JDK it said five lines of YES that
+        // the one "engine active" line below already means.
+        boolean verbose = agentConfig != null && agentConfig.isVerbose();
+        if (!canRedefine || !canRetransform || verbose) {
+            StatusReporter.info("JVM Capabilities:");
+            StatusReporter.info("  Redefine classes: " + (canRedefine ? "YES" : "NO"));
+            StatusReporter.info("  Retransform classes: " + (canRetransform ? "YES" : "NO"));
+            StatusReporter.info("  VM: " + probeResult.getVmDescription());
+            StatusReporter.info("  Detection method: " + probeResult.getDetectionMethod());
+        }
 
         if (probeResult.hasEnhancedRedefinition()) {
-            StatusReporter.success("  Structural hot-reload: enabled via enhanced redefinition (native)");
-        } else {
+            StatusReporter.success("Structural hot-reload: enabled via enhanced redefinition (native), "
+                    + probeResult.getVmDescription());
+        } else if (verbose) {
+            // Without verbose the companion engine says so itself when it starts.
             StatusReporter.success("  Structural hot-reload: enabled via Reclazz companion-class reloader");
         }
 

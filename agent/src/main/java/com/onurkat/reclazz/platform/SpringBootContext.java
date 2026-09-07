@@ -73,7 +73,9 @@ public class SpringBootContext implements PlatformContext {
         classpath = System.getProperty("java.class.path");
 
         int totalDirs = classOutputDirs.values().stream().mapToInt(List::size).sum();
-        StatusReporter.info("Watching " + totalDirs + " class output directories");
+        // The watcher says how many directories it watches once it has them;
+        // this is the detection's own count, for verbose.
+        if (config.isVerbose()) StatusReporter.info("Watching " + totalDirs + " class output directories");
     }
 
     /**

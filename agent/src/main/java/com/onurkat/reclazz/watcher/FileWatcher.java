@@ -321,9 +321,11 @@ public class FileWatcher {
                 }
             }
             long prepopMs = System.currentTimeMillis() - prepopStart;
-            StatusReporter.info("Content-hash baseline: " + prepopulatedClasses
-                    + " class files hashed in " + prepopMs + "ms — subsequent dispatches"
-                    + " skip files whose bytes haven't changed");
+            if (config.isVerbose()) {
+                StatusReporter.info("Content-hash baseline: " + prepopulatedClasses
+                        + " class files hashed in " + prepopMs + "ms — subsequent dispatches"
+                        + " skip files whose bytes haven't changed");
+            }
             dispatchClassesChangedDuringStartup();
         }
 
@@ -345,19 +347,21 @@ public class FileWatcher {
         }
 
         String mode = config.isAutoCompile() ? "autoCompile (watching sources)" : "default (watching classes)";
-        StatusReporter.info("Mode: " + mode);
-        StatusReporter.info("Watching " + watchCount + " directories");
+        if (config.isVerbose()) StatusReporter.info("Mode: " + mode);
+        StatusReporter.info("Watching " + Plural.of(watchCount, "directory", "directories"));
 
         // The transformer keeps its last emitted bytecode per class for the
         // per-method superclass salvage, deflated. This line is the memory
         // measurement for that cache on a real server: the watcher starts
         // after the application reports ready, which is when most watched
         // classes have been loaded and transformed.
-        StatusReporter.info("Last-known-good bytecode cache: "
-                + TransformedClassCache.classCount()
-                + " classes, "
-                + (TransformedClassCache.deflatedBytes() / 1024)
-                + " KB deflated");
+        if (config.isVerbose()) {
+            StatusReporter.info("Last-known-good bytecode cache: "
+                    + TransformedClassCache.classCount()
+                    + " classes, "
+                    + (TransformedClassCache.deflatedBytes() / 1024)
+                    + " KB deflated");
+        }
     }
 
     void registerRecursive(Path root, String moduleName, String sourceRoot) throws IOException {
