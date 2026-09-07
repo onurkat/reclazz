@@ -334,6 +334,27 @@ The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (b
 
 ---
 
+## When a Reload Goes Wrong
+
+A reload is a change to a running program, and the way back is the same as
+the way in: change the file back and save. The old bytes are reloaded like
+any other change, so an edit that throws on every request is undone in the
+editor, without a restart. What the agent offers on top:
+
+| Ask | Answer |
+|---|---|
+| `DIAGNOSE <class>` (Tools menu, or a line on the status socket) | what happened to the class the last time it was saved, and the file the bytes came from |
+| `PENDING` | what this session has done that only a restart completes; when the list is empty, nothing is |
+| `HEALTH` | reloads, failures, latency, what is watched, and a reload that is still running |
+| `sessionLog=<path>` | the whole session, timestamped, for reading back after the fact |
+
+When the trouble is the agent rather than the edit: `excludeClasses=<pattern>`
+takes a class out of instrumentation (method-body reloads still work for it),
+`structuralReload=false` turns the companion engine off for the session, and
+removing the `-javaagent` line runs the application with no agent at all. None
+of these loses application state that a restart would have kept; a restart is
+the last step, and `PENDING` says when it is the only one.
+
 ## Debugging Reloaded Code
 
 Breakpoints keep working in code Reclazz has reloaded. On a stock JDK an
