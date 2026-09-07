@@ -118,7 +118,10 @@ Before the handoff, Astra also runs whichever of these the change touches:
 
 Claude runs `./gradlew :agent:test` in full during the audit, on the tree
 as handed over, and no commit happens without seeing it green in this
-session. A green run reported by the other agent is evidence, not a
+session. Gradle serves a cached result for an unchanged task, so pass
+`--rerun`, and pass it after each task it should apply to: it binds to
+the task it follows, and `:agent:test :test --rerun` re-runs `:test`
+alone. A green run reported by the other agent is evidence, not a
 substitute for running it.
 
 ## The audit
