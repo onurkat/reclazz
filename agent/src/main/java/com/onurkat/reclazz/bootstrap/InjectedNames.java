@@ -46,6 +46,12 @@ public final class InjectedNames {
     /** The companion's copy of the static initialiser, when there is one. */
     public static final String INIT_METHOD = PREFIX + "initStatics";
 
+    /**
+     * Prefix of the companion methods that compute an added instance field's
+     * initial value for one object, one per field: {@code __reclazz$init$cache}.
+     */
+    public static final String FIELD_INIT_PREFIX = PREFIX + "init$";
+
     /** The opening of every renamed method body: {@code __reclazz$v0$}. */
     public static final String RENAMED_PREFIX = PREFIX + "v0$";
 

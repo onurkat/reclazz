@@ -34,6 +34,34 @@ public final class FieldStore {
      */
     private static final Object ABSENT = new Object();
 
+    /**
+     * What a slot holds after the application wrote null into it.
+     *
+     * <p>An empty slot and a null the developer assigned used to be the same
+     * null, and nothing needed to tell them apart. The initialiser that runs
+     * on first read does: "never written" is its cue, and a field the
+     * application set to null on purpose must stay null rather than be given
+     * its initial value again.
+     */
+    private static final Object WRITTEN_NULL = new Object();
+
+    /**
+     * The initial value of an added instance field, per owning class, as a
+     * method taking the object and returning the value boxed. Registered by
+     * the reload from the companion it generated, keyed by "name:desc". A
+     * {@link ClassValue} for the reason the static store is one: the handle
+     * pins the companion, and the companion must be collectable with the
+     * class rather than pinned by a global map for the life of the JVM.
+     */
+    private static final ClassValue<ConcurrentHashMap<String, java.lang.invoke.MethodHandle>>
+            initialisersByClass = new ClassValue<>() {
+                @Override
+                protected ConcurrentHashMap<String, java.lang.invoke.MethodHandle> computeValue(
+                        Class<?> type) {
+                    return new ConcurrentHashMap<>();
+                }
+            };
+
     private static final ClassValue<Object> extFieldCache = new ClassValue<>() {
         @Override
         protected Object computeValue(Class<?> type) {
@@ -129,25 +157,105 @@ public final class FieldStore {
                                       String fieldName, String desc) {
         int index = getIndex(className, fieldName, desc);
         if (index < 0) {
-            // Field not registered yet — register it and return the JVM
-            // default for the type (never null for primitives: the caller
-            // unboxes, and null would NPE where real field semantics give 0)
-            registerField(className, fieldName, desc);
-            return defaultValue(desc);
+            // Field not registered yet: the reload registers it after the
+            // switch, and a read can arrive first. Register it here and go
+            // on, so that the read still gets the initialiser's value rather
+            // than the type default.
+            index = registerField(className, fieldName, desc);
         }
         try {
             java.lang.reflect.Field extField = resolveExtField(instance.getClass());
             if (extField == null) return defaultValue(desc);
+            Object value;
             // Synchronize on instance to prevent reading a stale ext array
             // while putExtField is resizing it on another thread
             synchronized (instance) {
                 Object[] extArray = (Object[]) extField.get(instance);
-                Object value = getField(extArray, index);
-                return value != null ? value : defaultValue(desc);
+                value = getField(extArray, index);
             }
+            if (value == WRITTEN_NULL) return null;
+            if (value != null) return value;
+            Object initialised = initialise(instance, className, fieldName, desc, index, extField);
+            return initialised != null ? initialised : defaultValue(desc);
         } catch (Exception e) {
             return defaultValue(desc);
         }
+    }
+
+    /**
+     * Replace the first-read initialisers of a class's added instance fields
+     * with the ones the newest companion carries. The whole set at once: a
+     * field whose initialiser the developer removed must stop being
+     * initialised, and the previous companion must stop being pinned.
+     */
+    public static void setInstanceInitialisers(Class<?> owner,
+                                               java.util.Map<String, java.lang.invoke.MethodHandle> byKey) {
+        if (owner == null) return;
+        ConcurrentHashMap<String, java.lang.invoke.MethodHandle> current = initialisersByClass.get(owner);
+        current.clear();
+        current.putAll(byKey);
+    }
+
+    /** Whether an added instance field has an initialiser to run on first read. */
+    public static boolean hasInstanceInitialiser(Class<?> owner, String fieldName, String desc) {
+        return owner != null && initialisersByClass.get(owner).containsKey(fieldName + ":" + desc);
+    }
+
+    /**
+     * The first read of an added field on an object that was built before the
+     * field existed: run the field's initialiser for this object, once.
+     *
+     * <p>The value is computed outside the instance monitor, because the
+     * initialiser is application code and holding a lock around it is a
+     * deadlock nobody wrote. So two threads reading the same field of the
+     * same object for the first time can both compute a value; the store
+     * decides, and both threads return the value that landed, so the object
+     * never shows two. An initialiser that throws is taken out for good and
+     * the field reads as the type default, which is what it read before.
+     *
+     * @return the value now in the slot, or null when there is no initialiser
+     *         for the field or it could not run
+     */
+    private static Object initialise(Object instance, String className, String fieldName,
+                                     String desc, int index, java.lang.reflect.Field extField) {
+        Class<?> owner = ownerOf(instance.getClass(), className);
+        if (owner == null) return null;
+        ConcurrentHashMap<String, java.lang.invoke.MethodHandle> initialisers =
+                initialisersByClass.get(owner);
+        String key = fieldName + ":" + desc;
+        java.lang.invoke.MethodHandle initialiser = initialisers.get(key);
+        if (initialiser == null) return null;
+
+        Object computed;
+        try {
+            computed = initialiser.invoke(instance);
+        } catch (Throwable t) {
+            initialisers.remove(key);
+            return null;
+        }
+        try {
+            synchronized (instance) {
+                Object[] extArray = (Object[]) extField.get(instance);
+                Object present = getField(extArray, index);
+                if (present == WRITTEN_NULL) return null;
+                if (present != null) return present;
+                Object[] newArray = setField(extArray, index,
+                        computed == null ? WRITTEN_NULL : computed);
+                extField.set(instance, newArray);
+                return computed;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** The class a field belongs to, found from the object's own class upwards. */
+    private static Class<?> ownerOf(Class<?> from, String className) {
+        String wanted = layoutKey(className);
+        for (Class<?> c = from; c != null; c = c.getSuperclass()) {
+            if (c.getName().equals(wanted)) return c;
+        }
+        return null;
     }
 
     /**
@@ -305,7 +413,8 @@ public final class FieldStore {
             // Synchronize on instance to prevent race on ext array resize (#8)
             synchronized (instance) {
                 Object[] extArray = (Object[]) extField.get(instance);
-                Object[] newArray = setField(extArray, index, boxedValue);
+                Object[] newArray = setField(extArray, index,
+                        boxedValue == null ? WRITTEN_NULL : boxedValue);
                 if (newArray != extArray) {
                     extField.set(instance, newArray);
                 }

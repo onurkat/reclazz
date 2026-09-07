@@ -8,6 +8,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **An instance field added by a reload gets its initialiser's value on
+  objects that already existed.** The initialiser's own instructions are
+  lifted out of the constructor, the way an added static's are lifted out of
+  `<clinit>`, and run for each object on the field's first read from the
+  field store; nothing else in the constructor is re-run. Measured in
+  `AddedFieldInitialiserTest`: a live object that gained
+  `cache = new ArrayList<>()`, `retries = 3` and `label = name.toUpperCase()
+  + "!"` answered `NullPointerException` before and `size 1 retries 3 label
+  HOLDER!` after, with the second read seeing the list the first read
+  created. The first read cost 5.5 ms on that run, the later ones 0.3 ms.
+  A value the application wrote first, null included, is kept, which needed
+  the store to tell a written null from an empty slot. An assignment that
+  reads a constructor argument cannot be lifted and is named with that
+  reason, as before. Companion engine only: on JBR/DCEVM the field is real
+  and pre-existing objects keep the type default. JRebel's FAQ says an added
+  field "will not be initialized in existing instances", and HotswapAgent's
+  ClassInit plugin covers static members.
+
+### Added
+
 - The README has a Documentation table naming every document under `docs/`
   and what each is for, held to the folder by a test; `docs/usage.md`
   points other clients and build tools at the protocol document.

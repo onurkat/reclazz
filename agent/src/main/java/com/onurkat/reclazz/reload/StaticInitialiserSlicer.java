@@ -196,7 +196,7 @@ public final class StaticInitialiserSlicer implements Opcodes {
      * @return -1 when there is no such point, meaning the write is entangled
      *         with whatever was on the stack before it
      */
-    private static int segmentStart(Frame<BasicValue>[] frames, int putIndex) {
+    static int segmentStart(Frame<BasicValue>[] frames, int putIndex) {
         for (int i = putIndex; i >= 0; i--) {
             Frame<BasicValue> frame = frames[i];
             if (frame == null) return -1;          // unreachable code
@@ -270,7 +270,7 @@ public final class StaticInitialiserSlicer implements Opcodes {
     }
 
     /** Labels any jump, switch or handler can arrive at. */
-    private static Set<LabelNode> branchTargets(MethodNode method) {
+    static Set<LabelNode> branchTargets(MethodNode method) {
         Set<LabelNode> targets = new HashSet<>();
         for (AbstractInsnNode insn : method.instructions) {
             if (insn instanceof JumpInsnNode jump) {
@@ -289,22 +289,22 @@ public final class StaticInitialiserSlicer implements Opcodes {
         return targets;
     }
 
-    private static int indexOf(AbstractInsnNode[] insns, AbstractInsnNode target) {
+    static int indexOf(AbstractInsnNode[] insns, AbstractInsnNode target) {
         for (int i = 0; i < insns.length; i++) {
             if (insns[i] == target) return i;
         }
         return -1;
     }
 
-    private static Map<LabelNode, LabelNode> labelCopies(AbstractInsnNode insn,
-                                                          Map<LabelNode, LabelNode> copies) {
+    static Map<LabelNode, LabelNode> labelCopies(AbstractInsnNode insn,
+                                                  Map<LabelNode, LabelNode> copies) {
         if (insn instanceof LabelNode label) {
             copies.computeIfAbsent(label, unused -> new LabelNode());
         }
         return copies;
     }
 
-    private static boolean isStore(int opcode) {
+    static boolean isStore(int opcode) {
         return opcode == ISTORE || opcode == LSTORE || opcode == FSTORE
                 || opcode == DSTORE || opcode == ASTORE;
     }

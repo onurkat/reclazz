@@ -469,30 +469,33 @@ loop on hand-written Java, companion-class mode is transparent.
 
 ## Known Limitations
 
-### New Field Default Values
+### New Field Values on Objects That Already Existed
 
-When structural reload adds new instance fields to an existing class, **existing object instances** will have default values (`null`, `0`, `false`) for those fields. Only instances created after the reload will have field initializer values applied.
+When a structural reload adds an instance field, objects created after the
+reload run the new constructor and get the field's initialiser value. An
+object that already existed did not, so Reclazz lifts the initialiser's own
+instructions out of the constructor and runs them for that object on the
+field's first read. Adding `private final List<String> cache = new
+ArrayList<>();` to a live Spring singleton therefore reads a list, and
+`private int retries = 3;` reads 3. The initialiser may read the object's
+other fields and call its methods, which the live object has; each object
+computes its own value; a value the application wrote before the first read,
+null included, is kept; and the initialiser runs once per object.
 
-This is a fundamental consequence of how the JVM manages object memory — existing instances cannot be resized to accommodate new fields. Reclazz stores new fields in an external array (`__reclazz$ext`), which starts empty for pre-existing instances.
+What cannot be lifted keeps the type default (`null`, `0`, `false`) on
+pre-existing objects, and the reload names the field and the reason:
 
-Objects created after the reload do get the initializer, because they run the
-new constructor. A Spring bean is recreated by the reload, so in practice a new
-field on a bean holds the value you wrote; it is long-lived objects the reload
-did not recreate that keep the default.
+- an assignment that reads a constructor argument (`this.upper =
+  name.toUpperCase()` in the constructor body), because the object no longer
+  has the argument;
+- an initialiser that branches, sits in a try/catch, or shares a computation
+  with another field;
+- an initialiser that throws on first read: the field reads the default and
+  the initialiser is not tried again.
 
-**Workaround:** If a new field needs a specific initial value on objects that
-already exist, add a null-check or lazy initialization pattern in your code:
-
-```java
-private String newField; // Added via structural reload
-
-public String getNewField() {
-    if (newField == null) {
-        newField = "default value";
-    }
-    return newField;
-}
-```
+On JetBrains Runtime or DCEVM the field is a real field on the redefined
+class, so reflection sees it, and objects from before the reload keep the type
+default there.
 
 ---
 
