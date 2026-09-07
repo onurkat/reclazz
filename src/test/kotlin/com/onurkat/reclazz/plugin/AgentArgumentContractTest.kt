@@ -43,7 +43,7 @@ class AgentArgumentContractTest {
     @Test
     fun `directories are joined the way the agent splits them`() {
         val plugin = source("src/main/kotlin/com/onurkat/reclazz/plugin/agent/AgentJarLocator.kt").readText()
-        val agent = source("agent/src/main/java/com/onurkat/reclazz/agent/AgentConfig.java").readText()
+        val agent = source("agent/src/main/java/com/onurkat/reclazz/config/AgentConfig.java").readText()
 
         assertTrue(
             plugin.contains("""watchDirs=${'$'}{outputDirs.joinToString(";")}"""),
@@ -63,7 +63,7 @@ class AgentArgumentContractTest {
     }
 
     private fun keysTheAgentKnows(): Set<String> {
-        val text = source("agent/src/main/java/com/onurkat/reclazz/agent/AgentConfig.java").readText()
+        val text = source("agent/src/main/java/com/onurkat/reclazz/config/AgentConfig.java").readText()
         val block = text.substringAfter("KNOWN_KEYS = Set.of(").substringBefore(");")
         return Regex(""""([a-zA-Z]+)"""").findAll(block)
             .map { it.groupValues[1] }

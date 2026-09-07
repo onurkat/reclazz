@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.platform;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.io.File;

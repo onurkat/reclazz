@@ -33,9 +33,11 @@ import static org.junit.jupiter.api.Assertions.*;
  * them came from one class: the restart ledger lived in {@code agent}, the
  * composition root, and every reloader that noted a restart pulled
  * {@code agent} in with it. The ledger is reporting, and lives with the
- * status reporter now. What this pins is the layering that leaves:
- * {@code ui} at the bottom, {@code util} on {@code ui}, and the reloaders
- * ({@code spring}, {@code hybris}) not reaching up into {@code agent}.
+ * status reporter now, the agent's options live in {@code config} with nothing
+ * under them but {@code ui}, and the watcher is handed a callback instead of
+ * calling the agent. What this pins is the layering that leaves: {@code ui}
+ * at the bottom, {@code config} and {@code util} on it, and nothing but the
+ * composition root ({@code agent}) and {@code reload} knowing the agent.
  * Javadoc references do not count; only what the bytecode names.
  */
 class PackageDependenciesTest {
@@ -45,10 +47,15 @@ class PackageDependenciesTest {
     /** Package -> the project packages it may reference. Absent means unconstrained. */
     private static final Map<String, Set<String>> ALLOWED = Map.of(
             "ui", Set.of(),
-            "util", Set.of("ui"),
-            "spring", Set.of("ui", "util", "platform", "transform", "bootstrap", "reload"),
-            "hybris", Set.of("ui", "util", "platform", "watcher", "bootstrap"),
-            "compiler", Set.of("ui", "util", "platform", "hybris"));
+            "config", Set.of("ui"),
+            "util", Set.of("ui", "config"),
+            "spring", Set.of("ui", "util", "config", "platform", "transform", "bootstrap", "reload"),
+            "hybris", Set.of("ui", "util", "config", "platform", "watcher", "bootstrap"),
+            "compiler", Set.of("ui", "util", "config", "platform", "hybris"),
+            // The composition root assembles these; they do not know it.
+            "platform", Set.of("ui", "util", "config", "compiler", "hybris"),
+            "transform", Set.of("ui", "util", "config", "bootstrap", "platform"),
+            "watcher", Set.of("ui", "util", "config", "platform", "transform", "hybris"));
 
     @Test
     void theLowerPackagesDoNotReachUp() throws IOException {

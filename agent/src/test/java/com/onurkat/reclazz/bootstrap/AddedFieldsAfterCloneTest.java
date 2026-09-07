@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.bootstrap;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.transform.ReclazzTransformer;
 import com.onurkat.reclazz.transform.TransformContext;
 import com.onurkat.reclazz.transform.TransformTestBase;

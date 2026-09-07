@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.transform;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.agent.ClassReloader;
 import com.onurkat.reclazz.bootstrap.DispatchTable;
 import com.onurkat.reclazz.reload.StructuralReloader;

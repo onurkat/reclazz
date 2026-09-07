@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.reload;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.agent.ClassReloader;
 import com.onurkat.reclazz.transform.ReclazzTransformer;
 import com.onurkat.reclazz.transform.TransformContext;

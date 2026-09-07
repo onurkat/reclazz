@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.platform;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.hybris.ExtensionInfo;
 import com.onurkat.reclazz.hybris.HybrisContext;
 import org.junit.jupiter.api.BeforeEach;

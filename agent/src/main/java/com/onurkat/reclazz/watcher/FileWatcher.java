@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.watcher;
 
-import com.onurkat.reclazz.agent.AgentConfig;
+import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 import java.util.zip.CRC32;
 
 import static java.nio.file.StandardWatchEventKinds.*;
-import com.onurkat.reclazz.agent.ReclazzAgent;
 import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.hybris.HybrisConfigReloader;
 import com.onurkat.reclazz.platform.HybrisPlatformContext;
@@ -209,6 +208,19 @@ public class FileWatcher {
      * arrived, which split a save into a batch and a straggler. When both
      * handlers are set this one wins.
      */
+    /**
+     * What to do with each properties file found under a watched directory
+     * at start-up: the agent baselines it, so the first save after start-up
+     * reads as the keys that changed rather than every key in the file. A
+     * callback rather than a call into the agent, so the watcher does not
+     * know the class that assembles it.
+     */
+    private volatile Consumer<Path> propertyFileBaseline = file -> { };
+
+    public void onPropertyFileFound(Consumer<Path> baseline) {
+        this.propertyFileBaseline = baseline;
+    }
+
     public void onFileChanges(Consumer<List<ChangeEvent>> handler) {
         this.batchHandler = handler;
     }
@@ -1072,7 +1084,7 @@ public class FileWatcher {
         try (java.util.stream.Stream<Path> files = Files.walk(dir, 4)) {
             files.filter(Files::isRegularFile)
                  .filter(worthKeeping)
-                 .forEach(ReclazzAgent::baselinePropertyFile);
+                 .forEach(propertyFileBaseline);
         } catch (Exception e) {
             // A directory that cannot be walked costs one over-eager first
             // save, not a broken watcher.
