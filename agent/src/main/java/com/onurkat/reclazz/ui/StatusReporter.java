@@ -132,6 +132,7 @@ public class StatusReporter {
                 : String.format("Reloaded %s", className);
         log(GREEN + BOLD, "SWAP", msg);
         notifyListeners("RELOAD", msg);
+        ReloadEvents.reloaded(className, false, timeMs, null);
     }
 
     public static void structuralReload(String className, long timeMs) {
@@ -160,6 +161,7 @@ public class StatusReporter {
                 : String.format("Structural reload: %s (%s)", className, detail);
         log(GREEN + BOLD, "STRC", msg);
         notifyListeners("STRUCTURAL_RELOAD", msg);
+        ReloadEvents.reloaded(className, true, timeMs, shape);
     }
 
     public static void compile(String fileName, long timeMs) {
