@@ -310,39 +310,7 @@ public class ReclazzAgent {
                 StatusReporter.warn("Live web-context discovery failed: " + Failures.describe(t));
             }
 
-            // Start status server for plugin communication. If the user didn't
-            // pass an explicit portFile= or statusPort=, derive a sensible
-            // default so the IntelliJ plugin can discover us out of the box —
-            // even when the user added a bare `-javaagent:.../reclazz-agent.jar`
-            // line to wrapper.conf without args.
-            java.nio.file.Path effectivePortFile = config.getPortFile();
-            int effectivePort = config.getStatusPort();
-            if (effectivePortFile == null) {
-                java.nio.file.Path defaultDir;
-                if (isHybris && platformContext instanceof HybrisPlatformContext) {
-                    defaultDir = ((HybrisPlatformContext) platformContext)
-                            .getHybrisContext().getHybrisHome().resolve(".reclazz");
-                } else {
-                    defaultDir = java.nio.file.Paths.get(System.getProperty("user.dir"), ".reclazz");
-                }
-                try {
-                    java.nio.file.Files.createDirectories(defaultDir);
-                    effectivePortFile = defaultDir.resolve("agent.port");
-                } catch (Exception e) {
-                    StatusReporter.warn("Could not create default port-file directory " + defaultDir + ": " + Failures.describe(e));
-                }
-            }
-            if (effectivePortFile != null || effectivePort > 0) {
-                try {
-                    statusServer = new StatusServer(Math.max(0, effectivePort), effectivePortFile);
-                    statusServer.start();
-                    if (effectivePortFile != null) {
-                        StatusReporter.info("Status server port file: " + effectivePortFile);
-                    }
-                } catch (Exception e) {
-                    StatusReporter.warn("Failed to start status server: " + Failures.describe(e));
-                }
-            }
+            startStatusServer(config, isHybris);
 
             // What the JPA rebuild needs to know, handed over rather than read
             // back off this class.
@@ -647,6 +615,43 @@ public class ReclazzAgent {
             if (watcherExecutor != null) {
                 watcherExecutor.shutdownNow();
                 watcherExecutor = null;
+            }
+        }
+    }
+
+    /**
+     * Start the status server the IDE connects to. Without an explicit
+     * {@code portFile=} or {@code statusPort=}, the port file goes where the
+     * plugin looks for it, so a bare {@code -javaagent:...reclazz-agent.jar}
+     * line in wrapper.conf is found without arguments.
+     */
+    private static void startStatusServer(AgentConfig config, boolean isHybris) {
+        java.nio.file.Path effectivePortFile = config.getPortFile();
+        int effectivePort = config.getStatusPort();
+        if (effectivePortFile == null) {
+            java.nio.file.Path defaultDir;
+            if (isHybris && platformContext instanceof HybrisPlatformContext) {
+                defaultDir = ((HybrisPlatformContext) platformContext)
+                        .getHybrisContext().getHybrisHome().resolve(".reclazz");
+            } else {
+                defaultDir = java.nio.file.Paths.get(System.getProperty("user.dir"), ".reclazz");
+            }
+            try {
+                java.nio.file.Files.createDirectories(defaultDir);
+                effectivePortFile = defaultDir.resolve("agent.port");
+            } catch (Exception e) {
+                StatusReporter.warn("Could not create default port-file directory " + defaultDir + ": " + Failures.describe(e));
+            }
+        }
+        if (effectivePortFile != null || effectivePort > 0) {
+            try {
+                statusServer = new StatusServer(Math.max(0, effectivePort), effectivePortFile);
+                statusServer.start();
+                if (effectivePortFile != null) {
+                    StatusReporter.info("Status server port file: " + effectivePortFile);
+                }
+            } catch (Exception e) {
+                StatusReporter.warn("Failed to start status server: " + Failures.describe(e));
             }
         }
     }
