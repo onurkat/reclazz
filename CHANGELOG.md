@@ -4,6 +4,34 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [1.1.1] - 2026-09-07
+
+### Changed
+
+- **One of the two deprecated platform APIs is gone.** The Marketplace verifies
+  each release against eight IDE builds; all eight passed 1.1.0, and the newest,
+  IntelliJ IDEA 2026.1, reported two deprecated API usages where the others
+  reported one. `ReadAction.compute(ThrowableComputable)` is the one only 2026.1
+  sees, and `runReadAction` is the same thing without the deprecation, present
+  as far back as 2023.3.
+
+  `FileSaverDescriptor`'s vararg constructor is the other and it stays. Its
+  replacement was added in 2025.2 and does not exist at 2023.3, the oldest build
+  this plugin claims, so calling it would turn a warning into a
+  `NoSuchMethodError` there. Dropping the extension argument was tried and
+  changes nothing: at 2023.3 the vararg constructor is the only one, and that is
+  what the call compiles to.
+
+- **The release workflow publishes a usable checksum.** The `.sha256` beside the
+  agent jar carried the hash of the right file under the path the CI runner
+  built it at, so `shasum -c` looked for `/tmp/...` on the reader's machine and
+  reported a file it could not read rather than checking theirs. The 1.1.0 asset
+  has been replaced with a correct one, same hash.
+
+- The local plugin verifier now records what it cannot see: it resolves 2025.2
+  at the newest, so a deprecation that only the 2026.1 platform reports is one
+  this gate could not have caught.
+
 ## [1.1.0] - 2026-09-06
 
 ### Fixed
