@@ -120,7 +120,7 @@ public final class ProtectedCallResolver {
                     // declaring class as a direct or transitive superclass.
                     // The target class is exactly that.
                     MethodType virtualType = invocationType.dropParameterTypes(0, 1);
-                    mh = targetLookup.findSpecial(owner, invocationName, virtualType, target);
+                    mh = specialCall(targetLookup, owner, target, invocationName, virtualType);
                     break;
                 }
                 case KIND_VIRTUAL:
@@ -182,5 +182,42 @@ public final class ProtectedCallResolver {
         } catch (Throwable t) {
             return null;
         }
+    }
+
+    /**
+     * What an {@code invokespecial} in the companion resolves to.
+     *
+     * <p>A super call has to run the parent's body, and in an instrumented
+     * parent that body is the renamed copy, not the public method: the public
+     * method is a trampoline whose call site resolves the renamed copy
+     * virtually, and every instrumented class in the hierarchy names its copy
+     * the same way, so from a child receiver that virtual resolution lands on
+     * the child's own previous body. Measured: {@code Derived.describe()}
+     * returning {@code "d2/" + super.describe()} served {@code d2/d1/b1} after
+     * a reload of Derived alone, and kept serving it, because Base had never
+     * been reloaded and its site still pointed at the renamed copy. The
+     * transformer already sends a super call in an instrumented class straight
+     * to the parent's renamed copy for this reason; the companion is the same
+     * body in another class, and follows the same rule.
+     *
+     * <p>Only for a call into a parent. An {@code invokespecial} on the class
+     * itself is a private method of an older class file, and its renamed copy
+     * is the previous body; the trampoline is what reaches the reloaded one.
+     * A parent without the copy was never instrumented, and its public method
+     * is its real body.
+     */
+    private static MethodHandle specialCall(MethodHandles.Lookup targetLookup, Class<?> owner,
+                                            Class<?> target, String name, MethodType virtualType)
+            throws NoSuchMethodException, IllegalAccessException {
+        if (owner != target) {
+            String renamed = InjectedNames.renamed(name,
+                    InjectedNames.descHash(virtualType.toMethodDescriptorString()));
+            try {
+                return targetLookup.findSpecial(owner, renamed, virtualType, target);
+            } catch (NoSuchMethodException | IllegalAccessException parentNotInstrumented) {
+                // The public method is the body.
+            }
+        }
+        return targetLookup.findSpecial(owner, name, virtualType, target);
     }
 }

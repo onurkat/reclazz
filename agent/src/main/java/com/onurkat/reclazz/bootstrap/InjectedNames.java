@@ -57,6 +57,21 @@ public final class InjectedNames {
         return RENAMED_PREFIX + name + "$" + descHash;
     }
 
+    /**
+     * The hash that tells overloads apart in a renamed name: FNV-1a 64-bit
+     * over the method descriptor. Here rather than in the transformer because
+     * the runtime has to be able to name a renamed copy too, and this class
+     * is the one both sides can reach.
+     */
+    public static String descHash(String descriptor) {
+        long h = 0xcbf29ce484222325L;
+        for (int i = 0; i < descriptor.length(); i++) {
+            h ^= descriptor.charAt(i);
+            h *= 0x100000001b3L;
+        }
+        return Long.toHexString(h & 0x7FFFFFFFFFFFFFFFL);
+    }
+
     /** How an instance call site asks for its current implementation. */
     public static String siteKey(String name, String descHash) {
         return name + ":" + descHash;
