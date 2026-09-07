@@ -157,7 +157,7 @@ public class AgentConfig {
         }
 
         if (params.containsKey("wrapOutput")) {
-            String value = String.valueOf(params.get("wrapOutput")).trim().toLowerCase();
+            String value = String.valueOf(params.get("wrapOutput")).trim().toLowerCase(java.util.Locale.ROOT);
             // "true"/"false" are what a developer types out of habit for a
             // setting that reads like a boolean, and refusing them would be
             // pedantry rather than safety.
@@ -225,7 +225,7 @@ public class AgentConfig {
         }
 
         if (params.containsKey("platform")) {
-            config.platform = params.get("platform").toLowerCase();
+            config.platform = params.get("platform").toLowerCase(java.util.Locale.ROOT);
         }
 
         if (params.containsKey("jpaRefresh")) {

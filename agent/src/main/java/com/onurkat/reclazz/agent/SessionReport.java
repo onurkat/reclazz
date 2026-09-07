@@ -148,7 +148,7 @@ public final class SessionReport {
                 // pointer at the two settings that shorten the walk.
                 report.add("This JDK has no native file watching, so it walks every one of them "
                         + "about twice a second whether or not you are editing, at roughly "
-                        + String.format("%.1f", watchedFiles / 2000.0)
+                        + String.format(java.util.Locale.ROOT, "%.1f", watchedFiles / 2000.0)
                         + "% of one core. watchExtensions and excludePatterns shorten the walk.");
             }
         }
