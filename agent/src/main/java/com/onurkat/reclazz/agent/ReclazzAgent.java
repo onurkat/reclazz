@@ -450,6 +450,7 @@ public class ReclazzAgent {
             // that separate "nothing reloads" from "nothing I changed was being
             // watched" belong to the watcher, and it does not exist until now.
             if (statusServer != null) {
+                statusServer.setScanner(watcher::requestScan);
                 statusServer.setHealthReporter(() -> withStall(SessionReport.lines(
                         watcher.watchedDirectoryCount(),
                         watcher.unwatchableCount(),

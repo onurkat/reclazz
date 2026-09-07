@@ -29,8 +29,9 @@ import java.util.concurrent.TimeUnit;
  * Protocol: one JSON object per line, terminated by newline.
  *
  * Clients may send one line back: {@code DIAGNOSE <class name>},
- * {@code PENDING} or {@code HEALTH}. Both read state the agent already broadcasts and return
- * text, so they add no reach into the process, and the socket is loopback-only
+ * {@code PENDING}, {@code HEALTH} or {@code SCAN}. The first three read state the agent
+ * already broadcasts and return text; SCAN asks the watcher to look at its directories
+ * now rather than on the JDK's next poll. None of them adds reach into the process, and the socket is loopback-only
  * as before. Anything else is ignored rather than answered, so a stray
  * connection cannot make the agent talk.
  */
@@ -53,6 +54,9 @@ public class StatusServer implements StatusReporter.StatusListener {
 
     /** Answers HEALTH. Falls back to what SessionReport knows on its own. */
     private volatile java.util.function.Supplier<List<String>> health;
+
+    /** Acts on SCAN: the watcher looks now instead of waiting for the JDK. */
+    private volatile Runnable scanner;
 
     public StatusServer(int port, Path portFile) {
         this.requestedPort = port;
@@ -124,6 +128,16 @@ public class StatusServer implements StatusReporter.StatusListener {
     }
 
     /**
+     * What SCAN does. The IDE sends it when a build has finished; the answer
+     * is whatever reloads follow, as ordinary lines. It reads nothing the
+     * client names and loads nothing: it moves a look the watcher was going
+     * to take anyway to now.
+     */
+    public void setScanner(Runnable scanner) {
+        this.scanner = scanner;
+    }
+
+    /**
      * Runs a client's command and sends the answer to every client, so the
      * report lands in the reload log the developer is already looking at.
      */
@@ -137,6 +151,11 @@ public class StatusServer implements StatusReporter.StatusListener {
                 for (String reportLine : RestartLedger.digest()) {
                     StatusReporter.info(reportLine);
                 }
+                return;
+            }
+            if (trimmed.equalsIgnoreCase(SCAN)) {
+                Runnable scanning = scanner;
+                if (scanning != null) scanning.run();
                 return;
             }
             if (trimmed.equalsIgnoreCase(HEALTH)) {
@@ -313,6 +332,7 @@ public class StatusServer implements StatusReporter.StatusListener {
     private static final String DIAGNOSE = "DIAGNOSE";
     private static final String PENDING = "PENDING";
     private static final String HEALTH = "HEALTH";
+    private static final String SCAN = "SCAN";
 
     /**
      * Package-private rather than private: what this returns is the line the

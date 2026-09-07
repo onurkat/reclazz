@@ -200,6 +200,16 @@ class ReloadManager(private val project: Project) : Disposable {
     }
 
     /**
+     * Tell the agent a build has just finished, so its watcher looks at the
+     * output directories now instead of on the JDK's next poll.
+     *
+     * @return false when no agent is connected to tell
+     */
+    fun buildFinished(): Boolean {
+        return statusClient?.send("SCAN") ?: false
+    }
+
+    /**
      * Ask what a restart would still change. The answer arrives as log lines.
      *
      * @return false when no agent is connected to ask

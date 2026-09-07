@@ -45,6 +45,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **The IDE tells the agent when a build has finished, and the agent
+  looks.** The first change to a file in a session waits for the JDK's file
+  watcher to notice it, and on macOS, where the JDK has no native watcher,
+  that is a poll on a two-second cycle. The plugin already hears every build
+  finish; it now sends `SCAN` over the status socket, and the watcher stats
+  its directories itself and enqueues what changed as due, since a finished
+  build has nothing left to debounce. Measured on macOS, from the class file
+  being written to the agent's "Class file changed" line, fresh classes each
+  time:
+
+  | | round 1 | round 2 | round 3 |
+  |---|---|---|---|
+  | left to the JDK's poll (plus the 200ms debounce) | 2,123ms | 1,783ms | 1,781ms |
+  | scan on build finished | 114ms | 106ms | 125ms |
+
+  `SCAN` reads nothing a client names and loads nothing; it moves a look the
+  watcher was going to take to now. Where the JDK watches natively the event
+  has usually arrived already and the scan is a harmless check. The
+  watcher's idle poll of its own queue is 200ms instead of a second, so the
+  request is picked up promptly; idle, that poll touches no file.
+
 - **Within one save, a class is reloaded after the classes it calls.** A
   reload is atomic for a class and not for a save; between the first class
   of a save and the last the application runs a mixture, and the mixture

@@ -149,6 +149,16 @@ public class FileWatcher {
      */
     private final Map<Path, Long> baselineMtimes = new ConcurrentHashMap<>();
 
+    /**
+     * The modification time each watched file was last seen with, by the
+     * baseline walk, a dispatch, or a scan. What a requested scan compares
+     * against, so it enqueues only what has changed since.
+     */
+    private final Map<Path, Long> seenMtimes = new ConcurrentHashMap<>();
+
+    /** Set by {@link #requestScan()}, taken by the poll loop. */
+    private volatile boolean scanRequested;
+
     /** Class files modified after JVM start, found during the baseline walk. */
     private final Map<Path, WatchedDirectory> startupChangedClasses = new ConcurrentHashMap<>();
 
@@ -324,7 +334,7 @@ public class FileWatcher {
                 + " KB deflated");
     }
 
-    private void registerRecursive(Path root, String moduleName, String sourceRoot) throws IOException {
+    void registerRecursive(Path root, String moduleName, String sourceRoot) throws IOException {
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
@@ -636,9 +646,16 @@ public class FileWatcher {
         long debounceMs = config.getDebounceMs();
 
         while (active) {
-            long idleWait = (jdkPolls && !hotFiles.isEmpty()) ? HOT_SCAN_MS : 1000;
+            // Idle, this is a poll of an in-memory queue, so a short wait costs
+            // nothing and is what lets a requested scan be picked up promptly.
+            long idleWait = (jdkPolls && !hotFiles.isEmpty()) ? HOT_SCAN_MS : IDLE_WAIT_MS;
             long waitMs = pendingEvents.isEmpty() ? idleWait : Math.min(debounceMs, 100);
             WatchKey key = watchService.poll(waitMs, TimeUnit.MILLISECONDS);
+
+            if (scanRequested) {
+                scanRequested = false;
+                scanWatchedDirectories(pendingEvents, debounceMs);
+            }
 
             if (key != null) {
                 WatchedDirectory watchedDir = watchKeyMap.get(key);
@@ -725,6 +742,68 @@ public class FileWatcher {
         }
     }
 
+    /** The poll loop's wait when nothing is pending and nothing is hot. */
+    static final long IDLE_WAIT_MS = 200;
+
+    /**
+     * Ask the watcher to look at every watched directory now, rather than
+     * waiting for the JDK to notice.
+     *
+     * <p>Where the JDK has no native file watching, macOS, it polls its
+     * registered directories on a two-second cycle, and the first change to a
+     * file in a session waits for that cycle: measured at 611 to 1301ms
+     * between the write and the event. The IDE knows the moment a build has
+     * finished, which is the moment the files are worth looking at, so it
+     * says so over the status socket and the watcher stats the watched
+     * directories itself. Where the JDK watches natively the event has
+     * usually arrived already, and the scan is a harmless check. What the
+     * scan finds is enqueued as due: the build is over, there is nothing to
+     * debounce.
+     */
+    public void requestScan() {
+        scanRequested = true;
+    }
+
+    /**
+     * Enqueue every watched file whose modification time is newer than the
+     * one it was last seen with, or that has not been seen at all.
+     *
+     * @return how many were enqueued
+     */
+    int scanWatchedDirectories(Map<Path, PendingEvent> pendingEvents, long debounceMs) {
+        long now = System.currentTimeMillis();
+        int found = 0;
+        java.util.Set<Path> visited = new java.util.HashSet<>();
+        for (WatchedDirectory watched : watchKeyMap.values()) {
+            if (!visited.add(watched.directory())) continue;
+            try (java.nio.file.DirectoryStream<Path> entries = Files.newDirectoryStream(watched.directory())) {
+                for (Path file : entries) {
+                    String fileName = file.getFileName().toString();
+                    if (!isInterestingFile(fileName) || config.isExcluded(fileName)) continue;
+                    if (!Files.isRegularFile(file)) continue;
+                    long mtime = lastModifiedMillis(file);
+                    if (mtime <= 0) continue;
+                    Long seen = seenMtimes.get(file);
+                    if (seen != null && mtime <= seen) continue;
+                    seenMtimes.put(file, mtime);
+                    // Due now: the timestamp is set back by the debounce, so
+                    // the settle check passes on this pass.
+                    pendingEvents.put(file, new PendingEvent(now - debounceMs, file,
+                            seen == null ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED,
+                            watched.moduleName(), watched.sourceRoot()));
+                    found++;
+                }
+            } catch (IOException gone) {
+                // A directory the build is replacing; the lost-directory
+                // handling picks it up.
+            }
+        }
+        if (found > 0 && config.isVerbose()) {
+            StatusReporter.info("Scan on request found " + com.onurkat.reclazz.ui.Plural.of(found, "changed file"));
+        }
+        return found;
+    }
+
     /**
      * How long a burst may hold up its first file while it keeps arriving.
      * A build that writes for longer than this still gets its files in
@@ -799,6 +878,12 @@ public class FileWatcher {
             return null;
         }
         lastModifiedMap.put(pending.path, now);
+        if (pending.type != ChangeEvent.Type.DELETED) {
+            long mtime = lastModifiedMillis(pending.path);
+            if (mtime > 0) seenMtimes.put(pending.path, mtime);
+        } else {
+            seenMtimes.remove(pending.path);
+        }
 
         // Content-hash dedupe for .class files. A no-op build
         // (Hybris's ant build that rewrites identical bytecode from
@@ -914,6 +999,7 @@ public class FileWatcher {
                             long mtime = attrs.lastModifiedTime().toMillis();
                             classContentHashes.put(file, h);
                             baselineMtimes.put(file, mtime);
+                            seenMtimes.put(file, mtime);
                             if (owner != null && mtime > JVM_START_MILLIS) {
                                 startupChangedClasses.put(file, owner);
                             }
