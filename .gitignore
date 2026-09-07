@@ -52,3 +52,6 @@ docs/screenshots/
 # Archived notes from deleted GitHub releases: kept locally as a record,
 # not part of the source.
 docs/release-notes-archive/
+
+# Two-agent working files (see AGENTS.md)
+.collab/
