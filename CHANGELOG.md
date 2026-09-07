@@ -34,6 +34,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **Class files that land together are reloaded as one batch.** An IDE build
+  or a save-all writes every changed class at once. Each arrived on the
+  reload thread as its own task, and each bean's refresh cascaded to its
+  dependents and re-pointed its holders on its own: a walk over every
+  singleton in every context, per class. The autoCompile path already
+  bracketed its classes with one deferred sweep; the class-file path, which
+  is the one an IDE build takes, now does the same. The watcher hands over
+  everything that became due in one poll pass as one list, so the first
+  class of a save can no longer be under way before the second is queued.
+  Each class is still reloaded and reported as before; a single save is
+  handed straight through with no bracket and no waiting.
+
+  Measured on the agent's own window, from noticing the first class file to
+  the application serving every new version, on a plain Spring context:
+
+  | context | saved | sweeps before | sweeps after | before | after |
+  |---|---|---|---|---|---|
+  | 2,000 beans | 30 classes | 21 to 22 | 0 to 1 | 384 to 386ms | 296 to 300ms |
+  | 10,000 beans | 60 classes | 51 to 53 | 1 | 1,237 to 1,284ms | 1,021 to 1,125ms |
+
+  The sweep is what grows with the context, so the saving is the product of
+  classes saved and singletons held; the rest of the window is the per-class
+  redefinition and bean refresh, which are unchanged. So are the two seconds
+  before that window on macOS, which are javac and the JDK's polling file
+  watcher.
+
 - **The agent's every-class scan reads the constant pool, not the code.** The
   reflection intercept has to look at every class the JVM loads, because any
   of them might call `getDeclaredMethods` on a class Reclazz later adds a

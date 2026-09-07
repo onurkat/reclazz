@@ -66,7 +66,8 @@ tasks.test {
     // end-to-end inside the test process.
     jvmArgs("-Djdk.attach.allowAttachSelf=true")
     // Throughput measurement, opt-in: -Preclazz.bench.jar=<jar> -Preclazz.bench.out=<file>
-    for (key in listOf("reclazz.bench.jar", "reclazz.bench.corpus", "reclazz.bench.out")) {
+    for (key in listOf("reclazz.bench.jar", "reclazz.bench.corpus", "reclazz.bench.out",
+                       "reclazz.bench.trace", "reclazz.bench.beans", "reclazz.bench.saved")) {
         (project.findProperty(key) as String?)?.let { systemProperty(key, it) }
     }
     testLogging {

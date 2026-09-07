@@ -73,6 +73,17 @@ public class ReclazzAgent {
      */
     private static final java.util.LinkedHashMap<Path, ChangeEvent> pendingJavaChanges =
             new java.util.LinkedHashMap<>();
+
+    /**
+     * Class files that have landed and not yet been reloaded, drained as one
+     * batch by the reload thread. An IDE build or a save-all writes every
+     * changed class at once; handled one task per file, each bean's refresh
+     * cascaded to its dependents and re-pointed its holders on its own, which
+     * is a walk over every singleton in every context per class. Batched, the
+     * walk is one per save, the same way the autoCompile path already does it.
+     */
+    private static final java.util.LinkedHashMap<Path, ChangeEvent> pendingClassChanges =
+            new java.util.LinkedHashMap<>();
     private static volatile ExecutorService watcherExecutor;
     private static volatile ExecutorService reloadExecutor;
     private static volatile StatusServer statusServer;
@@ -458,18 +469,37 @@ public class ReclazzAgent {
             // events accumulate in the queue and the next drain compiles
             // them together in a single javac invocation (save-all in the
             // IDE used to pay full javac startup per file, serially).
-            watcher.onFileChange(event -> {
-                String fn = event.getPath().getFileName().toString();
-                if (fn.endsWith(".java") && config.isAutoCompile() && compiler != null
-                        && event.getType() != ChangeEvent.Type.DELETED) {
-                    synchronized (pendingJavaChanges) {
-                        pendingJavaChanges.put(event.getPath(), event);
+            // Class files that became due in the same pass are queued together
+            // and drained by one task, so a build's worth of classes is one
+            // batch on the reload thread rather than a batch and a straggler.
+            watcher.onFileChanges(events -> {
+                int classFiles = 0;
+                for (ChangeEvent event : events) {
+                    String fn = event.getPath().getFileName().toString();
+                    if (fn.endsWith(".java") && config.isAutoCompile() && compiler != null
+                            && event.getType() != ChangeEvent.Type.DELETED) {
+                        synchronized (pendingJavaChanges) {
+                            pendingJavaChanges.put(event.getPath(), event);
+                        }
                     }
+                    if (fn.endsWith(".class") && event.getType() != ChangeEvent.Type.DELETED) {
+                        synchronized (pendingClassChanges) {
+                            pendingClassChanges.put(event.getPath(), event);
+                        }
+                        classFiles++;
+                        continue;
+                    }
+                    reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(
+                            "Handling " + event.getPath().getFileName(),
+                            () -> handleChange(event, compiler, reloader,
+                                    springOrchestrator, interceptorReloader, impexImporter, config)));
                 }
-                reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(
-                        "Handling " + event.getPath().getFileName(),
-                        () -> handleChange(event, compiler, reloader,
-                                springOrchestrator, interceptorReloader, impexImporter, config)));
+                if (classFiles > 0) {
+                    reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(
+                            "Reloading " + com.onurkat.reclazz.ui.Plural.of(classFiles, "class file"),
+                            () -> handleClassBatch(compiler, reloader,
+                                    springOrchestrator, interceptorReloader, impexImporter, config)));
+                }
             });
 
             // Rebuilding a constant's dependents is the same work as saving
@@ -798,6 +828,80 @@ public class ReclazzAgent {
         PlatformContext platform = platformContext;
         com.onurkat.reclazz.reload.ConstantDependents.chase(className, changed,
                 platform == null ? Map.of() : platform.getSourceDirs(), constantRebuild);
+    }
+
+    /** How long a burst is given to finish arriving once it has been seen to be one. */
+    private static final long CLASS_BATCH_GRACE_MS = 100;
+    private static final long CLASS_BATCH_MAX_WAIT_MS = 1000;
+
+    /**
+     * Reload every class file that has landed, as one batch.
+     *
+     * <p>Each class still goes through {@link #handleChange}, so what is done
+     * and said per class is unchanged. What the batch adds is the bracket
+     * around them: the Spring dependent cascade and stale-reference healing
+     * are deferred to {@code endBatch} and run once. A single class is handed
+     * straight through, with no bracket and no waiting, so the latency of an
+     * ordinary save is what it was.
+     *
+     * <p>The watcher dispatches a burst one event at a time, and the first
+     * of them can reach this thread before the rest have been queued. Once
+     * two or more have been seen the burst is real, and it is given a short
+     * while to finish arriving rather than being split into a batch and a
+     * tail of singles, each with its own sweep.
+     */
+    private static void handleClassBatch(IncrementalCompiler compiler,
+                                         ClassReloader reloader,
+                                         SpringReloadOrchestrator springOrchestrator,
+                                         InterceptorReloader interceptorReloader,
+                                         ImpexAutoImporter impexImporter,
+                                         AgentConfig config) {
+        java.util.List<ChangeEvent> batch = drainPendingClassChanges();
+        if (batch.isEmpty()) return;          // drained by an earlier task
+
+        if (batch.size() > 1) {
+            long deadline = System.currentTimeMillis() + CLASS_BATCH_MAX_WAIT_MS;
+            while (System.currentTimeMillis() < deadline) {
+                try {
+                    Thread.sleep(CLASS_BATCH_GRACE_MS);
+                } catch (InterruptedException interrupted) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                java.util.List<ChangeEvent> more = drainPendingClassChanges();
+                if (more.isEmpty()) break;
+                batch.addAll(more);
+            }
+        }
+
+        if (batch.size() == 1) {
+            handleChange(batch.get(0), compiler, reloader,
+                    springOrchestrator, interceptorReloader, impexImporter, config);
+            return;
+        }
+
+        StatusReporter.info(batch.size() + " class files changed together; reloading them as one batch");
+        long startTime = System.currentTimeMillis();
+        springOrchestrator.beginBatch();
+        try {
+            for (ChangeEvent event : batch) {
+                handleChange(event, compiler, reloader,
+                        springOrchestrator, interceptorReloader, impexImporter, config);
+            }
+        } finally {
+            springOrchestrator.endBatch();
+        }
+        StatusReporter.info("Batch of " + batch.size() + " class files done ("
+                + (System.currentTimeMillis() - startTime) + "ms)");
+    }
+
+    private static java.util.List<ChangeEvent> drainPendingClassChanges() {
+        synchronized (pendingClassChanges) {
+            if (pendingClassChanges.isEmpty()) return new java.util.ArrayList<>();
+            java.util.List<ChangeEvent> drained = new java.util.ArrayList<>(pendingClassChanges.values());
+            pendingClassChanges.clear();
+            return drained;
+        }
     }
 
     private static void handleJavaBatch(IncrementalCompiler compiler,

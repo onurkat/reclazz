@@ -49,6 +49,11 @@ public final class WatchedApp implements AutoCloseable {
 
     private final List<String> output = new CopyOnWriteArrayList<>();
 
+
+    /** When each line of {@link #output()} was read, by this JVM's clock. */
+
+    private final List<Long> outputTimes = new java.util.concurrent.CopyOnWriteArrayList<>();
+
     private WatchedApp(Path sourceDir, Path classesDir, String classpath, Process process) {
         this.sourceDir = sourceDir;
         this.classesDir = classesDir;
@@ -146,6 +151,21 @@ public final class WatchedApp implements AutoCloseable {
         compile(List.of(file), classesDir, classpath);
     }
 
+    /**
+     * Rewrite several sources and compile them in one javac run, so their
+     * class files land in the watched directory together: what an IDE build
+     * or a save-all does, and what a reload has to cope with as a burst.
+     */
+    public void rewriteAll(java.util.Map<String, String> sourcesByName) throws IOException {
+        List<Path> files = new ArrayList<>();
+        for (var entry : sourcesByName.entrySet()) {
+            Path file = sourceDir.resolve(entry.getKey() + ".java");
+            Files.writeString(file, entry.getValue());
+            files.add(file);
+        }
+        compile(files, classesDir, classpath);
+    }
+
     /** Compile a source that is already on disk, unchanged. */
     public void recompile(String simpleName) throws IOException {
         compile(List.of(sourceDir.resolve(simpleName + ".java")), classesDir, classpath);
@@ -153,6 +173,27 @@ public final class WatchedApp implements AutoCloseable {
 
     public Path classesDir() {
         return classesDir;
+    }
+
+    /**
+     * When the first line containing {@code needle} was read, in this JVM's
+     * millis, or -1. With {@link #lastSeenMillis} it brackets a span of the
+     * application's output without trusting the application's own clock or
+     * the second-resolution timestamps in the agent's lines.
+     */
+    public long firstSeenMillis(String needle) {
+        for (int i = 0; i < output.size(); i++) {
+            if (output.get(i).contains(needle)) return outputTimes.get(i);
+        }
+        return -1;
+    }
+
+    /** When the last line containing {@code needle} was read, or -1. */
+    public long lastSeenMillis(String needle) {
+        for (int i = output.size() - 1; i >= 0; i--) {
+            if (output.get(i).contains(needle)) return outputTimes.get(i);
+        }
+        return -1;
     }
 
     /** Everything the application has printed so far. */
@@ -214,7 +255,10 @@ public final class WatchedApp implements AutoCloseable {
             try (BufferedReader in = new BufferedReader(
                     new InputStreamReader(process.getInputStream()))) {
                 String line;
-                while ((line = in.readLine()) != null) output.add(line);
+                while ((line = in.readLine()) != null) {
+                    outputTimes.add(System.currentTimeMillis());
+                    output.add(line);
+                }
             } catch (Exception stopped) {
                 // The process was killed; there is nothing left to read.
             }

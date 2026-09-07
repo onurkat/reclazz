@@ -169,11 +169,24 @@ public class FileWatcher {
     }
     private volatile boolean active = true;
     private Consumer<ChangeEvent> changeHandler;
+    private Consumer<List<ChangeEvent>> batchHandler;
 
     public FileWatcher(PlatformContext platformContext, AgentConfig config) throws IOException {
         this.platformContext = platformContext;
         this.config = config;
         this.watchService = FileSystems.getDefault().newWatchService();
+    }
+
+    /**
+     * Everything that became due in one pass of the poll loop, delivered as
+     * one list. A build writes its class files together and they become due
+     * together; handed over one at a time they reached the reload thread one
+     * at a time, and the first could be under way before the second had
+     * arrived, which split a save into a batch and a straggler. When both
+     * handlers are set this one wins.
+     */
+    public void onFileChanges(Consumer<List<ChangeEvent>> handler) {
+        this.batchHandler = handler;
     }
 
     public void onFileChange(Consumer<ChangeEvent> handler) {
@@ -696,6 +709,7 @@ public class FileWatcher {
             // Dispatch events whose debounce period has elapsed
             if (!pendingEvents.isEmpty()) {
                 long now = System.currentTimeMillis();
+                List<ChangeEvent> due = new ArrayList<>();
                 var it = pendingEvents.entrySet().iterator();
                 while (it.hasNext()) {
                     var entry = it.next();
@@ -703,9 +717,11 @@ public class FileWatcher {
                     if (now - pending.timestamp >= debounceMs) {
                         it.remove();
                         markHot(pending.path(), pending.moduleName(), pending.sourceRoot());
-                        dispatchEvent(pending);
+                        ChangeEvent event = toChangeEvent(pending);
+                        if (event != null) due.add(event);
                     }
                 }
+                deliver(due);
             }
 
             if (lastModifiedMap.size() > MAX_DEDUP_ENTRIES) {
@@ -716,10 +732,38 @@ public class FileWatcher {
 
     // Package-private for test access.
     void dispatchEvent(PendingEvent pending) {
+        ChangeEvent event = toChangeEvent(pending);
+        if (event != null) deliver(List.of(event));
+    }
+
+    private void deliver(List<ChangeEvent> events) {
+        if (events.isEmpty()) return;
+        if (batchHandler != null) {
+            try {
+                batchHandler.accept(events);
+            } catch (Exception e) {
+                StatusReporter.error("Error in change handler: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            }
+            return;
+        }
+        if (changeHandler == null) return;
+        for (ChangeEvent event : events) {
+            // One at a time, as before: a handler that throws on one file
+            // does not cost the others in the same pass.
+            try {
+                changeHandler.accept(event);
+            } catch (Exception e) {
+                StatusReporter.error("Error in change handler: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            }
+        }
+    }
+
+    /** The event a due file becomes, or null when it is a repeat or its bytes did not change. */
+    private ChangeEvent toChangeEvent(PendingEvent pending) {
         Long lastMod = lastModifiedMap.get(pending.path);
         long now = System.currentTimeMillis();
         if (lastMod != null && (now - lastMod) < 100) {
-            return;
+            return null;
         }
         lastModifiedMap.put(pending.path, now);
 
@@ -748,7 +792,7 @@ public class FileWatcher {
                     boolean racedBaseline = baselineMtime != null
                             && baselineMtime == lastModifiedMillis(pending.path);
                     if (!racedBaseline) {
-                        return;
+                        return null;
                     }
                     StatusReporter.info("Change to " + pending.path.getFileName()
                             + " landed while Reclazz was starting — reloading it now");
@@ -756,17 +800,9 @@ public class FileWatcher {
             }
         }
 
-        ChangeEvent changeEvent = new ChangeEvent(
+        return new ChangeEvent(
                 pending.path, pending.type,
                 pending.moduleName, pending.sourceRoot);
-
-        if (changeHandler != null) {
-            try {
-                changeHandler.accept(changeEvent);
-            } catch (Exception e) {
-                StatusReporter.error("Error in change handler: " + com.onurkat.reclazz.ui.Failures.describe(e));
-            }
-        }
     }
 
     /**
