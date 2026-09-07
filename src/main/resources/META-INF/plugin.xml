@@ -107,6 +107,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.1.1</h3>
+        <ul>
+            <li>Housekeeping only, with nothing in it that changes what a reload does. One of the two deprecated platform APIs the Marketplace's verifier reports is gone; the other stays, because its replacement does not exist on IntelliJ IDEA 2023.3, which this plugin still supports, and calling it there would fail rather than warn.</li>
+            <li>The checksum published beside the standalone agent jar can now actually be checked: it named the path the build ran at rather than the file next to it.</li>
+        </ul>
+
         <h3>1.1.0</h3>
         <ul>
             <li><b>Fixes a NoSuchMethodError on SAP Commerce item creation.</b> A super call into a parent that inherits the method rather than declaring it was rewritten against that parent, which never had the renamed copy. Every hybris item class has that shape, so this affected item creation generally, including ImpEx imports.</li>
