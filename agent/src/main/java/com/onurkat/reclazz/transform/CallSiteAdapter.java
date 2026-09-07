@@ -148,13 +148,6 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
     }
 
     public static String descHash(String descriptor) {
-        // FNV-1a 64-bit hash for collision resistance across overloaded methods.
-        // String.hashCode() (32-bit) has too high a collision risk for this use case.
-        long h = 0xcbf29ce484222325L;
-        for (int i = 0; i < descriptor.length(); i++) {
-            h ^= descriptor.charAt(i);
-            h *= 0x100000001b3L;
-        }
-        return Long.toHexString(h & 0x7FFFFFFFFFFFFFFFL);
+        return com.onurkat.reclazz.bootstrap.InjectedNames.descHash(descriptor);
     }
 }

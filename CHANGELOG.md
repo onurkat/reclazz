@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **An edited override calls the parent it extends, not its own previous
+  body.** Editing a method that calls `super` in a class whose parent had not
+  itself been reloaded returned the wrong value, and kept returning it:
+  `Derived.describe()` written as `"d2/" + super.describe()` served
+  `d2/d1/b1`, the new prefix on top of the *old* Derived body on top of Base.
+  The edited body runs in a companion class, whose super call resolved
+  through the parent's public method; that is a trampoline whose call site
+  finds the parent's renamed copy virtually, and since every instrumented
+  class in the hierarchy names its copy the same way, from a child receiver
+  that resolution lands on the child's own copy. A super call in an
+  instrumented class already goes straight to the parent's renamed copy for
+  this reason; the companion now follows the same rule, and falls back to
+  the public method when the parent was never instrumented. Measured: 335
+  million calls after such a reload, 325 million of them wrong, under 16
+  threads; single-threaded it was simply the answer. Under load, with the
+  parent reloaded first, the same defect showed as a few torn values during
+  the child's reload, which is what `HierarchyReloadUnderLoadTest` had been
+  catching in the full suite and nowhere else.
+
 ### Security
 
 - **The bootstrap jar is extracted into an owner-only directory with a random
