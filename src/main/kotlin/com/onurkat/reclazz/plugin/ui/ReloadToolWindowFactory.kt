@@ -29,11 +29,18 @@ class ReloadToolWindowFactory : ToolWindowFactory, DumbAware {
         toolWindow.setTitleActions(listOf(
             object : AnAction("Export Log") {
                 override fun actionPerformed(e: AnActionEvent) {
-                    // Deprecated since 2025.1 in favour of a builder, which
-                    // does not exist in 2024.1 — our declared minimum. Kept
-                    // deliberately: it is a deprecation, not a removal, and
-                    // switching would drop support for the oldest IDE we
-                    // claim. Revisit when sinceBuild moves past 251.
+                    // Deprecated from 2025.1, and it stays. The replacement,
+                    // the non-vararg FileSaverDescriptor(String, String), was
+                    // added in 2025.2 and does not exist at 2023.3, which is
+                    // our declared sinceBuild: calling it would turn a
+                    // deprecation warning into a NoSuchMethodError on the
+                    // oldest IDE we claim to support.
+                    //
+                    // Checked rather than assumed: dropping the extension
+                    // argument here compiles to exactly the same call, because
+                    // at 2023.3 the vararg constructor is the only one there
+                    // is, and the verifier reported the same deprecation
+                    // afterwards. Revisit when sinceBuild moves past 252.
                     @Suppress("DEPRECATION")
                     val descriptor = FileSaverDescriptor("Export Reclazz Log", "Save reload log to file", "txt")
                     val dialog = FileChooserFactory.getInstance().createSaveFileDialog(descriptor, project)

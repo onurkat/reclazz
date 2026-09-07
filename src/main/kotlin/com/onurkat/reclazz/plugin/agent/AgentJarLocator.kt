@@ -5,7 +5,7 @@
 package com.onurkat.reclazz.plugin.agent
 
 import com.intellij.ide.plugins.PluginManager
-import com.intellij.openapi.application.ReadAction
+import com.intellij.openapi.application.runReadAction
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.extensions.PluginId
 import com.intellij.openapi.module.ModuleManager
@@ -183,7 +183,7 @@ object AgentJarLocator {
     }
 
     private fun collectModuleOutputDirs(project: Project): List<String> {
-        return ReadAction.compute<List<String>, RuntimeException> {
+        return runReadAction {
             val dirs = LinkedHashSet<String>()
             for (module in ModuleManager.getInstance(project).modules) {
                 val ext = CompilerModuleExtension.getInstance(module) ?: continue

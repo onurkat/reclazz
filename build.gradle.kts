@@ -313,6 +313,14 @@ intellijPlatform {
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.2")
+            // 2025.2 is still the newest this toolchain resolves: 2025.3 is in
+            // the release feed and not in the repository this plugin reads, and
+            // 2026.1 is not a Community build at all. That is the gate's limit
+            // and it costs something real. The Marketplace verifies against
+            // IntelliJ IDEA 2026.1, where ReadAction.compute is deprecated and
+            // nowhere below it is, so 1.1.0 shipped a warning this task could
+            // not have reported and still cannot. When a review comes back with
+            // a deprecation, the Marketplace page is the only place to read it.
         }
     }
 
