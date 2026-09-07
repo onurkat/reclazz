@@ -4,6 +4,40 @@ All notable changes to Reclazz will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [Unreleased]
+
+### Changed
+
+- **The agent's every-class scan reads the constant pool, not the code.** The
+  reflection intercept has to look at every class the JVM loads, because any
+  of them might call `getDeclaredMethods` on a class Reclazz later adds a
+  member to. It used to find out by walking every instruction of every
+  method; now it walks the constant pool, where an `invokevirtual` on
+  `java/lang/Class` has to leave a `Methodref` behind. Measured over a
+  17,700-class corpus of Spring, Spring Boot, Hibernate, Jackson and Tomcat:
+
+  | | before | after |
+  |---|---|---|
+  | cold (first pass, as at startup) | 518ms | 138ms |
+  | warm | 184 to 231ms | 43 to 60ms |
+  | classes rewritten | 170 | 170 |
+
+  The same 170 classes are rewritten either way; a test walks two real jars
+  both ways and requires the answers to agree class for class. A SAP Commerce
+  server loads several times that many classes, so this is the difference
+  between the agent costing a second or two of every start and costing a
+  fraction of one.
+
+- **The serialVersionUID decision reads a watched class once instead of three
+  times.** Whether to write the UID was three questions asked of the same
+  bytes, each parsing the class again. One parse answers all three; on the
+  685 non-interface classes of spring-context the step went from 11ms to 6ms
+  of a transform that took 80ms.
+
+- Two opt-in throughput measurements now live beside the tests, skipped
+  unless a jar or a corpus is named on the command line, so the numbers above
+  can be re-taken on the next change rather than remembered.
+
 ## [1.1.1] - 2026-09-07
 
 ### Changed

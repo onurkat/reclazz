@@ -207,10 +207,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // annotation, which the structural diff cannot see.
         // Computed from the ORIGINAL bytes, before anything is added to them,
         // and only when the class does not already say what its UID is.
-        Long originalUid = SerialVersionUid.worthWriting(classfileBuffer)
-                && !SerialVersionUid.alreadyDeclared(classfileBuffer)
-                ? SerialVersionUid.computeFrom(classfileBuffer)
-                : null;
+        Long originalUid = SerialVersionUid.forInjection(classfileBuffer);
 
         MethodTrampolineAdapter adapter = new MethodTrampolineAdapter(
                 writer, context, AnnotationSignatures.of(classfileBuffer), originalUid, loader);
