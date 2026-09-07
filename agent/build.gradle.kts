@@ -50,6 +50,9 @@ dependencies {
     testImplementation("org.springframework:spring-webmvc:5.3.39")
     testImplementation("org.springframework:spring-test:5.3.39")
     testImplementation("javax.servlet:javax.servlet-api:4.0.1")
+    // The Bean Validation API under its pre-Jakarta name, for the test that
+    // a Boot 2 application's validator is found by it.
+    testImplementation("javax.validation:validation-api:2.0.1.Final")
 }
 
 tasks.test {
