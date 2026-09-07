@@ -45,6 +45,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The three most-edited sources, `ReclazzAgent`, `StructuralReloader` and
+  `FileWatcher`, name the project's own classes through imports instead of
+  fully qualified names inline (50 sites; 322 remain elsewhere). The
+  platform stub the watcher tests use is one shared class instead of seven
+  nested copies, six identical and one that had drifted.
+
 - **CI is green again, and cheaper.** Every run on `main` since 1.0.27 had
   failed on one test, `EnumAppendTest`, on Linux and Windows alike, while
   passing on the maintainer's machine: javac 21 compiles a switch over an

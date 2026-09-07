@@ -5,15 +5,13 @@
 package com.onurkat.reclazz.watcher;
 
 import com.onurkat.reclazz.agent.AgentConfig;
-import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.platform.NoopPlatformContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Not a test: what the watcher keeps per class file after its baseline
@@ -55,15 +53,4 @@ class WatcherFootprintBench {
         return rt.totalMemory() - rt.freeMemory();
     }
 
-    private static final class NoopPlatformContext implements PlatformContext {
-        @Override public Platform getPlatformId() { return Platform.GENERIC; }
-        @Override public void initialize() { }
-        @Override public Map<String, List<Path>> getClassOutputDirs() { return Map.of(); }
-        @Override public Map<String, List<Path>> getSourceDirs() { return Map.of(); }
-        @Override public Map<String, List<Path>> getResourceDirs() { return Map.of(); }
-        @Override public String resolveClasspath() { return ""; }
-        @Override public String resolveClassName(Path classFile) { return null; }
-        @Override public Path resolveOutputDir(Path classFile) { return null; }
-        @Override public Object getApplicationContext() { return null; }
-    }
 }

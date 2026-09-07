@@ -18,6 +18,15 @@ import java.util.function.Consumer;
 import java.util.zip.CRC32;
 
 import static java.nio.file.StandardWatchEventKinds.*;
+import com.onurkat.reclazz.agent.ReclazzAgent;
+import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.hybris.HybrisConfigReloader;
+import com.onurkat.reclazz.platform.HybrisPlatformContext;
+import com.onurkat.reclazz.platform.StartupSignal;
+import com.onurkat.reclazz.transform.TransformedClassCache;
+import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.util.Supervised;
 
 /**
  * Watches application directories for file changes using Java NIO WatchService.
@@ -219,8 +228,8 @@ public class FileWatcher {
             if (delaySec > 0) {
                 StatusReporter.info("FileWatcher starts when the application reports ready, "
                         + "or in " + delaySec + " seconds, whichever comes first...");
-                long waited = com.onurkat.reclazz.platform.StartupSignal.awaitReady(delaySec);
-                if (com.onurkat.reclazz.platform.StartupSignal.isReady()) {
+                long waited = StartupSignal.awaitReady(delaySec);
+                if (StartupSignal.isReady()) {
                     StatusReporter.info("Application context refreshed after " + waited
                             + "ms; watching from here instead of waiting out the "
                             + delaySec + "s cap");
@@ -237,7 +246,7 @@ public class FileWatcher {
             // asked for. Ending while it is still true is the loop giving up,
             // and it used to return from here as quietly as a clean shutdown.
             if (active) {
-                com.onurkat.reclazz.util.Supervised.stoppedUnexpectedly("The file watcher",
+                Supervised.stoppedUnexpectedly("The file watcher",
                         "Nothing will reload until this application is restarted.");
             }
         } catch (IOException e) {
@@ -245,9 +254,9 @@ public class FileWatcher {
             // returns, so the watcher is over: "FileWatcher error" read like
             // one error among many, in a session that would never reload again.
             StatusReporter.error("The file watcher stopped: "
-                    + com.onurkat.reclazz.ui.Failures.describe(e)
+                    + Failures.describe(e)
                     + ". Nothing will reload until this application is restarted.");
-            com.onurkat.reclazz.agent.RestartLedger.note("The file watcher",
+            RestartLedger.note("The file watcher",
                     "it stopped during this session with " + e.getClass().getSimpleName());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -333,9 +342,9 @@ public class FileWatcher {
         // after the application reports ready, which is when most watched
         // classes have been loaded and transformed.
         StatusReporter.info("Last-known-good bytecode cache: "
-                + com.onurkat.reclazz.transform.TransformedClassCache.classCount()
+                + TransformedClassCache.classCount()
                 + " classes, "
-                + (com.onurkat.reclazz.transform.TransformedClassCache.deflatedBytes() / 1024)
+                + (TransformedClassCache.deflatedBytes() / 1024)
                 + " KB deflated");
     }
 
@@ -432,7 +441,7 @@ public class FileWatcher {
                 + "how many directories one user may watch, which is shared with every other "
                 + "program doing it: on Linux raise fs.inotify.max_user_watches, or narrow what "
                 + "Reclazz watches with watchDirs or excludePatterns. The failure was "
-                + com.onurkat.reclazz.ui.Failures.describe(firstRegistrationFailure) + ".");
+                + Failures.describe(firstRegistrationFailure) + ".");
     }
 
     /**
@@ -635,7 +644,7 @@ public class FileWatcher {
                 }
             });
         } catch (IOException e) {
-            StatusReporter.warn("Failed to scan new directory " + root + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.warn("Failed to scan new directory " + root + ": " + Failures.describe(e));
         }
     }
 
@@ -692,7 +701,7 @@ public class FileWatcher {
                                     enqueueExistingFiles(changedFile, watchedDir.moduleName,
                                             watchedDir.sourceRoot, pendingEvents);
                                 } catch (IOException e) {
-                                    StatusReporter.error("Failed to watch new directory: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                                    StatusReporter.error("Failed to watch new directory: " + Failures.describe(e));
                                 }
                             }
                             continue;
@@ -805,7 +814,7 @@ public class FileWatcher {
             }
         }
         if (found > 0 && config.isVerbose()) {
-            StatusReporter.info("Scan on request found " + com.onurkat.reclazz.ui.Plural.of(found, "changed file"));
+            StatusReporter.info("Scan on request found " + Plural.of(found, "changed file"));
         }
         return found;
     }
@@ -860,7 +869,7 @@ public class FileWatcher {
             try {
                 batchHandler.accept(events);
             } catch (Exception e) {
-                StatusReporter.error("Error in change handler: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                StatusReporter.error("Error in change handler: " + Failures.describe(e));
             }
             return;
         }
@@ -871,7 +880,7 @@ public class FileWatcher {
             try {
                 changeHandler.accept(event);
             } catch (Exception e) {
-                StatusReporter.error("Error in change handler: " + com.onurkat.reclazz.ui.Failures.describe(e));
+                StatusReporter.error("Error in change handler: " + Failures.describe(e));
             }
         }
     }
@@ -974,7 +983,7 @@ public class FileWatcher {
     void dispatchClassesChangedDuringStartup() {
         if (startupChangedClasses.isEmpty()) return;
 
-        StatusReporter.info(com.onurkat.reclazz.ui.Plural.of(startupChangedClasses.size(), "class file")
+        StatusReporter.info(Plural.of(startupChangedClasses.size(), "class file")
                 + " changed while the JVM"
                 + " was starting — reloading them so the running code matches disk");
         for (var entry : startupChangedClasses.entrySet()) {
@@ -1024,7 +1033,7 @@ public class FileWatcher {
             });
         } catch (IOException e) {
             StatusReporter.warn("Pre-populate hash walk failed for " + classRoot
-                    + ": " + com.onurkat.reclazz.ui.Failures.describe(e));
+                    + ": " + Failures.describe(e));
         }
         return count[0];
     }
@@ -1056,14 +1065,14 @@ public class FileWatcher {
         // is what tells a changed log level or a rebindable property from the
         // rest of an application.properties, so there it is every file.
         java.util.function.Predicate<Path> worthKeeping =
-                (platformContext instanceof com.onurkat.reclazz.platform.HybrisPlatformContext)
-                        ? com.onurkat.reclazz.hybris.HybrisConfigReloader::isPlatformConfiguration
+                (platformContext instanceof HybrisPlatformContext)
+                        ? HybrisConfigReloader::isPlatformConfiguration
                         : f -> f.getFileName().toString().endsWith(".properties");
 
         try (java.util.stream.Stream<Path> files = Files.walk(dir, 4)) {
             files.filter(Files::isRegularFile)
                  .filter(worthKeeping)
-                 .forEach(com.onurkat.reclazz.agent.ReclazzAgent::baselinePropertyFile);
+                 .forEach(ReclazzAgent::baselinePropertyFile);
         } catch (Exception e) {
             // A directory that cannot be walked costs one over-eager first
             // save, not a broken watcher.
