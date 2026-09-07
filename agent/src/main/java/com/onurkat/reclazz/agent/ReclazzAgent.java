@@ -953,6 +953,10 @@ public class ReclazzAgent {
         // Callees before callers, so no caller's new body reaches a callee
         // that still has its old shape. See BatchOrder.
         java.util.List<ChangeEvent> ordered = com.onurkat.reclazz.reload.BatchOrder.calleesFirst(batch);
+        // Two brackets: the JVM redefinitions are applied in one call at the
+        // end, then the Spring cascade and healing run once over the result.
+        StructuralReloader structural = structuralReloader;
+        if (structural != null) structural.beginBatch();
         springOrchestrator.beginBatch();
         try {
             for (ChangeEvent event : ordered) {
@@ -960,7 +964,11 @@ public class ReclazzAgent {
                         springOrchestrator, interceptorReloader, impexImporter, config);
             }
         } finally {
-            springOrchestrator.endBatch();
+            try {
+                if (structural != null) structural.endBatch();
+            } finally {
+                springOrchestrator.endBatch();
+            }
         }
         StatusReporter.info("Batch of " + batch.size() + " class files done ("
                 + (System.currentTimeMillis() - startTime) + "ms)");
@@ -1028,7 +1036,10 @@ public class ReclazzAgent {
         java.util.LinkedHashMap<String, String> swappedShapes = new java.util.LinkedHashMap<>();
 
         // Dependent cascade + stale-reference healing sweep every singleton
-        // in every context, so run them once for the whole batch.
+        // in every context, so run them once for the whole batch; the JVM
+        // redefinitions likewise go in one call at the end.
+        StructuralReloader structuralForBatch = structuralReloader;
+        if (structuralForBatch != null) structuralForBatch.beginBatch();
         springOrchestrator.beginBatch();
         try {
         for (var entry : compiledClasses.entrySet()) {
@@ -1112,7 +1123,11 @@ public class ReclazzAgent {
             }
         }
         } finally {
-            springOrchestrator.endBatch();
+            try {
+                if (structuralForBatch != null) structuralForBatch.endBatch();
+            } finally {
+                springOrchestrator.endBatch();
+            }
         }
 
         long elapsed = System.currentTimeMillis() - startTime;
