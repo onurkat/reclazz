@@ -8,6 +8,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **CI builds and tests on JDK 17 and 21, and Dependabot watches the
+  dependencies.** The agent runs on 17 through 25 and the two javacs compile
+  the same source differently; an enum switch test passed for weeks on the
+  maintainer's 21 while every run on CI's 17 failed. Linux now runs both,
+  Windows stays on 17 for the path handling. Gradle dependencies (root and
+  agent) and the workflow actions get weekly grouped update pull requests
+  instead of being noticed when something breaks.
+
+### Added
+
 - **`scripts/release.sh X.Y.Z` cuts a release.** The seven commands in
   `docs/publishing.md` had two known ways to go wrong, a GitHub release
   forgotten four times and a signed zip uploaded under the wrong name, and
