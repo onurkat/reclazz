@@ -107,6 +107,8 @@ public final class WatchedApp implements AutoCloseable {
 
         private String agentArgs = "startupDelaySec=1,debounceMs=200";
 
+        private final List<String> jvmArgs = new ArrayList<>();
+
         private String extraClasspath = "";
 
         private Builder(Path tempDir) {
@@ -122,6 +124,12 @@ public final class WatchedApp implements AutoCloseable {
         /** Agent arguments, without the watched directory, which is added. */
         public Builder agentArgs(String args) {
             this.agentArgs = args;
+            return this;
+        }
+
+        /** Extra JVM options for the application, placed before the agent. */
+        public Builder jvmArgs(String... args) {
+            jvmArgs.addAll(List.of(args));
             return this;
         }
 
@@ -147,10 +155,14 @@ public final class WatchedApp implements AutoCloseable {
                     : extraClasspath + File.pathSeparator + classesDir;
             compile(files, classesDir, extraClasspath);
 
-            Process process = new ProcessBuilder(javaBinary(),
-                    "-javaagent:" + agentJar + "=watchDirs=" + classesDir + "," + agentArgs,
-                    "-cp", classpath,
-                    "app.App")
+            List<String> command = new ArrayList<>();
+            command.add(javaBinary());
+            command.addAll(jvmArgs);
+            command.add("-javaagent:" + agentJar + "=watchDirs=" + classesDir + "," + agentArgs);
+            command.add("-cp");
+            command.add(classpath);
+            command.add("app.App");
+            Process process = new ProcessBuilder(command)
                     .redirectErrorStream(true)
                     .start();
 
