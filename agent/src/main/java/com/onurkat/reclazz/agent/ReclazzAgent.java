@@ -20,11 +20,11 @@ import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.watcher.FileWatcher;
 import com.onurkat.reclazz.watcher.ChangeEvent;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.instrument.Instrumentation;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -556,17 +556,44 @@ public class ReclazzAgent {
             if (is == null) {
                 throw new IllegalStateException("reclazz-bootstrap.bin not found in agent resources");
             }
-            // Use PID-scoped path to avoid race between multiple JVMs
-            Path tempDir = Path.of(System.getProperty("java.io.tmpdir"));
-            Path tempJar = tempDir.resolve("reclazz-bootstrap-" + ProcessHandle.current().pid() + ".jar");
-            Files.copy(is, tempJar, StandardCopyOption.REPLACE_EXISTING);
-            tempJar.toFile().deleteOnExit();
+            Path tempJar = extractBootstrapJar(is);
             instrumentation.appendToBootstrapClassLoaderSearch(new JarFile(tempJar.toFile()));
             // The bootstrap classes exist as of this line, so this is the
             // earliest the trusted-caller list can be named, and it is still
             // inside premain: no application class has run.
             trustEngineCallers();
         }
+    }
+
+    /**
+     * Write the bootstrap jar somewhere only this user can reach, under a name
+     * nobody can guess.
+     *
+     * <p>The bootstrap loader reads classes from this file lazily for as long as
+     * the JVM runs, so whoever can write to it can put code on the bootstrap
+     * class path. It used to be {@code $TMPDIR/reclazz-bootstrap-<pid>.jar},
+     * written with REPLACE_EXISTING. On a machine whose temp directory is shared,
+     * a Linux {@code /tmp} being the common case, that is a path another local
+     * user can predict and pre-create: in a sticky directory that stops the
+     * agent from starting, and in one that is not sticky it is a file they can
+     * replace afterwards. A fresh directory from {@code createTempDirectory} is
+     * owner-only and its name is random, so there is no path to pre-create and
+     * nothing for anyone else to write. Both are removed when the JVM exits,
+     * the file before the directory: {@code deleteOnExit} runs last-registered
+     * first.
+     */
+    static Path extractBootstrapJar(InputStream is) throws IOException {
+        Path dir = Files.createTempDirectory("reclazz-");
+        dir.toFile().deleteOnExit();
+        Path tempJar = Files.createTempFile(dir, "reclazz-bootstrap-", ".jar");
+        tempJar.toFile().deleteOnExit();
+        // Written into the file createTempFile made, which is owner-only.
+        // Files.copy with REPLACE_EXISTING would delete it and create a new
+        // one under the process umask, which is usually world-readable.
+        try (java.io.OutputStream out = Files.newOutputStream(tempJar)) {
+            is.transferTo(out);
+        }
+        return tempJar;
     }
 
     private static void handleChange(ChangeEvent event,

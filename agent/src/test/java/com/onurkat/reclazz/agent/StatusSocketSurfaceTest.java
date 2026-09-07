@@ -140,4 +140,64 @@ class StatusSocketSurfaceTest {
         }
         return count;
     }
+
+    /**
+     * Through the socket rather than {@code handleCommand}: the cap on a
+     * command used to be checked after the whole line had been read, and a
+     * line that never ends is never whole. The client here sends a megabyte
+     * with no newline; the server must close on it, and must still be
+     * accepting the next client afterwards.
+     */
+    @Test
+    void aLineThatNeverEndsDropsTheConnectionAndNothingElse() throws Exception {
+        java.nio.file.Path portFile = java.nio.file.Files.createTempFile("reclazz-port", ".tmp");
+        java.nio.file.Files.deleteIfExists(portFile);
+        StatusServer status = new StatusServer(0, portFile);
+        status.start();
+        try {
+            int port = Integer.parseInt(java.nio.file.Files.readString(portFile).trim());
+
+            try (java.net.Socket flooder = new java.net.Socket("127.0.0.1", port)) {
+                flooder.setSoTimeout(10_000);
+                java.io.InputStream in = flooder.getInputStream();
+                assertTrue(readLine(in).contains("CONNECTED"), "the welcome line comes first");
+
+                byte[] chunk = new byte[64 * 1024];
+                java.util.Arrays.fill(chunk, (byte) 'A');
+                boolean writeRefused = false;
+                try {
+                    for (int i = 0; i < 16; i++) {          // one megabyte, no newline
+                        flooder.getOutputStream().write(chunk);
+                    }
+                    flooder.getOutputStream().flush();
+                } catch (java.io.IOException serverHungUp) {
+                    writeRefused = true;
+                }
+                boolean closed = writeRefused;
+                if (!closed) {
+                    try {
+                        closed = in.read() == -1;
+                    } catch (java.io.IOException reset) {
+                        closed = true;
+                    }
+                }
+                assertTrue(closed, "a megabyte without a newline must end the connection");
+            }
+
+            try (java.net.Socket next = new java.net.Socket("127.0.0.1", port)) {
+                next.setSoTimeout(10_000);
+                assertTrue(readLine(next.getInputStream()).contains("CONNECTED"),
+                        "the server is still accepting after dropping the flooder");
+            }
+        } finally {
+            status.stop();
+        }
+    }
+
+    private static String readLine(java.io.InputStream in) throws java.io.IOException {
+        StringBuilder sb = new StringBuilder();
+        int c;
+        while ((c = in.read()) != -1 && c != '\n') sb.append((char) c);
+        return sb.toString();
+    }
 }

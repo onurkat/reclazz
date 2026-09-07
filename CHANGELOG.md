@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Security
+
+- **The bootstrap jar is extracted into an owner-only directory with a random
+  name.** The bootstrap class loader reads that jar lazily for as long as the
+  JVM runs, so whoever can write it can put code on the bootstrap class path.
+  It was written to `$TMPDIR/reclazz-bootstrap-<pid>.jar` with
+  REPLACE_EXISTING: on a shared temp directory another local user could
+  pre-create the path (which stopped the agent starting, the temp directory
+  being sticky) or, where it is not sticky, replace the file afterwards. A
+  directory from `createTempDirectory` is `rwx------` and its name is random,
+  and the jar inside it is written into the `rw-------` file `createTempFile`
+  made rather than copied over it, which would have re-created it under the
+  umask. A test occupies the old path and checks extraction neither touches
+  nor needs it.
+
+- **A status-socket line that never ends now ends the connection.** The
+  512-byte cap on a command was checked after `readLine` returned, and
+  `readLine` returns when it sees a newline, so a local process could make
+  the application's JVM hold whatever it sent until then. The reader now
+  stops one byte past the cap and closes; a test sends a megabyte with no
+  newline through a real socket and checks the server drops it and accepts
+  the next client.
+
+- `SECURITY.md` now says what the agent writes to disk and what the status
+  socket can and cannot be made to do, and lists 1.1.x as the supported line.
+
 ### Changed
 
 - **The agent's every-class scan reads the constant pool, not the code.** The
