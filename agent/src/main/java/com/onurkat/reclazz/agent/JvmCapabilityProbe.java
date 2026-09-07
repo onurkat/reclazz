@@ -149,11 +149,26 @@ public class JvmCapabilityProbe {
      * Only returns non-null for VMs that support structural changes (JBR, DCEVM).
      */
     private static String detectVmIdentity() {
-        String vmName = System.getProperty("java.vm.name", "").toLowerCase();
-        String vmVendor = System.getProperty("java.vm.vendor", "").toLowerCase();
-        String vmVersion = System.getProperty("java.vm.version", "").toLowerCase();
+        return detectVmIdentity(System.getProperty("java.vm.name", ""),
+                System.getProperty("java.vm.vendor", ""),
+                System.getProperty("java.vm.version", ""));
+    }
 
-        if (vmName.contains("jetbrains") || vmName.contains("jbr")) {
+    /**
+     * Lowered with {@code Locale.ROOT}, not the machine's locale: in a
+     * Turkish one the capital I of "JetBrains" lowers to a dotless ı and the
+     * runtime went unrecognised, so the companion engine ran where the JVM
+     * itself would have redefined the class.
+     */
+    static String detectVmIdentity(String name, String vendor, String version) {
+        String vmName = name.toLowerCase(java.util.Locale.ROOT);
+        String vmVendor = vendor.toLowerCase(java.util.Locale.ROOT);
+        String vmVersion = version.toLowerCase(java.util.Locale.ROOT);
+
+        // A real JetBrains Runtime names itself in the vendor
+        // ("JetBrains s.r.o.") while its vm.name is the stock
+        // "OpenJDK 64-Bit Server VM", so the vendor is asked too.
+        if (vmName.contains("jetbrains") || vmName.contains("jbr") || vmVendor.contains("jetbrains")) {
             return "JBR";
         }
         if (vmName.contains("dcevm") || vmVendor.contains("trava") || vmVersion.contains("dcevm")) {

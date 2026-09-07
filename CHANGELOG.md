@@ -91,6 +91,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- **A JetBrains Runtime is recognised on a Turkish machine.** Three
+  comparisons lowered a string with the machine's default locale, and in a
+  Turkish one the capital I of "JetBrains" lowers to a dotless ı, so the
+  runtime went unrecognised and the companion engine ran where the JVM
+  itself would have redefined the class; `platform=HYBRIS` was not
+  `hybris` either. Every case conversion in the agent names `Locale.ROOT`
+  now, a test runs the two decisions under Turkish, and a source guard
+  keeps a locale-dependent conversion from coming back.
+
+### Fixed
+
 - **SAP Commerce codegen runs on Windows.** The `ant build` behind an
   items.xml or beans.xml save looked for `setantenv.sh` and
   `apache-ant/bin/ant` and ran them through bash, so on Windows, where the
