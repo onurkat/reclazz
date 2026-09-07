@@ -86,6 +86,8 @@ public class ReclazzAgent {
             new java.util.LinkedHashMap<>();
     private static volatile ExecutorService watcherExecutor;
     private static volatile ExecutorService reloadExecutor;
+    /** Reports a reload that has run for too long; see {@link ReloadStall}. */
+    private static volatile ReloadStall reloadStall;
     private static volatile StatusServer statusServer;
 
     /**
@@ -161,12 +163,20 @@ public class ReclazzAgent {
      */
     private static volatile java.util.function.Consumer<Map<String, List<Path>>> constantRebuild;
 
+    /**
+     * Run first inside the guarded start, by tests only, to stand in for a
+     * failure the start-up has no other way to be given.
+     */
+    static volatile Runnable startProbe;
+
     private static synchronized void initialize(String agentArgs) {
         if (running) {
             StatusReporter.warn("Reclazz agent already initialised, skipping duplicate init.");
             return;
         }
         try {
+            Runnable probe = startProbe;
+            if (probe != null) probe.run();
             AgentConfig config = AgentConfig.parse(agentArgs);
             // Before anything else prints: the first lines of a session are
             // the banner and the capability report, and they should be laid
@@ -440,12 +450,12 @@ public class ReclazzAgent {
             // that separate "nothing reloads" from "nothing I changed was being
             // watched" belong to the watcher, and it does not exist until now.
             if (statusServer != null) {
-                statusServer.setHealthReporter(() -> SessionReport.lines(
+                statusServer.setHealthReporter(() -> withStall(SessionReport.lines(
                         watcher.watchedDirectoryCount(),
                         watcher.unwatchableCount(),
                         RestartLedger.size(),
                         watcher.watchedFileCount(),
-                        watcher.polls()));
+                        watcher.polls())));
             }
 
             // Single-threaded, and that is a correctness requirement rather
@@ -463,6 +473,29 @@ public class ReclazzAgent {
                 t.setDaemon(true);
                 return t;
             });
+
+            // One thread's worth of saying so when a reload never comes back:
+            // the reloads behind it are queued, and a queue is silent.
+            reloadStall = new ReloadStall(System::currentTimeMillis, RELOAD_STALL_WARN_MS);
+            Thread stallWatch = new Thread(com.onurkat.reclazz.util.Supervised.forever(
+                    "The reload watch",
+                    "A reload that hangs will no longer be reported. Reloading itself is unaffected.",
+                    () -> {
+                        // Until the executor is torn down on shutdown; `running`
+                        // is not set until the end of start-up, after this thread
+                        // has begun.
+                        while (reloadExecutor != null) {
+                            try {
+                                Thread.sleep(RELOAD_STALL_CHECK_MS);
+                            } catch (InterruptedException interrupted) {
+                                return;
+                            }
+                            ReloadStall watch = reloadStall;
+                            if (watch != null) watch.check();
+                        }
+                    }), "Reclazz-ReloadWatch");
+            stallWatch.setDaemon(true);
+            stallWatch.start();
 
             // Register the reload pipeline. Java changes are queued BEFORE
             // the executor task is submitted: while one batch compiles, new
@@ -489,16 +522,16 @@ public class ReclazzAgent {
                         classFiles++;
                         continue;
                     }
-                    reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(
+                    submitReload(
                             "Handling " + event.getPath().getFileName(),
                             () -> handleChange(event, compiler, reloader,
-                                    springOrchestrator, interceptorReloader, impexImporter, config)));
+                                    springOrchestrator, interceptorReloader, impexImporter, config));
                 }
                 if (classFiles > 0) {
-                    reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(
+                    submitReload(
                             "Reloading " + com.onurkat.reclazz.ui.Plural.of(classFiles, "class file"),
                             () -> handleClassBatch(compiler, reloader,
-                                    springOrchestrator, interceptorReloader, impexImporter, config)));
+                                    springOrchestrator, interceptorReloader, impexImporter, config));
                 }
             });
 
@@ -519,9 +552,9 @@ public class ReclazzAgent {
                             }
                         }
                     }
-                    reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once("Rebuilding constant dependents",
+                    submitReload("Rebuilding constant dependents",
                             () -> handleJavaBatch(compiler, reloader,
-                                    springOrchestrator, interceptorReloader)));
+                                    springOrchestrator, interceptorReloader));
                 };
             }
 
@@ -560,8 +593,16 @@ public class ReclazzAgent {
             StatusReporter.success("Reclazz is active. Watching for changes...");
             StatusReporter.info("Press Ctrl+C or stop the server to deactivate.");
 
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            // Throwable, not Exception. Whatever escapes premain ends the JVM
+            // before the application's main has run ("processing of -javaagent
+            // failed"), and an Error is what an agent's start-up dies of: a
+            // class missing from the jar, a static initialiser that threw. The
+            // agent failing to start costs hot reload; the application failing
+            // to start costs the application, and that is not this tool's
+            // call to make.
             StatusReporter.error("Failed to initialize Reclazz: " + com.onurkat.reclazz.ui.Failures.describe(e));
+            StatusReporter.error("  The application starts without hot reload.");
             StatusReporter.error("  Stack trace: " + e);
             if (statusServer != null) {
                 try { statusServer.stop(); } catch (Exception ignored) {}
@@ -828,6 +869,32 @@ public class ReclazzAgent {
         PlatformContext platform = platformContext;
         com.onurkat.reclazz.reload.ConstantDependents.chase(className, changed,
                 platform == null ? Map.of() : platform.getSourceDirs(), constantRebuild);
+    }
+
+    /** A reload still running after this long is reported, once. */
+    private static final long RELOAD_STALL_WARN_MS = 30_000;
+    private static final long RELOAD_STALL_CHECK_MS = 5_000;
+
+    /**
+     * Every piece of reload work goes through here: supervised, so a failure
+     * is a sentence rather than a silent future, and timed, so a hang is one
+     * too.
+     */
+    private static void submitReload(String what, Runnable work) {
+        ReloadStall watch = reloadStall;
+        Runnable timed = watch == null ? work : watch.timed(what, work);
+        reloadExecutor.submit(com.onurkat.reclazz.util.Supervised.once(what, timed));
+    }
+
+    /** The HEALTH report, with the reload that is holding everything up named first. */
+    private static List<String> withStall(List<String> report) {
+        ReloadStall watch = reloadStall;
+        String line = watch == null ? null : watch.healthLine();
+        if (line == null) return report;
+        List<String> withIt = new java.util.ArrayList<>(report.size() + 1);
+        withIt.add(line);
+        withIt.addAll(report);
+        return withIt;
     }
 
     /** How long a burst is given to finish arriving once it has been seen to be one. */

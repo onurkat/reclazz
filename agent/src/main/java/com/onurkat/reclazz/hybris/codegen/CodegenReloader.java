@@ -275,39 +275,32 @@ public class CodegenReloader {
         try {
             ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", shellCommand);
             pb.directory(platform.toFile());
-            pb.redirectErrorStream(true);
-            Process process = pb.start();
 
-            StringBuilder tail = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                String line;
-                int lineCount = 0;
-                while ((line = reader.readLine()) != null) {
-                    lineCount++;
-                    if (line.contains("BUILD FAILED")
-                            || line.contains("error:")
-                            || line.contains("ERROR")) {
-                        StatusReporter.warn("  " + line);
-                    }
-                    tail.append(line).append('\n');
-                    if (tail.length() > 4000) {
-                        tail.delete(0, tail.length() - 4000);
-                    }
-                }
-                if (lineCount == 0) {
-                    StatusReporter.warn("Codegen: ant produced no output (suspicious)");
-                }
-            }
+            // The output used to be read to its end before the five-minute
+            // wait began, so an ant that hung with its output open held the
+            // reload thread for good, and every save after it with it.
+            java.util.concurrent.atomic.AtomicInteger lineCount = new java.util.concurrent.atomic.AtomicInteger();
+            com.onurkat.reclazz.util.BoundedProcess.Result run = com.onurkat.reclazz.util.BoundedProcess.run(
+                    pb, java.time.Duration.ofSeconds(300), line -> {
+                        lineCount.incrementAndGet();
+                        if (line.contains("BUILD FAILED")
+                                || line.contains("error:")
+                                || line.contains("ERROR")) {
+                            StatusReporter.warn("  " + line);
+                        }
+                    }, 4000);
 
-            if (!process.waitFor(300, TimeUnit.SECONDS)) {
-                process.destroyForcibly();
-                StatusReporter.error("Codegen: `ant build` timed out after 5 minutes");
+            if (run.timedOut()) {
+                StatusReporter.error("Codegen: `ant build` timed out after 5 minutes and was stopped");
                 return false;
             }
+            if (lineCount.get() == 0) {
+                StatusReporter.warn("Codegen: ant produced no output (suspicious)");
+            }
 
-            if (process.exitValue() != 0) {
-                StatusReporter.error("Codegen: ant exit code " + process.exitValue());
-                for (String failLine : tail.toString().split("\n")) {
+            if (run.exitCode() != 0) {
+                StatusReporter.error("Codegen: ant exit code " + run.exitCode());
+                for (String failLine : run.tail().split("\n")) {
                     if (failLine.isEmpty()) continue;
                     StatusReporter.error("  " + failLine);
                 }
