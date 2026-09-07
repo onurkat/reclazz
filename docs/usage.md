@@ -328,8 +328,8 @@ jfr print --events reclazz.Reload,reclazz.ReloadFailed reclazz.jfr
 
 | Event | Fields |
 |---|---|
-| `reclazz.Reload` | `className`, `structural` (members added or removed, as opposed to bodies changing), `measured` (the measured time, or -1 for one of a batch timed as a whole), `shape` (what changed, as `v2, +1 method`, when known) |
-| `reclazz.ReloadFailed` | `className`, `reason` |
+| `reclazz.Reload` | `className` (the JVM's name, `Outer$Inner` included), `structural` (members added or removed, as opposed to bodies changing), `measured` (the measured time, or -1 for one of a batch timed as a whole), `shape` (what changed, as `v2, +1 method`, when known), `source` (the class file the bytes came from, or the `.java` file that was compiled in AutoCompile mode) |
+| `reclazz.ReloadFailed` | `className`, `reason`, `source` |
 
 In JDK Mission Control they appear under the **Reclazz** category in the event
 browser. A recording of a slow session, sent along with a report, shows what

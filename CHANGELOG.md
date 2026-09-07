@@ -8,6 +8,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- **A reload that dies unexpectedly leaves a trail.** When a class-file
+  reload ended in an error thrown rather than a failure returned, from the
+  constant check, a new-bean registration or the reloader itself, the console
+  said "did not finish" and nothing else heard of it: the session counters
+  did not count it, no `reclazz.ReloadFailed` event was recorded, and
+  DIAGNOSE answered that no reload had been attempted and the rebuilt bytes
+  must have been identical, which sends the developer to their build for a
+  failure that is in the log. All three now record it as a failure with the
+  error's words. When the class had reloaded and the framework refresh after
+  it was what died, DIAGNOSE says exactly that, and a class file that could
+  not be read is recorded too.
+
 - **A call from a reloaded body to a method another reload added no longer
   fails for good.** On a stock JDK a method a reload adds lives in the
   class's companion, not on the class, and a call site in an instrumented
@@ -44,6 +56,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   catching in the full suite and nowhere else.
 
 ### Added
+
+- **A reload can be traced back to the file it came from.** The last
+  attempt DIAGNOSE reports for a class now ends with the class file the
+  bytes were read from, or the `.java` file that was compiled in AutoCompile
+  mode, so with two build outputs holding the same class the report says
+  which one the JVM is running. The Flight Recorder events carry the same
+  file as `source`, and the JVM's own class name, `Outer$Inner` included,
+  where the console prints "Outer (inner class)" for every inner class of
+  Outer alike. A class registered as a new bean is recorded as such, where
+  DIAGNOSE used to say no reload had been attempted.
 
 - **Reloads are JDK Flight Recorder events.** `reclazz.Reload` carries the
   class, whether the change was structural, the measured duration and what

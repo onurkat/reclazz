@@ -767,9 +767,8 @@ public class ReclazzAgent {
             return;
         }
 
-        String displayName = className.contains("$")
-                ? className.substring(0, className.indexOf('$')) + " (inner class)"
-                : className;
+        String displayName = displayName(className);
+        String source = classFile.toString();
 
         StatusReporter.info("Class file changed: " + classFile.getFileName() + " [" + moduleName + "]");
 
@@ -784,9 +783,14 @@ public class ReclazzAgent {
         } catch (java.io.IOException e) {
             StatusReporter.error("Failed to read class file " + classFile + ": "
                     + Failures.describe(e));
+            recordOutcome(className, false, "could not read the class file: " + Failures.describe(e), source);
             return;
         }
 
+        // Null until the JVM has answered. The catch below reads it to tell
+        // a reload that never happened from one that landed and then had
+        // its framework refresh die; both leave a trail, different ones.
+        ClassReloader.ReloadResult reloadResult = null;
         try {
             String internalName = className.replace('.', '/');
 
@@ -806,13 +810,13 @@ public class ReclazzAgent {
             // the ordinary reload machinery has nothing left to do for it.
             if (!alreadyLoaded(className)) {
                 if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
+                    recordOutcome(className, true, "registered as a new bean", source);
                     return;
                 }
                 JpaMappingRefresh.maybeMapNewEntity(
                         className, bytecode, platformContext.getAllApplicationContexts());
             }
 
-            ClassReloader.ReloadResult reloadResult;
             if (structuralReloader != null && transformContext != null
                     && transformContext.isWatched(internalName)) {
                 reloadResult = structuralReloader.reload(className, bytecode);
@@ -822,22 +826,12 @@ public class ReclazzAgent {
 
             long elapsed = System.currentTimeMillis() - startTime;
 
-            if (diagnostics != null) {
-                diagnostics.record(className, reloadResult.isSuccess(),
-                        reloadResult.isSuccess()
-                                ? (reloadResult.isStructuralReload() ? "structural" : "method bodies")
-                                : reloadResult.getError());
-            }
+            recordOutcome(className, reloadResult.isSuccess(),
+                    reloadResult.isSuccess() ? kindOf(reloadResult) : reloadResult.getError(), source);
 
             if (reloadResult.isSuccess()) {
-                if (reloadResult.isStructuralReload()) {
-                    SessionReport.reloaded(true, elapsed);
-                    StatusReporter.structuralReload(displayName, elapsed,
-                            reloadResult.getShape());
-                } else {
-                    SessionReport.reloaded(false, elapsed);
-                    StatusReporter.reload(displayName, elapsed);
-                }
+                reloadLanded(className, reloadResult.isStructuralReload(), elapsed,
+                        reloadResult.getShape(), source);
 
                 // Run Spring reloaders
                 if (reloadResult.isSpringBean()) {
@@ -859,7 +853,7 @@ public class ReclazzAgent {
             } else {
                 SessionReport.failed();
                 StatusReporter.error("Hot-swap failed for " + displayName + ": " + reloadResult.getError());
-                ReloadEvents.failed(className, reloadResult.getError());
+                ReloadEvents.failed(className, reloadResult.getError(), source);
                 // A structural failure does not always carry advice: the ones
                 // raised with their own explanation have nothing to add. Printing
                 // it unguarded put the literal word "null" under the message that
@@ -874,9 +868,79 @@ public class ReclazzAgent {
             // question answers with a NoClassDefFoundError as readily as with
             // an exception, and this runs on the watcher's thread: letting one
             // out is how a session stops reloading without saying anything.
-            StatusReporter.error("Reload of " + displayName + " did not finish: "
-                    + Failures.describe(t));
+            String why = Failures.describe(t);
+            StatusReporter.error("Reload of " + displayName + " did not finish: " + why);
+            if (reloadResult == null) {
+                // Died before the JVM was asked. Without this, the counters
+                // and the recorder hear nothing and DIAGNOSE answers that no
+                // reload was attempted, which sends the developer to look at
+                // their build for a failure that is in this log.
+                SessionReport.failed();
+                recordOutcome(className, false, "did not finish: " + why, source);
+                ReloadEvents.failed(className, "did not finish: " + why, source);
+            } else if (reloadResult.isSuccess()) {
+                recordOutcome(className, true, kindOf(reloadResult)
+                        + "; the framework refresh after it did not finish: " + why, source);
+            }
         }
+    }
+
+    /** The console's name for a class: the outer class, with inner classes folded in. */
+    private static String displayName(String className) {
+        return className.contains("$")
+                ? className.substring(0, className.indexOf('$')) + " (inner class)"
+                : className;
+    }
+
+    private static String kindOf(ClassReloader.ReloadResult result) {
+        return result.isStructuralReload() ? "structural" : "method bodies";
+    }
+
+    /** What DIAGNOSE will say about this class next time it is asked. */
+    private static void recordOutcome(String className, boolean success, String detail, String source) {
+        ReloadDiagnostics d = diagnostics;
+        if (d != null) d.record(className, success, detail, source);
+    }
+
+    /**
+     * One reload that landed, told to everything that keeps a trail of it:
+     * the session counters, the console and the socket behind it, and the
+     * Flight Recorder. The console gets the display name; the recorder gets
+     * the JVM's name and the file, because a recording is where a reload is
+     * traced back from and "Outer (inner class)" names every inner class of
+     * Outer the same way.
+     *
+     * @param elapsed the measured time, or negative for one of a batch timed
+     *                as a whole
+     * @param source  the class file, or the source file that was compiled
+     */
+    private static void reloadLanded(String className, boolean structural, long elapsed,
+                                     String shape, String source) {
+        SessionReport.reloaded(structural, elapsed);
+        if (structural) {
+            StatusReporter.structuralReload(displayName(className), elapsed, shape);
+        } else {
+            StatusReporter.reload(displayName(className), elapsed);
+        }
+        ReloadEvents.reloaded(className, structural, elapsed, shape, source);
+    }
+
+    /**
+     * The .java file a compiled class came from, by the name javac gives a
+     * top-level class's file. A class declared in another class's file, which
+     * javac allows when it is not public, gets the batch named instead of a
+     * wrong file.
+     */
+    static String sourceOf(String className, List<Path> javaFiles) {
+        String outer = className.substring(className.lastIndexOf('.') + 1);
+        if (outer.contains("$")) outer = outer.substring(0, outer.indexOf('$'));
+        String fileName = outer + ".java";
+        for (Path file : javaFiles) {
+            if (file.getFileName().toString().equals(fileName)) return file.toString();
+        }
+        return javaFiles.size() == 1
+                ? javaFiles.get(0).toString()
+                : "one of " + Plural.of(javaFiles.size(), "source file") + " compiled together";
     }
 
     /**
@@ -924,6 +988,8 @@ public class ReclazzAgent {
         }
 
         Map<String, byte[]> compiledClasses = new java.util.LinkedHashMap<>();
+        // class name -> the .java file it was compiled from, for the trail
+        Map<String, String> sources = new java.util.HashMap<>();
         for (var moduleEntry : byModule.entrySet()) {
             String moduleName = moduleEntry.getKey();
             List<Path> files = moduleEntry.getValue();
@@ -944,6 +1010,9 @@ public class ReclazzAgent {
                 StatusReporter.compile(f.getFileName().toString(), result.getCompileTimeMs());
             }
             compiledClasses.putAll(result.getCompiledClasses());
+            for (String compiled : result.getCompiledClasses().keySet()) {
+                sources.put(compiled, sourceOf(compiled, files));
+            }
         }
         if (compiledClasses.isEmpty()) return;
 
@@ -983,6 +1052,7 @@ public class ReclazzAgent {
             // becomes a live bean and is done.
             if (!alreadyLoaded(className)) {
                 if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
+                    recordOutcome(className, true, "registered as a new bean", sources.get(className));
                     successCount++;
                     continue;
                 }
@@ -1003,12 +1073,9 @@ public class ReclazzAgent {
                         "Unexpected " + t.getClass().getSimpleName() + ": " + t.getMessage(), false);
             }
 
-            if (diagnostics != null) {
-                diagnostics.record(className, reloadResult.isSuccess(),
-                        reloadResult.isSuccess()
-                                ? (reloadResult.isStructuralReload() ? "structural" : "method bodies")
-                                : reloadResult.getError());
-            }
+            recordOutcome(className, reloadResult.isSuccess(),
+                    reloadResult.isSuccess() ? kindOf(reloadResult) : reloadResult.getError(),
+                    sources.get(className));
 
             if (reloadResult.isSuccess()) {
                 successCount++;
@@ -1035,7 +1102,7 @@ public class ReclazzAgent {
             } else {
                 failCount++;
                 StatusReporter.error("Hot-swap failed for " + className + ": " + reloadResult.getError());
-                ReloadEvents.failed(className, reloadResult.getError());
+                ReloadEvents.failed(className, reloadResult.getError(), sources.get(className));
                 // A structural failure does not always carry advice: the ones
                 // raised with their own explanation have nothing to add. Printing
                 // it unguarded put the literal word "null" under the message that
@@ -1061,24 +1128,12 @@ public class ReclazzAgent {
         // the IDE widget's structural counter) never fired in this mode.
         if (compiledClasses.size() == 1 && successCount == 1) {
             var only = swappedClasses.entrySet().iterator().next();
-            if (only.getValue()) {
-                SessionReport.reloaded(true, elapsed);
-                StatusReporter.structuralReload(only.getKey(), elapsed,
-                        swappedShapes.get(only.getKey()));
-            } else {
-                SessionReport.reloaded(false, elapsed);
-                StatusReporter.reload(only.getKey(), elapsed);
-            }
+            reloadLanded(only.getKey(), only.getValue(), elapsed,
+                    swappedShapes.get(only.getKey()), sources.get(only.getKey()));
         } else if (compiledClasses.size() > 1) {
             for (var entry : swappedClasses.entrySet()) {
-                if (entry.getValue()) {
-                    SessionReport.reloaded(true, -1);
-                    StatusReporter.structuralReload(entry.getKey(), -1,
-                            swappedShapes.get(entry.getKey()));
-                } else {
-                    SessionReport.reloaded(false, -1);
-                    StatusReporter.reload(entry.getKey(), -1);
-                }
+                reloadLanded(entry.getKey(), entry.getValue(), -1,
+                        swappedShapes.get(entry.getKey()), sources.get(entry.getKey()));
             }
             String summary = String.format("Batch summary: %d/%d classes hot-swapped in %dms",
                     successCount, compiledClasses.size(), elapsed);

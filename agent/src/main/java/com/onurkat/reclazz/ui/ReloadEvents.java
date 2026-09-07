@@ -19,8 +19,12 @@ import jdk.jfr.Timespan;
  * collections, safepoints and compilations around it. A developer asking why
  * the server paused, or a maintainer sent a recording of a slow session, sees
  * {@code reclazz.Reload} events in JDK Mission Control or {@code jfr print}
- * with the class, the kind, the duration and what changed, and
- * {@code reclazz.ReloadFailed} with the reason.
+ * with the class, the kind, the duration, what changed and which file the
+ * bytes came from, and {@code reclazz.ReloadFailed} with the reason.
+ *
+ * <p>Emitted by the agent where the reload lands, not by the console
+ * reporter: the reporter prints a display name and knows no file, and a
+ * recording is the thing a reload is traced back from.
  *
  * <p>{@code jdk.jfr} is part of every JDK this agent runs on, but a runtime
  * image built without it is possible, so the event classes live in a nested
@@ -36,23 +40,30 @@ public final class ReloadEvents {
     }
 
     /**
-     * @param millis the measured duration, or negative when this reload was
-     *               one of a batch timed as a whole
-     * @param shape  what changed, as "v2, +1 method", or null
+     * @param className the class as the JVM names it, {@code Outer$Inner}
+     *                  included: the recording is where a reload is traced
+     *                  back from, and the console's "(inner class)" form
+     *                  names three anonymous classes the same way
+     * @param millis    the measured duration, or negative when this reload
+     *                  was one of a batch timed as a whole
+     * @param shape     what changed, as "v2, +1 method", or null
+     * @param source    where the bytes came from, the class file or the
+     *                  source file that was compiled, or null
      */
-    public static void reloaded(String className, boolean structural, long millis, String shape) {
+    public static void reloaded(String className, boolean structural, long millis, String shape,
+                                String source) {
         if (!available) return;
         try {
-            Jfr.reloaded(className, structural, millis, shape);
+            Jfr.reloaded(className, structural, millis, shape, source);
         } catch (LinkageError noFlightRecorder) {
             available = false;
         }
     }
 
-    public static void failed(String className, String reason) {
+    public static void failed(String className, String reason, String source) {
         if (!available) return;
         try {
-            Jfr.failed(className, reason);
+            Jfr.failed(className, reason, source);
         } catch (LinkageError noFlightRecorder) {
             available = false;
         }
@@ -83,6 +94,9 @@ public final class ReloadEvents {
             @Label("Shape")
             @Description("What changed, when the reload can say")
             String shape;
+            @Label("Source")
+            @Description("The class file, or the source file that was compiled, the bytes came from")
+            String source;
         }
 
         @Name("reclazz.ReloadFailed")
@@ -94,23 +108,29 @@ public final class ReloadEvents {
             String className;
             @Label("Reason")
             String reason;
+            @Label("Source")
+            @Description("The class file, or the source file that was compiled, the bytes came from")
+            String source;
         }
 
-        static void reloaded(String className, boolean structural, long millis, String shape) {
+        static void reloaded(String className, boolean structural, long millis, String shape,
+                             String source) {
             Reload event = new Reload();
             if (!event.isEnabled()) return;
             event.className = className;
             event.structural = structural;
             event.measured = millis;
             event.shape = shape == null ? "" : shape;
+            event.source = source == null ? "" : source;
             event.commit();
         }
 
-        static void failed(String className, String reason) {
+        static void failed(String className, String reason, String source) {
             ReloadFailed event = new ReloadFailed();
             if (!event.isEnabled()) return;
             event.className = className;
             event.reason = reason == null ? "" : reason;
+            event.source = source == null ? "" : source;
             event.commit();
         }
     }
