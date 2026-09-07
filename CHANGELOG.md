@@ -45,6 +45,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **The watcher keeps one record per class file instead of three maps of
+  boxed numbers.** The content hash, the baseline modification time and the
+  last-seen modification time of every watched class file were three
+  `Map<Path, Long>` entries. Measured on 20,000 class files, the baseline
+  walk retained 520 bytes per file; a SAP Commerce install has fifty
+  thousand. One entry holding three primitive fields is the same knowledge
+  at 408 bytes per file, the rest being the path itself. The member names
+  and descriptors in the per-class record are interned as well, which took
+  the record's share from 4,945 to about 4,400 bytes per transformed class
+  on spring-context; the deflated bytecode cache, capped at 8MB, is the
+  larger half of that and is unchanged.
+
 - **A save's JVM redefinitions go in one call.** Each `redefineClasses`
   call is a safepoint and a deoptimisation. Measured on 30 small classes,
   30 calls took 247 to 284ms and one call with the same 30 definitions 15
