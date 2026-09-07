@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.util.SourceText;
 import com.onurkat.reclazz.util.Supervised;

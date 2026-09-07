@@ -6,7 +6,7 @@ package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 
 /**
  * Coordinates all Spring-related reloaders in the correct order.

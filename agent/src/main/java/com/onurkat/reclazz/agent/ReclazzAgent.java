@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.agent;
 
+import com.onurkat.reclazz.ui.RestartLedger;
+
 import com.onurkat.reclazz.compiler.IncrementalCompiler;
 import com.onurkat.reclazz.hybris.interceptor.InterceptorReloader;
 import com.onurkat.reclazz.hybris.impex.ImpexAutoImporter;

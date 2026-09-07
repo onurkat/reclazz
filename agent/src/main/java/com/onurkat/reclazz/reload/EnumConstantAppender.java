@@ -11,7 +11,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.instrument.Instrumentation;
 import java.util.List;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 
 /**
  * Adds enum constants to a running JVM, or declines and says why.

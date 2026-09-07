@@ -11,7 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Map;
 import com.onurkat.reclazz.agent.ReclazzAgent;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 
 /**
  * Rebuilds the persistence unit after a reload changed an entity's persistent

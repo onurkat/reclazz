@@ -13,7 +13,7 @@ import org.objectweb.asm.Opcodes;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.bootstrap.InjectedNames;
 import com.onurkat.reclazz.ui.StatusReporter;
 

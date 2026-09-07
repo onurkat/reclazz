@@ -12,7 +12,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import com.onurkat.reclazz.agent.RestartLedger;
+import com.onurkat.reclazz.ui.RestartLedger;
 
 /**
  * Reloads {@code *-spring.xml} changes into a running Spring context without

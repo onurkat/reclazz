@@ -2,7 +2,7 @@
  * Copyright 2026 Onur Kat
  * SPDX-License-Identifier: Apache-2.0
  */
-package com.onurkat.reclazz.agent;
+package com.onurkat.reclazz.ui;
 
 import com.onurkat.reclazz.AgentSources;
 import org.junit.jupiter.api.Test;
