@@ -111,6 +111,57 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### Property changes keep the last working values
+
+For non-SAP Spring applications, Reclazz checks a saved `.properties` change
+before putting it into the running Environment. It binds affected
+`@ConfigurationProperties` beans on separate objects and resolves and converts
+direct `@Value` fields and constructor parameters. A save containing both a
+valid service address and an invalid timeout is held as one candidate. The
+Environment, property beans, direct fields and logger levels keep their old
+values. Fix the timeout and save again: both pending keys are retried.
+
+The check uses the application's Boot binding code with separate property
+sources and targets. Boot's validation fallback, a named
+`configurationPropertiesValidator`, self-validating records, bind-handler
+advisors, conversion services, property editors and the annotation's ignore
+flags apply. In particular, `ignoreInvalidFields=true` still permits values
+Boot chooses to ignore. The check does not write Boot's live bound-property
+records. The integration suite uses Boot 2.7.18. A separate probe against
+Boot 3.3.4 also verified Jakarta validation, record binding, live tracking
+isolation and successful application.
+
+No new option is needed. With `reloadBoundary=request`, successful changes
+wait for the existing request boundary before application. A save made during
+that wait becomes another candidate; accepting the earlier candidate never
+reads the newer file or its logger levels. An interrupted wait accepts nothing.
+
+The log distinguishes these outcomes:
+
+| Outcome | Running values | File baseline |
+|---|---|---|
+| Rejected | Kept because binding, conversion or validation failed | Pending |
+| Uncheckable | Kept because the binding check could not run | Pending |
+| Wait interrupted | Kept because application never ran | Pending |
+| Applied | Updated through the existing rebind path | Accepted candidate |
+| Partially applied | Some values may already have changed; failures are named | Pending for another save |
+
+Limits: this is a validation step before application, not rollback for arbitrary
+application code. Constructors, setters, converters, validators and advisors
+can have side effects; Reclazz cannot isolate state they keep themselves.
+If a setter or bean rebuild fails after a clean check, changes already made
+are not rolled back. Request isolation covers the synchronous MVC scope of
+[the existing boundary](#reload-between-requests); background readers are not
+paused. Connection pools still have their existing limitations.
+
+A JavaBean target needs a usable no-argument constructor. Constructor-bound
+targets use Boot's constructor binding. Missing or incompatible Boot internals
+hold the change as uncheckable. SpEL, YAML, key removal and SAP Commerce's
+`Config` path retain their existing behavior and are outside this check.
+Only added or changed keys are applied. A syntactically valid truncated file
+cannot be distinguished from an intentional save; malformed or unreadable
+files do not advance the baseline.
+
 ### Cache dependencies after reload
 
 Spring Cache observation is automatic when the companion engine instruments

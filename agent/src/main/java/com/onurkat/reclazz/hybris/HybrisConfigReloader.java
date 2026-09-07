@@ -104,6 +104,11 @@ public class HybrisConfigReloader {
      *         empty when nothing changed or the platform is not reachable
      */
     public List<String> apply(Path propertiesFile) {
+        return apply(snapshots.pending(propertiesFile));
+    }
+
+    public List<String> apply(PropertyFileSnapshots.Candidate candidate) {
+        if (candidate == null) return List.of();
         List<String> applied = new ArrayList<>();
         List<String> rejected = new ArrayList<>();
 
@@ -113,7 +118,8 @@ public class HybrisConfigReloader {
         // Against this file's own previous content, never against the running
         // configuration: the configuration is not a copy of any one file. See
         // PropertyFileSnapshots.
-        java.util.Map<String, String> edited = snapshots.changedSince(propertiesFile);
+        java.util.Map<String, String> edited = candidate.changed();
+        snapshots.accept(candidate);
         if (edited.isEmpty()) return applied;
 
         // Config reads the tenant from a ThreadLocal that the watcher thread
@@ -166,7 +172,7 @@ public class HybrisConfigReloader {
                     + Plural.of(rejected.size(), "property change")
                     + ": " + rejected
                     + ". They need a restart.");
-            RestartLedger.note(propertiesFile.getFileName().toString(),
+            RestartLedger.note(candidate.file().getFileName().toString(),
                     Plural.word(rejected.size(), "a property change", "property changes")
                             + " the platform refused: " + rejected);
         }
