@@ -40,6 +40,19 @@ own.
 export RECLAZZ_SIGNING_PASSWORD='the passphrase you chose'
 export RECLAZZ_PUBLISH_TOKEN='the marketplace token'
 
+scripts/release.sh X.Y.Z            # or --dry-run first, to see the steps
+```
+
+That runs the sequence below in order, after refusing when anything it
+needs is missing: a dirty tree, a branch other than main, a
+`gradle.properties` version that is not X.Y.Z, a changelog or plugin.xml
+without an entry for it, a tag that already exists, an unset password or
+token (`--skip-publish` leaves the Marketplace out). It waits for the tag's
+release to appear and attaches the signed zip under the name every release
+has used. The steps, for reference and for doing one by hand:
+
+```bash
+
 ./gradlew verifyPlugin                # what the Marketplace runs on submission
 ./gradlew signPlugin --no-daemon      # produces the signed zip
 ./gradlew publishPlugin --no-daemon   # uploads it
