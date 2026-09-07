@@ -304,5 +304,26 @@ search box.
 ## Version numbering
 
 `pluginVersion` in `gradle.properties` drives the plugin version, the
-agent jar name, and the zip name. Bump it and add a CHANGELOG entry in
-the same commit; the release commits in `git log` show the pattern.
+agent jar name, and the zip name. `scripts/bump-version.sh X.Y.Z` makes the
+release commit's three edits together: the version, the changelog's
+`[Unreleased]` section dated as `[X.Y.Z]` with a fresh `[Unreleased]` above
+it, and an `<h3>X.Y.Z</h3>` block at the top of `plugin.xml`'s change-notes
+seeded with the changelog's headlines, to be edited into the IDE's own
+words. Review, commit, then `scripts/release.sh X.Y.Z`.
+
+What a number means here:
+
+- **Patch** (1.1.x): fixes, and anything that changes no contract: a reload
+  that now lands where it did not, a message said better, a cost cut.
+- **Minor** (1.x.0): something new that an existing set-up does not have to
+  know about: a new kind of reload, a new agent argument, a new socket
+  command or JFR event, a new IDE version supported.
+- **Major** (x.0.0): a contract broken: an agent argument or a persisted
+  setting removed or renamed, a socket field or command changed, a JDK or
+  IDE floor raised, a default that changes what a save does.
+
+The contracts are the ones the tests pin: the argument table
+(`AgentArgumentsAreDocumentedTest`), the socket document
+(`ProtocolContractTest`), the persisted settings (`SettingsContractTest`)
+and the JFR events (`ReloadEventsTest`). A change that fails one of them is
+a major bump or a migration, never a quiet rename.

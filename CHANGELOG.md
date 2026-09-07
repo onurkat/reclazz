@@ -32,6 +32,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **`scripts/bump-version.sh X.Y.Z` prepares the release commit.** The
+  version, the changelog's `[Unreleased]` section dated as `[X.Y.Z]` with a
+  fresh `[Unreleased]` above it, and an `<h3>X.Y.Z</h3>` change-notes block
+  seeded with the changelog's headlines, in one command instead of three
+  edits copied from the last release commit. `docs/publishing.md` now says
+  what patch, minor and major mean for this project and which tests pin the
+  contracts a major bump is about.
+
+### Added
+
 - The plugin's persisted settings are a pinned contract: a test holds the
   component name, the `.idea/reclazz.xml` file and the thirteen property
   names with their defaults, because renaming any of them would reset that
