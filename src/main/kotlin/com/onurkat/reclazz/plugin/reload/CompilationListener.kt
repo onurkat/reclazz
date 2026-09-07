@@ -30,7 +30,13 @@ class CompilationListener : BuildManagerListener {
         if (!ReclazzSettings.getInstance(project).state.enabled) return
 
         val manager = ReloadManager.getInstance(project)
-        if (manager.isConnected) return
+        if (manager.isConnected) {
+            // The build is over, so the class files are worth looking at
+            // now. On macOS the JDK's file watcher polls on a two-second
+            // cycle; this saves the agent that wait.
+            manager.buildFinished()
+            return
+        }
 
         // Defer path resolution to ReloadManager — it knows all candidate
         // port file locations. connectToAgent() is a no-op if no port file

@@ -23,9 +23,11 @@ Reclazz is designed with security in mind:
 
 - **100% local** - No outbound network requests, no telemetry, no analytics
 - **Loopback-only status socket** - The agent listens on 127.0.0.1 for the IDE.
-  It broadcasts its own log lines and answers three read-only questions
-  (`DIAGNOSE`, `PENDING`, `HEALTH`); nothing a client sends can make it load,
-  reload or run anything. A command is capped at 512 bytes and a line that
+  It broadcasts its own log lines, answers three read-only questions
+  (`DIAGNOSE`, `PENDING`, `HEALTH`) and takes one nudge (`SCAN`, sent when a
+  build finishes, which makes the watcher look at its own directories now
+  rather than on the next poll); nothing a client sends can make it load,
+  reload or run anything it would not have on its own. A command is capped at 512 bytes and a line that
   never ends drops the connection rather than being held in memory
 - **What the agent writes** - Class redefinition happens in memory. On disk it
   writes a port file beside the project (`.reclazz/agent.port`), and extracts
