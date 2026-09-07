@@ -1115,20 +1115,17 @@ public class FileWatcher {
         }
     }
 
+    /**
+     * Whether a file is worth an event at all. One answer, given by
+     * {@link ChangeKind}: the kinds the agent handles are the files the
+     * watcher reports, so a new kind is one classification rule and one
+     * handler, not a third list here to keep in step. This used to be its own
+     * list of extensions, wider than the handled kinds (every {@code .xml},
+     * where only four patterns are handled), so an unrelated XML save was
+     * hashed, queued and handled as nothing.
+     */
     private boolean isInterestingFile(String fileName) {
-        return fileName.endsWith(".java") ||
-               fileName.endsWith(".class") ||
-               fileName.endsWith(".xml") ||
-               fileName.endsWith(".properties") ||
-               fileName.endsWith(".yml") ||
-               fileName.endsWith(".yaml") ||
-               fileName.endsWith(".impex") ||
-               // Templates are data, not code: watched so their cache can be
-               // dropped when they change.
-               fileName.endsWith(".ftl") ||
-               fileName.endsWith(".ftlh") ||
-               fileName.endsWith(".html") ||
-               fileName.endsWith(".htm");
+        return ChangeKind.watched(fileName);
     }
 
     record WatchedDirectory(Path directory, String moduleName, String sourceRoot) {}

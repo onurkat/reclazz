@@ -45,6 +45,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **One list says which files matter.** The watcher had its own list of
+  extensions worth an event and the agent its classification of what to do
+  with one, and the two had drifted: the watcher reported every `.xml`
+  where four patterns are handled, so an unrelated XML save was hashed,
+  queued and handled as nothing. The watcher now asks the classification
+  (`ChangeKind.watched`), so a new kind of file is one classification rule
+  and one handler, and a test requires every kind to carry a sample the
+  watcher accepts while `pom.xml`, `web.xml` and `notes.txt` stay unwatched.
+
 - **The reload thread and its queue are one class.** The executor, the
   stall watch, the class-file coalescing with its grace period, the
   callee-first ordering and the batch bracket were spread through the
