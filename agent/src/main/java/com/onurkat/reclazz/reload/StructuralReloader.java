@@ -1004,17 +1004,30 @@ public class StructuralReloader {
             // Re-target all call sites atomically via bootstrap-CL DispatchTable
             DispatchTable.retargetAll(targetClass, companionLookup, newTargets);
 
+            // From this line the JVM serves the new bodies, and nothing below
+            // can take that back. So each piece of bookkeeping that follows is
+            // best-effort on its own: one that throws used to reach the catch
+            // at the end of this method, which reported the reload as failed
+            // while the class was already dispatching the new code, and took
+            // every step after it down with it.
+
             // Register new fields in FieldStore (bootstrap-CL copy)
+            afterSwitch(className, "registering the added fields", () -> {
+            Runnable probe = afterSwitchProbe;
+            if (probe != null) probe.run();
             for (String fieldKey : diff.getAddedFields()) {
                 int colonIdx = fieldKey.indexOf(':');
                 String fieldName = fieldKey.substring(0, colonIdx);
                 String fieldDesc = fieldKey.substring(colonIdx + 1);
                 FieldStore.registerField(internalName, fieldName, fieldDesc);
             }
+            });
 
             // Register forged Method/Field objects with ReflectionBridge
             // so that getDeclaredMethods()/getDeclaredFields() return added members
+            afterSwitch(className, "showing the added members to reflection", () -> {
             registerReflectionMetadata(targetClass, internalName, diff, newTargets, companionLookup, companionClass);
+            });
 
             // Hide the injected members at the root of reflection. Placed
             // after the lookup and companion work above (the filter's captures
@@ -1022,6 +1035,7 @@ public class StructuralReloader {
             // pass) and before the constructor-body redefinition below, so the
             // redefinition's reflection-cache invalidation lands on a class
             // whose filter is already on. Idempotent from the second reload on.
+            afterSwitch(className, "hiding the injected members from reflection", () -> {
             com.onurkat.reclazz.transform.ReflectionRootFilter
                     .registerInjectedMembersOn(targetClass);
 
@@ -1048,12 +1062,14 @@ public class StructuralReloader {
             }
             com.onurkat.reclazz.transform.ReflectionRootFilter
                     .unhideRestoredMembersOn(targetClass, declaredFieldNames, declaredMethodNames);
+            });
 
             // A method this reload added is in the companion, which the call
             // sites reach and reflection does not. Anything a framework
             // discovers by looking at the class therefore misses it, and
             // misses it silently: the reload succeeds and the annotation the
             // developer just wrote does nothing.
+            afterSwitch(className, "checking what frameworks can see of the added methods", () -> {
             for (AddedMethodVisibility.Unseen unseen
                     : AddedMethodVisibility.check(newBytecode, diff.getNewMethods())) {
                 // True on every reload of the class, and information on the
@@ -1072,6 +1088,7 @@ public class StructuralReloader {
                         "added method " + unseen.method() + " that only a restart makes visible "
                         + "to framework scans");
             }
+            });
 
             // Members this reload REMOVED stay on the loaded class (a stock
             // JDK will not take them out), and a scan that keeps seeing them
@@ -1079,6 +1096,7 @@ public class StructuralReloader {
             // Hide them the way the injected members are hidden. A method
             // name is only hidden when no overload of it survives, because
             // the JDK filter works by name and would take the survivor too.
+            afterSwitch(className, "hiding the removed members from reflection", () -> {
             if (!diff.getRemovedFieldSigs().isEmpty() || !diff.getRemovedMethodSigs().isEmpty()) {
                 java.util.Set<String> removedFieldNames = new java.util.LinkedHashSet<>();
                 for (var f : diff.getRemovedFieldSigs()) {
@@ -1108,6 +1126,7 @@ public class StructuralReloader {
                                     ". Scans no longer see them; old code holding them still runs."));
                 }
             }
+            });
 
             // Two different limits, and they used to be reported as one.
             //
@@ -1123,6 +1142,7 @@ public class StructuralReloader {
             // belongs to the new field, which is what happens here; what
             // cannot is reported with the reason rather than left to be
             // discovered as a null.
+            afterSwitch(className, "initialising the added fields", () -> {
             if (!diff.getAddedFields().isEmpty()) {
                 java.util.List<String> addedStatics = staticFieldNames(diff, newBytecode);
                 // An enum constant is a static field of the enum's own type, so
@@ -1164,15 +1184,18 @@ public class StructuralReloader {
                             + "get the value.");
                 }
             }
+            });
 
             // A pure removal never enters the added-fields branch above, so a
             // tail removal (the one removal that moves no ordinal) is handed
             // to the same decider, which applies it or refuses with the same
             // sentences the other engine uses.
+            afterSwitch(className, "applying the enum change", () -> {
             if (isEnum(newBytecode) && enumChange != null && diff.getAddedFields().isEmpty()) {
                 EnumConstantAppender.applyOrExplain(className, findLoadedClass(className),
                         newBytecode, enumChange, instrumentation);
             }
+            });
 
             // Update metadata in TransformContext
             context.putMetadata(internalName, new TransformContext.ClassMetadata(
@@ -1415,6 +1438,36 @@ public class StructuralReloader {
             }
             return ClassReloader.ReloadResult.failure(
                     "Structural reload failed: " + e.getMessage(), true);
+        }
+    }
+
+    /** One step of the bookkeeping that follows the dispatch switch. */
+    private interface AfterSwitchStep {
+        void run() throws Throwable;
+    }
+
+    /**
+     * Run first inside the first post-switch step, by tests only, to stand
+     * in for a failure the bookkeeping has no other way to be given.
+     */
+    static volatile Runnable afterSwitchProbe;
+
+    /**
+     * Bookkeeping after the switch is best-effort, step by step: the new
+     * bodies are already live, so a step that fails costs what that step
+     * does, not the reload, and not the steps after it. Said as what will be
+     * missing rather than as a stack.
+     */
+    private static void afterSwitch(String className, String what, AfterSwitchStep step) {
+        try {
+            step.run();
+        } catch (Throwable t) {
+            StatusReporter.warn("Reloading " + className + ": " + what + " did not complete ("
+                    + com.onurkat.reclazz.ui.Failures.describe(t) + "). The new method bodies are "
+                    + "live; what that step does is missing until the next reload of this class "
+                    + "or a restart.");
+            com.onurkat.reclazz.agent.RestartLedger.note(className,
+                    what + " did not complete after a reload");
         }
     }
 

@@ -29,6 +29,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **A reload whose bookkeeping fails after the switch is reported as what
+  it is.** A structural reload switches the class's call sites to the new
+  bodies and then does its bookkeeping: registering added fields, showing
+  added members to reflection, hiding removed ones, initialising added
+  statics. A step in that sequence that threw fell through to the catch at
+  the end, which reported the reload as failed, of a class already running
+  the new code, and skipped every step after the one that failed. Each step
+  is now on its own: one that fails is named, with its cause and with what
+  will be missing until the next reload of the class, and the rest still
+  run. The record of the class keeps describing what the JVM holds, as
+  before; that is what the next save is diffed against.
+
 - **A request that arrives while a controller is re-scanned waits for the
   mapping instead of missing it.** Reloading a controller took its mappings
   out of Spring's registry and scanned them back in, and a request between
