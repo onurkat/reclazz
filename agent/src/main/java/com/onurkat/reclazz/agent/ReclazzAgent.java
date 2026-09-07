@@ -46,7 +46,6 @@ import com.onurkat.reclazz.hybris.PropertyFileSnapshots;
 import com.onurkat.reclazz.hybris.backoffice.BackofficeConfigReloader;
 import com.onurkat.reclazz.hybris.codegen.CodegenReloader;
 import com.onurkat.reclazz.platform.TomcatContextScanner;
-import com.onurkat.reclazz.reload.BatchOrder;
 import com.onurkat.reclazz.reload.ConstantChangeWarning;
 import com.onurkat.reclazz.reload.ConstantDependents;
 import com.onurkat.reclazz.reload.JpaMappingRefresh;
@@ -107,20 +106,9 @@ public class ReclazzAgent {
     private static final java.util.LinkedHashMap<Path, ChangeEvent> pendingJavaChanges =
             new java.util.LinkedHashMap<>();
 
-    /**
-     * Class files that have landed and not yet been reloaded, drained as one
-     * batch by the reload thread. An IDE build or a save-all writes every
-     * changed class at once; handled one task per file, each bean's refresh
-     * cascaded to its dependents and re-pointed its holders on its own, which
-     * is a walk over every singleton in every context per class. Batched, the
-     * walk is one per save, the same way the autoCompile path already does it.
-     */
-    private static final java.util.LinkedHashMap<Path, ChangeEvent> pendingClassChanges =
-            new java.util.LinkedHashMap<>();
     private static volatile ExecutorService watcherExecutor;
-    private static volatile ExecutorService reloadExecutor;
-    /** Reports a reload that has run for too long; see {@link ReloadStall}. */
-    private static volatile ReloadStall reloadStall;
+    /** The reload thread and what is queued for it; see {@link ReloadQueue}. */
+    private static volatile ReloadQueue reloadQueue;
     private static volatile StatusServer statusServer;
 
     /**
@@ -503,34 +491,31 @@ public class ReclazzAgent {
             // reloaders be written as though it were the only thing running,
             // which is how they are all written. A pool here would make them
             // racy without a line of them changing.
-            reloadExecutor = Executors.newSingleThreadExecutor(r -> {
-                Thread t = new Thread(r, "Reclazz-Reloader");
-                t.setDaemon(true);
-                return t;
-            });
+            // What a class-file batch is bracketed with: the JVM redefinitions
+            // applied in one call at the end, then the Spring cascade and
+            // healing run once over the result.
+            ReloadQueue.Bracket batchBracket = new ReloadQueue.Bracket() {
+                @Override
+                public void begin() {
+                    StructuralReloader structural = structuralReloader;
+                    if (structural != null) structural.beginBatch();
+                    springOrchestrator.beginBatch();
+                }
 
-            // One thread's worth of saying so when a reload never comes back:
-            // the reloads behind it are queued, and a queue is silent.
-            reloadStall = new ReloadStall(System::currentTimeMillis, RELOAD_STALL_WARN_MS);
-            Thread stallWatch = new Thread(Supervised.forever(
-                    "The reload watch",
-                    "A reload that hangs will no longer be reported. Reloading itself is unaffected.",
-                    () -> {
-                        // Until the executor is torn down on shutdown; `running`
-                        // is not set until the end of start-up, after this thread
-                        // has begun.
-                        while (reloadExecutor != null) {
-                            try {
-                                Thread.sleep(RELOAD_STALL_CHECK_MS);
-                            } catch (InterruptedException interrupted) {
-                                return;
-                            }
-                            ReloadStall watch = reloadStall;
-                            if (watch != null) watch.check();
-                        }
-                    }), "Reclazz-ReloadWatch");
-            stallWatch.setDaemon(true);
-            stallWatch.start();
+                @Override
+                public void end() {
+                    try {
+                        StructuralReloader structural = structuralReloader;
+                        if (structural != null) structural.endBatch();
+                    } finally {
+                        springOrchestrator.endBatch();
+                    }
+                }
+            };
+            reloadQueue = ReloadQueue.start(
+                    event -> handleChange(event, compiler, reloader,
+                            springOrchestrator, interceptorReloader, impexImporter, config),
+                    batchBracket);
 
             // Register the reload pipeline. Java changes are queued BEFORE
             // the executor task is submitted: while one batch compiles, new
@@ -551,22 +536,17 @@ public class ReclazzAgent {
                         }
                     }
                     if (fn.endsWith(".class") && event.getType() != ChangeEvent.Type.DELETED) {
-                        synchronized (pendingClassChanges) {
-                            pendingClassChanges.put(event.getPath(), event);
-                        }
+                        reloadQueue.enqueueClassFile(event);
                         classFiles++;
                         continue;
                     }
-                    submitReload(
+                    reloadQueue.submit(
                             "Handling " + event.getPath().getFileName(),
                             () -> handleChange(event, compiler, reloader,
                                     springOrchestrator, interceptorReloader, impexImporter, config));
                 }
                 if (classFiles > 0) {
-                    submitReload(
-                            "Reloading " + Plural.of(classFiles, "class file"),
-                            () -> handleClassBatch(compiler, reloader,
-                                    springOrchestrator, interceptorReloader, impexImporter, config));
+                    reloadQueue.submitClassBatch(classFiles);
                 }
             });
 
@@ -587,7 +567,7 @@ public class ReclazzAgent {
                             }
                         }
                     }
-                    submitReload("Rebuilding constant dependents",
+                    reloadQueue.submit("Rebuilding constant dependents",
                             () -> handleJavaBatch(compiler, reloader,
                                     springOrchestrator, interceptorReloader));
                 };
@@ -616,8 +596,8 @@ public class ReclazzAgent {
                 if (statusServer != null) {
                     statusServer.stop();
                 }
-                if (reloadExecutor != null) {
-                    reloadExecutor.shutdownNow();
+                if (reloadQueue != null) {
+                    reloadQueue.shutdown();
                 }
                 if (watcherExecutor != null) {
                     watcherExecutor.shutdownNow();
@@ -643,9 +623,9 @@ public class ReclazzAgent {
                 try { statusServer.stop(); } catch (Exception ignored) {}
                 statusServer = null;
             }
-            if (reloadExecutor != null) {
-                reloadExecutor.shutdownNow();
-                reloadExecutor = null;
+            if (reloadQueue != null) {
+                reloadQueue.shutdown();
+                reloadQueue = null;
             }
             if (watcherExecutor != null) {
                 watcherExecutor.shutdownNow();
@@ -906,115 +886,15 @@ public class ReclazzAgent {
                 platform == null ? Map.of() : platform.getSourceDirs(), constantRebuild);
     }
 
-    /** A reload still running after this long is reported, once. */
-    private static final long RELOAD_STALL_WARN_MS = 30_000;
-    private static final long RELOAD_STALL_CHECK_MS = 5_000;
-
-    /**
-     * Every piece of reload work goes through here: supervised, so a failure
-     * is a sentence rather than a silent future, and timed, so a hang is one
-     * too.
-     */
-    private static void submitReload(String what, Runnable work) {
-        ReloadStall watch = reloadStall;
-        Runnable timed = watch == null ? work : watch.timed(what, work);
-        reloadExecutor.submit(Supervised.once(what, timed));
-    }
-
     /** The HEALTH report, with the reload that is holding everything up named first. */
     private static List<String> withStall(List<String> report) {
-        ReloadStall watch = reloadStall;
-        String line = watch == null ? null : watch.healthLine();
+        ReloadQueue queue = reloadQueue;
+        String line = queue == null ? null : queue.healthLine();
         if (line == null) return report;
         List<String> withIt = new java.util.ArrayList<>(report.size() + 1);
         withIt.add(line);
         withIt.addAll(report);
         return withIt;
-    }
-
-    /** How long a burst is given to finish arriving once it has been seen to be one. */
-    private static final long CLASS_BATCH_GRACE_MS = 100;
-    private static final long CLASS_BATCH_MAX_WAIT_MS = 1000;
-
-    /**
-     * Reload every class file that has landed, as one batch.
-     *
-     * <p>Each class still goes through {@link #handleChange}, so what is done
-     * and said per class is unchanged. What the batch adds is the bracket
-     * around them: the Spring dependent cascade and stale-reference healing
-     * are deferred to {@code endBatch} and run once. A single class is handed
-     * straight through, with no bracket and no waiting, so the latency of an
-     * ordinary save is what it was.
-     *
-     * <p>The watcher dispatches a burst one event at a time, and the first
-     * of them can reach this thread before the rest have been queued. Once
-     * two or more have been seen the burst is real, and it is given a short
-     * while to finish arriving rather than being split into a batch and a
-     * tail of singles, each with its own sweep.
-     */
-    private static void handleClassBatch(IncrementalCompiler compiler,
-                                         ClassReloader reloader,
-                                         SpringReloadOrchestrator springOrchestrator,
-                                         InterceptorReloader interceptorReloader,
-                                         ImpexAutoImporter impexImporter,
-                                         AgentConfig config) {
-        java.util.List<ChangeEvent> batch = drainPendingClassChanges();
-        if (batch.isEmpty()) return;          // drained by an earlier task
-
-        if (batch.size() > 1) {
-            long deadline = System.currentTimeMillis() + CLASS_BATCH_MAX_WAIT_MS;
-            while (System.currentTimeMillis() < deadline) {
-                try {
-                    Thread.sleep(CLASS_BATCH_GRACE_MS);
-                } catch (InterruptedException interrupted) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-                java.util.List<ChangeEvent> more = drainPendingClassChanges();
-                if (more.isEmpty()) break;
-                batch.addAll(more);
-            }
-        }
-
-        if (batch.size() == 1) {
-            handleChange(batch.get(0), compiler, reloader,
-                    springOrchestrator, interceptorReloader, impexImporter, config);
-            return;
-        }
-
-        StatusReporter.info(batch.size() + " class files changed together; reloading them as one batch");
-        long startTime = System.currentTimeMillis();
-        // Callees before callers, so no caller's new body reaches a callee
-        // that still has its old shape. See BatchOrder.
-        java.util.List<ChangeEvent> ordered = BatchOrder.calleesFirst(batch);
-        // Two brackets: the JVM redefinitions are applied in one call at the
-        // end, then the Spring cascade and healing run once over the result.
-        StructuralReloader structural = structuralReloader;
-        if (structural != null) structural.beginBatch();
-        springOrchestrator.beginBatch();
-        try {
-            for (ChangeEvent event : ordered) {
-                handleChange(event, compiler, reloader,
-                        springOrchestrator, interceptorReloader, impexImporter, config);
-            }
-        } finally {
-            try {
-                if (structural != null) structural.endBatch();
-            } finally {
-                springOrchestrator.endBatch();
-            }
-        }
-        StatusReporter.info("Batch of " + batch.size() + " class files done ("
-                + (System.currentTimeMillis() - startTime) + "ms)");
-    }
-
-    private static java.util.List<ChangeEvent> drainPendingClassChanges() {
-        synchronized (pendingClassChanges) {
-            if (pendingClassChanges.isEmpty()) return new java.util.ArrayList<>();
-            java.util.List<ChangeEvent> drained = new java.util.ArrayList<>(pendingClassChanges.values());
-            pendingClassChanges.clear();
-            return drained;
-        }
     }
 
     private static void handleJavaBatch(IncrementalCompiler compiler,

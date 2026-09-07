@@ -45,6 +45,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- **The reload thread and its queue are one class.** The executor, the
+  stall watch, the class-file coalescing with its grace period, the
+  callee-first ordering and the batch bracket were spread through the
+  agent's 450-line start-up and three helpers beside it. `ReloadQueue` owns
+  them; what is done per event and what a bracket means are handed in, so
+  the queue is tested on its own without a thread, a clock or a sleep: one
+  file goes straight through, several are one bracket, a straggler during
+  the grace joins, and the bracket closes when a handler throws.
+
 - **The agent's options and the class lookup no longer live in the
   composition root.** `AgentConfig` moves to `config`, which depends on
   nothing but `ui`; `ClassLookup` to `util`; and the watcher is handed a
