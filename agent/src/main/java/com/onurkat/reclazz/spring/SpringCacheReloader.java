@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.bootstrap.CacheDependencyLedger;
 import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
@@ -12,18 +13,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import com.onurkat.reclazz.ui.Failures;
 
-/**
- * Evicts Spring caches for classes with @Cacheable, @CacheEvict, or @CachePut annotations.
- *
- * When a class using Spring caching annotations is reloaded, cached values may become stale.
- * This reloader finds all CacheManager beans and evicts their caches.
- *
- * Note: currently evicts ALL caches, not just caches referenced by the reloaded class.
- * Targeted eviction would require parsing @Cacheable("name") annotation values via reflection,
- * which is complex and brittle. Full eviction is safe for development.
- *
- * All Spring interaction is via reflection — graceful no-op if Spring Cache is not present.
- */
+/** Evicts observed dependent cache instances, with the original annotation fallback for unknown coverage. */
 public class SpringCacheReloader {
 
     private final PlatformContext platformContext;
@@ -36,9 +26,32 @@ public class SpringCacheReloader {
      * Evict caches if the reloaded class uses Spring caching annotations.
      */
     public boolean reloadCaches(Class<?> reloadedClass) {
-        if (!hasCacheAnnotations(reloadedClass)) return false;
-
+        if (reloadedClass == null) return false;
+        java.util.List<Object> known = java.util.List.of();
+        boolean complete = false;
+        try {
+            known = CacheDependencyLedger.cachesDependingOn(reloadedClass);
+            complete = CacheDependencyLedger.completeCoverage();
+        } catch (LinkageError unavailableBootstrap) { /* Keep the original annotation fallback. */ }
+        boolean annotated = hasCacheAnnotations(reloadedClass);
         boolean evicted = false;
+        java.util.List<String> names = new java.util.ArrayList<>();
+        // Clear known resolver-only caches too, even when manager fallback is needed.
+        for (Object cache : known) {
+            if (CacheDependencyLedger.clearObserved(cache)) {
+                evicted = true;
+                names.add(CacheDependencyLedger.cacheName(cache));
+            }
+        }
+        if (!annotated || (complete && !known.isEmpty())) {
+            if (evicted) {
+                ReloadEffects.note("caches evicted");
+                StatusReporter.detail("Spring caches evicted for " + reloadedClass.getName() + ": " + String.join(", ", names));
+            }
+            return evicted;
+        }
+
+
         // CacheManagers may live in any context (web contexts included).
         for (Object appContext : platformContext.getAllApplicationContexts()) {
             evicted |= reloadCachesIn(appContext, reloadedClass);

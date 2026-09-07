@@ -116,7 +116,7 @@ than either.
 
 - **Spring Bean Refresh**: Automatically destroys and recreates singleton beans after class reload
 - **MVC Re-scan**: Re-registers `@RequestMapping` methods when controllers change structurally
-- **Cache Eviction**: Evicts Spring caches for classes with `@Cacheable`/`@CacheEvict`/`@CachePut`
+- **Cache dependencies**: A reloaded helper invalidates the Spring cache regions computed through it, including outer caches that read cached inner results. Unrelated observed regions stay warm. Cache instances and classloaders remain distinct. Unknown or partial history retains conservative annotation fallback. See [scope and concurrency limits](docs/usage.md#cache-dependencies-after-reload).
 - **Scheduler Reload**: Cancels and re-registers `@Scheduled` tasks
 - **Event Listener Refresh**: Re-registers `@EventListener` methods
 - **AOP Proxy Refresh**: Clears `AbstractAutoProxyCreator` caches for `@Aspect` classes

@@ -111,6 +111,57 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### Cache dependencies after reload
+
+Spring Cache observation is automatic when the companion engine instruments
+application methods. No agent argument is needed. If `PriceService` caches
+its result in `prices` and calls an unannotated `DiscountRules` helper,
+reloading the helper invalidates `prices`. An unrelated `descriptions` cache
+stays populated. This works for externally compiled classes and AutoCompile.
+
+The agent records the watched classes executed inside Spring's synchronous
+cache interceptor and the actual cache instances involved. If a cached
+`quotes` calculation reads an already cached `prices` result, their dependency
+is recorded too: changing the price helper invalidates both regions. Equal
+cache names in separate managers or application contexts are distinct, as are
+classes with the same name in different classloaders. Caches supplied directly
+by a `CacheResolver` are included. This is region-level eviction, not per-key
+invalidation. Dependencies are conservative unions: a dependency that stops
+being used can still cause eviction until its class or cache is collected.
+
+A cache operation overlapping a class mutation is conservatively invalidated
+when its outermost synchronous interceptor returns. Its caller can still get
+the result calculated with old code, but that result is not retained for the
+next call after the invalidation succeeds. The interval between Spring storing
+a value and the interceptor exiting is not isolated: another thread can read
+that value, and thread scheduling can extend this interval. Nested operations
+defer their invalidation until the outermost exit so an inner exit does not
+clear caches while an outer synchronous cache loader still holds its lock.
+Normal and exceptional exits release observation. Failed clears are reported,
+do not replace the application's result or exception, and retain dependencies
+for another reload to retry. Operations overlapping unrelated reloads may also
+be cleared conservatively.
+
+Attach mode and any cache-hook failure mark observation incomplete. For an
+annotated class the agent then retains its existing fallback of clearing all
+manager caches; known resolver-only caches are also cleared. An unannotated
+helper invalidates only its observed dependents, even with incomplete history.
+Without observations, an annotated class keeps the same fallback. Tracking
+stops growing at 512 cache instances or 8192 class/dependency links and marks
+coverage incomplete for the session; existing dependency records remain usable.
+Persistent class and cache identities are weakly held.
+
+Limits: native JBR/DCEVM redefinition does not use the method instrumentation
+and therefore keeps the annotation fallback. Constructors, class initializers,
+excluded methods/classes, unwatched libraries, cache access outside Spring's
+interceptor, pre-attach entries and asynchronous/reactive computations do not
+have complete dependency coverage. The synchronous paths, including
+`@Cacheable(sync=true)`, are tested against Spring 5.3.39. The hook matches the
+Spring 6 signatures as well, but this change does not add a real Spring 6 E2E
+matrix. A watched method pays a volatile activity check even when no cache
+operation is open; during observation it also records a class identity.
+`verbose=true` names targeted evictions and computations crossing reloads.
+
 ### Reload between requests
 
 Add `reloadBoundary=request` to the agent arguments to keep a synchronous

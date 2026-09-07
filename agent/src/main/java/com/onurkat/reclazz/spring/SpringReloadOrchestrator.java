@@ -97,6 +97,13 @@ public class SpringReloadOrchestrator {
         beanReloader.endBatch();
     }
 
+    public void onHelperReloaded(String className, Class<?> type) {
+        if (type == null) return;
+        ReloadSteps.runAll(java.util.List.of(new ReloadSteps.Step("Cache eviction",
+                        r -> cacheReloader.reloadCaches(r.type()))),
+                new ReloadSteps.Reloaded(className, type, false, false));
+    }
+
     public void onClassReloaded(String className, Class<?> reloadedClass, boolean isStructural) {
         onClassReloaded(className, reloadedClass, isStructural, false);
     }

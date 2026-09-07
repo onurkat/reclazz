@@ -44,6 +44,8 @@ import com.onurkat.reclazz.bootstrap.MethodForge;
 import com.onurkat.reclazz.bootstrap.ProtectedCallResolver;
 import com.onurkat.reclazz.bootstrap.UnsafeAccess;
 import com.onurkat.reclazz.transform.RequestBoundaryTransformer;
+import com.onurkat.reclazz.transform.CacheComputationTransformer;
+import com.onurkat.reclazz.bootstrap.CacheDependencyLedger;
 import com.onurkat.reclazz.hybris.HybrisConfigReloader;
 import com.onurkat.reclazz.hybris.HybrisLocalizationReloader;
 import com.onurkat.reclazz.hybris.PropertyFileSnapshots;
@@ -181,6 +183,7 @@ public class ReclazzAgent {
     }
 
     private static volatile AgentConfig agentConfig;
+    private static boolean cacheTrackingInstalled;
 
     /**
      * How to rebuild the sources that inlined a changed constant, or null when
@@ -264,6 +267,27 @@ public class ReclazzAgent {
                 if (enableStructural) {
                     StatusReporter.warn("Structural reload disabled — falling back to method-body-only mode");
                     enableStructural = false;
+                }
+            }
+
+            if (bootstrapInstalled) {
+                CacheDependencyLedger.reporter(message -> {
+                    if (message.contains("failed")) StatusReporter.warn(message);
+                    else StatusReporter.detail(message);
+                });
+                CacheDependencyLedger.configure(!attached);
+                try {
+                    instrumentation.addTransformer(new CacheComputationTransformer(), true);
+                    cacheTrackingInstalled = true;
+                    for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                        if (loaded.getName().equals(CacheComputationTransformer.TARGET.replace('/', '.'))) {
+                            CacheDependencyLedger.partialCoverage();
+                            instrumentation.retransformClasses(loaded);
+                        }
+                    }
+                } catch (Throwable failure) {
+                    CacheDependencyLedger.partialCoverage();
+                    StatusReporter.warn("Spring cache dependency observation is partial; annotation fallback retained");
                 }
             }
 
@@ -856,12 +880,7 @@ public class ReclazzAgent {
                         className, bytecode, platformContext.getAllApplicationContexts());
             }
 
-            if (structuralReloader != null && transformContext != null
-                    && transformContext.isWatched(internalName)) {
-                reloadResult = structuralReloader.reload(className, bytecode);
-            } else {
-                reloadResult = reloader.reload(className, bytecode);
-            }
+            reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader);
 
             long elapsed = System.currentTimeMillis() - startTime;
 
@@ -879,6 +898,8 @@ public class ReclazzAgent {
                             reloadResult.isMethodsAdded(),
                             reloadResult.getAddedMethodSigs(),
                             reloadResult.getNewBytecode());
+                } else {
+                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className));
                 }
 
                 // Hybris-specific: interceptor reload
@@ -1064,6 +1085,19 @@ public class ReclazzAgent {
         else apply.run();
     }
 
+    private static ClassReloader.ReloadResult reloadWithCacheBoundary(String className, String internalName,
+                                                                     byte[] bytecode, ClassReloader reloader) {
+        if (cacheTrackingInstalled) CacheDependencyLedger.beginMutation();
+        try {
+            if (structuralReloader != null && transformContext != null && transformContext.isWatched(internalName)) {
+                return structuralReloader.reload(className, bytecode);
+            }
+            return reloader.reload(className, bytecode);
+        } finally {
+            if (cacheTrackingInstalled) CacheDependencyLedger.endMutation();
+        }
+    }
+
     private static void applyCompiledClasses(Map<String, byte[]> compiledClasses, Map<String, String> sources,
                                              ClassReloader reloader,
                                              SpringReloadOrchestrator springOrchestrator,
@@ -1117,12 +1151,7 @@ public class ReclazzAgent {
             ClassReloader.ReloadResult reloadResult;
             ReloadEffects.begin();
             try {
-                if (structuralReloader != null && transformContext != null
-                        && transformContext.isWatched(internalName)) {
-                    reloadResult = structuralReloader.reload(className, bytecode);
-                } else {
-                    reloadResult = reloader.reload(className, bytecode);
-                }
+                reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader);
             } catch (Throwable t) {
                 reloadResult = ClassReloader.ReloadResult.failure(
                         "Unexpected " + t.getClass().getSimpleName() + ": " + t.getMessage(), false);
@@ -1147,6 +1176,8 @@ public class ReclazzAgent {
                             reloadResult.isMethodsAdded(),
                             reloadResult.getAddedMethodSigs(),
                             reloadResult.getNewBytecode());
+                } else {
+                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className));
                 }
 
                 if (reloadResult.isInterceptor() && interceptorReloader != null) {
