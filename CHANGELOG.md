@@ -32,6 +32,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- The plugin's persisted settings are a pinned contract: a test holds the
+  component name, the `.idea/reclazz.xml` file and the thirteen property
+  names with their defaults, because renaming any of them would reset that
+  setting for every project on the next update with nothing saying so.
+  Together with the argument table and the socket document, every surface
+  another party depends on now has a test that notices a change.
+
+### Added
+
 - **Every agent argument is in the table, and the table is held to the
   agent.** Nine of the nineteen arguments the agent accepts (`watchDirs`,
   `excludeClasses`, `impexAllowRemove`, `jpaRefresh`, `structuralReload`,
