@@ -18,6 +18,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.LongSupplier;
+import java.util.function.Consumer;
 
 /**
  * The one thread reloads run on, and what is queued for it.
@@ -74,9 +75,14 @@ public final class ReloadQueue {
     private final LinkedHashMap<Path, ChangeEvent> pendingClassFiles = new LinkedHashMap<>();
     private volatile boolean running = true;
     private ExecutorService ownedExecutor;
+    private Consumer<Runnable> classBoundary = Runnable::run;
 
     /** The production queue: its own daemon thread, a real clock, real sleeps, and the stall watch started. */
     public static ReloadQueue start(Handler handler, Bracket bracket) {
+        return start(handler, bracket, Runnable::run);
+    }
+
+    public static ReloadQueue start(Handler handler, Bracket bracket, Consumer<Runnable> classBoundary) {
         ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
             Thread t = new Thread(r, "Reclazz-Reloader");
             t.setDaemon(true);
@@ -86,6 +92,7 @@ public final class ReloadQueue {
                 new ReloadStall(System::currentTimeMillis, STALL_WARN_MS),
                 System::currentTimeMillis, Thread::sleep);
         queue.ownedExecutor = executor;
+        queue.classBoundary = classBoundary;
         queue.startStallWatch();
         return queue;
     }
@@ -185,6 +192,11 @@ public final class ReloadQueue {
             }
         }
 
+        List<ChangeEvent> ready = batch;
+        classBoundary.accept(() -> applyClassBatch(ready));
+    }
+
+    private void applyClassBatch(List<ChangeEvent> batch) {
         if (batch.size() == 1) {
             handler.handle(batch.get(0));
             return;

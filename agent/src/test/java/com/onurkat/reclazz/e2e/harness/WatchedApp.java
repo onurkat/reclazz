@@ -110,6 +110,7 @@ public final class WatchedApp implements AutoCloseable {
         private final List<String> jvmArgs = new ArrayList<>();
 
         private String extraClasspath = "";
+        private boolean mavenLayout;
 
         private Builder(Path tempDir) {
             this.tempDir = tempDir;
@@ -139,10 +140,16 @@ public final class WatchedApp implements AutoCloseable {
             return this;
         }
 
+        /** A source/output layout the agent can discover for AutoCompile. */
+        public Builder mavenLayout() {
+            this.mavenLayout = true;
+            return this;
+        }
+
         public WatchedApp start() throws IOException {
             String agentJar = agentJarOrSkip();
-            Path sourceDir = Files.createDirectories(tempDir.resolve("src/app"));
-            Path classesDir = Files.createDirectories(tempDir.resolve("classes"));
+            Path sourceDir = Files.createDirectories(tempDir.resolve(mavenLayout ? "src/main/java/app" : "src/app"));
+            Path classesDir = Files.createDirectories(tempDir.resolve(mavenLayout ? "target/classes" : "classes"));
 
             List<Path> files = new ArrayList<>();
             for (Source source : sources) {
