@@ -8,7 +8,6 @@ import com.onurkat.reclazz.e2e.harness.WatchedApp;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,7 +37,7 @@ class ManyClassesSavedAtOnceTest {
     @Test
     void thirtyBeansSavedTogetherAreRefreshedTogether() throws Exception {
         WatchedApp.Builder builder = WatchedApp.in(tmp)
-                .classpath(springOnlyClasspath())
+                .classpath(WatchedApp.springClasspath())
                 .agentArgs("startupDelaySec=1,debounceMs=200"
                         + (Boolean.getBoolean("reclazz.bench.trace") ? ",verbose=true" : ""))
                 .with("App", driver())
@@ -145,9 +144,4 @@ class ManyClassesSavedAtOnceTest {
                 """;
     }
 
-    private static String springOnlyClasspath() {
-        return java.util.Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
-                .filter(p -> new File(p).getName().startsWith("spring-"))
-                .collect(Collectors.joining(File.pathSeparator));
-    }
 }

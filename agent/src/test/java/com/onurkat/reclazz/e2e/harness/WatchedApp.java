@@ -80,6 +80,25 @@ public final class WatchedApp implements AutoCloseable {
         return new Builder(tempDir);
     }
 
+    /**
+     * The Spring jars (and their logging bridge) from this test JVM's
+     * classpath, for an application that needs a container. Only those: the
+     * whole worker classpath would put the agent's own classes on the
+     * application classloader too, a duplication no real user has, and one
+     * that makes the agent load half-unshaded.
+     */
+    public static String springClasspath() {
+        List<String> entries = new ArrayList<>();
+        for (String entry : System.getProperty("java.class.path").split(File.pathSeparator)) {
+            String name = Path.of(entry).getFileName().toString();
+            if (name.startsWith("spring-") || name.contains("jcl") || name.contains("commons-logging")) {
+                entries.add(entry);
+            }
+        }
+        if (entries.isEmpty()) throw new IllegalStateException("Spring jars must be on the test classpath");
+        return String.join(File.pathSeparator, entries);
+    }
+
     public static final class Builder {
 
         private final Path tempDir;
