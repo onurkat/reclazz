@@ -5,7 +5,12 @@
 package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.config.AgentConfig;
+import com.onurkat.reclazz.ui.StatusReporter;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -113,5 +118,46 @@ class JpaMappingRefreshTest {
         assertTrue(source.contains("refresh.appendix()"),
                 "the warning has to carry the appendix, or the qualifying-but-"
                 + "opted-out case loses its hint");
+    }
+
+    private final List<String> lines = new CopyOnWriteArrayList<>();
+    private final StatusReporter.StatusListener listener = (level, message) -> lines.add(level + " " + message);
+
+    @AfterEach
+    void unconfigure() {
+        JpaMappingRefresh.configure(null, null);
+        StatusReporter.removeListener(listener);
+    }
+
+    /**
+     * The opt-in and the JVM's ability are handed in by whoever assembles
+     * the agent, not read off its static state: with the opt-in said to be
+     * on, a new entity gets past the hint and is declined for the next real
+     * reason, which in a JVM with no Spring context is that there is no
+     * persistence unit to rebuild.
+     */
+    @Test
+    void theOptInIsReadFromWhoeverConfiguredIt() {
+        StatusReporter.addListener(listener);
+        JpaMappingRefresh.configure(() -> true, () -> false);
+
+        JpaMappingRefresh.applyForNewEntity("demo.Thing", Object.class);
+
+        assertTrue(lines.stream().noneMatch(l -> l.contains("jpaRefresh=true")),
+                "the hint to opt in is for developers who have not: " + lines);
+        assertTrue(lines.stream().anyMatch(l -> l.startsWith("WARN") && l.contains("not exactly one persistence unit")),
+                "declined for the next reason along, so the opt-in was seen: " + lines);
+    }
+
+    /** Unconfigured, both conditions say no, which is what a JVM without the agent's start-up gets. */
+    @Test
+    void unconfiguredItDeclinesWithTheHint() {
+        StatusReporter.addListener(listener);
+        JpaMappingRefresh.configure(null, null);
+
+        JpaMappingRefresh.applyForNewEntity("demo.Thing", Object.class);
+
+        assertTrue(lines.stream().anyMatch(l -> l.startsWith("INFO") && l.contains("jpaRefresh=true")),
+                "the hint names the flag: " + lines);
     }
 }

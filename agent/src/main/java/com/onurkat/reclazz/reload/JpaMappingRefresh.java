@@ -9,8 +9,8 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.function.BooleanSupplier;
 import java.util.Map;
-import com.onurkat.reclazz.agent.ReclazzAgent;
 import com.onurkat.reclazz.ui.RestartLedger;
 
 /**
@@ -282,14 +282,33 @@ public final class JpaMappingRefresh {
         };
     }
 
+    /**
+     * The two conditions a rebuild needs, handed in by whoever assembles the
+     * agent rather than read off it. Until configured both say no, which is
+     * the answer a JVM without the agent's start-up gives; it used to be
+     * read from the agent class's static state, which meant nothing here
+     * could be tested with the conditions true without starting the agent.
+     */
+    private static volatile BooleanSupplier optedIn = () -> false;
+    private static volatile BooleanSupplier enhancedRedefinition = () -> false;
+
+    /**
+     * @param jpaRefreshOptedIn     whether the developer asked for the rebuild
+     *                              ({@code jpaRefresh=true})
+     * @param jvmRedefinesEnhanced  whether the JVM applies added fields to a
+     *                              loaded class (JetBrains Runtime, DCEVM)
+     */
+    public static void configure(BooleanSupplier jpaRefreshOptedIn, BooleanSupplier jvmRedefinesEnhanced) {
+        optedIn = jpaRefreshOptedIn == null ? () -> false : jpaRefreshOptedIn;
+        enhancedRedefinition = jvmRedefinesEnhanced == null ? () -> false : jvmRedefinesEnhanced;
+    }
+
     private static boolean vmQualifies() {
-        var probe = ReclazzAgent.getProbeResult();
-        return probe != null && probe.hasEnhancedRedefinition();
+        return enhancedRedefinition.getAsBoolean();
     }
 
     private static boolean optedIn() {
-        var config = ReclazzAgent.getConfig();
-        return config != null && config.isJpaRefresh();
+        return optedIn.getAsBoolean();
     }
 
     /**
