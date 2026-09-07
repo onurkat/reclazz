@@ -7,6 +7,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Invalid property saves keep the running configuration.** Non-SAP Spring
+  `.properties` changes are checked on detached targets with Boot's binding
+  policy before live application. Rejected or uncheckable candidates remain
+  pending with all their changed keys and logger levels. Acceptance records
+  the exact checked file version, including across request-boundary waits.
+  Interrupted work accepts nothing; post-check failures are reported as
+  partial and are not rolled back. See [usage and limits](docs/usage.md#property-changes-keep-the-last-working-values).
+
+  | Measurement | Before | After |
+  |---|---:|---:|
+  | Live values changed by invalid timeout in the six-value regression | 3 | 0 |
+  | Failing cases in the initial three-test regression | 2 | 0 |
+  | Keys offered again after fixing only the timeout | 1 of 2 | 2 of 2 |
+
 - **A build's output is published whole, or held.** AutoCompile stages all modules before publishing successful output; IntelliJ BUILD signals hold external class changes until a complete byte snapshot is accepted. Newer builds invalidate pending acceptance; missing results keep output held and appear in HEALTH.
 
   Measured with `AutoCompileHoldsABrokenPackageTest` and

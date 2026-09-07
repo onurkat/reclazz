@@ -201,11 +201,11 @@ class SpringPropertyRebinderTest {
         assertFalse(takes(ReadsThroughSpel.class));
     }
 
-    /** What the save reached decides whether a restart warning is printed at all. */
     @Test
-    void aRebuiltBeanCountsAsTakingEffect() {
-        assertTrue(new SpringPropertyRebinder.Applied(List.of(), 0, List.of("clientConfig"))
-                .tookEffect(), "a rebuilt bean is a value that is live");
-        assertFalse(new SpringPropertyRebinder.Applied(List.of(), 0, List.of()).tookEffect());
+    void outcomesSeparateSuccessfulApplicationFromPartialFailure() {
+        var applied = new PropertyChangeOutcome(PropertyChangeOutcome.State.APPLIED,
+                List.of(), 0, List.of("clientConfig"), List.of());
+        assertEquals(List.of("clientConfig"), applied.rebuilt());
+        assertEquals(PropertyChangeOutcome.State.APPLIED, applied.state());
     }
 }

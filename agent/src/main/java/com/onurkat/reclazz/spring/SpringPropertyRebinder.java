@@ -48,7 +48,7 @@ public final class SpringPropertyRebinder {
             "org.springframework.boot.context.properties.ConfigurationProperties";
 
     /** Ours, so a later save replaces it instead of stacking another layer. */
-    private static final String SOURCE_NAME = "reclazz-reloaded-properties";
+    static final String SOURCE_NAME = "reclazz-reloaded-properties";
 
     private final List<Object> applicationContexts;
 
@@ -56,42 +56,53 @@ public final class SpringPropertyRebinder {
         this.applicationContexts = applicationContexts;
     }
 
-    /**
-     * What a property save reached: bound beans, fields injected directly, and
-     * beans rebuilt because their constructor is where the value goes in.
-     */
-    public record Applied(List<String> rebound, int valueFields, List<String> rebuilt) {
-        public Applied(List<String> rebound, int valueFields) {
-            this(rebound, valueFields, List.of());
-        }
-
-        public boolean tookEffect() {
-            return !rebound.isEmpty() || valueFields > 0 || !rebuilt.isEmpty();
-        }
+    /** Validate first; only completed work can accept the immutable file candidate. */
+    public PropertyChangeOutcome apply(Map<String, String> changed) {
+        return apply(changed, Runnable::run, () -> { });
     }
 
-    /**
-     * @param changed the keys this save changed, with their new values
-     * @return the {@code @ConfigurationProperties} beans that took them, how
-     *         many {@code @Value} fields were re-injected, and the beans
-     *         rebuilt for a {@code @Value} constructor parameter
-     */
-    public Applied apply(Map<String, String> changed) {
+    public PropertyChangeOutcome apply(Map<String, String> changed,
+                                       java.util.function.Consumer<Runnable> boundary,
+                                       Runnable accepted) {
+        Map<String, String> candidate = Map.copyOf(changed);
+        var check = new PropertyChangeCheck().check(applicationContexts, candidate);
+        if (!check.passed()) {
+            check.findings().forEach(StatusReporter::warn);
+            StatusReporter.warn((check.state() == PropertyChangeOutcome.State.REJECTED
+                    ? "Rejected" : "Uncheckable") + ": the running configuration is unchanged. "
+                    + Plural.of(candidate.size(), "changed key") + " held until the file binds clean.");
+            return PropertyChangeOutcome.held(check.state(), check.findings());
+        }
+        PropertyChangeOutcome[] result = {PropertyChangeOutcome.held(
+                PropertyChangeOutcome.State.NOT_RUN, List.of("Property application did not run"))};
+        boundary.accept(() -> {
+            result[0] = applyLive(candidate);
+            if (result[0].state() == PropertyChangeOutcome.State.APPLIED) accepted.run();
+        });
+        if (result[0].state() == PropertyChangeOutcome.State.PARTIAL) {
+            result[0].findings().forEach(StatusReporter::warn);
+            StatusReporter.warn("Property change partially applied; live values may differ. "
+                    + "The file remains pending for the next save.");
+        }
+        return result[0];
+    }
+
+    private PropertyChangeOutcome applyLive(Map<String, String> changed) {
         List<String> rebound = new ArrayList<>();
         List<String> rebuilt = new ArrayList<>();
         int valueFields = 0;
-        if (changed.isEmpty()) return new Applied(rebound, 0, rebuilt);
+        List<String> failures = new ArrayList<>();
 
         for (Object context : applicationContexts) {
             try {
                 if (!updateEnvironment(context, changed)) continue;
-                rebound.addAll(rebind(context, changed));
-                valueFields += reinjectValueFields(context, changed);
-                rebuilt.addAll(recreateValueConstructorBeans(context, changed));
+                rebound.addAll(rebind(context, changed, failures));
+                valueFields += reinjectValueFields(context, changed, failures);
+                rebuilt.addAll(recreateValueConstructorBeans(context, changed, failures));
             } catch (Throwable t) {
-                // One context that cannot be reached is not a reason to skip
-                // the others: a Spring Boot application has one, a server has
-                // dozens and most of them have no Environment at all.
+                String finding = context.getClass().getSimpleName() + ": " + Failures.describe(t);
+                failures.add(finding);
+                RestartLedger.note(context.getClass().getSimpleName(), "property application failed");
             }
         }
         // A pool takes a size or a timeout and cannot take a URL. Asked after
@@ -113,7 +124,8 @@ public final class SpringPropertyRebinder {
                             " that take a changed @Value through their constructor: ")
                     + rebuilt);
         }
-        return new Applied(rebound, valueFields, rebuilt);
+        return new PropertyChangeOutcome(failures.isEmpty() ? PropertyChangeOutcome.State.APPLIED
+                : PropertyChangeOutcome.State.PARTIAL, rebound, valueFields, rebuilt, failures);
     }
 
     /**
@@ -134,79 +146,66 @@ public final class SpringPropertyRebinder {
      * by {@link #recreateValueConstructorBeans}, the same way the
      * constructor-bound properties bean is.
      */
-    private static int reinjectValueFields(Object context, Map<String, String> changed) {
+    private static int reinjectValueFields(Object context, Map<String, String> changed,
+                                           List<String> failures) throws Exception {
         int injected = 0;
-        try {
-            Object beanFactory = SpringBeans.getBeanFactory(context);
-            Method resolveEmbedded = Reflect.findMethod(beanFactory.getClass(),
-                    "resolveEmbeddedValue", String.class);
-            Method getTypeConverter = Reflect.findMethod(beanFactory.getClass(), "getTypeConverter");
-            if (resolveEmbedded == null || getTypeConverter == null) return 0;
-
-            ClassLoader loader = context.getClass().getClassLoader();
-            @SuppressWarnings("unchecked")
-            Class<? extends java.lang.annotation.Annotation> valueAnnotation =
-                    (Class<? extends java.lang.annotation.Annotation>) Class.forName(
-                            "org.springframework.beans.factory.annotation.Value", true, loader);
-            Method valueMember = valueAnnotation.getMethod("value");
-
-            Method getSingletonNames = Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
-            Method getSingleton = Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
-            if (getSingletonNames == null || getSingleton == null) return 0;
-
-            Object typeConverter = getTypeConverter.invoke(beanFactory);
-            Method convert = Reflect.findMethod(typeConverter.getClass(),
-                    "convertIfNecessary", Object.class, Class.class);
-            if (convert != null) convert.setAccessible(true);
-
-            for (String name : (String[]) getSingletonNames.invoke(beanFactory)) {
-                Object bean;
-                try {
-                    bean = getSingleton.invoke(beanFactory, name);
-                } catch (Throwable notNow) {
-                    continue;
-                }
-                if (bean == null) continue;
-                Object target = unwrapAopProxy(bean);
-                injected += reinjectInto(target, changed, valueAnnotation, valueMember,
-                        beanFactory, resolveEmbedded, typeConverter, convert);
+        Object factory = SpringBeans.getBeanFactory(context);
+        Object converter = PropertyChangeCheck.call(factory, "getTypeConverter");
+        for (ValueTarget target : valueTargets(context, changed)) {
+            if (target.field() == null) continue;
+            try {
+                Object resolved = PropertyChangeCheck.call(factory, "resolveEmbeddedValue", target.expression());
+                Object converted = PropertyChangeCheck.call(converter, "convertIfNecessary", resolved, target.type());
+                target.field().setAccessible(true);
+                target.field().set(target.bean(), converted);
+                injected++;
+            } catch (Throwable failure) {
+                failures.add(target.member() + ": " + Failures.describe(failure));
+                RestartLedger.note(target.member(), "@Value field could not take the changed property");
             }
-        } catch (Throwable notSpringShaped) {
-            return injected;
         }
         return injected;
     }
 
-    private static int reinjectInto(Object bean, Map<String, String> changed,
-                                    Class<? extends java.lang.annotation.Annotation> valueAnnotation,
-                                    Method valueMember, Object beanFactory,
-                                    Method resolveEmbedded, Object typeConverter,
-                                    Method convert) {
-        int injected = 0;
-        for (Class<?> c = userClass(bean.getClass()); c != null && c != Object.class;
-                c = c.getSuperclass()) {
-            for (java.lang.reflect.Field field : c.getDeclaredFields()) {
-                try {
-                    java.lang.annotation.Annotation value = field.getAnnotation(valueAnnotation);
-                    if (value == null) continue;
-                    String expression = String.valueOf(valueMember.invoke(value));
-                    if (!referencesChangedKey(expression, changed)) continue;
-                    if (expression.contains("#{")) continue;   // SpEL: stated policy above
+    record ValueTarget(Object bean, java.lang.reflect.Field field, Class<?> type,
+                       String expression, String member) { }
 
-                    Object resolved = resolveEmbedded.invoke(beanFactory, expression);
-                    Object converted = convert != null
-                            ? convert.invoke(typeConverter, resolved, field.getType())
-                            : resolved;
-                    field.setAccessible(true);
-                    field.set(bean, converted);
-                    injected++;
-                } catch (Throwable oneField) {
-                    // A field that cannot take the value keeps the one it has;
-                    // the count reports only what really changed.
+    /** One sweep defines the direct placeholders that both phases handle. */
+    static List<ValueTarget> valueTargets(Object context, Map<String, String> changed) throws Exception {
+        List<ValueTarget> targets = new ArrayList<>();
+        Object factory = SpringBeans.getBeanFactory(context);
+        @SuppressWarnings("unchecked")
+        Class<? extends java.lang.annotation.Annotation> annotation =
+                (Class<? extends java.lang.annotation.Annotation>) Class.forName(
+                        "org.springframework.beans.factory.annotation.Value", true, context.getClass().getClassLoader());
+        Method value = annotation.getMethod("value");
+        for (String name : (String[]) PropertyChangeCheck.call(factory, "getSingletonNames")) {
+            Object singleton = PropertyChangeCheck.call(factory, "getSingleton", name);
+            if (singleton == null) continue;
+            Object bean = unwrapAopProxy(singleton);
+            Class<?> type = userClass(bean.getClass());
+            for (Class<?> c = type; c != null && c != Object.class; c = c.getSuperclass()) {
+                for (java.lang.reflect.Field field : c.getDeclaredFields()) {
+                    var found = field.getAnnotation(annotation);
+                    if (found == null) continue;
+                    String expression = (String) value.invoke(found);
+                    if (referencesChangedKey(expression, changed) && !expression.contains("#{"))
+                        targets.add(new ValueTarget(bean, field, field.getType(), expression, name + "." + field.getName()));
+                }
+            }
+            for (var constructor : type.getDeclaredConstructors()) {
+                var parameters = constructor.getParameters();
+                for (int i = 0; i < parameters.length; i++) {
+                    var found = parameters[i].getAnnotation(annotation);
+                    if (found == null) continue;
+                    String expression = (String) value.invoke(found);
+                    if (referencesChangedKey(expression, changed) && !expression.contains("#{"))
+                        targets.add(new ValueTarget(bean, null, parameters[i].getType(), expression,
+                                name + ".<init>[" + i + "]"));
                 }
             }
         }
-        return injected;
+        return targets;
     }
 
     /**
@@ -230,7 +229,7 @@ public final class SpringPropertyRebinder {
      * just filled in.
      */
     private static List<String> recreateValueConstructorBeans(Object context,
-                                                              Map<String, String> changed) {
+                                                              Map<String, String> changed, List<String> failures) {
         List<String> rebuilt = new ArrayList<>();
         try {
             Object beanFactory = SpringBeans.getBeanFactory(context);
@@ -273,9 +272,10 @@ public final class SpringPropertyRebinder {
                 if (!takesChangedValue(type, changed, valueAnnotation, valueMember)) continue;
 
                 if (rebuildSingleton(context, name, type)) rebuilt.add(name);
+                else failures.add(name + ": @Value constructor bean could not be rebuilt");
             }
         } catch (Throwable notSpringShaped) {
-            return rebuilt;
+            failures.add(context.getClass().getSimpleName() + ": " + Failures.describe(notSpringShaped));
         }
         return rebuilt;
     }
@@ -419,11 +419,13 @@ public final class SpringPropertyRebinder {
         return true;
     }
 
-    private List<String> rebind(Object context, Map<String, String> changed) throws Exception {
+    private List<String> rebind(Object context, Map<String, String> changed, List<String> failures) throws Exception {
         List<String> rebound = new ArrayList<>();
 
         ClassLoader loader = context.getClass().getClassLoader();
-        Class<?> annotation = Class.forName(ANNOTATION, true, loader);
+        Class<?> annotation;
+        try { annotation = Class.forName(ANNOTATION, true, loader); }
+        catch (ClassNotFoundException noBoot) { return rebound; }
 
         @SuppressWarnings("unchecked")
         Map<String, Object> beans = (Map<String, Object>) context.getClass()
@@ -436,6 +438,7 @@ public final class SpringPropertyRebinder {
             postProcessor = context.getClass().getMethod("getBean", String.class)
                     .invoke(context, BINDING_POST_PROCESSOR);
         } catch (Throwable notBoot) {
+            failures.add("ConfigurationProperties binding post-processor unavailable: " + Failures.describe(notBoot));
             return rebound;
         }
         Method rebindMethod = postProcessor.getClass()
@@ -456,7 +459,7 @@ public final class SpringPropertyRebinder {
             if (isConstructorBound(bean.getValue())) {
                 if (recreateConstructorBound(context, bean.getKey(), prefix)) {
                     rebound.add(bean.getKey());
-                }
+                } else failures.add(bean.getKey() + ": constructor-bound bean could not be rebuilt");
                 continue;
             }
 
@@ -464,6 +467,7 @@ public final class SpringPropertyRebinder {
                 rebindMethod.invoke(postProcessor, bean.getValue(), bean.getKey());
                 rebound.add(bean.getKey());
             } catch (Throwable t) {
+                failures.add(bean.getKey() + ": " + Failures.describe(t));
                 RestartLedger.note(bean.getKey(),
                         "properties under \"" + prefix + "\" that could not be rebound");
                 StatusReporter.warn("Could not rebind " + bean.getKey() + ": " + Failures.describe(t));
@@ -543,7 +547,7 @@ public final class SpringPropertyRebinder {
     }
 
     /** The prefix the bean asked for, or "" when it binds the root. */
-    private static String prefixOf(Object bean, Class<?> annotation) {
+    static String prefixOf(Object bean, Class<?> annotation) {
         try {
             Class<?> type = userClass(bean.getClass());
             Object found = type.getAnnotation(annotation.asSubclass(java.lang.annotation.Annotation.class));

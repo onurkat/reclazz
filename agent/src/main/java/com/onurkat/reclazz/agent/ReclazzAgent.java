@@ -1286,6 +1286,13 @@ public class ReclazzAgent {
         }
 
         StatusReporter.info("Config file changed: " + fileName);
+        var candidate = propertySnapshots.pending(event.getPath());
+        if (candidate == null) return;
+        if (candidate.changed().isEmpty()) {
+            propertySnapshots.accept(candidate);
+            StatusReporter.info("No property values changed.");
+            return;
+        }
 
         // On SAP Commerce the platform keeps its properties in memory and only
         // reads the files at startup, so an edit reaches nothing on its own.
@@ -1302,8 +1309,8 @@ public class ReclazzAgent {
                     : platformContext.getClass().getClassLoader();
             HybrisConfigReloader configReloader =
                     new HybrisConfigReloader(platformLoader, propertySnapshots);
-            java.util.List<String> applied = configReloader.apply(event.getPath());
-            applyLoggerLevels(event.getPath(), applied);
+            java.util.List<String> applied = configReloader.apply(candidate);
+            applyLoggerLevels(candidate.content(), applied);
 
             if (applied.isEmpty() && configReloader.isPlatformReachable()) {
                 // The file was compared against the running configuration and
@@ -1322,45 +1329,41 @@ public class ReclazzAgent {
             }
         }
 
-        // Outside SAP Commerce nothing here rebinds properties yet, but a log
-        // level is not a property the application has to read again: it can be
-        // set on the running logger directly.
-        java.util.Map<String, String> changed = propertySnapshots.changedSince(event.getPath());
-        int levelsApplied = applyLoggerLevels(event.getPath(), changed.keySet());
-
-        // Spring Boot binds a properties file into objects once, at startup.
-        // The values go back into the Environment and the beans that read them
-        // are put through the same binding the application did on the way up.
-        //
-        // Not on SAP Commerce: the platform reads its properties through Config
-        // rather than the Environment, and the branch above is what applies
-        // them there. Reaching into a hundred web contexts to add a source
-        // nothing reads would be work for its own sake.
-        SpringPropertyRebinder.Applied applied =
-                (platformContext instanceof HybrisPlatformContext)
-                ? new SpringPropertyRebinder.Applied(
-                        java.util.List.of(), 0)
-                : new SpringPropertyRebinder(
-                        platformContext.getAllApplicationContexts()).apply(changed);
-        java.util.List<String> rebound = applied.rebound();
-        if (!rebound.isEmpty()) {
-            StatusReporter.success("Rebound "
-                    + Plural.of(rebound.size(), "@ConfigurationProperties bean")
-                    + ": "
-                    + (rebound.size() > 5 ? rebound.subList(0, 5) + " …" : rebound.toString()));
-        }
-
-        // Warning about a restart after the change has been applied would tell
-        // the developer to do the one thing this just saved them.
-        if (applied.tookEffect()) return;
-        if (levelsApplied > 0 && changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey)) {
+        java.util.Map<String, String> changed = candidate.changed();
+        if (platformContext instanceof HybrisPlatformContext) {
+            // Preserve the logger-only fallback when the platform Config API is absent.
+            propertySnapshots.accept(candidate);
+            int levels = applyLoggerLevels(candidate.content(), changed.keySet());
+            if (levels == 0 || !changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey))
+                reportUnconsumedProperties(changed);
             return;
         }
+        int[] levelsApplied = {0};
+        var applied = new SpringPropertyRebinder(platformContext.getAllApplicationContexts())
+                .apply(changed,
+                        agentConfig != null && agentConfig.isRequestBoundary()
+                                ? RequestReloadBoundary::run : Runnable::run,
+                        () -> {
+                            propertySnapshots.accept(candidate);
+                            levelsApplied[0] = applyLoggerLevels(candidate.content(), changed.keySet());
+                        });
+        if (applied.state() != com.onurkat.reclazz.spring.PropertyChangeOutcome.State.APPLIED) return;
+        StatusReporter.success("Applied " + Plural.of(changed.size(), "property change") + ": " + changed.keySet());
+        java.util.List<String> rebound = applied.rebound();
+        if (!rebound.isEmpty()) {
+            StatusReporter.success("Rebound " + Plural.of(rebound.size(), "@ConfigurationProperties bean")
+                    + ": " + (rebound.size() > 5 ? rebound.subList(0, 5) + " …" : rebound.toString()));
+        }
+        if (!rebound.isEmpty() || applied.valueFields() > 0 || !applied.rebuilt().isEmpty()) return;
+        if (levelsApplied[0] > 0 && changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey)) return;
+        reportUnconsumedProperties(changed);
+    }
+
+    private static void reportUnconsumedProperties(java.util.Map<String, String> changed) {
         StatusReporter.warn("Values a bean read once at startup still need a restart; "
                 + "nothing here reads them again on its own.");
         RestartLedger.note(changed.keySet().toString(),
-                "changed, and a bean that read the value once at startup is still holding "
-                + "the old one");
+                "changed, and a bean that read the value once at startup is still holding the old one");
     }
 
     /**
@@ -1395,16 +1398,12 @@ public class ReclazzAgent {
      * file would undo a level raised from the HAC console minutes earlier,
      * every time any unrelated property is edited.
      */
-    private static int applyLoggerLevels(java.nio.file.Path propertiesFile,
+    private static int applyLoggerLevels(java.util.Map<String, String> content,
                                          java.util.Collection<String> changedKeys) {
         if (changedKeys.isEmpty()) return 0;
 
         java.util.Properties fromFile = new java.util.Properties();
-        try (java.io.InputStream in = java.nio.file.Files.newInputStream(propertiesFile)) {
-            fromFile.load(in);
-        } catch (Throwable halfWritten) {
-            return 0;
-        }
+        fromFile.putAll(content);
 
         java.util.Map<String, String> levels =
                 LoggingReloader.levelsIn(fromFile, changedKeys);

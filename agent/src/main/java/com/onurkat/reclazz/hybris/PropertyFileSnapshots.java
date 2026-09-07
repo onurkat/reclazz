@@ -52,30 +52,32 @@ public final class PropertyFileSnapshots {
      */
     public void baseline(Path file) {
         Map<String, String> content = read(file);
-        if (content != null) lastSeen.put(file, content);
+        if (content != null) lastSeen.put(file, Map.copyOf(content));
     }
 
-    /**
-     * The keys whose value in this file differs from the last version seen,
-     * along with their new values, in file order.
-     *
-     * A file with no previous version is a file that appeared after startup,
-     * and everything in it is new.
-     */
-    public Map<String, String> changedSince(Path file) {
+    /** A single read carried unchanged through checking, application and acceptance. */
+    public record Candidate(Path file, Map<String, String> content, Map<String, String> changed) {
+        public Candidate {
+            content = Map.copyOf(content);
+            changed = Map.copyOf(changed);
+        }
+    }
+
+    /** Null means unreadable; neither a read nor a rejection advances the baseline. */
+    public Candidate pending(Path file) {
         Map<String, String> now = read(file);
-        if (now == null) return Map.of();
-
-        Map<String, String> previous = lastSeen.put(file, now);
-        if (previous == null) return now;
-
+        if (now == null) return null;
+        Map<String, String> previous = lastSeen.get(file);
         Map<String, String> changed = new LinkedHashMap<>();
         for (Map.Entry<String, String> entry : now.entrySet()) {
-            if (!Objects.equals(previous.get(entry.getKey()), entry.getValue())) {
+            if (previous == null || !Objects.equals(previous.get(entry.getKey()), entry.getValue()))
                 changed.put(entry.getKey(), entry.getValue());
-            }
         }
-        return changed;
+        return new Candidate(file, now, changed);
+    }
+
+    public void accept(Candidate candidate) {
+        lastSeen.put(candidate.file(), candidate.content());
     }
 
     /** The version currently recorded, or null when the file is unknown. */

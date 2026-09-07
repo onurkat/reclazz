@@ -53,6 +53,9 @@ dependencies {
     // The Bean Validation API under its pre-Jakarta name, for the test that
     // a Boot 2 application's validator is found by it.
     testImplementation("javax.validation:validation-api:2.0.1.Final")
+    testImplementation("org.springframework.boot:spring-boot:2.7.18")
+    testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
+    testImplementation("org.glassfish:jakarta.el:3.0.4")
 }
 
 tasks.test {
