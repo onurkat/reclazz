@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- **`scripts/release.sh X.Y.Z` cuts a release.** The seven commands in
+  `docs/publishing.md` had two known ways to go wrong, a GitHub release
+  forgotten four times and a signed zip uploaded under the wrong name, and
+  the tag's workflow could only refuse a mismatched version after the tag
+  was pushed. The script refuses first, naming everything at once: a dirty
+  tree, a branch other than `main`, a `gradle.properties` version that is
+  not the one asked for, a changelog or `plugin.xml` without an entry for
+  it, an existing tag, a missing password or token. Then it verifies,
+  signs, publishes (unless `--skip-publish`), tags, pushes, waits for the
+  release and attaches the zip under the name every release has used.
+  `--dry-run` prints the steps instead, which is what its test holds it to.
+
 ### Fixed
 
 - **Breakpoints bind in reloaded code on a stock JDK.** An edited method
