@@ -949,9 +949,12 @@ public class ReclazzAgent {
 
         StatusReporter.info(batch.size() + " class files changed together; reloading them as one batch");
         long startTime = System.currentTimeMillis();
+        // Callees before callers, so no caller's new body reaches a callee
+        // that still has its old shape. See BatchOrder.
+        java.util.List<ChangeEvent> ordered = com.onurkat.reclazz.reload.BatchOrder.calleesFirst(batch);
         springOrchestrator.beginBatch();
         try {
-            for (ChangeEvent event : batch) {
+            for (ChangeEvent event : ordered) {
                 handleChange(event, compiler, reloader,
                         springOrchestrator, interceptorReloader, impexImporter, config);
             }

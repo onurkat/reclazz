@@ -134,6 +134,9 @@ public final class ProtectedCallResolver {
                             "Unsupported ProtectedCallResolver kind: " + kind);
             }
         } catch (NoSuchMethodException | NoSuchMethodError notOnTheClass) {
+            if (owner != target && kind != KIND_SPECIAL) {
+                return addedToAnotherClass(caller, invocationName, invocationType, ownerInternal, kind);
+            }
             mh = addedByThisReload(caller, invocationName, invocationType, notOnTheClass);
         }
 
@@ -156,6 +159,39 @@ public final class ProtectedCallResolver {
      * BootstrapMethodError. On a live SAP Commerce server that surfaced as an
      * HTTP 500 from a servlet filter.
      */
+    /**
+     * A method of another watched class that its loaded shape does not have.
+     *
+     * <p>On a stock JDK a method a reload adds lives in that class's companion,
+     * not on the class, so {@code findVirtual} does not find it. A call site
+     * in an instrumented class reaches it anyway, through the dispatch table
+     * the class's reloads re-target; a call from a companion took this
+     * resolver instead, found nothing, and the linkage failed. An
+     * {@code invokedynamic} whose bootstrap fails is failed for good: every
+     * later call throws {@code BootstrapMethodError}, including after the
+     * callee has been reloaded and has the method. Measured with a caller and
+     * a callee saved together, the caller's new body calling a method the
+     * save added to the callee: every call failed, and kept failing.
+     *
+     * <p>So a call from a companion into another class goes the way a call
+     * from an instrumented class goes: the same bootstrap, the same site
+     * registered under the same key in the callee's dispatch. If the callee
+     * has already been reloaded, the site gets its latest target on creation;
+     * if it is reloaded later, that reload re-targets the site. Nothing is
+     * failed permanently.
+     */
+    private static CallSite addedToAnotherClass(MethodHandles.Lookup caller, String name,
+                                                MethodType invocationType, String ownerInternal,
+                                                int kind) throws Throwable {
+        if (kind == KIND_STATIC) {
+            return ReclazzBootstrap.bootstrapStaticMethod(caller, name, invocationType, ownerInternal,
+                    InjectedNames.descHash(invocationType.toMethodDescriptorString()));
+        }
+        MethodType virtualType = invocationType.dropParameterTypes(0, 1);
+        return ReclazzBootstrap.bootstrapMethod(caller, name, invocationType, ownerInternal,
+                InjectedNames.descHash(virtualType.toMethodDescriptorString()));
+    }
+
     private static MethodHandle addedByThisReload(MethodHandles.Lookup caller,
                                                   String name,
                                                   MethodType invocationType,

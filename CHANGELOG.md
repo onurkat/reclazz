@@ -8,6 +8,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- **A call from a reloaded body to a method another reload added no longer
+  fails for good.** On a stock JDK a method a reload adds lives in the
+  class's companion, not on the class, and a call site in an instrumented
+  class reaches it through the dispatch table that class's reloads
+  re-target. A call from a *companion*, an edited body, into another class
+  went through a resolver that looked the method up on the class, found
+  nothing, and failed the linkage; an `invokedynamic` whose bootstrap fails
+  is failed for good, so every later call threw `BootstrapMethodError`,
+  after the callee had been reloaded too. Measured with a caller and a
+  callee saved together, the caller's new body calling a method the save
+  added to the callee: every call failed and kept failing until the caller
+  was reloaded again. A companion's call into another class now goes the
+  way an instrumented class's does: the same bootstrap, the same site in
+  the callee's dispatch, so it gets the callee's latest target on creation
+  or when the callee is reloaded.
+
 - **An edited override calls the parent it extends, not its own previous
   body.** Editing a method that calls `super` in a class whose parent had not
   itself been reloaded returned the wrong value, and kept returning it:
@@ -28,6 +44,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   catching in the full suite and nowhere else.
 
 ### Changed
+
+- **Within one save, a class is reloaded after the classes it calls.** A
+  reload is atomic for a class and not for a save; between the first class
+  of a save and the last the application runs a mixture, and the mixture
+  that fails is a caller reloaded before its callee, whose new body reaches
+  for a shape the callee does not have yet. The other way round never
+  fails: a reloaded callee keeps every method its old callers use. So the
+  files of a save are ordered callees first, from the references in their
+  constant pools, with a cycle broken at the class the most of its members
+  call. What is left is the window in which old callers reach new callees,
+  which is what every reload already is.
+
+- **A save's files are dispatched once the save has settled, not one by
+  one.** The debounce was judged per file, so two class files written 30ms
+  apart by one javac run came due in different passes of the watcher and
+  reached the reload thread as two saves, with the caller in one and the
+  callee it was compiled against in the other. The wait is now measured
+  from the newest pending file: the first waits for the burst to settle,
+  a single save waits exactly what it did, and a build that writes for
+  longer than a second still gets its files in batches of what is due.
 
 - **The staged agent jar is compared with the bundled one by content.** A
   SAP Commerce server loads the agent from a copy staged under the user's
