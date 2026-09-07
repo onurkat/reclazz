@@ -88,6 +88,33 @@ tasks.test {
     }
 }
 
+// The suite is two minutes, and 104 of those seconds are the 24 end-to-end
+// tests, each of which starts a JVM. The other 850 tests take under twenty.
+// `unitTest` is the inner loop; `test` still runs everything and is the gate.
+val unitTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Every test except the end-to-end ones that start a JVM (about 20s)"
+    useJUnitPlatform()
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    jvmArgs("-Djdk.attach.allowAttachSelf=true")
+    systemProperty("reclazz.agent.jar",
+            tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    exclude("com/onurkat/reclazz/e2e/**")
+}
+
+val e2eTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Only the end-to-end tests, against the built agent jar (about 100s)"
+    useJUnitPlatform()
+    dependsOn(tasks.named("shadowJar"))
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    systemProperty("reclazz.agent.jar",
+            tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    include("com/onurkat/reclazz/e2e/**")
+}
+
 // What the tests actually reach, in this process.
 //
 // Written down because "I think that is covered" was the only answer available
