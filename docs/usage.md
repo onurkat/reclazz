@@ -367,6 +367,15 @@ the method is not filtered out. Set or move the breakpoint after the edit if
 the line you want did not exist before; a breakpoint on a line that the old
 body had and the new one does not has nothing to bind to, as in any rebuild.
 
+## Other Clients and Build Tools
+
+Everything the IntelliJ plugin sees comes over a small loopback socket, and
+anything else can read it or send the four commands, `DIAGNOSE`, `PENDING`,
+`HEALTH` and `SCAN`: another IDE's extension, a Gradle or Maven build that
+nudges the agent when it has finished writing class files, a log shipper.
+The port file, the JSON lines and the commands are in
+[protocol.md](protocol.md), with a Gradle and a shell recipe for `SCAN`.
+
 ## Seeing Reloads in JDK Flight Recorder
 
 Every reload is also a Flight Recorder event, so it sits on the same timeline

@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- The README has a Documentation table naming every document under `docs/`
+  and what each is for, held to the folder by a test; `docs/usage.md`
+  points other clients and build tools at the protocol document.
+
+### Added
+
 - **CI builds and tests on JDK 17 and 21, and Dependabot watches the
   dependencies.** The agent runs on 17 through 25 and the two javacs compile
   the same source differently; an enum switch test passed for weeks on the
