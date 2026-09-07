@@ -59,19 +59,28 @@ jobs:
     # it had ever been exercised on a platform with a different separator. The
     # verifier only runs once, on Linux: it downloads whole IDEs and the answer
     # does not depend on the host.
+    # Two JDKs on Linux, because the agent runs on 17 through 25 and the two
+    # javacs compile the same source differently: an enum switch test passed
+    # for weeks on the maintainer's 21 while every CI run on 17 failed. Windows
+    # stays on one JDK; it is here for the path handling, which does not
+    # depend on the compiler.
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
+        jdk: ['17', '21']
+        exclude:
+          - os: windows-latest
+            jdk: '21'
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: ${{ matrix.jdk }}
           distribution: 'temurin'
 
       - name: Setup Gradle
@@ -86,11 +95,11 @@ jobs:
       # Marketplace runs this on submission; failing here instead means we
       # never find out from a rejection email.
       - name: Verify Plugin (JetBrains Plugin Verifier)
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.jdk == '17'
         run: ./gradlew verifyPlugin
 
       - name: Upload Plugin Artifact
-        if: github.ref == 'refs/heads/main' && matrix.os == 'ubuntu-latest'
+        if: github.ref == 'refs/heads/main' && matrix.os == 'ubuntu-latest' && matrix.jdk == '17'
         uses: actions/upload-artifact@v4
         with:
           name: reclazz-plugin
@@ -100,7 +109,7 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-reports-${{ matrix.os }}
+          name: test-reports-${{ matrix.os }}-jdk${{ matrix.jdk }}
           path: |
             agent/build/reports/tests/
             build/reports/tests/

@@ -660,13 +660,6 @@ public class FileWatcher {
         }
     }
 
-    // TODO: under heavy class-change load (e.g. a full `ant build` that
-    //   rewrites hundreds of .class files in one go), individual user
-    //   saves to unrelated files can see multi-second dispatch latency
-    //   because the WatchService queue is saturated. Functional (event
-    //   eventually fires) but noticeable in rapid edit cycles. Fix
-    //   candidate: process class-file events in bulk per directory
-    //   instead of one at a time.
     private void pollLoop() throws InterruptedException {
         Map<Path, PendingEvent> pendingEvents = new LinkedHashMap<>();
         long debounceMs = config.getDebounceMs();

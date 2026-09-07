@@ -1,0 +1,26 @@
+# Dependency updates arrive as pull requests, weekly, instead of being
+# noticed when something breaks. Grouped so a week of minor bumps is one PR
+# per ecosystem rather than one per library; the Marketplace verifier and
+# the two-JDK matrix are what judge them.
+version: 2
+updates:
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      gradle-dependencies:
+        patterns: ["*"]
+        update-types: [minor, patch]
+  - package-ecosystem: gradle
+    directory: /agent
+    schedule:
+      interval: weekly
+    groups:
+      agent-dependencies:
+        patterns: ["*"]
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
