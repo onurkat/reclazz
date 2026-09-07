@@ -254,28 +254,57 @@ public class CodegenReloader {
         }
     }
 
+    /**
+     * How the platform's ant is started on this operating system: the files
+     * that have to be there, and the command that runs it.
+     *
+     * <p>SAP Commerce ships {@code setantenv.sh} with {@code apache-ant/bin/ant}
+     * for Unix and {@code setantenv.bat} with {@code ant.bat} for Windows.
+     * This looked for the Unix pair only and ran bash, so on Windows, where a
+     * good share of Commerce development happens, every items.xml save
+     * reported that the platform's ant was not found and codegen was left to
+     * the developer.
+     */
+    record AntLaunch(Path setEnv, Path antBin, java.util.List<String> command) {
+        static AntLaunch forPlatform(Path platform, boolean windows) {
+            if (windows) {
+                return new AntLaunch(
+                        platform.resolve("setantenv.bat"),
+                        platform.resolve("apache-ant").resolve("bin").resolve("ant.bat"),
+                        // The working directory is set on the process, never
+                        // interpolated: a path with a space or a special
+                        // character would otherwise be parsed by the shell.
+                        java.util.List.of("cmd.exe", "/c", "call setantenv.bat && ant build"));
+            }
+            return new AntLaunch(
+                    platform.resolve("setantenv.sh"),
+                    platform.resolve("apache-ant").resolve("bin").resolve("ant"),
+                    java.util.List.of("/bin/bash", "-c", "source ./setantenv.sh && ant build"));
+        }
+
+        boolean present() {
+            return Files.exists(setEnv) && Files.exists(antBin);
+        }
+    }
+
+    static boolean isWindows() {
+        return System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).contains("win");
+    }
+
     private boolean runAnt(ExtensionInfo ext) {
         Path platform = hybrisContext.getHybrisHome().resolve("bin").resolve("platform");
-        Path setEnv = platform.resolve("setantenv.sh");
-        Path antBin = platform.resolve("apache-ant").resolve("bin").resolve("ant");
+        AntLaunch launch = AntLaunch.forPlatform(platform, isWindows());
 
-        if (!Files.exists(setEnv) || !Files.exists(antBin)) {
+        if (!launch.present()) {
             StatusReporter.warn("Codegen: Hybris platform ant not found at " + platform
-                    + " — Tier 1 ant strategy skipped. Run `ant build` manually.");
+                    + " (" + launch.setEnv().getFileName() + " and " + launch.antBin().getFileName()
+                    + ") — Tier 1 ant strategy skipped. Run `ant build` manually.");
             return false;
         }
 
-        // The working directory is set on the ProcessBuilder rather than
-        // interpolated into the shell command: a hybris path containing
-        // $, backtick or a quote would otherwise be expanded by bash
-        // (command injection through an innocuous-looking directory name).
-        // setantenv.sh still computes ANT_HOME from $PWD, which is exactly
-        // the directory we set below. Platform-level `ant build` is the
-        // only target that invokes the gensource / ycodegenerator macro.
-        String shellCommand = "source ./setantenv.sh && ant build";
 
         try {
-            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", shellCommand);
+            ProcessBuilder pb = new ProcessBuilder(launch.command());
             pb.directory(platform.toFile());
 
             // The output used to be read to its end before the five-minute
