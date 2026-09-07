@@ -97,6 +97,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `wrapOutput` | `auto` | Wrap console lines to the terminal width: `auto`, `true`, `false` |
 | `transformDumpDir` | (none) | Write every transformed class file here, for looking at what the agent emitted |
 | `verifyTransform` | `false` | Run the bytecode verifier over every transformed class and print what it says |
+| `sessionLog` | (none) | Append every status line to this file with an ISO timestamp and level, no colour: the session's record, to read back or attach to a report |
 
 Arguments are never removed or renamed within a major version: a line that
 worked with an older 1.x agent works with a newer one. An argument the agent

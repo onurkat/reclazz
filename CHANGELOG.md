@@ -32,6 +32,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **`sessionLog=<path>` records the session.** Every status line the agent
+  emits is appended to the file with an ISO timestamp and its level, one
+  per line, without colour codes or wrapping: what the console shows and
+  then scrolls away, kept. Restarts of the same server append to the same
+  file. A file that cannot be written is said once and costs the record,
+  not the reload.
+
+### Added
+
 - The promise in `SECURITY.md` that nothing leaves the machine is a test:
   the shipped sources of the agent and the plugin open no HTTP or other
   client connection, and the only sockets are the status socket bound to

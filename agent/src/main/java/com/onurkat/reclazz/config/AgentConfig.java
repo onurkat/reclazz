@@ -30,7 +30,7 @@ public class AgentConfig {
             "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
-            "platform", "watchDirs", "jpaRefresh"
+            "platform", "watchDirs", "jpaRefresh", "sessionLog"
     );
 
     // Split on comma followed by a known key= pattern
@@ -108,6 +108,8 @@ public class AgentConfig {
      * server only when the developer asked for it.
      */
     private boolean jpaRefresh = false;
+    /** Where every status line is appended for the record, or null for no record. */
+    private Path sessionLog;
 
     public static AgentConfig parse(String agentArgs) {
         AgentConfig config = new AgentConfig();
@@ -179,6 +181,9 @@ public class AgentConfig {
 
         if (params.containsKey("portFile")) {
             config.portFile = Paths.get(params.get("portFile"));
+        }
+        if (params.containsKey("sessionLog")) {
+            config.sessionLog = Paths.get(params.get("sessionLog"));
         }
 
         if (params.containsKey("excludeClasses")) {
@@ -335,6 +340,7 @@ public class AgentConfig {
     public String getWrapOutput() { return wrapOutput; }
     public int getStatusPort() { return statusPort; }
     public Path getPortFile() { return portFile; }
+    public Path getSessionLog() { return sessionLog; }
     public List<String> getExcludePatterns() { return Collections.unmodifiableList(excludePatterns); }
     public int getStartupDelaySec() { return startupDelaySec; }
     public boolean isStructuralReload() { return structuralReload; }
