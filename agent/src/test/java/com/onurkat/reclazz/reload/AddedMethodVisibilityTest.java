@@ -111,6 +111,17 @@ class AddedMethodVisibilityTest {
     }
 
     @Test
+    void eventReloadingReportsItsOwnFailuresOnlyWhenSpringOrchestrationRuns() {
+        byte[] bytes = classWith(new Method(Opcodes.ACC_PUBLIC, "listen", "(Ljava/lang/String;)V",
+                "Lorg/springframework/context/event/EventListener;"));
+        assertEquals(List.of(), AddedMethodVisibility.check(bytes, added("listen", "(Ljava/lang/String;)V"), true));
+        assertEquals(1, AddedMethodVisibility.check(bytes, added("listen", "(Ljava/lang/String;)V")).size());
+        byte[] transactional = classWith(new Method(Opcodes.ACC_PUBLIC, "listen", "(Ljava/lang/String;)V",
+                "Lorg/springframework/transaction/event/TransactionalEventListener;"));
+        assertEquals(1, AddedMethodVisibility.check(transactional, added("listen", "(Ljava/lang/String;)V"), true).size());
+    }
+
+    @Test
     void aPrivateGetterIsNotAProperty() {
         byte[] bytes = classWith(new Method(Opcodes.ACC_PRIVATE, "getSecret",
                 "()Ljava/lang/String;", null));

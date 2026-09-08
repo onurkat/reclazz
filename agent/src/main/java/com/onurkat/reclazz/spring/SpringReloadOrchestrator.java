@@ -276,7 +276,7 @@ public class SpringReloadOrchestrator {
             new ReloadSteps.Step("Scheduler re-registration",
                     r -> schedulerReloader.reloadScheduledMethods(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Event listener re-registration",
-                    r -> eventReloader.reloadEventListeners(r.type())),
+                    r -> eventReloader.reloadEventListeners(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("AOP proxy cache clear",
                     r -> aopReloader.reloadAopProxies(r.type())),
             new ReloadSteps.Step("Async re-processing",

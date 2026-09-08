@@ -160,6 +160,60 @@ adapter is cancelled and any partially registered replacement tasks are
 cancelled too. The failure is reported; the previous schedule is not restored.
 Correct the declaration and compile again to retry.
 
+### Event listener methods added after startup
+
+With the agent attached at startup, add a listener to an existing, unproxied
+singleton `@Service` or `@Component` and compile. It can be the class's first
+listener. Spring's event listener processor must already be present (as in an
+annotation-configured Spring context).
+
+```java
+@EventListener(condition = "#a0.priority > 5")
+@Order(10)
+public void onOrder(OrderCreated event) {
+    notifications.send(event);
+}
+```
+
+The added method receives matching events without a restart. Spring selects
+the event type, unwraps payload events, evaluates `condition`, and applies
+`@Order`. `classes`/`value` and explicit listener `id` attributes are carried
+across. Indexed conditions (`#a0`, `#p0`) work without compiler parameter names;
+named parameters also work when the class file includes `-parameters` or debug
+local variable metadata.
+
+Saving again replaces the added registrations. Removing the method or its
+annotation stops it from receiving subsequent publications after reload has
+completed. Refreshing existing listeners scans only the affected beans;
+other beans and manually registered listeners keep their registrations.
+Multiple singleton instances and multiple contexts are handled separately.
+Each invocation reads the current singleton, so dependency refreshes can replace
+the bean without leaving its listener on a destroyed instance. An absent bean
+is skipped without being created; a replacement proxy is skipped and reported.
+
+The added-method scope is a direct `@EventListener` on a `void` instance method,
+including a private method, with exactly one reference event parameter and no
+generic method signature. The bean class must carry a Spring stereotype
+recognized by Reclazz. Extra runtime method annotations are limited to
+`@Order` and `@Deprecated`. Added `@Async` and `@TransactionalEventListener`
+methods, composed listener annotations, generic signatures, proxies/subclasses,
+prototype beans, and classes registered only through XML or `@Bean` without a
+recognized stereotype require a restart. The added path requires the default
+Spring event listener factory; contexts with custom or transactional listener
+factories are reported as unsupported for additions. Existing reflected
+listeners continue to use the application's factories.
+
+Event delivery is not paused during reload. A callback already selected by the
+multicaster can finish; the MVC request boundary does not cover event publication
+from other threads. If registration fails, previous added registrations and any
+partially registered replacements for that class are removed in the affected
+context. There is no rollback to the previous listener declaration. Correct the
+declaration and compile again. Spring expression syntax and user exceptions
+remain subject to Spring's normal event delivery behavior.
+
+This path is runtime-tested on Spring 5.3.39 with JDK 21. Spring 6 compatibility
+has source-level checks but has not been verified in a running application.
+
 ### Property changes keep the last working values
 
 For non-SAP Spring applications, Reclazz checks a saved `.properties` change

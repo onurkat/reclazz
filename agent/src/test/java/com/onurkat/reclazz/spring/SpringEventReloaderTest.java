@@ -29,6 +29,46 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class SpringEventReloaderTest {
 
+    public static class First {
+        int calls;
+        @org.springframework.context.event.EventListener
+        public void on(String event) { calls++; }
+    }
+
+    public static class Second {
+        int calls;
+        @org.springframework.context.event.EventListener
+        public void on(String event) { calls++; }
+    }
+
+    @Test
+    void reloadingOneClassDoesNotMultiplyUnrelatedListeners() {
+        try (var context = new org.springframework.context.annotation.AnnotationConfigApplicationContext()) {
+            context.registerBean("first", First.class);
+            context.registerBean("second", Second.class);
+            context.refresh();
+            var manual = new java.util.concurrent.atomic.AtomicInteger();
+            context.addApplicationListener(event -> {
+                if (event instanceof org.springframework.context.PayloadApplicationEvent<?> payload
+                        && payload.getPayload() instanceof String) manual.incrementAndGet();
+            });
+            var platform = (com.onurkat.reclazz.platform.PlatformContext) java.lang.reflect.Proxy.newProxyInstance(
+                    getClass().getClassLoader(), new Class<?>[]{com.onurkat.reclazz.platform.PlatformContext.class},
+                    (p, m, a) -> m.getName().equals("getAllApplicationContexts") ? java.util.List.of(context) : null);
+            var reloader = new SpringEventReloader(platform);
+            int registrySize = context.getApplicationListeners().size();
+            for (int i = 1; i <= 4; i++) {
+                context.publishEvent("event");
+                assertEquals(i, context.getBean(First.class).calls);
+                assertEquals(i, context.getBean(Second.class).calls, "an unrelated listener must run exactly once per publish");
+                assertEquals(i, manual.get());
+                assertTrue(reloader.reloadEventListeners(First.class));
+                assertEquals(registrySize, context.getApplicationListeners().size(),
+                        "the context must release old adapters as well as the multicaster");
+            }
+        }
+    }
+
     /** What the multicaster keeps its listeners in. */
     static class Retriever {
         public final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();

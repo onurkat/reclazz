@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Event listener methods added after startup on a stock JDK.** Direct
+  `@EventListener` methods with one reference parameter and a `void` return on
+  unproxied Spring stereotype singletons receive matching events through a
+  hidden adapter. Spring handles event types, conditions and `@Order`; each
+  invocation reaches the current singleton. Further saves replace registrations,
+  and removing the method or annotation stops delivery. Unsupported shapes are
+  reported. See [scope and example](docs/usage.md#event-listener-methods-added-after-startup).
+  Listener refresh now scans only the affected beans and releases their old
+  adapters from both the multicaster and context registry. A real Spring
+  regression previously delivered an unrelated listener's event twice after
+  refreshing another class; it now delivers once.
+
 - **Schedule methods added after startup on a stock JDK.** Direct `@Scheduled`
   and `@Schedules` declarations on no-argument `void` instance methods of
   unproxied Spring stereotype singletons are registered through hidden

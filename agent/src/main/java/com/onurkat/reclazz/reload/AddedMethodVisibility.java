@@ -117,7 +117,7 @@ public final class AddedMethodVisibility {
 
     public static List<Unseen> check(byte[] newBytecode,
                                     List<TransformContext.MethodSig> added,
-                                    boolean schedulingHandled) {
+                                    boolean springListenersHandled) {
         List<Unseen> unseen = new ArrayList<>();
         if (added == null || added.isEmpty()) return unseen;
 
@@ -141,10 +141,11 @@ public final class AddedMethodVisibility {
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(
                                 String annotationDescriptor, boolean visible) {
                             String simple = simpleName(annotationDescriptor);
-                            // The scheduling reloader registers the supported
+                            // The Spring reloaders register the supported
                             // subset and names its own refusals and failures.
-                            if (schedulingHandled && (annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Scheduled;")
-                                    || annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Schedules;")))
+                            if (springListenersHandled && (annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Scheduled;")
+                                    || annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Schedules;")
+                                    || annotationDescriptor.equals("Lorg/springframework/context/event/EventListener;")))
                                 return null;
                             if (!reported && !ALREADY_CARRIED.contains(simple)
                                     && DISCOVERED_BY_SCAN.contains(simple)) {
