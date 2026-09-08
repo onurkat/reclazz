@@ -7,13 +7,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Computed `@Value` constructor arguments follow property saves.** Supported
+  scalar expressions on directly constructed, unproxied singletons with one
+  constructor are checked before bean destruction. All `@Value` arguments on
+  an affected constructor are checked, including unchanged expressions and
+  placeholders resolving to SpEL. Valid changes recreate the bean through Spring
+  and re-point surviving singleton holders; unsupported creation policies hold
+  the candidate with a reason. Constructor/lifecycle failures during live apply
+  remain partial and are not rolled back. See
+  [scope and lifecycle](docs/usage.md#computed-value-constructor-parameters).
+
 - **Computed `@Value` fields follow property saves.** Scalar instance fields
   using whole arithmetic/conditional SpEL expressions over `${...}` placeholders
   are checked and recalculated without recreating their bean. Invalid expressions
   or conversions hold all candidate keys before live writes. Unsupported nodes,
   including nodes in untaken branches, are named without evaluating them and
   hold the candidate as uncheckable. The application's conversion service is
-  preserved. Constructor SpEL remains outside this support. See
+  preserved. Constructor support is described separately above. See
   [scope and example](docs/usage.md#computed-value-fields).
 
 - **Event listener methods added after startup on a stock JDK.** Direct

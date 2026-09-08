@@ -181,8 +181,7 @@ class SpringPropertyRebinderTest {
         assertTrue(takes(ReadsTimeoutWithDefault.class),
                 "a default in the placeholder does not stop it reading the key");
         assertTrue(takes(AnnotatedOnASecondConstructor.class),
-                "which constructor Spring picked is not recorded anywhere reachable, "
-                + "so every one of them is looked at");
+                "direct-placeholder selection retains its conservative sweep of every constructor");
     }
 
     @Test
@@ -191,14 +190,10 @@ class SpringPropertyRebinderTest {
         assertFalse(takes(ReadsNothing.class));
     }
 
-    /**
-     * The same policy the field path states: re-evaluating an arbitrary
-     * expression is running application code at a moment it did not choose,
-     * and a rebuild would do exactly that through the constructor.
-     */
+    /** Selection includes SpEL; the precheck decides whether it is supported. */
     @Test
-    void aSpelParameterIsLeftAloneLikeASpelField() throws Exception {
-        assertFalse(takes(ReadsThroughSpel.class));
+    void aSpelParameterReadingAChangedKeyIsSelectedForChecking() throws Exception {
+        assertTrue(takes(ReadsThroughSpel.class));
     }
 
     @Test

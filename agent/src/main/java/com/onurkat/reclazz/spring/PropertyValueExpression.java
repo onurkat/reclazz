@@ -10,7 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayDeque;
 import java.util.Set;
 
-/** The arithmetic-only subset of field SpEL that property reload can evaluate. */
+/** The arithmetic-only subset of @Value SpEL that property reload can evaluate. */
 final class PropertyValueExpression {
     private static final String AST = "org.springframework.expression.spel.ast.";
     private static final String PARSER = "org.springframework.expression.spel.standard.SpelExpressionParser";
@@ -36,12 +36,16 @@ final class PropertyValueExpression {
     static boolean isExpression(String value) { return value.contains("#{"); }
 
     static Object evaluate(Object context, SpringPropertyRebinder.ValueTarget target, Object resolved) throws Exception {
-        if (!isExpression(target.expression())) return resolved;
-        if (target.field() == null || Modifier.isStatic(target.field().getModifiers())
-                || Modifier.isFinal(target.field().getModifiers()))
+        if (target.unsupportedReason() != null) throw new Unsupported(target.unsupportedReason());
+        // A constructor placeholder may itself resolve to SpEL. Spring will
+        // evaluate that at recreation too, so check it before any destruction.
+        if (!isExpression(target.expression()) && !(target.field() == null
+                && resolved instanceof String text && isExpression(text))) return resolved;
+        if (target.field() != null && (Modifier.isStatic(target.field().getModifiers())
+                || Modifier.isFinal(target.field().getModifiers())))
             throw new Unsupported("only writable instance fields are supported");
         if (!target.type().isPrimitive() && !SCALARS.contains(target.type()))
-            throw new Unsupported("only primitive, boxed primitive and String fields are supported");
+            throw new Unsupported("only primitive, boxed primitive and String values are supported");
         if (!(resolved instanceof String text)) throw new Unsupported("placeholder resolution did not return text");
         if (text.length() > MAX_LENGTH) throw new Unsupported("expression exceeds " + MAX_LENGTH + " characters");
         if (!text.startsWith("#{") || !text.endsWith("}") || text.indexOf("#{", 2) >= 0)
