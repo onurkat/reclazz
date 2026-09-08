@@ -31,8 +31,8 @@ import com.onurkat.reclazz.spring.AddedEndpointAdapter;
  *   getMethod("getEmail")  NoSuchMethodException
  * </pre>
  *
- * <p>So an added {@code @Bean} method is not a bean, an added {@code @Scheduled}
- * method never runs, an added getter is not serialised, and none of that
+ * <p>So an added {@code @Bean} method is not a bean,
+ * an added getter is not serialised, and none of that
  * announces itself: the reload succeeds, the log says so, and the thing the
  * developer added does nothing. That silence is the problem this fixes. It
  * cannot make the method visible, which is the JDK's wall rather than a cache,
@@ -56,7 +56,7 @@ public final class AddedMethodVisibility {
      * meta-annotated one of the application's.
      */
     private static final Set<String> DISCOVERED_BY_SCAN = Set.of(
-            "Bean", "Scheduled", "EventListener", "TransactionalEventListener",
+            "Bean", "Scheduled", "Schedules", "EventListener", "TransactionalEventListener",
             "PostConstruct", "PreDestroy", "ExceptionHandler", "InitBinder",
             "ModelAttribute", "JmsListener", "KafkaListener", "RabbitListener",
             "Async", "Transactional", "Cacheable", "CacheEvict", "CachePut",
@@ -112,6 +112,12 @@ public final class AddedMethodVisibility {
      */
     public static List<Unseen> check(byte[] newBytecode,
                                      List<TransformContext.MethodSig> added) {
+        return check(newBytecode, added, false);
+    }
+
+    public static List<Unseen> check(byte[] newBytecode,
+                                    List<TransformContext.MethodSig> added,
+                                    boolean schedulingHandled) {
         List<Unseen> unseen = new ArrayList<>();
         if (added == null || added.isEmpty()) return unseen;
 
@@ -135,6 +141,11 @@ public final class AddedMethodVisibility {
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(
                                 String annotationDescriptor, boolean visible) {
                             String simple = simpleName(annotationDescriptor);
+                            // The scheduling reloader registers the supported
+                            // subset and names its own refusals and failures.
+                            if (schedulingHandled && (annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Scheduled;")
+                                    || annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Schedules;")))
+                                return null;
                             if (!reported && !ALREADY_CARRIED.contains(simple)
                                     && DISCOVERED_BY_SCAN.contains(simple)) {
                                 reported = true;

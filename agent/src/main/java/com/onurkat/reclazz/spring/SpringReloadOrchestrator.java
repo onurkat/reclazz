@@ -226,7 +226,8 @@ public class SpringReloadOrchestrator {
         // whose Spring version this agent has never seen. As a bare sequence
         // one of them throwing skipped all the ones after it.
         ReloadSteps.runAll(afterTheBeanIsBack,
-                new ReloadSteps.Reloaded(className, reloadedClass, isStructural, annotationsChanged));
+                new ReloadSteps.Reloaded(className, reloadedClass, isStructural, annotationsChanged,
+                        addedMethodSigs, newBytecode));
     }
 
     /**
@@ -273,7 +274,7 @@ public class SpringReloadOrchestrator {
                     r -> securityReloader.refreshMethodSecurity(r.type())),
 
             new ReloadSteps.Step("Scheduler re-registration",
-                    r -> schedulerReloader.reloadScheduledMethods(r.type())),
+                    r -> schedulerReloader.reloadScheduledMethods(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Event listener re-registration",
                     r -> eventReloader.reloadEventListeners(r.type())),
             new ReloadSteps.Step("AOP proxy cache clear",

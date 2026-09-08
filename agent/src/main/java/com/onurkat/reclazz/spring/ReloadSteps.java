@@ -50,7 +50,11 @@ public final class ReloadSteps {
 
     /** What the steps are told about the class that just reloaded. */
     public record Reloaded(String className, Class<?> type,
-                           boolean structural, boolean annotationsChanged) {
+                           boolean structural, boolean annotationsChanged,
+                           Set<String> addedMethods, byte[] bytecode) {
+        public Reloaded(String className, Class<?> type, boolean structural, boolean annotationsChanged) {
+            this(className, type, structural, annotationsChanged, Set.of(), null);
+        }
     }
 
     private static final Set<String> reported = ConcurrentHashMap.newKeySet();

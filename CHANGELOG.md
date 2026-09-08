@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Schedule methods added after startup on a stock JDK.** Direct `@Scheduled`
+  and `@Schedules` declarations on no-argument `void` instance methods of
+  unproxied Spring stereotype singletons are registered through hidden
+  adapters. Subsequent saves replace the registration and target the current
+  bean; removing the method or annotation, or closing the context, cancels it.
+  Unsupported shapes and registration failures are reported. No new dependency
+  or agent option is required. See [scope and example](docs/usage.md#scheduled-methods-added-after-startup).
+
 - **Invalid property saves keep the running configuration.** Non-SAP Spring
   `.properties` changes are checked on detached targets with Boot's binding
   policy before live application. Rejected or uncheckable candidates remain
