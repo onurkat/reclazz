@@ -288,9 +288,9 @@ candidate, including its other keys and logger levels. Fix the value and save
 again to retry the pending keys.
 
 The supported subset is one whole `#{...}` expression on a writable instance
-field of primitive, boxed primitive or `String` type. It must directly mention
-a changed `${key}` placeholder; placeholder defaults and nested placeholders
-are resolved. Expressions can use numeric, string, boolean and null literals,
+field of primitive, boxed primitive or `String` type. A changed key can be
+referenced directly or through a [property-value chain](#indirect-value-dependencies);
+placeholder defaults and nested placeholders are resolved. Expressions can use numeric, string, boolean and null literals,
 `+`, `-`, `*`, `/`, `%`, comparisons, boolean operators, `?:` conditionals and
 Elvis defaults. Arithmetic follows Spring's operator semantics (including its
 integer arithmetic); this is not an overflow checker. The bean factory's
@@ -307,9 +307,9 @@ expression delimiters are also held. Resolved expressions and string results
 are limited to 2048 characters, with at most 256 AST nodes and depth 32.
 
 Computed constructor parameters have their own [rebuild scope](#computed-value-constructor-parameters).
-Static/final fields and non-scalar field types are outside the field support. A key reached only indirectly through
-another property's value is not tracked as a dependency. Existing placeholder
-resolver ordering still applies during live reinjection; the precheck uses the
+Static/final fields and non-scalar field types are outside the field support.
+Existing placeholder resolver ordering still applies during live reinjection;
+the precheck uses the
 candidate Environment. As with ordinary property rebinding, custom converters
 may have side effects, and a failure during live application is reported as
 partial rather than rolled back. Background readers are not paused.
@@ -366,11 +366,68 @@ can run application code during checking too. If construction or initialization
 fails after the precheck, the outcome is **Partial**: the Environment may already
 have changed, the old bean may already be destroyed, and there is no rollback.
 The file remains pending. Background readers are not paused. Existing placeholder
-resolver ordering and the direct-key dependency limit still apply.
+resolver ordering still applies; [indirect dependencies](#indirect-value-dependencies)
+are followed within the scope below.
 
 Verified on Spring 5.3.39 / Boot 2.7.18 test dependencies and JDK 21, including a
 real agent JVM watching saves, rejection, recovery and holder replacement.
 Spring 6, JDK 17 and live SAP runtime tests have not been run for this feature.
+
+### Indirect @Value dependencies
+
+Properties can refer to other properties:
+
+```properties
+shared.timeout=5
+client.timeout=${shared.timeout}
+```
+
+```java
+@Value("#{${client.timeout} * 1000L}")
+private long timeoutMillis;
+```
+
+Saving only `shared.timeout=8` updates this field to `8000`. The same dependency
+selection applies to ordinary `${...}` fields and constructor parameters, and to
+supported computed constructor parameters. Fields are re-injected and constructor
+beans are rebuilt under their existing scope and lifecycle rules.
+
+Reclazz follows the placeholder reads through the candidate property sources,
+using Spring's placeholder helper and source priority. Several alias hops,
+nested keys such as `${route.${profile}.timeout}`, and placeholder defaults are
+supported. Sources need not enumerate their keys. A higher-priority literal masks
+a lower-priority alias. Retarget an alias to another key and later saves follow
+the new chain. Alias values remain `${...}` in their source; only the actual saved
+keys are written to the Environment and accepted into the file baseline.
+
+Tracing stops as soon as it reaches a changed key. The selected target then goes
+through the existing candidate check: invalid arithmetic, conversion, or a newly
+introduced circular reference rejects the whole save before live writes. If a
+trace cannot determine whether a target is affected (for example an already-cyclic
+source or an unreadable source), the save is **Uncheckable**. Fixing the candidate
+allows it to be retried. An unrelated cycle elsewhere is not scanned.
+
+Indirect tracing allows at most 8192 characters per input/raw value, 128 placeholder
+occurrences across the traversal, and 256 lookups per expression. Exceeding a trace
+limit holds the candidate as uncheckable. These are dependency-selection limits;
+the existing expression checks still apply after a target is selected. Results
+are cached only within a selection pass, up to 1024 expressions, and are discarded
+after that pass. Direct references retain their conservative matching: a mentioned
+fallback key may select a target even when the resulting value stays the same.
+
+This tracks `@Value` dependencies through the candidate Environment's default
+`${...}`/colon syntax. It does not add indirect `@ConfigurationProperties` binding,
+custom placeholder-language support, arbitrary SpEL, YAML/key removal or SAP
+Commerce `Config` support. Custom embedded resolvers may use different sources or
+ordering during live injection; that existing precheck/live limitation remains.
+Application property-source lookups and conversions can have side effects. Mutable
+sources changed independently of Reclazz are not frozen across the request boundary.
+Successful constructor recreation retains its existing state-reset and reference
+limits; failures during live application remain partial without rollback.
+
+Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies on JDK 21, including
+watched saves, rejection and recovery in a real agent JVM. Spring 6, JDK 17 and a
+live SAP runtime have not been run for this feature.
 
 ### Cache dependencies after reload
 

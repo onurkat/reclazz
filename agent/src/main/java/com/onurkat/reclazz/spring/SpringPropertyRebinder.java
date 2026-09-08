@@ -173,6 +173,7 @@ public final class SpringPropertyRebinder {
     /** One sweep defines the targets both checking and live application handle. */
     static List<ValueTarget> valueTargets(Object context, Map<String, String> changed) throws Exception {
         List<ValueTarget> targets = new ArrayList<>();
+        var affected = new PropertyValueDependencies(context, changed);
         Object factory = SpringBeans.getBeanFactory(context);
         @SuppressWarnings("unchecked")
         Class<? extends java.lang.annotation.Annotation> annotation =
@@ -189,14 +190,14 @@ public final class SpringPropertyRebinder {
                     var found = field.getAnnotation(annotation);
                     if (found == null) continue;
                     String expression = (String) value.invoke(found);
-                    if (referencesChangedKey(expression, changed))
+                    if (affected.test(expression))
                         targets.add(new ValueTarget(bean, field, field.getType(), expression, name + "." + field.getName(), null));
                 }
             }
             // Recreation re-evaluates every argument, not just the one whose
             // property changed. Validate the unchanged @Value arguments too.
             boolean computedConstructor = hasConstructorExpression(type, annotation, value)
-                    && takesChangedValue(type, changed, annotation, value);
+                    && takesChangedValue(type, affected, annotation, value);
             String unsupported = computedConstructor
                     ? constructorExpressionProblem(factory, name, singleton, type) : null;
             for (var constructor : type.getDeclaredConstructors()) {
@@ -205,7 +206,7 @@ public final class SpringPropertyRebinder {
                     var found = parameters[i].getAnnotation(annotation);
                     if (found == null) continue;
                     String expression = (String) value.invoke(found);
-                    if (computedConstructor || referencesChangedKey(expression, changed))
+                    if (computedConstructor || affected.test(expression))
                         targets.add(new ValueTarget(bean, null, parameters[i].getType(), expression,
                                 name + ".<init>[" + i + "]", unsupported));
                 }
@@ -238,6 +239,7 @@ public final class SpringPropertyRebinder {
                                                               Map<String, String> changed, List<String> failures) {
         List<String> rebuilt = new ArrayList<>();
         try {
+            var affected = new PropertyValueDependencies(context, changed);
             Object beanFactory = SpringBeans.getBeanFactory(context);
             Method getSingletonNames = Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
             Method getSingleton = Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
@@ -275,7 +277,7 @@ public final class SpringPropertyRebinder {
                 if (propertiesAnnotation != null && type.getAnnotation(propertiesAnnotation) != null) {
                     continue;
                 }
-                if (!takesChangedValue(type, changed, valueAnnotation, valueMember)) continue;
+                if (!takesChangedValue(type, affected, valueAnnotation, valueMember)) continue;
 
                 if (rebuildSingleton(context, name, type)) rebuilt.add(name);
                 else failures.add(name + ": @Value constructor bean could not be rebuilt");
@@ -298,17 +300,28 @@ public final class SpringPropertyRebinder {
     static boolean takesChangedValue(Class<?> type, Map<String, String> changed,
                                      Class<? extends java.lang.annotation.Annotation> valueAnnotation,
                                      Method valueMember) {
+        return takesChangedValue(type, expression -> referencesChangedKey(expression, changed),
+                valueAnnotation, valueMember);
+    }
+
+    private static boolean takesChangedValue(Class<?> type, java.util.function.Predicate<String> affected,
+                                     Class<? extends java.lang.annotation.Annotation> valueAnnotation,
+                                     Method valueMember) {
         for (java.lang.reflect.Constructor<?> constructor : type.getDeclaredConstructors()) {
             for (java.lang.annotation.Annotation[] parameter : constructor.getParameterAnnotations()) {
                 for (java.lang.annotation.Annotation annotation : parameter) {
                     if (!valueAnnotation.isInstance(annotation)) continue;
+                    String expression;
                     try {
-                        String expression = String.valueOf(valueMember.invoke(annotation));
-                        if (referencesChangedKey(expression, changed)) return true;
+                        expression = String.valueOf(valueMember.invoke(annotation));
                     } catch (Throwable oneParameter) {
                         // A parameter whose annotation cannot be read is not a
                         // reason to rebuild the bean.
+                        continue;
                     }
+                    // A failed dependency trace must reach the precheck as
+                    // uncheckable, rather than silently skipping this bean.
+                    if (affected.test(expression)) return true;
                 }
             }
         }

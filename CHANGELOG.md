@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **`@Value` follows indirect property dependencies.** Changing a source key now
+  updates fields and rebuilds supported constructor beans that read it through
+  `${...}` property-value chains. Selection follows Spring placeholder resolution
+  and source priority, including nested keys and defaults, without flattening
+  aliases or adding derived keys to the accepted candidate. Invalid selected
+  values are checked before live writes; unreadable, cyclic or oversized traces
+  that cannot determine affected targets hold the save as uncheckable. See
+  [scope and examples](docs/usage.md#indirect-value-dependencies).
+
 - **Computed `@Value` constructor arguments follow property saves.** Supported
   scalar expressions on directly constructed, unproxied singletons with one
   constructor are checked before bean destruction. All `@Value` arguments on
