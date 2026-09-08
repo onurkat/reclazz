@@ -93,6 +93,17 @@ class AddedMethodVisibilityTest {
     }
 
     @Test
+    void schedulingReportsItsOwnRegistrationFailures() {
+        for (String annotation : List.of("Scheduled", "Schedules")) {
+            byte[] bytes = classWith(new Method(Opcodes.ACC_PUBLIC, "tick", "()V",
+                    "Lorg/springframework/scheduling/annotation/" + annotation + ";"));
+            assertEquals(List.of(), AddedMethodVisibility.check(bytes, added("tick", "()V"), true));
+            assertEquals(1, AddedMethodVisibility.check(bytes, added("tick", "()V")).size(),
+                    "when Spring orchestration will not run, the limitation must still be named");
+        }
+    }
+
+    @Test
     void anOrdinaryAddedMethodIsNobodysBusiness() {
         byte[] bytes = classWith(plain("recompute", "()V"));
 

@@ -111,6 +111,55 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### Scheduled methods added after startup
+
+With the agent attached at startup, add this method to an existing, unproxied
+singleton `@Service` or `@Component`, compile, and it starts running without a
+restart. Scheduling must already be enabled in the application, for example
+with `@EnableScheduling`.
+
+```java
+@Scheduled(fixedDelayString = "${cleanup.delay:1000}")
+public void cleanup() {
+    cache.clear();
+}
+```
+
+On a stock JDK the new method lives in a companion and reflection on the
+original class cannot see it. Reclazz supplies Spring with a hidden adapter
+carrying the scheduling annotation and delegating to the current implementation.
+Spring resolves the timing attributes. Each successful save replaces the
+previous adapter registration. Each invocation reads the current singleton, so
+replacing that bean through a dependency refresh does not leave the task calling
+a destroyed instance. Invocations skip a temporarily absent bean without
+creating it. Removing
+the method or its scheduling annotation cancels that registration. Closing the
+Spring context cancels it too. Reload does not pause background scheduling
+while bytecode and Spring metadata are updated. Cancellation takes effect
+during scheduling re-registration; callbacks that start before cancellation
+may finish. Scheduled work is outside the MVC request reload boundary.
+
+The added-method path supports direct `@Scheduled` and repeated `@Scheduled`
+declarations (`@Schedules`) on no-argument, `void` instance methods, including
+private methods, on singleton classes recognized by the agent's Spring
+stereotype detection (`@Service`, `@Component`, and the other directly supported
+Spring stereotypes). It also works when the application had no scheduled tasks
+at startup. The existing scheduler, unrelated tasks and scheduling configuration
+are retained.
+
+Static methods, parameters, non-void/reactive return types, proxies/subclass
+instances and additional runtime method annotations (other than `@Deprecated`)
+are reported as unsupported for the added-method path. In particular, Reclazz
+does not schedule an added method while silently bypassing its advice.
+Custom composed scheduling annotations and classes registered only through
+XML or `@Bean` without a recognized class stereotype are outside this support.
+Existing methods still use the ordinary Spring scheduling path.
+
+If registration fails, for example because of invalid cron syntax, the previous
+adapter is cancelled and any partially registered replacement tasks are
+cancelled too. The failure is reported; the previous schedule is not restored.
+Correct the declaration and compile again to retry.
+
 ### Property changes keep the last working values
 
 For non-SAP Spring applications, Reclazz checks a saved `.properties` change

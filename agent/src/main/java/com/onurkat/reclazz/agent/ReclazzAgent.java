@@ -170,6 +170,8 @@ public class ReclazzAgent {
                 StructuralReloader.class);
         LookupCapture.trust(
                 ProtectedCallResolver.class);
+        LookupCapture.trust(
+                com.onurkat.reclazz.spring.AddedScheduledAdapter.class);
         LookupCapture.seal();
     }
 

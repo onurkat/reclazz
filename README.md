@@ -60,7 +60,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Jackson picks up a changed shape | **Yes** — a property renamed with `@JsonProperty`, and a getter you removed, reach the JSON. A getter you *add* is the stock-JDK wall rather than a cache: it lives in the companion, where reflection cannot reach it, so it is **named instead of claimed**, with what will not happen | Yes (restart) | Yes |
 | MVC mapping re-scan | **Yes** | Yes (restart) | Yes |
 | Cache eviction | **Yes** | Yes (restart) | Yes |
-| `@Scheduled` re-register | **Yes** | Yes (restart) | Yes |
+| `@Scheduled` re-register | **Yes**, including a method added after startup on a stock JDK: direct `@Scheduled`/`@Schedules`, no arguments, `void`, on an unproxied singleton. Later saves replace its registration; removing the method or annotation cancels it. [Scope and example](docs/usage.md#scheduled-methods-added-after-startup) | Yes (restart) | Yes |
 | `@EventListener` refresh | **Yes** | Yes (restart) | Yes |
 | AOP proxy refresh | **Yes** | Yes (restart) | Yes |
 | Spring Data repo refresh | **Yes** | Yes (restart) | Yes |
@@ -74,7 +74,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | `@Value` field picks up a changed property | **Yes** — re-resolved and written in place (a SpEL `@Value` is left alone and said) | Yes (restart) | Yes |
 | Constructor-bound `@ConfigurationProperties` (a record) | **Yes** — the bean is rebuilt through the same constructor binding and its holders re-pointed | Yes (restart) | Yes |
 | A lambda added to an edited method body | **Yes (any JDK 17+)** — the synthetic body travels with the companion and links through Reclazz's own factory. The object is a reflective proxy rather than a spun class, and a serializable lambda loses serializability until restart | Yes (restart) | Yes |
-| A method you add that a framework was going to find (`@Bean`, `@Scheduled`, `@EventListener`, a getter) | **Named.** Added methods live in the companion, which call sites reach and reflection does not, so the scan that would have picked it up cannot see it. Reclazz says which method and what will not happen instead of letting the reload look like it worked. A new `@RequestMapping` is the exception and really does answer: the mapping scan is handed a small class carrying a copy of the method | Yes (restart) | Yes |
+| A method you add that a framework was going to find (`@Bean`, `@EventListener`, a getter) | **Named.** Added methods live in the companion, which call sites reach and reflection does not, so the scan that would have picked it up cannot see it. Reclazz says which method and what will not happen instead of letting the reload look like it worked. New `@RequestMapping` methods and the supported `@Scheduled` methods above are exceptions: Spring is handed a small class carrying copies of the methods | Yes (restart) | Yes |
 | Members you deleted stop being visible | **Yes** — a removed field or method is hidden from reflection, so a deleted getter stops being serialised. Old code already holding it keeps the implementation it had, one outcome rather than three: a live caller is never made to throw for a removal you made on purpose | Yes (restart) | Yes |
 | Changed compile-time constant (`static final`) | **Named, and the dependents found**: javac inlines the value and leaves no reference behind, so the changed class cannot reach them, but the sources that read it can be found and are listed by name. With `autoCompile` they are rebuilt and hot-swapped, so the new value is live without a restart. A constants-only holder is covered too, though the JVM never loads it | Yes (restart) | Same limitation, undocumented |
 | Message bundle (`messages.properties`) | **Yes** — the message source's cache is dropped, the JDK `ResourceBundle` cache with it, so the next lookup reads the file | Yes (restart) | Yes |
@@ -119,7 +119,7 @@ than either.
 - **Spring Bean Refresh**: Automatically destroys and recreates singleton beans after class reload
 - **MVC Re-scan**: Re-registers `@RequestMapping` methods when controllers change structurally
 - **Cache dependencies**: A reloaded helper invalidates the Spring cache regions computed through it, including outer caches that read cached inner results. Unrelated observed regions stay warm. Cache instances and classloaders remain distinct. Unknown or partial history retains conservative annotation fallback. See [scope and concurrency limits](docs/usage.md#cache-dependencies-after-reload).
-- **Scheduler Reload**: Cancels and re-registers `@Scheduled` tasks
+- **Scheduler Reload**: Cancels and re-registers `@Scheduled` tasks, including supported methods added after startup on a stock JDK. See [scope and example](docs/usage.md#scheduled-methods-added-after-startup)
 - **Event Listener Refresh**: Re-registers `@EventListener` methods
 - **AOP Proxy Refresh**: Clears `AbstractAutoProxyCreator` caches for `@Aspect` classes
 - **Async Re-processing**: Re-processes `@Async` beans
@@ -575,7 +575,7 @@ compile with an older `--release` while you develop, or update Reclazz.
 | Change Type | Any JDK 17+ | Caveat on Standard JVMs |
 |---|---|---|
 | Method body changes | Yes | None |
-| Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. A new Spring MVC endpoint is an exception: it is mapped without a restart |
+| Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. New Spring MVC endpoints and supported `@Scheduled` methods are registered through adapters without a restart |
 | Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Once a class carries members added since startup, the JVM refuses the redefinition that installs the new constructor, so a field added after that reads its default even on new objects; Reclazz names the fields and the reason rather than leaving you to find the value |
 | Remove methods/fields | **Yes** | Hidden from reflection so scans stop seeing them; existing callers keep the previous implementation until they are hot-recompiled |
 | Change annotations | **Yes** | None |

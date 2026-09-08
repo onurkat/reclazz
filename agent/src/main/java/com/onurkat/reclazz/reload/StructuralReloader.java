@@ -1172,7 +1172,7 @@ public class StructuralReloader {
             // developer just wrote does nothing.
             afterSwitch(className, "checking what frameworks can see of the added methods", () -> {
             for (AddedMethodVisibility.Unseen unseen
-                    : AddedMethodVisibility.check(newBytecode, diff.getNewMethods())) {
+                    : AddedMethodVisibility.check(newBytecode, diff.getNewMethods(), isSpringBean(targetClass))) {
                 // True on every reload of the class, and information on the
                 // first one. The ledger still counts each occurrence, so
                 // asking later still knows how long this has been the case.
