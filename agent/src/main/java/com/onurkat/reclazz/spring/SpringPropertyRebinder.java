@@ -35,10 +35,10 @@ import com.onurkat.reclazz.util.Reflect;
  * constructor is destroyed and rebuilt against the updated Environment, a
  * {@code @Value} placeholder field is re-resolved and written directly, and a
  * bean that takes a changed {@code @Value} through its constructor is rebuilt
- * the same way the constructor-bound properties bean is. What remains out of
- * reach is said rather than glossed over: a SpEL {@code @Value}, because
- * re-evaluating arbitrary expressions is running application code at a moment
- * it did not choose.
+ * the same way the constructor-bound properties bean is. Scalar field SpEL
+ * can use literals and arithmetic/conditional operators over placeholders;
+ * application-code access is rejected before live values change. Constructor
+ * SpEL keeps its existing restart requirement.
  */
 public final class SpringPropertyRebinder {
 
@@ -139,10 +139,9 @@ public final class SpringPropertyRebinder {
      * resolving through the bean factory's own embedded-value resolver, so the
      * default syntax and nesting behave exactly as they did at startup.
      *
-     * <p>What is left alone, on purpose: a SpEL expression ({@code #{...}}),
-     * because re-evaluating arbitrary expressions is running application code
-     * at a moment it did not choose. A {@code @Value} constructor parameter
-     * has no field to write into and is not left alone either; it is answered
+     * <p>Field SpEL uses the same restricted evaluator as the precheck; it
+     * cannot reach application beans or methods. A direct-placeholder
+     * {@code @Value} constructor parameter has no field to write into; it is answered
      * by {@link #recreateValueConstructorBeans}, the same way the
      * constructor-bound properties bean is.
      */
@@ -155,6 +154,7 @@ public final class SpringPropertyRebinder {
             if (target.field() == null) continue;
             try {
                 Object resolved = PropertyChangeCheck.call(factory, "resolveEmbeddedValue", target.expression());
+                resolved = PropertyValueExpression.evaluate(context, target, resolved);
                 Object converted = PropertyChangeCheck.call(converter, "convertIfNecessary", resolved, target.type());
                 target.field().setAccessible(true);
                 target.field().set(target.bean(), converted);
@@ -170,7 +170,7 @@ public final class SpringPropertyRebinder {
     record ValueTarget(Object bean, java.lang.reflect.Field field, Class<?> type,
                        String expression, String member) { }
 
-    /** One sweep defines the direct placeholders that both phases handle. */
+    /** One sweep defines the fields and direct constructor placeholders both phases handle. */
     static List<ValueTarget> valueTargets(Object context, Map<String, String> changed) throws Exception {
         List<ValueTarget> targets = new ArrayList<>();
         Object factory = SpringBeans.getBeanFactory(context);
@@ -189,7 +189,7 @@ public final class SpringPropertyRebinder {
                     var found = field.getAnnotation(annotation);
                     if (found == null) continue;
                     String expression = (String) value.invoke(found);
-                    if (referencesChangedKey(expression, changed) && !expression.contains("#{"))
+                    if (referencesChangedKey(expression, changed))
                         targets.add(new ValueTarget(bean, field, field.getType(), expression, name + "." + field.getName()));
                 }
             }
