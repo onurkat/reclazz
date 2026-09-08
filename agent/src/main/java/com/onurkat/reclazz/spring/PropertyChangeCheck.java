@@ -72,7 +72,7 @@ public final class PropertyChangeCheck {
                 : PropertyChangeOutcome.State.APPLIED, findings);
     }
 
-    private static Object candidateEnvironment(ClassLoader loader, Object live,
+    static Object candidateEnvironment(ClassLoader loader, Object live,
                                                Map<String, String> changed) throws Exception {
         Object environment = Class.forName("org.springframework.core.env.StandardEnvironment", true, loader)
                 .getConstructor().newInstance();
