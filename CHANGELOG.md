@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Computed `@Value` fields follow property saves.** Scalar instance fields
+  using whole arithmetic/conditional SpEL expressions over `${...}` placeholders
+  are checked and recalculated without recreating their bean. Invalid expressions
+  or conversions hold all candidate keys before live writes. Unsupported nodes,
+  including nodes in untaken branches, are named without evaluating them and
+  hold the candidate as uncheckable. The application's conversion service is
+  preserved. Constructor SpEL remains outside this support. See
+  [scope and example](docs/usage.md#computed-value-fields).
+
 - **Event listener methods added after startup on a stock JDK.** Direct
   `@EventListener` methods with one reference parameter and a `void` return on
   unproxied Spring stereotype singletons receive matching events through a

@@ -71,7 +71,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | New `@Service` / `@Component` / `@Controller` class | **Yes (any JDK 17+)** — the bean is registered, its constructor autowired, and a new controller's mappings served on the next request | Yes (restart) | Yes |
 | Edited `@Transactional` / `@Cacheable` annotation | **Yes** — the cached metadata is re-read, so a flipped `readOnly` or a new `condition` actually applies | Yes (restart) | Yes |
 | Spring Security rules | **Yes** — the filter chain is rebuilt and swapped into the live proxy, and method security (`@PreAuthorize`, `@Secured` and friends) is re-read on the service class that carries it, not only on the security configuration: the resolved-once metadata is cleared and refilled from fresh `Method` objects, because the stale one the proxy carries would answer with the expression it read at startup | Yes (restart) | Yes, via a separate plugin |
-| `@Value` field picks up a changed property | **Yes** — re-resolved and written in place (a SpEL `@Value` is left alone and said) | Yes (restart) | Yes |
+| `@Value` field picks up a changed property | **Yes** — direct placeholders and supported arithmetic/conditional SpEL on scalar fields are re-evaluated after validation. [Scope and example](docs/usage.md#computed-value-fields) | Yes (restart) | Yes |
 | Constructor-bound `@ConfigurationProperties` (a record) | **Yes** — the bean is rebuilt through the same constructor binding and its holders re-pointed | Yes (restart) | Yes |
 | A lambda added to an edited method body | **Yes (any JDK 17+)** — the synthetic body travels with the companion and links through Reclazz's own factory. The object is a reflective proxy rather than a spun class, and a serializable lambda loses serializability until restart | Yes (restart) | Yes |
 | A method you add that a framework was going to find (`@Bean`, a getter) | **Named.** Added methods live in the companion, which call sites reach and reflection does not, so the scan that would have picked it up cannot see it. Reclazz says which method and what will not happen instead of letting the reload look like it worked. New `@RequestMapping` methods and the supported `@Scheduled`/`@EventListener` methods above are exceptions: Spring is handed a small class carrying copies of the methods | Yes (restart) | Yes |
@@ -175,10 +175,10 @@ than either.
   updated Environment, and the references holding it re-pointed. A `@Value`
   placeholder field is re-resolved and written in place, and a bean that takes
   a changed `@Value` through its constructor is rebuilt the same way the
-  constructor-bound properties bean is. A SpEL `@Value` is the one that still
-  waits for a restart, because re-evaluating an arbitrary expression is running
-  application code at a moment it did not choose, and Reclazz says so rather
-  than reporting it as applied
+  constructor-bound properties bean is. Scalar `@Value` fields can also compute
+  arithmetic and conditional expressions from changed placeholders; unsupported
+  expression operations hold the candidate without being evaluated. Constructor
+  SpEL remains outside this support. See [computed fields](docs/usage.md#computed-value-fields)
 - **Logging configuration**: `logging.level.<logger>` in a properties file, or a
   saved `logback.xml` / `log4j2.xml`, is applied to the running logging context.
   Raising a logger to debug is one of the most common reasons to restart a
@@ -582,7 +582,7 @@ compile with an older `--release` while you develop, or update Reclazz.
 | Spring bean logic | Yes | None |
 | New Spring beans (@Component) | **Yes** — a new stereotype class is registered and wired, and `*-spring.xml` still works for XML-defined beans | None |
 | Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | None |
-| Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved, beans taking a changed `@Value` through their constructor rebuilt | A SpEL `@Value` keeps its startup value |
+| Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved, beans taking a changed direct `@Value` through their constructor rebuilt; supported scalar field SpEL recomputed | Constructor SpEL keeps its startup value; unsupported field expressions hold the candidate. [Scope](docs/usage.md#computed-value-fields) |
 | Log levels and logging config | Yes (`logging.level.*`, `logback.xml`, `log4j2.xml`) | Appenders are rebuilt, so a reconfigure resets the context |
 | Superclass changes | No | None |
 

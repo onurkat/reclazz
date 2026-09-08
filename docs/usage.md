@@ -219,7 +219,8 @@ has source-level checks but has not been verified in a running application.
 For non-SAP Spring applications, Reclazz checks a saved `.properties` change
 before putting it into the running Environment. It binds affected
 `@ConfigurationProperties` beans on separate objects and resolves and converts
-direct `@Value` fields and constructor parameters. A save containing both a
+direct `@Value` fields and constructor parameters, including the supported
+[computed field expressions](#computed-value-fields). A save containing both a
 valid service address and an invalid timeout is held as one candidate. The
 Environment, property beans, direct fields and logger levels keep their old
 values. Fix the timeout and save again: both pending keys are retried.
@@ -259,11 +260,62 @@ paused. Connection pools still have their existing limitations.
 
 A JavaBean target needs a usable no-argument constructor. Constructor-bound
 targets use Boot's constructor binding. Missing or incompatible Boot internals
-hold the change as uncheckable. SpEL, YAML, key removal and SAP Commerce's
-`Config` path retain their existing behavior and are outside this check.
+hold the change as uncheckable. Constructor SpEL, YAML, key removal and SAP
+Commerce's `Config` path retain their existing behavior and are outside this check.
 Only added or changed keys are applied. A syntactically valid truncated file
 cannot be distinguished from an intentional save; malformed or unreadable
 files do not advance the baseline.
+
+### Computed @Value fields
+
+An existing singleton field can compute a value from changed properties:
+
+```java
+@Value("#{${timeout.seconds:5} * 1000L}")
+private long timeoutMillis;
+
+@Value("#{${retry.count:2} > 3 ? 'extended' : 'normal'}")
+private String retryMode;
+```
+
+Save the `.properties` file and the field is recalculated without recreating
+its bean. The expression is checked against the candidate property values
+before any live property is changed. Syntax errors, integer division by zero,
+non-finite numeric results and failed type conversions reject the whole
+candidate, including its other keys and logger levels. Fix the value and save
+again to retry the pending keys.
+
+The supported subset is one whole `#{...}` expression on a writable instance
+field of primitive, boxed primitive or `String` type. It must directly mention
+a changed `${key}` placeholder; placeholder defaults and nested placeholders
+are resolved. Expressions can use numeric, string, boolean and null literals,
+`+`, `-`, `*`, `/`, `%`, comparisons, boolean operators, `?:` conditionals and
+Elvis defaults. Arithmetic follows Spring's operator semantics (including its
+integer arithmetic); this is not an overflow checker. The bean factory's
+conversion service is used inside expressions, and its type converter performs
+the final field conversion.
+
+Bean references, property/method access, `T(...)`, `new`, variables, assignment,
+collections, regex and mixed text/expression templates are unsupported. Every
+AST branch is checked before evaluation, even a branch that would not execute.
+An affected unsupported field holds the whole candidate as **Uncheckable** and
+names the field and reason. It is not evaluated through the application's bean
+expression resolver. Custom resolver/parser implementations and non-default
+expression delimiters are also held. Resolved expressions and string results
+are limited to 2048 characters, with at most 256 AST nodes and depth 32.
+
+Constructor SpEL retains its startup value; this change does not rebuild a bean
+because a SpEL constructor parameter changed. Static/final fields and non-scalar
+field types are outside the new support. A key reached only indirectly through
+another property's value is not tracked as a dependency. Existing placeholder
+resolver ordering still applies during live reinjection; the precheck uses the
+candidate Environment. As with ordinary property rebinding, custom converters
+may have side effects, and a failure during live application is reported as
+partial rather than rolled back. Background readers are not paused.
+
+Verified with Spring 5.3.39 / Boot 2.7.18 on JDK 21, including a real agent JVM
+watching property saves. Spring 6, JDK 17 and live SAP runtime tests have not
+been run for this feature.
 
 ### Cache dependencies after reload
 

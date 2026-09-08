@@ -35,7 +35,7 @@ public final class PropertyChangeCheck {
                 if (liveEnvironment == null) continue;
                 ClassLoader loader = context.getClass().getClassLoader();
                 Object environment = candidateEnvironment(loader, liveEnvironment, changed);
-                checkValues(context, environment, changed, rejected);
+                checkValues(context, environment, changed, rejected, unavailable);
                 Class<?> annotation;
                 try { annotation = Class.forName(PROPERTIES + "ConfigurationProperties", false, loader); }
                 catch (ClassNotFoundException noBoot) { continue; }
@@ -99,14 +99,16 @@ public final class PropertyChangeCheck {
     }
 
     private static void checkValues(Object context, Object environment, Map<String, String> changed,
-                                    List<String> rejected) throws Exception {
+                                    List<String> rejected, List<String> unavailable) throws Exception {
         Object converter = call(SpringBeans.getBeanFactory(context), "getTypeConverter");
         for (var target : SpringPropertyRebinder.valueTargets(context, changed)) {
             try {
                 Object resolved = call(environment, "resolveRequiredPlaceholders", target.expression());
+                resolved = PropertyValueExpression.evaluate(context, target, resolved);
                 call(converter, "convertIfNecessary", resolved, target.type());
             } catch (Throwable failure) {
-                rejected.add(context.getClass().getSimpleName() + "/" + target.member()
+                List<String> findings = unwrap(failure) instanceof PropertyValueExpression.Unsupported ? unavailable : rejected;
+                findings.add(context.getClass().getSimpleName() + "/" + target.member()
                         + ": " + Failures.describe(unwrap(failure)));
             }
         }
