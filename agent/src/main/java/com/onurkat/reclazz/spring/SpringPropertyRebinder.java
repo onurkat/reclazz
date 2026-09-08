@@ -37,8 +37,8 @@ import com.onurkat.reclazz.util.Reflect;
  * bean that takes a changed {@code @Value} through its constructor is rebuilt
  * the same way the constructor-bound properties bean is. Scalar field SpEL
  * can use literals and arithmetic/conditional operators over placeholders;
- * application-code access is rejected before live values change. Constructor
- * SpEL keeps its existing restart requirement.
+ * application-code access is rejected before live values change. The same subset
+ * is supported on scalar constructor parameters of directly constructed singletons.
  */
 public final class SpringPropertyRebinder {
 
@@ -168,9 +168,9 @@ public final class SpringPropertyRebinder {
     }
 
     record ValueTarget(Object bean, java.lang.reflect.Field field, Class<?> type,
-                       String expression, String member) { }
+                       String expression, String member, String unsupportedReason) { }
 
-    /** One sweep defines the fields and direct constructor placeholders both phases handle. */
+    /** One sweep defines the targets both checking and live application handle. */
     static List<ValueTarget> valueTargets(Object context, Map<String, String> changed) throws Exception {
         List<ValueTarget> targets = new ArrayList<>();
         Object factory = SpringBeans.getBeanFactory(context);
@@ -190,18 +190,24 @@ public final class SpringPropertyRebinder {
                     if (found == null) continue;
                     String expression = (String) value.invoke(found);
                     if (referencesChangedKey(expression, changed))
-                        targets.add(new ValueTarget(bean, field, field.getType(), expression, name + "." + field.getName()));
+                        targets.add(new ValueTarget(bean, field, field.getType(), expression, name + "." + field.getName(), null));
                 }
             }
+            // Recreation re-evaluates every argument, not just the one whose
+            // property changed. Validate the unchanged @Value arguments too.
+            boolean computedConstructor = hasConstructorExpression(type, annotation, value)
+                    && takesChangedValue(type, changed, annotation, value);
+            String unsupported = computedConstructor
+                    ? constructorExpressionProblem(factory, name, singleton, type) : null;
             for (var constructor : type.getDeclaredConstructors()) {
                 var parameters = constructor.getParameters();
                 for (int i = 0; i < parameters.length; i++) {
                     var found = parameters[i].getAnnotation(annotation);
                     if (found == null) continue;
                     String expression = (String) value.invoke(found);
-                    if (referencesChangedKey(expression, changed) && !expression.contains("#{"))
+                    if (computedConstructor || referencesChangedKey(expression, changed))
                         targets.add(new ValueTarget(bean, null, parameters[i].getType(), expression,
-                                name + ".<init>[" + i + "]"));
+                                name + ".<init>[" + i + "]", unsupported));
                 }
             }
         }
@@ -284,11 +290,10 @@ public final class SpringPropertyRebinder {
      * Whether any constructor of this class takes a {@code @Value} reading one
      * of the changed keys.
      *
-     * <p>Every constructor is looked at rather than only the one Spring
-     * picked: which one that was is not recorded anywhere reachable, and a
-     * class whose only annotated parameter sits on a constructor Spring did
-     * not use rebuilds through the one it did, which is the same instance it
-     * would have built anyway.
+     * <p>Direct-placeholder selection retains its conservative sweep of every
+     * constructor. A bean declaring constructor SpEL must additionally pass
+     * constructorExpressionProblem in the precheck: a single constructor and
+     * Spring's cached creation policy must agree before any live mutation.
      */
     static boolean takesChangedValue(Class<?> type, Map<String, String> changed,
                                      Class<? extends java.lang.annotation.Annotation> valueAnnotation,
@@ -299,7 +304,6 @@ public final class SpringPropertyRebinder {
                     if (!valueAnnotation.isInstance(annotation)) continue;
                     try {
                         String expression = String.valueOf(valueMember.invoke(annotation));
-                        if (expression.contains("#{")) continue;   // SpEL: stated policy above
                         if (referencesChangedKey(expression, changed)) return true;
                     } catch (Throwable oneParameter) {
                         // A parameter whose annotation cannot be read is not a
@@ -309,6 +313,57 @@ public final class SpringPropertyRebinder {
             }
         }
         return false;
+    }
+
+    private static boolean hasConstructorExpression(Class<?> type,
+            Class<? extends java.lang.annotation.Annotation> annotation, Method value) throws Exception {
+        for (var constructor : type.getDeclaredConstructors()) {
+            for (var parameter : constructor.getParameters()) {
+                var found = parameter.getAnnotation(annotation);
+                if (found != null && PropertyValueExpression.isExpression((String) value.invoke(found))) return true;
+            }
+        }
+        return false;
+    }
+
+    /** Prove Spring will re-resolve this constructor, rather than call a factory or supplier. */
+    private static String constructorExpressionProblem(Object factory, String name, Object singleton, Class<?> type) {
+        try {
+            if (singleton.getClass() != type)
+                return "computed constructor parameters require an unproxied bean";
+            if (type.getDeclaredConstructors().length != 1)
+                return "computed constructor parameters require exactly one constructor";
+            for (var annotation : type.getAnnotations()) {
+                if (annotation.annotationType().getName().equals(ANNOTATION))
+                    return "@ConfigurationProperties uses its own constructor binding path";
+            }
+            if (!Boolean.TRUE.equals(PropertyChangeCheck.call(factory, "containsBeanDefinition", name)))
+                return "computed constructor parameters require a bean definition, not a manual singleton";
+            Object definition = PropertyChangeCheck.call(factory, "getMergedBeanDefinition", name);
+            if (!Boolean.TRUE.equals(PropertyChangeCheck.call(definition, "isSingleton")))
+                return "computed constructor parameters require singleton scope";
+            if (PropertyChangeCheck.call(definition, "getFactoryMethodName") != null
+                    || PropertyChangeCheck.call(definition, "getFactoryBeanName") != null)
+                return "computed constructor parameters do not support factory methods";
+            if (PropertyChangeCheck.call(definition, "getInstanceSupplier") != null)
+                return "computed constructor parameters do not support instance suppliers";
+            if (!type.getName().equals(PropertyChangeCheck.call(definition, "getBeanClassName")))
+                return "bean definition does not directly construct the live class";
+            if (Boolean.TRUE.equals(PropertyChangeCheck.call(definition, "hasConstructorArgumentValues"))
+                    || Boolean.TRUE.equals(PropertyChangeCheck.call(definition, "hasMethodOverrides")))
+                return "explicit constructor arguments or method overrides are unsupported";
+            // Spring's constructor cache is read only. A prepared argument is
+            // resolved again by ConstructorResolver; a resolved value is reused.
+            var constructor = type.getDeclaredConstructors()[0];
+            if (!constructor.equals(Reflect.readField(definition, "resolvedConstructorOrFactoryMethod"))
+                    || Reflect.readField(definition, "resolvedConstructorArguments") != null
+                    || !(Reflect.readField(definition, "preparedConstructorArguments") instanceof Object[] prepared)
+                    || prepared.length != constructor.getParameterCount())
+                return "Spring's re-resolvable constructor arguments could not be verified";
+            return null;
+        } catch (Throwable failure) {
+            return "constructor creation policy could not be verified: " + Failures.describe(failure);
+        }
     }
 
     /** Replace the singleton and re-point what held it, or say why it stayed. */

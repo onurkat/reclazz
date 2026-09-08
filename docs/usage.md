@@ -260,8 +260,10 @@ paused. Connection pools still have their existing limitations.
 
 A JavaBean target needs a usable no-argument constructor. Constructor-bound
 targets use Boot's constructor binding. Missing or incompatible Boot internals
-hold the change as uncheckable. Constructor SpEL, YAML, key removal and SAP
-Commerce's `Config` path retain their existing behavior and are outside this check.
+hold the change as uncheckable. Computed `@Value` constructors use the
+[restricted check below](#computed-value-constructor-parameters). YAML, key
+removal and SAP Commerce's `Config` path retain their existing behavior and
+are outside this check.
 Only added or changed keys are applied. A syntactically valid truncated file
 cannot be distinguished from an intentional save; malformed or unreadable
 files do not advance the baseline.
@@ -304,9 +306,8 @@ expression resolver. Custom resolver/parser implementations and non-default
 expression delimiters are also held. Resolved expressions and string results
 are limited to 2048 characters, with at most 256 AST nodes and depth 32.
 
-Constructor SpEL retains its startup value; this change does not rebuild a bean
-because a SpEL constructor parameter changed. Static/final fields and non-scalar
-field types are outside the new support. A key reached only indirectly through
+Computed constructor parameters have their own [rebuild scope](#computed-value-constructor-parameters).
+Static/final fields and non-scalar field types are outside the field support. A key reached only indirectly through
 another property's value is not tracked as a dependency. Existing placeholder
 resolver ordering still applies during live reinjection; the precheck uses the
 candidate Environment. As with ordinary property rebinding, custom converters
@@ -316,6 +317,60 @@ partial rather than rolled back. Background readers are not paused.
 Verified with Spring 5.3.39 / Boot 2.7.18 on JDK 21, including a real agent JVM
 watching property saves. Spring 6, JDK 17 and live SAP runtime tests have not
 been run for this feature.
+
+### Computed @Value constructor parameters
+
+A constructor argument can use the same scalar arithmetic/conditional subset:
+
+```java
+@Component
+public class Client {
+    private final long timeoutMillis;
+
+    public Client(@Value("#{${timeout.seconds:5} * 1000L}") long timeoutMillis) {
+        this.timeoutMillis = timeoutMillis;
+    }
+}
+```
+
+Saving `timeout.seconds=8` rebuilds this singleton with `timeoutMillis=8000`.
+Before destroying anything, Reclazz resolves and checks every `@Value` argument
+on the affected constructor, including unchanged arguments that recreation will
+re-evaluate. A direct placeholder that resolves to `#{...}` is checked too.
+The precheck evaluates values and conversions; it does not invoke the constructor.
+A syntax, arithmetic or conversion error rejects the whole candidate. An
+unsupported constructor expression or creation policy holds it as **Uncheckable**
+and identifies the bean and constructor parameter. A corrected save retries the
+pending keys. Unrelated property saves do not recreate the bean.
+
+This support requires an existing, unproxied singleton, one declared constructor,
+and a bean definition that directly constructs that class. Spring's cached
+constructor and re-resolvable arguments must be readable and agree with that
+constructor. Factory methods (including `@Bean`), instance suppliers, manually
+registered singletons, explicit constructor arguments, method overrides and
+`@ConfigurationProperties` beans are outside this new path. Non-singleton beans
+are not swept. Ordinary injected bean dependencies may accompany the scalar
+`@Value` parameters. The expression operators, resolver restrictions and limits
+are the same as for [computed fields](#computed-value-fields).
+
+The instance is replaced: its local state resets, and Spring runs destruction,
+construction, injection and initialization callbacks. Existing writable reference
+fields in surviving singletons in the same context are re-pointed to the new
+instance. Spring may destroy dependent beans too; retrieving them again constructs
+them with the new dependency. References held by application locals, collections,
+other contexts or already-destroyed holders are not guaranteed to change.
+
+This is not a dry run of the bean's lifecycle. Ordinary field/method injection and
+application callbacks still run during successful recreation. Custom converters
+can run application code during checking too. If construction or initialization
+fails after the precheck, the outcome is **Partial**: the Environment may already
+have changed, the old bean may already be destroyed, and there is no rollback.
+The file remains pending. Background readers are not paused. Existing placeholder
+resolver ordering and the direct-key dependency limit still apply.
+
+Verified on Spring 5.3.39 / Boot 2.7.18 test dependencies and JDK 21, including a
+real agent JVM watching saves, rejection, recovery and holder replacement.
+Spring 6, JDK 17 and live SAP runtime tests have not been run for this feature.
 
 ### Cache dependencies after reload
 
