@@ -251,6 +251,54 @@ again to recover. The ordinary configuration-bean refresh still runs before this
 registration step, with its existing lifecycle effects. This feature does not
 rerun configuration parsing or add `@Bean` to methods that existed at startup.
 
+### Jackson getters added after startup
+
+Start with `-javaagent`, then add a getter to an already loaded DTO and compile:
+
+```java
+private int count = 7;
+public int getCount() { return count; }
+```
+
+The next JSON response from a Spring-managed Jackson mapper includes `"count":7`,
+including when the endpoint returns an object created before the edit and the
+field has a supported [initialiser](#new-field-values-on-objects-that-already-existed).
+Repeated saves update the getter body and its annotations. Removing the getter
+removes the property on the next mapper serialization; restoring it brings it back.
+
+Jackson still decides which properties to serialize. Reclazz supplies saved getter
+metadata and routes invocation to the current companion body. `@JsonProperty`,
+`@JsonGetter`, `@JsonIgnore`, inclusion rules, naming strategies, method mix-ins and generic
+getter signatures reach that normal discovery path. Private annotated getters
+follow the mapper's access-override policy. Existing custom DTO serializers remain
+in charge, and property serializers still run. Throwing getters retain Jackson's
+mapping-error behavior.
+
+This covers concrete, non-static, no-argument, non-void methods named `getX`, boolean
+`isX`, or directly annotated with `@JsonProperty`/`@JsonGetter`. Synthetic/bridge
+methods are excluded. The original class's ordinary reflection still cannot see
+these methods. Direct added-field discovery and setters/deserialization are not
+provided by this feature. The Jackson hook must load before Jackson databind;
+attaching after Jackson loaded does not install it retroactively.
+
+Put serialization annotations on the getter. A newly added instance field with
+runtime annotations (including type annotations) makes this DTO's getter adapter
+decline and name the field; any previous added-getter metadata is withdrawn.
+This avoids silently dropping field metadata such as `@JsonIgnore`. Field mix-ins
+and direct field access are outside this getter-only path.
+
+Cache refresh discovers ObjectMapper beans in captured Spring contexts. A mapper
+created privately outside those contexts can retain its previous shape. An
+ObjectWriter retained from before a change can retain its property list, while its
+added getters dispatch to updated bodies; obtain a new writer after reload for
+the new shape. In-flight serialization is not paused or rolled back.
+
+Verified on stock JDK 21 with Jackson 2.13.5 and Spring 5.3.39: real loopback HTTP,
+old/new DTO objects, three mapper policies, nested/generic values, private getters,
+null/empty inclusion, custom serializers and four successive edits. Jackson 3,
+other Jackson 2 versions and accessor-generating extensions such as Afterburner
+are not verified; this support targets Jackson's normal reflective accessor path.
+
 ### Scheduled methods added after startup
 
 With the agent attached at startup, add this method to an existing, unproxied
@@ -1053,14 +1101,15 @@ doesn't allow). This has one consequence worth knowing:
 - Hot-compiled Java code that calls a new method directly — the
   invocation is rewritten through the companion via `invokedynamic`
 - Hot-compiled Java code that reads/writes a new field
+- Jackson serialization through the [added getter adapter](#jackson-getters-added-after-startup)
 - Hybris Jalo-layer property access (`jaloItem.setProperty(...)`)
 - Flexible search with new attribute columns (after HAC
   `updatesystem` for items.xml changes)
 
 **Needs server restart on standard JVMs (works immediately on JBR/DCEVM):**
 - `Class.getMethod("setNewThing", ...)` on the original class
-- Reflective caches built at boot time (Hybris `ModelService`'s
-  attribute dispatch, Jackson, Gson, etc.)
+- Reflective consumers without a supported adapter (Hybris `ModelService`'s
+  attribute dispatch, Gson, and Jackson use outside the getter adapter's scope)
 - Groovy console reflection that reaches through
   `ModelService.setAttributeValue` / `getAttributeValue`
 

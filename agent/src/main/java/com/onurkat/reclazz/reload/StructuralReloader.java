@@ -1165,14 +1165,27 @@ public class StructuralReloader {
                     .unhideRestoredMembersOn(targetClass, declaredFieldNames, declaredMethodNames);
             });
 
+            Set<String> jacksonGetters = new LinkedHashSet<>();
+            boolean hadJacksonGetters = com.onurkat.reclazz.bootstrap.JacksonBridge.hasGetters(targetClass);
+            final MethodHandles.Lookup getterLookup = classLookup;
+            afterSwitch(className, "making added getters available to Jackson", () -> {
+                jacksonGetters.addAll(JacksonAddedGetters.publish(targetClass, newBytecode,
+                        getterLookup, newTargets));
+            });
+
             // A method this reload added is in the companion, which the call
             // sites reach and reflection does not. Anything a framework
             // discovers by looking at the class therefore misses it, and
             // misses it silently: the reload succeeds and the annotation the
             // developer just wrote does nothing.
             afterSwitch(className, "checking what frameworks can see of the added methods", () -> {
+            Set<String> reflectedMethods = new HashSet<>();
+            for (var method : targetClass.getDeclaredMethods())
+                reflectedMethods.add(method.getName() + org.objectweb.asm.Type.getMethodDescriptor(method));
+            var missingMethods = diff.getNewMethods().stream()
+                    .filter(method -> !reflectedMethods.contains(method.name() + method.descriptor())).toList();
             for (AddedMethodVisibility.Unseen unseen
-                    : AddedMethodVisibility.check(newBytecode, diff.getNewMethods(), isSpringBean(targetClass))) {
+                    : AddedMethodVisibility.check(newBytecode, missingMethods, isSpringBean(targetClass), jacksonGetters)) {
                 // True on every reload of the class, and information on the
                 // first one. The ledger still counts each occurrence, so
                 // asking later still knows how long this has been the case.
@@ -1309,16 +1322,16 @@ public class StructuralReloader {
             // Both kinds of change qualify and for different reasons. An
             // annotation change is the one Jackson can actually see, since
             // redefinition puts the new annotations on the loaded class. A
-            // structural change is thinner than it looks on a stock JDK: an
-            // ADDED getter lives in the companion and reflection cannot see it
-            // either way, which was measured too and is the wall, not a cache;
-            // but a REMOVED one is hidden from reflection now, and a mapper
-            // holding the old serializer would keep writing it.
+            // structural change can add companion getters: JacksonAddedGetters
+            // supplies their saved metadata to Jackson's reflection calls. A
+            // removed one disappears on the next scan, but a mapper holding
+            // the old serializer would keep writing it. Later saves also need
+            // this flush when only an added getter's annotations changed.
             //
             // It says nothing when it runs: a cache that rebuilds lazily and
             // correctly is not news. The enum path keeps its own sentence,
             // because there the constant was failing outright.
-            if (isStructural || diff.isAnnotationsChanged()) {
+            if (isStructural || diff.isAnnotationsChanged() || hadJacksonGetters || !jacksonGetters.isEmpty()) {
                 int mappers = JacksonEnumCaches.flush();
 
                 // Bean Validation resolves a class's constraints once and keeps

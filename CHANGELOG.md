@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Jackson getters added to live DTOs on a stock JDK.** Added getters now reach
+  Jackson's property discovery and invoke their current companion bodies. Real
+  HTTP tests cover old/new objects, naming, inclusion, private annotated getters,
+  custom serializers and property rename/removal/restoration across saves.
+  Runtime annotations on added instance fields are refused instead of ignored;
+  place serialization annotations on the getter for this path.
+  Spring-managed mapper caches also drop Jackson 2.13's read-only serializer
+  snapshot. Jackson remains a test-only dependency. See
+  [scope](docs/usage.md#jackson-getters-added-after-startup).
+
 - **Conditional initial values for fields added to existing objects.** Isolated
   ternary and short-circuit expressions in single-constructor classes now run
   on first read using the object's current state, without replaying its

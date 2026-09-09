@@ -32,7 +32,7 @@ import com.onurkat.reclazz.spring.AddedEndpointAdapter;
  * </pre>
  *
  * <p>An unsupported added {@code @Bean} method is not a bean,
- * an added getter is not serialised, and none of that
+ * a getter without a framework adapter is not serialised, and none of that
  * announces itself: the reload succeeds, the log says so, and the thing the
  * developer added does nothing. That silence is the problem this fixes. It
  * cannot make the method visible, which is the JDK's wall rather than a cache,
@@ -42,6 +42,8 @@ import com.onurkat.reclazz.spring.AddedEndpointAdapter;
  * handing the mapping scan a small class holding a copy of the method
  * ({@link AddedEndpointAdapter}), so an added
  * endpoint really does answer and warning about it would be wrong.
+ * Getters carried by JacksonAddedGetters are likewise excluded from Jackson
+ * warnings; annotations for other framework scans still get their own warning.
  *
  * <p>Only reached on the companion path. A JVM with enhanced redefinition puts
  * the method on the class for real, where every scan finds it, and this
@@ -118,6 +120,12 @@ public final class AddedMethodVisibility {
     public static List<Unseen> check(byte[] newBytecode,
                                     List<TransformContext.MethodSig> added,
                                     boolean springAdaptersHandled) {
+        return check(newBytecode, added, springAdaptersHandled, Set.of());
+    }
+
+    public static List<Unseen> check(byte[] newBytecode,
+                                    List<TransformContext.MethodSig> added,
+                                    boolean springAdaptersHandled, Set<String> jacksonGetters) {
         List<Unseen> unseen = new ArrayList<>();
         if (added == null || added.isEmpty()) return unseen;
 
@@ -141,6 +149,8 @@ public final class AddedMethodVisibility {
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(
                                 String annotationDescriptor, boolean visible) {
                             String simple = simpleName(annotationDescriptor);
+                            if (jacksonGetters.contains(name + descriptor)
+                                    && annotationDescriptor.startsWith("Lcom/fasterxml/jackson/")) return null;
                             // The Spring reloaders register the supported
                             // subset and names its own refusals and failures.
                             if (springAdaptersHandled && (annotationDescriptor.equals("Lorg/springframework/context/annotation/Bean;")
@@ -164,7 +174,7 @@ public final class AddedMethodVisibility {
                             // shape, which is the same wall by a different
                             // door: the serialiser asks the class what its
                             // properties are and this one is not among them.
-                            if (!reported && isGetter(access, name, descriptor)) {
+                            if (!reported && !jacksonGetters.contains(name + descriptor) && isGetter(access, name, descriptor)) {
                                 unseen.add(new Unseen(name + "()",
                                         "a getter is found by shape, so serialisation "
                                         + "(Jackson, for one) will not include it"));
