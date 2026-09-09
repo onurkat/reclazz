@@ -450,7 +450,86 @@ unrelated container identity and context close. Start with `-javaagent` before
 application classes load. Other broker/framework versions, JDK 17 runtime,
 external clusters, transactions and rebalance/failure delivery guarantees were
 not exercised. Kafka libraries and the embedded broker are test dependencies
-only. New RabbitMQ/JMS listener methods remain unsupported.
+only. New RabbitMQ listener methods remain unsupported. Beans mixing JMS and
+Kafka listeners require a restart before either broker's consumers are retired.
+
+### JMS listeners added after startup
+
+With Spring JMS already configured, add a listener to a running plain singleton
+`@Component`, `@Service` or `@Repository` and compile:
+
+```java
+@JmsListener(id = "orders-created", destination = "orders")
+public void onOrder(@Payload String payload, @Header("tenant") String tenant) {
+    processOrder(tenant, payload);
+}
+```
+
+Spring's actual listener processor and container factory register the saved
+metadata. Public/private instance `void` methods with arguments are supported.
+Spring resolves the payload, headers and JMS message/session arguments. Calls
+reach the current plain singleton; a missing/proxied replacement throws rather
+than silently consuming a message. Later saves can edit bodies or queue
+destinations, remove a method or its annotation, and restore it. Original
+listeners on the same bean are registered again after recreation. Containers
+belonging to unrelated beans keep their identity.
+
+Use literal nonempty `id` and `destination`. Optional literal `containerFactory`,
+`selector` and positive `concurrency` (a number or ascending range) are supported.
+The class must directly extend `Object`, have no interfaces/type variables, and
+carry only the stereotypes above or `@Deprecated`. Added callback annotations
+are direct `@JmsListener` and optional `@Deprecated`; parameter annotations are
+`@Payload`, `@Header` and `@Headers`. Extra advice, static/non-void/synthetic
+methods, type-variable signatures and other explicitly supplied listener
+options are refused. Parameter names require explicit annotation names or
+compilation with `-parameters`.
+
+The verified infrastructure is the standard `JmsListenerAnnotationBeanPostProcessor`,
+`JmsListenerEndpointRegistry`, `DefaultJmsListenerContainerFactory` and
+`DefaultMessageListenerContainer` with Spring's `MessagingMessageListenerAdapter`.
+The application factory retains its conversion, selector and local session
+transaction settings. Added listeners refuse custom factories/executors,
+external transaction managers and topic/durable/shared subscription factories.
+Proxies and subclass receivers are not unwrapped. Repeatable/composed listeners,
+reply methods, scoped/prototype beans and registries shared between contexts are
+outside this scope. Custom argument factories that depend on the exact original
+declaring class are not verified: the added method is reflected on a hidden
+metadata delegate.
+
+Before singleton recreation, Reclazz identifies owned containers and waits for
+complete destruction, including their consumers, sessions and connection.
+Spring 5.3 has no registry unregister API; matching entries are removed under
+the registry's registration lock only after destruction finishes. A duplicate
+ID on another container is refused. Failed registration cleans up containers
+registered by that attempt. Unsupported JMS infrastructure leaves unrelated
+bean reloads on their ordinary path. A bean mixing Kafka and JMS consumers, or
+a JMS bean with uninspectable Kafka ownership, is deferred before shutdown.
+
+Shutdown waits up to 30 seconds. On timeout or interruption, registry ownership
+is retained and bean recreation/framework follow-up is deferred with a restart
+ledger diagnostic. Destruction continues in the background; a later save waits
+for that same operation before releasing the ID. Retained entries may therefore
+refer to already stopped containers until retry or application restart. Already
+reloaded bodies are not rolled back. This coordination covers direct class
+reloads through the Spring orchestrator; property/dependency-cascade recreation
+through other paths is outside scope. It does not make a reload atomic or promise
+global exactly-once delivery. Broker and application acknowledgment/redelivery
+policies still apply.
+
+Verified with Spring JMS 5.3.39 (`javax.jms`), a real embedded ActiveMQ Classic
+5.19.11 broker, and stock JDK 21 using startup `-javaagent`. Tests cover the first
+listener on an already used bean, addition beside an original listener, six
+saves, payload/header/message conversion, local transaction rollback/redelivery,
+selector filtering, consumer retirement, and context close. A deliberately
+blocked real consumer proves timeout/interruption and retry using a shorter
+internal test wait. Other JMS providers, Spring versions, JDK 17 runtime,
+Jakarta Messaging 3, late attach, XA and durable topics were not exercised.
+
+Spring JMS and ActiveMQ are isolated test dependencies. Existing tests retain
+their Jackson/SLF4J versions. `:agent:unitTest`, `:agent:e2eTest` and `:agent:test`
+also run the matching isolated JMS suites; those results have separate XML
+reports under `jmsUnitTest`, `jmsE2eTest` and `jmsTest`. Run just JMS with
+`./gradlew :agent:jmsTest --rerun`. No JMS/broker classes enter the production JAR.
 
 ### Operations on added service methods
 

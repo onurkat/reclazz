@@ -69,7 +69,47 @@ dependencies {
     testImplementation("org.glassfish:jakarta.el:3.0.4")
 }
 
+// The broker's Jackson/SLF4J versions belong to JMS tests only. Extending the
+// dependency declarations resolves a separate graph; it does not change test.
+val jmsTests = sourceSets.create("jmsTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+}
+configurations[jmsTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[jmsTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+dependencies {
+    add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:5.3.39")
+    add(jmsTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:5.19.11")
+}
+val jmsTest by tasks.registering(Test::class) {
+    description = "All JMS regressions with isolated real-broker dependencies"
+}
+val jmsUnitTest by tasks.registering(Test::class) {
+    description = "JMS regressions without starting an agent JVM"
+    exclude("com/onurkat/reclazz/e2e/**")
+}
+val jmsE2eTest by tasks.registering(Test::class) {
+    description = "JMS regressions against a real agent JVM"
+    include("com/onurkat/reclazz/e2e/**")
+}
+for (suite in listOf(jmsTest, jmsUnitTest, jmsE2eTest)) suite.configure {
+    group = "verification"
+    useJUnitPlatform()
+    // --rerun applies only to the named task, not dependencies. Each outer
+    // audit/inner-loop gate must also execute its isolated JMS counterpart.
+    outputs.upToDateWhen { false }
+    testClassesDirs = jmsTests.output.classesDirs
+    classpath = jmsTests.runtimeClasspath
+    dependsOn(tasks.named("shadowJar"))
+    systemProperty("reclazz.agent.jar",
+        tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
+    jvmArgs("-Djdk.attach.allowAttachSelf=true")
+    testLogging { events("passed", "failed", "skipped") }
+}
+
 tasks.test {
+    dependsOn(jmsTest)
     useJUnitPlatform()
     // The generic-path smoke test launches a child JVM with -javaagent, so
     // it needs the shaded agent jar. Built here rather than assumed so a
@@ -106,6 +146,7 @@ tasks.test {
 // tests, each of which starts a JVM. The other 850 tests take under twenty.
 // `unitTest` is the inner loop; `test` still runs everything and is the gate.
 val unitTest by tasks.registering(Test::class) {
+    dependsOn(jmsUnitTest)
     group = "verification"
     description = "Every test except the end-to-end ones that start a JVM (about 20s)"
     useJUnitPlatform()
@@ -118,6 +159,7 @@ val unitTest by tasks.registering(Test::class) {
 }
 
 val e2eTest by tasks.registering(Test::class) {
+    dependsOn(jmsE2eTest)
     group = "verification"
     description = "Only the end-to-end tests, against the built agent jar (about 100s)"
     useJUnitPlatform()
