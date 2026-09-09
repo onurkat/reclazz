@@ -121,7 +121,13 @@ as handed over, and no commit happens without seeing it green in this
 session. Gradle serves a cached result for an unchanged task, so pass
 `--rerun`, and pass it after each task it should apply to: it binds to
 the task it follows, and `:agent:test :test --rerun` re-runs `:test`
-alone. A green run reported by the other agent is evidence, not a
+alone.
+
+A test that asserts a timing property can fail on its own: as of
+2026-09-09 `ManyClassesSavedAtOnceTest` expects thirty class files inside
+the queue's one-second collection window, and once arrived with a
+straggler. On such a failure, run the test alone first; a regression
+fails again, a flake does not, and the audit says which it was. A green run reported by the other agent is evidence, not a
 substitute for running it.
 
 ## The audit
