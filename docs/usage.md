@@ -251,6 +251,57 @@ again to recover. The ordinary configuration-bean refresh still runs before this
 registration step, with its existing lifecycle effects. This feature does not
 rerun configuration parsing or add `@Bean` to methods that existed at startup.
 
+### Edited aspect pointcuts
+
+Change the expression on an existing advice method and compile the aspect:
+
+```java
+@Around("execution(* com.example.OrderService.submit(..))")
+public Object observe(ProceedingJoinPoint call) throws Throwable {
+    return call.proceed();
+}
+```
+
+If `OrderService` already has a supported Spring proxy, previously injected
+references now use the edited pointcut. The same proxy and target remain alive:
+service fields are not reset and the service is not destroyed/recreated by this
+AOP step. An existing proxy can gain this aspect's advice even if it previously
+carried only another advisor. Widening, narrowing, removing all matches and
+restoring matches update the chain without duplicating advice.
+
+Spring resolves matching with the bean name, supplies its AspectJ invocation
+context and orders the changed advice. Unrelated advisors retain their identity
+and relative order. If Spring's sorting would reorder those advisors, the bean
+is declined with a reason. All captured contexts are checked, including child
+contexts using an aspect defined in a parent. Aspects registered by factories or
+programmatically reach this path even without `@Component`.
+
+The supported shape is a mutable JDK or CGLIB singleton proxy with a direct
+`SingletonTargetSource`, and one standard
+`AnnotationAwareAspectJAutoProxyCreator` in that context. Previously unproxied
+singletons cannot acquire a proxy in place; matching beans are named in the log
+and restart ledger. Frozen, opaque, nested and dynamic/custom-target proxies,
+custom/multiple auto-proxy creators, per-clause aspects and introductions are
+outside this path. The scan does not instantiate lazy/prototype service beans;
+already-issued prototype/scoped instances and FactoryBean products are not
+tracked. Adding new advice methods on a stock JDK, changing proxy interfaces or
+removing the `@Aspect` annotation is not covered.
+
+Invalid pointcut syntax is detected before changing living chains; a corrected
+save can recover. This is not an atomic update across concurrent invocations:
+Spring's advisor mutation API clears method-chain caches, but an invocation
+already running can finish with its old chain. Calls overlapping the mutation
+can observe an intermediate chain, including both old and new aspect advisors;
+concurrent refresh is not covered by the single-call correctness tests. The existing request-boundary mode has its own
+[documented scope](#reload-between-requests). The aspect's ordinary bean refresh,
+when applicable, retains its existing lifecycle effects.
+
+Verified with Spring Framework 5.3.39, AspectJ 1.9.22.1 and a stock JDK 21 using
+real JDK/CGLIB proxies and HTTP calls across four aspect saves. Other Spring/
+AspectJ versions and a JDK 17 runtime were not exercised for this feature.
+AspectJ is only a test dependency of Reclazz; the production agent ships neither
+Spring nor AspectJ and does not enable AspectJ weaving.
+
 ### Jackson getters added after startup
 
 Start with `-javaagent`, then add a getter to an already loaded DTO and compile:

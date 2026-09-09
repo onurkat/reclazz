@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Edited pointcuts reach existing Spring singleton proxies.** Supported JDK and
+  CGLIB proxies update their aspect advisors in place, preserving injected
+  references, target state and unrelated advice. Real HTTP tests cover matching
+  changes across four saves for component and factory-registered aspects.
+  Invalid pointcuts keep existing chains; unsupported beans are named. Previously
+  unproxied objects still need a restart. AspectJ is test-only; no weaving is
+  enabled. See [scope](docs/usage.md#edited-aspect-pointcuts).
+
 - **Jackson getters added to live DTOs on a stock JDK.** Added getters now reach
   Jackson's property discovery and invoke their current companion bodies. Real
   HTTP tests cover old/new objects, naming, inclusion, private annotated getters,

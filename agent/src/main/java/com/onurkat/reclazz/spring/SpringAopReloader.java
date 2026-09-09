@@ -9,19 +9,11 @@ import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Map;
-import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.Failures;
 
-/**
- * Clears Spring AOP proxy caches and recreates proxied beans for @Aspect classes.
- *
- * When an @Aspect class is reloaded, the AOP proxy cache may hold stale advice.
- * This reloader clears the advisedBeans cache in AbstractAutoProxyCreator and
- * destroys+recreates affected beans.
- *
- * All Spring interaction is via reflection — graceful no-op if Spring AOP is not present.
+/** Re-parses @Aspect advice and updates supported living Spring singleton proxies in place.
+ * All Spring interaction is reflective; the agent has no Spring/AspectJ dependency.
  */
 public class SpringAopReloader {
 
@@ -32,7 +24,7 @@ public class SpringAopReloader {
     }
 
     /**
-     * Clear AOP caches and recreate proxied beans if the reloaded class is an @Aspect.
+     * Re-parse advice and refresh existing proxy chains if the class is an @Aspect.
      */
     public boolean reloadAopProxies(Class<?> reloadedClass) {
         if (!isAspectClass(reloadedClass)) return false;
@@ -47,38 +39,53 @@ public class SpringAopReloader {
 
     private boolean reloadAopProxiesIn(Object appContext, Class<?> reloadedClass) {
         try {
-            // Find AbstractAutoProxyCreator beans
-            String[] beanNames = SpringBeans.beanNamesForType(appContext,
-                    "org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator");
-            if (beanNames == null || beanNames.length == 0) return false;
-
-            Method getBean = appContext.getClass().getMethod("getBean", String.class);
-
-            boolean cleared = false;
-            for (String beanName : beanNames) {
-                Object proxyCreator = getBean.invoke(appContext, beanName);
-                cleared |= clearAdvisedBeansCache(proxyCreator);
-                cleared |= clearParsedAdvisors(proxyCreator);
+            Object factory = SpringBeans.getBeanFactory(appContext);
+            if (factory == null) return false;
+            ClassLoader loader = appContext.getClass().getClassLoader();
+            Class<?> creatorType = Class.forName(
+                    "org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator", false, loader);
+            String[] beanNames = (String[]) factory.getClass()
+                    .getMethod("getBeanNamesForType", Class.class, boolean.class, boolean.class)
+                    .invoke(factory, creatorType, false, false);
+            if (beanNames.length == 0) return false;
+            if (beanNames.length != 1) {
+                SpringAopProxyRefresh.skipped(reloadedClass.getName(), "multiple auto-proxy creators");
+                return false;
             }
-
-            if (cleared) {
-                ReloadEffects.note("aspect advice re-read");
-                StatusReporter.detail("AOP advice re-read for aspect " + reloadedClass.getName()
-                        + ": the pointcut is parsed again, so beans proxied from here on match "
-                        + "it as written.");
-                // Said because it is the half a developer will otherwise hunt
-                // for: a pointcut that starts matching a bean built before the
-                // edit cannot reach that bean, whose proxy was decided when it
-                // was created.
-                StatusReporter.warn("Beans already proxied keep the advice they were built "
-                        + "with; save the advised class, or restart, to apply a pointcut that "
-                        + "now matches something new.");
-                RestartLedger.note(reloadedClass.getName(),
-                        "a pointcut change that beans proxied before it still do not match");
+            for (var annotation : reloadedClass.getAnnotations()) {
+                if (annotation.annotationType().getName().equals("org.aspectj.lang.annotation.Aspect")
+                        && !((String) annotation.annotationType().getMethod("value").invoke(annotation)).isEmpty()) {
+                    SpringAopProxyRefresh.skipped(reloadedClass.getName(), "per-clause aspect");
+                    return false;
+                }
             }
+            for (var field : reloadedClass.getDeclaredFields()) for (var annotation : field.getAnnotations()) {
+                if (annotation.annotationType().getName().equals("org.aspectj.lang.annotation.DeclareParents")) {
+                    SpringAopProxyRefresh.skipped(reloadedClass.getName(), "aspect introductions");
+                    return false;
+                }
+            }
+            // New reflection objects are needed as well as new parsed pointcuts.
+            for (String utility : new String[]{"org.springframework.util.ReflectionUtils",
+                    "org.springframework.core.annotation.AnnotationUtils"}) {
+                Class.forName(utility, false, loader).getMethod("clearCache").invoke(null);
+            }
+            Object proxyCreator = appContext.getClass().getMethod("getBean", String.class)
+                    .invoke(appContext, beanNames[0]);
+            boolean cleared = clearAdvisedBeansCache(proxyCreator);
+            if (!clearParsedAdvisors(proxyCreator)) {
+                SpringAopProxyRefresh.skipped(reloadedClass.getName(), "advisor cache layout unavailable");
+                return cleared;
+            }
+            cleared = true;
+            int updated = SpringAopProxyRefresh.refresh(factory, proxyCreator, reloadedClass);
+            ReloadEffects.note("aspect advice re-read");
+            if (updated > 0) ReloadEffects.note("AOP proxies updated");
+            StatusReporter.detail("AOP advice re-read for aspect " + reloadedClass.getName()
+                    + "; updated " + updated + " existing singleton proxies in place.");
             return cleared;
         } catch (Exception e) {
-            StatusReporter.warn("Spring AOP reload failed: " + Failures.describe(e));
+            SpringAopProxyRefresh.skipped(reloadedClass.getName(), "reload failed: " + Failures.describe(e));
             return false;
         }
     }
@@ -98,31 +105,24 @@ public class SpringAopReloader {
         Object builder = readField(proxyCreator, "aspectJAdvisorsBuilder");
         if (builder == null) return false;
 
-        boolean cleared = false;
         Object cache = readField(builder, "advisorsCache");
-        if (cache instanceof Map<?, ?> map) {
-            map.clear();
-            cleared = true;
-        }
-        // The builder skips the whole scan when it already has the names, so
-        // the cache alone would be refilled from nothing.
+        if (!(cache instanceof Map<?, ?> map)) return false;
+        // Both cache and name-list reset must be available before rebuilding advisors.
         try {
-            for (Class<?> c = builder.getClass(); c != null && c != Object.class;
-                    c = c.getSuperclass()) {
+            for (Class<?> c = builder.getClass(); c != null; c = c.getSuperclass()) {
                 try {
                     Field names = c.getDeclaredField("aspectBeanNames");
                     names.setAccessible(true);
+                    if (!java.util.List.class.isAssignableFrom(names.getType())) return false;
                     names.set(builder, null);
-                    cleared = true;
-                    break;
-                } catch (NoSuchFieldException keepWalking) {
-                    // the next class up may declare it
-                }
+                    map.clear();
+                    return true;
+                } catch (NoSuchFieldException next) { /* inherited cache */ }
             }
-        } catch (Throwable notThisShape) {
-            // A builder that will not be reset keeps the pointcuts it parsed.
+        } catch (ReflectiveOperationException | RuntimeException unavailable) {
+            return false;
         }
-        return cleared;
+        return false;
     }
 
     private static Object readField(Object target, String name) {
@@ -165,7 +165,7 @@ public class SpringAopReloader {
         try {
             for (var annotation : clazz.getAnnotations()) {
                 String name = annotation.annotationType().getName();
-                if (name.endsWith(".Aspect") || name.contains("aspectj")) {
+                if (name.equals("org.aspectj.lang.annotation.Aspect")) {
                     return true;
                 }
             }
