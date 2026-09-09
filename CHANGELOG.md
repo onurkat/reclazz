@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **`@Bean` methods added after startup on a stock JDK.** Supported no-argument
+  object factories on direct `@Configuration(proxyBeanMethods=false)` singletons
+  register through hidden delegates and Spring bean definitions. Spring injects
+  and initializes the product; subsequent saves recreate it and removal cleans
+  owned registrations. Existing names and externally replaced registrations are
+  preserved by the added-factory reloader. Unsupported metadata and failed
+  factories are reported. See [scope and lifecycle](docs/usage.md#bean-methods-added-after-startup).
+
 - **`@Value` follows indirect property dependencies.** Changing a source key now
   updates fields and rebuilds supported constructor beans that read it through
   `${...}` property-value chains. Selection follows Spring placeholder resolution

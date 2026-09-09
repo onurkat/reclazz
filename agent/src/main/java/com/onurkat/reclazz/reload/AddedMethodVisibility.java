@@ -31,7 +31,7 @@ import com.onurkat.reclazz.spring.AddedEndpointAdapter;
  *   getMethod("getEmail")  NoSuchMethodException
  * </pre>
  *
- * <p>So an added {@code @Bean} method is not a bean,
+ * <p>An unsupported added {@code @Bean} method is not a bean,
  * an added getter is not serialised, and none of that
  * announces itself: the reload succeeds, the log says so, and the thing the
  * developer added does nothing. That silence is the problem this fixes. It
@@ -117,7 +117,7 @@ public final class AddedMethodVisibility {
 
     public static List<Unseen> check(byte[] newBytecode,
                                     List<TransformContext.MethodSig> added,
-                                    boolean springListenersHandled) {
+                                    boolean springAdaptersHandled) {
         List<Unseen> unseen = new ArrayList<>();
         if (added == null || added.isEmpty()) return unseen;
 
@@ -143,7 +143,8 @@ public final class AddedMethodVisibility {
                             String simple = simpleName(annotationDescriptor);
                             // The Spring reloaders register the supported
                             // subset and names its own refusals and failures.
-                            if (springListenersHandled && (annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Scheduled;")
+                            if (springAdaptersHandled && (annotationDescriptor.equals("Lorg/springframework/context/annotation/Bean;")
+                                    || annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Scheduled;")
                                     || annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Schedules;")
                                     || annotationDescriptor.equals("Lorg/springframework/context/event/EventListener;")))
                                 return null;

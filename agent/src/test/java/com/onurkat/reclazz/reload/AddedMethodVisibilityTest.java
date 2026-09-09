@@ -66,6 +66,18 @@ class AddedMethodVisibilityTest {
     }
 
     @Test
+    void springBeanAdapterOwnsItsDiagnosticsButAGetterStillNeedsSerialisationSupport() {
+        byte[] bytes = classWith(new Method(Opcodes.ACC_PUBLIC, "dataSource",
+                "()Ljava/lang/Object;", "Lorg/springframework/context/annotation/Bean;"));
+        assertTrue(AddedMethodVisibility.check(bytes, added("dataSource", "()Ljava/lang/Object;"), true).isEmpty());
+        byte[] getter = classWith(new Method(Opcodes.ACC_PUBLIC, "getDataSource",
+                "()Ljava/lang/Object;", "Lorg/springframework/context/annotation/Bean;"));
+        var unseen = AddedMethodVisibility.check(getter, added("getDataSource", "()Ljava/lang/Object;"), true);
+        assertEquals(1, unseen.size());
+        assertTrue(unseen.get(0).reason().contains("serialisation"));
+    }
+
+    @Test
     void anAddedGetterIsReportedForSerialisation() {
         byte[] bytes = classWith(plain("getEmail", "()Ljava/lang/String;"));
 
