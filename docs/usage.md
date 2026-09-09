@@ -1120,7 +1120,32 @@ ArrayList<>();` to a live Spring singleton therefore reads a list, and
 `private int retries = 3;` reads 3. The initialiser may read the object's
 other fields and call its methods, which the live object has; each object
 computes its own value; a value the application wrote before the first read,
-null included, is kept; and the initialiser runs once per object.
+null included, is kept; and subsequent reads reuse the stored value.
+
+Isolated conditional expressions also work for classes with one constructor.
+For example, add this field when `enabled` is already part of the object:
+
+```java
+private String mode = enabled ? "on" : "off";
+```
+
+The condition uses that object's state at the field's first read. Only the
+selected branch runs; nested conditions, short-circuit booleans, object
+construction and primitive/reference values are supported. Existing objects can
+therefore receive different values from the same added initializer. A later
+save preserves values already stored; an object that has not read the field yet
+uses the current initializer. The constructor and preceding initializer blocks
+are not replayed.
+
+This conditional path requires one assignment to the field in a class with
+exactly one constructor. Multiple constructors are refused even when their
+initializers appear equivalent. Constructor arguments and other local variables,
+outside branches, loops, switches, shared field/array writes, locking and
+separate void/discarded-result calls are unsupported. Any try/catch in the
+constructor also refuses conditional initialization, even if the handler is
+elsewhere. The existing concurrent-first-read behavior is unchanged: computations
+can overlap, and the first stored value wins. This does not add rollback for
+side effects or change how a throwing initializer is retired.
 
 What cannot be lifted keeps the type default (`null`, `0`, `false`) on
 pre-existing objects, and the reload names the field and the reason:
@@ -1128,8 +1153,8 @@ pre-existing objects, and the reload names the field and the reason:
 - an assignment that reads a constructor argument (`this.upper =
   name.toUpperCase()` in the constructor body), because the object no longer
   has the argument;
-- an initialiser that branches, sits in a try/catch, or shares a computation
-  with another field;
+- an initialiser whose control flow leaves the assignment, loops, uses a switch
+  or try/catch, or shares a computation with another field;
 - an initialiser that throws on first read: the field reads the default and
   the initialiser is not tried again.
 

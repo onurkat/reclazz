@@ -71,11 +71,11 @@ class InstanceInitialiserTest {
     }
 
     @Test
-    void aBranchingInitialiserIsRefused() throws IOException {
-        var plan = planFor(Fixture.class, "mode:Ljava/lang/String;");
+    void anExternallyGuardedInitialiserIsRefused() throws IOException {
+        var plan = planFor(Fixture.class, "guarded:Ljava/lang/String;");
 
         assertTrue(plan.initialisers.isEmpty());
-        assertTrue(plan.refused.get("mode:Ljava/lang/String;").contains("branch"),
+        assertTrue(plan.refused.get("guarded:Ljava/lang/String;").contains("branch"),
                 "the reason has to be about control flow: " + plan.refused);
     }
 
@@ -279,10 +279,12 @@ class InstanceInitialiserTest {
         private int retries = 3;
         private final String label = name + "!";
         private final String mode = System.getProperty("reclazz.absent") != null ? "on" : "off";
+        private String guarded;
         private long spare;
 
         Fixture(String name) {
             this.name = name;
+            if (System.getProperty("reclazz.absent") != null) guarded = "on";
         }
     }
 
