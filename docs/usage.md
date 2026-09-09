@@ -121,8 +121,8 @@ configuration class, compile, and look up the new singleton through Spring:
 public class ClientConfiguration {
     // Add this method after the application has started:
     @Bean
-    public Client client() {
-        return new Client("http://localhost:8081");
+    public Client client(Transport transport) {
+        return new Client(transport);
     }
 }
 ```
@@ -137,10 +137,28 @@ Closing the context runs normal product destruction. Repeated saves leave one
 registration per supported name.
 
 Definitions from the same save are registered before products are initialized,
-so an added product can inject another added bean regardless of declaration order.
-Only contexts containing the edited configuration participate.
+so an added product can inject another added bean regardless of declaration order,
+including through factory parameters. Only contexts containing the edited
+configuration participate.
 
-Supported factories carry direct `@Bean`, have no parameters, return an object
+Factory parameters are required reference beans. Spring selects candidates by
+type, honors primary candidates and direct parameter `@Qualifier("beanName")`,
+and uses the original parameter name to break ties when javac preserved it with
+`-parameters` or debug local-variable information. Without a preserved name, no
+name is invented: unique type/primary/qualifier selection still works, and an
+unresolved ambiguity is reported. Parent-context candidates and dependency
+proxies are passed through as the objects Spring resolves.
+
+Arguments are resolved on every product creation. Dependency names are registered
+with the creating bean factory so its normal dependency destruction applies,
+including for dependencies that were already cached singletons. If an argument
+is missing, ambiguous or resolves to null, the factory body is not called and
+its failed owned definition is removed. The message identifies the parameter
+and Spring's failure. Fix the dependency or qualifier and compile the
+configuration again to recover; registering a missing dependency alone does not
+restore a definition removed after a failed reload.
+
+Supported factories carry direct `@Bean`, return an object
 (not a primitive, array or `void`), and have no generic signature. Private instance
 methods work; static, native and abstract methods do not. The class must carry
 direct `@Configuration(proxyBeanMethods=false)`, extend only `Object`, implement
@@ -148,6 +166,12 @@ no interfaces and have exactly one local, unproxied singleton configuration in
 each affected bean factory. Extra runtime class/method annotations are limited to
 `@Deprecated`. Conditions, profiles, scopes, advice, lazy/primary/qualifier metadata,
 composed annotations and proxied configurations require a restart.
+The parameter-level `@Qualifier` described above is the exception. Primitive,
+array, collection/map, optional, stream and provider parameters are unsupported,
+as are generic signatures and extra runtime parameter/type annotations such as
+`@Value`, `@Lazy`, nullable annotations and composed qualifiers. Parameter names
+come from the saved bytecode; custom name-discovery policies and custom lazy
+resolution hooks are not used by this path. No-argument factories remain supported.
 
 The default method name or one explicit `name`/`value` is supported, along with
 `initMethod` and `destroyMethod`. The default inferred `close`/`shutdown` destruction

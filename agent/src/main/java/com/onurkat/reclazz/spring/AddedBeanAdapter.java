@@ -13,7 +13,9 @@ import org.objectweb.asm.tree.*;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** A factory delegate for a method that reflection cannot see on a stock JDK. */
@@ -21,6 +23,8 @@ public final class AddedBeanAdapter {
     static final String BEAN = "Lorg/springframework/context/annotation/Bean;";
     static final String CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
     private static final String DEPRECATED = "Ljava/lang/Deprecated;";
+    private static final String QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
+    private static final String PARAMETERS = InjectedNames.PREFIX + "parameters";
     private AddedBeanAdapter() { }
 
     record Factory(MethodNode method, String name, String init, String destroy) { }
@@ -31,7 +35,8 @@ public final class AddedBeanAdapter {
         List<String> refused = new ArrayList<>();
         if (bytes == null) return new Plan(factories, refused);
         ClassNode source = new ClassNode();
-        new ClassReader(bytes).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG);
+        // Preserve debug argument names just as the added event adapter does.
+        new ClassReader(bytes).accept(source, ClassReader.SKIP_FRAMES);
         AnnotationNode config = annotation(source.visibleAnnotations, CONFIGURATION);
         boolean supportedClass = config != null && Boolean.FALSE.equals(value(config, "proxyBeanMethods", true))
                 && "java/lang/Object".equals(source.superName) && source.interfaces.isEmpty()
@@ -44,10 +49,20 @@ public final class AddedBeanAdapter {
                 if (!supportedClass) throw new IllegalArgumentException(
                         "requires direct @Configuration(proxyBeanMethods=false), without inheritance or additional class annotations");
                 Type signature = Type.getMethodType(method.desc);
-                if (signature.getArgumentTypes().length != 0 || signature.getReturnType().getSort() != Type.OBJECT
+                if (signature.getReturnType().getSort() != Type.OBJECT
                         || (method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC)) != 0
                         || method.signature != null)
-                    throw new IllegalArgumentException("only no-argument, non-generic, object-returning instance factories are supported");
+                    throw new IllegalArgumentException("only non-generic, object-returning instance factories are supported");
+                for (Type argument : signature.getArgumentTypes())
+                    if (argument.getSort() != Type.OBJECT)
+                        throw new IllegalArgumentException("factory parameters must be required reference beans; primitive/array parameters are unsupported");
+                if (method.visibleParameterAnnotations != null)
+                    for (var annotations : method.visibleParameterAnnotations)
+                        if (annotations != null && annotations.stream().anyMatch(a -> !a.desc.equals(QUALIFIER)))
+                            throw new IllegalArgumentException("only direct @Qualifier is supported on factory parameters");
+                if (signature.getArgumentTypes().length > 0
+                        && method.visibleTypeAnnotations != null && !method.visibleTypeAnnotations.isEmpty())
+                    throw new IllegalArgumentException("factory type annotations are not supported");
                 if (extraAnnotations(method.visibleAnnotations, BEAN))
                     throw new IllegalArgumentException("additional method annotations cannot be applied to the factory delegate");
                 if (bean.values != null) for (int i = 0; i < bean.values.size(); i += 2)
@@ -93,45 +108,99 @@ public final class AddedBeanAdapter {
 
     // The captured lookup is a capability; this entry point stays package-private.
     static Supplier<?> create(Class<?> owner, Supplier<?> currentConfig, Factory factory) throws Throwable {
+        if (Type.getArgumentTypes(factory.method().desc).length != 0)
+            throw new IllegalArgumentException("parameterized factory requires an argument resolver");
+        return create(owner, currentConfig, factory, ignored -> () -> new Object[0]);
+    }
+
+    static Supplier<?> create(Class<?> owner, Supplier<?> currentConfig, Factory factory,
+                              Function<Method, Supplier<Object[]>> argumentResolver) throws Throwable {
         MethodHandles.Lookup lookup = LookupCapture.get(owner);
         if (lookup == null) throw new IllegalStateException("no captured lookup for " + owner.getName());
         String internal = Type.getInternalName(owner);
         String adapter = internal + "$$ReclazzBean";
         String supplier = "Ljava/util/function/Supplier;";
         String target = InjectedNames.PREFIX + "target";
+        String arguments = InjectedNames.PREFIX + "arguments";
+        Type[] argumentTypes = Type.getArgumentTypes(factory.method().desc);
         ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         writer.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC, adapter, null,
                 "java/lang/Object", new String[]{"java/util/function/Supplier"});
         writer.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, target, supplier, null, null).visitEnd();
-        MethodVisitor ctor = writer.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(" + supplier + ")V", null, null);
+        writer.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, arguments, supplier, null, null).visitEnd();
+        MethodVisitor ctor = writer.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(" + supplier + supplier + ")V", null, null);
         ctor.visitCode();
         ctor.visitVarInsn(Opcodes.ALOAD, 0);
         ctor.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
         ctor.visitVarInsn(Opcodes.ALOAD, 0);
         ctor.visitVarInsn(Opcodes.ALOAD, 1);
         ctor.visitFieldInsn(Opcodes.PUTFIELD, adapter, target, supplier);
+        ctor.visitVarInsn(Opcodes.ALOAD, 0);
+        ctor.visitVarInsn(Opcodes.ALOAD, 2);
+        ctor.visitFieldInsn(Opcodes.PUTFIELD, adapter, arguments, supplier);
         ctor.visitInsn(Opcodes.RETURN);
         ctor.visitMaxs(0, 0);
         ctor.visitEnd();
         MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, "get", "()Ljava/lang/Object;", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
+        mv.visitFieldInsn(Opcodes.GETFIELD, adapter, arguments, supplier);
+        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/function/Supplier", "get", "()Ljava/lang/Object;", true);
+        mv.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/Object;");
+        mv.visitVarInsn(Opcodes.ASTORE, 1);
+        mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, adapter, target, supplier);
         mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/function/Supplier", "get", "()Ljava/lang/Object;", true);
         mv.visitTypeInsn(Opcodes.CHECKCAST, internal);
+        for (int i = 0; i < argumentTypes.length; i++) {
+            mv.visitVarInsn(Opcodes.ALOAD, 1);
+            mv.visitLdcInsn(i);
+            mv.visitInsn(Opcodes.AALOAD);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, argumentTypes[i].getInternalName());
+        }
         Handle bootstrap = new Handle(Opcodes.H_INVOKESTATIC,
                 "com/onurkat/reclazz/bootstrap/ReclazzBootstrap", "bootstrapMethod",
                 "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;"
                         + "Ljava/lang/invoke/MethodType;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/invoke/CallSite;", false);
         mv.visitInvokeDynamicInsn(factory.method().name,
-                "(" + Type.getDescriptor(owner) + ")" + Type.getReturnType(factory.method().desc).getDescriptor(),
+                "(" + Type.getDescriptor(owner) + factory.method().desc.substring(1),
                 bootstrap, internal, CallSiteAdapter.descHash(factory.method().desc));
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();
+        MethodVisitor metadata = writer.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                PARAMETERS, factory.method().desc, null, null);
+        for (int i = 0; i < argumentTypes.length; i++) {
+            String name = null;
+            int access = 0;
+            if (factory.method().parameters != null && i < factory.method().parameters.size()) {
+                var parameter = factory.method().parameters.get(i);
+                name = parameter.name;
+                access = parameter.access;
+            } else if (factory.method().localVariables != null) {
+                int slot = i + 1; // all supported parameters occupy one slot
+                name = factory.method().localVariables.stream().filter(v -> v.index == slot)
+                        .map(v -> v.name).findFirst().orElse(null);
+            }
+            metadata.visitParameter(name, access);
+            if (factory.method().visibleParameterAnnotations != null
+                    && i < factory.method().visibleParameterAnnotations.length
+                    && factory.method().visibleParameterAnnotations[i] != null)
+                for (var annotation : factory.method().visibleParameterAnnotations[i])
+                    annotation.accept(metadata.visitParameterAnnotation(i, annotation.desc, true));
+        }
+        // Read only for parameter metadata; never used to invoke application code.
+        metadata.visitCode();
+        metadata.visitInsn(Opcodes.ACONST_NULL);
+        metadata.visitInsn(Opcodes.ARETURN);
+        metadata.visitMaxs(0, 0);
+        metadata.visitEnd();
         writer.visitEnd();
         MethodHandles.Lookup hidden = lookup.defineHiddenClass(writer.toByteArray(), true, MethodHandles.Lookup.ClassOption.NESTMATE);
-        return (Supplier<?>) hidden.findConstructor(hidden.lookupClass(), MethodType.methodType(void.class, Supplier.class))
-                .invoke(currentConfig);
+        Class<?>[] parameters = MethodType.fromMethodDescriptorString(factory.method().desc, owner.getClassLoader()).parameterArray();
+        Method reflected = hidden.lookupClass().getDeclaredMethod(PARAMETERS, parameters);
+        Supplier<Object[]> resolved = argumentResolver.apply(reflected);
+        return (Supplier<?>) hidden.findConstructor(hidden.lookupClass(), MethodType.methodType(void.class, Supplier.class, Supplier.class))
+                .invoke(currentConfig, resolved);
     }
 }

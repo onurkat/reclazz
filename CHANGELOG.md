@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Required bean arguments for `@Bean` methods added after startup.** Factories
+  can take non-generic reference bean parameters. Spring resolves types, primary
+  candidates, direct parameter qualifiers and preserved parameter names. Each
+  creation obtains current dependencies, including beans added in the same save,
+  and records dependency names with its factory. Missing, ambiguous or null
+  dependencies prevent the factory call and produce a parameter-specific reason;
+  a corrected reload recovers. Optional, collection/provider, primitive/array and
+  `@Value` parameters remain outside scope. See
+  [scope and lifecycle](docs/usage.md#bean-methods-added-after-startup).
+
 - **`@Bean` methods added after startup on a stock JDK.** Supported no-argument
   object factories on direct `@Configuration(proxyBeanMethods=false)` singletons
   register through hidden delegates and Spring bean definitions. Spring injects

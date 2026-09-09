@@ -39,7 +39,7 @@ class SpringAddedBeanTest {
         public Object infrastructure() { return (org.springframework.beans.factory.config.BeanPostProcessor) new org.springframework.beans.factory.config.BeanPostProcessor() { }; }
         public void bad() { }
         public int primitive() { return 1; }
-        public Product argument(String value) { return new Product(1); }
+        public Product argument(int value) { return new Product(value); }
         public static Product staticFactory() { return new Product(1); }
         public List<String> generic() { return List.of(); }
     }
