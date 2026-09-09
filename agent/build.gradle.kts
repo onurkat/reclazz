@@ -49,6 +49,8 @@ dependencies {
     testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
     testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
     testImplementation("org.springframework:spring-messaging:5.3.39")
+    // Real Rabbit listener regressions only; production remains reflection-only.
+    testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
     testImplementation("com.h2database:h2:2.2.224")
@@ -108,7 +110,34 @@ for (suite in listOf(jmsTest, jmsUnitTest, jmsE2eTest)) suite.configure {
     testLogging { events("passed", "failed", "skipped") }
 }
 
+val rabbitTests = sourceSets.create("rabbitTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+}
+configurations[rabbitTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[rabbitTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+val rabbitTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Real RabbitMQ broker tests (requires Docker; explicit Windows CI opt-out only)"
+    jvmArgs("-Djdk.attach.allowAttachSelf=true")
+    useJUnitPlatform()
+    testClassesDirs = rabbitTests.output.classesDirs
+    classpath = rabbitTests.runtimeClasspath
+    dependsOn(tasks.named("shadowJar"))
+    systemProperty("reclazz.agent.jar",
+        tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
+    outputs.upToDateWhen { false }
+    onlyIf {
+        val skip = providers.gradleProperty("reclazz.skipRabbitBroker").orNull == "true"
+        if (skip) logger.lifecycle("RabbitMQ broker tests explicitly NOT RUN (-Preclazz.skipRabbitBroker=true)")
+        !skip
+    }
+    testLogging { events("passed", "failed", "skipped") }
+}
+
 tasks.test {
+    dependsOn(rabbitTest)
     dependsOn(jmsTest)
     useJUnitPlatform()
     // The generic-path smoke test launches a child JVM with -javaagent, so
@@ -159,6 +188,7 @@ val unitTest by tasks.registering(Test::class) {
 }
 
 val e2eTest by tasks.registering(Test::class) {
+    dependsOn(rabbitTest)
     dependsOn(jmsE2eTest)
     group = "verification"
     description = "Only the end-to-end tests, against the built agent jar (about 100s)"

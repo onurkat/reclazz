@@ -89,8 +89,17 @@ jobs:
       # One Gradle invocation for both: the second one paid the whole
       # configuration again, on every job, for a task the first could have
       # run. The runner is fresh, so there is nothing for clean to clean.
+      - name: Pull pinned RabbitMQ broker for integration tests
+        if: matrix.os == 'ubuntu-latest'
+        run: docker pull rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd
+
       - name: Build and test, then package the plugin
+        if: matrix.os == 'ubuntu-latest'
         run: ./gradlew build buildPlugin
+
+      - name: Build and test on Windows (Linux RabbitMQ broker suite explicitly omitted)
+        if: matrix.os == 'windows-latest'
+        run: ./gradlew build buildPlugin -Preclazz.skipRabbitBroker=true
 
       # Marketplace runs this on submission; failing here instead means we
       # never find out from a rejection email.

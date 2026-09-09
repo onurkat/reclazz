@@ -450,8 +450,8 @@ unrelated container identity and context close. Start with `-javaagent` before
 application classes load. Other broker/framework versions, JDK 17 runtime,
 external clusters, transactions and rebalance/failure delivery guarantees were
 not exercised. Kafka libraries and the embedded broker are test dependencies
-only. New RabbitMQ listener methods remain unsupported. Beans mixing JMS and
-Kafka listeners require a restart before either broker's consumers are retired.
+only. Beans mixing Rabbit, JMS or Kafka listeners require a restart before
+any of their consumers are retired.
 
 ### JMS listeners added after startup
 
@@ -530,6 +530,103 @@ their Jackson/SLF4J versions. `:agent:unitTest`, `:agent:e2eTest` and `:agent:te
 also run the matching isolated JMS suites; those results have separate XML
 reports under `jmsUnitTest`, `jmsE2eTest` and `jmsTest`. Run just JMS with
 `./gradlew :agent:jmsTest --rerun`. No JMS/broker classes enter the production JAR.
+
+### Rabbit listeners added after startup
+
+With Spring Rabbit already configured, add a method to a running plain singleton
+`@Component`, `@Service` or `@Repository`, then compile:
+
+```java
+@RabbitListener(id = "orders-created", queues = "orders")
+public void onOrder(@Payload String payload, @Header("tenant") String tenant) {
+    processOrder(tenant, payload);
+}
+```
+
+The application’s real processor and `SimpleRabbitListenerContainerFactory`
+register the saved metadata. Spring converts payloads/headers and supplies the
+AMQP message. The callback uses the current plain singleton; missing or proxied
+receivers fail explicitly. Public/private instance `void` methods with arguments
+are supported. Later saves can edit bodies and queues, remove methods or their
+annotations, and restore them. Original listeners are registered again after
+bean recreation; unrelated containers retain their identity.
+
+For newly added methods, use an explicit nonempty literal `id` and literal `queues`
+naming existing queues. Optional literal `containerFactory` and positive `concurrency` (number or ascending
+range) are accepted. Explicit `autoStartup` is outside this stage: Spring's late
+registration can start a container even when that flag is false. The class directly extends
+`Object`, has no interfaces/type variables, and uses only the stereotypes above
+and optional `@Deprecated`. Callback annotations are direct `@RabbitListener`
+and optional `@Deprecated`; parameter annotations are `@Payload`, `@Header` and
+`@Headers`. Composed/repeatable/class-level handlers, expression/property queue
+names, inline queue/exchange/binding declarations, return/reply/async methods,
+proxies, method advice and inheritance are outside this support.
+
+Existing methods are re-scanned by Spring and do not use the added-method option
+allowlist: an existing `@RabbitListener(queues="orders")` keeps working with
+Spring-generated IDs, including beside a new listener. Existing `ackMode="AUTO"`
+and `autoStartup` metadata also stay on Spring's ordinary registration path.
+Spring's late registration may start an existing `autoStartup="false"` container;
+Reclazz preserves that framework behavior.
+
+Both original and added consumers require the standard
+`RabbitListenerAnnotationBeanPostProcessor`, `RabbitListenerEndpointRegistry`,
+`MessagingMessageListenerAdapter`, a plain receiver and
+`SimpleMessageListenerContainer`, with AUTO acknowledgment and the default
+`SimpleAsyncTaskExecutor`. Newly added consumers additionally require the standard
+simple factory without a customizer. Local channel transactions are preserved.
+Manual/automatic-without-ack modes, external transaction managers, container
+advice, custom executors, direct/stream/batch containers and custom listener
+adapters are refused for retirement of either original or added consumers.
+Unsupported added-method metadata, foreign added IDs and mixed Rabbit/JMS/Kafka
+owners are checked before owned consumers are retired. Original consumers are
+checked against the runtime lifecycle restrictions above, not the added-method
+metadata restrictions. Unknown broker ownership also requires a restart. Unsupported Rabbit infrastructure does not block unrelated
+beans.
+
+Start with `-javaagent`. The agent tracks each actual simple-container worker
+from construction through its complete `run()` exit, including queued tasks and
+channel/transaction cleanup. Before recreation it prevents new workers on the
+retired container, starts destruction, and waits up to 30 seconds for both
+destruction and worker completion. A zero Spring consumer count alone is not
+accepted: channel shutdown can release that counter while a callback still runs.
+An unavailable startup hook, timeout or interruption retains registry ownership,
+defers bean recreation and records a restart diagnostic. A later save waits for
+the same retirement; it may find stopped containers still holding their IDs.
+
+This covers direct listener-class reloads through the Spring orchestrator.
+Property/dependency-cascade recreation is outside scope. Already reloaded bodies
+are not rolled back, and this does not make reload atomic or promise exactly-once
+delivery. Broker/application acknowledgment and redelivery policies still apply.
+Custom conversion depending on the callback’s exact declaring-class identity is
+outside the verified scope because added callbacks use a hidden delegate.
+
+Verified locally with Spring Rabbit 2.4.17, Spring Framework 5.3.39, RabbitMQ
+4.3.5 and stock JDK 21. Real-agent tests cover six saves both on an already used
+bean with no listeners and beside both explicitly named and ID-less original
+listeners, including payload/header
+conversion, rollback/redelivery and context close. A blocked real original
+callback checks force-close, timeout, repeat, interruption and retry. Other
+framework/broker versions, late attach and JDK 17 runtime were not verified
+locally. Linux CI is configured for JDK 17/21; those runs are separate evidence.
+
+Spring Rabbit is a test dependency; no AMQP/framework/broker classes ship in the
+agent. The `:agent:rabbitTest` suite requires Docker with Linux containers and a
+pre-pulled official image. Prepare and run it with:
+
+```bash
+docker pull rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd
+./gradlew :agent:rabbitTest --rerun
+```
+
+Tests create uniquely named temporary containers, bind random loopback ports and
+remove their own resources on completion. Missing Docker/image fails the suite.
+`:agent:test` and `:agent:e2eTest` include it and report results separately under
+`agent/build/test-results/rabbitTest`. Count these alongside `test` and `jmsTest`
+for the full gate. Portable Rabbit checks run in `:agent:unitTest`; the blocked
+broker test belongs to `rabbitTest`. Windows CI explicitly omits only this Linux
+broker suite with `-Preclazz.skipRabbitBroker=true`, retaining portable tests.
+That option reports NOT RUN and is not a complete broker validation.
 
 ### Operations on added service methods
 

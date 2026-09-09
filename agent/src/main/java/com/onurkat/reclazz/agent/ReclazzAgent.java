@@ -181,6 +181,7 @@ public class ReclazzAgent {
                 com.onurkat.reclazz.spring.AddedKafkaListenerAdapter.class);
         LookupCapture.trust(
                 com.onurkat.reclazz.spring.AddedJmsListenerAdapter.class);
+        LookupCapture.trust(com.onurkat.reclazz.spring.AddedRabbitListenerAdapter.class);
         LookupCapture.seal();
     }
 
@@ -395,6 +396,7 @@ public class ReclazzAgent {
                 instrumentation.addTransformer(new JacksonAccessorTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.ExceptionHandlerTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.MvcBindingTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.RabbitConsumerTransformer(), true);
                 ReflectionInterceptTransformer reflectionTransformer = new ReflectionInterceptTransformer();
                 instrumentation.addTransformer(reflectionTransformer, true);
                 if (config.isVerbose()) StatusReporter.info("Reflection intercept transformer registered");
