@@ -277,8 +277,8 @@ class SpringAddedBeanTest {
     }
 
     @Test
-    void aliasesConflictingNamesAndExtraBeanOptionsAreRefused() throws Exception {
-        for (Object[] attributes : List.of(new Object[]{"name", List.of("a", "b")},
+    void invalidAliasesConflictingNamesAndExtraBeanOptionsAreRefused() throws Exception {
+        for (Object[] attributes : List.of(new Object[]{"name", List.of("a", "&b")},
                 new Object[]{"name", List.of("a"), "value", List.of("b")},
                 new Object[]{"autowireCandidate", false}, new Object[]{"name", List.of(" ")})) {
             assertEquals(1, inspect(annotated("first", attributes)).refused().size());
