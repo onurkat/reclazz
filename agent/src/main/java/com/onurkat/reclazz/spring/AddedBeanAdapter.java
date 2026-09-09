@@ -55,9 +55,9 @@ public final class AddedBeanAdapter {
                         "requires direct @Configuration(proxyBeanMethods=false), without inheritance or additional class annotations");
                 Type signature = Type.getMethodType(method.desc);
                 if (signature.getReturnType().getSort() != Type.OBJECT
-                        || (method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC)) != 0
+                        || (method.access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC)) != 0
                         || method.signature != null)
-                    throw new IllegalArgumentException("only non-generic, object-returning instance factories are supported");
+                    throw new IllegalArgumentException("only non-generic, object-returning factories are supported");
                 for (Type argument : signature.getArgumentTypes())
                     if (argument.getSort() != Type.OBJECT)
                         throw new IllegalArgumentException("factory parameters must be required reference beans; primitive/array parameters are unsupported");
@@ -135,6 +135,7 @@ public final class AddedBeanAdapter {
         String target = InjectedNames.PREFIX + "target";
         String arguments = InjectedNames.PREFIX + "arguments";
         Type[] argumentTypes = Type.getArgumentTypes(factory.method().desc);
+        boolean isStatic = (factory.method().access & Opcodes.ACC_STATIC) != 0;
         ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         writer.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC, adapter, null,
                 "java/lang/Object", new String[]{"java/util/function/Supplier"});
@@ -160,10 +161,12 @@ public final class AddedBeanAdapter {
         mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/function/Supplier", "get", "()Ljava/lang/Object;", true);
         mv.visitTypeInsn(Opcodes.CHECKCAST, "[Ljava/lang/Object;");
         mv.visitVarInsn(Opcodes.ASTORE, 1);
-        mv.visitVarInsn(Opcodes.ALOAD, 0);
-        mv.visitFieldInsn(Opcodes.GETFIELD, adapter, target, supplier);
-        mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/function/Supplier", "get", "()Ljava/lang/Object;", true);
-        mv.visitTypeInsn(Opcodes.CHECKCAST, internal);
+        if (!isStatic) {
+            mv.visitVarInsn(Opcodes.ALOAD, 0);
+            mv.visitFieldInsn(Opcodes.GETFIELD, adapter, target, supplier);
+            mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/function/Supplier", "get", "()Ljava/lang/Object;", true);
+            mv.visitTypeInsn(Opcodes.CHECKCAST, internal);
+        }
         for (int i = 0; i < argumentTypes.length; i++) {
             mv.visitVarInsn(Opcodes.ALOAD, 1);
             mv.visitLdcInsn(i);
@@ -171,11 +174,11 @@ public final class AddedBeanAdapter {
             mv.visitTypeInsn(Opcodes.CHECKCAST, argumentTypes[i].getInternalName());
         }
         Handle bootstrap = new Handle(Opcodes.H_INVOKESTATIC,
-                "com/onurkat/reclazz/bootstrap/ReclazzBootstrap", "bootstrapMethod",
+                "com/onurkat/reclazz/bootstrap/ReclazzBootstrap", isStatic ? "bootstrapStaticMethod" : "bootstrapMethod",
                 "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;"
                         + "Ljava/lang/invoke/MethodType;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/invoke/CallSite;", false);
         mv.visitInvokeDynamicInsn(factory.method().name,
-                "(" + Type.getDescriptor(owner) + factory.method().desc.substring(1),
+                isStatic ? factory.method().desc : "(" + Type.getDescriptor(owner) + factory.method().desc.substring(1),
                 bootstrap, internal, CallSiteAdapter.descHash(factory.method().desc));
         mv.visitInsn(Opcodes.ARETURN);
         mv.visitMaxs(0, 0);
@@ -190,7 +193,7 @@ public final class AddedBeanAdapter {
                 name = parameter.name;
                 access = parameter.access;
             } else if (factory.method().localVariables != null) {
-                int slot = i + 1; // all supported parameters occupy one slot
+                int slot = i + (isStatic ? 0 : 1); // all supported parameters occupy one slot
                 name = factory.method().localVariables.stream().filter(v -> v.index == slot)
                         .map(v -> v.name).findFirst().orElse(null);
             }
