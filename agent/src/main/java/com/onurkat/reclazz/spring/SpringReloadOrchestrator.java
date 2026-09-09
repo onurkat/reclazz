@@ -102,7 +102,9 @@ public class SpringReloadOrchestrator {
     public void onHelperReloaded(String className, Class<?> type) {
         if (type == null) return;
         ReloadSteps.runAll(java.util.List.of(new ReloadSteps.Step("Cache eviction",
-                        r -> cacheReloader.reloadCaches(r.type()))),
+                        r -> cacheReloader.reloadCaches(r.type())),
+                // @Bean/programmatic aspects need not carry a Spring stereotype.
+                new ReloadSteps.Step("AOP proxy refresh", r -> aopReloader.reloadAopProxies(r.type()))),
                 new ReloadSteps.Reloaded(className, type, false, false));
     }
 
@@ -281,7 +283,7 @@ public class SpringReloadOrchestrator {
                     r -> schedulerReloader.reloadScheduledMethods(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Event listener re-registration",
                     r -> eventReloader.reloadEventListeners(r.type(), r.addedMethods(), r.bytecode())),
-            new ReloadSteps.Step("AOP proxy cache clear",
+            new ReloadSteps.Step("AOP proxy refresh",
                     r -> aopReloader.reloadAopProxies(r.type())),
             new ReloadSteps.Step("Async re-processing",
                     r -> asyncReloader.reloadAsyncMethods(r.type())),

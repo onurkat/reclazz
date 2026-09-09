@@ -57,7 +57,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | `@Autowired` added to an existing field | **Yes** — Spring resolves a bean's injection points once and keeps them, so this used to reload, re-create the bean and leave the field null. `@Resource`, `@PostConstruct` and `@PreDestroy` come with it | Yes (restart) | Yes |
 | A constraint added to a field (`@NotBlank`) | **Yes** — enforced on the next request, instead of the request that should now be rejected being accepted | Yes (restart) | Yes |
 | `@ExceptionHandler` / `@InitBinder` / `@ModelAttribute` | **Yes** on a method that was already there, instead of the endpoint going on answering the framework's default | Yes (restart) | Yes |
-| Edited `@Aspect` pointcut | **Yes, re-parsed** — and the half that still waits is named: a bean already proxied keeps the advice it was built with until it is itself reloaded | Yes (restart) | Yes |
+| Edited `@Aspect` pointcut | **Yes for existing mutable singleton JDK/CGLIB proxies** — changed advice reaches already-injected references without recreating the target. Previously unproxied beans and unsupported proxy shapes are named. [Scope](docs/usage.md#edited-aspect-pointcuts) | Yes (restart) | Yes |
 | Jackson picks up a changed shape | **Yes**, including getters added to an already loaded DTO on a stock JDK. Jackson's getter adapter preserves property naming, getter annotations, inclusion rules and serializers; subsequent saves can rename, remove and restore the added property. Annotated added fields are refused with a reason. Mapper caches are refreshed for Spring-managed mappers. Verified with real HTTP responses on Jackson 2.13.5. [Scope](docs/usage.md#jackson-getters-added-after-startup) | Yes (restart) | Yes |
 | MVC mapping re-scan | **Yes** | Yes (restart) | Yes |
 | Cache eviction | **Yes** | Yes (restart) | Yes |
@@ -123,7 +123,7 @@ than either.
 - **Cache dependencies**: A reloaded helper invalidates the Spring cache regions computed through it, including outer caches that read cached inner results. Unrelated observed regions stay warm. Cache instances and classloaders remain distinct. Unknown or partial history retains conservative annotation fallback. See [scope and concurrency limits](docs/usage.md#cache-dependencies-after-reload).
 - **Scheduler Reload**: Cancels and re-registers `@Scheduled` tasks, including supported methods added after startup on a stock JDK. See [scope and example](docs/usage.md#scheduled-methods-added-after-startup)
 - **Event Listener Refresh**: Refreshes only the edited beans, preserving unrelated listeners without duplication. Supports added methods within the [documented scope](docs/usage.md#event-listener-methods-added-after-startup)
-- **AOP Proxy Refresh**: Clears `AbstractAutoProxyCreator` caches for `@Aspect` classes
+- **AOP Proxy Refresh**: Re-parses `@Aspect` pointcuts and updates supported existing singleton proxy chains in place
 - **Async Re-processing**: Re-processes `@Async` beans
 - **Spring Data Refresh**: Destroys and recreates `Repository` beans
 - **One line per save that says what it touched**: `Reloaded OrderService
@@ -731,7 +731,7 @@ reclazz/
 │       │   ├── SpringCacheReloader.java       # Cache eviction
 │       │   ├── SpringSchedulerReloader.java   # @Scheduled re-register
 │       │   ├── SpringEventReloader.java       # @EventListener refresh
-│       │   ├── SpringAopReloader.java         # AOP proxy cache clear
+│       │   ├── SpringAopReloader.java         # AOP cache and living proxy refresh
 │       │   ├── SpringAsyncReloader.java       # @Async re-processing
 │       │   ├── SpringDataReloader.java        # Repository refresh
 │       │   └── SpringSecurityReloader.java    # Security config notification

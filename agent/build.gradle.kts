@@ -45,6 +45,8 @@ dependencies {
     // reflection-only and has no Spring compile dependency.
     testImplementation("org.springframework:spring-beans:5.3.39")
     testImplementation("org.springframework:spring-context:5.3.39")
+    // Real @Aspect proxy regressions only; no weaving and no production dependency.
+    testImplementation("org.aspectj:aspectjweaver:1.9.22.1")
     // Spring MVC, its test support and the servlet API, for driving a real
     // RequestMappingHandlerMapping under load while a controller is re-scanned.
     testImplementation("org.springframework:spring-webmvc:5.3.39")
