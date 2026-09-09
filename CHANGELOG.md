@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Conditional initial values for static fields added after startup.** Isolated
+  ternary and short-circuit expressions now initialize the added field on a stock
+  JDK, including nested conditions and reference/primitive values. Only the
+  selected branch runs; unrelated static blocks and already initialized fields
+  are preserved. External control flow, loops, shared writes and unsupported
+  local/exception handling shapes are refused. See
+  [scope and example](docs/usage.md#added-static-field-values).
+
 - **Static `@Bean` methods added after startup.** Supported configurations can
   now gain static factories, including private methods and required reference
   bean arguments. Calls reach the current static companion body without an

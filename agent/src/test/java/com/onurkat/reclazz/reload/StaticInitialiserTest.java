@@ -103,14 +103,12 @@ class StaticInitialiserTest {
     }
 
     /**
-     * A conditional initialiser is not straight-line code, so there is no
-     * single run of instructions to lift out. Which of the control-flow checks
-     * catches it depends on where javac puts the merge point, and both answers
-     * are the same answer: leave it alone.
+     * An outer condition can skip the assignment entirely. Lifting only the
+     * assigned value would turn that guarded write into an unconditional one.
      */
     @Test
-    void aBranchingInitialiserIsRefused() throws IOException {
-        var plan = planFor(Branchy.class, "MODE:Ljava/lang/String;");
+    void aGuardedAssignmentIsRefused() throws IOException {
+        var plan = planFor(Guarded.class, "MODE:Ljava/lang/String;");
 
         assertTrue(plan.slicedKeys.isEmpty());
         String reason = plan.refused.get("MODE:Ljava/lang/String;");
@@ -274,6 +272,11 @@ class StaticInitialiserTest {
     @SuppressWarnings("unused")
     static class Branchy {
         static final String MODE = System.getProperty("reclazz.absent") != null ? "on" : "off";
+    }
+
+    static class Guarded {
+        static String MODE;
+        static { if (System.getProperty("reclazz.absent") != null) MODE = "on"; }
     }
 
     @SuppressWarnings("unused")
