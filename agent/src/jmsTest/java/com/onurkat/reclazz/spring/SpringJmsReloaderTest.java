@@ -79,7 +79,14 @@ class SpringJmsReloaderTest {
         final PlatformContext platform;
         final SpringJmsReloader reloader;
         Scope() throws Exception { this(false); }
-        Scope(boolean kafka) throws Exception {
+        Scope(boolean kafka) throws Exception { this(kafka, false); }
+        Scope(boolean kafka, boolean rabbit) throws Exception {
+            if (rabbit) {
+                SpringRabbitReloaderTest.installTracking();
+                context.register(SpringRabbitReloaderTest.Config.class);
+                context.registerBean("rabbitConnectionFactory", org.springframework.amqp.rabbit.connection.CachingConnectionFactory.class,
+                        () -> new org.springframework.amqp.rabbit.connection.CachingConnectionFactory("127.0.0.1", 1));
+            }
             LookupCapture.store(Owner.class, MethodHandles.privateLookupIn(Owner.class, MethodHandles.lookup()));
             if (kafka) context.register(KafkaConfig.class);
             context.register(Config.class); context.registerBean("owner", Owner.class); context.refresh();
@@ -187,6 +194,22 @@ class SpringJmsReloaderTest {
             assertSame(prior, s.container("original")); assertTrue(prior.isActive());
             assertSame(kafkaPrior, kr.getListenerContainer("kafka-original"));
             assertTrue(RestartLedger.digest().stream().anyMatch(v -> v.contains("mixed Kafka/JMS")));
+        }
+    }
+    @Test void mixedRabbitJmsOwnerWithRemovedAnnotationsIsRefusedBeforeEitherRetires() throws Exception {
+        try (var s = new Scope(false, true)) {
+            register(s, "jms-original", s.owner(), "first"); var jms = s.container("jms-original");
+            var registry = s.context.getBean(org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry.class);
+            var endpoint = new org.springframework.amqp.rabbit.listener.MethodRabbitListenerEndpoint();
+            endpoint.setId("rabbit-original"); endpoint.setQueueNames("unused"); endpoint.setBean(s.owner());
+            endpoint.setMethod(Owner.class.getMethod("first", String.class));
+            var handler = new DefaultMessageHandlerMethodFactory(); handler.afterPropertiesSet(); endpoint.setMessageHandlerMethodFactory(handler);
+            registry.registerListenerContainer(endpoint, s.context.getBean(org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory.class), false);
+            var rabbit = registry.getListenerContainer("rabbit-original");
+            assertFalse(new SpringRabbitReloader(s.platform, 200).beforeBeanRefresh(Owner.class, original(), null, s.reloader));
+            assertSame(jms, s.container("jms-original")); assertTrue(jms.isActive());
+            assertSame(rabbit, registry.getListenerContainer("rabbit-original"));
+            assertTrue(RestartLedger.digest().stream().anyMatch(v -> v.contains("mixed Rabbit/Kafka/JMS")));
         }
     }
     @Test void unfinishedShutdownAndRepeatedWaitKeepRegistryOwnership() throws Exception {

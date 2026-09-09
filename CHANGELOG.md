@@ -7,6 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Rabbit listeners added to running singleton components.** Supported new
+  `@RabbitListener` methods use Spring's processor and simple queue containers.
+  Repeated saves edit queues, remove and restore listeners. Original listeners
+  retain Spring's metadata handling, including generated IDs; added-method
+  restrictions apply only to additions. Worker completion
+  is tracked beyond channel shutdown before bean recreation; timeout/retry,
+  ID ownership and mixed-broker refusal are covered. Tests use a pinned real
+  RabbitMQ Docker broker and test-only Spring Rabbit dependencies.
+  [Scope](docs/usage.md#rabbit-listeners-added-after-startup).
+
 - **JMS listeners added to running singleton components.** Supported new
   `@JmsListener` methods register through Spring's processor and queue container
   factory. Owned consumers finish destruction before singleton recreation;

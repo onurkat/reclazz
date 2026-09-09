@@ -61,6 +61,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Entirely new `@InitBinder` / `@ModelAttribute` methods | **Yes for supported plain controllers and controller advice on a stock JDK** — named binding rules and model initialization apply to existing and new endpoints, with Spring advice order/selectors preserved. [Scope](docs/usage.md#binding-and-model-methods-added-after-startup) | Not verified here | Not verified here |
 | Entirely new `@KafkaListener` method | **Yes for supported plain singleton components on a stock JDK** — literal IDs/topics, existing listener preservation, topic edits, removal and restoration, with consumer shutdown before bean recreation. [Scope](docs/usage.md#kafka-listeners-added-after-startup) | Not verified here | Not verified here |
 | Entirely new `@JmsListener` method | **Yes for supported plain singleton components on a stock JDK** — literal queue destinations, edits/removal/restoration, existing listener preservation and consumer destruction before bean recreation. [Scope](docs/usage.md#jms-listeners-added-after-startup) | Not verified here | Not verified here |
+| Entirely new `@RabbitListener` method | **Yes for supported plain singleton components on a stock JDK** — literal queue names, edits/removal/restoration and complete worker retirement before bean recreation. [Scope](docs/usage.md#rabbit-listeners-added-after-startup) | Not verified here | Not verified here |
 | New service methods with `@Transactional` / `@Cacheable` / `@CachePut` / `@CacheEvict` | **Yes for supported singleton beans on a stock JDK** — external added-method calls use the application's real Spring interceptors and target. Commit/rollback, cache hits, updates and eviction are verified; unsupported advice shapes fail explicitly. [Scope](docs/usage.md#operations-on-added-service-methods) | Yes (restart) | Not verified here |
 | Edited `@Aspect` pointcut | **Yes for existing mutable singleton JDK/CGLIB proxies** — changed advice reaches already-injected references without recreating the target. Previously unproxied beans and unsupported proxy shapes are named. [Scope](docs/usage.md#edited-aspect-pointcuts) | Yes (restart) | Yes |
 | Jackson picks up a changed shape | **Yes**, including getters added to an already loaded DTO on a stock JDK. Jackson's getter adapter preserves property naming, getter annotations, inclusion rules and serializers; subsequent saves can rename, remove and restore the added property. Annotated added fields are refused with a reason. Mapper caches are refreshed for Spring-managed mappers. Verified with real HTTP responses on Jackson 2.13.5. [Scope](docs/usage.md#jackson-getters-added-after-startup) | Yes (restart) | Yes |
@@ -173,6 +174,10 @@ than either.
   Real broker tests cover queue edits, removal/restoration, consumer shutdown
   and local transaction rollback/redelivery.
   [Scope](docs/usage.md#jms-listeners-added-after-startup).
+- **New RabbitMQ consumers**: add a supported `@RabbitListener` to a running
+  component. Real broker tests cover queue changes, removal/restoration and
+  local transaction rollback/redelivery.
+  [Scope](docs/usage.md#rabbit-listeners-added-after-startup).
 - **What the frameworks cached about your class**: a reload is only half the
   job, because each framework answers from what it worked out about that class
   once, at startup. An `@Autowired` you add injects, a constraint you add is
