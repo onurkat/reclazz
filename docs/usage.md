@@ -190,17 +190,36 @@ as are generic signatures and extra runtime parameter/type annotations such as
 come from the saved bytecode; custom name-discovery policies and custom lazy
 resolution hooks are not used by this path. No-argument factories remain supported.
 
-The default method name or one explicit `name`/`value` is supported, along with
-`initMethod` and `destroyMethod`. The default inferred `close`/`shutdown` destruction
-and an explicit empty destroy method are preserved. Multiple aliases and other
-explicit `@Bean` options are refused. `FactoryBean`, bean postprocessors and bean
+The default method name or explicit `name`/`value` names are supported, along with
+`initMethod` and `destroyMethod`. For `@Bean({"transport", "legacyTransport"})`, the
+first name identifies the bean definition and the remaining names are aliases
+for the same singleton. The method name is not another implicit alias. Aliases
+are available before added products initialize, including for a parameter such
+as `@Qualifier("legacyTransport") Transport transport`. Editing the names replaces
+the owned name/alias registrations; removing the method or its `@Bean` annotation
+removes them. Each product has one lifecycle regardless of how many names it has.
+
+Every name must be nonblank, must not start with `&`, and must be distinct within
+the factory. Conflicting `name` and `value` arrays are refused. The default inferred
+`close`/`shutdown` destruction and an explicit empty destroy method are preserved.
+Other explicit `@Bean` options are refused. `FactoryBean`, bean postprocessors and bean
 factory postprocessors cannot be introduced through this path, including when
 hidden behind an `Object` return. Null results are refused.
 
-An existing definition, singleton, alias or parent bean blocks the new name.
-Duplicate supported added names are refused. Before removal, Reclazz checks that
+An existing definition, singleton, local alias (even a dangling one) or parent bean
+blocks any requested name or alias; none of that factory's names are installed
+when a collision is found. Overlapping names/aliases across supported added
+factories in the same save refuse every affected factory. Before removal, Reclazz checks that
 the definition and any live singleton still belong to its registration; externally
-replaced registrations are left alone. Registration is not a transaction with
+replaced registrations and their aliases are left alone. Alias cleanup removes
+only aliases registered by Reclazz that still point directly to the owned name.
+Externally retargeted aliases and externally added alias chains are preserved;
+they can remain dangling if their target was removed. Replacing an alias with an
+identical direct binding cannot be distinguished from leaving it unchanged.
+If current direct alias bindings cannot be inspected, aliased factories are
+refused before registration. Failed alias registration or product initialization
+cleans up the owned definition and its unchanged aliases.
+Registration is not a transaction with
 other threads concurrently changing the Spring registry. A product recreated by
 Spring from the owned definition remains reloadable, including a product wrapped
 by the application's existing bean postprocessors. Runtime changes to the

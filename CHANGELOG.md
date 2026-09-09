@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Aliases for `@Bean` methods added after startup.** Multiple `name`/`value`
+  entries register one singleton with aliases, available to same-save factory
+  arguments. Later saves update the names; removal and failed creation clean up
+  owned registrations. Name collisions refuse the affected factory, and alias
+  cleanup preserves externally retargeted bindings and replaced beans. See
+  [scope and lifecycle](docs/usage.md#bean-methods-added-after-startup).
+
 - **Selection metadata for `@Bean` methods added after startup.** Direct method
   `@Primary` and `@Qualifier` annotations now participate in Spring candidate
   selection, including providers added in the same save and qualifier values

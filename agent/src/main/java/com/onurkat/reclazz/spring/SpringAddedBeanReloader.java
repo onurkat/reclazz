@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.ui.Failures;
+import com.onurkat.reclazz.util.Reflect;
 
 import java.lang.invoke.MethodType;
 import java.lang.ref.WeakReference;
@@ -24,7 +25,7 @@ public final class SpringAddedBeanReloader {
     // Values must not retain the factory key through a supplier/bean/context.
     private final Map<Object, Registry> owned = new WeakHashMap<>();
     private record Owned(WeakReference<Class<?>> owner, WeakReference<Object> definition,
-                         AtomicReference<WeakReference<Object>> instance) { }
+                         AtomicReference<WeakReference<Object>> instance, List<String> aliases) { }
     private static final class Registry {
         final Map<String, Owned> definitions = new ConcurrentHashMap<>();
         boolean observing;
@@ -47,8 +48,7 @@ public final class SpringAddedBeanReloader {
                 // Removal/annotation removal still reaches here with an empty plan.
                 for (var entry : List.copyOf(registrations.entrySet())) {
                     if (entry.getValue().owner().get() != type) continue;
-                    if (stillOwned(factory, entry.getKey(), entry.getValue())) {
-                        call(factory, "removeBeanDefinition", entry.getKey());
+                    if (removeOwned(factory, entry.getKey(), entry.getValue())) {
                         ReloadEffects.note("added bean " + entry.getKey() + " removed");
                     }
                     registrations.remove(entry.getKey());
@@ -100,10 +100,14 @@ public final class SpringAddedBeanReloader {
     private void registerDefinition(Class<?> type, Object factory, String configName,
                           AddedBeanAdapter.Factory method, Map<String, Owned> registrations) throws Throwable {
         String name = method.name();
-        if (Boolean.TRUE.equals(call(factory, "containsBean", name))
-                || Boolean.TRUE.equals(call(factory, "containsBeanDefinition", name))
-                || Boolean.TRUE.equals(call(factory, "isAlias", name)))
-            throw new IllegalStateException("bean name '" + name + "' is already in use");
+        for (String candidate : method.names()) {
+            if (Boolean.TRUE.equals(call(factory, "containsBean", candidate))
+                    || Boolean.TRUE.equals(call(factory, "containsBeanDefinition", candidate))
+                    || Boolean.TRUE.equals(call(factory, "isAlias", candidate)))
+                throw new IllegalStateException("bean name or alias '" + candidate + "' is already in use");
+        }
+        // Refuse before registration if later alias ownership cannot be checked.
+        if (!method.aliases().isEmpty()) aliasBindings(factory);
         Class<?> resultType = MethodType.fromMethodDescriptorString(method.method().desc, type.getClassLoader()).returnType();
         ClassLoader spring = factory.getClass().getClassLoader();
         rejectInfrastructure(resultType, spring);
@@ -138,8 +142,15 @@ public final class SpringAddedBeanReloader {
         }
         factory.getClass().getMethod("registerBeanDefinition", String.class, definitionInterface).invoke(factory, name, definition);
         Owned registration = new Owned(new WeakReference<>(type), new WeakReference<>(definition),
-                new AtomicReference<>(new WeakReference<>(null)));
+                new AtomicReference<>(new WeakReference<>(null)), method.aliases());
         registrations.put(name, registration);
+        try {
+            for (String alias : method.aliases())
+                factory.getClass().getMethod("registerAlias", String.class, String.class).invoke(factory, name, alias);
+        } catch (Throwable failure) {
+            discardFailed(factory, name, registration, registrations, failure);
+            throw failure;
+        }
     }
 
     private static void initialize(Object factory, String name, Map<String, Owned> registrations) throws Throwable {
@@ -155,10 +166,45 @@ public final class SpringAddedBeanReloader {
         } catch (Throwable failure) {
             // Only our definition is removed; callbacks and dependent destruction
             // are live application work and cannot be rolled back here.
-            if (stillOwned(factory, name, registration)) call(factory, "removeBeanDefinition", name);
-            registrations.remove(name, registration);
+            discardFailed(factory, name, registration, registrations, failure);
             throw failure;
         }
+    }
+
+    private static void discardFailed(Object factory, String name, Owned registration,
+                                      Map<String, Owned> registrations, Throwable failure) {
+        try {
+            removeOwned(factory, name, registration);
+            registrations.remove(name, registration);
+        } catch (Throwable cleanup) {
+            // Keep the registration and report cleanup without hiding the original failure.
+            failure.addSuppressed(cleanup);
+        }
+    }
+
+    private static boolean removeOwned(Object factory, String name, Owned registration) throws Exception {
+        if (!stillOwned(factory, name, registration)) return false;
+        Map<?, ?> bindings = registration.aliases().isEmpty() ? Map.of() : aliasBindings(factory);
+        call(factory, "removeBeanDefinition", name);
+        // Destruction callbacks may have installed a new owner of this name.
+        if (Boolean.TRUE.equals(call(factory, "containsBeanDefinition", name))
+                || call(factory, "getSingleton", name) != null) return true;
+        // Never hold the alias lock while destroying beans/application callbacks.
+        synchronized (bindings) {
+            for (String alias : registration.aliases()) {
+                // Comparing the canonical root would wrongly remove an alias
+                // externally retargeted through a different intermediate alias.
+                if (name.equals(bindings.get(alias))) call(factory, "removeAlias", alias);
+            }
+        }
+        return true;
+    }
+
+    private static Map<?, ?> aliasBindings(Object factory) {
+        Object bindings = Reflect.readField(factory, "aliasMap");
+        if (!(bindings instanceof Map<?, ?> map))
+            throw new IllegalStateException("cannot inspect direct alias bindings for ownership");
+        return map;
     }
 
     private static boolean stillOwned(Object factory, String name, Owned registration) throws Exception {

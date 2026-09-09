@@ -28,8 +28,11 @@ public final class AddedBeanAdapter {
     private static final String PARAMETERS = InjectedNames.PREFIX + "parameters";
     private AddedBeanAdapter() { }
 
-    record Factory(MethodNode method, String name, String init, String destroy,
-                   boolean primary, String qualifier) { }
+    record Factory(MethodNode method, List<String> names, String init, String destroy,
+                   boolean primary, String qualifier) {
+        String name() { return names.get(0); }
+        List<String> aliases() { return names.subList(1, names.size()); }
+    }
     record Plan(List<Factory> factories, List<String> refused) { }
 
     static Plan inspect(byte[] bytes, Set<String> added) {
@@ -75,11 +78,13 @@ public final class AddedBeanAdapter {
                 if (!names.isEmpty() && !aliases.isEmpty() && !names.equals(aliases))
                     throw new IllegalArgumentException("conflicting @Bean name/value aliases");
                 if (names.isEmpty()) names = aliases;
-                if (names.size() > 1) throw new IllegalArgumentException("multiple bean names/aliases are not supported");
-                String name = names.isEmpty() ? method.name : (String) names.get(0);
-                if (name.isBlank() || name.startsWith("&")) throw new IllegalArgumentException("unsupported bean name");
+                List<String> beanNames = names.isEmpty() ? List.of(method.name) : names.stream().map(String.class::cast).toList();
+                for (String name : beanNames)
+                    if (name.isBlank() || name.startsWith("&")) throw new IllegalArgumentException("unsupported bean name or alias");
+                if (new HashSet<>(beanNames).size() != beanNames.size())
+                    throw new IllegalArgumentException("duplicate bean name or alias in one factory");
                 AnnotationNode qualifier = annotation(method.visibleAnnotations, QUALIFIER);
-                factories.add(new Factory(method, name, (String) value(bean, "initMethod", ""),
+                factories.add(new Factory(method, beanNames, (String) value(bean, "initMethod", ""),
                         (String) value(bean, "destroyMethod", "(inferred)"),
                         annotation(method.visibleAnnotations, PRIMARY) != null,
                         qualifier == null ? null : (String) value(qualifier, "value", "")));
@@ -88,10 +93,11 @@ public final class AddedBeanAdapter {
             }
         }
         Map<String, Long> counts = new HashMap<>();
-        for (Factory factory : factories) counts.merge(factory.name(), 1L, Long::sum);
+        for (Factory factory : factories) for (String name : factory.names()) counts.merge(name, 1L, Long::sum);
         factories.removeIf(factory -> {
-            if (counts.get(factory.name()) == 1) return false;
-            refused.add(factory.method().name + factory.method().desc + ": duplicate added bean name '" + factory.name() + "'");
+            String conflict = factory.names().stream().filter(name -> counts.get(name) > 1).findFirst().orElse(null);
+            if (conflict == null) return false;
+            refused.add(factory.method().name + factory.method().desc + ": duplicate added bean name or alias '" + conflict + "'");
             return true;
         });
         return new Plan(factories, refused);
