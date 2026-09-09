@@ -1080,6 +1080,35 @@ loop on hand-written Java, companion-class mode is transparent.
 
 ## Known Limitations
 
+### Added Static Field Values
+
+On a stock JDK, a static field added after startup gets its compile-time constant
+or the value computed by an isolated initializer. Conditional expressions work
+too, for example:
+
+```java
+private static final String MODE =
+    System.getProperty("app.mode") != null ? "on" : "off";
+```
+
+Reclazz runs only the new field's initializer, including its condition and the
+selected branch. Nested conditions, short-circuit boolean expressions, object
+construction and primitive/reference results are supported when the expression
+can be separated. Other static blocks and existing static field values are not
+reset. Initializers for newly added fields run in source order. Later saves keep
+an initialized field's current value, including null or a value the application
+wrote; changing the initializer does not reinitialize that field.
+
+The conditional path accepts forward branches that finish at one field
+assignment. An outside condition that can skip the assignment, loops, switches,
+multiple assignments to the field, shared field/array writes, local variables,
+locking and separate void/discarded-result calls are refused. Conditional
+initializers in a class initializer containing any try/catch are also refused,
+even if that handler is elsewhere. An unsupported initializer leaves the field
+at its type default and the reload names the reason. Calls that compute the
+condition or selected value retain their usual application side effects; this
+does not make initialization transactional or add rollback on failure.
+
 ### New Field Values on Objects That Already Existed
 
 When a structural reload adds an instance field, objects created after the

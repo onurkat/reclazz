@@ -49,6 +49,12 @@ import com.onurkat.reclazz.bootstrap.InjectedNames;
  * apiece, and a static block with side effects is simply a segment that no
  * added field's PUTSTATIC ends. Taking the segments we want and leaving the
  * rest is the whole trick.
+ * A conditional value also needs its condition and both arms. For statics,
+ * the candidate is extended to include forward branches entering its interior,
+ * then checked as a single-entry expression with one final field write. A
+ * preceding block may arrive at its empty-stack boundary, but may not enter
+ * its middle, skip the write or loop around it. Instance slicing still uses
+ * the original straight-line boundary helpers.
  *
  * <p>This class refuses far more readily than it accepts, because the failure
  * it is avoiding is silent. A segment that writes a field the application
@@ -153,9 +159,15 @@ public final class StaticInitialiserSlicer implements Opcodes {
         }
 
         AbstractInsnNode[] insns = clinit.instructions.toArray();
-        Set<LabelNode> enteredFromOutside = branchTargets(clinit);
         InsnList sliced = new InsnList();
         Map<LabelNode, LabelNode> labelCopies = new HashMap<>();
+        Map<String, Integer> writes = new HashMap<>();
+        for (AbstractInsnNode insn : insns) {
+            // Forward jumps need their destination copies before cloning.
+            if (insn instanceof LabelNode label) labelCopies.put(label, new LabelNode());
+            if (insn instanceof FieldInsnNode put && put.getOpcode() == PUTSTATIC && put.owner.equals(cls.name))
+                writes.merge(put.name + ":" + put.desc, 1, Integer::sum);
+        }
 
         // In source order, so a field initialised from one declared above it
         // still sees the value: javac emits them in that order too.
@@ -164,10 +176,11 @@ public final class StaticInitialiserSlicer implements Opcodes {
             String key = put.name + ":" + put.desc;
             if (!remaining.contains(key) || !put.owner.equals(cls.name)) continue;
 
-            int start = segmentStart(frames, i);
-            String problem = (start < 0)
+            int start = staticSegmentStart(insns, frames, i);
+            String problem = writes.get(key) != 1 ? "the static block assigns this field more than once"
+                    : (start < 0)
                     ? "its initialiser is not a self-contained block"
-                    : check(insns, start, i, cls.name, remaining, enteredFromOutside, clinit);
+                    : check(insns, start, i, frames, clinit);
             if (problem != null) {
                 refused.put(key, problem);
                 remaining.remove(key);
@@ -205,15 +218,74 @@ public final class StaticInitialiserSlicer implements Opcodes {
         return -1;
     }
 
+    /** Include the condition and both arms when a previous jump enters the value expression. */
+    private static int staticSegmentStart(AbstractInsnNode[] insns, Frame<BasicValue>[] frames, int end) {
+        int start = segmentStart(frames, end);
+        if (start < 0) return -1;
+        while (true) {
+            // Labels/frames at an empty-stack boundary belong to that boundary.
+            while (start > 0 && insns[start - 1].getOpcode() < 0) start--;
+            int earlier = start;
+            for (int i = 0; i < start; i++) {
+                if (!(insns[i] instanceof JumpInsnNode jump)) continue;
+                int target = indexOf(insns, jump.label);
+                // Entry at the boundary is fine; entry into an arm/merge is not.
+                if (target > start && target <= end) {
+                    int condition = segmentStart(frames, i);
+                    if (condition < 0) return -1;
+                    earlier = Math.min(earlier, condition);
+                }
+            }
+            if (earlier == start) return start;
+            start = earlier;
+        }
+    }
+
     /**
      * Whether a candidate segment really is one field's initialiser and
      * nothing else.
      *
      * @return null when it is, or the reason to leave it alone
      */
-    private static String check(AbstractInsnNode[] insns, int start, int end, String owner,
-                                Set<String> remaining, Set<LabelNode> enteredFromOutside,
-                                MethodNode clinit) {
+    private static String check(AbstractInsnNode[] insns, int start, int end,
+                                Frame<BasicValue>[] frames, MethodNode clinit) {
+        if (frames[start] == null || frames[start].getStackSize() != 0
+                || frames[end] == null || frames[end].getStackSize() != 1)
+            return "its initialiser does not have an empty entry and exit stack";
+        boolean conditional = false;
+        for (int i = 0; i < insns.length; i++) {
+            AbstractInsnNode insn = insns[i];
+            List<LabelNode> targets;
+            if (insn instanceof JumpInsnNode jump) {
+                targets = List.of(jump.label);
+                if (i >= start && i <= end) {
+                    conditional = true;
+                    if (jump.getOpcode() == JSR) return "its initialiser branches to a subroutine";
+                }
+            } else if (insn instanceof TableSwitchInsnNode table) {
+                if (i >= start && i <= end) return "its initialiser branches through a switch";
+                targets = new ArrayList<>(table.labels);
+                targets.add(table.dflt);
+            } else if (insn instanceof LookupSwitchInsnNode lookup) {
+                if (i >= start && i <= end) return "its initialiser branches through a switch";
+                targets = new ArrayList<>(lookup.labels);
+                targets.add(lookup.dflt);
+            } else continue;
+            for (LabelNode label : targets) {
+                int target = indexOf(insns, label);
+                if (target < 0) return "its initialiser branches to an unknown label";
+                if (i >= start && i <= end) {
+                    if (target <= i || target > end)
+                        return "its initialiser branches backwards or outside its value expression";
+                } else if ((i < start && target > start) || (i > end && target <= end)) {
+                    // This includes an outer if that can skip the write, or a
+                    // loop that encloses it, even without an edge into its middle.
+                    return "a branch outside can enter, skip or repeat its initialiser";
+                }
+            }
+        }
+        if (conditional && !clinit.tryCatchBlocks.isEmpty())
+            return "its conditional initialiser shares a static block with try/catch";
         Set<Integer> localsWrittenHere = new HashSet<>();
 
         for (int j = start; j <= end; j++) {
@@ -229,18 +301,25 @@ public final class StaticInitialiserSlicer implements Opcodes {
                 return "its initialiser writes into an object it does not own here";
             }
 
-            // A branch makes the block something other than straight-line
-            // code, and the analysis that would make it safe is not worth the
-            // risk of getting it wrong quietly.
-            if (insn instanceof JumpInsnNode || insn instanceof TableSwitchInsnNode
-                    || insn instanceof LookupSwitchInsnNode) {
-                return "its initialiser branches";
-            }
-            if (insn instanceof LabelNode label && enteredFromOutside.contains(label)) {
-                return "code elsewhere can jump into its initialiser";
-            }
-            if (insn.getOpcode() == ATHROW || insn.getOpcode() == RET) {
+            if (insn.getOpcode() == ATHROW || insn.getOpcode() == RET
+                    || (insn.getOpcode() >= IRETURN && insn.getOpcode() <= RETURN)) {
                 return "its initialiser does not fall through";
+            }
+
+            // Keep the new path to expressions: do not absorb separate work
+            // or local state from one of the surrounding static-block arms.
+            if (conditional) {
+                int opcode = insn.getOpcode();
+                if (insn instanceof VarInsnNode || insn instanceof IincInsnNode)
+                    return "its conditional initialiser uses local state";
+                if ((opcode >= IASTORE && opcode <= SASTORE) || opcode == MONITORENTER || opcode == MONITOREXIT
+                        || opcode == POP || opcode == POP2)
+                    return "its conditional initialiser writes an array, locks or discards a value";
+                if (insn instanceof MethodInsnNode call && Type.getReturnType(call.desc).getSort() == Type.VOID
+                        && !call.name.equals("<init>"))
+                    return "its conditional initialiser includes a separate void call";
+                if (insn instanceof InvokeDynamicInsnNode call && Type.getReturnType(call.desc).getSort() == Type.VOID)
+                    return "its conditional initialiser includes a separate void call";
             }
 
             if (insn instanceof VarInsnNode var) {
