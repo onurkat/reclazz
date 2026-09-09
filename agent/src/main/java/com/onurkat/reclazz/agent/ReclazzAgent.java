@@ -182,6 +182,7 @@ public class ReclazzAgent {
         LookupCapture.trust(
                 com.onurkat.reclazz.spring.AddedJmsListenerAdapter.class);
         LookupCapture.trust(com.onurkat.reclazz.spring.AddedRabbitListenerAdapter.class);
+        LookupCapture.trust(com.onurkat.reclazz.spring.AddedLifecycleAdapter.class);
         LookupCapture.seal();
     }
 

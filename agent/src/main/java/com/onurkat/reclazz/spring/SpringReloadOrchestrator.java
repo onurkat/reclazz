@@ -44,6 +44,7 @@ public class SpringReloadOrchestrator {
     private final SpringSecurityReloader securityReloader;
     private final SpringOperationSourceReloader operationSourceReloader;
     private final SpringInjectionMetadataReloader injectionMetadataReloader;
+    private final SpringLifecycleReloader lifecycleReloader;
     private final PlatformContext platformContext;
     private final SpringControllerAdviceReloader exceptionHandlerReloader;
     private final java.util.List<ReloadSteps.Step> afterTheBeanIsBack;
@@ -65,6 +66,7 @@ public class SpringReloadOrchestrator {
         this.securityReloader = new SpringSecurityReloader(platformContext);
         this.operationSourceReloader = new SpringOperationSourceReloader(platformContext);
         this.injectionMetadataReloader = new SpringInjectionMetadataReloader(platformContext);
+        this.lifecycleReloader = new SpringLifecycleReloader(platformContext);
         this.exceptionHandlerReloader = new SpringControllerAdviceReloader(platformContext);
         this.newBeanRegistrar = new SpringNewBeanRegistrar(platformContext, mvcReloader);
         // Last, because every step refers to a reloader above it.
@@ -146,6 +148,8 @@ public class SpringReloadOrchestrator {
         if (reloadedClass == null) return;
 
         if (isSpringBean(reloadedClass)) {
+            var lifecycle = lifecycleReloader.prepare(reloadedClass, addedMethodSigs, newBytecode);
+            if (lifecycle == null) return;
             // 0. What the container thinks this class needs injected, before
             // anything re-creates it. Spring answers that once per bean and
             // keeps it, so adding @Autowired to a field that was already there
@@ -163,6 +167,7 @@ public class SpringReloadOrchestrator {
             if (!rabbitReloader.beforeBeanRefresh(reloadedClass, newBytecode, addedMethodSigs, kafkaReloader, jmsReloader)) return;
             if (!jmsReloader.beforeBeanRefresh(reloadedClass, newBytecode, kafkaReloader)) return;
             if (!kafkaReloader.beforeBeanRefresh(reloadedClass, newBytecode)) return;
+            if (!lifecycle.install()) return;
             beanReloader.refreshBean(className, reloadedClass);
 
             // 2. MVC re-scan. Structural changes need it because the set of

@@ -123,6 +123,19 @@ class AddedMethodVisibilityTest {
     }
 
     @Test
+    void lifecycleAdapterOwnsOnlyJavaxDiagnosticsWhenSpringRuns() {
+        for (String annotation : List.of("PostConstruct", "PreDestroy")) {
+            byte[] supported = classWith(new Method(Opcodes.ACC_PRIVATE, "callback", "()V",
+                    "Ljavax/annotation/" + annotation + ";"));
+            assertEquals(0, AddedMethodVisibility.check(supported, added("callback", "()V"), true).size());
+            assertEquals(1, AddedMethodVisibility.check(supported, added("callback", "()V"), false).size());
+            byte[] jakarta = classWith(new Method(Opcodes.ACC_PRIVATE, "callback", "()V",
+                    "Ljakarta/annotation/" + annotation + ";"));
+            assertEquals(1, AddedMethodVisibility.check(jakarta, added("callback", "()V"), true).size());
+        }
+    }
+
+    @Test
     void eventReloadingReportsItsOwnFailuresOnlyWhenSpringOrchestrationRuns() {
         byte[] bytes = classWith(new Method(Opcodes.ACC_PUBLIC, "listen", "(Ljava/lang/String;)V",
                 "Lorg/springframework/context/event/EventListener;"));

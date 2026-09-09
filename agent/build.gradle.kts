@@ -45,6 +45,8 @@ dependencies {
     // reflection-only and has no Spring compile dependency.
     testImplementation("org.springframework:spring-beans:5.3.39")
     testImplementation("org.springframework:spring-context:5.3.39")
+    // Real JSR-250 lifecycle regressions only; never packaged with the agent.
+    testImplementation("javax.annotation:javax.annotation-api:1.3.2")
     // Real local Kafka broker regressions only; never packaged with the agent.
     testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
     testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")

@@ -187,6 +187,8 @@ public final class AddedMethodVisibility {
                                     || annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Scheduled;")
                                     || annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Schedules;")
                                     || annotationDescriptor.equals("Lorg/springframework/context/event/EventListener;")
+                                    || annotationDescriptor.equals("Ljavax/annotation/PostConstruct;")
+                                    || annotationDescriptor.equals("Ljavax/annotation/PreDestroy;")
                                     || annotationDescriptor.equals("Lorg/springframework/kafka/annotation/KafkaListener;")
                                     || annotationDescriptor.equals("Lorg/springframework/jms/annotation/JmsListener;")
                                     || annotationDescriptor.equals("Lorg/springframework/amqp/rabbit/annotation/RabbitListener;")))
