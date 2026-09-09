@@ -114,7 +114,7 @@ public final class SpringAddedBeanReloader {
                     throw new IllegalStateException("configuration is no longer an unproxied singleton");
                 return current;
             } catch (Exception failure) { throw new IllegalStateException("configuration cannot be resolved", failure); }
-        }, method);
+        }, method, metadata -> AddedBeanArguments.prepare(factory, name, metadata));
         Supplier<?> checked = () -> {
             Object product = Objects.requireNonNull(delegate.get(), "added @Bean factory returned null");
             try { rejectInfrastructure(product.getClass(), spring); }
