@@ -111,6 +111,64 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### Lifecycle methods added after startup
+
+On a stock JDK, supported `javax.annotation.PostConstruct` and
+`javax.annotation.PreDestroy` methods added to a running Spring singleton now
+participate in its lifecycle. Verified with real Spring 5.3.39 and a startup
+agent, including private callbacks and a resource field added in the same save.
+
+The lifetime policy is per instance:
+
+- Adding init never runs it retroactively on the old bean. Normal singleton
+  recreation destroys that bean, then injects the new one before invoking its
+  added init callback. Existing annotation init callbacks run first; the added
+  callback runs before `InitializingBean.afterPropertiesSet` and configured init.
+- A newly created instance retains the added destroy entry body associated with
+  its initialization. Editing or removing the method/annotation affects future
+  instances; it does not erase cleanup owed to an existing instance. A destroy
+  callback added without an init callback also applies only to new instances.
+- Existing annotation destroy callbacks remain Spring's responsibility. Added
+  destroy runs after those and before `DisposableBean.destroy` and configured
+  destroy methods. Normal later bean recreation and context close use the same
+  registration, with one callback invocation per instance.
+- An added init exception fails bean creation. Spring's existing refresh path
+  has already destroyed the previous singleton; this is not a rollback to it.
+  As with Spring annotation initialization, a failed init does not automatically
+  receive destroy, so partially acquired resources need cleanup in the init's
+  own failure path. An added destroy exception is reported and does not prevent
+  remaining normal destruction callbacks or other beans from closing.
+
+The supported added methods are direct, nonstatic, no-argument `void` methods,
+at most one added method per phase, with no other method annotations except
+`@Deprecated`. Init and destroy must be distinct methods. Existing reflected
+methods are not subject to these added-method restrictions. The bean must be an
+already initialized local singleton, have its exact declared runtime class and
+`Object` superclass, and not be a factory-method product or Spring infrastructure
+bean. The saved class may carry direct Spring component/service/repository/
+controller/rest-controller stereotypes and `@Deprecated`; other class annotations
+are outside this subset. A callback also named as a configured init/destroy
+method is refused to avoid duplicate invocation. One standard, unmodified
+`CommonAnnotationBeanPostProcessor` using the javax annotations must be present.
+
+Proxy, inherited, lazy/uninitialized, non-singleton, custom lifecycle processor,
+additional advice/annotation and `jakarta.annotation` cases are not covered by
+this adapter. Unsupported additions are named as requiring a restart. Validation
+runs before singleton recreation and does not replace a previously installed
+callback plan on refusal. The compiled application code has already reloaded;
+this preflight is not a transaction over the entire reload.
+
+Only the added callback entry body is captured. Methods it calls, field access,
+injected collaborators and the rest of the application keep their normal reload
+behavior; this does not freeze an object graph or guarantee cleanup after
+incompatible changes to resource state. Existing callback bodies also retain
+their existing live dispatch behavior.
+
+Regression tests check exact callback order and instance identity through six
+saves, method/annotation removal and restoration, external bean recreation and
+context close. Real NIO channels must close, with zero left open. Annotation API
+1.3.2 is a test-only dependency and is not included in the production agent.
+
 ### Bean methods added after startup
 
 On a stock JDK with the agent attached at startup, add a factory to an existing

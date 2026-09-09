@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Lifecycle methods added to running singleton components.** Supported new
+  javax `@PostConstruct` / `@PreDestroy` methods run through Spring creation and
+  destruction. New instances initialize after injection and retain their added
+  destroy entry body through later edits/removal. Private callbacks, existing
+  lifecycle order, real resource cleanup, failure handling and independent
+  contexts are covered. Verified on Spring 5.3; annotation API is test-only.
+  [Scope and policy](docs/usage.md#lifecycle-methods-added-after-startup).
+
 - **Rabbit listeners added to running singleton components.** Supported new
   `@RabbitListener` methods use Spring's processor and simple queue containers.
   Repeated saves edit queues, remove and restore listeners. Original listeners
