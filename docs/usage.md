@@ -306,6 +306,28 @@ across. Indexed conditions (`#a0`, `#p0`) work without compiler parameter names;
 named parameters also work when the class file includes `-parameters` or debug
 local variable metadata.
 
+An added listener can also return a single event object:
+
+```java
+@EventListener
+private OrderAccepted onOrder(OrderCreated event) {
+    return new OrderAccepted(event.id());
+}
+```
+
+Spring publishes the returned object through the same application context; it
+retains its identity as an `ApplicationEvent` or a payload event's payload. A
+`null` return, a rejected condition or an absent/skipped singleton publishes no
+result. User exceptions follow Spring's normal delivery behavior. The return
+can be declared as `Object`, but its actual value is checked too: primitive/array,
+Iterable/collection, Map, stream, Future/CompletionStage, JDK Flow.Publisher and
+reactive-streams Publisher returns are outside this single-event scope. Unsupported
+declared types prevent registration; an unsupported actual result throws before
+Spring can publish, expand or subscribe to it. The handler's preceding side
+effects are not rolled back. Existing reflected listeners keep their usual Spring
+return behavior. Use distinct input/output event types when chaining listeners;
+Reclazz does not prevent application event feedback loops.
+
 Saving again replaces the added registrations. Removing the method or its
 annotation stops it from receiving subsequent publications after reload has
 completed. Refreshing existing listeners scans only the affected beans;
@@ -315,9 +337,9 @@ Each invocation reads the current singleton, so dependency refreshes can replace
 the bean without leaving its listener on a destroyed instance. An absent bean
 is skipped without being created; a replacement proxy is skipped and reported.
 
-The added-method scope is a direct `@EventListener` on a `void` instance method,
-including a private method, with exactly one reference event parameter and no
-generic method signature. The bean class must carry a Spring stereotype
+The added-method scope is a direct `@EventListener` on an instance method returning
+`void` or a single event object, including a private method, with exactly one
+reference event parameter and no generic method signature. The bean class must carry a Spring stereotype
 recognized by Reclazz. Extra runtime method annotations are limited to
 `@Order` and `@Deprecated`. Added `@Async` and `@TransactionalEventListener`
 methods, composed listener annotations, generic signatures, proxies/subclasses,
