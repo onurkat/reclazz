@@ -72,6 +72,81 @@ class DispatchStaysCheapAfterReloadTest {
         return Double.parseDouble(line.replaceAll(".*ns=([0-9.]+).*", "$1"));
     }
 
+    @Test
+    void anExternallyCalledAddedPlainMethodAvoidsPerCallBoxing() throws Exception {
+        var management = java.lang.management.ManagementFactory.getThreadMXBean();
+        org.junit.jupiter.api.Assumptions.assumeTrue(
+                management instanceof com.sun.management.ThreadMXBean allocation
+                        && allocation.isThreadAllocatedMemorySupported(),
+                "this JDK does not expose thread allocation measurements");
+        try (WatchedApp app = WatchedApp.in(tmp)
+                .jvmArgs("-Xmx256m")
+                .with("Work", work("v1", false))
+                .with("Caller", addedMethodMeasurement(false))
+                .with("App", """
+                        package app;
+                        public class App {
+                            public static void main(String[] args) throws Exception {
+                                Work work = new Work();
+                                while (true) {
+                                    Thread.sleep(500);
+                                    System.out.println(Caller.measure(work));
+                                }
+                            }
+                        }
+                        """)
+                .start()) {
+            app.awaitOrFail("ADDED tag=v1", "no initial measurement");
+            // Measure a save in a running session, not the separate startup
+            // catch-up path (see CallerAndCalleeSavedTogetherTest).
+            app.awaitOrFail("] Watching 1 director", "the file watcher never became ready");
+            app.rewriteAll(java.util.Map.of(
+                    "Work", work("v2", false).replace("private int counter;", """
+                            private int counter;
+                            public int addedStep(int a, int b) { counter += a + b; return counter; }
+                            """),
+                    "Caller", addedMethodMeasurement(true)));
+            app.awaitOrFail("ADDED tag=v2", "external caller never reached the added method");
+            Thread.sleep(4000); // Same post-reload JIT settling period as the existing dispatch check.
+            String sample = app.latest("ADDED tag=v2");
+            double ns = nsPerCall(sample);
+            double bytes = Double.parseDouble(sample.replaceAll(".*bytes=([0-9.]+).*", "$1"));
+            System.out.println("[added-dispatch] " + sample);
+            assertTrue(ns < CEILING_NS, () -> "added-method dispatch exceeds existing ceiling: " + sample);
+            // Timing alone misses the audited regression (~70 ns is below 200).
+            // A primitive loop should not allocate even one boxed argument per call.
+            assertTrue(bytes < 16.0, () -> "plain added calls allocate per invocation: " + sample);
+        }
+    }
+
+    private static String addedMethodMeasurement(boolean added) {
+        String call = added ? "work.addedStep(513, 769)" : "work.step(1282)";
+        return """
+                package app;
+                public class Caller {
+                    private static volatile long sink;
+                    public static String measure(Work work) {
+                        var allocation = (com.sun.management.ThreadMXBean)
+                                java.lang.management.ManagementFactory.getThreadMXBean();
+                        if (!allocation.isThreadAllocatedMemoryEnabled())
+                            allocation.setThreadAllocatedMemoryEnabled(true);
+                        long thread = Thread.currentThread().getId();
+                        long sum = 0;
+                        for (int i = 0; i < 2_000_000; i++) sum += %s;
+                        long allocated = allocation.getThreadAllocatedBytes(thread);
+                        long start = System.nanoTime();
+                        int n = 2_000_000;
+                        for (int i = 0; i < n; i++) sum += %s;
+                        double ns = (double) (System.nanoTime() - start) / n;
+                        double bytes = (double) (allocation.getThreadAllocatedBytes(thread) - allocated) / n;
+                        sink = sum;
+                        return String.format(java.util.Locale.ROOT,
+                                "ADDED tag=%s ns=%%.2f bytes=%%.2f sum=%%d", ns, bytes, sink);
+                    }
+                }
+                """.formatted(call, call, added ? "v2" : "v1");
+    }
+
     private static String work(String tag, boolean withAddedMember) {
         return """
                 package app;

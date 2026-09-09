@@ -44,6 +44,7 @@ public final class ReclazzBootstrap {
 
         MethodHandle initialTarget;
         MethodHandle publicCall = null;
+        boolean absentFromClass = false;
         try {
             // Instance method bootstrap: type includes receiver as first parameter.
             // The renamed original is an instance method, so use findVirtual with
@@ -84,6 +85,7 @@ public final class ReclazzBootstrap {
                 }
             }
             if (initialTarget == null) {
+                absentFromClass = true;
                 initialTarget = MethodHandles.throwException(type.returnType(),
                         UnsupportedOperationException.class)
                         .bindTo(new UnsupportedOperationException(
@@ -104,7 +106,13 @@ public final class ReclazzBootstrap {
             // table keeps what it needs to rebuild the guard.
             dispatch.registerOverrideGuard(siteKey, ownerClass, name, publicCall);
         }
-        return dispatch.getOrCreateMethodSite(siteKey, callSite);
+        CallSite direct = dispatch.getOrCreateMethodSite(siteKey, callSite);
+        // Added methods have no proxy override. Only their external call sites
+        // get this boundary; raw dispatch and same-class calls remain unadvised.
+        if (absentFromClass && ownerClass != null && lookup.lookupClass() != ownerClass) {
+            return AddedOperationBridge.externalCall(ownerClass, siteKey, direct);
+        }
+        return direct;
     }
 
     /**

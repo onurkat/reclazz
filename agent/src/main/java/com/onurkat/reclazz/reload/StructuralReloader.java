@@ -51,6 +51,7 @@ public class StructuralReloader {
     private final TransformContext context;
     private final AgentConfig config;
     private final boolean isHybris;
+    private final PlatformContext platformContext;
 
     // Hybris-specific reloaders — lazily initialized only on Hybris platform
     private Object hibernateInvalidator; // HibernateCacheInvalidator, loaded via reflection to avoid import
@@ -67,6 +68,7 @@ public class StructuralReloader {
         this.instrumentation = instrumentation;
         this.context = context;
         this.config = config;
+        this.platformContext = platformContext;
         this.isHybris = platformContext != null &&
                 platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS;
         if (isHybris) {
@@ -1102,6 +1104,12 @@ public class StructuralReloader {
             registerInstanceInitialisers(className, targetClass, companion,
                     companionLookup, companionClass);
 
+            // Snapshot added operation metadata and existing bean identities
+            // before publishing bodies or letting Spring recreate a singleton.
+            Set<String> operationMethods = com.onurkat.reclazz.spring.SpringAddedOperations.publish(targetClass, newBytecode,
+                    classLookup, platformContext == null ? java.util.List.of()
+                            : platformContext.getAllApplicationContexts());
+
             // Re-target all call sites atomically via bootstrap-CL DispatchTable
             DispatchTable.retargetAll(targetClass, companionLookup, newTargets);
 
@@ -1185,7 +1193,7 @@ public class StructuralReloader {
             var missingMethods = diff.getNewMethods().stream()
                     .filter(method -> !reflectedMethods.contains(method.name() + method.descriptor())).toList();
             for (AddedMethodVisibility.Unseen unseen
-                    : AddedMethodVisibility.check(newBytecode, missingMethods, isSpringBean(targetClass), jacksonGetters)) {
+                    : AddedMethodVisibility.check(newBytecode, missingMethods, isSpringBean(targetClass), jacksonGetters, operationMethods)) {
                 // True on every reload of the class, and information on the
                 // first one. The ledger still counts each occurrence, so
                 // asking later still knows how long this has been the case.

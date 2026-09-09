@@ -251,6 +251,86 @@ again to recover. The ordinary configuration-bean refresh still runs before this
 registration step, with its existing lifecycle effects. This feature does not
 rerun configuration parsing or add `@Bean` to methods that existed at startup.
 
+### Operations on added service methods
+
+On a stock JDK, add a public instance method to a running singleton service and
+compile it together with its caller:
+
+```java
+@Transactional(rollbackFor = Exception.class)
+public void submit(int id) throws Exception {
+    jdbc.update("insert into orders (id) values (?)", id);
+    if (!accepted(id)) throw new Exception("order rejected");
+}
+
+@Cacheable(cacheNames = "orders", key = "#p0")
+public Order load(int id) {
+    return repository.find(id);
+}
+```
+
+Calls from other watched application classes now run the application's real
+Spring transaction/cache interceptors around the added companion method. This
+covers direct `@Transactional`, `@Cacheable`, `@CachePut`, `@CacheEvict` and
+`@Caching` metadata, plus class-level transaction settings and `@CacheConfig`.
+Spring owns manager selection, rollback rules, cache keys, conditions, `unless`
+and advisor ordering. Saved parameter names (when compiled with `-parameters`)
+and indexed arguments such as `#p0` are available. A configured key generator
+receives the actual target and saved method metadata.
+
+Both a direct singleton gaining its first operation method and an existing
+supported CGLIB proxy are covered. A call through an old proxy reaches its real
+target, rather than running against the proxy object's fields. Same-class
+self-invocation retains its existing bypass of Spring advice. Repeated saves
+replace metadata and bodies. Removing an operation method makes its retained
+external call sites fail explicitly; restoring it makes those sites usable
+again. Removing only its annotation removes that interception. Application
+cache values retain normal region/key semantics; metadata refresh does not by
+itself flush their values.
+
+The ordinary service-bean refresh still applies: editing a `@Service` can replace
+the registered bean and run its lifecycle callbacks. The adapter captures old
+singleton identities before that refresh and discovers the replacement for new
+calls. It does not undo destruction callbacks or guarantee that resources on a
+destroyed old target remain usable. Factory/programmatically registered classes
+without a Spring stereotype retain their existing bean-refresh behavior.
+
+Supported calls require a captured live singleton, a direct target or mutable
+CGLIB proxy with `SingletonTargetSource`, and one standard Spring
+`InfrastructureAdvisorAutoProxyCreator` or `AnnotationAwareAspectJAutoProxyCreator`.
+The configured candidate/proxy advisor sets must contain only the standard
+transaction/cache advisors, interceptors and annotation sources. Additional
+aspect, security or other custom advisors are refused, including candidate
+advisors that have not been attached to this proxy. Missing infrastructure,
+unknown receivers and unsupported metadata also cause an explicit exception
+before the operation body runs. No unmanaged/prototype instance is assumed to
+be a singleton merely because its class matches one.
+
+This does not add interface methods to existing JDK proxies, add reflective
+methods to the original class, or cover new overrides of already-resolvable
+inherited methods. Static/private/final methods, final service classes, generic
+metadata, composed/additional advice annotations, scoped/dynamic/opaque/nested
+proxies and declared async/reactive return types are outside this path. Existing
+methods follow their existing dispatch; this boundary is installed only for
+external calls whose method is absent from the loaded class. Framework reflection
+calls, method references/lambdas, and async values hidden behind a declared
+`Object` result are not validated by this feature.
+
+Spring sees a separate metadata `Method`: its name, parameters and annotations
+are supplied, but its declaring class is a collectible hidden metadata class.
+Custom code depending on the exact declaring class is not given the original
+class's reflective identity. Metadata caches are cleared on saves to release old
+metadata. Bean/context references kept by the adapter are weak. Reloading is not
+an atomic transaction with concurrent application calls; this feature does not
+add a concurrent consistency guarantee.
+
+Verified with Spring Framework 5.3.39, H2 2.2.224 and a stock JDK 21: real database
+commit/checked-exception rollback, cache hit/put/evict, combined transaction/cache,
+parameter names, custom key generation, annotation changes, method removal and
+restoration, and old/new bean references. Other Spring versions and a JDK 17
+runtime were not exercised. Spring JDBC/TX and H2 are test-only dependencies of
+Reclazz and are absent from the production agent.
+
 ### Edited aspect pointcuts
 
 Change the expression on an existing advice method and compile the aspect:
