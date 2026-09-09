@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Conditional initial values for fields added to existing objects.** Isolated
+  ternary and short-circuit expressions in single-constructor classes now run
+  on first read using the object's current state, without replaying its
+  constructor. Selected branches, primitive/reference results and prior writes
+  (including null) follow the existing field-store lifecycle. Unsafe control
+  flow, constructor arguments, multiple constructors and shared writes are
+  refused. See [scope and example](docs/usage.md#new-field-values-on-objects-that-already-existed).
+
 - **Conditional initial values for static fields added after startup.** Isolated
   ternary and short-circuit expressions now initialize the added field on a stock
   JDK, including nested conditions and reference/primitive values. Only the
