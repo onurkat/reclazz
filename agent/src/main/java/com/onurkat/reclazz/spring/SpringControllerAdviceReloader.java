@@ -85,7 +85,7 @@ public class SpringControllerAdviceReloader {
     };
 
     /** The list an initialiser prepends to instead of replacing. */
-    private static final String PREPENDED_LIST = "requestResponseBodyAdvice";
+    private static final String[] PREPENDED_LISTS = {"requestResponseBodyAdvice", "responseBodyAdvice"};
 
     private final PlatformContext platformContext;
 
@@ -211,17 +211,18 @@ public class SpringControllerAdviceReloader {
             // The adapter's initialiser prepends to this rather than replacing
             // it, so without the snapshot a ResponseBodyAdvice would run once
             // more per reload, for every response.
-            Object prepended = readField(resolver, PREPENDED_LIST);
-            java.util.List<Object> before = prepended instanceof java.util.List<?> list
-                    ? new java.util.ArrayList<>(list) : null;
-
-            init.invoke(resolver);
-
-            if (before != null && prepended instanceof java.util.List<?>) {
-                @SuppressWarnings("unchecked")
-                java.util.List<Object> live = (java.util.List<Object>) prepended;
-                live.clear();
-                live.addAll(before);
+            var before = new java.util.IdentityHashMap<java.util.List<Object>, java.util.List<Object>>();
+            for (String name : PREPENDED_LISTS) {
+                Object value = readField(resolver, name);
+                if (value instanceof java.util.List<?> list) {
+                    @SuppressWarnings("unchecked") var live = (java.util.List<Object>) list;
+                    before.put(live, new java.util.ArrayList<>(live));
+                }
+            }
+            try {
+                init.invoke(resolver);
+            } finally {
+                before.forEach((live, snapshot) -> { live.clear(); live.addAll(snapshot); });
             }
             return true;
         } catch (Throwable notThisShape) {

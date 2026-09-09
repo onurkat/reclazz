@@ -389,6 +389,7 @@ public class ReclazzAgent {
                 // Jackson must take its specialised metadata route before the general
                 // reflection transformer rewrites these same Class calls.
                 instrumentation.addTransformer(new JacksonAccessorTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.ExceptionHandlerTransformer(), true);
                 ReflectionInterceptTransformer reflectionTransformer = new ReflectionInterceptTransformer();
                 instrumentation.addTransformer(reflectionTransformer, true);
                 if (config.isVerbose()) StatusReporter.info("Reflection intercept transformer registered");

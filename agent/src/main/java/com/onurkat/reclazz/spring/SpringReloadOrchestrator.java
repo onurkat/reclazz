@@ -255,8 +255,9 @@ public class SpringReloadOrchestrator {
             // that was already there reached nothing: measured on Boot 3.3,
             // the endpoint kept answering the default error body.
             new ReloadSteps.Step("Controller advice re-scan", r -> {
-                if ((r.structural() || r.annotationsChanged())
-                        && SpringControllerAdviceReloader.carriesAdvice(r.type())) {
+                if (com.onurkat.reclazz.bootstrap.ExceptionHandlerBridge.wasAdapted(r.type())
+                        || ((r.structural() || r.annotationsChanged())
+                        && SpringControllerAdviceReloader.carriesAdvice(r.type()))) {
                     exceptionHandlerReloader.reload();
                 }
             }),

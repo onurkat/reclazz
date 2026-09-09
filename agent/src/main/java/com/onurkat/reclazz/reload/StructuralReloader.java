@@ -1181,6 +1181,11 @@ public class StructuralReloader {
                         getterLookup, newTargets));
             });
 
+            Set<String> exceptionHandlers = new LinkedHashSet<>();
+            afterSwitch(className, "making added exception handlers available to Spring MVC", () -> {
+                exceptionHandlers.addAll(AddedExceptionHandlers.publish(targetClass, newBytecode, getterLookup, newTargets));
+            });
+
             // A method this reload added is in the companion, which the call
             // sites reach and reflection does not. Anything a framework
             // discovers by looking at the class therefore misses it, and
@@ -1193,7 +1198,7 @@ public class StructuralReloader {
             var missingMethods = diff.getNewMethods().stream()
                     .filter(method -> !reflectedMethods.contains(method.name() + method.descriptor())).toList();
             for (AddedMethodVisibility.Unseen unseen
-                    : AddedMethodVisibility.check(newBytecode, missingMethods, isSpringBean(targetClass), jacksonGetters, operationMethods)) {
+                    : AddedMethodVisibility.check(newBytecode, missingMethods, isSpringBean(targetClass), jacksonGetters, operationMethods, exceptionHandlers)) {
                 // True on every reload of the class, and information on the
                 // first one. The ledger still counts each occurrence, so
                 // asking later still knows how long this has been the case.

@@ -228,4 +228,35 @@ class SpringControllerAdviceReloaderTest {
         void ordinary() {
         }
     }
+
+    @Test
+    void realExceptionResolverKeepsResponseBodyAdviceRegistrationAcrossRescans() throws Exception {
+        try (var context = new org.springframework.web.context.support.StaticWebApplicationContext()) {
+            context.registerSingleton("bodyAdvice", BodyAdvice.class);
+            context.refresh();
+            var resolver = new org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver();
+            resolver.setApplicationContext(context); resolver.afterPropertiesSet();
+            var field = resolver.getClass().getDeclaredField("responseBodyAdvice");
+            field.setAccessible(true);
+            var registered = (List<?>) field.get(resolver);
+            assertEquals(1, registered.size());
+            Object original = registered.get(0);
+            for (int save = 0; save < 3; save++) {
+                assertTrue(SpringControllerAdviceReloader.rebuild(resolver));
+                assertEquals(1, registered.size(), "an exception-handler save must not accumulate response advice");
+                assertSame(original, registered.get(0));
+            }
+        }
+    }
+
+    @org.springframework.web.bind.annotation.ControllerAdvice
+    public static class BodyAdvice implements org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice<Object> {
+        @Override public boolean supports(org.springframework.core.MethodParameter method,
+                Class<? extends org.springframework.http.converter.HttpMessageConverter<?>> converter) { return true; }
+        @Override public Object beforeBodyWrite(Object body, org.springframework.core.MethodParameter method,
+                org.springframework.http.MediaType mediaType,
+                Class<? extends org.springframework.http.converter.HttpMessageConverter<?>> converter,
+                org.springframework.http.server.ServerHttpRequest request,
+                org.springframework.http.server.ServerHttpResponse response) { return body; }
+    }
 }
