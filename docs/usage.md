@@ -142,12 +142,28 @@ including through factory parameters. Only contexts containing the edited
 configuration participate.
 
 Factory parameters are required reference beans. Spring selects candidates by
-type, honors primary candidates and direct parameter `@Qualifier("beanName")`,
+type, honors primary candidates and direct parameter `@Qualifier("fast")`,
 and uses the original parameter name to break ties when javac preserved it with
 `-parameters` or debug local-variable information. Without a preserved name, no
 name is invented: unique type/primary/qualifier selection still works, and an
 unresolved ambiguity is reported. Parent-context candidates and dependency
 proxies are passed through as the objects Spring resolves.
+
+Added factory methods can also carry direct `@Primary` and `@Qualifier`.
+For example, a method named `remoteTransport` carrying `@Bean @Qualifier("fast")`
+can supply a parameter declared as `@Qualifier("fast") Transport transport`:
+the qualifier value need not be the bean name and does not create an alias.
+With several candidates of the required type, `@Primary` selects the default;
+an explicit parameter qualifier first restricts the matching candidates. If
+several candidates match that qualifier, one primary candidate can break the tie.
+The default empty `@Qualifier` value is preserved, distinct from no qualifier.
+
+Selection metadata is installed before any added products are initialized, so
+these rules also apply to providers added in the same save. Newly created ordinary
+Spring consumers can use it too. Moving, changing or removing either annotation
+and compiling again updates selection for newly created products. Missing matches
+or unresolved ambiguity are reported; correcting the annotations and compiling
+again recovers. Existing singleton holders are not globally re-injected.
 
 Arguments are resolved on every product creation. Dependency names are registered
 with the creating bean factory so its normal dependency destruction applies,
@@ -163,10 +179,11 @@ Supported factories carry direct `@Bean`, return an object
 methods work; static, native and abstract methods do not. The class must carry
 direct `@Configuration(proxyBeanMethods=false)`, extend only `Object`, implement
 no interfaces and have exactly one local, unproxied singleton configuration in
-each affected bean factory. Extra runtime class/method annotations are limited to
-`@Deprecated`. Conditions, profiles, scopes, advice, lazy/primary/qualifier metadata,
-composed annotations and proxied configurations require a restart.
-The parameter-level `@Qualifier` described above is the exception. Primitive,
+each affected bean factory. Extra runtime class annotations are limited to
+`@Deprecated`; methods additionally allow direct `@Primary` and `@Qualifier`.
+Conditions, profiles, scopes, advice, lazy metadata, class-level primary/qualifier
+policies, composed annotations and proxied configurations require a restart.
+Parameters allow the direct `@Qualifier` described above. Primitive,
 array, collection/map, optional, stream and provider parameters are unsupported,
 as are generic signatures and extra runtime parameter/type annotations such as
 `@Value`, `@Lazy`, nullable annotations and composed qualifiers. Parameter names

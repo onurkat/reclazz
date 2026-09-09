@@ -127,6 +127,15 @@ public final class SpringAddedBeanReloader {
         definitionType.getMethod("setInstanceSupplier", Supplier.class).invoke(definition, checked);
         call(definition, "setInitMethodName", method.init());
         call(definition, "setDestroyMethodName", method.destroy());
+        definitionType.getMethod("setPrimary", boolean.class).invoke(definition, method.primary());
+        if (method.qualifier() != null) {
+            // Selection metadata belongs on the definition: the original class
+            // cannot expose an added factory method through reflection.
+            Class<?> qualifierType = Class.forName("org.springframework.beans.factory.support.AutowireCandidateQualifier", true, spring);
+            Object qualifier = qualifierType.getConstructor(String.class, Object.class).newInstance(
+                    "org.springframework.beans.factory.annotation.Qualifier", method.qualifier());
+            definitionType.getMethod("addQualifier", qualifierType).invoke(definition, qualifier);
+        }
         factory.getClass().getMethod("registerBeanDefinition", String.class, definitionInterface).invoke(factory, name, definition);
         Owned registration = new Owned(new WeakReference<>(type), new WeakReference<>(definition),
                 new AtomicReference<>(new WeakReference<>(null)));

@@ -24,10 +24,12 @@ public final class AddedBeanAdapter {
     static final String CONFIGURATION = "Lorg/springframework/context/annotation/Configuration;";
     private static final String DEPRECATED = "Ljava/lang/Deprecated;";
     private static final String QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
+    private static final String PRIMARY = "Lorg/springframework/context/annotation/Primary;";
     private static final String PARAMETERS = InjectedNames.PREFIX + "parameters";
     private AddedBeanAdapter() { }
 
-    record Factory(MethodNode method, String name, String init, String destroy) { }
+    record Factory(MethodNode method, String name, String init, String destroy,
+                   boolean primary, String qualifier) { }
     record Plan(List<Factory> factories, List<String> refused) { }
 
     static Plan inspect(byte[] bytes, Set<String> added) {
@@ -63,7 +65,7 @@ public final class AddedBeanAdapter {
                 if (signature.getArgumentTypes().length > 0
                         && method.visibleTypeAnnotations != null && !method.visibleTypeAnnotations.isEmpty())
                     throw new IllegalArgumentException("factory type annotations are not supported");
-                if (extraAnnotations(method.visibleAnnotations, BEAN))
+                if (extraAnnotations(method.visibleAnnotations, BEAN, PRIMARY, QUALIFIER))
                     throw new IllegalArgumentException("additional method annotations cannot be applied to the factory delegate");
                 if (bean.values != null) for (int i = 0; i < bean.values.size(); i += 2)
                     if (!Set.of("name", "value", "initMethod", "destroyMethod").contains(bean.values.get(i)))
@@ -76,8 +78,11 @@ public final class AddedBeanAdapter {
                 if (names.size() > 1) throw new IllegalArgumentException("multiple bean names/aliases are not supported");
                 String name = names.isEmpty() ? method.name : (String) names.get(0);
                 if (name.isBlank() || name.startsWith("&")) throw new IllegalArgumentException("unsupported bean name");
+                AnnotationNode qualifier = annotation(method.visibleAnnotations, QUALIFIER);
                 factories.add(new Factory(method, name, (String) value(bean, "initMethod", ""),
-                        (String) value(bean, "destroyMethod", "(inferred)")));
+                        (String) value(bean, "destroyMethod", "(inferred)"),
+                        annotation(method.visibleAnnotations, PRIMARY) != null,
+                        qualifier == null ? null : (String) value(qualifier, "value", "")));
             } catch (IllegalArgumentException failure) {
                 refused.add(method.name + method.desc + ": " + failure.getMessage());
             }
@@ -96,8 +101,9 @@ public final class AddedBeanAdapter {
         return annotations == null ? null : annotations.stream().filter(a -> a.desc.equals(descriptor)).findFirst().orElse(null);
     }
 
-    private static boolean extraAnnotations(List<AnnotationNode> annotations, String allowed) {
-        return annotations != null && annotations.stream().anyMatch(a -> !a.desc.equals(allowed) && !a.desc.equals(DEPRECATED));
+    private static boolean extraAnnotations(List<AnnotationNode> annotations, String... allowed) {
+        Set<String> supported = Set.of(allowed);
+        return annotations != null && annotations.stream().anyMatch(a -> !supported.contains(a.desc) && !a.desc.equals(DEPRECATED));
     }
 
     private static Object value(AnnotationNode annotation, String key, Object fallback) {
