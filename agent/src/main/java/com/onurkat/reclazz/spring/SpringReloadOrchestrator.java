@@ -34,6 +34,7 @@ public class SpringReloadOrchestrator {
     private final SpringCacheReloader cacheReloader;
     private final SpringSchedulerReloader schedulerReloader;
     private final SpringEventReloader eventReloader;
+    private final SpringAddedBeanReloader addedBeanReloader;
     private final SpringAopReloader aopReloader;
     private final SpringAsyncReloader asyncReloader;
     private final SpringDataReloader dataReloader;
@@ -51,6 +52,7 @@ public class SpringReloadOrchestrator {
         this.cacheReloader = new SpringCacheReloader(platformContext);
         this.schedulerReloader = new SpringSchedulerReloader(platformContext);
         this.eventReloader = new SpringEventReloader(platformContext);
+        this.addedBeanReloader = new SpringAddedBeanReloader(platformContext);
         this.aopReloader = new SpringAopReloader(platformContext);
         this.asyncReloader = new SpringAsyncReloader(platformContext);
         this.dataReloader = new SpringDataReloader(platformContext);
@@ -240,6 +242,8 @@ public class SpringReloadOrchestrator {
      */
     private java.util.List<ReloadSteps.Step> buildSteps() {
         return java.util.List.of(
+            new ReloadSteps.Step("Added bean factories",
+                    r -> addedBeanReloader.reloadBeanMethods(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Cache eviction",
                     r -> cacheReloader.reloadCaches(r.type())),
 

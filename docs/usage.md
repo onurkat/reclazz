@@ -111,6 +111,70 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### Bean methods added after startup
+
+On a stock JDK with the agent attached at startup, add a factory to an existing
+configuration class, compile, and look up the new singleton through Spring:
+
+```java
+@Configuration(proxyBeanMethods = false)
+public class ClientConfiguration {
+    // Add this method after the application has started:
+    @Bean
+    public Client client() {
+        return new Client("http://localhost:8081");
+    }
+}
+```
+
+The new method lives in the companion. A hidden supplier calls its current body
+on the current configuration singleton, and a Spring bean definition creates the
+product. Spring applies dependency injection, bean postprocessors and lifecycle
+callbacks. A later save recreates the added product, including body-only edits.
+Removing the method or its `@Bean` annotation removes its owned definition.
+Changing its name removes the previous owned name and registers the new one.
+Closing the context runs normal product destruction. Repeated saves leave one
+registration per supported name.
+
+Definitions from the same save are registered before products are initialized,
+so an added product can inject another added bean regardless of declaration order.
+Only contexts containing the edited configuration participate.
+
+Supported factories carry direct `@Bean`, have no parameters, return an object
+(not a primitive, array or `void`), and have no generic signature. Private instance
+methods work; static, native and abstract methods do not. The class must carry
+direct `@Configuration(proxyBeanMethods=false)`, extend only `Object`, implement
+no interfaces and have exactly one local, unproxied singleton configuration in
+each affected bean factory. Extra runtime class/method annotations are limited to
+`@Deprecated`. Conditions, profiles, scopes, advice, lazy/primary/qualifier metadata,
+composed annotations and proxied configurations require a restart.
+
+The default method name or one explicit `name`/`value` is supported, along with
+`initMethod` and `destroyMethod`. The default inferred `close`/`shutdown` destruction
+and an explicit empty destroy method are preserved. Multiple aliases and other
+explicit `@Bean` options are refused. `FactoryBean`, bean postprocessors and bean
+factory postprocessors cannot be introduced through this path, including when
+hidden behind an `Object` return. Null results are refused.
+
+An existing definition, singleton, alias or parent bean blocks the new name.
+Duplicate supported added names are refused. Before removal, Reclazz checks that
+the definition and any live singleton still belong to its registration; externally
+replaced registrations are left alone. Registration is not a transaction with
+other threads concurrently changing the Spring registry. A product recreated by
+Spring from the owned definition remains reloadable, including a product wrapped
+by the application's existing bean postprocessors. Runtime changes to the
+postprocessor chain are outside this support.
+
+Factories are created eagerly. Replacement/removal destroys the old product and
+may destroy its dependents through Spring. Existing holders, collections and local
+variables are not globally rewired by this feature; retrieve the current product
+from the context. Factory or initialization failure is reported and the failed
+owned definition is removed. The previous product may already have been destroyed,
+and callback side effects are not rolled back. Correct the factory and compile
+again to recover. The ordinary configuration-bean refresh still runs before this
+registration step, with its existing lifecycle effects. This feature does not
+rerun configuration parsing or add `@Bean` to methods that existed at startup.
+
 ### Scheduled methods added after startup
 
 With the agent attached at startup, add this method to an existing, unproxied
