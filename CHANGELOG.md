@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Returned events from `@EventListener` methods added after startup.** A
+  supported listener can return a single event object for Spring to publish,
+  preserving its identity. Null results and skipped invocations publish nothing;
+  edits and removal follow the existing listener lifecycle. Non-single and async
+  result shapes are refused, including actual values hidden behind `Object`.
+  See [scope and example](docs/usage.md#event-listener-methods-added-after-startup).
+
 - **Aliases for `@Bean` methods added after startup.** Multiple `name`/`value`
   entries register one singleton with aliases, available to same-save factory
   arguments. Later saves update the names; removal and failed creation clean up

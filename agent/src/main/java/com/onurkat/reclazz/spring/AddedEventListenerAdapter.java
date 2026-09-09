@@ -17,7 +17,12 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow;
+import java.util.concurrent.Future;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** Spring's event adapter, with a reflective delegate into an added method. */
@@ -26,6 +31,7 @@ public final class AddedEventListenerAdapter {
     private static final String ORDER = "Lorg/springframework/core/annotation/Order;";
     private static final String BASE = "org/springframework/context/event/ApplicationListenerMethodAdapter";
     private static final String TARGET = InjectedNames.PREFIX + "target";
+    private static final String RESULT = InjectedNames.PREFIX + "result";
     private static final String DELEGATE = InjectedNames.PREFIX + "event$";
 
     private AddedEventListenerAdapter() { }
@@ -46,11 +52,12 @@ public final class AddedEventListenerAdapter {
             if (!added.contains(method.name + ":" + method.desc) || method.visibleAnnotations == null
                     || method.visibleAnnotations.stream().noneMatch(a -> a.desc.equals(EVENT))) continue;
             Type[] args = Type.getArgumentTypes(method.desc);
+            int result = Type.getReturnType(method.desc).getSort();
             String reason = null;
             if ((method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) != 0
-                    || Type.getReturnType(method.desc).getSort() != Type.VOID || args.length != 1
+                    || (result != Type.VOID && result != Type.OBJECT) || args.length != 1
                     || (args[0].getSort() != Type.OBJECT && args[0].getSort() != Type.ARRAY))
-                reason = "only void instance methods with one reference event parameter are supported";
+                reason = "only void or single event object returns on instance methods with one reference event parameter are supported";
             else if (method.signature != null)
                 reason = "generic listener signatures need a restart";
             else if (classAdvice || method.visibleAnnotations.stream().anyMatch(a ->
@@ -69,14 +76,20 @@ public final class AddedEventListenerAdapter {
         if (plan.methods().isEmpty()) return List.of();
         MethodHandles.Lookup lookup = LookupCapture.get(owner);
         if (lookup == null) throw new IllegalStateException("no captured lookup for " + owner.getName());
+        for (MethodNode method : plan.methods()) {
+            Class<?> result = MethodType.fromMethodDescriptorString(method.desc, owner.getClassLoader()).returnType();
+            if (result != void.class) requireSingleEvent(result);
+        }
         String internal = Type.getInternalName(owner);
         String adapter = internal + "$$ReclazzEvent";
         String supplier = "Ljava/util/function/Supplier;";
+        String function = "Ljava/util/function/Function;";
         ClassWriter writer = new SafeClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
         writer.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC, adapter, null, BASE, null);
         writer.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, TARGET, supplier, null, null).visitEnd();
+        writer.visitField(Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL, RESULT, function, null, null).visitEnd();
         MethodVisitor ctor = writer.visitMethod(Opcodes.ACC_PUBLIC, "<init>",
-                "(Ljava/lang/String;Ljava/lang/reflect/Method;" + supplier + ")V", null, null);
+                "(Ljava/lang/String;Ljava/lang/reflect/Method;" + supplier + function + ")V", null, null);
         ctor.visitCode();
         ctor.visitVarInsn(Opcodes.ALOAD, 0);
         ctor.visitVarInsn(Opcodes.ALOAD, 1);
@@ -88,6 +101,9 @@ public final class AddedEventListenerAdapter {
         ctor.visitVarInsn(Opcodes.ALOAD, 0);
         ctor.visitVarInsn(Opcodes.ALOAD, 3);
         ctor.visitFieldInsn(Opcodes.PUTFIELD, adapter, TARGET, supplier);
+        ctor.visitVarInsn(Opcodes.ALOAD, 0);
+        ctor.visitVarInsn(Opcodes.ALOAD, 4);
+        ctor.visitFieldInsn(Opcodes.PUTFIELD, adapter, RESULT, function);
         ctor.visitInsn(Opcodes.RETURN);
         ctor.visitMaxs(0, 0);
         ctor.visitEnd();
@@ -102,6 +118,8 @@ public final class AddedEventListenerAdapter {
         target.visitEnd();
 
         for (MethodNode method : plan.methods()) {
+            Type result = Type.getReturnType(method.desc);
+            boolean returnsEvent = result.getSort() != Type.VOID;
             MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, DELEGATE + method.name, method.desc, null, null);
             if (method.parameters != null && !method.parameters.isEmpty()) {
                 var parameter = method.parameters.get(0);
@@ -129,21 +147,54 @@ public final class AddedEventListenerAdapter {
                             + "Ljava/lang/invoke/MethodType;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/invoke/CallSite;", false);
             mv.visitInvokeDynamicInsn(method.name, "(" + Type.getDescriptor(owner) + method.desc.substring(1),
                     bootstrap, internal, CallSiteAdapter.descHash(method.desc));
+            if (returnsEvent) {
+                // Validate the actual value as well: an Object return can hide
+                // a collection or an async result that Spring would otherwise expand.
+                mv.visitVarInsn(Opcodes.ASTORE, 3);
+                mv.visitVarInsn(Opcodes.ALOAD, 0);
+                mv.visitFieldInsn(Opcodes.GETFIELD, adapter, RESULT, function);
+                mv.visitVarInsn(Opcodes.ALOAD, 3);
+                mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, "java/util/function/Function", "apply",
+                        "(Ljava/lang/Object;)Ljava/lang/Object;", true);
+                mv.visitTypeInsn(Opcodes.CHECKCAST, result.getInternalName());
+                mv.visitInsn(Opcodes.ARETURN);
+            } else mv.visitInsn(Opcodes.RETURN);
             mv.visitLabel(done);
-            mv.visitInsn(Opcodes.RETURN);
+            if (returnsEvent) mv.visitInsn(Opcodes.ACONST_NULL);
+            mv.visitInsn(returnsEvent ? Opcodes.ARETURN : Opcodes.RETURN);
             mv.visitMaxs(0, 0);
             mv.visitEnd();
         }
         writer.visitEnd();
         MethodHandles.Lookup hidden = lookup.defineHiddenClass(writer.toByteArray(), true, MethodHandles.Lookup.ClassOption.NESTMATE);
         var constructor = hidden.findConstructor(hidden.lookupClass(),
-                MethodType.methodType(void.class, String.class, Method.class, Supplier.class));
+                MethodType.methodType(void.class, String.class, Method.class, Supplier.class, Function.class));
+        Function<Object, Object> checkResult = result -> {
+            if (result != null) requireSingleEvent(result.getClass());
+            return result;
+        };
         List<Object> listeners = new ArrayList<>();
         for (MethodNode method : plan.methods()) {
             Class<?> parameter = MethodType.fromMethodDescriptorString(method.desc, owner.getClassLoader()).parameterType(0);
             Method delegate = hidden.lookupClass().getDeclaredMethod(DELEGATE + method.name, parameter);
-            listeners.add(constructor.invoke(beanName, delegate, currentBean));
+            listeners.add(constructor.invoke(beanName, delegate, currentBean, checkResult));
         }
         return listeners;
+    }
+
+    private static void requireSingleEvent(Class<?> type) {
+        if (type.isPrimitive() || type.isArray() || Iterable.class.isAssignableFrom(type)
+                || Map.class.isAssignableFrom(type)
+                || java.util.stream.BaseStream.class.isAssignableFrom(type)
+                || CompletionStage.class.isAssignableFrom(type) || Future.class.isAssignableFrom(type)
+                || Flow.Publisher.class.isAssignableFrom(type) || reactivePublisher(type))
+            throw new IllegalArgumentException("added listener must return a single event object or null; unsupported result: " + type.getName());
+    }
+
+    private static boolean reactivePublisher(Class<?> type) {
+        if (type == null) return false;
+        if (type.getName().equals("org.reactivestreams.Publisher")) return true;
+        for (Class<?> contract : type.getInterfaces()) if (reactivePublisher(contract)) return true;
+        return reactivePublisher(type.getSuperclass());
     }
 }
