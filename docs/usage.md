@@ -299,8 +299,8 @@ stereotypes, `@Component`, `@RequestMapping`, `@ResponseBody`, `@ResponseStatus`
 reactive and streaming return types are refused. Async behavior hidden behind
 an `Object` return or performed inside a body, scoped/prototype configurations,
 custom resolver subclasses and changes to advice class ordering/selectors were
-not validated here. `@InitBinder` / `@ModelAttribute` methods added from scratch
-remain separate unsupported features.
+not validated here. Newly added `@InitBinder` / `@ModelAttribute` methods use
+the separate adapter described below.
 
 Spring sees a hidden metadata class for an adapted handler: its reflective
 declaring/containing class is not the original controller. Custom argument,
@@ -317,6 +317,69 @@ actual exception resolver. This requires startup with `-javaagent`, before MVC
 loads. An unavailable/incompatible resolver hook is reported. Other Spring
 versions, JDK 17 runtime, attach to an already loaded MVC stack, and a servlet
 container deployment were not exercised. No dependencies were added.
+
+### Binding and model methods added after startup
+
+A supported plain controller or controller advice can gain entirely new
+`@InitBinder` and `@ModelAttribute` methods on a stock JDK. For example, compile
+these additions to a running `@RestController`:
+
+```java
+@InitBinder("name")
+public void trimName(WebDataBinder binder) {
+    binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
+}
+
+@ModelAttribute("greeting")
+public String greeting() {
+    return "Hello";
+}
+```
+
+Spring's normal binder and model pipeline sees the saved callback metadata.
+Binder names still restrict which arguments/objects a binder affects. Global
+callbacks run before local ones; advice ordering and controller selectors are
+applied by Spring. Existing model callbacks stay in the scan, and model
+attribute dependencies, return values and void methods that populate `Model`
+use Spring's normal behavior. Model-annotated request mappings are excluded
+from initialization, as in Spring's own method filter.
+
+Public and private callbacks delegate to the actual controller/advice bean.
+Method/parameter annotations, `MethodParameters` names and concrete generic
+signatures are copied. Use explicit annotation argument names (for example
+`@ModelAttribute("base")`) or compile with `-parameters` when names are needed;
+local-variable-table parameter-name discovery is not reproduced. Existing
+endpoints and Reclazz-added endpoints share the original controller's callbacks
+and advice scope. Later saves can edit, remove, restore or remove the annotation
+from an added callback. Cache rebuilding uses the existing advice reloader.
+
+The scope is plain receivers whose class directly extends `Object` without
+interfaces or type variables. Supported class metadata is direct MVC
+controller/advice stereotypes, `@Component`, `@RequestMapping`, `@ResponseBody`,
+`@ResponseStatus`, `@Order` and `@Deprecated`; callback annotations are direct
+`@InitBinder`, `@ModelAttribute` and `@Deprecated`. Extra callback advice
+annotations, static/abstract/native/bridge/synthetic callbacks, type-variable
+signatures, non-void binders and declared async/reactive/streaming model returns
+are refused. Proxy/subclass receivers are refused at invocation, so callback
+bodies do not bypass their advice. `@SessionAttributes`, composed metadata,
+custom adapter subclasses, scoped/prototype beans, changes to advice class
+selectors/order and asynchronous request behavior are outside this support.
+
+A rejected publication clears that class's added-callback adapter; methods
+still visible on the original class remain available to Spring. This does not
+roll back already reloaded bodies. The hidden metadata class differs from the
+original controller's reflective declaring/containing class, so custom argument
+resolvers relying on exact class identity are not covered. Normal bean
+recreation/lifecycle effects remain; this does not guarantee atomic metadata
+publication with concurrent requests. Added methods remain absent from ordinary
+application reflection.
+
+Verified with Spring Framework 5.3.39 on stock JDK 21, using real-agent loopback
+HTTP requests into MockMvc/DispatcherServlet and focused tests of the actual
+Spring adapter. Start with `-javaagent` before MVC loads. The transformer checks
+its expected bytecode sites and reports an unavailable/incompatible hook.
+Other Spring versions, JDK 17 runtime, late attach and a servlet-container
+deployment were not exercised. No dependencies were added.
 
 ### Operations on added service methods
 

@@ -140,6 +140,14 @@ public final class AddedMethodVisibility {
                                     List<TransformContext.MethodSig> added,
                                     boolean springAdaptersHandled, Set<String> jacksonGetters,
                                     Set<String> operationMethods, Set<String> exceptionHandlers) {
+        return check(newBytecode, added, springAdaptersHandled, jacksonGetters, operationMethods, exceptionHandlers, Set.of());
+    }
+
+    public static List<Unseen> check(byte[] newBytecode,
+                                    List<TransformContext.MethodSig> added,
+                                    boolean springAdaptersHandled, Set<String> jacksonGetters,
+                                    Set<String> operationMethods, Set<String> exceptionHandlers,
+                                    Set<String> bindingMethods) {
         List<Unseen> unseen = new ArrayList<>();
         if (added == null || added.isEmpty()) return unseen;
 
@@ -163,6 +171,9 @@ public final class AddedMethodVisibility {
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(
                                 String annotationDescriptor, boolean visible) {
                             String simple = simpleName(annotationDescriptor);
+                            if (bindingMethods.contains(name + descriptor)
+                                    && (annotationDescriptor.equals("Lorg/springframework/web/bind/annotation/InitBinder;")
+                                    || annotationDescriptor.equals("Lorg/springframework/web/bind/annotation/ModelAttribute;"))) return null;
                             if (exceptionHandlers.contains(name + descriptor)
                                     && annotationDescriptor.equals("Lorg/springframework/web/bind/annotation/ExceptionHandler;")) return null;
                             if (operationMethods.contains(name + descriptor)
