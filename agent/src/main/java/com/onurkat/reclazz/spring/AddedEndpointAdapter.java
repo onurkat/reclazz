@@ -82,6 +82,10 @@ public final class AddedEndpointAdapter {
         MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(
                 controllerClass, MethodHandles.lookup());
         Class<?> adapterClass = lookup.defineClass(bytes);
+        var target = MethodHandles.privateLookupIn(adapterClass, lookup)
+                .findGetter(adapterClass, "target", controllerClass)
+                .asType(java.lang.invoke.MethodType.methodType(Object.class, Object.class));
+        com.onurkat.reclazz.bootstrap.ExceptionHandlerBridge.registerEndpoint(adapterClass, controllerClass, target);
         return adapterClass.getConstructor(controllerClass).newInstance(controllerBean);
     }
 

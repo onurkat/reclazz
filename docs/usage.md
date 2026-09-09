@@ -251,6 +251,73 @@ again to recover. The ordinary configuration-bean refresh still runs before this
 registration step, with its existing lifecycle effects. This feature does not
 rerun configuration parsing or add `@Bean` to methods that existed at startup.
 
+### Exception handlers added after startup
+
+On a stock JDK, add a handler to an already running plain controller or
+`@ControllerAdvice` / `@RestControllerAdvice` class and compile it:
+
+```java
+@ExceptionHandler(IllegalArgumentException.class)
+public ResponseEntity<String> invalidInput(IllegalArgumentException failure) {
+    return ResponseEntity.status(422).body(failure.getMessage());
+}
+```
+
+The next matching exception can reach this new method without restarting the
+context. Spring still selects the handler: local controller methods take
+priority over global advice, exception specificity and causes are matched by
+Spring, and advice order and scope selectors keep their normal role. An endpoint
+added by Reclazz is associated with its original controller for this lookup, so
+its local handlers and controller-specific advice apply too.
+
+The adapter supplies saved handler metadata and delegates to the actual
+controller/advice instance chosen by Spring. Runtime method and parameter
+annotations, saved parameter names, concrete generic signatures such as
+`ResponseEntity<String>`, and class/method `@ResponseStatus` are available to
+Spring's normal argument and response pipeline. Both public and private handler
+methods are covered. Class-level response-body metadata is copied as well.
+
+Later saves update the metadata and method body. Removing the method or its
+`@ExceptionHandler` annotation removes it from the next cache rebuild; restoring
+it makes it eligible again. The complete declared handler set is validated by
+Spring before publishing a metadata adapter, so ambiguous exception mappings
+are rejected. Rejection disables that class's added-handler adapter and reports
+the failure; handlers still visible on the original class remain available to
+the ordinary scan. This is not rollback of already reloaded method bodies.
+Exception-cache rescans also preserve the existing response-body advice list,
+so repeated handler saves do not accumulate advice registrations.
+
+The supported scope uses the standard MVC exception resolver and plain
+controller/advice receivers. The adapter refuses proxy/subclass receivers
+instead of unwrapping them and bypassing advice. Controller class/interface
+inheritance, class or method type variables, static/abstract/native/bridge
+handlers, composed annotations and extra class/method advice annotations are
+outside this path. Accepted class metadata is the direct MVC controller/advice
+stereotypes, `@Component`, `@RequestMapping`, `@ResponseBody`, `@ResponseStatus`,
+`@Order` and `@Deprecated`; handler metadata is direct `@ExceptionHandler`,
+`@ResponseBody`, `@ResponseStatus` and `@Deprecated`. Declared asynchronous,
+reactive and streaming return types are refused. Async behavior hidden behind
+an `Object` return or performed inside a body, scoped/prototype configurations,
+custom resolver subclasses and changes to advice class ordering/selectors were
+not validated here. `@InitBinder` / `@ModelAttribute` methods added from scratch
+remain separate unsupported features.
+
+Spring sees a hidden metadata class for an adapted handler: its reflective
+declaring/containing class is not the original controller. Custom argument,
+return-value or response-advice code relying on that exact class identity is
+not covered. Original application reflection still cannot find the added
+method. Ordinary bean recreation and lifecycle callbacks remain in effect;
+this feature does not preserve destroyed bean resources or make metadata
+publication atomic with concurrent requests.
+
+Verified on stock JDK 21 and Spring Framework 5.3.39. Real-agent tests send
+loopback HTTP requests through Spring MVC's MockMvc/DispatcherServlet pipeline
+and check existing/new endpoints across five saves; focused tests exercise the
+actual exception resolver. This requires startup with `-javaagent`, before MVC
+loads. An unavailable/incompatible resolver hook is reported. Other Spring
+versions, JDK 17 runtime, attach to an already loaded MVC stack, and a servlet
+container deployment were not exercised. No dependencies were added.
+
 ### Operations on added service methods
 
 On a stock JDK, add a public instance method to a running singleton service and

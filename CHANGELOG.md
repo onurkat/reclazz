@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Exception handlers added to running controllers and advice.** Supported
+  plain controllers and controller advice can gain entirely new
+  `@ExceptionHandler` methods on a stock JDK. Spring retains handler selection,
+  local priority, advice selectors and its argument/response pipeline; existing
+  and added endpoints follow edits, removal and restoration. Repeated exception
+  cache rescans preserve response-body advice registrations. Unsupported
+  metadata/receiver shapes are refused. No new dependencies.
+  [Scope](docs/usage.md#exception-handlers-added-after-startup).
+
 - **Transaction and cache operations on added service methods.** External
   companion-method calls on supported singleton beans now use the application's
   real Spring interceptors and actual target. H2 and real-agent tests cover

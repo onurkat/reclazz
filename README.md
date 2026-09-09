@@ -57,6 +57,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | `@Autowired` added to an existing field | **Yes** — Spring resolves a bean's injection points once and keeps them, so this used to reload, re-create the bean and leave the field null. `@Resource`, `@PostConstruct` and `@PreDestroy` come with it | Yes (restart) | Yes |
 | A constraint added to a field (`@NotBlank`) | **Yes** — enforced on the next request, instead of the request that should now be rejected being accepted | Yes (restart) | Yes |
 | `@ExceptionHandler` / `@InitBinder` / `@ModelAttribute` | **Yes** on a method that was already there, instead of the endpoint going on answering the framework's default | Yes (restart) | Yes |
+| Entirely new `@ExceptionHandler` method | **Yes for supported plain controllers and controller advice on a stock JDK** — existing and newly added endpoints use Spring's handler selection, including local priority and advice selectors. Later saves can edit, remove and restore the handler. [Scope](docs/usage.md#exception-handlers-added-after-startup) | Not verified here | Not verified here |
 | New service methods with `@Transactional` / `@Cacheable` / `@CachePut` / `@CacheEvict` | **Yes for supported singleton beans on a stock JDK** — external added-method calls use the application's real Spring interceptors and target. Commit/rollback, cache hits, updates and eviction are verified; unsupported advice shapes fail explicitly. [Scope](docs/usage.md#operations-on-added-service-methods) | Yes (restart) | Not verified here |
 | Edited `@Aspect` pointcut | **Yes for existing mutable singleton JDK/CGLIB proxies** — changed advice reaches already-injected references without recreating the target. Previously unproxied beans and unsupported proxy shapes are named. [Scope](docs/usage.md#edited-aspect-pointcuts) | Yes (restart) | Yes |
 | Jackson picks up a changed shape | **Yes**, including getters added to an already loaded DTO on a stock JDK. Jackson's getter adapter preserves property naming, getter annotations, inclusion rules and serializers; subsequent saves can rename, remove and restore the added property. Annotated added fields are refused with a reason. Mapper caches are refreshed for Spring-managed mappers. Verified with real HTTP responses on Jackson 2.13.5. [Scope](docs/usage.md#jackson-getters-added-after-startup) | Yes (restart) | Yes |
@@ -153,6 +154,10 @@ than either.
   registered, instead of waiting for the next restart's component scan
 - **Annotation metadata**: an edited `@Transactional` or `@Cacheable` takes
   effect, not just the method body it sits on
+- **New exception handlers**: add an `@ExceptionHandler` method to a supported
+  running controller or controller advice; real HTTP tests cover status/body,
+  local priority, advice selectors and repeated saves, including new endpoints.
+  [Scope and example](docs/usage.md#exception-handlers-added-after-startup).
 - **What the frameworks cached about your class**: a reload is only half the
   job, because each framework answers from what it worked out about that class
   once, at startup. An `@Autowired` you add injects, a constraint you add is
