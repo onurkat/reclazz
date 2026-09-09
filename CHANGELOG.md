@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Static `@Bean` methods added after startup.** Supported configurations can
+  now gain static factories, including private methods and required reference
+  bean arguments. Calls reach the current static companion body without an
+  instance receiver. Parameter names, qualifiers, primary selection, aliases
+  and the existing product lifecycle are preserved. The existing configuration
+  and infrastructure restrictions still apply. See
+  [scope and example](docs/usage.md#bean-methods-added-after-startup).
+
 - **Returned events from `@EventListener` methods added after startup.** A
   supported listener can return a single event object for Spring to publish,
   preserving its identity. Null results and skipped invocations publish nothing;

@@ -127,9 +127,10 @@ public class ClientConfiguration {
 }
 ```
 
-The new method lives in the companion. A hidden supplier calls its current body
-on the current configuration singleton, and a Spring bean definition creates the
-product. Spring applies dependency injection, bean postprocessors and lifecycle
+The new method lives in the companion. A hidden supplier calls its current body,
+using the current configuration singleton for an instance method or a receiver-free
+static call for a static method. A Spring bean definition creates the product.
+Spring applies dependency injection, bean postprocessors and lifecycle
 callbacks. A later save recreates the added product, including body-only edits.
 Removing the method or its `@Bean` annotation removes its owned definition.
 Changing its name removes the previous owned name and registers the new one.
@@ -174,9 +175,24 @@ and Spring's failure. Fix the dependency or qualifier and compile the
 configuration again to recover; registering a missing dependency alone does not
 restore a definition removed after a failed reload.
 
+Static factories are supported too, including private methods and required bean
+arguments. For example, add this method to the supported configuration:
+
+```java
+@Bean({"staticClient", "legacyStaticClient"})
+private static Client staticClient(Transport transport) {
+    return new Client(transport);
+}
+```
+
+Static and instance factories share argument resolution, alias registration,
+selection metadata and product lifecycle. Registration still requires the
+configuration singleton described below; supporting a static method does not
+enable configuration-free registration or early infrastructure factories.
+
 Supported factories carry direct `@Bean`, return an object
 (not a primitive, array or `void`), and have no generic signature. Private instance
-methods work; static, native and abstract methods do not. The class must carry
+and static methods work; native and abstract methods do not. The class must carry
 direct `@Configuration(proxyBeanMethods=false)`, extend only `Object`, implement
 no interfaces and have exactly one local, unproxied singleton configuration in
 each affected bean factory. Extra runtime class annotations are limited to

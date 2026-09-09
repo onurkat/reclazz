@@ -40,7 +40,7 @@ class SpringAddedBeanTest {
         public void bad() { }
         public int primitive() { return 1; }
         public Product argument(int value) { return new Product(value); }
-        public static Product staticFactory() { return new Product(1); }
+        public native Product nativeFactory();
         public List<String> generic() { return List.of(); }
     }
 
@@ -250,7 +250,7 @@ class SpringAddedBeanTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"bad", "primitive", "argument", "staticFactory", "generic"})
+    @ValueSource(strings = {"bad", "primitive", "argument", "nativeFactory", "generic"})
     void unsupportedSignaturesAreNamed(String name) throws Exception {
         var plan = inspect(annotated(name));
         assertTrue(plan.factories().isEmpty());
