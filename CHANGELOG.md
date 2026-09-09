@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Transaction and cache operations on added service methods.** External
+  companion-method calls on supported singleton beans now use the application's
+  real Spring interceptors and actual target. H2 and real-agent tests cover
+  commit/rollback, cache hits/put/eviction, combined operations, metadata changes,
+  removal/restoration and old/new bean references. Unsupported advice/receiver
+  shapes fail explicitly; existing-method and self-call dispatch remain separate.
+  Spring JDBC/TX and H2 are test-only. See
+  [scope](docs/usage.md#operations-on-added-service-methods).
+  Added plain methods on classes without operation routes retain typed dispatch
+  without per-call argument boxing; route publication activates interception on
+  already-linked call sites.
+
 - **Edited pointcuts reach existing Spring singleton proxies.** Supported JDK and
   CGLIB proxies update their aspect advisors in place, preserving injected
   references, target state and unrelated advice. Real HTTP tests cover matching

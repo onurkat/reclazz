@@ -45,6 +45,9 @@ dependencies {
     // reflection-only and has no Spring compile dependency.
     testImplementation("org.springframework:spring-beans:5.3.39")
     testImplementation("org.springframework:spring-context:5.3.39")
+    // Real commit/rollback regressions against a local in-memory database only.
+    testImplementation("org.springframework:spring-jdbc:5.3.39")
+    testImplementation("com.h2database:h2:2.2.224")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.22.1")
     // Spring MVC, its test support and the servlet API, for driving a real

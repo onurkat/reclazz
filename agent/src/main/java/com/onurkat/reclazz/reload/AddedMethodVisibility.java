@@ -126,6 +126,13 @@ public final class AddedMethodVisibility {
     public static List<Unseen> check(byte[] newBytecode,
                                     List<TransformContext.MethodSig> added,
                                     boolean springAdaptersHandled, Set<String> jacksonGetters) {
+        return check(newBytecode, added, springAdaptersHandled, jacksonGetters, Set.of());
+    }
+
+    public static List<Unseen> check(byte[] newBytecode,
+                                    List<TransformContext.MethodSig> added,
+                                    boolean springAdaptersHandled, Set<String> jacksonGetters,
+                                    Set<String> operationMethods) {
         List<Unseen> unseen = new ArrayList<>();
         if (added == null || added.isEmpty()) return unseen;
 
@@ -149,6 +156,9 @@ public final class AddedMethodVisibility {
                         public org.objectweb.asm.AnnotationVisitor visitAnnotation(
                                 String annotationDescriptor, boolean visible) {
                             String simple = simpleName(annotationDescriptor);
+                            if (operationMethods.contains(name + descriptor)
+                                    && (annotationDescriptor.equals("Lorg/springframework/transaction/annotation/Transactional;")
+                                    || annotationDescriptor.startsWith("Lorg/springframework/cache/annotation/"))) return null;
                             if (jacksonGetters.contains(name + descriptor)
                                     && annotationDescriptor.startsWith("Lcom/fasterxml/jackson/")) return null;
                             // The Spring reloaders register the supported
