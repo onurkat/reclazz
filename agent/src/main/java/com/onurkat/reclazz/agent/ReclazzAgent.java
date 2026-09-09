@@ -21,6 +21,7 @@ import com.onurkat.reclazz.reload.StructuralReloader;
 import com.onurkat.reclazz.spring.SpringReloadOrchestrator;
 import com.onurkat.reclazz.transform.ReclazzTransformer;
 import com.onurkat.reclazz.transform.ReflectionInterceptTransformer;
+import com.onurkat.reclazz.transform.JacksonAccessorTransformer;
 import com.onurkat.reclazz.transform.TransformContext;
 import com.onurkat.reclazz.ui.ReloadEffects;
 import com.onurkat.reclazz.ui.ReloadEvents;
@@ -385,6 +386,9 @@ public class ReclazzAgent {
                 instrumentation.addTransformer(transformer, true);
                 if (config.isVerbose()) StatusReporter.info("Reclazz ClassFileTransformer registered (retransform-capable)");
 
+                // Jackson must take its specialised metadata route before the general
+                // reflection transformer rewrites these same Class calls.
+                instrumentation.addTransformer(new JacksonAccessorTransformer(), true);
                 ReflectionInterceptTransformer reflectionTransformer = new ReflectionInterceptTransformer();
                 instrumentation.addTransformer(reflectionTransformer, true);
                 if (config.isVerbose()) StatusReporter.info("Reflection intercept transformer registered");

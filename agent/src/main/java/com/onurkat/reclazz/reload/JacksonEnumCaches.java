@@ -32,21 +32,16 @@ import java.util.Map;
  *   old constants, both ways      fine
  * </pre>
  *
- * <p>An enum is not the only shape Jackson caches. A serializer is built once
- * per class per mapper from the properties it found, so a field added to a
- * response DTO is missing from the JSON even though the class reloaded, and
- * nothing anywhere says why. Measured on Spring Boot 3.3.4, stock JDK 21,
- * after adding a field and its getter to a DTO whose endpoint had already
- * been called once:
+ * <p>DTO serializers cache property metadata too. Flushing alone cannot expose
+ * a getter the loaded class does not have: {@link JacksonAddedGetters} supplies
+ * that metadata to Jackson before this runs. AddedJacksonGetterReloadTest
+ * exercises real HTTP responses on Jackson 2.13.5 across addition, annotation
+ * changes, removal and restoration. Its initial run without the adapter kept
+ * answering only the original property.
  *
- * <pre>
- *   the reload                    Structural reload: demo.Dto (+1 method +1 field)
- *   the endpoint, before flush    {"name":"alpha"}
- *   the endpoint, after flush     {"name":"alpha","count":7}
- * </pre>
- *
- * <p>So the same flush runs after any structural reload, not only after an
- * enum change. It says nothing when it does: a cache that rebuilds lazily and
+ * <p>The same flush runs after structural/annotation changes and saves of a DTO
+ * carrying added getters, not only after an enum change. It says nothing when it does:
+ * a cache that rebuilds lazily and
  * correctly is not news, and the enum path keeps its own sentence because
  * there the constant was previously failing outright.
  *
@@ -105,6 +100,17 @@ final class JacksonEnumCaches {
             Object serializerCache = read(provider, "_serializerCache");
             Method flush = serializerCache.getClass().getMethod("flush");
             flush.setAccessible(true);
+            // Jackson 2.13's flush clears the mutable map but leaves its cached
+            // read-only snapshot intact (verified against 2.13.5 bytecode).
+            // Later providers can otherwise keep discovering the old shape.
+            java.util.concurrent.atomic.AtomicReference<?> readOnly = null;
+            try {
+                Object snapshot = read(serializerCache, "_readOnlyMap");
+                if (!(snapshot instanceof java.util.concurrent.atomic.AtomicReference<?> reference)) return false;
+                readOnly = reference;
+            } catch (NoSuchFieldException absent) {
+                // Other cache implementations may invalidate snapshots in flush itself.
+            }
 
             Object deserializationContext = read(mapper, "_deserializationContext");
             Object deserializerCache = read(deserializationContext, "_cache");
@@ -115,7 +121,10 @@ final class JacksonEnumCaches {
             if (!(rootDeserializers instanceof Map<?, ?> roots)) return false;
 
             // Everything was located; only now is anything touched.
-            flush.invoke(serializerCache);
+            synchronized (serializerCache) {
+                flush.invoke(serializerCache);
+                if (readOnly != null) readOnly.set(null);
+            }
             flushDeser.invoke(deserializerCache);
             roots.clear();
             return true;

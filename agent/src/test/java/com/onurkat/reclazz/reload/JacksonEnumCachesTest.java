@@ -19,19 +19,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 /**
- * The Jackson flush after an enum append, tested without Jackson.
+ * Mapper cache flushing, with isolated stand-ins and a real Jackson regression.
  *
- * <p>The agent has no Jackson dependency on purpose, and this module's test
- * classpath has none either, which makes the absence case the real thing
- * rather than a simulation. The presence case compiles a stand-in
+ * <p>The production agent has no Jackson dependency. Isolated loaders keep the
+ * missing-Jackson and incompatible-cache cases independent of the real test
+ * dependency. The compatibility cases compile a stand-in
  * {@code com.fasterxml.jackson.databind.ObjectMapper} at runtime carrying the
  * three members the flush walks ({@code _serializerProvider._serializerCache}
  * with {@code flush()}, {@code _deserializationContext._cache} with
  * {@code flushCachedDeserializers()}, and the {@code _rootDeserializers}
  * map), because those names are the entire contract: a Jackson that renames
  * one must make the flush skip the mapper, and these tests hold both sides of
- * that bargain. The live measurement behind the feature is recorded in
- * {@link JacksonEnumCaches}'s javadoc; what is prevented here is the flush
+ * that bargain. What is prevented here is the flush
  * silently doing nothing (stale caches would 500 on serialising an appended
  * constant) and the flush claiming a mapper it only half-reached.
  */
@@ -46,17 +45,18 @@ class JacksonEnumCachesTest {
     }
 
     @Test
-    void withoutJacksonOrSpringTheFlushDoesNothingAndSaysNothing() {
+    void withoutJacksonOrSpringTheFlushDoesNothingAndSaysNothing() throws Exception {
         assertEquals(0, JacksonEnumCaches.flush(),
                 "no contexts registered: an application without Spring must be untouched");
 
-        ApplicationContextHolder.register(new Object() {
-            public Map<String, Object> getBeansOfType(Class<?> type) {
-                return Map.of();
-            }
-        });
-        assertEquals(0, JacksonEnumCaches.flush(),
-                "a context whose classloader has no Jackson has no cache to flush");
+        Path source = dir.resolve("NoJacksonContext.java");
+        Files.writeString(source, "public class NoJacksonContext { public java.util.Map getBeansOfType(Class type) { throw new AssertionError(\"must not query beans without Jackson\"); } }");
+        assertEquals(0, javax.tools.ToolProvider.getSystemJavaCompiler().run(null, null, null, source.toString()));
+        try (var loader = new URLClassLoader(new java.net.URL[]{dir.toUri().toURL()}, ClassLoader.getPlatformClassLoader())) {
+            assertThrows(ClassNotFoundException.class, () -> loader.loadClass("com.fasterxml.jackson.databind.ObjectMapper"));
+            ApplicationContextHolder.register(loader.loadClass("NoJacksonContext").getConstructor().newInstance());
+            assertEquals(0, JacksonEnumCaches.flush(), "a context without Jackson has no cache to flush");
+        }
     }
 
     @Test
@@ -95,7 +95,7 @@ class JacksonEnumCachesTest {
         assertEquals(0, rc, "the stand-in sources have to compile");
 
         try (URLClassLoader loader = new URLClassLoader(new java.net.URL[]{dir.toUri().toURL()},
-                JacksonEnumCachesTest.class.getClassLoader())) {
+                ClassLoader.getPlatformClassLoader())) {
             Object mapper = Class.forName("com.fasterxml.jackson.databind.ObjectMapper", true, loader)
                     .getDeclaredConstructor().newInstance();
             Object context = Class.forName("fakespring.Ctx", true, loader)
@@ -154,7 +154,7 @@ class JacksonEnumCachesTest {
         assertEquals(0, rc);
 
         try (URLClassLoader loader = new URLClassLoader(new java.net.URL[]{dir.toUri().toURL()},
-                JacksonEnumCachesTest.class.getClassLoader())) {
+                ClassLoader.getPlatformClassLoader())) {
             Object mapper = Class.forName("com.fasterxml.jackson.databind.ObjectMapper", true, loader)
                     .getDeclaredConstructor().newInstance();
             Object context = Class.forName("fakespring.Ctx", true, loader)
@@ -168,6 +168,28 @@ class JacksonEnumCachesTest {
                     "everything is located before anything is touched: a mapper that "
                     + "cannot be fully flushed must not be partly flushed");
         }
+    }
+
+    public static class Dto { public String getName() { return "value"; } }
+    public abstract static class Renamed {
+        @com.fasterxml.jackson.annotation.JsonProperty("renamed") abstract String getName();
+    }
+    public static class MapperContext {
+        final Object mapper;
+        MapperContext(Object mapper) { this.mapper = mapper; }
+        public Map<String, Object> getBeansOfType(Class<?> type) {
+            return type.isInstance(mapper) ? Map.of("mapper", mapper) : Map.of();
+        }
+    }
+
+    @Test void realJacksonFlushDropsTheReadOnlySerializerSnapshotToo() throws Exception {
+        var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        assertEquals("{\"name\":\"value\"}", mapper.writeValueAsString(new Dto()));
+        assertEquals("{\"name\":\"value\"}", mapper.writeValueAsString(new Dto()));
+        mapper.addMixIn(Dto.class, Renamed.class);
+        ApplicationContextHolder.register(new MapperContext(mapper));
+        assertEquals(1, JacksonEnumCaches.flush());
+        assertEquals("{\"renamed\":\"value\"}", mapper.writeValueAsString(new Dto()));
     }
 
     private static Object read(Object target, String fieldName) throws Exception {
