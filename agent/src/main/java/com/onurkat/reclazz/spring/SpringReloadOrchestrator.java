@@ -35,6 +35,7 @@ public class SpringReloadOrchestrator {
     private final SpringSchedulerReloader schedulerReloader;
     private final SpringEventReloader eventReloader;
     private final SpringKafkaReloader kafkaReloader;
+    private final SpringJmsReloader jmsReloader;
     private final SpringAddedBeanReloader addedBeanReloader;
     private final SpringAopReloader aopReloader;
     private final SpringAsyncReloader asyncReloader;
@@ -54,6 +55,7 @@ public class SpringReloadOrchestrator {
         this.schedulerReloader = new SpringSchedulerReloader(platformContext);
         this.eventReloader = new SpringEventReloader(platformContext);
         this.kafkaReloader = new SpringKafkaReloader(platformContext);
+        this.jmsReloader = new SpringJmsReloader(platformContext);
         this.addedBeanReloader = new SpringAddedBeanReloader(platformContext);
         this.aopReloader = new SpringAopReloader(platformContext);
         this.asyncReloader = new SpringAsyncReloader(platformContext);
@@ -156,6 +158,7 @@ public class SpringReloadOrchestrator {
             // 1. Bean refresh — pass the actual Class object: its own
             // classloader is the only reliable way to match bean types
             // across contexts with different classloaders.
+            if (!jmsReloader.beforeBeanRefresh(reloadedClass, newBytecode, kafkaReloader)) return;
             if (!kafkaReloader.beforeBeanRefresh(reloadedClass, newBytecode)) return;
             beanReloader.refreshBean(className, reloadedClass);
 
@@ -247,6 +250,8 @@ public class SpringReloadOrchestrator {
      */
     private java.util.List<ReloadSteps.Step> buildSteps() {
         return java.util.List.of(
+            new ReloadSteps.Step("Added JMS listeners",
+                    r -> jmsReloader.reloadJmsListeners(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Added Kafka listeners",
                     r -> kafkaReloader.reloadKafkaListeners(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Added bean factories",

@@ -30,6 +30,22 @@ public final class SpringKafkaReloader {
     private record Infrastructure(Object context, Object processor, Object registry) { }
     private record Container(Object registry, String id, Object instance) { }
 
+    /** Read-only preflight for refusing mixed JMS/Kafka owners before shutdown. */
+    synchronized boolean hasListeners(Class<?> type, byte[] bytes) {
+        if (owners.get(type).registered || declaresKafka(type, bytes)) return true;
+        try {
+            for (var scope : infrastructures()) for (var c : containers(scope.registry())) {
+                Object bean = listenerBean(messageListener(c.instance()));
+                if (AddedKafkaListenerAdapter.ownerOf(bean) == type || (bean != null && type.isInstance(bean))) return true;
+            }
+            return false;
+        } catch (Throwable unavailable) {
+            // Only called for a JMS-relevant bean. Uncertain Kafka ownership
+            // must be resolved before the JMS side retires any consumers.
+            return true;
+        }
+    }
+
     public synchronized boolean beforeBeanRefresh(Class<?> type) {
         return beforeBeanRefresh(type, null);
     }

@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **JMS listeners added to running singleton components.** Supported new
+  `@JmsListener` methods register through Spring's processor and queue container
+  factory. Owned consumers finish destruction before singleton recreation;
+  later saves edit destinations, remove and restore listeners. ID ownership,
+  unfinished shutdown/retry and unrelated consumers are checked. Real broker
+  tests preserve local transaction rollback/redelivery. JMS dependencies are
+  isolated from the existing test classpath and never ship with the agent.
+  [Scope](docs/usage.md#jms-listeners-added-after-startup).
+
 - **Kafka listeners added to running singleton components.** Supported new
   `@KafkaListener` methods register through the application's Spring Kafka
   processor and record container factory. Direct listener-class reloads stop
