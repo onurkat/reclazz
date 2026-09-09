@@ -381,6 +381,77 @@ its expected bytecode sites and reports an unavailable/incompatible hook.
 Other Spring versions, JDK 17 runtime, late attach and a servlet-container
 deployment were not exercised. No dependencies were added.
 
+### Kafka listeners added after startup
+
+With Spring Kafka already configured, compile a new listener method on a
+running plain singleton `@Component` / `@Service` / `@Repository`:
+
+```java
+@KafkaListener(id = "orders-created", topics = "orders", groupId = "orders-service")
+public void onOrder(String payload) {
+    processOrder(payload);
+}
+```
+
+The saved metadata is passed to the application's Kafka listener processor and
+container factory. Spring performs message conversion and argument resolution;
+`@Payload`, `@Header`, `@Headers` and concrete generic parameter signatures such
+as `ConsumerRecord<Integer, String>` are carried. Public and private void
+instance methods with one or more arguments are supported. Calls delegate to
+the current plain singleton; a missing or proxied replacement throws instead
+of silently treating the message as handled.
+
+Unsupported Kafka infrastructure does not block unrelated bean reloads.
+Before the edited bean is recreated, Reclazz identifies its standard Kafka
+record adapters, requests consumer stop and waits for the stop callbacks before
+unregistering their container IDs. Normal Spring initialization can then
+re-register existing methods without ID collisions. The new methods register
+afterward. Later saves update bodies/topics, remove listeners or annotations,
+and restore them. Unrelated containers retain their identity. A duplicate ID
+belonging to another container is refused. A failed registration attempt cleans
+up the containers it created; failures are reported in the restart ledger.
+
+The supported addition uses literal nonempty `id` and `topics`; optional literal
+`groupId`, `containerFactory`, `idIsGroup`, `autoStartup` and positive integer
+`concurrency` are accepted. Other explicitly supplied `@KafkaListener` options
+are refused. The class directly extends `Object`, has no interfaces/type
+variables and carries only the component stereotypes above or `@Deprecated`.
+Callback annotations are direct `@KafkaListener` and optional `@Deprecated`;
+extra advice annotations, non-void/static/abstract/native/bridge/synthetic
+methods and type-variable signatures are refused. Parameter names require
+explicit annotation names or compilation with `-parameters`.
+
+Use the standard `KafkaListenerAnnotationBeanPostProcessor`,
+`KafkaListenerEndpointRegistry` and `ConcurrentKafkaListenerContainerFactory`
+in record mode. Added listeners refuse annotation enhancers, retry-topic
+configuration, filtered/retry-template/batch factories and container
+customizers. Proxy/subclass receivers are not unwrapped past advice. This
+scope does not cover class-level or repeatable listeners, SpEL/property-based
+listener attributes, container groups, arbitrary wrapper/container types,
+scoped/prototype beans or sharing one registry between multiple contexts.
+
+If consumer stop does not complete within 30 seconds, container entries remain
+registered and this class's bean refresh/framework follow-up is deferred with
+a diagnostic. Already reloaded method bodies are not rolled back. The Kafka
+coordination here runs for direct class reload through the Spring orchestrator;
+property-triggered or dependent-bean recreation through other paths is not
+covered. Existing Spring bean recreation/lifecycle effects remain. The hidden
+method's declaring class differs from the original, so custom conversion or
+argument factories depending on exact declaring-class identity are outside the
+verified scope. This is not an atomic reload transaction or a Kafka exactly-once
+delivery guarantee; application acknowledgments, retries and offset policy
+continue to determine redelivery.
+
+Verified with Spring Kafka 2.9.13, Spring Framework 5.3.39 and a real embedded
+Kafka 3.2.3 broker on stock JDK 21. Real-agent tests cover both the first listener
+on an already used bean and addition beside an existing listener, unique test
+message delivery across six saves, topic changes, retired consumer state,
+unrelated container identity and context close. Start with `-javaagent` before
+application classes load. Other broker/framework versions, JDK 17 runtime,
+external clusters, transactions and rebalance/failure delivery guarantees were
+not exercised. Kafka libraries and the embedded broker are test dependencies
+only. New RabbitMQ/JMS listener methods remain unsupported.
+
 ### Operations on added service methods
 
 On a stock JDK, add a public instance method to a running singleton service and

@@ -177,6 +177,8 @@ public class ReclazzAgent {
                 com.onurkat.reclazz.spring.AddedEventListenerAdapter.class);
         LookupCapture.trust(
                 com.onurkat.reclazz.spring.AddedBeanAdapter.class);
+        LookupCapture.trust(
+                com.onurkat.reclazz.spring.AddedKafkaListenerAdapter.class);
         LookupCapture.seal();
     }
 
