@@ -45,6 +45,10 @@ dependencies {
     // reflection-only and has no Spring compile dependency.
     testImplementation("org.springframework:spring-beans:5.3.39")
     testImplementation("org.springframework:spring-context:5.3.39")
+    // Real local Kafka broker regressions only; never packaged with the agent.
+    testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
+    testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
+    testImplementation("org.springframework:spring-messaging:5.3.39")
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
     testImplementation("com.h2database:h2:2.2.224")

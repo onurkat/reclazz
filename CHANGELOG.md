@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Kafka listeners added to running singleton components.** Supported new
+  `@KafkaListener` methods register through the application's Spring Kafka
+  processor and record container factory. Direct listener-class reloads stop
+  owned consumers before bean recreation and support later body/topic edits,
+  removal and restoration, while retaining unrelated containers. Duplicate IDs
+  and unsupported added-listener shapes are reported. Real embedded-broker
+  tests use test-only dependencies.
+  [Scope](docs/usage.md#kafka-listeners-added-after-startup).
+
 - **Binding and model callbacks added to running controllers and advice.**
   Supported plain beans can gain `@InitBinder` and `@ModelAttribute` methods on
   a stock JDK. Existing/new endpoints use Spring's named binding, model

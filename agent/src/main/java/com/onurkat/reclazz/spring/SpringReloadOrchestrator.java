@@ -34,6 +34,7 @@ public class SpringReloadOrchestrator {
     private final SpringCacheReloader cacheReloader;
     private final SpringSchedulerReloader schedulerReloader;
     private final SpringEventReloader eventReloader;
+    private final SpringKafkaReloader kafkaReloader;
     private final SpringAddedBeanReloader addedBeanReloader;
     private final SpringAopReloader aopReloader;
     private final SpringAsyncReloader asyncReloader;
@@ -52,6 +53,7 @@ public class SpringReloadOrchestrator {
         this.cacheReloader = new SpringCacheReloader(platformContext);
         this.schedulerReloader = new SpringSchedulerReloader(platformContext);
         this.eventReloader = new SpringEventReloader(platformContext);
+        this.kafkaReloader = new SpringKafkaReloader(platformContext);
         this.addedBeanReloader = new SpringAddedBeanReloader(platformContext);
         this.aopReloader = new SpringAopReloader(platformContext);
         this.asyncReloader = new SpringAsyncReloader(platformContext);
@@ -154,6 +156,7 @@ public class SpringReloadOrchestrator {
             // 1. Bean refresh — pass the actual Class object: its own
             // classloader is the only reliable way to match bean types
             // across contexts with different classloaders.
+            if (!kafkaReloader.beforeBeanRefresh(reloadedClass, newBytecode)) return;
             beanReloader.refreshBean(className, reloadedClass);
 
             // 2. MVC re-scan. Structural changes need it because the set of
@@ -244,6 +247,8 @@ public class SpringReloadOrchestrator {
      */
     private java.util.List<ReloadSteps.Step> buildSteps() {
         return java.util.List.of(
+            new ReloadSteps.Step("Added Kafka listeners",
+                    r -> kafkaReloader.reloadKafkaListeners(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Added bean factories",
                     r -> addedBeanReloader.reloadBeanMethods(r.type(), r.addedMethods(), r.bytecode())),
             new ReloadSteps.Step("Cache eviction",
