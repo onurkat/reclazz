@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Binding and model callbacks added to running controllers and advice.**
+  Supported plain beans can gain `@InitBinder` and `@ModelAttribute` methods on
+  a stock JDK. Existing/new endpoints use Spring's named binding, model
+  initialization, advice ordering and selectors across subsequent edits,
+  removal and restoration. Unsupported metadata/receivers are refused.
+  [Scope](docs/usage.md#binding-and-model-methods-added-after-startup).
+
 - **Exception handlers added to running controllers and advice.** Supported
   plain controllers and controller advice can gain entirely new
   `@ExceptionHandler` methods on a stock JDK. Spring retains handler selection,

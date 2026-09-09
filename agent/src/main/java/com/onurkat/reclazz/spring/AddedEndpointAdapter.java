@@ -86,6 +86,7 @@ public final class AddedEndpointAdapter {
                 .findGetter(adapterClass, "target", controllerClass)
                 .asType(java.lang.invoke.MethodType.methodType(Object.class, Object.class));
         com.onurkat.reclazz.bootstrap.ExceptionHandlerBridge.registerEndpoint(adapterClass, controllerClass, target);
+        com.onurkat.reclazz.bootstrap.MvcBindingBridge.registerEndpoint(adapterClass, controllerClass, target);
         return adapterClass.getConstructor(controllerClass).newInstance(controllerBean);
     }
 
