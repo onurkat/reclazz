@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Selection metadata for `@Bean` methods added after startup.** Direct method
+  `@Primary` and `@Qualifier` annotations now participate in Spring candidate
+  selection, including providers added in the same save and qualifier values
+  different from bean names. Later saves update or remove the metadata. Missing
+  or ambiguous matches are reported and a corrected reload recovers. Class-level
+  policies and composed qualifiers remain outside scope. See
+  [scope and lifecycle](docs/usage.md#bean-methods-added-after-startup).
+
 - **Required bean arguments for `@Bean` methods added after startup.** Factories
   can take non-generic reference bean parameters. Spring resolves types, primary
   candidates, direct parameter qualifiers and preserved parameter names. Each
