@@ -155,9 +155,11 @@ than either.
   per method and keyed by something redefinition does not change; it is cleared
   and refilled on every reload, so an edited expression on a service is
   enforced as written on the next request
-- **New bean classes**: a brand-new `@Service`, `@Component` or `@RestController`
-  file becomes a live bean on any JDK 17+, dependencies injected and mappings
-  registered, instead of waiting for the next restart's component scan
+- **New bean classes**: a brand-new `@Service`, `@Component`, `@RestController`
+  or a custom meta-annotated stereotype file becomes a live bean on any JDK 17+,
+  dependencies injected and mappings registered, with the bean name resolved the
+  way component scanning would (including `@AliasFor`), instead of waiting for
+  the next restart's component scan
 - **Annotation metadata**: an edited `@Transactional` or `@Cacheable` takes
   effect, not just the method body it sits on
 - **New exception handlers**: add an `@ExceptionHandler` method to a supported
@@ -639,7 +641,7 @@ compile with an older `--release` while you develop, or update Reclazz.
 | Remove methods/fields | **Yes** | Hidden from reflection so scans stop seeing them; existing callers keep the previous implementation until they are hot-recompiled |
 | Change annotations | **Yes** | None |
 | Spring bean logic | Yes | None |
-| New Spring beans (@Component) | **Yes** — a new stereotype class is registered and wired, and `*-spring.xml` still works for XML-defined beans | None |
+| New Spring beans (@Component) | **Yes**, a new class carrying a direct or custom meta-annotated stereotype is registered and wired with the scanner's own bean name, and `*-spring.xml` still works for XML-defined beans | None |
 | Spring XML/YAML changes | XML property edits and [selected singleton recreation](docs/usage.md#xml-singleton-recreation); [loaded Boot properties/YAML](docs/usage.md#yaml-and-removed-configuration-keys) | XML removal, new complex definitions and unsupported dependency graphs require restart |
 | Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved, beans taking changed direct or supported computed `@Value` constructor arguments rebuilt; supported scalar field SpEL recomputed; [property-value chains are followed for `@Value`](docs/usage.md#indirect-value-dependencies) | Unsupported expressions or constructor creation policies hold the candidate. [Fields](docs/usage.md#computed-value-fields) and [constructors](docs/usage.md#computed-value-constructor-parameters) |
 | Log levels and logging config | Yes (`logging.level.*`, `logback.xml`, `log4j2.xml`) | Appenders are rebuilt, so a reconfigure resets the context |

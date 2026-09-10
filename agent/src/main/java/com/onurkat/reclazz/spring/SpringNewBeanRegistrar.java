@@ -30,23 +30,17 @@ import com.onurkat.reclazz.util.Reflect;
  * already has a reloader. Failures unregister the definition again, so a
  * constructor that throws leaves the context exactly as it was.
  *
- * <p>Scope, stated: classes carrying one of Spring's own stereotype
- * annotations, by descriptor, from the bytecode. A custom meta-annotated
- * stereotype is not resolved (that needs the full scanner) and is reported as
- * skipped when it at least looks like one.
+ * <p>Scope, stated: any class Spring's own component scan would accept,
+ * resolved once the class is loaded through the context's Spring. A direct
+ * stereotype, a custom meta-annotated stereotype, and an {@code @AliasFor} bean
+ * name are all read the way scanning reads them at startup. Generic type
+ * resolution, inherited callbacks and non-component adapters stay with their
+ * own reloaders.
  */
 public final class SpringNewBeanRegistrar {
 
     /** What was done with the new class. */
     public enum Outcome { REGISTERED, NOT_A_COMPONENT, DECLINED }
-
-    private static final String[] STEREOTYPES = {
-            "Lorg/springframework/stereotype/Component;",
-            "Lorg/springframework/stereotype/Service;",
-            "Lorg/springframework/stereotype/Repository;",
-            "Lorg/springframework/stereotype/Controller;",
-            "Lorg/springframework/web/bind/annotation/RestController;",
-    };
 
     private final PlatformContext platformContext;
     private final SpringMvcReloader mvcReloader;
@@ -66,8 +60,11 @@ public final class SpringNewBeanRegistrar {
         if (className == null || bytecode == null || className.contains("$")) {
             return Outcome.NOT_A_COMPONENT;
         }
-        Stereotype stereotype = findStereotype(bytecode);
-        if (stereotype == null) return Outcome.NOT_A_COMPONENT;
+        // Cheap gate: only a class carrying at least one class annotation can be
+        // a component. The stereotype itself is resolved through Spring below,
+        // once a context that can load the class is known, so a custom
+        // meta-annotated stereotype is recognised too.
+        if (!hasClassAnnotation(bytecode)) return Outcome.NOT_A_COMPONENT;
 
         List<Object> contexts = platformContext.getAllApplicationContexts();
         if (contexts.isEmpty()) return Outcome.DECLINED;
@@ -114,12 +111,15 @@ public final class SpringNewBeanRegistrar {
             }
             if (home == null) return Outcome.DECLINED;
 
-            String beanName = stereotype.beanName != null && !stereotype.beanName.isEmpty()
-                    ? stereotype.beanName
-                    : java.beans.Introspector.decapitalize(
-                            clazz.getSimpleName());
-
             Object beanFactory = SpringBeans.getBeanFactory(home);
+            ClassLoader springLoader = beanFactory.getClass().getClassLoader();
+            // Resolve the stereotype and bean name through Spring's own merged
+            // annotations, so a custom stereotype and an @AliasFor name are read
+            // exactly as component scanning would at startup.
+            Stereotype stereotype = resolveStereotype(clazz, beanFactory, springLoader);
+            if (stereotype == null) return Outcome.NOT_A_COMPONENT;
+            String beanName = stereotype.beanName;
+
             Method containsBeanDefinition = Reflect.findMethod(
                     beanFactory.getClass(), "containsBeanDefinition", String.class);
             if (containsBeanDefinition != null
@@ -130,12 +130,9 @@ public final class SpringNewBeanRegistrar {
                 return Outcome.DECLINED;
             }
 
-            // new RootBeanDefinition(clazz), through the context's own Spring.
-            ClassLoader springLoader = beanFactory.getClass().getClassLoader();
-            Class<?> definitionClass = Class.forName(
-                    "org.springframework.beans.factory.support.RootBeanDefinition",
-                    true, springLoader);
-            Object definition = definitionClass.getConstructor(Class.class).newInstance(clazz);
+            // The annotated definition Spring's own scanner would register,
+            // carrying the class's merged metadata.
+            Object definition = stereotype.definition;
 
             Method register = Reflect.findMethod(beanFactory.getClass(),
                     "registerBeanDefinition", String.class,
@@ -199,40 +196,61 @@ public final class SpringNewBeanRegistrar {
         return c.getClass().getSimpleName() + (message == null ? "" : ": " + message);
     }
 
-    // ── stereotype detection, from bytecode ───────────────────────────────
+    // ── stereotype detection, through Spring's merged annotations ──────────
 
-    private record Stereotype(String beanName, boolean controller) {
+    private record Stereotype(String beanName, boolean controller, Object definition) {
     }
 
-    private static Stereotype findStereotype(byte[] bytecode) {
-        final Stereotype[] found = new Stereotype[1];
+    /** Any class-level annotation makes the class worth resolving through Spring. */
+    private static boolean hasClassAnnotation(byte[] bytecode) {
+        final boolean[] found = {false};
         try {
             new org.objectweb.asm.ClassReader(bytecode).accept(
                     new org.objectweb.asm.ClassVisitor(org.objectweb.asm.Opcodes.ASM9) {
                         @Override
-                        public org.objectweb.asm.AnnotationVisitor visitAnnotation(
-                                String descriptor, boolean visible) {
-                            for (String stereotype : STEREOTYPES) {
-                                if (!descriptor.equals(stereotype)) continue;
-                                boolean controller = descriptor.contains("Controller");
-                                found[0] = new Stereotype(null, controller);
-                                return new org.objectweb.asm.AnnotationVisitor(
-                                        org.objectweb.asm.Opcodes.ASM9) {
-                                    @Override
-                                    public void visit(String name, Object value) {
-                                        if ("value".equals(name) && value instanceof String s) {
-                                            found[0] = new Stereotype(s, controller);
-                                        }
-                                    }
-                                };
-                            }
+                        public org.objectweb.asm.AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                            found[0] = true;
                             return null;
                         }
                     },
                     org.objectweb.asm.ClassReader.SKIP_CODE);
         } catch (Throwable unreadable) {
-            return null;
+            return false;
         }
         return found[0];
+    }
+
+    /**
+     * Ask the context's own Spring whether the class is a component and, if so,
+     * build the annotated definition and bean name its scanner would. This
+     * resolves custom meta-annotated stereotypes and {@code @AliasFor} names
+     * rather than matching a fixed list of descriptors.
+     */
+    private static Stereotype resolveStereotype(Class<?> clazz, Object beanFactory, ClassLoader springLoader) {
+        try {
+            Class<?> merged = Class.forName("org.springframework.core.annotation.AnnotatedElementUtils", false, springLoader);
+            Method hasAnnotation = merged.getMethod("hasAnnotation", java.lang.reflect.AnnotatedElement.class, Class.class);
+            Class<?> component = Class.forName("org.springframework.stereotype.Component", false, springLoader);
+            if (!Boolean.TRUE.equals(hasAnnotation.invoke(null, clazz, component))) return null;
+            Class<?> controllerType = Class.forName("org.springframework.stereotype.Controller", false, springLoader);
+            boolean controller = Boolean.TRUE.equals(hasAnnotation.invoke(null, clazz, controllerType));
+
+            Class<?> annotatedDefinition = Class.forName("org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition", true, springLoader);
+            Object definition = annotatedDefinition.getConstructor(Class.class).newInstance(clazz);
+            // Honour @Scope, @Lazy, @Primary, @DependsOn on the class, as the scanner would.
+            Class<?> annotatedBeanDefinition = Class.forName("org.springframework.beans.factory.annotation.AnnotatedBeanDefinition", false, springLoader);
+            Class<?> configUtils = Class.forName("org.springframework.context.annotation.AnnotationConfigUtils", true, springLoader);
+            configUtils.getMethod("processCommonDefinitionAnnotations", annotatedBeanDefinition).invoke(null, definition);
+
+            Class<?> registryType = Class.forName("org.springframework.beans.factory.support.BeanDefinitionRegistry", false, springLoader);
+            Class<?> beanDefinitionType = Class.forName("org.springframework.beans.factory.config.BeanDefinition", false, springLoader);
+            Object generator = Class.forName("org.springframework.context.annotation.AnnotationBeanNameGenerator", true, springLoader)
+                    .getConstructor().newInstance();
+            String name = (String) generator.getClass().getMethod("generateBeanName", beanDefinitionType, registryType)
+                    .invoke(generator, definition, beanFactory);
+            return new Stereotype(name, controller, definition);
+        } catch (ReflectiveOperationException unavailable) {
+            return null;
+        }
     }
 }
