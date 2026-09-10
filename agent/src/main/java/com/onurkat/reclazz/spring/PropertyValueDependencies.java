@@ -25,9 +25,14 @@ final class PropertyValueDependencies implements Predicate<String> {
     private final Class<?> resolverType;
 
     PropertyValueDependencies(Object context, Map<String, String> changed) throws Exception {
+        this(context, changed, null);
+    }
+
+    PropertyValueDependencies(Object context, Map<String, String> changed, Object preparedEnvironment) throws Exception {
         this.changed = Map.copyOf(changed);
         ClassLoader loader = context.getClass().getClassLoader();
-        Object environment = PropertyChangeCheck.candidateEnvironment(loader,
+        Object environment = preparedEnvironment != null ? preparedEnvironment
+                : PropertyChangeCheck.candidateEnvironment(loader,
                 PropertyChangeCheck.call(context, "getEnvironment"), changed);
         Class<?> sourcesType = Class.forName("org.springframework.core.env.PropertySources", false, loader);
         Class<?> rawType = Class.forName("org.springframework.core.env.PropertySourcesPropertyResolver", true, loader);

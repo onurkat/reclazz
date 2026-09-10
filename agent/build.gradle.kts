@@ -67,6 +67,8 @@ dependencies {
     // a Boot 2 application's validator is found by it.
     testImplementation("javax.validation:validation-api:2.0.1.Final")
     testImplementation("org.springframework.boot:spring-boot:2.7.18")
+    // Boot 2.7 YAML regression fixtures only; not shipped in the agent.
+    testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.5")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")

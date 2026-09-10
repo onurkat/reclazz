@@ -96,6 +96,8 @@ public class ReclazzAgent {
      */
     private static final PropertyFileSnapshots propertySnapshots =
             new PropertyFileSnapshots();
+    private static final com.onurkat.reclazz.spring.SpringPropertyFiles springPropertyFiles =
+            new com.onurkat.reclazz.spring.SpringPropertyFiles();
 
     /**
      * Localization saves defer expensive work to whoever reads next, so a save
@@ -1305,7 +1307,23 @@ public class ReclazzAgent {
         }
 
         StatusReporter.info("Config file changed: " + fileName);
-        var candidate = propertySnapshots.pending(event.getPath());
+        var candidate = fileName.endsWith(".properties") ? propertySnapshots.pending(event.getPath()) : null;
+        if (!(platformContext instanceof HybrisPlatformContext)) {
+            var fileResult = springPropertyFiles.apply(event.getPath(), platformContext::getAllApplicationContexts,
+                    agentConfig != null && agentConfig.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
+            if (fileResult != null) {
+                if (fileResult.outcome().state() == com.onurkat.reclazz.spring.PropertyChangeOutcome.State.APPLIED) {
+                    applyLoggerLevels(fileResult.effective(), fileResult.changed());
+                    StatusReporter.success("Applied " + Plural.of(fileResult.changed().size(), "property change")
+                            + " from " + fileName + ": " + fileResult.changed());
+                    if (fileResult.changed().stream().anyMatch(key -> isLoggingKey(key) && !fileResult.effective().containsKey(key))) {
+                        StatusReporter.warn("A removed logging level has no lower configured value; restart to reset that logger.");
+                        RestartLedger.note(fileName, "a removed logging level has no lower configured value; the logger needs resetting");
+                    }
+                }
+                return;
+            }
+        }
         if (candidate == null) return;
         if (candidate.changed().isEmpty()) {
             propertySnapshots.accept(candidate);
