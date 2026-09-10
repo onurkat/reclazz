@@ -181,9 +181,11 @@ than either.
   local transaction rollback/redelivery.
   [Scope](docs/usage.md#rabbit-listeners-added-after-startup).
 - **New `@Bean` factories**: add an instance or static `@Bean` method to a
-  running `@Configuration(proxyBeanMethods=false)` class and its product is
-  registered, with reference beans, typed collections and maps, arrays,
-  `Optional`, Spring providers and `@Value` arguments resolved by Spring.
+  running `@Configuration` class and its product is registered. Lite
+  configuration and static factories take reference beans, typed collections
+  and maps, arrays, `Optional`, Spring providers and `@Value` arguments; on a
+  default configuration a no-argument instance factory resolves the container
+  singleton from inter-bean calls, helpers and method references.
   [Scope and lifecycle](docs/usage.md#bean-methods-added-after-startup).
 - **New lifecycle methods**: a `@PostConstruct` or `@PreDestroy` added to a
   supported singleton runs on the next instance, and each instance keeps the

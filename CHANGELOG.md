@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-09-10
+
 ### Fixed
 - **Added MVC endpoints in child classloaders.** Controllers loaded by Tomcat
   and other child loaders can expose reload-added endpoints without a second
