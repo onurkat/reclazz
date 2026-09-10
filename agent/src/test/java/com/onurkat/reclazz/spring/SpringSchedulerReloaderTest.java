@@ -114,11 +114,14 @@ class SpringSchedulerReloaderTest {
             scope.context.getDefaultListableBeanFactory().destroySingleton("jobs");
             var proxy = new org.springframework.aop.framework.ProxyFactory(new Jobs());
             proxy.setProxyTargetClass(true);
+            // A non-standard advisor is the shape that stays refused: a standard
+            // tx/cache proxy is unwrapped and supported instead.
+            proxy.addAdvice((org.aopalliance.intercept.MethodInterceptor) call -> call.proceed());
             scope.context.getBeanFactory().registerSingleton("jobs", proxy.getProxy());
             RestartLedger.clear();
             assertFalse(reloader.reloadScheduledMethods(Jobs.class, ADDED, bytes));
             assertEquals(0, scope.processor.getScheduledTasks().size(), "the old adapter must be cancelled too");
-            assertTrue(RestartLedger.digest().stream().anyMatch(s -> s.contains("proxies")));
+            assertTrue(RestartLedger.digest().stream().anyMatch(s -> s.contains("advisor")));
         } finally { RestartLedger.clear(); }
     }
 

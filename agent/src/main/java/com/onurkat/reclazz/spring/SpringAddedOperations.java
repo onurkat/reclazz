@@ -88,9 +88,18 @@ public final class SpringAddedOperations {
         }
 
         synchronized Binding binding(Object receiver) throws Exception {
-            for (Binding binding : bindings) if (binding.bean.get() == receiver) return binding;
+            Binding match = match(receiver);
+            if (match != null) return match;
             discover();
+            return match(receiver);
+        }
+
+        // A caller may hand us the bean (proxy) or the unwrapped target: a
+        // scheduled or event task added to a proxied bean invokes the method on
+        // the target, and either identity names the same binding.
+        private Binding match(Object receiver) {
             for (Binding binding : bindings) if (binding.bean.get() == receiver) return binding;
+            for (Binding binding : bindings) if (binding.target.get() == receiver) return binding;
             return null;
         }
 

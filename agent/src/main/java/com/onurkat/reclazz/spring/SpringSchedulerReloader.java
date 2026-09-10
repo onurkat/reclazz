@@ -106,10 +106,14 @@ public class SpringSchedulerReloader {
             postProcess.invoke(processor, bean, beanName);
         }
         if (plan.methods().isEmpty()) return original;
-        // An added method is absent from an existing proxy's advised surface.
-        // Unwrapping it would execute the job while silently bypassing advice.
-        if (bean.getClass() != type) {
-            report(type, beanName + ": added scheduled methods on proxies or subclass instances need a restart");
+        // A standard tx/cache proxy is unwrapped so the task runs on the real
+        // target. Any advice the added method needs is applied by the
+        // added-operation bridge, keyed on the method's own annotations, so a
+        // plain task runs directly and an annotated one keeps its advice.
+        try {
+            resolveTarget(bean, type);
+        } catch (Exception reason) {
+            report(type, beanName + ": " + reason.getMessage());
             return original;
         }
         Object adapter = AddedScheduledAdapter.create(type, currentSingleton(factory, beanName, type), plan);
@@ -149,16 +153,20 @@ public class SpringSchedulerReloader {
                 // bean without reloading its class. Never retain that destroyed
                 // instance, and never create one while Spring is rebuilding it.
                 Object bean = read.invoke(factory, beanName);
-                if (bean != null && bean.getClass() != type) {
-                    if (warned.compareAndSet(false, true))
-                        report(type, beanName + ": the replacement singleton is a proxy or subclass; added tasks are paused");
-                    return null;
-                }
-                return bean;
+                if (bean == null) return null;
+                return resolveTarget(bean, type);
+            } catch (IllegalStateException unsupported) {
+                if (warned.compareAndSet(false, true))
+                    report(type, beanName + ": " + unsupported.getMessage() + "; added tasks are paused");
+                return null;
             } catch (ReflectiveOperationException failure) {
                 throw new IllegalStateException("Cannot read scheduled singleton " + beanName, failure);
             }
         };
+    }
+
+    private static Object resolveTarget(Object bean, Class<?> type) throws ReflectiveOperationException {
+        return AddedProxyTarget.resolve(bean, type);
     }
 
     private static void report(Class<?> type, String reason) {

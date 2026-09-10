@@ -125,7 +125,7 @@ public class SpringEventReloader {
             throw new IllegalStateException(bean + ": only singleton beans are supported");
         Supplier<Object> current = currentSingleton(factory, bean, type);
         Object instance = current.get();
-        if (instance == null) throw new IllegalStateException(bean + ": singleton is absent or is a proxy/subclass");
+        if (instance == null) throw new IllegalStateException(bean + ": singleton is absent or is an unsupported proxy/subclass");
         Object factories = Reflect.readField(processor, "eventListenerFactories");
         if (!(factories instanceof List<?> list) || list.isEmpty())
             throw new IllegalStateException("event listener factories are unavailable");
@@ -215,11 +215,11 @@ public class SpringEventReloader {
         return () -> {
             try {
                 Object bean = read.invoke(factory, name);
-                if (bean != null && bean.getClass() != type) {
-                    if (warned.compareAndSet(false, true)) report(type, name + ": proxies or subclass instances are unsupported; added listener paused");
-                    return null;
-                }
-                return bean;
+                if (bean == null) return null;
+                return AddedProxyTarget.resolve(bean, type);
+            } catch (IllegalStateException unsupported) {
+                if (warned.compareAndSet(false, true)) report(type, name + ": " + unsupported.getMessage() + "; added listener paused");
+                return null;
             } catch (ReflectiveOperationException failure) {
                 throw new IllegalStateException("Cannot read event singleton " + name, failure);
             }
