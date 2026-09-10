@@ -50,7 +50,9 @@ final class SpringReflection {
      */
     static Object newTempBeanFactory(ClassLoader springLoader) {
         try {
-            return loadClass(CLS_DLBF, springLoader).getDeclaredConstructor().newInstance();
+            Object factory = loadClass(CLS_DLBF, springLoader).getDeclaredConstructor().newInstance();
+            factory.getClass().getMethod("setBeanClassLoader", ClassLoader.class).invoke(factory, springLoader);
+            return factory;
         } catch (Throwable t) {
             return null;
         }

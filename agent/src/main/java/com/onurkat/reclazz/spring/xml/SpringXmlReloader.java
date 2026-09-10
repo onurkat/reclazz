@@ -31,10 +31,12 @@ import com.onurkat.reclazz.ui.RestartLedger;
  *       (singleton, no init-method, no constructor-args, not a
  *       BeanPostProcessor). {@code registerBeanDefinition} + {@code getBean}
  *       — if instantiation fails, the partial state is rolled back.</li>
+ *   <li>Selected existing constructor/factory/lifecycle edits use native
+ *       recreation and direct holder repair through {@link XmlBeanRecreator}.</li>
  * </ul>
  *
  * <h2>Not supported</h2>
- * Bean removal, class changes, constructor-arg changes, init-method beans,
+ * Bean removal, class changes, unsupported constructor/factory/lifecycle shapes,
  * BeanPostProcessors, {@code InitializingBean}/{@code DisposableBean}
  * implementers. Any such change is collected into a single warning asking
  * the user to restart — the live context stays untouched.
@@ -70,14 +72,18 @@ public final class SpringXmlReloader {
             return;
         }
 
-        // Use the first context's CL as the Spring classloader hint for
-        // parsing. All candidates share the same Spring jar (same webapp
-        // CL chain), so any will do.
+        // Use the application's bean loader; Spring itself may live in a
+        // parent that cannot see application classes. The shared parse path
+        // requires candidate contexts using the same Spring classes.
         ClassLoader springCl = null;
         for (Object ctx : candidates) {
             Object bf = SpringReflection.getBeanFactory(ctx);
             if (bf != null) {
-                springCl = bf.getClass().getClassLoader();
+                try { springCl = (ClassLoader) bf.getClass().getMethod("getBeanClassLoader").invoke(bf); }
+                catch (ReflectiveOperationException failure) {
+                    StatusReporter.warn("Spring XML: application bean classloader unavailable");
+                    return;
+                }
                 break;
             }
         }
@@ -138,6 +144,13 @@ public final class SpringXmlReloader {
         }
 
         int applied = 0;
+        try {
+            applied += XmlBeanRecreator.apply(appContext, liveFactory, diff.recreated);
+        } catch (Exception failure) {
+            for (var replacement : diff.recreated)
+                diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(replacement.name(),
+                        "bean recreation failed: " + com.onurkat.reclazz.ui.Failures.describe(failure)));
+        }
         for (BeanDefinitionDiff.PropertyChange change : diff.propertyChanges) {
             try {
                 applyPropertyChange(liveFactory, change);

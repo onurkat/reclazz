@@ -24,6 +24,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   constant check no longer claims Hibernate L2 coverage.
 
 ### Added
+- **Selected Spring XML singleton recreation.** Existing constructor arguments,
+  static/instance factory methods and explicit init/destroy metadata can change
+  in `*-spring.xml`. Native replacement recreates supported dependents and repairs
+  writable direct holder fields across saves. Exact resource ownership, type and
+  graph checks run before destruction. Failed creation attempts restoration and
+  reports callback side effects and restoration failures. Per-context value copies
+  isolate placeholder resolution; parsing uses the application bean classloader.
+  See [scope](docs/usage.md#xml-singleton-recreation).
 - **Richer arguments for added `@Bean` factories.** Instance and static factories
   now accept concrete generic collections/maps, reference arrays, `Optional`,
   Spring `ObjectProvider`/`ObjectFactory`, and direct `@Value` parameters including

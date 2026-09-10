@@ -458,8 +458,9 @@ Hybris-specific features:
   New attributes still need a database column, so Reclazz prints a reminder to
   run **HAC > Platform > Update Running System**; it will not run DDL against a
   live database.
-- **Spring XML reload**: `*-spring.xml` changes are diffed and applied, which is
-  also how a brand new `@Component` becomes available without a restart
+- **Spring XML reload**: `*-spring.xml` property edits apply in place. Supported
+  existing constructor/factory/lifecycle definitions are recreated, with writable
+  direct holder references repaired. [Scope](docs/usage.md#xml-singleton-recreation).
 - **Interceptor reload**: Captures mappings before Spring refresh and updates the
   actual SAP registry afterwards (Validate, Prepare, Load, Remove, InitDefaults).
   Missing or failed registration is reported instead of success. The SDK
@@ -619,7 +620,7 @@ compile with an older `--release` while you develop, or update Reclazz.
 | Change annotations | **Yes** | None |
 | Spring bean logic | Yes | None |
 | New Spring beans (@Component) | **Yes** — a new stereotype class is registered and wired, and `*-spring.xml` still works for XML-defined beans | None |
-| Spring XML/YAML changes | Yes (`*-spring.xml` reloader) | None |
+| Spring XML/YAML changes | XML property edits and [selected singleton recreation](docs/usage.md#xml-singleton-recreation); [loaded Boot properties/YAML](docs/usage.md#yaml-and-removed-configuration-keys) | XML removal, new complex definitions and unsupported dependency graphs require restart |
 | Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved, beans taking changed direct or supported computed `@Value` constructor arguments rebuilt; supported scalar field SpEL recomputed; [property-value chains are followed for `@Value`](docs/usage.md#indirect-value-dependencies) | Unsupported expressions or constructor creation policies hold the candidate. [Fields](docs/usage.md#computed-value-fields) and [constructors](docs/usage.md#computed-value-constructor-parameters) |
 | Log levels and logging config | Yes (`logging.level.*`, `logback.xml`, `log4j2.xml`) | Appenders are rebuilt, so a reconfigure resets the context |
 | Superclass changes | No | None |
