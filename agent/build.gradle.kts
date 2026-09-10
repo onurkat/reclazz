@@ -43,25 +43,25 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Spring for XML reloader tests only — production code stays
     // reflection-only and has no Spring compile dependency.
-    testImplementation("org.springframework:spring-beans:5.3.39")
-    testImplementation("org.springframework:spring-context:5.3.39")
+    testImplementation("org.springframework:spring-beans:7.0.9")
+    testImplementation("org.springframework:spring-context:7.0.9")
     // Real JSR-250 lifecycle regressions only; never packaged with the agent.
     testImplementation("javax.annotation:javax.annotation-api:1.3.2")
     // Real local Kafka broker regressions only; never packaged with the agent.
     testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
     testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
-    testImplementation("org.springframework:spring-messaging:5.3.39")
+    testImplementation("org.springframework:spring-messaging:7.0.9")
     // Real Rabbit listener regressions only; production remains reflection-only.
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
     // Real commit/rollback regressions against a local in-memory database only.
-    testImplementation("org.springframework:spring-jdbc:5.3.39")
+    testImplementation("org.springframework:spring-jdbc:7.0.9")
     testImplementation("com.h2database:h2:2.2.224")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.22.1")
     // Spring MVC, its test support and the servlet API, for driving a real
     // RequestMappingHandlerMapping under load while a controller is re-scanned.
-    testImplementation("org.springframework:spring-webmvc:5.3.39")
-    testImplementation("org.springframework:spring-test:5.3.39")
+    testImplementation("org.springframework:spring-webmvc:7.0.9")
+    testImplementation("org.springframework:spring-test:7.0.9")
     testImplementation("javax.servlet:javax.servlet-api:4.0.1")
     // The Bean Validation API under its pre-Jakarta name, for the test that
     // a Boot 2 application's validator is found by it.
@@ -84,7 +84,7 @@ val jmsTests = sourceSets.create("jmsTest") {
 configurations[jmsTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[jmsTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
 dependencies {
-    add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:5.3.39")
+    add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:7.0.9")
     add(jmsTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:5.19.11")
 }
 val jmsTest by tasks.registering(Test::class) {
