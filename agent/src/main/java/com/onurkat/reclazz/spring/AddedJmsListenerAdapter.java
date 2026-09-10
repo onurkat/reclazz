@@ -63,7 +63,9 @@ public final class AddedJmsListenerAdapter {
                 for (String key : options.keySet()) if (!OPTIONS.contains(key))
                     throw new IllegalArgumentException("unsupported JmsListener option " + key);
                 String id = literal(options.get("id"), "id");
-                literal(options.get("destination"), "destination");
+                // A destination may be a ${property} placeholder: the real
+                // processor resolves it. A #{SpEL} expression stays out of scope.
+                destination(options.get("destination"), "destination");
                 for (String option : List.of("containerFactory", "selector"))
                     if (options.containsKey(option)) literal(options.get(option), option);
                 if (options.containsKey("concurrency")) {
@@ -77,6 +79,11 @@ public final class AddedJmsListenerAdapter {
             } catch (RuntimeException invalid) { refused.add(m.name + m.desc + ": " + com.onurkat.reclazz.ui.Failures.describe(invalid)); }
         }
         return new Plan(List.copyOf(methods), List.copyOf(ids), List.copyOf(refused));
+    }
+    private static String destination(Object value, String name) {
+        if (!(value instanceof String s) || s.isBlank() || s.contains("#{"))
+            throw new IllegalArgumentException(name + " must be a nonempty literal or ${property} placeholder");
+        return (String) value;
     }
     private static String literal(Object value, String name) {
         if (!(value instanceof String s) || s.isBlank() || s.contains("#{") || s.contains("${"))

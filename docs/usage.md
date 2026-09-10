@@ -609,7 +609,9 @@ and restore them. Unrelated containers retain their identity. A duplicate ID
 belonging to another container is refused. A failed registration attempt cleans
 up the containers it created; failures are reported in the restart ledger.
 
-The supported addition uses literal nonempty `id` and `topics`; optional literal
+The supported addition uses a literal nonempty `id`, and `topics` that are each a
+literal or a `${property}` placeholder resolved by the application's own value
+resolver (a `#{SpEL}` expression stays out of scope); optional literal
 `groupId`, `containerFactory`, `idIsGroup`, `autoStartup` and positive integer
 `concurrency` are accepted. Other explicitly supplied `@KafkaListener` options
 are refused. The class directly extends `Object`, has no interfaces/type
@@ -672,7 +674,9 @@ destinations, remove a method or its annotation, and restore it. Original
 listeners on the same bean are registered again after recreation. Containers
 belonging to unrelated beans keep their identity.
 
-Use literal nonempty `id` and `destination`. Optional literal `containerFactory`,
+Use a literal nonempty `id` and a `destination` that is a literal or a
+`${property}` placeholder resolved by the application's own value resolver (a
+`#{SpEL}` expression stays out of scope). Optional literal `containerFactory`,
 `selector` and positive `concurrency` (a number or ascending range) are supported.
 The class must directly extend `Object`, have no interfaces/type variables, and
 carry only the stereotypes above or `@Deprecated`. Added callback annotations
@@ -749,14 +753,16 @@ are supported. Later saves can edit bodies and queues, remove methods or their
 annotations, and restore them. Original listeners are registered again after
 bean recreation; unrelated containers retain their identity.
 
-For newly added methods, use an explicit nonempty literal `id` and literal `queues`
-naming existing queues. Optional literal `containerFactory` and positive `concurrency` (number or ascending
+For newly added methods, use an explicit nonempty literal `id` and `queues` that
+are each a literal or a `${property}` placeholder resolved by the application's
+own value resolver (a `#{SpEL}` expression stays out of scope), naming existing
+queues. Optional literal `containerFactory` and positive `concurrency` (number or ascending
 range) are accepted. Explicit `autoStartup` is outside this stage: Spring's late
 registration can start a container even when that flag is false. The class directly extends
 `Object`, has no interfaces/type variables, and uses only the stereotypes above
 and optional `@Deprecated`. Callback annotations are direct `@RabbitListener`
 and optional `@Deprecated`; parameter annotations are `@Payload`, `@Header` and
-`@Headers`. Composed/repeatable/class-level handlers, expression/property queue
+`@Headers`. Composed/repeatable/class-level handlers, `#{SpEL}` expression queue
 names, inline queue/exchange/binding declarations, return/reply/async methods,
 proxies, method advice and inheritance are outside this support.
 

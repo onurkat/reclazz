@@ -64,8 +64,10 @@ public final class AddedRabbitListenerAdapter {
                     throw new IllegalArgumentException("unsupported RabbitListener option " + key);
                 String id = literal(options.get("id"), "id");
                 if (!(options.get("queues") instanceof List<?> queues) || queues.isEmpty())
-                    throw new IllegalArgumentException("queues must contain existing literal queue names");
-                for (Object queue : queues) literal(queue, "queue");
+                    throw new IllegalArgumentException("queues must contain existing queue names");
+                // A queue may be a ${property} placeholder: the real processor
+                // resolves it. A #{SpEL} expression stays out of scope.
+                for (Object queue : queues) destination(queue, "queue");
                 for (String option : List.of("containerFactory"))
                     if (options.containsKey(option)) literal(options.get(option), option);
                 if (options.containsKey("concurrency")) {
@@ -79,6 +81,11 @@ public final class AddedRabbitListenerAdapter {
             } catch (RuntimeException invalid) { refused.add(m.name + m.desc + ": " + com.onurkat.reclazz.ui.Failures.describe(invalid)); }
         }
         return new Plan(List.copyOf(methods), List.copyOf(ids), List.copyOf(refused));
+    }
+    private static String destination(Object value, String name) {
+        if (!(value instanceof String s) || s.isBlank() || s.contains("#{"))
+            throw new IllegalArgumentException(name + " must be a nonempty literal or ${property} placeholder");
+        return (String) value;
     }
     private static String literal(Object value, String name) {
         if (!(value instanceof String s) || s.isBlank() || s.contains("#{") || s.contains("${"))
