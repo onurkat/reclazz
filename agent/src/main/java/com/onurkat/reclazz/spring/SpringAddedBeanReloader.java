@@ -67,9 +67,19 @@ public final class SpringAddedBeanReloader {
                 if (!SpringConfigurationCalls.matches(config, type, factory, plan.full()))
                     throw new IllegalStateException("requires the native singleton configuration without additional proxies");
                 observeCreations(factory, registry);
+                Object environment = context.getClass().getMethod("getEnvironment").invoke(context);
+                ClassLoader spring = factory.getClass().getClassLoader();
                 List<AddedBeanAdapter.Factory> prepared = new ArrayList<>();
                 for (var method : plan.factories()) {
                     try {
+                        // A @Profile that the active environment does not accept
+                        // leaves the bean unregistered, the same as Spring at
+                        // startup. The remove-then-add above already dropped a
+                        // prior registration whose profile no longer matches.
+                        if (!profileAccepted(environment, spring, method.profiles())) {
+                            ReloadEffects.note("added bean " + method.name() + " not registered: profile inactive");
+                            continue;
+                        }
                         registerDefinition(type, factory, configName, method, registrations, plan.full());
                         prepared.add(method);
                     } catch (Throwable failure) {
@@ -78,9 +88,17 @@ public final class SpringAddedBeanReloader {
                     }
                 }
                 // An added product can inject another product from this save,
-                // even when its factory appears first in the source file.
+                // even when its factory appears first in the source file. A lazy
+                // or prototype bean is left for its first getBean instead.
                 for (var method : prepared) {
                     try {
+                        if (method.lazy() || method.prototype()) {
+                            ReloadEffects.note("added bean " + method.name()
+                                    + " registered (" + (method.lazy() ? "lazy" : "prototype") + ", created on demand)");
+                            StatusReporter.detail("Added @Bean registered: " + method.name()
+                                    + " (" + (method.lazy() ? "lazy" : "prototype") + ")");
+                            continue;
+                        }
                         initialize(factory, method.name(), registrations);
                     } catch (Throwable failure) {
                         success = false;
@@ -97,6 +115,16 @@ public final class SpringAddedBeanReloader {
             success = false;
         }
         return success;
+    }
+
+    // Delegate profile evaluation to Spring's own Environment so profile
+    // expressions (negation, and/or) behave exactly as at startup.
+    private static boolean profileAccepted(Object environment, ClassLoader spring, List<String> profiles) throws Exception {
+        if (profiles.isEmpty()) return true;
+        Class<?> profilesType = Class.forName("org.springframework.core.env.Profiles", false, spring);
+        Class<?> environmentType = Class.forName("org.springframework.core.env.Environment", false, spring);
+        Object parsed = profilesType.getMethod("of", String[].class).invoke(null, (Object) profiles.toArray(new String[0]));
+        return Boolean.TRUE.equals(environmentType.getMethod("acceptsProfiles", profilesType).invoke(environment, parsed));
     }
 
     private void registerDefinition(Class<?> type, Object factory, String configName,
@@ -135,6 +163,9 @@ public final class SpringAddedBeanReloader {
         call(definition, "setInitMethodName", method.init());
         call(definition, "setDestroyMethodName", method.destroy());
         definitionType.getMethod("setPrimary", boolean.class).invoke(definition, method.primary());
+        definitionType.getMethod("setLazyInit", boolean.class).invoke(definition, method.lazy());
+        if (!"singleton".equals(method.scope()))
+            definitionType.getMethod("setScope", String.class).invoke(definition, method.scope());
         if (method.qualifier() != null) {
             // Selection metadata belongs on the definition: the original class
             // cannot expose an added factory method through reflection.

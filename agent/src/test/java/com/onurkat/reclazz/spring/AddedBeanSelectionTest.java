@@ -207,7 +207,7 @@ class AddedBeanSelectionTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"classPrimary", "classQualifier", "composed", "scope"})
+    @ValueSource(strings = {"classPrimary", "classQualifier", "composed", "webScope"})
     void unsupportedPoliciesStillRefuseRegistration(String kind) throws Exception {
         try (Scope scope = new Scope()) {
             ClassNode source = beans("first");
@@ -215,7 +215,7 @@ class AddedBeanSelectionTest {
                 case "classPrimary" -> source.visibleAnnotations.add(new AnnotationNode(PRIMARY));
                 case "classQualifier" -> source.visibleAnnotations.add(new AnnotationNode(QUALIFIER));
                 case "composed" -> annotate(source, "first", Type.getDescriptor(Fast.class));
-                case "scope" -> annotate(source, "first", Type.getDescriptor(org.springframework.context.annotation.Scope.class), "value", "prototype");
+                case "webScope" -> annotate(source, "first", Type.getDescriptor(org.springframework.context.annotation.Scope.class), "value", "request");
             }
             assertFalse(scope.reload(source));
             assertFalse(scope.context.containsBean("first"));

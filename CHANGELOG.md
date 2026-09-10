@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- **`@Lazy`, `@Scope` and `@Profile` on `@Bean` methods added after startup.**
+  A direct `@Lazy` factory is created on first access instead of when the save
+  applies, and is destroyed normally once created; `@Scope("prototype")` hands
+  out a distinct instance per lookup and is not tracked for destruction; a
+  direct `@Profile` registers the bean only when the running `Environment`
+  accepts its expression, evaluated by Spring itself, and a later save that
+  changes the expression re-evaluates it so the bean joins or leaves on an edit.
+  Arbitrary `@Conditional`, web or custom scopes, and scoped-proxy `@Scope` are
+  refused with a named reason rather than silently ignored. Lite and default
+  `@Configuration`, instance and static factories are covered. Real-agent
+  reload tests cover both class loaders; a stock JDK is enough.
+  [Scope and lifecycle](docs/usage.md#bean-methods-added-after-startup).
+
 ## [1.2.1] - 2026-09-10
 
 ### Fixed
