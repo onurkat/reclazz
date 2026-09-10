@@ -84,14 +84,14 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Computed `@Value` constructor parameter | **Yes**, for supported scalar expressions on directly constructed, unproxied singletons with one constructor. Arguments are checked before the bean is rebuilt; existing singleton holders are re-pointed. [Scope and lifecycle](docs/usage.md#computed-value-constructor-parameters) | Yes (restart) | Not verified here |
 | Constructor-bound `@ConfigurationProperties` (a record) | **Yes** — the bean is rebuilt through the same constructor binding and its holders re-pointed | Yes (restart) | Yes |
 | A lambda added to an edited method body | **Yes (any JDK 17+)** — the synthetic body travels with the companion and links through Reclazz's own factory. The object is a reflective proxy rather than a spun class, and a serializable lambda loses serializability until restart | Yes (restart) | Yes |
-| Other methods you add that a framework was going to find | **Named.** Added methods live in the companion, which ordinary reflection does not see. New `@RequestMapping` methods, supported `@Bean`/`@Scheduled`/`@EventListener` methods and Jackson getters use adapters; unsupported framework scans still need a restart | Yes (restart) | Yes |
+| Other methods you add that a framework was going to find | **Named.** Added methods live in the companion, which ordinary reflection does not see. Spring MVC endpoints, exception handlers, binders and model attributes, `@Bean` factories, `@Scheduled`, event and transactional listeners, `@PostConstruct`/`@PreDestroy`, transactional and cacheable service methods, Jackson properties and Kafka, JMS and RabbitMQ listeners use adapters; a framework scan without one still needs a restart and is named | Yes (restart) | Yes |
 | Members you deleted stop being visible | **Yes** — a removed field or method is hidden from reflection, so a deleted getter stops being serialised. Old code already holding it keeps the implementation it had, one outcome rather than three: a live caller is never made to throw for a removal you made on purpose | Yes (restart) | Yes |
 | Changed compile-time constant (`static final`) | **Named, and the dependents found**: javac inlines the value and leaves no reference behind, so the changed class cannot reach them, but the sources that read it can be found and are listed by name. With `autoCompile` they are rebuilt and hot-swapped, so the new value is live without a restart. A constants-only holder is covered too, though the JVM never loads it | Yes (restart) | Same limitation, undocumented |
 | Message bundle (`messages.properties`) | **Yes** — the message source's cache is dropped, the JDK `ResourceBundle` cache with it, so the next lookup reads the file | Yes (restart) | Yes |
 | Template reload (Thymeleaf, Freemarker) | **Yes** | Yes | Yes |
 | SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
 | SAP Commerce: ImpEx auto-import | **Yes** | No | No |
-| SAP Commerce: interceptor reload | **Yes** | No | No |
+| SAP Commerce: interceptor reload | **Yes**, the mapping is re-registered in the platform registry and verified by a real model save | No | No |
 | IDE support | Any IDE or none; the IntelliJ plugin adds auto-attach and a status UI | any | IntelliJ, Eclipse, VS Code, NetBeans |
 | Remote / container sync | Syncing changed `.class` files into a watched directory is enough; Compose Watch and rsync recipes under [Remote and containers](#remote-and-containers). CCv2 is unreachable for every tool | No | Yes |
 | Modified JVM required | **No** | No | No |
@@ -127,10 +127,10 @@ than either.
 ### Spring Integration
 
 - **Spring Bean Refresh**: Automatically destroys and recreates singleton beans after class reload
-- **MVC Re-scan**: Re-registers `@RequestMapping` methods when controllers change structurally
+- **MVC Re-scan**: Re-registers `@RequestMapping` methods when controllers change structurally, including endpoints added after startup on a stock JDK and inside a Tomcat webapp class loader
 - **Cache dependencies**: A reloaded helper invalidates the Spring cache regions computed through it, including outer caches that read cached inner results. Unrelated observed regions stay warm. Cache instances and classloaders remain distinct. Unknown or partial history retains conservative annotation fallback. See [scope and concurrency limits](docs/usage.md#cache-dependencies-after-reload).
 - **Scheduler Reload**: Cancels and re-registers `@Scheduled` tasks, including supported methods added after startup on a stock JDK. See [scope and example](docs/usage.md#scheduled-methods-added-after-startup)
-- **Event Listener Refresh**: Refreshes only the edited beans, preserving unrelated listeners without duplication. Supports added methods within the [documented scope](docs/usage.md#event-listener-methods-added-after-startup)
+- **Event Listener Refresh**: Refreshes only the edited beans, preserving unrelated listeners without duplication. Supports added methods within the [documented scope](docs/usage.md#event-listener-methods-added-after-startup), and an added `@TransactionalEventListener` fires at its transaction phase through Spring's own synchronization. [Scope](docs/usage.md#transactional-event-listeners-added-after-startup)
 - **Added service operations**: New transaction/cache methods on supported singleton services run through real Spring interceptors, including old CGLIB references and first operations on plain beans. [Scope](docs/usage.md#operations-on-added-service-methods).
 - **AOP Proxy Refresh**: Re-parses `@Aspect` pointcuts and updates supported existing singleton proxy chains in place
 - **Async Re-processing**: Re-processes `@Async` beans
@@ -180,11 +180,28 @@ than either.
   component. Real broker tests cover queue changes, removal/restoration and
   local transaction rollback/redelivery.
   [Scope](docs/usage.md#rabbit-listeners-added-after-startup).
+- **New `@Bean` factories**: add an instance or static `@Bean` method to a
+  running `@Configuration(proxyBeanMethods=false)` class and its product is
+  registered, with reference beans, typed collections and maps, arrays,
+  `Optional`, Spring providers and `@Value` arguments resolved by Spring.
+  [Scope and lifecycle](docs/usage.md#bean-methods-added-after-startup).
+- **New lifecycle methods**: a `@PostConstruct` or `@PreDestroy` added to a
+  supported singleton runs on the next instance, and each instance keeps the
+  destroy callback it was initialised with. [Scope and policy](docs/usage.md#lifecycle-methods-added-after-startup).
+- **Jackson input and output for added members**: a getter, a void setter or
+  an instance field added to a running DTO is discovered by Jackson with its
+  saved annotations, so JSON is read and written through it on a stock JDK.
+  [Scope](docs/usage.md#jackson-properties-added-after-startup).
+- **Spring XML singleton recreation**: a changed constructor argument, factory
+  method or init/destroy method in a `*-spring.xml` recreates the singleton
+  through Spring and repairs the beans still holding the old one; property edits
+  keep applying in place. [Scope](docs/usage.md#xml-singleton-recreation).
 - **What the frameworks cached about your class**: a reload is only half the
   job, because each framework answers from what it worked out about that class
   once, at startup. An `@Autowired` you add injects, a constraint you add is
   enforced, an `@ExceptionHandler` or `@InitBinder` you add runs, an edited
-  pointcut is parsed again, and Jackson stops serialising the old shape
+  pointcut is parsed again, and Jackson reads and writes the getter, setter or
+  field you added instead of serialising the old shape
 
 ### Core
 
@@ -225,7 +242,7 @@ than either.
 ### Platform Support
 
 - **Spring Boot**: Auto-detects `target/classes` (Maven) or `build/classes/java/main` (Gradle)
-- **SAP Commerce (Hybris)**: Full extension-aware support with interceptor reload, ImpEx auto-import
+- **SAP Commerce (Hybris)**: extension-aware; `*-items.xml` regeneration and reload, interceptor re-registration in the platform registry verified by a real model save on a live 2211 server, ImpEx auto-import with a macro-aware REMOVE guard, Spring XML property edits and singleton recreation
 - **Generic Java**: Works with any Java application via `watchDirs=` configuration
 
 ## Installation
@@ -615,8 +632,8 @@ compile with an older `--release` while you develop, or update Reclazz.
 | Change Type | Any JDK 17+ | Caveat on Standard JVMs |
 |---|---|---|
 | Method body changes | Yes | None |
-| Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Spring MVC endpoints, supported `@Bean`/`@Scheduled`/`@EventListener` methods and Jackson getters use adapters without a restart |
-| Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Once a class carries members added since startup, the JVM refuses the redefinition that installs the new constructor, so a field added after that reads its default even on new objects; Reclazz names the fields and the reason rather than leaving you to find the value |
+| Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Adapters carry the saved metadata to Spring MVC (endpoints, `@ExceptionHandler`, `@InitBinder`, `@ModelAttribute`), `@Bean` factories, `@Scheduled`, `@EventListener` and `@TransactionalEventListener`, `@PostConstruct`/`@PreDestroy`, `@Transactional`/`@Cacheable` service methods, Jackson getters and setters, and `@KafkaListener`/`@JmsListener`/`@RabbitListener` without a restart; a scan without an adapter is named |
+| Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Once a class carries members added since startup, the JVM refuses the redefinition that installs the new constructor, so a field added after that reads its default even on new objects; Reclazz names the fields and the reason rather than leaving you to find the value. A field added to a Jackson DTO is read and written by JSON through the same adapter as added getters |
 | Remove methods/fields | **Yes** | Hidden from reflection so scans stop seeing them; existing callers keep the previous implementation until they are hot-recompiled |
 | Change annotations | **Yes** | None |
 | Spring bean logic | Yes | None |
