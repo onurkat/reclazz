@@ -36,6 +36,7 @@ public final class SpringAddedBeanReloader {
     public synchronized boolean reloadBeanMethods(Class<?> type, Set<String> added, byte[] bytes) {
         if (bytes == null) return true;
         var plan = AddedBeanAdapter.inspect(bytes, added);
+        SpringConfigurationCalls.publish(type, plan);
         for (String reason : plan.refused()) refuse(type, reason);
         boolean success = plan.refused().isEmpty();
         boolean foundConfiguration = false;
@@ -63,12 +64,13 @@ public final class SpringAddedBeanReloader {
                 if (!Boolean.TRUE.equals(call(factory, "isSingleton", configName)))
                     throw new IllegalStateException("configuration must be a singleton");
                 Object config = call(factory, "getBean", configName);
-                if (config.getClass() != type) throw new IllegalStateException("proxied configuration is not supported");
+                if (!SpringConfigurationCalls.matches(config, type, factory, plan.full()))
+                    throw new IllegalStateException("requires the native singleton configuration without additional proxies");
                 observeCreations(factory, registry);
                 List<AddedBeanAdapter.Factory> prepared = new ArrayList<>();
                 for (var method : plan.factories()) {
                     try {
-                        registerDefinition(type, factory, configName, method, registrations);
+                        registerDefinition(type, factory, configName, method, registrations, plan.full());
                         prepared.add(method);
                     } catch (Throwable failure) {
                         success = false;
@@ -98,7 +100,7 @@ public final class SpringAddedBeanReloader {
     }
 
     private void registerDefinition(Class<?> type, Object factory, String configName,
-                          AddedBeanAdapter.Factory method, Map<String, Owned> registrations) throws Throwable {
+                          AddedBeanAdapter.Factory method, Map<String, Owned> registrations, boolean full) throws Throwable {
         String name = method.name();
         for (String candidate : method.names()) {
             if (Boolean.TRUE.equals(call(factory, "containsBean", candidate))
@@ -114,8 +116,9 @@ public final class SpringAddedBeanReloader {
         Supplier<?> delegate = AddedBeanAdapter.create(type, () -> {
             try {
                 Object current = call(factory, "getBean", configName);
-                if (current.getClass() != type || !Boolean.TRUE.equals(call(factory, "isSingleton", configName)))
-                    throw new IllegalStateException("configuration is no longer an unproxied singleton");
+                if (!SpringConfigurationCalls.matches(current, type, factory, full)
+                        || !Boolean.TRUE.equals(call(factory, "isSingleton", configName)))
+                    throw new IllegalStateException("configuration is no longer a supported singleton");
                 return current;
             } catch (Exception failure) { throw new IllegalStateException("configuration cannot be resolved", failure); }
         }, method, (metadata, descriptor) -> AddedBeanArguments.prepare(factory, name, metadata, descriptor));

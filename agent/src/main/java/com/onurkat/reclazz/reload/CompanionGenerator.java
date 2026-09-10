@@ -37,6 +37,10 @@ import com.onurkat.reclazz.transform.SafeClassWriter;
  */
 public class CompanionGenerator implements Opcodes {
 
+    private static String referenceName(String name, String descriptor) {
+        return InjectedNames.PREFIX + "reference$" + name + "$" + CallSiteAdapter.descHash(descriptor);
+    }
+
     private static final String FIELD_STORE = "com/onurkat/reclazz/bootstrap/FieldStore";
     private static final String PROTECTED_CALL_RESOLVER =
             "com/onurkat/reclazz/bootstrap/ProtectedCallResolver";
@@ -252,6 +256,25 @@ public class CompanionGenerator implements Opcodes {
                 methodHandleKeys.put(siteKey, companionMethodName + companionDescriptor);
             }
 
+            if (!isStatic && diff.getAddedMethods().contains(name + ":" + descriptor)) {
+                // A method reference must cross the same bean-reference boundary as
+                // an ordinary call, rather than holding the raw factory body.
+                MethodVisitor reference = writer.visitMethod(ACC_PUBLIC | ACC_STATIC | ACC_SYNTHETIC,
+                        referenceName(name, descriptor), companionDescriptor, null, exceptions);
+                reference.visitCode();
+                int slot = 0;
+                for (Type parameter : Type.getArgumentTypes(companionDescriptor)) {
+                    reference.visitVarInsn(parameter.getOpcode(ILOAD), slot);
+                    slot += parameter.getSize();
+                }
+                reference.visitInvokeDynamicInsn(name, companionDescriptor,
+                        new Handle(H_INVOKESTATIC, PROTECTED_CALL_RESOLVER, "protectedCall", PROTECTED_CALL_BSM_DESC, false),
+                        originalClass, originalClass, ProtectedCallResolver.KIND_VIRTUAL);
+                reference.visitInsn(Type.getReturnType(descriptor).getOpcode(IRETURN));
+                reference.visitMaxs(Math.max(slot, Type.getReturnType(descriptor).getSize()), slot);
+                reference.visitEnd();
+            }
+
             // Create the method in the companion class (always static)
             int companionAccess = ACC_PUBLIC | ACC_STATIC;
             MethodVisitor mv = writer.visitMethod(companionAccess, companionMethodName,
@@ -355,7 +378,8 @@ public class CompanionGenerator implements Opcodes {
                     // method reference): the companion's copy is static with
                     // the receiver as its first parameter, which is the other
                     // implMethod shape a lambda linker accepts.
-                    lifted = new Handle(H_INVOKESTATIC, companionName, handle.getName(),
+                    lifted = new Handle(H_INVOKESTATIC, companionName,
+                            isAddedMethod && !isLambdaBody ? referenceName(handle.getName(), handle.getDesc()) : handle.getName(),
                             "(L" + originalClass + ";" + handle.getDesc().substring(1), false);
                 }
                 if (rewritten == null) rewritten = args.clone();

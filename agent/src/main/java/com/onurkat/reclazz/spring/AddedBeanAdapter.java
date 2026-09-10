@@ -35,17 +35,18 @@ public final class AddedBeanAdapter {
         String name() { return names.get(0); }
         List<String> aliases() { return names.subList(1, names.size()); }
     }
-    record Plan(List<Factory> factories, List<String> refused) { }
+    record Plan(List<Factory> factories, List<String> refused, boolean full) { }
 
     static Plan inspect(byte[] bytes, Set<String> added) {
         List<Factory> factories = new ArrayList<>();
         List<String> refused = new ArrayList<>();
-        if (bytes == null) return new Plan(factories, refused);
+        if (bytes == null) return new Plan(factories, refused, false);
         ClassNode source = new ClassNode();
         // Preserve debug argument names just as the added event adapter does.
         new ClassReader(bytes).accept(source, ClassReader.SKIP_FRAMES);
         AnnotationNode config = annotation(source.visibleAnnotations, CONFIGURATION);
-        boolean supportedClass = config != null && Boolean.FALSE.equals(value(config, "proxyBeanMethods", true))
+        boolean full = config != null && !Boolean.FALSE.equals(value(config, "proxyBeanMethods", true));
+        boolean supportedClass = config != null
                 && "java/lang/Object".equals(source.superName) && source.interfaces.isEmpty()
                 && !extraAnnotations(source.visibleAnnotations, CONFIGURATION);
         for (MethodNode method : source.methods) {
@@ -54,13 +55,16 @@ public final class AddedBeanAdapter {
             if (bean == null) continue;
             try {
                 if (!supportedClass) throw new IllegalArgumentException(
-                        "requires direct @Configuration(proxyBeanMethods=false), without inheritance or additional class annotations");
+                        "requires direct @Configuration, without inheritance or additional class annotations");
                 Type signature = Type.getMethodType(method.desc);
                 if (signature.getReturnType().getSort() != Type.OBJECT
                         || (method.access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC)) != 0)
                     throw new IllegalArgumentException("only concrete, object-returning factories are supported");
                 requireConcreteParameters(method.signature);
                 Type[] arguments = signature.getArgumentTypes();
+                if (full && (method.access & Opcodes.ACC_STATIC) == 0
+                        && (arguments.length != 0 || (method.access & (Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL)) != 0))
+                    throw new IllegalArgumentException("full Configuration instance factories require no parameters and must be overridable");
                 for (int i = 0; i < arguments.length; i++)
                     if (arguments[i].getSort() < Type.ARRAY && (method.visibleParameterAnnotations == null
                             || annotation(method.visibleParameterAnnotations[i], VALUE) == null))
@@ -104,7 +108,7 @@ public final class AddedBeanAdapter {
             refused.add(factory.method().name + factory.method().desc + ": duplicate added bean name or alias '" + conflict + "'");
             return true;
         });
-        return new Plan(factories, refused);
+        return new Plan(factories, refused, full);
     }
 
     private static AnnotationNode annotation(List<AnnotationNode> annotations, String descriptor) {
@@ -211,7 +215,7 @@ public final class AddedBeanAdapter {
             }
         }
         Handle bootstrap = new Handle(Opcodes.H_INVOKESTATIC,
-                "com/onurkat/reclazz/bootstrap/ReclazzBootstrap", isStatic ? "bootstrapStaticMethod" : "bootstrapMethod",
+                "com/onurkat/reclazz/bootstrap/ReclazzBootstrap", isStatic ? "bootstrapStaticMethod" : "bootstrapBody",
                 "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;"
                         + "Ljava/lang/invoke/MethodType;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/invoke/CallSite;", false);
         mv.visitInvokeDynamicInsn(factory.method().name,

@@ -82,7 +82,7 @@ public final class AddedLifecycleAdapter {
         // Keep the entry target, not dynamicInvoker: a later save may remove
         // this callback or change how the next instance releases its resource.
         // Calls made inside the captured body still use ordinary live dispatch.
-        return ReclazzBootstrap.bootstrapMethod(lookup, method.name,
+        return ReclazzBootstrap.bootstrapBody(lookup, method.name,
                 MethodType.methodType(void.class, owner), Type.getInternalName(owner),
                 CallSiteAdapter.descHash(method.desc)).getTarget()
                 .asType(MethodType.methodType(void.class, Object.class));

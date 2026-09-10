@@ -138,6 +138,11 @@ public final class ProtectedCallResolver {
                 return addedToAnotherClass(caller, invocationName, invocationType, ownerInternal, kind);
             }
             mh = addedByThisReload(caller, invocationName, invocationType, notOnTheClass);
+            if (kind != KIND_STATIC) {
+                String key = InjectedNames.siteKey(invocationName,
+                        InjectedNames.descHash(invocationType.dropParameterTypes(0, 1).toMethodDescriptorString()));
+                return AddedBeanBridge.call(owner, key, new ConstantCallSite(mh.asType(invocationType)));
+            }
         }
 
         return new ConstantCallSite(mh.asType(invocationType));
