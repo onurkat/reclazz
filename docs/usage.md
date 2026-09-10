@@ -1087,16 +1087,17 @@ The added-method scope is a direct `@EventListener` on an instance method return
 `void` or a single event object, including a private method, with exactly one
 reference event parameter and no generic method signature. The bean class must carry a Spring stereotype
 recognized by Reclazz. Extra runtime method annotations are limited to
-`@Order` and `@Deprecated`. Added `@Async` and `@TransactionalEventListener`
-methods, composed listener annotations, generic signatures, proxies/subclasses,
+`@Order` and `@Deprecated`. Added `@TransactionalEventListener` methods have the
+[separate scope below](#transactional-event-listeners-added-after-startup).
+Added `@Async` methods, composed listener annotations, generic signatures, proxies/subclasses,
 prototype beans, and classes registered only through XML or `@Bean` without a
 recognized stereotype require a restart. The added path requires the default
-Spring event listener factory; contexts with custom or transactional listener
-factories are reported as unsupported for additions. Existing reflected
+Spring event listener factory; the standard transactional factory can coexist
+with it. Custom factories are reported as unsupported for additions. Existing reflected
 listeners continue to use the application's factories.
 
-Event delivery is not paused during reload. A callback already selected by the
-multicaster can finish; the MVC request boundary does not cover event publication
+Event delivery is not paused during reload. Retired added registrations skip
+processing; a callback body already executing can finish. The MVC request boundary does not cover event publication
 from other threads. If registration fails, previous added registrations and any
 partially registered replacements for that class are removed in the affected
 context. There is no rollback to the previous listener declaration. Correct the
@@ -1105,6 +1106,55 @@ remain subject to Spring's normal event delivery behavior.
 
 This path is runtime-tested on Spring 5.3.39 with JDK 21. Spring 6 compatibility
 has source-level checks but has not been verified in a running application.
+
+### Transactional event listeners added after startup
+
+On a supported unproxied Spring singleton, add a direct transaction listener
+and compile the class:
+
+```java
+@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+public void accepted(OrderAccepted event) {
+    notifications.record(event.id());
+}
+```
+
+The application's standard `TransactionalEventListenerFactory` must be present
+and precede the default event factory. Reclazz uses Spring's native transactional
+adapter and synchronization lifecycle. `BEFORE_COMMIT`, `AFTER_COMMIT`,
+`AFTER_ROLLBACK` and `AFTER_COMPLETION`, direct `@Order`, event filtering,
+conditions and `fallbackExecution` are supported. Default fallback skips events
+published without a transaction. Preserved argument names work in conditions;
+use `#a0` or `#p0` when the compiler did not preserve names.
+
+Callbacks retain Spring's transaction semantics: a `BEFORE_COMMIT` exception can
+roll back the transaction, while an after-completion callback cannot undo an
+already completed commit. This feature does not give callback writes a new
+transaction or promise to commit them separately.
+
+An added registration is retired before removal or replacement. Events already
+queued for that registration are skipped when their transaction phase arrives,
+including condition evaluation. They are not replayed through the new listener.
+Newly published events use the replacement; a method body already executing is
+not interrupted. This retirement policy applies to added registrations, not to
+listeners reflected at application startup. Failed removal keeps the retired
+registration indexed so a later save can retry cleanup without duplicate delivery.
+Callbacks also skip an inactive context or an absent singleton; they resolve the
+current unproxied singleton when invocation begins.
+
+Support requires one reference event parameter, a `void` return, a direct
+`@TransactionalEventListener` and the existing stereotype/singleton restrictions.
+Do not combine it with a direct `@EventListener` on the same method. Extra advice
+such as `@Transactional` or `@Async`, result publication, generic signatures,
+composed annotations, proxies, custom factories and reactive transaction context
+remain outside this added-method scope. Ordinary added listeners continue to work
+in contexts with the standard transaction factory.
+
+Verified with Spring 5.3.39, JDBC/H2 and SapMachine 21, including real commit and
+rollback, native phase/order comparison, pending events during replacement/removal,
+restoration and ordinary/child classloaders. No production dependency was added.
+Other Spring versions, reactive transaction managers and a JDK 17 runtime have
+not been verified for this extension.
 
 ### Property changes keep the last working values
 

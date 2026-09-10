@@ -143,7 +143,8 @@ class AddedMethodVisibilityTest {
         assertEquals(1, AddedMethodVisibility.check(bytes, added("listen", "(Ljava/lang/String;)V")).size());
         byte[] transactional = classWith(new Method(Opcodes.ACC_PUBLIC, "listen", "(Ljava/lang/String;)V",
                 "Lorg/springframework/transaction/event/TransactionalEventListener;"));
-        assertEquals(1, AddedMethodVisibility.check(transactional, added("listen", "(Ljava/lang/String;)V"), true).size());
+        assertEquals(0, AddedMethodVisibility.check(transactional, added("listen", "(Ljava/lang/String;)V"), true).size());
+        assertEquals(1, AddedMethodVisibility.check(transactional, added("listen", "(Ljava/lang/String;)V"), false).size());
     }
 
     @Test

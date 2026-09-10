@@ -70,6 +70,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Cache eviction | **Yes** | Yes (restart) | Yes |
 | `@Scheduled` re-register | **Yes**, including a method added after startup on a stock JDK: direct `@Scheduled`/`@Schedules`, no arguments, `void`, on an unproxied singleton. Later saves replace its registration; removing the method or annotation cancels it. [Scope and example](docs/usage.md#scheduled-methods-added-after-startup) | Yes (restart) | Yes |
 | `@EventListener` refresh | **Yes**, including a method added after startup: direct annotation, one reference event parameter, `void` or a single event object return, on an unproxied singleton. Spring publishes a returned event; null produces none. Preserves filtering, conditions and `@Order`; later saves replace or remove its registration. [Scope and example](docs/usage.md#event-listener-methods-added-after-startup) | Yes (restart) | Yes |
+| `@TransactionalEventListener` added after startup | **Yes**, for direct `void` listeners on supported unproxied singletons. Spring handles all four phases, fallback, conditions and order. Reload/removal retires queued callbacks from the previous added registration. [Scope](docs/usage.md#transactional-event-listeners-added-after-startup) | Yes (restart) | Not verified here |
 | AOP proxy refresh | **Yes** | Yes (restart) | Yes |
 | Spring Data repo refresh | **Yes** | Yes (restart) | Yes |
 | `@Async` re-processing | **Yes** | Yes (restart) | Yes |
