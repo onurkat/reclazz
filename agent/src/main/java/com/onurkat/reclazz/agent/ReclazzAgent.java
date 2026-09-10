@@ -917,6 +917,8 @@ public class ReclazzAgent {
             if (reloadResult.isSuccess()) {
                 // The framework steps first, the line last, so that the line
                 // can say what the steps did.
+                var interceptorRefresh = reloadResult.isInterceptor() && interceptorReloader != null
+                        ? interceptorReloader.prepare(className, platformContext.getAllApplicationContexts()) : null;
                 if (reloadResult.isSpringBean()) {
                     Class<?> reloadedClass = findLoadedClass(className);
                     springOrchestrator.onClassReloaded(className, reloadedClass,
@@ -930,9 +932,7 @@ public class ReclazzAgent {
                 }
 
                 // Hybris-specific: interceptor reload
-                if (reloadResult.isInterceptor() && interceptorReloader != null) {
-                    interceptorReloader.reloadInterceptor(className,
-                            ((HybrisPlatformContext) platformContext).getHybrisContext());
+                if (interceptorRefresh != null && interceptorRefresh.complete()) {
                     ReloadEffects.note("interceptor re-registered");
                     StatusReporter.detail("Interceptor reloaded: " + displayName);
                 }
@@ -1191,6 +1191,8 @@ public class ReclazzAgent {
                     swappedShapes.put(className, reloadResult.getShape());
                 }
 
+                var interceptorRefresh = reloadResult.isInterceptor() && interceptorReloader != null
+                        ? interceptorReloader.prepare(className, platformContext.getAllApplicationContexts()) : null;
                 if (reloadResult.isSpringBean()) {
                     Class<?> reloadedClass = findLoadedClass(className);
                     springOrchestrator.onClassReloaded(className, reloadedClass,
@@ -1203,9 +1205,7 @@ public class ReclazzAgent {
                     springOrchestrator.onHelperReloaded(className, findLoadedClass(className));
                 }
 
-                if (reloadResult.isInterceptor() && interceptorReloader != null) {
-                    interceptorReloader.reloadInterceptor(className,
-                            ((HybrisPlatformContext) platformContext).getHybrisContext());
+                if (interceptorRefresh != null && interceptorRefresh.complete()) {
                     ReloadEffects.note("interceptor re-registered");
                     StatusReporter.detail("Interceptor reloaded: " + className);
                 }
@@ -1328,10 +1328,12 @@ public class ReclazzAgent {
                     : platformContext.getClass().getClassLoader();
             HybrisConfigReloader configReloader =
                     new HybrisConfigReloader(platformLoader, propertySnapshots);
-            java.util.List<String> applied = configReloader.apply(candidate);
+            var propertyResult = configReloader.applyResult(candidate);
+            java.util.List<String> applied = propertyResult.applied();
             applyLoggerLevels(candidate.content(), applied);
 
-            if (applied.isEmpty() && configReloader.isPlatformReachable()) {
+            if (applied.isEmpty() && propertyResult.reachable()) {
+                if (!propertyResult.pending().isEmpty()) return;
                 // The file was compared against the running configuration and
                 // held nothing new: a comment, a reformat, or a save with no
                 // edit. Warning about a restart here would be noise.
@@ -1351,8 +1353,9 @@ public class ReclazzAgent {
         java.util.Map<String, String> changed = candidate.changed();
         if (platformContext instanceof HybrisPlatformContext) {
             // Preserve the logger-only fallback when the platform Config API is absent.
-            propertySnapshots.accept(candidate);
             int levels = applyLoggerLevels(candidate.content(), changed.keySet());
+            propertySnapshots.acceptKeys(candidate, changed.keySet().stream()
+                    .filter(ReclazzAgent::isLoggingKey).toList());
             if (levels == 0 || !changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey))
                 reportUnconsumedProperties(changed);
             return;

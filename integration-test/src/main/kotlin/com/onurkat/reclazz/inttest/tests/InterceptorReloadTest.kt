@@ -25,25 +25,25 @@ class InterceptorReloadTest(
                 "TestValidateInterceptor_v2.java.txt"
             )
 
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs)
+            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs, "TestValidateInterceptor.java")
             if (compileEvent == null) {
                 return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
             }
 
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs)
+            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs, "TestValidateInterceptor")
             if (reloadEvent == null) {
                 return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
             }
 
             Thread.sleep(config.settleDelayMs)
 
-            // Check interceptor result (requires a product save to have triggered)
-            val httpResult = httpVerifier.get("${config.testEndpointBase}/interceptor")
-            if (httpResult.body.startsWith("validated-v2:")) {
-                result(start, TestStatus.PASS)
+            val nonce = java.util.UUID.randomUUID().toString()
+            val httpResult = httpVerifier.post("${config.testEndpointBase}/interceptor-save", mapOf("nonce" to nonce))
+            val failure = interceptorSaveFailure(httpResult, nonce)
+            if (failure == null) {
+                result(start, TestStatus.PASS, "modelService.save validated once; test transaction rolled back")
             } else {
-                // May still show v1 or "none" if no product was saved after reload
-                result(start, TestStatus.PASS, "Interceptor reloaded (last: ${httpResult.body})")
+                result(start, TestStatus.FAIL, failure)
             }
         } catch (e: Exception) {
             result(start, TestStatus.ERROR, e.message ?: e.toString())

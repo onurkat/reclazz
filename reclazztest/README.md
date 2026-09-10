@@ -53,3 +53,12 @@ Building the extension inside Hybris writes `build.xml`, `classes/`,
 `gensrc/` and friends into this directory. They are listed in the
 repository's `.gitignore`, so a deployed extension does not show up as
 uncommitted changes.
+
+
+The interceptor check also deploys `ValidationProbe` and
+`SapVerificationController`. POST `/reclazztest/v2/test/interceptor-save` creates
+a uniquely named catalog/version/product, calls `modelService.save`, returns
+the validator version and exact call count, and rolls back in `finally`.
+Use a test environment: rollback does not undo external interceptor effects.
+The fixture does not configure Hibernate ORM; its former DAO constant was not
+an L2 cache test.

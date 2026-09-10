@@ -15,10 +15,9 @@ class HibernateL2CacheTest(
     httpVerifier: HttpVerifier,
 ) : BaseTest("Hibernate L2 cache", config, agentClient, httpVerifier) {
 
-    override fun run(): TestResult = writeAndVerify(
-        targetPath = "${config.srcDir}/com/onurkat/reclazztest/services/TestDao.java",
-        templateName = "TestDao_v2.java.txt",
-        httpPath = "${config.testEndpointBase}/dao",
-        expectedBody = "dao-v2",
+    override fun run(): TestResult = result(
+        System.currentTimeMillis(), com.onurkat.reclazz.inttest.report.TestStatus.SKIP,
+        "The Commerce fixture has no Hibernate ORM SessionFactory/L2 provider. " +
+            "A DAO constant is not cache evidence; run the separate Hibernate L2 regression suite."
     )
 }

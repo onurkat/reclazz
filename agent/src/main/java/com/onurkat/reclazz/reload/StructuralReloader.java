@@ -1383,8 +1383,8 @@ public class StructuralReloader {
                 // Invalidate Hibernate L2 cache for structurally changed classes (Hybris only)
                 if (isHybris && hibernateInvalidator != null) {
                     try {
-                        hibernateInvalidator.getClass().getMethod("invalidateCache", String.class)
-                                .invoke(hibernateInvalidator, className);
+                        hibernateInvalidator.getClass().getMethod("invalidateCache", String.class, java.util.List.class)
+                                .invoke(hibernateInvalidator, className, platformContext.getAllApplicationContexts());
                     } catch (Exception ignored) {}
                 }
             }

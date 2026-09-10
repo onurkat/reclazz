@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- **SAP reload reliability.** ImpEx REMOVE detection covers macro headers and
+  refuses unresolved/recursive headers by default. Failed property writes stay
+  pending for an identical save; successful keys keep their own baseline.
+  Code generation preserves real edits inside the own-touch window and releases
+  its queue atomically. Interceptor reload captures old mapping identities and
+  updates the SAP registry after Spring refresh; missing/failed updates no longer
+  earn a success effect. The integration test now saves a product, requires one
+  invocation with the current nonce/version and rolls back. Corrected circular
+  Tomcat setup examples and obsolete blanket restart limitations. The old DAO
+  constant check no longer claims Hibernate L2 coverage.
+
 ### Added
 - **Lifecycle methods added to running singleton components.** Supported new
   javax `@PostConstruct` / `@PreDestroy` methods run through Spring creation and

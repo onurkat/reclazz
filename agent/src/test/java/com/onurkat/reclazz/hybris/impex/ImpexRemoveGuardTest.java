@@ -57,6 +57,36 @@ class ImpexRemoveGuardTest {
         assertEquals(2, scan(impex), "the line the user should go and look at is the first");
     }
 
+    @Test
+    void quotedRemoveHeaderIsRefused() {
+        assertEquals(1, scan("\"REMOVE Product\";code[unique=true]\n"));
+    }
+
+    @Test
+    void macroTypeCannotBypassRemoveGuard() {
+        assertEquals(2, scan("$type=Product\nREMOVE $type;code[unique=true]\n"));
+    }
+
+    @Test
+    void macroHeaderCannotBypassRemoveGuard() {
+        assertEquals(2, scan("$header=REMOVE Product\n$header;code[unique=true]\n"));
+        assertEquals(3, scan("$mode=REMOVE\n$header=$mode Product\n$header;code\n"));
+        assertEquals(1, scan("$unknownHeader;code[unique=true]\n"),
+                "unresolved header macros cannot be certified safe for auto-import");
+    }
+
+    @Test
+    void recursiveHeaderMacrosAreRefusedWithoutUnboundedExpansion() {
+        assertEquals(2, scan("$header=$header$header\n$header;code\n"));
+        assertEquals(3, scan("$a=$b\n$b=$a\n$a;code\n"));
+    }
+
+    @Test
+    void safeMacroHeadersAndValuesRemainUsable() {
+        assertEquals(-1, scan("$mode=INSERT_UPDATE\n$mode Product;code[unique=true]\n;p1\n"));
+        assertEquals(-1, scan("$name=REMOVE Product\nINSERT Product;code;name\n;p1;$name\n"));
+    }
+
     // ── Not caught, and must not be ───────────────────────────────────────
 
     @Test
