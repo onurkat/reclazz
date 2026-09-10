@@ -11,7 +11,7 @@ import java.util.List;
  * Classification result produced by {@link XmlSafetyClassifier} when diffing
  * a newly parsed *-spring.xml against the live bean factory.
  *
- * Three outcomes per bean:
+ * Outcomes per bean (including native recreation of selected definitions):
  * <ul>
  *   <li>{@link NewBean} — absent in the live factory, safe to register + instantiate</li>
  *   <li>{@link PropertyChange} — exists live, only {@code <property>} value differs,
@@ -21,18 +21,17 @@ import java.util.List;
  *       BeanPostProcessor, constructor-arg change, etc.)</li>
  * </ul>
  *
- * Bean removals are intentionally NOT detected — doing so would require the
- * reloader to remember the previous contents of each XML file, which trades
- * a stateless design for a narrow feature with low signal-to-noise.
+ * Bean removals are detected from resource ownership and remain report-only.
  */
 final class BeanDefinitionDiff {
 
     final List<NewBean> added = new ArrayList<>();
     final List<PropertyChange> propertyChanges = new ArrayList<>();
     final List<UnsafeChange> unsafe = new ArrayList<>();
+    final List<XmlBeanRecreator.Replacement> recreated = new ArrayList<>();
 
     boolean hasChanges() {
-        return !added.isEmpty() || !propertyChanges.isEmpty() || !unsafe.isEmpty();
+        return !added.isEmpty() || !propertyChanges.isEmpty() || !unsafe.isEmpty() || !recreated.isEmpty();
     }
 
     static final class NewBean {

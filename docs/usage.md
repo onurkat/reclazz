@@ -111,6 +111,63 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### XML singleton recreation
+
+For an existing bean in a watched `*-spring.xml`, edits to constructor arguments,
+a public static or instance factory method, or explicit `init-method` and
+`destroy-method` metadata can recreate the singleton without restarting:
+
+```xml
+<bean id="client" class="example.Client" init-method="start" destroy-method="stop">
+    <constructor-arg value="30"/>
+</bean>
+```
+
+Changing `30` to `60` replaces the definition and lets Spring create and initialize
+the new product. The old product receives its old destroy callback; the new
+definition controls subsequent destruction. Arguments and properties support
+scalar values, bean references and the live factory's placeholder resolution.
+Unchanged definitions do not recreate products. A lazy singleton that has not
+been created stays lazy. Ordinary setter-only edits retain the existing in-place
+path and bean identity.
+
+Reclazz snapshots Spring's dependent graph before replacement. Supported plain
+dependents are recreated too. Writable direct fields in known singleton holders
+are updated by identity, including previously replaced plain holders still held
+by application code. These old holders are remembered weakly across saves.
+Their own state is not reset or globally copied from the new holder.
+
+Preflight requires exact file ownership, the same concrete product type, stable
+class/factory-bean/alias metadata and an ordinary singleton definition. An instance
+factory must already be a local singleton; factory methods must be public and
+unambiguous with a concrete return type. Scalar/reference argument and property
+edits, factory-method selection and explicit init/destroy names are the allowed
+metadata changes. Scope, parent, autowire policy, depends-on, method overrides,
+custom suppliers, infrastructure metadata and other definition changes are refused.
+
+New constructor/factory/lifecycle definitions and bean removal still require a
+restart. Recreated definitions cannot use nested beans or managed collections.
+FactoryBean, proxies, AutoCloseable, Thread, Executor, DataSource, Spring lifecycle
+interfaces and infrastructure types are excluded. Dependents must have plain
+definitions without constructor/factory/lifecycle metadata or lifecycle annotations.
+Known direct final fields and collection/map/array holders referencing replaced
+beans are refused before destruction. Local variables, static fields, nested
+object graphs, inaccessible fields and holders outside the owning factory are
+not repaired; a raw reference to the old target remains the old object.
+
+If creation fails, Reclazz attempts to restore the previous definitions, recreate
+the affected instances and repair holders. Both the original failure and a failed
+restoration are reported. Fix the input or dependency and save again to retry.
+This is not rollback of constructor or callback side effects; restoration can run
+callbacks again. Spring retains its own callback-error handling. Replacement is
+not a transaction with concurrent requests, registry edits or external resources.
+
+Verified with Spring 5.3.39 and SapMachine 21, including startup-agent reloads in
+ordinary and child classloaders, factory edits, callback counts and repeated saves.
+Multiple owning contexts resolve placeholders independently, using the same Spring
+classes. Other Spring versions, separate Spring installations, SAP Commerce runtime
+integration and a JDK 17 runtime have not been verified for this extension.
+
 ### Lifecycle methods added after startup
 
 On a stock JDK, supported `javax.annotation.PostConstruct` and

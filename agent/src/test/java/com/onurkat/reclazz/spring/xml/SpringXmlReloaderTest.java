@@ -206,7 +206,7 @@ class SpringXmlReloaderTest {
     }
 
     @Test
-    void initMethodBeanIsRejected() throws Exception {
+    void addingInitMethodRecreatesTheBean() throws Exception {
         // Start with a simple bean
         Path xml = writeXml("beans.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
@@ -219,7 +219,7 @@ class SpringXmlReloaderTest {
         loadIntoLiveContext(xml);
         liveContext.refresh();
 
-        // User adds an init-method — reloader must refuse (side effects not rollback-safe)
+        // Adding an explicit init method selects the bounded recreation path.
         writeXml("beans.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <beans xmlns="http://www.springframework.org/schema/beans">
@@ -232,8 +232,11 @@ class SpringXmlReloaderTest {
         TestBean bean = liveContext.getBean("target", TestBean.class);
         reloader.reload(xml);
 
-        // Reloader must not have called setter — init-method rule rejects the whole bean
+        // A raw reference to the old target is not itself replaced.
         assertEquals("v1", bean.getMessage());
+        TestBean current = liveContext.getBean("target", TestBean.class);
+        org.junit.jupiter.api.Assertions.assertNotSame(bean, current);
+        assertEquals("v2", current.getMessage());
     }
 
     @Test
@@ -674,7 +677,7 @@ class SpringXmlReloaderTest {
     }
 
     @Test
-    void destroyMethodBeanIsRejected() throws Exception {
+    void addingDestroyMethodRecreatesTheBean() throws Exception {
         Path xml = writeXml("beans.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <beans xmlns="http://www.springframework.org/schema/beans">
@@ -688,7 +691,7 @@ class SpringXmlReloaderTest {
 
         TestBean bean = liveContext.getBean("target", TestBean.class);
 
-        // User adds a destroy-method — reloader must refuse
+        // The new registration owns the new destroy callback.
         writeXml("beans.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <beans xmlns="http://www.springframework.org/schema/beans">
@@ -700,8 +703,10 @@ class SpringXmlReloaderTest {
 
         reloader.reload(xml);
 
-        assertEquals("v1", bean.getMessage(),
-                "destroy-method bean must be rejected as unsafe — property must not be applied");
+        assertEquals("v1", bean.getMessage());
+        TestBean current = liveContext.getBean("target", TestBean.class);
+        org.junit.jupiter.api.Assertions.assertNotSame(bean, current);
+        assertEquals("v2", current.getMessage());
     }
 
     @Test

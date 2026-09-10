@@ -14,7 +14,8 @@ import java.util.Set;
  * Walks every bean definition in a freshly-parsed XML and decides whether each
  * change can be applied live or whether it requires a server restart.
  *
- * Applicability rules (from most to least conservative):
+ * Existing constructor/factory/lifecycle definitions first go through
+ * {@link XmlBeanRecreator}. Rules for the remaining legacy property/addition path:
  * <ul>
  *   <li>{@code abstract="true"}, non-singleton scope, {@code factory-bean},
  *       {@code init-method}, {@code destroy-method}, {@code InitializingBean},
@@ -42,6 +43,17 @@ final class XmlSafetyClassifier {
             newNameSet.add(beanName);
             Object newBd = SpringReflection.getBeanDefinition(tempFactory, beanName);
             if (newBd == null) continue;
+
+            Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
+            if (XmlBeanRecreator.handles(existing, newBd)) {
+                try {
+                    var replacement = XmlBeanRecreator.prepare(liveFactory, tempFactory, beanName, existing, newBd, xmlPath);
+                    if (replacement != null) out.recreated.add(replacement);
+                } catch (Exception failure) {
+                    out.unsafe.add(new BeanDefinitionDiff.UnsafeChange(beanName, SpringReflection.rootCause(failure)));
+                }
+                continue;
+            }
 
             String shapeReason = unsafeShapeReason(newBd);
             if (shapeReason != null) {
