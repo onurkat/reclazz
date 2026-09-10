@@ -817,7 +817,9 @@ AspectJ versions and a JDK 17 runtime were not exercised for this feature.
 AspectJ is only a test dependency of Reclazz; the production agent ships neither
 Spring nor AspectJ and does not enable AspectJ weaving.
 
-### Jackson getters added after startup
+<a id="jackson-getters-added-after-startup"></a>
+
+### Jackson properties added after startup
 
 Start with `-javaagent`, then add a getter to an already loaded DTO and compile:
 
@@ -829,39 +831,63 @@ public int getCount() { return count; }
 The next JSON response from a Spring-managed Jackson mapper includes `"count":7`,
 including when the endpoint returns an object created before the edit and the
 field has a supported [initialiser](#new-field-values-on-objects-that-already-existed).
-Repeated saves update the getter body and its annotations. Removing the getter
-removes the property on the next mapper serialization; restoring it brings it back.
+Add a setter too and a JSON request can populate the new property:
 
-Jackson still decides which properties to serialize. Reclazz supplies saved getter
-metadata and routes invocation to the current companion body. `@JsonProperty`,
-`@JsonGetter`, `@JsonIgnore`, inclusion rules, naming strategies, method mix-ins and generic
-getter signatures reach that normal discovery path. Private annotated getters
-follow the mapper's access-override policy. Existing custom DTO serializers remain
-in charge, and property serializers still run. Throwing getters retain Jackson's
-mapping-error behavior.
+```java
+public void setCount(int count) { this.count = count; }
+```
+
+Direct instance fields work as well, including private annotated fields:
+
+```java
+@JsonProperty("display_name")
+@JsonAlias("label")
+private String displayName;
+```
+
+Jackson writes the same added-field storage that application code reads. Both
+deserializing a new mutable DTO and `readerForUpdating` an object created before
+the reload are covered. Repeated saves update metadata and bodies; renaming,
+removing and restoring a property changes fresh mapper discovery in both directions.
+
+Jackson still decides which properties to read and write. Reclazz supplies saved
+field/method metadata and routes calls to the current companion or field storage.
+`@JsonProperty`, `@JsonGetter`, `@JsonSetter`, `@JsonAlias`, `@JsonIgnore`, read/write-only
+access, null policies, inclusion, naming and field/method mix-ins reach the normal
+discovery path. Concrete generic collections retain their element types. Private
+members follow each mapper's access-override policy; one mapper granting access
+does not grant it to another. Custom DTO and property serializers/deserializers
+remain in charge. Invalid input conversions and throwing setters/getters retain
+Jackson's mapping-error path. An ignored field can suppress its associated getter.
 
 This covers concrete, non-static, no-argument, non-void methods named `getX`, boolean
 `isX`, or directly annotated with `@JsonProperty`/`@JsonGetter`. Synthetic/bridge
-methods are excluded. The original class's ordinary reflection still cannot see
-these methods. Direct added-field discovery and setters/deserialization are not
-provided by this feature. The Jackson hook must load before Jackson databind;
-attaching after Jackson loaded does not install it retroactively.
-
-Put serialization annotations on the getter. A newly added instance field with
-runtime annotations (including type annotations) makes this DTO's getter adapter
-decline and name the field; any previous added-getter metadata is withdrawn.
-This avoids silently dropping field metadata such as `@JsonIgnore`. Field mix-ins
-and direct field access are outside this getter-only path.
+methods are excluded. Added setters must be nonstatic, concrete, single-argument
+`void` methods named `setX` or directly annotated with `@JsonProperty`/`@JsonSetter`.
+Nonstatic, nonsynthetic fields carry their saved annotations, type annotations
+and generic signature. Jackson retains its normal visibility/transient filtering.
+Final added fields can be read but cannot be written, even with access overriding
+enabled. Fluent setters, new constructor/record creators and builder mutation are
+outside this addition. The original class's ordinary reflection still cannot see
+the added members. The Jackson hook must load before Jackson databind; attaching
+after Jackson loaded does not install it retroactively.
 
 Cache refresh discovers ObjectMapper beans in captured Spring contexts. A mapper
 created privately outside those contexts can retain its previous shape. An
 ObjectWriter retained from before a change can retain its property list, while its
 added getters dispatch to updated bodies; obtain a new writer after reload for
-the new shape. In-flight serialization is not paused or rolled back.
+the new shape. Retained ObjectReaders can likewise keep an earlier input shape;
+obtain a fresh reader after reload. In-flight conversion is not paused or rolled
+back. Application setter side effects are not a transaction: an error in a later
+property does not undo earlier writes to an object being updated.
 
 Verified on stock JDK 21 with Jackson 2.13.5 and Spring 5.3.39: real loopback HTTP,
 old/new DTO objects, three mapper policies, nested/generic values, private getters,
-null/empty inclusion, custom serializers and four successive edits. Jackson 3,
+null/empty inclusion, custom serializers and four successive edits. Input/field
+regressions additionally cover four saves with real HTTP JSON, ordinary and child
+application classloaders, alias/name changes, removal/restoration, private setters
+and fields, generic conversion, null skipping, custom deserializers and original
+reflection staying unchanged. Jackson 3,
 other Jackson 2 versions and accessor-generating extensions such as Afterburner
 are not verified; this support targets Jackson's normal reflective accessor path.
 
@@ -1667,7 +1693,7 @@ doesn't allow). This has one consequence worth knowing:
 - Hot-compiled Java code that calls a new method directly — the
   invocation is rewritten through the companion via `invokedynamic`
 - Hot-compiled Java code that reads/writes a new field
-- Jackson serialization through the [added getter adapter](#jackson-getters-added-after-startup)
+- Jackson JSON input/output through the [added property adapter](#jackson-properties-added-after-startup)
 - Hybris Jalo-layer property access (`jaloItem.setProperty(...)`)
 - Flexible search with new attribute columns (after HAC
   `updatesystem` for items.xml changes)
@@ -1675,7 +1701,7 @@ doesn't allow). This has one consequence worth knowing:
 **Needs server restart on standard JVMs (works immediately on JBR/DCEVM):**
 - `Class.getMethod("setNewThing", ...)` on the original class
 - Reflective consumers without a supported adapter (Hybris `ModelService`'s
-  attribute dispatch, Gson, and Jackson use outside the getter adapter's scope)
+  attribute dispatch, Gson, and Jackson use outside the property adapter's scope)
 - Groovy console reflection that reaches through
   `ModelService.setAttributeValue` / `getAttributeValue`
 

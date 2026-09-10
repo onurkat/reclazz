@@ -33,13 +33,27 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
                                 if (owner.equals("java/lang/Class") && method.equals("getDeclaredMethods")
                                         && descriptor.equals("()[Ljava/lang/reflect/Method;"))
                                     replacement = "(Ljava/lang/Class;)[Ljava/lang/reflect/Method;";
+                                if (owner.equals("java/lang/Class") && method.equals("getDeclaredFields")
+                                        && descriptor.equals("()[Ljava/lang/reflect/Field;"))
+                                    replacement = "(Ljava/lang/Class;)[Ljava/lang/reflect/Field;";
                                 if (owner.equals("java/lang/reflect/Method")) {
                                     if (method.equals("invoke") && descriptor.equals("(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;"))
                                         replacement = "(Ljava/lang/reflect/Method;Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;";
                                     if (method.equals("getDeclaringClass") && descriptor.equals("()Ljava/lang/Class;"))
                                         replacement = "(Ljava/lang/reflect/Method;)Ljava/lang/Class;";
                                 }
+                                if (owner.equals("java/lang/reflect/Field")) {
+                                    if (method.equals("get") && descriptor.equals("(Ljava/lang/Object;)Ljava/lang/Object;"))
+                                        replacement = "(Ljava/lang/reflect/Field;Ljava/lang/Object;)Ljava/lang/Object;";
+                                    if (method.equals("set") && descriptor.equals("(Ljava/lang/Object;Ljava/lang/Object;)V"))
+                                        replacement = "(Ljava/lang/reflect/Field;Ljava/lang/Object;Ljava/lang/Object;)V";
+                                    if (method.equals("getDeclaringClass") && descriptor.equals("()Ljava/lang/Class;"))
+                                        replacement = "(Ljava/lang/reflect/Field;)Ljava/lang/Class;";
+                                }
                             }
+                            if (opcode == Opcodes.INVOKEINTERFACE && owner.equals("java/lang/reflect/Member")
+                                    && method.equals("getDeclaringClass") && descriptor.equals("()Ljava/lang/Class;"))
+                                replacement = "(Ljava/lang/reflect/Member;)Ljava/lang/Class;";
                             if (replacement == null) super.visitMethodInsn(opcode, owner, method, descriptor, isInterface);
                             else {
                                 changed[0] = true;
@@ -51,7 +65,7 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
             }, 0);
             return changed[0] ? writer.toByteArray() : null;
         } catch (Throwable failure) {
-            StatusReporter.warn("Jackson getter hook could not transform " + name + ": " + failure.getClass().getSimpleName());
+            StatusReporter.warn("Jackson property hook could not transform " + name + ": " + failure.getClass().getSimpleName());
             return null;
         }
     }

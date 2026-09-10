@@ -1176,7 +1176,7 @@ public class StructuralReloader {
             Set<String> jacksonGetters = new LinkedHashSet<>();
             boolean hadJacksonGetters = com.onurkat.reclazz.bootstrap.JacksonBridge.hasGetters(targetClass);
             final MethodHandles.Lookup getterLookup = classLookup;
-            afterSwitch(className, "making added getters available to Jackson", () -> {
+            afterSwitch(className, "making added properties available to Jackson", () -> {
                 jacksonGetters.addAll(JacksonAddedGetters.publish(targetClass, newBytecode,
                         getterLookup, newTargets));
             });
