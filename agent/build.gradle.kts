@@ -48,8 +48,8 @@ dependencies {
     // Real JSR-250 lifecycle regressions only; never packaged with the agent.
     testImplementation("javax.annotation:javax.annotation-api:1.3.2")
     // Real local Kafka broker regressions only; never packaged with the agent.
-    testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
-    testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
+    testImplementation("org.springframework.kafka:spring-kafka:4.1.1")
+    testImplementation("org.springframework.kafka:spring-kafka-test:4.1.1")
     testImplementation("org.springframework:spring-messaging:5.3.39")
     // Real Rabbit listener regressions only; production remains reflection-only.
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
