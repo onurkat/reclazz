@@ -20,6 +20,14 @@ final class AddedOperationMetadata {
     private static final Set<String> CLASS_METADATA = Set.of("Lorg/springframework/stereotype/Service;",
             "Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Repository;",
             "Lorg/springframework/cache/annotation/CacheConfig;", "Ljava/lang/Deprecated;");
+    // Owned by other added-method adapters. A method carrying one of these is
+    // not an operation refusal here: it may still take transaction/cache advice
+    // and its scheduling/event registration is another adapter's job.
+    private static final Set<String> OTHER_ADAPTERS = Set.of(
+            "Lorg/springframework/scheduling/annotation/Scheduled;",
+            "Lorg/springframework/scheduling/annotation/Schedules;",
+            "Lorg/springframework/context/event/EventListener;",
+            "Lorg/springframework/transaction/event/TransactionalEventListener;");
     record Entry(Method method, String key, String reason, boolean transaction, boolean cache) { }
     record Plan(List<Entry> entries, boolean operations) { }
 
@@ -52,7 +60,8 @@ final class AddedOperationMetadata {
                 if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !CLASS_METADATA.contains(a.desc))
                     reason = "unsupported class annotation " + a.desc;
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations)
-                if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;"))
+                if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
+                        && !OTHER_ADAPTERS.contains(a.desc))
                     reason = "unsupported method annotation " + a.desc;
             if (reason != null) reasons.put(method.name + method.desc, reason);
             MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, method.name, method.desc, null,

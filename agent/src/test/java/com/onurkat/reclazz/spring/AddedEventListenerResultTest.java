@@ -128,6 +128,9 @@ class AddedEventListenerResultTest {
             Handlers replacement = new Handlers();
             var proxy = new org.springframework.aop.framework.ProxyFactory(replacement);
             proxy.setProxyTargetClass(true);
+            // A non-standard advisor stays refused; a standard tx/cache proxy is
+            // unwrapped and supported instead.
+            proxy.addAdvice((org.aopalliance.intercept.MethodInterceptor) call -> call.proceed());
             scope.context.getBeanFactory().registerSingleton("handlers", proxy.getProxy());
             scope.context.publishEvent("go");
             assertTrue(scope.results.isEmpty());

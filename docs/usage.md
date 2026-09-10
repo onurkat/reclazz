@@ -1033,10 +1033,15 @@ are not verified; this support targets Jackson's normal reflective accessor path
 
 ### Scheduled methods added after startup
 
-With the agent attached at startup, add this method to an existing, unproxied
-singleton `@Service` or `@Component`, compile, and it starts running without a
-restart. Scheduling must already be enabled in the application, for example
-with `@EnableScheduling`.
+With the agent attached at startup, add this method to an existing singleton
+`@Service` or `@Component`, compile, and it starts running without a restart.
+The bean may already be a standard transaction or cache proxy: the task is
+unwrapped to run on the real target, so it reads the live fields, and if the
+added method itself carries `@Transactional` or `@Cacheable`, that advice is
+applied through the same path as any added service method. A frozen proxy, a
+non-singleton target source, or a proxy carrying a non-standard advisor is
+named and left for a restart. Scheduling must already be enabled in the
+application, for example with `@EnableScheduling`.
 
 ```java
 @Scheduled(fixedDelayString = "${cleanup.delay:1000}")
@@ -1082,10 +1087,14 @@ Correct the declaration and compile again to retry.
 
 ### Event listener methods added after startup
 
-With the agent attached at startup, add a listener to an existing, unproxied
-singleton `@Service` or `@Component` and compile. It can be the class's first
-listener. Spring's event listener processor must already be present (as in an
-annotation-configured Spring context).
+With the agent attached at startup, add a listener to an existing singleton
+`@Service` or `@Component` and compile. It can be the class's first listener.
+The bean may already be a standard transaction or cache proxy: the listener is
+unwrapped to run on the real target, and advice the added method carries is
+applied through the same path as any added service method. A frozen proxy, a
+non-singleton target source, or a proxy carrying a non-standard advisor is
+named and left for a restart. Spring's event listener processor must already be
+present (as in an annotation-configured Spring context).
 
 ```java
 @EventListener(condition = "#a0.priority > 5")

@@ -174,6 +174,9 @@ class SpringAddedEventListenerTest {
                 if (proxy) {
                     var factory = new org.springframework.aop.framework.ProxyFactory(new Handlers());
                     factory.setProxyTargetClass(true);
+                    // A non-standard advisor stays refused; a standard tx/cache
+                    // proxy is now unwrapped and supported.
+                    factory.addAdvice((org.aopalliance.intercept.MethodInterceptor) call -> call.proceed());
                     scope.context.getBeanFactory().registerSingleton("handlers", factory.getProxy());
                 } else {
                     var definition = new org.springframework.beans.factory.support.RootBeanDefinition(Handlers.class);
@@ -184,7 +187,7 @@ class SpringAddedEventListenerTest {
                 reloader.reloadEventListeners(Handlers.class, ADDED, annotated("first"));
                 scope.context.publishEvent("ignored");
                 assertEquals(List.of(), old.calls);
-                assertTrue(RestartLedger.digest().stream().anyMatch(s -> s.contains(proxy ? "prox" : "singleton")));
+                assertTrue(RestartLedger.digest().stream().anyMatch(s -> s.contains(proxy ? "advisor" : "singleton")));
                 if (!proxy) assertNull(scope.context.getBeanFactory().getSingleton("handlers"));
             } finally { RestartLedger.clear(); }
         }
@@ -223,6 +226,8 @@ class SpringAddedEventListenerTest {
             Handlers target = new Handlers();
             var factory = new org.springframework.aop.framework.ProxyFactory(target);
             factory.setProxyTargetClass(true);
+            // A non-standard advisor stays refused; the paused report follows.
+            factory.addAdvice((org.aopalliance.intercept.MethodInterceptor) call -> call.proceed());
             scope.context.getBeanFactory().registerSingleton("handlers", factory.getProxy());
             RestartLedger.clear();
             scope.context.publishEvent("proxy");

@@ -7,6 +7,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **`@Scheduled` and `@EventListener` methods added to a proxied singleton.** A
+  service that is already a standard transaction or cache proxy can gain a
+  scheduled task or an event listener after startup. The method is unwrapped to
+  run on the real target, so it reads the live fields instead of the proxy's,
+  and if the added method itself carries `@Transactional` or `@Cacheable` that
+  advice is applied through the same bridge as any added service method. The
+  existing proxy advice keeps working, and a later save can edit or remove the
+  method. A frozen proxy, a non-singleton target source, or a proxy carrying a
+  non-standard advisor is named and left for a restart; `@Async` stays out of
+  scope. Real-agent reload tests cover both class loaders.
+  [Scheduled scope](docs/usage.md#scheduled-methods-added-after-startup),
+  [event scope](docs/usage.md#event-listener-methods-added-after-startup).
 - **`@Lazy`, `@Scope` and `@Profile` on `@Bean` methods added after startup.**
   A direct `@Lazy` factory is created on first access instead of when the save
   applies, and is destroyed normally once created; `@Scope("prototype")` hands
