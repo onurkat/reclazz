@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-09-10
+
+### Fixed
+- **Compatible with IntelliJ 2026.2.** The `until-build` was capped at `261.*`,
+  so the Marketplace flagged the plugin as incompatible with IDE build 262 and
+  stopped offering it to users on that release. The range now extends through
+  `262.*`. No agent or plugin code changed; the verifier still reports
+  Compatible from 2023.3 through 2025.2, the newest this toolchain resolves.
+
 ## [1.2.0] - 2026-09-10
 
 ### Fixed
