@@ -24,6 +24,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   constant check no longer claims Hibernate L2 coverage.
 
 ### Added
+- **New bean methods on default Configuration.** Added overridable, no-argument
+  instance factories resolve inter-bean and external calls through Spring's
+  singleton registry, including aliases and existing configuration references.
+  Native dependency tracking and circular-creation errors are preserved; static
+  calls retain ordinary Java semantics. Parameterized instance factories and
+  additional proxies remain outside the full-configuration scope.
 - **Transaction listeners added after startup.** Supported direct `void`
   `@TransactionalEventListener` methods use Spring's native four transaction
   phases, fallback, conditions and ordering. Ordinary added listeners also work

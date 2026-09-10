@@ -35,6 +35,18 @@ public final class ReclazzBootstrap {
     public static CallSite bootstrapMethod(MethodHandles.Lookup lookup, String name,
                                             MethodType type, String targetClass,
                                             String descHash) throws Throwable {
+        return methodCall(lookup, name, type, targetClass, descHash, true);
+    }
+
+    /** Body consumers bypass bean references; nested calls still use their own boundaries. */
+    public static CallSite bootstrapBody(MethodHandles.Lookup lookup, String name,
+                                                MethodType type, String targetClass,
+                                                String descHash) throws Throwable {
+        return methodCall(lookup, name, type, targetClass, descHash, false);
+    }
+
+    private static CallSite methodCall(MethodHandles.Lookup lookup, String name, MethodType type,
+                                       String targetClass, String descHash, boolean beanReference) throws Throwable {
         String siteKey = InjectedNames.siteKey(name, descHash);
         Class<?> ownerClass = null;
         MethodHandles.Lookup ownerLookup = null;
@@ -107,10 +119,12 @@ public final class ReclazzBootstrap {
             dispatch.registerOverrideGuard(siteKey, ownerClass, name, publicCall);
         }
         CallSite direct = dispatch.getOrCreateMethodSite(siteKey, callSite);
-        // Added methods have no proxy override. Only their external call sites
-        // get this boundary; raw dispatch and same-class calls remain unadvised.
-        if (absentFromClass && ownerClass != null && lookup.lookupClass() != ownerClass) {
-            return AddedOperationBridge.externalCall(ownerClass, siteKey, direct);
+        // Transaction/cache advice stays external-call only. Bean references
+        // also cover same-owner calls; the factory supplier bypasses that route.
+        if (absentFromClass && ownerClass != null && beanReference) {
+            if (lookup.lookupClass() != ownerClass)
+                direct = AddedOperationBridge.externalCall(ownerClass, siteKey, direct);
+            direct = AddedBeanBridge.call(ownerClass, siteKey, direct);
         }
         return direct;
     }

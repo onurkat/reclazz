@@ -329,14 +329,16 @@ configuration singleton described below; supporting a static method does not
 enable configuration-free registration or early infrastructure factories.
 
 Supported factories carry direct `@Bean` and return a non-generic object
-(not a primitive, array or `void`). Private instance
-and static methods work; native and abstract methods do not. The class must carry
-direct `@Configuration(proxyBeanMethods=false)`, extend only `Object`, implement
-no interfaces and have exactly one local, unproxied singleton configuration in
-each affected bean factory. Extra runtime class annotations are limited to
+(not a primitive, array or `void`). Private instance methods work with
+`@Configuration(proxyBeanMethods=false)`; static methods can also be private.
+Native and abstract methods do not work. The class must carry direct
+`@Configuration`, extend only `Object`, implement no interfaces and have exactly
+one local configuration singleton in each affected bean factory. Lite
+configuration (`proxyBeanMethods=false`) requires an unproxied instance; default
+configuration requires Spring's direct enhanced subclass as described below. Extra runtime class annotations are limited to
 `@Deprecated`; methods additionally allow direct `@Primary` and `@Qualifier`.
 Conditions, profiles, scopes, advice, lazy metadata, class-level primary/qualifier
-policies, composed annotations and proxied configurations require a restart.
+policies, composed annotations and additional proxies require a restart.
 Parameters allow direct `@Qualifier` and `@Value`. Primitive parameters without
 `@Value`, primitive/multidimensional arrays, raw generic parameters, wildcard or
 unresolved type variables, generic return types and generic factory methods
@@ -347,6 +349,44 @@ parameter/type annotations such as `@Lazy`, nullable annotations and composed
 qualifiers require a restart. Parameter names come from the saved bytecode;
 custom name-discovery policies are not used by this path. No-argument factories
 remain supported.
+
+Default `@Configuration` (including explicit `proxyBeanMethods=true`) supports
+added instance factories with no parameters that are neither private nor final.
+For example:
+
+```java
+@Configuration
+public class Clients {
+    @Bean({"transport", "legacyTransport"})
+    public Transport transport() { return new Transport(); }
+
+    @Bean
+    public Client client() { return new Client(transport()); }
+}
+```
+
+The call to `transport()` resolves the same singleton as `getBean("transport")`
+and its alias. Calls from an existing configuration reference or another
+instrumented application class use that same reference path. The container's
+factory supplier executes the method body to create a product; nested instance
+factory calls go back through Spring. A method reference such as `this::transport`
+created in the edited configuration follows the same route, including when it is
+retained across later saves. Reflection, arbitrary method handles and method
+references created in other classes are outside this added-factory scope.
+Spring tracks their dependencies and rejects
+unresolvable creation cycles. Correcting the factory and saving again recovers.
+Static factory calls and manually constructed configurations retain ordinary Java
+semantics; calling a static factory directly can create another object.
+
+Parameterized instance factories in full configuration remain unsupported: the
+added supplier path does not implement explicit argument calls to those methods.
+Their parameter annotations do not make them supported. The richer parameter
+support above remains available for lite configuration and static factories.
+Full configuration must be Spring's direct enhanced subclass with its native bean
+factory binding; additional AOP proxies, user subclasses, inheritance and changing
+configuration mode at runtime are outside this scope. Existing lifecycle and
+replacement rules below still apply: a saved configuration can recreate existing
+products, so references to old products are not promised to stay current.
 
 The default method name or explicit `name`/`value` names are supported, along with
 `initMethod` and `destroyMethod`. For `@Bean({"transport", "legacyTransport"})`, the

@@ -266,7 +266,7 @@ class SpringAddedBeanTest {
     }
 
     @Test
-    void proxiedConfigurationInheritanceAndClassPoliciesAreRefused() throws Exception {
+    void privateFullFactoryInheritanceAndClassPoliciesAreRefused() throws Exception {
         for (String kind : List.of("proxy", "super", "annotation")) {
             ClassNode source = read(annotated("first"));
             if (kind.equals("proxy")) source.visibleAnnotations.get(0).values = null;
