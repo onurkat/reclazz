@@ -65,8 +65,11 @@ public final class AddedKafkaListenerAdapter {
                     throw new IllegalArgumentException("unsupported KafkaListener option " + key);
                 String id = literal(options.get("id"), "id");
                 Object topics = options.get("topics");
-                if (!(topics instanceof List<?> list) || list.isEmpty()) throw new IllegalArgumentException("literal topics are required");
-                for (Object topic : list) literal(topic, "topic");
+                if (!(topics instanceof List<?> list) || list.isEmpty()) throw new IllegalArgumentException("topics are required");
+                // A topic may be a ${property} placeholder: the real processor
+                // resolves it through the application's own value resolver. A
+                // #{SpEL} expression stays out of scope.
+                for (Object topic : list) destination(topic, "topic");
                 for (String option : List.of("groupId", "containerFactory"))
                     if (options.containsKey(option)) literal(options.get(option), option);
                 if (options.containsKey("autoStartup") && !Set.of("true", "false").contains(options.get("autoStartup")))
@@ -82,6 +85,13 @@ public final class AddedKafkaListenerAdapter {
     private static String literal(Object value, String name) {
         if (!(value instanceof String s) || s.isBlank() || s.contains("#{") || s.contains("${"))
             throw new IllegalArgumentException(name + " must be a nonempty literal");
+        return (String) value;
+    }
+    // A destination may carry a ${property} placeholder but not a #{SpEL}
+    // expression, which the added-listener path does not evaluate here.
+    private static String destination(Object value, String name) {
+        if (!(value instanceof String s) || s.isBlank() || s.contains("#{"))
+            throw new IllegalArgumentException(name + " must be a nonempty literal or ${property} placeholder");
         return (String) value;
     }
     private static boolean typeVariables(String signature) {

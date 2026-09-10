@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **`${property}` destinations for message listeners added after startup.** A
+  `@KafkaListener` topic, a `@JmsListener` destination or a `@RabbitListener`
+  queue added at runtime may now be a `${property}` placeholder instead of a
+  literal. The application's own value resolver resolves it, the same as at
+  startup, so the listener consumes from the configured destination. A `#{SpEL}`
+  expression stays out of scope. Real-broker tests (embedded Kafka, embedded
+  ActiveMQ, a RabbitMQ container) add a placeholder listener, deliver a message
+  to the resolved destination, and remove it.
 - **`@Scheduled` and `@EventListener` methods added to a proxied singleton.** A
   service that is already a standard transaction or cache proxy can gain a
   scheduled task or an event listener after startup. The method is unwrapped to
