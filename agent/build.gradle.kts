@@ -29,17 +29,17 @@ dependencies {
     implementation("org.ow2.asm:asm-util:9.10.1")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-    testImplementation("net.bytebuddy:byte-buddy:1.18.5") {
+    testImplementation("net.bytebuddy:byte-buddy:1.18.13") {
         exclude(group = "org.slf4j")
     }
-    testImplementation("net.bytebuddy:byte-buddy-agent:1.18.5") {
+    testImplementation("net.bytebuddy:byte-buddy-agent:1.18.13") {
         exclude(group = "org.slf4j")
     }
     // Test only, and deliberately not an implementation dependency: the agent
     // recognises a mapped class by the annotation's descriptor, never by
     // loading it, so that it works against jakarta and javax alike and against
     // an application whose persistence API the agent has never seen.
-    testImplementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
+    testImplementation("jakarta.persistence:jakarta.persistence-api:3.2.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Spring for XML reloader tests only — production code stays
     // reflection-only and has no Spring compile dependency.
@@ -55,9 +55,9 @@ dependencies {
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
-    testImplementation("com.h2database:h2:2.2.224")
+    testImplementation("com.h2database:h2:2.5.250")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
-    testImplementation("org.aspectj:aspectjweaver:1.9.22.1")
+    testImplementation("org.aspectj:aspectjweaver:1.9.25.1")
     // Spring MVC, its test support and the servlet API, for driving a real
     // RequestMappingHandlerMapping under load while a controller is re-scanned.
     testImplementation("org.springframework:spring-webmvc:5.3.39")
@@ -70,7 +70,7 @@ dependencies {
     // Boot 2.7 YAML regression fixtures only; not shipped in the agent.
     testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.5")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.2")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.4")
 }
@@ -152,7 +152,7 @@ configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configur
 dependencies {
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
-    add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.1.8")
+    add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.2.4")
 }
 val hibernateTest by tasks.registering(Test::class) {
     group = "verification"
