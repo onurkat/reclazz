@@ -270,7 +270,7 @@ intellijPlatform {
         version = providers.gradleProperty("pluginVersion")
         ideaVersion {
             sinceBuild = "233"
-            untilBuild = "261.*"
+            untilBuild = "262.*"
         }
     }
 
@@ -308,7 +308,7 @@ intellijPlatform {
             // plugin version reaches for builds that are not downloadable.
             // 2025.3 is not resolvable here either, by version or by build
             // number, so 2025.2 is the newest this toolchain can verify while
-            // untilBuild claims 261.
+            // untilBuild claims 262.
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2023.3")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")

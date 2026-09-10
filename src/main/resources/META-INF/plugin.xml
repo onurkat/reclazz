@@ -109,6 +109,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.2.1</h3>
+        <ul>
+            <li><b>Compatible with IntelliJ 2026.2.</b> The supported IDE range now extends through build 262, so the Marketplace keeps offering the plugin on that release. Nothing else changed.</li>
+        </ul>
         <h3>1.2.0</h3>
         <ul>
             <li><b>A method you add is found by the framework that was going to look for it, on a stock JDK.</b> A new endpoint is served on the next request, inside a Tomcat webapp as well; a new @ExceptionHandler, @InitBinder or @ModelAttribute runs through Spring's own selection and ordering; a new @Scheduled, @EventListener (returned events included) or @TransactionalEventListener registers, the last one firing at its transaction phase; a new @PostConstruct or @PreDestroy runs on the next instance; a new @Transactional or @Cacheable service method goes through the real interceptors. A shape without an adapter is named as needing a restart instead of looking applied.</li>
