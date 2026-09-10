@@ -150,8 +150,8 @@ val hibernateTests = sourceSets.create("hibernateTest") {
 configurations[hibernateTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
 dependencies {
-    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
-    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
+    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:7.4.7.Final")
+    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:7.4.7.Final")
     add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.1.8")
 }
 val hibernateTest by tasks.registering(Test::class) {
