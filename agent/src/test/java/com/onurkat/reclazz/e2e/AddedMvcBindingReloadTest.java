@@ -19,14 +19,22 @@ class AddedMvcBindingReloadTest {
     @Test void localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints() throws Exception { exercise(false); }
     @Test void adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors() throws Exception { exercise(true); }
 
-    private void exercise(boolean advice) throws Exception {
+    @Test void localBindingAndModelMethodsWorkAcrossChildLoaderSaves() throws Exception { exercise(false, true); }
+    @Test void adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves() throws Exception { exercise(true, true); }
+
+    private void exercise(boolean advice) throws Exception { exercise(advice, false); }
+
+    private void exercise(boolean advice, boolean childLoader) throws Exception {
         String servlet = Path.of(javax.servlet.Servlet.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
-        try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet)
+        var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet);
+        if (childLoader) builder.childClassLoader();
+        try (var app = builder
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Api", api(advice, 0)).with("Advice", advice(0)).with("Other", OTHER)
                 .with("Editor", EDITOR).with("Global", GLOBAL).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "server did not start");
             app.awaitOrFail("] Watching ", "watcher did not start");
+            if (childLoader) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "fixture did not cross a module boundary");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();
             check(client, port, "/value?amount=7", "21:null:global:existing");

@@ -19,14 +19,22 @@ class AddedExceptionHandlerReloadTest {
     @Test void addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves() throws Exception { exercise(false); }
     @Test void addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves() throws Exception { exercise(true); }
 
-    private void exercise(boolean advice) throws Exception {
+    @Test void localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves() throws Exception { exercise(false, true); }
+    @Test void adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves() throws Exception { exercise(true, true); }
+
+    private void exercise(boolean advice) throws Exception { exercise(advice, false); }
+
+    private void exercise(boolean advice, boolean childLoader) throws Exception {
         String servlet = Path.of(javax.servlet.Servlet.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
-        try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet)
+        var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet);
+        if (childLoader) builder.childClassLoader();
+        try (var app = builder
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("App", APP).with("Api", api(advice, 0)).with("Advice", advice(0))
                 .with("Fallback", FALLBACK).with("Other", OTHER).with("Local", LOCAL).start()) {
             app.awaitOrFail("PORT=", "MVC HTTP bridge did not start");
             app.awaitOrFail("] Watching ", "watcher did not start");
+            if (childLoader) app.awaitOrFail("APP_IN_CHILD_MODULE=true", "fixture did not cross a module boundary");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
             var client = HttpClient.newHttpClient();
             check(client, port, "/boom", advice ? 400 : 409, advice ? "fallback:bad" : "local-base:bad");

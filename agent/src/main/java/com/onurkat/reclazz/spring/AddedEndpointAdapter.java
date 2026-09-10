@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.spring;
 
 import com.onurkat.reclazz.transform.CallSiteAdapter;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Handle;
@@ -39,6 +40,8 @@ import com.onurkat.reclazz.transform.SafeClassWriter;
  * the return type. Nothing here interprets them.
  */
 public final class AddedEndpointAdapter {
+
+    private static final String TARGET_ACCESSOR = InjectedNames.PREFIX + "endpointTarget";
 
     private static final String BOOTSTRAP =
             "com/onurkat/reclazz/bootstrap/ReclazzBootstrap";
@@ -82,8 +85,11 @@ public final class AddedEndpointAdapter {
         MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(
                 controllerClass, MethodHandles.lookup());
         Class<?> adapterClass = lookup.defineClass(bytes);
-        var target = MethodHandles.privateLookupIn(adapterClass, lookup)
-                .findGetter(adapterClass, "target", controllerClass)
+        // Crossing into a webapp's module drops MODULE from this lookup.
+        // It can define the adapter and call its public accessor, but cannot
+        // perform another privateLookupIn. Never expose a privileged Lookup.
+        var target = lookup.findVirtual(adapterClass, TARGET_ACCESSOR,
+                        java.lang.invoke.MethodType.methodType(Object.class))
                 .asType(java.lang.invoke.MethodType.methodType(Object.class, Object.class));
         com.onurkat.reclazz.bootstrap.ExceptionHandlerBridge.registerEndpoint(adapterClass, controllerClass, target);
         com.onurkat.reclazz.bootstrap.MvcBindingBridge.registerEndpoint(adapterClass, controllerClass, target);
@@ -131,6 +137,15 @@ public final class AddedEndpointAdapter {
         ctor.visitInsn(Opcodes.RETURN);
         ctor.visitMaxs(0, 0);
         ctor.visitEnd();
+
+        var getter = writer.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
+                TARGET_ACCESSOR, "()Ljava/lang/Object;", null, null);
+        getter.visitCode();
+        getter.visitVarInsn(Opcodes.ALOAD, 0);
+        getter.visitFieldInsn(Opcodes.GETFIELD, adapterInternal, "target", targetDesc);
+        getter.visitInsn(Opcodes.ARETURN);
+        getter.visitMaxs(0, 0);
+        getter.visitEnd();
 
         for (MethodNode handler : handlers) {
             writeDelegate(writer, adapterInternal, controllerInternal, targetDesc, handler);

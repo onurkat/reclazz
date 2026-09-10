@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- **Added MVC endpoints in child classloaders.** Controllers loaded by Tomcat
+  and other child loaders can expose reload-added endpoints without a second
+  privileged lookup. Local/advice exception handling, binding and model methods
+  keep the original controller receiver. Regression tests cross a real unnamed
+  module boundary and exercise five saves with real HTTP responses.
 - **SAP reload reliability.** ImpEx REMOVE detection covers macro headers and
   refuses unresolved/recursive headers by default. Failed property writes stay
   pending for an identical save; successful keys keep their own baseline.

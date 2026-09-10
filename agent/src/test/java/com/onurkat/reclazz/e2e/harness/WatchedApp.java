@@ -111,6 +111,7 @@ public final class WatchedApp implements AutoCloseable {
 
         private String extraClasspath = "";
         private boolean mavenLayout;
+        private boolean childClassLoader;
 
         private Builder(Path tempDir) {
             this.tempDir = tempDir;
@@ -146,6 +147,12 @@ public final class WatchedApp implements AutoCloseable {
             return this;
         }
 
+        /** Application classes in another unnamed module, like a Tomcat webapp. */
+        public Builder childClassLoader() {
+            this.childClassLoader = true;
+            return this;
+        }
+
         public WatchedApp start() throws IOException {
             String agentJar = agentJarOrSkip();
             Path sourceDir = Files.createDirectories(tempDir.resolve(mavenLayout ? "src/main/java/app" : "src/app"));
@@ -162,13 +169,42 @@ public final class WatchedApp implements AutoCloseable {
                     : extraClasspath + File.pathSeparator + classesDir;
             compile(files, classesDir, extraClasspath);
 
+            String mainClass = "app.App";
+            if (childClassLoader) {
+                Path launcherDir = Files.createDirectories(tempDir.resolve("launcher"));
+                Path launcherSource = tempDir.resolve("ChildLauncher.java");
+                Files.writeString(launcherSource, """
+                        package launcher;
+                        public class ChildLauncher {
+                            public static void main(String[] args) throws Exception {
+                                var loader = new java.net.URLClassLoader(new java.net.URL[]{
+                                        java.nio.file.Path.of(args[0]).toUri().toURL()
+                                }, ClassLoader.getSystemClassLoader());
+                                Thread.currentThread().setContextClassLoader(loader);
+                                Class<?> app = Class.forName("app.App", true, loader);
+                                if (app.getClassLoader() != loader || app.getModule() == ChildLauncher.class.getModule())
+                                    throw new AssertionError("Fixture must use a distinct child-loader module");
+                                System.out.println("APP_IN_CHILD_MODULE=true");
+                                app.getMethod("main", String[].class).invoke(null, (Object) new String[0]);
+                            }
+                        }
+                        """);
+                compile(List.of(launcherSource), launcherDir, "");
+                // Keep application output OFF the parent's classpath. Merely
+                // wrapping the ordinary classpath in a URLClassLoader delegates
+                // back to the parent and misses the module boundary again.
+                classpath = launcherDir + (extraClasspath.isEmpty() ? "" : File.pathSeparator + extraClasspath);
+                mainClass = "launcher.ChildLauncher";
+            }
+
             List<String> command = new ArrayList<>();
             command.add(javaBinary());
             command.addAll(jvmArgs);
             command.add("-javaagent:" + agentJar + "=watchDirs=" + classesDir + "," + agentArgs);
             command.add("-cp");
             command.add(classpath);
-            command.add("app.App");
+            command.add(mainClass);
+            if (childClassLoader) command.add(classesDir.toString());
             Process process = new ProcessBuilder(command)
                     .redirectErrorStream(true)
                     .start();
