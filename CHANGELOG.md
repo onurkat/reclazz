@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Custom stereotypes register a new bean class after startup.** A brand-new
+  class carrying a custom meta-annotated stereotype, not only a direct
+  `@Component`/`@Service`/`@Repository`/`@Controller`/`@RestController`, is now
+  registered as a live bean. The registrar resolves the stereotype and the bean
+  name through Spring's own merged-annotation and bean-name generation, so a
+  composed stereotype and an `@AliasFor` name are read exactly as component
+  scanning reads them at startup, and `@Scope`/`@Lazy`/`@Primary`/`@DependsOn`
+  on the class are honoured. A class with no stereotype is still left alone.
 - **`${property}` destinations for message listeners added after startup.** A
   `@KafkaListener` topic, a `@JmsListener` destination or a `@RabbitListener`
   queue added at runtime may now be a `${property}` placeholder instead of a
