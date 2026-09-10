@@ -121,12 +121,12 @@ class JacksonAddedGettersTest {
         assertEquals("{\"name\":\"original\"}", json(mapper()));
     }
 
-    @Test void addedFieldAnnotationsAreRefusedRatherThanIgnored() throws Exception {
+    @Test void addedFieldAnnotationsParticipateInGetterDiscovery() throws Exception {
         publish(Shape.class, Map.of("getAdded", "old", "getSecret", "hidden", "named", "private"));
-        var failure = assertThrows(IllegalStateException.class,
-                () -> publish(AnnotatedField.class, Map.of("getSecret", "must-not-leak")));
-        assertTrue(failure.getMessage().contains("secret"));
-        assertFalse(JacksonBridge.hasGetters(Owner.class), "do not retain the previous shape after refusing current metadata");
+        publish(AnnotatedField.class, Map.of("getSecret", "must-not-leak"));
+        assertTrue(JacksonBridge.hasGetters(Owner.class));
+        assertTrue(Arrays.stream(JacksonBridge.getDeclaredFields(Owner.class))
+                .anyMatch(f -> f.getName().equals("secret") && f.isAnnotationPresent(JsonIgnore.class)));
         assertEquals("{\"name\":\"original\"}", json(mapper()));
     }
 

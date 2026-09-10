@@ -24,6 +24,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   constant check no longer claims Hibernate L2 coverage.
 
 ### Added
+- **JSON input and fields added to running DTOs.** Jackson can discover new void
+  setters and instance fields on a stock JDK, populate new or existing mutable
+  objects and serialize their current values. Saved field/method metadata keeps
+  aliases, ignore/access/null rules, generic conversion and custom deserializers.
+  Repeated saves rename, remove and restore properties across application
+  classloaders. Final added fields remain unwritable. Verified with Jackson 2.13.5.
+  [Scope](docs/usage.md#jackson-properties-added-after-startup).
+
 - **Lifecycle methods added to running singleton components.** Supported new
   javax `@PostConstruct` / `@PreDestroy` methods run through Spring creation and
   destruction. New instances initialize after injection and retain their added
