@@ -35,7 +35,14 @@ ground a Java-only reload does not.
 - **Spring**: beans are destroyed and recreated, references to the old instance
   are re-pointed, MVC mappings are re-scanned, caches evicted, `@Scheduled` tasks
   and `@EventListener` methods re-registered, AOP proxy caches cleared. A handler
-  method you add is served on the next request, on a stock JDK as well. A
+  method you add is served on the next request, on a stock JDK and inside a
+  Tomcat webapp as well, and so are an `@ExceptionHandler`, `@InitBinder` or
+  `@ModelAttribute`, a `@Bean` factory (collections, `Optional`, providers and
+  `@Value` arguments resolved by Spring), a `@Scheduled`, `@EventListener` or
+  `@TransactionalEventListener`, a `@PostConstruct` or `@PreDestroy`, a
+  `@Transactional` or `@Cacheable` service method, and a `@KafkaListener`,
+  `@JmsListener` or `@RabbitListener`, whose previous consumer is stopped and
+  waited for before the bean is recreated. A
   brand-new `@Service`, `@Component` or `@RestController` class becomes a live
   bean with its constructor autowired, because a fresh class is entirely real
   and only its definition was missing. An edited `@Transactional` or
@@ -45,7 +52,11 @@ ground a Java-only reload does not.
   the service class that carries it. A constructor-bound
   `@ConfigurationProperties` bean is replaced rather than mutated, a `@Value`
   field is re-resolved in place, and a bean that takes a changed `@Value`
-  through its constructor is rebuilt the same way.
+  through its constructor is rebuilt the same way. A saved `.properties` or
+  `.yml` file is reloaded at its own precedence, so a deleted key falls back to
+  the next source or the default instead of staying stale, and a supported
+  `*-spring.xml` constructor, factory or init/destroy edit recreates the
+  singleton and repairs the beans holding it.
 - **What the frameworks cached about the class**: a reload is only half the job,
   because each framework answers from what it worked out about that class once,
   at startup. An `@Autowired` added to a field that was already there injects,
@@ -54,14 +65,16 @@ ground a Java-only reload does not.
   `@InitBinder` or `@ModelAttribute` added to an existing method runs. An edited
   `@Aspect` pointcut is parsed again, with the half that still waits named: a
   bean already proxied keeps the advice it was built with until it is itself
-  reloaded. And Jackson stops serialising the shape it first saw, so a property
-  renamed with `@JsonProperty` and a getter you removed both reach the response.
-  A getter you *add* is the stock-JDK wall rather than a cache, and is not
-  claimed. Each of these was measured on a running Spring Boot 3.3 server before
+  reloaded. And Jackson stops serialising the shape it first saw: a property renamed
+  with `@JsonProperty`, a getter you removed, and a getter, setter or field you
+  *add* all reach the next request's JSON, on a stock JDK too. Each of these was measured on a running Spring Boot 3.3 server before
   it was written and again after.
-- **Interceptors and ImpEx**: Validate, Prepare, Load and Remove interceptors
-  re-register; changed `.impex` files can be imported on save, opt-in, and a file
-  carrying a REMOVE header is refused rather than run against a live database.
+- **Interceptors and ImpEx**: Validate, Prepare, Load, Remove and InitDefaults
+  interceptors re-register: the mapping is captured before Spring refreshes the
+  bean and put back into the platform registry afterwards, verified by a real
+  model save that runs the new rule exactly once. Changed `.impex` files can be
+  imported on save, opt-in, and a file carrying a REMOVE header, written out or
+  behind a macro, is refused rather than run against a live database.
 
 ## What it does not do
 
@@ -107,7 +120,12 @@ ground a Java-only reload does not.
   the same opt-in it is added to the persistence unit and mapped on any JDK 17+.
 - Reflective visibility of newly added members is full on JetBrains Runtime or
   DCEVM, and limited on a stock JVM, where added members live on a companion
-  class. Members you REMOVE are hidden from reflection on either, so a deleted
+  class. The frameworks that were going to look for a new member get its saved
+  metadata through an adapter instead (Spring MVC, `@Bean` factories, schedulers,
+  event and transaction listeners, lifecycle callbacks, Jackson, and the Kafka,
+  JMS and RabbitMQ listener containers); a framework without one, Hybris
+  ModelService attribute dispatch for instance, is named as needing a restart.
+  Members you REMOVE are hidden from reflection on either, so a deleted
   getter stops being serialised by a framework that never knew it was gone.
 - A changed **compile-time constant** (`static final` with a constant value)
   cannot be repaired from the class that changed: javac copied the old value
@@ -127,7 +145,10 @@ change, or says that nothing would.
   integration scenarios on a live server, 23 of 23 as of the current release.
 - Spring Boot 2.7 and 3.3: class reload, structural reload, bean refresh, cache
   eviction, rebound properties, logger levels, a new endpoint without a restart,
-  a new bean class registered live, a security rule flipped without a restart.
+  a new bean class registered live, a security rule flipped without a restart,
+  `@Bean`, listener, lifecycle and Jackson members added after startup, YAML and
+  removed-key reloads, XML singleton recreation, and Kafka, JMS and RabbitMQ
+  listeners added against real brokers.
 - Java 17 and 21, and JetBrains Runtime 25.
 - IntelliJ IDEA 2023.3 through 2026.1.
 

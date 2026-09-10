@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Free, open-source hot-reload for SAP Commerce (Hybris) and Spring, and a free alternative to JRebel. Save an items.xml and it regenerates and reloads instead of costing you ant clean all and a restart. Properties, log levels, locales, backoffice labels, Spring beans and MVC mappings included. Apache 2.0, any JDK 17+.">
-    <meta name="keywords" content="SAP Commerce, Hybris, hybris hot reload, items.xml, impex hot reload, hybris localization reload, backoffice labels reload, hybris properties reload, JRebel alternative, DCEVM alternative, Spring Boot, hot-reload, Java agent, hot-swap, Spring bean refresh, MVC, Reclazz, IntelliJ plugin">
+    <meta name="description" content="Free, open-source hot-reload for SAP Commerce (Hybris) and Spring, and a free alternative to JRebel. Save an items.xml and it regenerates and reloads instead of costing you ant clean all and a restart. Properties, YAML, log levels, locales, backoffice labels, Spring beans and MVC mappings included, and the methods you add after startup are found: endpoints, @Bean factories, listeners, Kafka, JMS and RabbitMQ consumers, Jackson properties. Apache 2.0, any JDK 17+.">
+    <meta name="keywords" content="SAP Commerce, Hybris, hybris hot reload, items.xml, impex hot reload, hybris localization reload, backoffice labels reload, hybris properties reload, JRebel alternative, DCEVM alternative, Spring Boot, hot-reload, Java agent, hot-swap, Spring bean refresh, MVC, Kafka listener hot reload, JMS listener, RabbitMQ listener, application.yml reload, @Bean added at runtime, Jackson, Reclazz, IntelliJ plugin">
     <meta name="author" content="Onur Kat">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#06060a" media="(prefers-color-scheme: dark)">
@@ -670,7 +670,11 @@
             "Spring bean refresh, MVC re-scan, cache eviction, scheduler and event listener re-registration",
             "A newly added Spring MVC endpoint served without a restart",
             "Type and enum text from locales files, and backoffice labels, refreshed without a system update",
-            "Hybris interceptor reload and opt-in ImpEx import on save"
+            "Hybris interceptor reload and opt-in ImpEx import on save",
+            "Methods added after startup found by Spring MVC, @Bean factories, schedulers, event and transaction listeners, lifecycle callbacks and Jackson on a stock JDK",
+            "Kafka, JMS and RabbitMQ listeners added after startup, with existing consumers stopped before the bean is recreated",
+            "Properties and YAML files reloaded at their own precedence, removed keys falling back to the next source",
+            "Spring XML constructor, factory and init/destroy edits recreating the singleton and repairing its holders"
         ]
     }
     </script>
@@ -741,6 +745,14 @@
                         "acceptedAnswer": {
                                 "@type": "Answer",
                                 "text": "Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "I added a method to a running bean. Will Spring, Jackson or my message broker find it?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "On a stock JDK the method lives on a hidden companion class, which is exactly what a reflective scan cannot see, so Reclazz hands each framework the saved metadata through an adapter. A new endpoint, exception handler, binder or model attribute method is served on the next request; a new @Bean, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct or @PreDestroy registers; a new @KafkaListener, @JmsListener or @RabbitListener consumes after the previous consumer has been stopped; a new Jackson getter, setter or field is read and written. Each is a real test against the framework, and a shape without an adapter is named as needing a restart."
                         }
                 }
         ]
@@ -886,12 +898,12 @@
             <div class="feature-card reveal">
                 <div class="feature-icon green">&#127793;</div>
                 <h3 data-i18n="sap.spring.title">Spring XML</h3>
-                <p data-i18n="sap.spring.desc">Changes to a *-spring.xml are diffed and applied to the live context, which is also how a brand new bean becomes available without a restart.</p>
+                <p data-i18n="sap.spring.desc">Property edits in a *-spring.xml are applied to the live bean in place. A changed constructor argument, factory method or init/destroy method recreates that singleton through Spring itself and repairs the beans still holding the old one, and a brand new bean definition becomes available without a restart.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon orange">&#9881;</div>
                 <h3 data-i18n="sap.props.title">Properties</h3>
-                <p data-i18n="sap.props.desc">The platform reads its property files once, at startup. Save one now and the keys whose value actually changed are applied to the running server, through the same call the HAC console makes. Values consumed once at startup are named as still needing a restart, instead of being reported as done.</p>
+                <p data-i18n="sap.props.desc">The platform reads its property files once, at startup. Save one now and the keys whose value actually changed are applied to the running server, through the same call the HAC console makes. Values consumed once at startup are named as still needing a restart, instead of being reported as done, and a key the platform refuses to write stays pending so that saving the same file again retries it.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon cyan">&#128220;</div>
@@ -911,12 +923,12 @@
             <div class="feature-card reveal">
                 <div class="feature-icon">&#128274;</div>
                 <h3 data-i18n="sap.interceptors.title">Interceptors</h3>
-                <p data-i18n="sap.interceptors.desc">Validate, Prepare, Load and Remove interceptors re-register, so a changed rule applies to the next model that passes through it.</p>
+                <p data-i18n="sap.interceptors.desc">Validate, Prepare, Load, Remove and InitDefaults interceptors re-register: the mapping is captured before Spring refreshes the bean and put back into the platform registry afterwards, verified by a real model save that runs the new rule exactly once. A registration that fails says so instead of claiming success.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon orange">&#128228;</div>
                 <h3 data-i18n="sap.impex.title">ImpEx On Save</h3>
-                <p data-i18n="sap.impex.desc">Changed .impex files can be imported the moment you save them. It is opt-in, because it runs against your live database, and a file carrying a REMOVE header is named and refused rather than executed.</p>
+                <p data-i18n="sap.impex.desc">Changed .impex files can be imported the moment you save them. It is opt-in, because it runs against your live database, and a file carrying a REMOVE header, written out or hidden behind a macro, is named and refused rather than executed. A header macro the guard cannot resolve is refused the same way.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon green">&#128193;</div>
@@ -969,7 +981,7 @@
         <div class="section-header">
             <span class="section-label" data-i18n="features.label">Features</span>
             <h2 data-i18n="features.title_html">Deep Spring Integration.<br><span class="text-gradient">Not Just Hot-Swap.</span></h2>
-            <p data-i18n="features.subtitle">Reclazz understands Spring internals. When a class reloads, beans refresh, mappings re-scan, caches evict, and schedulers re-register, automatically.</p>
+            <p data-i18n="features.subtitle">Reclazz understands Spring internals. When a class reloads, beans refresh, mappings re-scan, caches evict and schedulers re-register, and a method you add after startup is found by the framework that was going to look for it.</p>
         </div>
         <div class="features-grid">
             <div class="feature-card reveal">
@@ -980,7 +992,7 @@
             <div class="feature-card reveal">
                 <div class="feature-icon cyan">&#128268;</div>
                 <h3 data-i18n="features.mvc.title">MVC Re-scan</h3>
-                <p data-i18n="features.mvc.desc">Re-registers @RequestMapping methods when a controller changes. An endpoint you add is served on the next request, on an ordinary JDK as well, instead of after a restart.</p>
+                <p data-i18n="features.mvc.desc">Re-registers @RequestMapping methods when a controller changes. An endpoint you add is served on the next request, on an ordinary JDK and inside a Tomcat webapp as well, instead of after a restart. An @ExceptionHandler, @InitBinder or @ModelAttribute you add to a running controller or advice runs through Spring's own selection, local priority and advice ordering included.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon pink">&#128293;</div>
@@ -990,7 +1002,7 @@
             <div class="feature-card reveal">
                 <div class="feature-icon orange">&#9202;</div>
                 <h3 data-i18n="features.scheduler.title">Scheduler Reload</h3>
-                <p data-i18n="features.scheduler.desc">Cancels and re-registers @Scheduled tasks. Changed cron expressions and fixed-rate schedules apply immediately.</p>
+                <p data-i18n="features.scheduler.desc">Cancels and re-registers @Scheduled tasks. Changed cron expressions and fixed-rate schedules apply immediately, and a @Scheduled method you add after startup is registered on a stock JDK; removing it, or its annotation, cancels it.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon">&#128736;</div>
@@ -1005,7 +1017,7 @@
             <div class="feature-card reveal">
                 <div class="feature-icon orange">&#9881;</div>
                 <h3 data-i18n="features.props.title">Property &amp; Log Changes</h3>
-                <p data-i18n="features.props.desc">Spring Boot reads a properties file once, at startup. Save one now and the changed keys go into the running Environment and the @ConfigurationProperties beans that read them are rebound, so a timeout or a feature flag applies on the next call. Log levels, and a saved logback.xml or log4j2.xml, reach the running logging context too. A bean bound through its constructor cannot take a new value, and Reclazz says so rather than reporting it as applied.</p>
+                <p data-i18n="features.props.desc">Spring Boot reads a properties file once, at startup. Save a .properties or .yml file now and it is reloaded at its own place in the Environment, so command-line overrides keep winning, a nested YAML value or list reaches the same binding as at startup, and a key you delete falls back to the next source or the default instead of staying stale. The @ConfigurationProperties beans that read it are rebound or, when constructor-bound, rebuilt and re-pointed; @Value fields are re-resolved, computed expressions included. Log levels, and a saved logback.xml or log4j2.xml, reach the running logging context too. An invalid value holds the whole save and says why.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon cyan">&#128269;</div>
@@ -1015,7 +1027,7 @@
             <div class="feature-card reveal">
                 <div class="feature-icon green">&#128737;</div>
                 <h3 data-i18n="features.aop.title">AOP &amp; Events</h3>
-                <p data-i18n="features.aop.desc">Clears AOP proxy caches for @Aspect classes and parses an edited pointcut again, instead of leaving every proxy matching the old expression. The one half a restart is still needed for is named: a bean already proxied keeps the advice it was built with until it is itself reloaded. Re-registers @EventListener methods. Refreshes @Async processing.</p>
+                <p data-i18n="features.aop.desc">Clears AOP proxy caches for @Aspect classes and parses an edited pointcut again, instead of leaving every proxy matching the old expression. The one half a restart is still needed for is named: a bean already proxied keeps the advice it was built with until it is itself reloaded. Re-registers @EventListener methods, including ones you add after startup, and a @TransactionalEventListener you add fires at its transaction phase through Spring's own synchronization. Refreshes @Async processing.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon cyan">&#128218;</div>
@@ -1025,7 +1037,17 @@
             <div class="feature-card reveal">
                 <div class="feature-icon orange">&#128260;</div>
                 <h3 data-i18n="features.caches.title">What The Frameworks Cached</h3>
-                <p data-i18n="features.caches.desc">A reload is only half the job. Every framework answers from what it worked out about your class once, at startup, and nothing tells it otherwise. So an @Autowired you add to an existing field actually injects, a constraint you add is enforced on the next request, an @ExceptionHandler, @InitBinder or @ModelAttribute you add runs, an edited @Aspect pointcut is parsed again, and Jackson stops serialising the shape it first saw. Each one was measured on a running server, before and after.</p>
+                <p data-i18n="features.caches.desc">A reload is only half the job. Every framework answers from what it worked out about your class once, at startup, and nothing tells it otherwise. So an @Autowired you add to an existing field actually injects, a constraint you add is enforced on the next request, an @ExceptionHandler, @InitBinder or @ModelAttribute you add runs, an edited @Aspect pointcut is parsed again, and Jackson stops serialising the shape it first saw: a getter, a setter or a field you add to a DTO is written and read by the next request's JSON. Each one was measured on a running server, before and after.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#128295;</div>
+                <h3 data-i18n="features.added.title">Methods You Add Are Found</h3>
+                <p data-i18n="features.added.desc">On a stock JDK a method you add lives on a hidden companion class, where a framework's scan cannot see it. Reclazz hands the framework the saved metadata instead: a new @Bean factory registers its product, with collections, Optional, providers and @Value arguments resolved by Spring; a new @PostConstruct or @PreDestroy runs on the next instance and keeps its destroy callback; a new @Transactional or @Cacheable service method runs through the real interceptors. A shape without an adapter is named as needing a restart, never silently skipped.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#128236;</div>
+                <h3 data-i18n="features.brokers.title">Message Listeners</h3>
+                <p data-i18n="features.brokers.desc">A @KafkaListener, @JmsListener or @RabbitListener you add to a running component registers through the application's own listener processor and container factory. Before the bean is recreated its existing consumers are stopped and waited for, so a queue is never consumed twice; edits, topic or queue changes, removal and restoration follow later saves. Verified against embedded Kafka and ActiveMQ brokers and a real RabbitMQ container.</p>
             </div>
             <div class="feature-card reveal">
                 <div class="feature-icon">&#9889;</div>
@@ -1073,6 +1095,12 @@
                     <tr><td data-i18n="compare.spring_bean">Spring bean refresh</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
                     <tr><td data-i18n="compare.new_bean">New @Service / @Controller class</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">any JDK 17+, wired and mapped</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
                     <tr><td data-i18n="compare.security">Spring Security rules</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">filter chain rebuilt live</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">separate plugin</span></td></tr>
+                    <tr><td data-i18n="compare.added_bean">@Bean method added after startup</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">any JDK 17+; collections, Optional, providers and @Value arguments</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.added_handlers">Handler or callback method added after startup</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">@ExceptionHandler, @InitBinder, @ModelAttribute, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct, @PreDestroy</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.brokers">Message listener added after startup</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">@KafkaListener, @JmsListener, @RabbitListener; the old consumer is stopped first</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.jackson">Jackson property added after startup</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">getter, setter or field on a running DTO</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.config">Properties and YAML follow the saved file</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">removed keys fall back, constructor-bound beans rebuilt</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.xml">Spring XML constructor, factory and init/destroy edits</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">singleton recreated, holders repaired</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
                     <tr><td data-i18n="compare.removed">Deleted members stop being visible</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">hidden from reflection</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
                     <tr><td data-i18n="compare.mvc">MVC mapping re-scan</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
                     <tr><td data-i18n="compare.cache">Cache eviction</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
@@ -1172,15 +1200,15 @@
             </div>
             <div class="limitation-card reveal">
                 <h4 data-i18n="limits.structural_title">Reflection on New Members (standard JDKs)</h4>
-                <p data-i18n="limits.structural_desc">Adding and removing methods or fields works on any JDK 17+. On a standard JDK the new members live on a hidden companion class, so code that calls them directly sees them, but reflection on the original class and caches built at startup (Hybris ModelService, Jackson) do not until a restart. JetBrains Runtime or DCEVM removes that caveat.</p>
+                <p data-i18n="limits.structural_desc">Adding and removing methods or fields works on any JDK 17+. On a standard JDK the new members live on a hidden companion class, so code that calls them directly sees them, but reflection on the original class does not. Spring MVC, @Bean factories, schedulers, event and transaction listeners, lifecycle callbacks, Jackson and the Kafka, JMS and RabbitMQ listener containers get the saved metadata through adapters; a framework without one, Hybris ModelService attribute dispatch for instance, still needs a restart and is named. JetBrains Runtime or DCEVM removes the caveat entirely.</p>
             </div>
             <div class="limitation-card reveal">
-                <h4 data-i18n="limits.config_title">Spring Configuration Changes</h4>
-                <p data-i18n="limits.config_desc">Configuration file changes (application.properties, application.yml, XML bean definitions) are loaded at startup and require a restart.</p>
+                <h4 data-i18n="limits.config_title">Configuration Beyond a File Edit</h4>
+                <p data-i18n="limits.config_desc">A loaded properties or YAML file reloads at its own precedence, and supported XML edits recreate the bean. What still needs a restart: a new config location, profile or import, a bean definition removed from XML, a changed class, scope or parent, and XML definitions with nested beans or managed collections. Each is named when it happens.</p>
             </div>
             <div class="limitation-card reveal">
-                <h4 data-i18n="limits.new_beans_title">New Spring Beans</h4>
-                <p data-i18n="limits.new_beans_desc">Adding entirely new @Component classes requires a restart. Spring's component scanning runs at startup. Modifying existing beans works out of the box.</p>
+                <h4 data-i18n="limits.new_beans_title">Creators, Proxies and Custom Scans</h4>
+                <p data-i18n="limits.new_beans_desc">A new @Component class is live, but some shapes stay outside: Jackson constructor and record creators for added properties, a listener or lifecycle callback added to a proxied bean, custom listener factories, Jakarta lifecycle annotations, and frameworks that read your classes through their own reflection. Reclazz refuses these with the reason rather than applying half of them.</p>
             </div>
         </div>
     </div>
@@ -1259,6 +1287,10 @@
             <div class="faq-item">
                 <button class="faq-question" aria-expanded="false" data-i18n="faq.q9">How do I reload an items.xml change without running ant clean all?<span class="faq-arrow">&#9660;</span></button>
                 <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a9">Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q10">I added a method to a running bean. Will Spring, Jackson or my message broker find it?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a10">On a stock JDK the method lives on a hidden companion class, which is exactly what a reflective scan cannot see, so Reclazz hands each framework the saved metadata through an adapter. A new endpoint, exception handler, binder or model attribute method is served on the next request; a new @Bean, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct or @PreDestroy registers; a new @KafkaListener, @JmsListener or @RabbitListener consumes after the previous consumer has been stopped; a new Jackson getter, setter or field is read and written. Each is a real test against the framework, and a shape without an adapter is named as needing a restart.</div></div>
             </div>
         </div>
     </div>
@@ -1397,29 +1429,29 @@ const translations = {
         'hero.github': 'GitHub\'da Y\u0131ld\u0131zla',
         'features.label': '\u00D6zellikler',
         'features.title_html': 'Derin Spring Entegrasyonu.<br><span class="text-gradient">Sadece Hot-Swap De\u011Fil.</span>',
-        'features.subtitle': 'Reclazz, Spring i\u00E7 yap\u0131s\u0131n\u0131 anlar. S\u0131n\u0131f yenilendi\u011Finde bean\'ler yenilenir, e\u015Flemeler taran\u0131r, \u00F6nbellekler temizlenir ve zamanlay\u0131c\u0131lar yeniden kaydedilir, otomatik olarak.',
+        'features.subtitle': "Reclazz, Spring iç yapısını anlar. Bir sınıf yenilendiğinde bean'ler tazelenir, mapping'ler yeniden taranır, önbellekler boşaltılır ve zamanlayıcılar yeniden kaydolur; açılıştan sonra eklediğiniz bir metot da onu arayacak framework tarafından bulunur.",
         'features.bean.title': 'Spring Bean Yenileme',
         'features.bean.desc': 'S\u0131n\u0131f yenilendikten sonra singleton bean\'leri otomatik olarak yok edip yeniden olu\u015Fturur. Uygulama durumu korunur.',
         'features.mvc.title': 'MVC Yeniden Tarama',
-        'features.mvc.desc': 'Bir controller de\u011fi\u015fti\u011finde @RequestMapping metotlari yeniden kaydolur. Ekledi\u011finiz endpoint, restart beklemeden bir sonraki istekte cevap verir, siradan bir JDK\'da da.',
+        'features.mvc.desc': "Bir controller değiştiğinde @RequestMapping metotları yeniden kaydolur. Eklediğiniz bir endpoint, sıradan bir JDK'da ve bir Tomcat webapp'i içinde de, restart sonrası yerine bir sonraki istekte cevap verir. Çalışan bir controller'a ya da advice'a eklediğiniz @ExceptionHandler, @InitBinder veya @ModelAttribute, yerel öncelik ve advice sıralaması dahil Spring'in kendi seçimiyle çalışır.",
         'features.cache.title': '\u00D6nbellek Temizleme',
         'features.cache.desc': '@Cacheable, @CacheEvict veya @CachePut i\u00E7eren s\u0131n\u0131flar i\u00E7in Spring \u00F6nbelleklerini temizler. Yenileme sonras\u0131 eski veri kalmaz.',
         'features.scheduler.title': 'Zamanlay\u0131c\u0131 Yenileme',
-        'features.scheduler.desc': '@Scheduled g\u00F6revlerini iptal edip yeniden kaydeder. De\u011Fi\u015Fen cron ifadeleri an\u0131nda uygulan\u0131r.',
+        'features.scheduler.desc': "@Scheduled görevlerini iptal edip yeniden kaydeder. Değişen cron ifadeleri ve sabit aralıklı zamanlamalar hemen uygulanır; açılıştan sonra eklediğiniz bir @Scheduled metodu standart JDK'da kaydolur, metodu ya da anotasyonunu kaldırmak görevi iptal eder.",
         'features.structural.title': 'Yap\u0131sal De\u011Fi\u015Fiklikler',
         'features.structural.desc': "Her JDK 17+ s\u00fcr\u00fcm\u00fcnde metot ve \u00f6rnek alan\u0131 ekleyin, kald\u0131r\u0131n, anotasyon de\u011fi\u015ftirin. Yamal\u0131 bir JVM gerekmez. Eklenen statik alan ba\u015flang\u0131\u00e7 de\u011ferini de al\u0131r, statik blo\u011fun geri kalan\u0131 yeniden \u00e7al\u0131\u015fmadan. Sona eklenen bir enum de\u011feri \u00e7al\u0131\u015fan JVM'e uygulan\u0131r, JDK 26 dahil: o s\u00fcr\u00fcm\u00fcn kapatt\u0131\u011f\u0131 \u015fey sun.misc.Unsafe ve JDK'n\u0131n kendi Unsafe'i ayn\u0131 yazmay\u0131 yap\u0131yor. De\u011fi\u015fen bir derleme zaman\u0131 sabiti, onu inline eden dosyalarla birlikte adland\u0131r\u0131l\u0131r ve derleyici Reclazz ise yeniden derlenir.",
         'features.templates.title': '\u015Eablon Yeniden Y\u00FCkleme',
         'features.templates.desc': 'Thymeleaf veya Freemarker \u015Fablonunu d\u00FCzenledi\u011Finizde bir sonraki render\u0027da ge\u00E7erli olur; \u00F6nbellek a\u00E7\u0131k kalabilir.',
         'features.props.title': 'Property ve Log De\u011Fi\u015Fiklikleri',
-        'features.props.desc': 'Spring Boot bir property dosyas\u0131n\u0131 yaln\u0131z a\u00E7\u0131l\u0131\u015Fta okur. Art\u0131k kaydetti\u011Finizde de\u011Fi\u015Fen anahtarlar \u00E7al\u0131\u015Fan Environment\'a girer ve onlar\u0131 okuyan @ConfigurationProperties bean\'leri yeniden ba\u011Flan\u0131r; bir timeout ya da bir \u00F6zellik anahtar\u0131 sonraki \u00E7a\u011Fr\u0131da ge\u00E7erli olur. Log seviyeleri ile kaydedilen bir logback.xml veya log4j2.xml de \u00E7al\u0131\u015Fan log altyap\u0131s\u0131na ula\u015F\u0131r. Constructor ile ba\u011Flanan bir bean yeni de\u011Feri alamaz, Reclazz bunu "uyguland\u0131" diye raporlamak yerine a\u00E7\u0131k\u00E7a s\u00F6yler.',
+        'features.props.desc': "Spring Boot bir property dosyasını yalnız açılışta okur. Bir .properties ya da .yml dosyasını şimdi kaydedin: dosya Environment'taki kendi yerinde yeniden yüklenir, böylece komut satırı override'ları kazanmaya devam eder, iç içe bir YAML değeri ya da liste açılıştaki aynı bağlamaya ulaşır ve sildiğiniz bir anahtar bayat kalmak yerine bir sonraki kaynağa ya da varsayılana düşer. Dosyayı okuyan @ConfigurationProperties bean'leri yeniden bağlanır; constructor ile bağlananlar yeniden kurulup referansları yeni örneğe çevrilir; @Value alanları, hesaplanan ifadeler dahil, yeniden çözülür. Log seviyeleri ile kaydedilen bir logback.xml veya log4j2.xml de çalışan log altyapısına ulaşır. Geçersiz bir değer kaydın tamamını bekletir ve nedenini söyler.",
         'features.diag.title': 'Kendini A\u00E7\u0131kl\u0131yor',
         'features.diag.desc': 'Hi\u00E7bir \u015Fey olmad\u0131\u011F\u0131nda nedenini sorun: build o s\u0131n\u0131fa u\u011Framam\u0131\u015Ft\u0131r, s\u0131n\u0131f Reclazz\'\u0131n izlemedi\u011Fi bir yere derleniyordur, \u00FCretilen byte\'lar ayn\u0131 \u00E7\u0131km\u0131\u015Ft\u0131r ya da JVM s\u0131n\u0131f\u0131 hen\u00FCz y\u00FCklememi\u015Ftir. Bunlar\u0131n hi\u00E7biri hata \u00FCretmez, log\'un bo\u015F olmas\u0131n\u0131n sebebi budur. \u0130kinci soru da \u015Fu: neyin i\u00E7in h\u00E2l\u00E2 restart gerekiyor. Bu oturumun geride b\u0131rakt\u0131klar\u0131n\u0131 listeler, hi\u00E7bir \u015Fey yoksa onu da a\u00E7\u0131k\u00E7a s\u00F6yler.',
         'features.aop.title': 'AOP & Olaylar',
-        'features.aop.desc': "@Aspect s\u0131n\u0131flar\u0131 i\u00e7in AOP proxy \u00f6nbelleklerini temizler ve d\u00fczenlenen bir pointcut'\u0131 yeniden ayr\u0131\u015ft\u0131r\u0131r; eskiden her proxy eski ifadeyle e\u015fle\u015fmeye devam ediyordu. H\u00e2l\u00e2 restart gerektiren tek yar\u0131 da a\u00e7\u0131k\u00e7a s\u00f6ylenir: zaten proxy'lenmi\u015f bir bean, kendisi yeniden y\u00fcklenene kadar kuruldu\u011fu advice'\u0131 ta\u015f\u0131r. @EventListener metotlar\u0131n\u0131 yeniden kaydeder, @Async i\u015flemesini tazeler.",
+        'features.aop.desc': "@Aspect sınıfları için AOP proxy önbelleklerini temizler ve düzenlenen bir pointcut'ı yeniden ayrıştırır; her proxy'yi eski ifadeyle eşleşir halde bırakmaz. Hâlâ restart gerektiren yarı adlandırılır: zaten proxy'lenmiş bir bean, kendisi yenilenene kadar kurulduğu advice'ı korur. @EventListener metotlarını, açılıştan sonra eklediğiniz dahil, yeniden kaydeder; eklediğiniz bir @TransactionalEventListener Spring'in kendi senkronizasyonu üzerinden kendi işlem fazında tetiklenir. @Async işlemesini tazeler.",
         'features.data.title': 'Spring Data & G\u00FCvenlik',
         'features.data.desc': "Repository bean'lerini yeniler. D\u00fczenlenen bir @EnableWebSecurity yap\u0131land\u0131rmas\u0131 \u00e7al\u0131\u015fan filter chain'e uygulan\u0131r; method security (@PreAuthorize, @Secured) ise yaln\u0131z g\u00fcvenlik yap\u0131land\u0131rmas\u0131nda de\u011fil, onu ta\u015f\u0131yan servis s\u0131n\u0131f\u0131nda yeniden okunur.",
         'features.caches.title': "Framework'lerin Cache'ledi\u011fi",
-        'features.caches.desc': "Yeniden y\u00fckleme i\u015fin yaln\u0131z yar\u0131s\u0131. Her framework, s\u0131n\u0131f\u0131n\u0131z hakk\u0131nda bir kez, a\u00e7\u0131l\u0131\u015fta hesaplad\u0131\u011f\u0131 cevab\u0131 saklar ve kimse ona de\u011fi\u015fti\u011fini s\u00f6ylemez. Art\u0131k mevcut bir alana ekledi\u011finiz @Autowired ger\u00e7ekten enjekte ediliyor, ekledi\u011finiz bir k\u0131s\u0131t bir sonraki istekte uygulan\u0131yor, ekledi\u011finiz @ExceptionHandler, @InitBinder veya @ModelAttribute \u00e7al\u0131\u015f\u0131yor, d\u00fczenledi\u011finiz @Aspect pointcut'\u0131 yeniden ayr\u0131\u015ft\u0131r\u0131l\u0131yor ve Jackson ilk g\u00f6rd\u00fc\u011f\u00fc \u015fekli d\u00f6nd\u00fcrmeyi b\u0131rak\u0131yor. Her biri \u00e7al\u0131\u015fan bir sunucuda, \u00f6ncesi ve sonras\u0131 \u00f6l\u00e7\u00fcld\u00fc.",
+        'features.caches.desc': "Yeniden yükleme işin yalnız yarısı. Her framework, sınıfınız hakkında bir kez, açılışta hesapladığı cevabı saklar ve kimse ona değiştiğini söylemez. Artık mevcut bir alana eklediğiniz @Autowired gerçekten enjekte ediliyor, eklediğiniz bir kısıt bir sonraki istekte uygulanıyor, eklediğiniz @ExceptionHandler, @InitBinder veya @ModelAttribute çalışıyor, düzenlediğiniz @Aspect pointcut'ı yeniden ayrıştırılıyor ve Jackson ilk gördüğü şekli döndürmeyi bırakıyor: bir DTO'ya eklediğiniz getter, setter ya da alan bir sonraki isteğin JSON'ında yazılıp okunuyor. Her biri çalışan bir sunucuda, öncesi ve sonrası ölçüldü.",
         'features.hotswap.title': 'Anl\u0131k Hot-Swap',
         'features.hotswap.desc': '\u00C7al\u0131\u015Fan JVM\'deki s\u0131n\u0131flar\u0131 Instrumentation API ile yeniden tan\u0131mlar. ~50ms\'de uygulan\u0131r. S\u0131f\u0131r kesinti.',
         'features.privacy.title': '100% Yerel & Gizli',
@@ -1458,19 +1490,19 @@ const translations = {
         'sap.items.title': 'items.xml ve beans.xml',
         'sap.items.desc': 'Kaydetti\u011Finizde platformun kendi kod \u00FCretimini \u00E7al\u0131\u015Ft\u0131r\u0131p yeniden \u00FCretilen model ve DTO s\u0131n\u0131flar\u0131n\u0131 y\u00FCkler, ant clean all ve restart yerine. Yeni bir attribute h\u00E2l\u00E2 veritaban\u0131 kolonu ister, o y\u00FCzden Reclazz \u015Feman\u0131za dokunmak yerine Update Running System \u00E7al\u0131\u015Ft\u0131rman\u0131z\u0131 s\u00F6yler.',
         'sap.spring.title': 'Spring XML',
-        'sap.spring.desc': '*-spring.xml de\u011Fi\u015Fiklikleri farklan\u0131p canl\u0131 context\'e uygulan\u0131r; yepyeni bir bean de restart olmadan b\u00F6yle kullan\u0131labilir hale gelir.',
+        'sap.spring.desc': "Bir *-spring.xml'deki property düzenlemeleri canlı bean'e yerinde uygulanır. Değişen bir constructor argümanı, factory metodu ya da init/destroy metodu o singleton'ı Spring'in kendisi üzerinden yeniden yaratır ve eski örneği hâlâ tutan bean'leri onarır; yepyeni bir bean tanımı da restart olmadan kullanılabilir hale gelir.",
         'sap.props.title': 'Property\'ler',
         'sap.logging.title': 'Log Seviyeleri',
         'sap.logging.desc': 'SAP Commerce log seviyelerini bir log4j2.xml\'de de\u011Fil, property dosyalar\u0131nda ad ve seviye \u00E7ifti olarak tutar. Birini de\u011Fi\u015Ftirdi\u011Finizde \u00E7al\u0131\u015Fan logger\'a ula\u015F\u0131r; bir s\u0131n\u0131f\u0131 debug\'a \u00E7ekmek restart de\u011Fil, bir kaydetme kadar s\u00FCrer. Dokunmad\u0131\u011F\u0131n\u0131z seviyeler yerinde kal\u0131r, HAC konsolundan y\u00FCkseltti\u011Finiz bir seviye dahil.',
-        'sap.props.desc': 'Platform property dosyalar\u0131n\u0131 yaln\u0131z a\u00E7\u0131l\u0131\u015Fta okur. Art\u0131k kaydetti\u011Finizde ger\u00E7ekten de\u011Feri de\u011Fi\u015Fen anahtarlar, HAC konsolunun kulland\u0131\u011F\u0131 \u00E7a\u011Fr\u0131n\u0131n ayn\u0131s\u0131yla \u00E7al\u0131\u015Fan sunucuya uygulan\u0131r. Yaln\u0131zca a\u00E7\u0131l\u0131\u015Fta okunan de\u011Ferler ise "oldu" diye raporlanmaz, restart gerektirdi\u011Fi a\u00E7\u0131k\u00E7a s\u00F6ylenir.',
+        'sap.props.desc': "Platform property dosyalarını yalnız açılışta okur. Artık kaydettiğinizde değeri gerçekten değişen anahtarlar, HAC konsolunun yaptığı aynı çağrıyla çalışan sunucuya uygulanır. Yalnız açılışta okunan değerler \"uygulandı\" diye raporlanmak yerine hâlâ restart gerektirdiği söylenerek adlandırılır; platformun yazmayı reddettiği bir anahtar bekleyen durumda kalır, aynı dosyayı yeniden kaydetmek onu tekrar dener.",
         'sap.l10n.title': 'Tip ve Enum Metinleri',
         'sap.l10n.desc': 'Bir locales dosyas\u0131n\u0131 d\u00FCzenleyin, yeni metin bir sonraki okumada gelir. System update yok, veritaban\u0131 yaz\u0131m\u0131 yok, restart yok.',
         'sap.labels.title': 'Backoffice Label\'lar\u0131',
         'sap.labels.desc': 'Label dosyalar\u0131 backoffice\'in ger\u00E7ekten okudu\u011Fu \u00F6nbelle\u011Fe ula\u015F\u0131r, hem de her kopyas\u0131na. G\u00F6r\u00FCn\u00FCm\u00FC yeniden a\u00E7\u0131n, metniniz orada.',
         'sap.interceptors.title': 'Interceptor\'lar',
-        'sap.interceptors.desc': 'Validate, Prepare, Load ve Remove interceptor\'lar\u0131 yeniden kaydolur; de\u011Fi\u015Fen kural i\u00E7inden ge\u00E7en bir sonraki modelde ge\u00E7erlidir.',
+        'sap.interceptors.desc': "Validate, Prepare, Load, Remove ve InitDefaults interceptor'ları yeniden kaydolur: mapping Spring bean'i yenilemeden önce yakalanır, sonrasında platform registry'sine geri konur ve yeni kuralı tam bir kez çalıştıran gerçek bir model kaydıyla doğrulanır. Başarısız bir kayıt başarı iddia etmek yerine bunu söyler.",
         'sap.impex.title': 'Kaydedince ImpEx',
-        'sap.impex.desc': 'De\u011Fi\u015Fen .impex dosyalar\u0131 kaydetti\u011Finiz anda i\u00E7eri al\u0131nabilir. Canl\u0131 veritaban\u0131n\u0131zda \u00E7al\u0131\u015Ft\u0131\u011F\u0131 i\u00E7in iste\u011Fe ba\u011Fl\u0131d\u0131r ve REMOVE ba\u015Fl\u0131\u011F\u0131 ta\u015F\u0131yan dosya \u00E7al\u0131\u015Ft\u0131r\u0131lmaz, ad\u0131yla birlikte reddedilir.',
+        'sap.impex.desc': "Değişen .impex dosyaları kaydettiğiniz anda içeri alınabilir. Canlı veritabanınıza karşı çalıştığı için opt-in'dir; açıkça yazılmış ya da bir makronun arkasına saklanmış REMOVE başlığı taşıyan bir dosya çalıştırılmak yerine adlandırılıp reddedilir. Koruma katmanının çözemediği bir başlık makrosu da aynı şekilde reddedilir.",
         'sap.ext.title': 'Eklentileri Tan\u0131r',
         'sap.ext.desc': 'Eklenti yap\u0131n\u0131z\u0131, classpath\'i ve classloader hiyerar\u015Fisini kendi okur. Yaz\u0131p g\u00FCncel tutman\u0131z gereken eklenti ba\u015F\u0131na bir tan\u0131m dosyas\u0131 yoktur.',
         'sapcmp.label': '\u00D6zellikle SAP Commerce\'te',
@@ -1526,11 +1558,11 @@ const translations = {
         'limits.hierarchy_title': 'S\u0131n\u0131f Hiyerar\u015Fisi De\u011Fi\u015Fiklikleri',
         'limits.hierarchy_desc': '\u00DCst s\u0131n\u0131f veya aray\u00FCz de\u011Fi\u015Ftirmek JVM s\u0131n\u0131rlamas\u0131d\u0131r. Hi\u00E7bir ara\u00E7 bunu a\u015Famaz. Yeniden ba\u015Flatma gerekir.',
         'limits.structural_title': 'Yeni \u00DCyelerde Reflection (standart JDK)',
-        'limits.structural_desc': 'Metot ve alan ekleme/kald\u0131rma her JDK 17+ s\u00FCr\u00FCm\u00FCnde \u00E7al\u0131\u015F\u0131r. Standart JDK\'de yeni \u00FCyeler gizli bir companion s\u0131n\u0131fta durur: onlar\u0131 do\u011Frudan \u00E7a\u011F\u0131ran kod g\u00F6r\u00FCr, ancak orijinal s\u0131n\u0131f \u00FCzerindeki reflection ve a\u00E7\u0131l\u0131\u015Fta kurulan \u00F6nbellekler (Hybris ModelService, Jackson) yeniden ba\u015Flatmaya kadar g\u00F6rmez. JetBrains Runtime veya DCEVM bu k\u0131s\u0131t\u0131 kald\u0131r\u0131r.',
-        'limits.config_title': 'Spring Yap\u0131land\u0131rma De\u011Fi\u015Fiklikleri',
-        'limits.config_desc': 'Yap\u0131land\u0131rma dosyas\u0131 de\u011Fi\u015Fiklikleri (application.properties, application.yml, XML bean tan\u0131mlar\u0131) ba\u015Flang\u0131\u00E7ta y\u00FCklenir ve yeniden ba\u015Flatma gerektirir.',
-        'limits.new_beans_title': 'Yeni Spring Bean\'leri',
-        'limits.new_beans_desc': 'Tamamen yeni @Component s\u0131n\u0131flar\u0131 eklemek yeniden ba\u015Flatma gerektirir. Spring\'in bile\u015Fen taramas\u0131 ba\u015Flang\u0131\u00E7ta \u00E7al\u0131\u015F\u0131r. Mevcut bean\'leri de\u011Fi\u015Ftirmek sorunsuz \u00E7al\u0131\u015F\u0131r.',
+        'limits.structural_desc': "Metot ve alan ekleme/kaldırma her JDK 17+ sürümünde çalışır. Standart bir JDK'da yeni üyeler gizli bir companion sınıfında yaşar; onları doğrudan çağıran kod görür ama orijinal sınıf üzerindeki reflection görmez. Spring MVC, @Bean fabrikaları, zamanlayıcılar, olay ve işlem dinleyicileri, yaşam döngüsü callback'leri, Jackson ile Kafka, JMS ve RabbitMQ dinleyici container'ları kaydedilen metadata'yı adaptörler üzerinden alır; adaptörü olmayan bir framework, örneğin Hybris ModelService nitelik dağıtımı, hâlâ restart gerektirir ve adıyla bildirilir. JetBrains Runtime veya DCEVM bu kısıtı tamamen kaldırır.",
+        'limits.config_title': "Dosya Düzenlemesinin Ötesindeki Yapılandırma",
+        'limits.config_desc': "Yüklenmiş bir properties ya da YAML dosyası kendi önceliğinde yeniden yüklenir, desteklenen XML düzenlemeleri bean'i yeniden yaratır. Hâlâ restart gerektirenler: yeni bir config konumu, profil ya da import, XML'den kaldırılan bir bean tanımı, değişen sınıf, scope ya da parent, iç içe bean veya yönetilen koleksiyon içeren XML tanımları. Her biri olduğu anda adlandırılır.",
+        'limits.new_beans_title': "Creator'lar, Proxy'ler ve Özel Taramalar",
+        'limits.new_beans_desc': "Yeni bir @Component sınıfı canlıdır, ama bazı şekiller dışarıda kalır: eklenen property'ler için Jackson constructor ve record creator'ları, proxy'lenmiş bir bean'e eklenen dinleyici ya da yaşam döngüsü callback'i, özel dinleyici fabrikaları, Jakarta yaşam döngüsü anotasyonları ve sınıflarınızı kendi reflection'ıyla okuyan framework'ler. Reclazz bunları yarısını uygulamak yerine nedeniyle birlikte reddeder.",
         'install.label': 'Ba\u015Flayal\u0131m',
         'install.title_html': '<span class="text-gradient">3 Ad\u0131mda</span> \u00C7al\u0131\u015F\u0131r Duruma Gelin',
         'install.step1.title': 'Agent\'\u0131 Ekleyin',
@@ -1561,7 +1593,19 @@ const translations = {
         'cta.title_html': 'Uygulama Yeniden Ba\u015Flatmalar\u0131na<br><span class="text-gradient">Zaman Harcamay\u0131 B\u0131rak\u0131n</span>',
         'cta.subtitle': 'Spring Boot DevTools yeniden ba\u015Flatmalar\u0131 saniyeler s\u00FCrer ve durumunuzu kaybeder. Reclazz ~50ms\'de yeniler ve her \u015Feyi korur. \u00DCcretsiz ve a\u00E7\u0131k kaynak.',
         'cta.install': 'Marketplace\'den Y\u00FCkle',
-        'cta.github': 'Kaynak Kodu GitHub\'da'
+        'cta.github': 'Kaynak Kodu GitHub\'da',
+        'features.added.title': "Eklediğiniz Metotlar Bulunur",
+        'features.added.desc': "Standart bir JDK'da eklediğiniz metot gizli bir companion sınıfında yaşar; framework'ün taraması onu göremez. Reclazz bunun yerine framework'e kaydedilen metadata'yı verir: yeni bir @Bean fabrikası ürününü kaydeder, koleksiyon, Optional, provider ve @Value argümanlarını Spring çözer; yeni bir @PostConstruct ya da @PreDestroy bir sonraki örnekte çalışır ve destroy callback'ini korur; yeni bir @Transactional ya da @Cacheable servis metodu gerçek interceptor'lardan geçer. Adaptörü olmayan bir şekil sessizce atlanmaz, restart gerektirdiği söylenerek adlandırılır.",
+        'features.brokers.title': "Mesaj Dinleyicileri",
+        'features.brokers.desc': "Çalışan bir component'e eklediğiniz @KafkaListener, @JmsListener ya da @RabbitListener uygulamanın kendi dinleyici işlemcisi ve container fabrikası üzerinden kaydolur. Bean yeniden yaratılmadan önce mevcut consumer'ları durdurulup beklenir, böylece bir kuyruk asla iki kez tüketilmez; düzenlemeler, topic ya da kuyruk değişiklikleri, kaldırma ve geri getirme sonraki kayıtları izler. Gömülü Kafka ve ActiveMQ broker'ları ile gerçek bir RabbitMQ container'ına karşı doğrulandı.",
+        'compare.added_bean': "Açılıştan sonra eklenen @Bean metodu",
+        'compare.added_handlers': "Açılıştan sonra eklenen handler ya da callback metodu",
+        'compare.brokers': "Açılıştan sonra eklenen mesaj dinleyicisi",
+        'compare.jackson': "Açılıştan sonra eklenen Jackson property'si",
+        'compare.config': "Properties ve YAML kaydedilen dosyayı izler",
+        'compare.xml': "Spring XML constructor, factory ve init/destroy düzenlemeleri",
+        'faq.q10': "Çalışan bir bean'e metot ekledim. Spring, Jackson ya da mesaj broker'ım onu bulur mu?",
+        'faq.a10': "Standart bir JDK'da metot gizli bir companion sınıfında yaşar; reflection tabanlı bir taramanın göremediği tam olarak budur. Bu yüzden Reclazz her framework'e kaydedilen metadata'yı bir adaptör üzerinden verir. Yeni bir endpoint, exception handler, binder ya da model attribute metodu bir sonraki istekte cevap verir; yeni bir @Bean, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct ya da @PreDestroy kaydolur; yeni bir @KafkaListener, @JmsListener ya da @RabbitListener önceki consumer durdurulduktan sonra tüketir; yeni bir Jackson getter, setter ya da alanı okunup yazılır. Her biri framework'e karşı gerçek bir testtir; adaptörü olmayan bir şekil restart gerektirdiği söylenerek adlandırılır.",
     }
 };
 
