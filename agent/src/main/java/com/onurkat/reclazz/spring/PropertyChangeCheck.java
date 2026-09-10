@@ -22,6 +22,15 @@ public final class PropertyChangeCheck {
     }
 
     public Result check(List<Object> contexts, Map<String, String> changed) {
+        return check(contexts, changed, null);
+    }
+
+    Result check(List<Object> contexts, Map<String, String> changed, Object preparedEnvironment) {
+        return check(contexts, changed, preparedEnvironment, Set.of(), new HashMap<>());
+    }
+
+    Result check(List<Object> contexts, Map<String, String> changed, Object preparedEnvironment,
+                 Set<String> removed, Map<String, Object> resets) {
         List<String> rejected = new ArrayList<>();
         List<String> unavailable = new ArrayList<>();
         for (Object context : contexts) {
@@ -34,7 +43,8 @@ public final class PropertyChangeCheck {
                 Object liveEnvironment = call(context, "getEnvironment");
                 if (liveEnvironment == null) continue;
                 ClassLoader loader = context.getClass().getClassLoader();
-                Object environment = candidateEnvironment(loader, liveEnvironment, changed);
+                Object environment = preparedEnvironment != null ? preparedEnvironment
+                        : candidateEnvironment(loader, liveEnvironment, changed);
                 checkValues(context, environment, changed, rejected, unavailable);
                 Class<?> annotation;
                 try { annotation = Class.forName(PROPERTIES + "ConfigurationProperties", false, loader); }
@@ -46,7 +56,17 @@ public final class PropertyChangeCheck {
                             SpringPropertyRebinder.prefixOf(entry.getValue(), annotation))) continue;
                     try {
                         if (binder == null) binder = scratchBinder(context, environment, loader);
-                        checkBean(context, entry.getKey(), entry.getValue(), binder, loader);
+                        Object detached = checkBean(context, entry.getKey(), entry.getValue(), binder, loader);
+                        if (detached != null && SpringPropertyRebinder.affects(removed,
+                                SpringPropertyRebinder.prefixOf(entry.getValue(), annotation))) {
+                            Class<?> beanUtils = Class.forName("org.springframework.beans.BeanUtils", true, loader);
+                            for (Object descriptor : (Object[]) beanUtils.getMethod("getPropertyDescriptors", Class.class)
+                                    .invoke(null, detached.getClass()))
+                                if (!call(descriptor, "getName").equals("class")
+                                        && (call(descriptor, "getReadMethod") == null || call(descriptor, "getWriteMethod") == null))
+                                    throw new IllegalStateException("Removal requires readable and writable properties: " + call(descriptor, "getName"));
+                            resets.put(entry.getKey(), detached);
+                        }
                     } catch (Throwable failure) {
                         Throwable cause = unwrap(failure);
                         String finding = location + "/" + entry.getKey() + ": " + Failures.describe(cause);
@@ -101,7 +121,7 @@ public final class PropertyChangeCheck {
     private static void checkValues(Object context, Object environment, Map<String, String> changed,
                                     List<String> rejected, List<String> unavailable) throws Exception {
         Object converter = call(SpringBeans.getBeanFactory(context), "getTypeConverter");
-        for (var target : SpringPropertyRebinder.valueTargets(context, changed)) {
+        for (var target : SpringPropertyRebinder.valueTargets(context, changed, environment)) {
             try {
                 Object resolved = call(environment, "resolveRequiredPlaceholders", target.expression());
                 resolved = PropertyValueExpression.evaluate(context, target, resolved);
@@ -150,7 +170,7 @@ public final class PropertyChangeCheck {
         return name.equals(BOUND) || name.equals(PLACEHOLDERS);
     }
 
-    private static void checkBean(Object context, String name, Object live, Object binder,
+    private static Object checkBean(Object context, String name, Object live, Object binder,
                                   ClassLoader loader) throws Exception {
         Class<?> metadata = Class.forName(PROPERTIES + "ConfigurationPropertiesBean", true, loader);
         Class<?> appContext = Class.forName("org.springframework.context.ApplicationContext", true, loader);
@@ -191,6 +211,7 @@ public final class PropertyChangeCheck {
         Method bind = binder.getClass().getDeclaredMethod(valueObject ? "bindOrCreate" : "bind", metadata);
         bind.setAccessible(true);
         bind.invoke(binder, detached);
+        return instance;
     }
 
     /** Boot's private fallback owns a validator factory; a per-save instance must close it. */

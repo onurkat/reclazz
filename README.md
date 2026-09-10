@@ -196,7 +196,11 @@ than either.
   on separate objects. An invalid value holds the whole candidate, including
   logger levels, and fixing it retries all pending keys. Unsupported binding
   checks hold the change; a failure during application is reported as partial
-  and is not rolled back. See [scope and limits](docs/usage.md#property-changes-keep-the-last-working-values).
+  and is not rolled back. Already-loaded Boot `.properties`, `.yml` and `.yaml`
+  files also support nested values, lists and removed keys without overriding
+  higher-priority sources. Removal reveals lower values or defaults; mutable
+  property beans keep their identity. [YAML/removal scope](docs/usage.md#yaml-and-removed-configuration-keys).
+  See [validation limits](docs/usage.md#property-changes-keep-the-last-working-values).
   After a clean check, a changed key goes into the running Environment and the
   `@ConfigurationProperties` beans whose prefix it touches are rebound, so a
   timeout or a feature flag takes effect without a restart. A bean bound through

@@ -88,6 +88,10 @@ public final class SpringPropertyRebinder {
     }
 
     private PropertyChangeOutcome applyLive(Map<String, String> changed) {
+        return applyLive(changed, Map.of(), true);
+    }
+
+    PropertyChangeOutcome applyLive(Map<String, String> changed, Map<String, Object> resets, boolean updateSources) {
         List<String> rebound = new ArrayList<>();
         List<String> rebuilt = new ArrayList<>();
         int valueFields = 0;
@@ -95,8 +99,8 @@ public final class SpringPropertyRebinder {
 
         for (Object context : applicationContexts) {
             try {
-                if (!updateEnvironment(context, changed)) continue;
-                rebound.addAll(rebind(context, changed, failures));
+                if (updateSources && !updateEnvironment(context, changed)) continue;
+                rebound.addAll(rebind(context, changed, resets, failures));
                 valueFields += reinjectValueFields(context, changed, failures);
                 rebuilt.addAll(recreateValueConstructorBeans(context, changed, failures));
             } catch (Throwable t) {
@@ -172,8 +176,12 @@ public final class SpringPropertyRebinder {
 
     /** One sweep defines the targets both checking and live application handle. */
     static List<ValueTarget> valueTargets(Object context, Map<String, String> changed) throws Exception {
+        return valueTargets(context, changed, null);
+    }
+
+    static List<ValueTarget> valueTargets(Object context, Map<String, String> changed, Object environment) throws Exception {
         List<ValueTarget> targets = new ArrayList<>();
-        var affected = new PropertyValueDependencies(context, changed);
+        var affected = new PropertyValueDependencies(context, changed, environment);
         Object factory = SpringBeans.getBeanFactory(context);
         @SuppressWarnings("unchecked")
         Class<? extends java.lang.annotation.Annotation> annotation =
@@ -487,7 +495,8 @@ public final class SpringPropertyRebinder {
         return true;
     }
 
-    private List<String> rebind(Object context, Map<String, String> changed, List<String> failures) throws Exception {
+    private List<String> rebind(Object context, Map<String, String> changed, Map<String, Object> resets,
+                                List<String> failures) throws Exception {
         List<String> rebound = new ArrayList<>();
 
         ClassLoader loader = context.getClass().getClassLoader();
@@ -532,7 +541,11 @@ public final class SpringPropertyRebinder {
             }
 
             try {
-                rebindMethod.invoke(postProcessor, bean.getValue(), bean.getKey());
+                if (resets.containsKey(bean.getKey())) {
+                    Class.forName("org.springframework.beans.BeanUtils", true, loader)
+                            .getMethod("copyProperties", Object.class, Object.class)
+                            .invoke(null, resets.get(bean.getKey()), unwrapAopProxy(bean.getValue()));
+                } else rebindMethod.invoke(postProcessor, bean.getValue(), bean.getKey());
                 rebound.add(bean.getKey());
             } catch (Throwable t) {
                 failures.add(bean.getKey() + ": " + Failures.describe(t));

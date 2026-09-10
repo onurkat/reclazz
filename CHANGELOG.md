@@ -24,6 +24,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   constant check no longer claims Hibernate L2 coverage.
 
 ### Added
+- **YAML and removed Boot configuration keys.** Already-loaded local YAML and
+  properties files reload through their original source positions. Nested values,
+  lists, key/file deletion and restoration preserve higher-priority overrides.
+  Removed values fall back to lower sources/defaults; writable mutable property
+  beans retain their identity. Validation holds rejected candidates across
+  contexts, and partial binding failures remain retryable. Active document
+  topology and config imports stay fixed. Verified on Boot 2.7.18; SnakeYAML is
+  test-only. [Scope](docs/usage.md#yaml-and-removed-configuration-keys).
+
 - **JSON input and fields added to running DTOs.** Jackson can discover new void
   setters and instance fields on a stock JDK, populate new or existing mutable
   objects and serialize their current values. Saved field/method metadata keeps

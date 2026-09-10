@@ -1063,12 +1063,57 @@ paused. Connection pools still have their existing limitations.
 A JavaBean target needs a usable no-argument constructor. Constructor-bound
 targets use Boot's constructor binding. Missing or incompatible Boot internals
 hold the change as uncheckable. Computed `@Value` constructors use the
-[restricted check below](#computed-value-constructor-parameters). YAML, key
-removal and SAP Commerce's `Config` path retain their existing behavior and
-are outside this check.
-Only added or changed keys are applied. A syntactically valid truncated file
+[restricted check below](#computed-value-constructor-parameters). SAP Commerce's
+`Config` path retains its separate behavior. The legacy path for `.properties`
+files without Boot resource origins applies only added or changed keys. For
+Boot-owned files, see [YAML and removal](#yaml-and-removed-configuration-keys).
+A syntactically valid truncated file
 cannot be distinguished from an intentional save; malformed or unreadable
 files do not advance the baseline.
+
+### YAML and removed configuration keys
+
+Already-loaded local Spring Boot `.properties`, `.yml` and `.yaml` files use the
+application's own loaders. Nested YAML keys and indexed lists reach the same
+binding path as startup. Reclazz identifies the file through Boot's resource
+origins and replaces its sources at their existing positions. Command-line and
+other higher-priority sources continue to win; an edited inactive profile file
+is not promoted into a new override.
+
+Deleting a key reveals its value from lower-priority sources, or the consumer's
+default when no source supplies it. Emptying or deleting a previously identified
+single-document file works, and recreating it restores its values. For mutable
+`@ConfigurationProperties` beans, removal copies freshly bound, validated JavaBean
+properties into the existing object. The bean's identity and existing holders
+are preserved; nested property objects can be replaced by their setters. Types
+with read-only or write-only bean properties are held as uncheckable on removal.
+Constructor-bound beans retain the existing recreation path and its reference
+limits. `@Value` fields resolve against the resulting Environment.
+
+Validation covers every affected context before any file source is changed.
+Malformed input or invalid conversion keeps the previous sources and values.
+A live setter failure can partially apply values; it is reported as partial and
+the same file remains pending for an identical-save retry. A waiting request
+boundary uses the captured file bytes. It does not reread a later save.
+
+Supported YAML documents use the current active profiles and
+`spring.config.activate.on-profile` expressions. The set and positions of active
+documents must stay the same. Changing activation, imports, config locations,
+profile groups or cloud-platform selection requires a restart. Files containing
+other `spring.config.*` or `spring.profiles*` controls are held. New or initially
+empty files with no identifiable Boot source, custom source loaders and changed
+source ownership are outside this path. Applications with Boot file sources do
+not fall back to a global override for an unowned file. SAP configuration removal
+is outside this feature. Removing a logging level without a lower configured
+level still needs a logger reset/restart.
+
+Verified with Spring Boot 2.7.18, Spring 5.3.39, SnakeYAML 1.30 and stock JDK 21:
+real startup-agent HTTP checks for properties and YAML, old bean holders,
+lists/defaults, invalid conversion/syntax recovery, deletion and restoration;
+unit regressions cover precedence, active/inactive documents, multiple contexts,
+immutable candidates, external source replacement and partial-application retry.
+Other Boot/SnakeYAML versions are not verified. SnakeYAML is a test dependency;
+the production agent uses the application's parser and packages no YAML library.
 
 ### Computed @Value fields
 
