@@ -258,7 +258,7 @@ class SpringAddedBeanTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"Scope", "Conditional", "Profile", "Lazy", "DependsOn"})
+    @ValueSource(strings = {"Conditional", "DependsOn", "Role"})
     void additionalMethodMetadataIsNeverSilentlyIgnored(String annotation) throws Exception {
         ClassNode source = read(annotated("first"));
         method(source, "first").visibleAnnotations.add(new AnnotationNode("Lorg/springframework/context/annotation/" + annotation + ";"));

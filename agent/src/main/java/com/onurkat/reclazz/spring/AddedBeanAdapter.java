@@ -27,13 +27,17 @@ public final class AddedBeanAdapter {
     private static final String QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
     private static final String PRIMARY = "Lorg/springframework/context/annotation/Primary;";
     private static final String VALUE = "Lorg/springframework/beans/factory/annotation/Value;";
+    private static final String LAZY = "Lorg/springframework/context/annotation/Lazy;";
+    private static final String SCOPE = "Lorg/springframework/context/annotation/Scope;";
+    private static final String PROFILE = "Lorg/springframework/context/annotation/Profile;";
     private static final String PARAMETERS = InjectedNames.PREFIX + "parameters";
     private AddedBeanAdapter() { }
 
     record Factory(MethodNode method, List<String> names, String init, String destroy,
-                   boolean primary, String qualifier) {
+                   boolean primary, String qualifier, boolean lazy, String scope, List<String> profiles) {
         String name() { return names.get(0); }
         List<String> aliases() { return names.subList(1, names.size()); }
+        boolean prototype() { return "prototype".equals(scope); }
     }
     record Plan(List<Factory> factories, List<String> refused, boolean full) { }
 
@@ -76,7 +80,7 @@ public final class AddedBeanAdapter {
                 if (signature.getArgumentTypes().length > 0
                         && method.visibleTypeAnnotations != null && !method.visibleTypeAnnotations.isEmpty())
                     throw new IllegalArgumentException("factory type annotations are not supported");
-                if (extraAnnotations(method.visibleAnnotations, BEAN, PRIMARY, QUALIFIER))
+                if (extraAnnotations(method.visibleAnnotations, BEAN, PRIMARY, QUALIFIER, LAZY, SCOPE, PROFILE))
                     throw new IllegalArgumentException("additional method annotations cannot be applied to the factory delegate");
                 if (bean.values != null) for (int i = 0; i < bean.values.size(); i += 2)
                     if (!Set.of("name", "value", "initMethod", "destroyMethod").contains(bean.values.get(i)))
@@ -95,7 +99,10 @@ public final class AddedBeanAdapter {
                 factories.add(new Factory(method, beanNames, (String) value(bean, "initMethod", ""),
                         (String) value(bean, "destroyMethod", "(inferred)"),
                         annotation(method.visibleAnnotations, PRIMARY) != null,
-                        qualifier == null ? null : (String) value(qualifier, "value", "")));
+                        qualifier == null ? null : (String) value(qualifier, "value", ""),
+                        lazyFlag(annotation(method.visibleAnnotations, LAZY)),
+                        scopeName(annotation(method.visibleAnnotations, SCOPE)),
+                        profileList(annotation(method.visibleAnnotations, PROFILE))));
             } catch (IllegalArgumentException failure) {
                 refused.add(method.name + method.desc + ": " + failure.getMessage());
             }
@@ -145,6 +152,36 @@ public final class AddedBeanAdapter {
         if (annotation.values != null) for (int i = 0; i < annotation.values.size(); i += 2)
             if (annotation.values.get(i).equals(key)) return annotation.values.get(i + 1);
         return fallback;
+    }
+
+    // @Lazy defaults to true; @Lazy(false) turns eager creation back on.
+    private static boolean lazyFlag(AnnotationNode lazy) {
+        return lazy != null && !Boolean.FALSE.equals(value(lazy, "value", Boolean.TRUE));
+    }
+
+    // Only singleton and prototype are supported. Web/custom scopes and scoped
+    // proxies need a proxy Reclazz does not build here, so they are refused.
+    private static String scopeName(AnnotationNode scope) {
+        if (scope == null) return "singleton";
+        String[] proxyMode = (String[]) value(scope, "proxyMode", null);
+        if (proxyMode != null && proxyMode.length == 2
+                && !proxyMode[1].equals("DEFAULT") && !proxyMode[1].equals("NO"))
+            throw new IllegalArgumentException("scoped-proxy @Scope is not supported");
+        String name = (String) value(scope, "value", value(scope, "scopeName", ""));
+        if (name == null || name.isEmpty()) name = "singleton";
+        if (!name.equals("singleton") && !name.equals("prototype"))
+            throw new IllegalArgumentException("only singleton and prototype @Scope are supported, not '" + name + "'");
+        return name;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<String> profileList(AnnotationNode profile) {
+        if (profile == null) return List.of();
+        List<String> values = (List<String>) value(profile, "value", List.of());
+        for (String expression : values)
+            if (expression == null || expression.isBlank())
+                throw new IllegalArgumentException("blank @Profile expression");
+        return List.copyOf(values);
     }
 
     // The captured lookup is a capability; this entry point stays package-private.

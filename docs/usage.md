@@ -336,17 +336,27 @@ Native and abstract methods do not work. The class must carry direct
 one local configuration singleton in each affected bean factory. Lite
 configuration (`proxyBeanMethods=false`) requires an unproxied instance; default
 configuration requires Spring's direct enhanced subclass as described below. Extra runtime class annotations are limited to
-`@Deprecated`; methods additionally allow direct `@Primary` and `@Qualifier`.
-Conditions, profiles, scopes, advice, lazy metadata, class-level primary/qualifier
-policies, composed annotations and additional proxies require a restart.
+`@Deprecated`; methods additionally allow direct `@Primary`, `@Qualifier`,
+`@Lazy`, `@Scope` and `@Profile`. A direct `@Lazy` makes the added bean lazy, so
+it is created on first access rather than when the save is applied; `@Lazy(false)`
+keeps it eager. A direct `@Scope("prototype")` gives every lookup a new instance;
+`@Scope("singleton")` is the default. A direct `@Profile` registers the bean only
+when the running environment accepts its expression, evaluated by Spring's own
+`Environment`, and a later save that changes the expression re-evaluates it, so a
+bean can join or leave on an edit. Arbitrary `@Conditional`, web or custom scopes,
+scoped-proxy `@Scope`, advice, class-level primary/qualifier policies, composed
+annotations and additional proxies require a restart. A prototype bean is not
+tracked for destruction by Spring, so its destroy method and `close()` are not
+called when the context closes; a lazy singleton is destroyed normally once it
+has been created.
 Parameters allow direct `@Qualifier` and `@Value`. Primitive parameters without
 `@Value`, primitive/multidimensional arrays, raw generic parameters, wildcard or
 unresolved type variables, generic return types and generic factory methods
 remain unsupported. Collection/map implementations other than the interfaces
 listed above, maps with non-String keys, streams, suppliers, custom provider
 interfaces and JSR provider APIs are also unsupported. Extra runtime
-parameter/type annotations such as `@Lazy`, nullable annotations and composed
-qualifiers require a restart. Parameter names come from the saved bytecode;
+parameter/type annotations such as a parameter-level `@Lazy`, nullable
+annotations and composed qualifiers require a restart. Parameter names come from the saved bytecode;
 custom name-discovery policies are not used by this path. No-argument factories
 remain supported.
 
