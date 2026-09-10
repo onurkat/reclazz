@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.inttest.http
 
 import okhttp3.OkHttpClient
+import okhttp3.FormBody
 import okhttp3.Request
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
@@ -39,6 +40,16 @@ class HttpVerifier(private val baseUrl: String, timeoutMs: Long) {
             .connectTimeout(timeoutMs, TimeUnit.MILLISECONDS)
             .readTimeout(timeoutMs, TimeUnit.MILLISECONDS)
             .build()
+    }
+
+    fun post(path: String, parameters: Map<String, String> = emptyMap()): HttpResult {
+        val absolute = if (path.startsWith("http")) path else "$baseUrl$path"
+        val form = FormBody.Builder()
+        parameters.forEach { (key, value) -> form.add(key, value) }
+        val request = Request.Builder().url(absolute).post(form.build()).build()
+        return client.newCall(request).execute().use { response ->
+            HttpResult(response.code, response.body?.string() ?: "")
+        }
     }
 
     fun get(path: String, queryParams: Map<String, String> = emptyMap()): HttpResult {

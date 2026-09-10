@@ -80,6 +80,15 @@ public final class PropertyFileSnapshots {
         lastSeen.put(candidate.file(), candidate.content());
     }
 
+    /** Acknowledge only keys actually handled; failed keys remain pending on an identical save. */
+    public void acceptKeys(Candidate candidate, java.util.Collection<String> keys) {
+        lastSeen.compute(candidate.file(), (file, previous) -> {
+            Map<String, String> accepted = new HashMap<>(previous == null ? Map.of() : previous);
+            for (String key : keys) accepted.put(key, candidate.content().get(key));
+            return Map.copyOf(accepted);
+        });
+    }
+
     /** The version currently recorded, or null when the file is unknown. */
     public Map<String, String> current(Path file) {
         return lastSeen.get(file);

@@ -456,7 +456,11 @@ Hybris-specific features:
   live database.
 - **Spring XML reload**: `*-spring.xml` changes are diffed and applied, which is
   also how a brand new `@Component` becomes available without a restart
-- **Interceptor reload**: Re-registers Hybris interceptors (Validate, Prepare, Load, Remove)
+- **Interceptor reload**: Captures mappings before Spring refresh and updates the
+  actual SAP registry afterwards (Validate, Prepare, Load, Remove, InitDefaults).
+  Missing or failed registration is reported instead of success. The SDK
+  contract and the live model-save check are described in
+  [integration tests](integration-test/README.md#sap-reliability-checks).
 - **ImpEx auto-import**: Optionally imports changed `.impex` files on save
   (opt-in). It runs against your live database with no confirmation and
   nothing that undoes it, so files containing a `REMOVE` header are refused

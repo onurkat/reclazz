@@ -2,14 +2,14 @@
 
 The end-to-end suite. It edits real source files in a running SAP
 Commerce server, then asks the server over HTTP whether the change took
-effect. Everything Reclazz claims to do is claimed on the strength of
-these 20 tests passing against a live 2211 install.
+effect. A reported pass requires the expected application behavior; a compile
+or reload event alone is not proof. Portable checks and live SAP checks are
+reported separately.
 
-**You need a licensed SAP Commerce installation to run this.** Nothing
-here runs in CI and nothing here runs from a plain clone. If you do not
-have one, that is fine: `./gradlew build` covers everything else, and
-this module still compiles as part of it, so you cannot break it without
-noticing.
+**You need a licensed SAP Commerce installation for the live suite.**
+The portable HTTP proof checks run as part of this module's `build` without
+SAP. The SDK contract script additionally needs an installed licensed SDK;
+it does not start the server. Report these checks separately from a live run.
 
 ## What it covers
 
@@ -17,7 +17,8 @@ noticing.
 | --- | --- |
 | Class redefinition | method body, add and remove method, add and remove field, change signature, constructor, annotation |
 | Spring | bean refresh, MVC re-scan, cache eviction, scheduler, event listener |
-| SAP Commerce | interceptor reload, ImpEx auto-import, Hibernate L2 cache |
+| SAP Commerce | interceptor model save with rollback, ImpEx auto-import |
+| Optional Hibernate ORM | separate real L2 provider regression; the SAP fixture has no ORM provider and reports SKIP |
 | Behaviour under load | multi-class reload, large class, rapid successive changes, syntax error recovery |
 
 ## Running it
@@ -76,3 +77,33 @@ happened but was not applied, or was applied and the assertion about the
 result still failed. Those are three different bugs and the report
 distinguishes them. The recurring one in practice has been the second:
 Reclazz reporting success while doing nothing.
+
+
+## SAP reliability checks
+
+`InterceptorReloadTest` uses POST `/test/interceptor-save` with a fresh nonce.
+The test extension creates a catalog/version/product in a transaction, invokes
+`modelService.save`, observes that request's validator version and call count,
+and rolls back. Redeploy the updated `ValidationProbe` and
+`SapVerificationController` before running it. HTTP failures, old versions,
+old nonces, zero calls and duplicate calls fail. Run only in a test environment:
+rollback does not undo external side effects from application interceptors.
+
+The previous Hibernate test only returned `dao-v2`; it never populated or read
+an L2 cache. It now reports SKIP in this Commerce fixture. SAP Commerce's native
+persistence cache and Hibernate Validator are not Hibernate ORM L2 caches.
+
+Without starting SAP or touching its database, use the installed SDK for the
+registry/mapping contract and compilation of the model-save fixture:
+
+```bash
+./gradlew :agent:compileJava :integration-test:build
+python3 scripts/test-sap-sdk.py /path/to/hybris
+python3 scripts/test-sap-sdk.py /path/to/hybris --disable-refresh
+```
+
+The last command is a negative control and **must fail** with the new target
+missing from the registry. The SDK check uses real SAP/Spring classes while
+isolating database type resolution and session policy. It does not claim to
+execute `modelService.save`. `:integration-test:sapProofTest` separately checks
+eight acceptance cases against a real local HTTP server, without a SAP server.

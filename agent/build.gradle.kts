@@ -138,7 +138,32 @@ val rabbitTest by tasks.registering(Test::class) {
     testLogging { events("passed", "failed", "skipped") }
 }
 
+// Hibernate ORM is not part of SAP Commerce; the L2 invalidator is optional
+// support and gets its only executable proof here, on an isolated graph so
+// the ordinary test classpath keeps its versions. Owner-approved, test-only.
+val hibernateTests = sourceSets.create("hibernateTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+}
+configurations[hibernateTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+dependencies {
+    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
+    add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
+    add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.1.8")
+}
+val hibernateTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Real Hibernate ORM L2 cache regressions on H2 with isolated dependencies"
+    useJUnitPlatform()
+    testClassesDirs = hibernateTests.output.classesDirs
+    classpath = hibernateTests.runtimeClasspath
+    outputs.upToDateWhen { false }
+    testLogging { events("passed", "failed", "skipped") }
+}
+
 tasks.test {
+    dependsOn(hibernateTest)
     dependsOn(rabbitTest)
     dependsOn(jmsTest)
     useJUnitPlatform()
@@ -178,6 +203,7 @@ tasks.test {
 // `unitTest` is the inner loop; `test` still runs everything and is the gate.
 val unitTest by tasks.registering(Test::class) {
     dependsOn(jmsUnitTest)
+    dependsOn(hibernateTest)
     group = "verification"
     description = "Every test except the end-to-end ones that start a JVM (about 20s)"
     useJUnitPlatform()

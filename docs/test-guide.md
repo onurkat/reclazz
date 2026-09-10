@@ -163,8 +163,15 @@ reflective caches work without restart.
 2. Compile
 
 ### Verify
-- Tool window shows hot-swap success
-- If interceptor is managed by Spring, also shows bean refresh
+- Run the integration `InterceptorReloadTest`: it POSTs a unique nonce to
+  `/reclazztest/v2/test/interceptor-save`, which calls `modelService.save` on a
+  test product and always rolls back its transaction.
+- Require HTTP 200 and `validated-v2:reclazz-probe-<nonce>|calls=1`.
+  A reload event, stale value, `none`, duplicate invocation or HTTP failure is
+  not evidence of success.
+- The fixture requires its own transaction and a test-only Commerce environment.
+  A portable SDK registry check is also available via `scripts/test-sap-sdk.py`;
+  it does not replace the live model-save test.
 
 ## 10. Extension Watching Scope
 

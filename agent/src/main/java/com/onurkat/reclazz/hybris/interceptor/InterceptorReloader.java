@@ -4,171 +4,144 @@
  */
 package com.onurkat.reclazz.hybris.interceptor;
 
-import com.onurkat.reclazz.hybris.HybrisContext;
+import com.onurkat.reclazz.hybris.PlatformTenant;
 import com.onurkat.reclazz.ui.StatusReporter;
-
+import com.onurkat.reclazz.ui.RestartLedger;
 import java.lang.reflect.Method;
-import com.onurkat.reclazz.ui.Failures;
-import com.onurkat.reclazz.ui.Plural;
-import com.onurkat.reclazz.util.Reflect;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
-/**
- * Handles re-registration of SAP Commerce interceptors after hot-reload.
- *
- * Hybris interceptors (ValidateInterceptor, PrepareInterceptor, etc.) are
- * registered in the InterceptorRegistry. When an interceptor class is reloaded,
- * the registry may still hold a reference to the old interceptor instance.
- *
- * This reloader destroys and re-creates the interceptor Spring bean,
- * which triggers the InterceptorMapping to pick up the new instance.
- */
+/** Keeps SAP's registered mapping identities across Spring bean recreation. */
 public class InterceptorReloader {
+    private static final String MAPPING = "de.hybris.platform.servicelayer.interceptor.impl.InterceptorMapping";
 
-    /** Said once: the platform's absence is a fact about the session. */
-    private static final java.util.concurrent.atomic.AtomicBoolean
-            platformMissingReported = new java.util.concurrent.atomic.AtomicBoolean();
+    /** Called before Spring destroys beans; Registry belongs to the application's loader and tenant. */
+    public Refresh prepare(String className, List<Object> contexts) {
+        for (Object context : contexts) {
+            try {
+                ClassLoader loader = (ClassLoader) context.getClass().getMethod("getClassLoader").invoke(context);
+                Class<?> registry = Class.forName("de.hybris.platform.core.Registry", false, loader);
+                if (!PlatformTenant.ensureActive(loader)) continue;
+                Object tenantContext = registry.getMethod("getApplicationContext").invoke(null);
+                if (tenantContext != null) return prepareInContext(className, tenantContext, loader);
+            } catch (ReflectiveOperationException | LinkageError | RuntimeException e) {
+                // Another captured context may belong to the platform loader.
+            }
+        }
+        StatusReporter.warn("Interceptor registry unavailable; re-registration was not performed: " + className);
+        return new Refresh(List.of(), false);
+    }
 
-    /**
-     * Reload an interceptor after its class has been hot-swapped.
-     *
-     * Since interceptors in Hybris are Spring beans registered via
-     * InterceptorMapping in Spring XML, destroying and recreating
-     * the Spring bean is sufficient to update the interceptor.
-     */
-    public void reloadInterceptor(String className, HybrisContext context) {
+    // Exercises the actual SAP registry SPI without starting a database in SDK contract tests.
+    Refresh prepareInContext(String className, Object context, ClassLoader loader) {
+        List<MappingChange> changes = new ArrayList<>();
         try {
-            // Access the InterceptorRegistry via Registry
-            Class<?> registryClass = Class.forName("de.hybris.platform.core.Registry");
-
-            Method hasCurrentTenant = registryClass.getMethod("hasCurrentTenant");
-            if (!(Boolean) hasCurrentTenant.invoke(null)) {
-                StatusReporter.warn("Tenant not available. Interceptor reload deferred.");
-                return;
-            }
-
-            Method getCtx = registryClass.getMethod("getApplicationContext");
-            Object appContext = getCtx.invoke(null);
-
-            if (appContext == null) {
-                StatusReporter.warn("ApplicationContext not available for interceptor reload.");
-                return;
-            }
-
-            // Find the interceptor bean
-            Class<?> interceptorClass = Class.forName(className, false,
-                    appContext.getClass().getClassLoader());
-
-            Method getBeanNamesForType = appContext.getClass().getMethod(
-                    "getBeanNamesForType", Class.class);
-            String[] beanNames = (String[]) getBeanNamesForType.invoke(appContext, interceptorClass);
-
-            if (beanNames.length == 0) {
-                StatusReporter.info("No Spring bean found for interceptor: " + className);
-                return;
-            }
-
-            for (String beanName : beanNames) {
-                // Destroy and recreate the bean
-                Method getBeanFactory = appContext.getClass().getMethod("getBeanFactory");
-                Object beanFactory = getBeanFactory.invoke(appContext);
-
-                Method destroySingleton = findDestroyMethod(beanFactory);
-                if (destroySingleton != null) {
-                    destroySingleton.invoke(beanFactory, beanName);
+            Class<?> type = Class.forName(className, false, loader);
+            Class<?> mappingType = Class.forName(MAPPING, false, loader);
+            Method getBean = context.getClass().getMethod("getBean", String.class);
+            Method names = context.getClass().getMethod("getBeanNamesForType", Class.class);
+            Object registry = getBean.invoke(context, "interceptorRegistry");
+            Method register = registry.getClass().getMethod("registerInterceptor", mappingType);
+            Method unregister = registry.getClass().getMethod("unregisterInterceptor", mappingType);
+            String[] beanNames = (String[]) names.invoke(context, type);
+            for (String name : (String[]) names.invoke(context, mappingType)) {
+                Object mapping = getBean.invoke(context, name);
+                Object target = mappingType.getMethod("getInterceptor").invoke(mapping);
+                for (String beanName : beanNames) {
+                    if (target == getBean.invoke(context, beanName)
+                            || (beanNames.length == 1 && type.isInstance(target))) {
+                        changes.add(new MappingChange(context, getBean, name, beanName,
+                                mapping, target, registry, register, unregister, mappingType));
+                        break;
+                    }
                 }
-
-                // Recreate by requesting the bean
-                Method getBean = appContext.getClass().getMethod("getBean", String.class);
-                getBean.invoke(appContext, beanName);
-
-                StatusReporter.success("Interceptor bean re-registered: " + beanName);
             }
-
-            // Refresh only InterceptorMapping beans that reference this interceptor class
-            refreshInterceptorMappings(appContext, className);
-
-        } catch (ClassNotFoundException e) {
-            // The platform is either reachable from here or it is not, for the
-            // whole session, so this is one fact rather than one per reload.
-            // It was said on every interceptor reload: forty-three times in a
-            // single integration run, which is how a true sentence becomes
-            // something nobody reads.
-            if (platformMissingReported.compareAndSet(false, true)) {
-                StatusReporter.warn("Hybris platform classes not available. " +
-                        "Interceptor reload will take effect after server start.");
-            }
-        } catch (Exception e) {
-            StatusReporter.error("Failed to reload interceptor " + className + ": " + Failures.describe(e));
+            if (changes.isEmpty()) StatusReporter.warn("No registered Spring mapping found for interceptor: " + className);
+            return new Refresh(changes, !changes.isEmpty());
+        } catch (ReflectiveOperationException | LinkageError | RuntimeException e) {
+            StatusReporter.warn("Interceptor mapping capture failed: " + className);
+            return new Refresh(List.of(), false);
         }
     }
 
-    /**
-     * Refresh only InterceptorMapping beans that reference the given interceptor class.
-     * This avoids destroying all mappings when only one interceptor changed.
-     */
-    private void refreshInterceptorMappings(Object appContext, String interceptorClassName) {
-        try {
-            Class<?> mappingClass = Class.forName(
-                    "de.hybris.platform.servicelayer.interceptor.impl.InterceptorMapping",
-                    false, appContext.getClass().getClassLoader());
+    private record MappingChange(Object context, Method getBean, String mappingName, String beanName,
+                                 Object oldMapping, Object oldTarget, Object registry,
+                                 Method register, Method unregister, Class<?> mappingType) {}
 
-            Method getBeanNamesForType = appContext.getClass().getMethod(
-                    "getBeanNamesForType", Class.class);
-            String[] mappingBeans = (String[]) getBeanNamesForType.invoke(appContext, mappingClass);
+    public static final class Refresh {
+        private final List<MappingChange> changes;
+        private final boolean ready;
+        private boolean completed;
+        private Refresh(List<MappingChange> changes, boolean ready) {
+            this.changes = List.copyOf(changes);
+            this.ready = ready;
+        }
 
-            if (mappingBeans.length == 0) return;
+        private static void verifyTarget(Object registry, Class<?> mappingType, Object mapping, Object target)
+                throws ReflectiveOperationException {
+            String typeCode = (String) mappingType.getMethod("getTypeCode").invoke(mapping);
+            boolean checked = false;
+            for (String kind : List.of("Validate", "Prepare", "Load", "Remove", "InitDefaults")) {
+                Class<?> api = Class.forName("de.hybris.platform.servicelayer.interceptor." + kind + "Interceptor",
+                        false, mappingType.getClassLoader());
+                if (!api.isInstance(target)) continue;
+                Collection<?> registered = (Collection<?>) registry.getClass()
+                        .getMethod("get" + kind + "Interceptors", String.class).invoke(registry, typeCode);
+                if (registered.stream().filter(value -> value == target).count() != 1)
+                    throw new IllegalStateException("Registry did not expose the refreshed target exactly once");
+                checked = true;
+            }
+            if (!checked) throw new IllegalStateException("No supported interceptor contract on target");
+        }
 
-            Method getBeanFactory = appContext.getClass().getMethod("getBeanFactory");
-            Object beanFactory = getBeanFactory.invoke(appContext);
-            Method destroyMethod = findDestroyMethod(beanFactory);
-            Method getBean = appContext.getClass().getMethod("getBean", String.class);
-
-            int refreshed = 0;
-            for (String beanName : mappingBeans) {
+        /** False includes missing mappings and failures; callers must not label either a success. */
+        public synchronized boolean complete() {
+            if (!ready || completed) return false;
+            completed = true;
+            boolean success = true;
+            for (MappingChange change : changes) {
+                Object next = null;
+                boolean removed = false;
                 try {
-                    // Get the mapping bean and check if its interceptor matches
-                    Object mapping = getBean.invoke(appContext, beanName);
-                    Method getInterceptor = Reflect.findMethod(mapping.getClass(), "getInterceptor");
-                    if (getInterceptor != null) {
-                        Object interceptor = getInterceptor.invoke(mapping);
-                        if (interceptor != null &&
-                                interceptor.getClass().getName().equals(interceptorClassName)) {
-                            if (destroyMethod != null) {
-                                destroyMethod.invoke(beanFactory, beanName);
-                            }
-                            getBean.invoke(appContext, beanName);
-                            refreshed++;
+                    next = change.getBean.invoke(change.context, change.mappingName);
+                    Object target = change.getBean.invoke(change.context, change.beanName);
+                    Method setter = change.mappingType.getMethod("setInterceptor",
+                            change.mappingType.getMethod("getInterceptor").getReturnType());
+                    Object currentRegistry = change.getBean.invoke(change.context, "interceptorRegistry");
+                    if (currentRegistry != change.registry) {
+                        // Spring may recreate the dependent registry as well. Its
+                        // configured mappings are loaded lazily: never add a duplicate.
+                        verifyTarget(currentRegistry, change.mappingType, next, target);
+                        continue;
+                    }
+                    // SAP unregister removes the original mapping by identity, not bean name.
+                    change.unregister.invoke(change.registry, change.oldMapping);
+                    removed = true;
+                    setter.invoke(next, target);
+                    change.register.invoke(change.registry, next);
+                    verifyTarget(change.registry, change.mappingType, next, target);
+                } catch (ReflectiveOperationException | RuntimeException e) {
+                    success = false;
+                    if (removed) {
+                        try {
+                            if (next != null) change.unregister.invoke(change.registry, next);
+                            // Keep the registry and Spring on the same mapping
+                            // identity so a later save can retry the failed target.
+                            Object restored = next != null ? next : change.oldMapping;
+                            change.mappingType.getMethod("setInterceptor",
+                                    change.mappingType.getMethod("getInterceptor").getReturnType())
+                                    .invoke(restored, change.oldTarget);
+                            change.register.invoke(change.registry, restored);
+                        } catch (ReflectiveOperationException rollback) {
+                            StatusReporter.error("Interceptor mapping restoration failed; restart required: " + change.mappingName);
                         }
                     }
-                } catch (Exception e) {
-                    StatusReporter.warn("Could not inspect mapping bean: " + beanName);
+                    StatusReporter.warn("Interceptor re-registration failed; restart may be required: " + change.mappingName);
+                    RestartLedger.note(change.mappingName, "interceptor re-registration failed");
                 }
             }
-
-            if (refreshed > 0) {
-                StatusReporter.info("Refreshed "
-                        + Plural.of(refreshed, "InterceptorMapping bean")
-                        + " for " + interceptorClassName);
-            }
-
-        } catch (ClassNotFoundException e) {
-            // InterceptorMapping class not available - that's OK
-        } catch (Exception e) {
-            StatusReporter.warn("Could not refresh InterceptorMappings: " + Failures.describe(e));
+            return success;
         }
-    }
-
-    private Method findDestroyMethod(Object beanFactory) {
-        Class<?> current = beanFactory.getClass();
-        while (current != null) {
-            try {
-                Method m = current.getDeclaredMethod("destroySingleton", String.class);
-                m.setAccessible(true);
-                return m;
-            } catch (NoSuchMethodException e) {
-                current = current.getSuperclass();
-            }
-        }
-        return null;
     }
 }

@@ -41,7 +41,7 @@ import com.onurkat.reclazz.util.BoundedProcess;
  *   <li>Before running ant, the reloader touches the XML file so
  *       Hybris's CodeGenerator doesn't short-circuit with
  *       "No changes found, skipping". The resulting watcher re-fire
- *       is suppressed via {@code lastTouchedFile} + echo window.</li>
+ *       is suppressed via {@code lastTouchedFile} + content digest + echo window.</li>
  *   <li>Hybris generates {@code .java} into {@code platform/bootstrap/gensrc}
  *       and {@code ant build} compiles into {@code platform/bootstrap/modelclasses}.</li>
  *   <li>Agent's class watcher picks up the new bytecode and the
@@ -102,6 +102,7 @@ public class CodegenReloader {
     private volatile Path pendingFile = null;
     private volatile Path lastTouchedFile = null;
     private volatile long lastTouchedAtMs = 0L;
+    private byte[] lastTouchedDigest; // guarded by lock, together with the touch identity
 
     /**
      * Kinds of XML that were saved during (or just before) the current
@@ -126,16 +127,6 @@ public class CodegenReloader {
         Kind kind = Kind.fromFileName(fileName);
         if (kind == null) return; // not one of ours — defensive
 
-        // Echo suppression — see TODO on the 3-second window's
-        // false-positive failure mode.
-        Path lastTouched = lastTouchedFile;
-        long sinceTouch = System.currentTimeMillis() - lastTouchedAtMs;
-        if (lastTouched != null
-                && sinceTouch < OWN_TOUCH_ECHO_WINDOW_MS
-                && file.toAbsolutePath().equals(lastTouched.toAbsolutePath())) {
-            return;
-        }
-
         ExtensionInfo ext = findOwningExtension(file);
         if (ext == null) {
             StatusReporter.warn(kind.label() + " changed: " + fileName
@@ -144,6 +135,11 @@ public class CodegenReloader {
         }
 
         synchronized (lock) {
+            if (lastTouchedFile != null
+                    && System.currentTimeMillis() - lastTouchedAtMs < OWN_TOUCH_ECHO_WINDOW_MS
+                    && file.toAbsolutePath().normalize().equals(lastTouchedFile)
+                    && lastTouchedDigest != null
+                    && java.util.Arrays.equals(lastTouchedDigest, digest(file))) return;
             pendingKinds.add(kind);
             if (running) {
                 rerunPending = true;
@@ -165,6 +161,7 @@ public class CodegenReloader {
     }
 
     private void runLoop(ExtensionInfo firstExt, Path firstFile) {
+        boolean released = false;
         try {
             ExtensionInfo ext = firstExt;
             Path file = firstFile;
@@ -192,17 +189,25 @@ public class CodegenReloader {
                 }
 
                 synchronized (lock) {
-                    if (!rerunPending) return;
+                    if (!rerunPending) {
+                        running = false;
+                        released = true;
+                        return;
+                    }
                     String nextName = pendingExtName;
                     ExtensionInfo next = hybrisContext.getExtensions().get(nextName);
-                    if (next == null) return;
+                    if (next == null) {
+                        running = false;
+                        released = true;
+                        return;
+                    }
                     ext = next;
                     file = pendingFile != null ? pendingFile : file;
                     StatusReporter.info("Codegen: pending save queued, re-running ant for " + ext.getName());
                 }
             }
         } finally {
-            synchronized (lock) { running = false; }
+            synchronized (lock) { if (!released) running = false; }
         }
     }
 
@@ -345,12 +350,26 @@ public class CodegenReloader {
     }
 
     private void touchFile(Path file) {
-        long now = System.currentTimeMillis();
-        try {
-            Files.setLastModifiedTime(file, FileTime.fromMillis(now));
-            lastTouchedFile = file;
-            lastTouchedAtMs = now;
-        } catch (Exception ignored) {}
+        synchronized (lock) {
+            try {
+                // Capture content before touching. A real edit racing with the
+                // touch then differs and must be queued, even inside the window.
+                lastTouchedDigest = digest(file);
+                lastTouchedFile = file.toAbsolutePath().normalize();
+                lastTouchedAtMs = System.currentTimeMillis();
+                Files.setLastModifiedTime(file, FileTime.fromMillis(lastTouchedAtMs));
+            } catch (Exception ignored) { lastTouchedDigest = null; }
+        }
+    }
+
+    private static byte[] digest(Path file) {
+        try (var in = Files.newInputStream(file)) {
+            var hash = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] buffer = new byte[8192];
+            int n;
+            while ((n = in.read(buffer)) != -1) hash.update(buffer, 0, n);
+            return hash.digest();
+        } catch (Exception e) { return null; }
     }
 
     /** Package-private for test access. */

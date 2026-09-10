@@ -15,6 +15,7 @@ public class TestValidateInterceptor implements ValidateInterceptor<ProductModel
     @Override
     public void onValidate(ProductModel model, InterceptorContext ctx) throws InterceptorException {
         lastValidation = "validated-v1:" + model.getCode();
+        ValidationProbe.record(model.getCode(), lastValidation);
     }
 
     public static String getLastValidation() {

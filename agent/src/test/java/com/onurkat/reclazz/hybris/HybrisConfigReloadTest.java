@@ -122,6 +122,35 @@ class HybrisConfigReloadTest {
         assertEquals("Original", StubConfig.getParameter("readonly.key"));
     }
 
+    @Test
+    void failedPropertyWriteRetriesOnIdenticalSave() throws Exception {
+        Path file = write("feature=old\n");
+        snapshots.baseline(file);
+        StubConfig.seed("feature", "old");
+        StubConfig.failing.add("feature");
+        Files.writeString(file, "feature=new\n");
+        assertEquals(List.of(), reloader().apply(file));
+        assertEquals("old", snapshots.current(file).get("feature"));
+        StubConfig.failing.clear();
+        assertEquals(List.of("feature"), reloader().apply(file));
+        assertEquals("new", StubConfig.getParameter("feature"));
+        assertEquals(2, StubConfig.writes());
+    }
+
+    @Test
+    void partialSuccessPreservesFailedKeysWithoutOverwritingLaterHacEdits() throws Exception {
+        Path file = write("good=old\nbad=old\n");
+        snapshots.baseline(file);
+        StubConfig.failing.add("bad");
+        Files.writeString(file, "good=new\nbad=new\n");
+        assertEquals(List.of("good"), reloader().apply(file));
+        assertEquals(java.util.Map.of("bad", "new"), snapshots.pending(file).changed());
+        StubConfig.seed("good", "hac-override");
+        StubConfig.failing.clear();
+        assertEquals(List.of("bad"), reloader().apply(file));
+        assertEquals("hac-override", StubConfig.getParameter("good"));
+    }
+
     // ── Where it must do nothing ──────────────────────────────────────────
 
     /**
@@ -188,12 +217,15 @@ class HybrisConfigReloadTest {
         private static final java.util.Set<String> refused =
                 java.util.concurrent.ConcurrentHashMap.newKeySet();
 
+        static final java.util.Set<String> failing = new java.util.HashSet<>();
+
         public static String getParameter(String key) {
             return values.get(key);
         }
 
         public static void setParameter(String key, String value) {
             writes.incrementAndGet();
+            if (failing.contains(key)) throw new IllegalStateException("temporary write failure");
             if (refused.contains(key)) return;
             values.put(key, value);
         }
@@ -212,6 +244,7 @@ class HybrisConfigReloadTest {
 
         static void reset() {
             values.clear();
+            failing.clear();
             refused.clear();
             writes.set(0);
         }

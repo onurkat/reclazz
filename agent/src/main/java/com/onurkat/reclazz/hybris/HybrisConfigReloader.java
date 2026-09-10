@@ -6,15 +6,11 @@ package com.onurkat.reclazz.hybris;
 
 import com.onurkat.reclazz.ui.StatusReporter;
 
-import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import com.onurkat.reclazz.ui.RestartLedger;
-import com.onurkat.reclazz.ui.Plural;
 
 /**
  * Applies edited platform properties to the running server.
@@ -100,7 +96,7 @@ public class HybrisConfigReloader {
     }
 
     /**
-     * @return the keys whose value changed and were applied, in file order;
+     * @return the keys whose value changed and were applied;
      *         empty when nothing changed or the platform is not reachable
      */
     public List<String> apply(Path propertiesFile) {
@@ -108,76 +104,63 @@ public class HybrisConfigReloader {
     }
 
     public List<String> apply(PropertyFileSnapshots.Candidate candidate) {
-        if (candidate == null) return List.of();
-        List<String> applied = new ArrayList<>();
-        List<String> rejected = new ArrayList<>();
+        return applyResult(candidate).applied();
+    }
 
+    public record Result(List<String> applied, List<String> pending, boolean reachable) {
+        public Result { applied = List.copyOf(applied); pending = List.copyOf(pending); }
+    }
+
+    public Result applyResult(PropertyFileSnapshots.Candidate candidate) {
+        if (candidate == null) return new Result(List.of(), List.of(), false);
+        var edited = candidate.changed();
         Class<?> config = findConfig();
-        if (config == null) return applied;
-
-        // Against this file's own previous content, never against the running
-        // configuration: the configuration is not a copy of any one file. See
-        // PropertyFileSnapshots.
-        java.util.Map<String, String> edited = candidate.changed();
-        snapshots.accept(candidate);
-        if (edited.isEmpty()) return applied;
-
-        // Config reads the tenant from a ThreadLocal that the watcher thread
-        // does not have. Without this the call fails with a bare
-        // NullPointerException from inside the platform.
+        if (config == null) return new Result(List.of(), new ArrayList<>(edited.keySet()), false);
         if (configClassForTests == null && !PlatformTenant.ensureActive(platformClassLoader)) {
-            return applied;
+            StatusReporter.warn("Property changes deferred: platform tenant is unavailable; save again to retry.");
+            return new Result(List.of(), new ArrayList<>(edited.keySet()), true);
         }
-
+        List<String> applied = new ArrayList<>();
+        List<String> accepted = new ArrayList<>();
+        List<String> pending = new ArrayList<>();
         try {
             Method get = config.getMethod("getParameter", String.class);
             Method set = config.getMethod("setParameter", String.class, String.class);
-
-            for (java.util.Map.Entry<String, String> entry : edited.entrySet()) {
+            for (var entry : edited.entrySet()) {
                 String key = entry.getKey();
                 String desired = entry.getValue();
-                if (desired == null || isUnresolved(desired)) continue;
-
-                String current = (String) get.invoke(null, key);
-                if (desired.equals(current)) continue;
-
-                set.invoke(null, key, desired);
-
-                // Read it back. The platform is free to ignore, coerce or
-                // override a value, and a key reported as applied that the
-                // server did not take is exactly the kind of claim this
-                // feature must not make.
-                String after = (String) get.invoke(null, key);
-                if (desired.equals(after)) {
-                    applied.add(key);
-                } else {
-                    rejected.add(key);
+                if (isUnresolved(desired)) {
+                    pending.add(key);
+                    continue;
+                }
+                try {
+                    if (!desired.equals(get.invoke(null, key))) {
+                        set.invoke(null, key, desired);
+                        if (!desired.equals(get.invoke(null, key))) {
+                            pending.add(key);
+                            continue;
+                        }
+                        applied.add(key);
+                    }
+                    accepted.add(key);
+                } catch (ReflectiveOperationException | RuntimeException e) {
+                    pending.add(key);
+                    // Report keys, not values or platform exception messages:
+                    // configuration can contain credentials.
+                    StatusReporter.warn("Could not apply property: " + key + "; save again to retry.");
                 }
             }
-        } catch (Throwable t) {
-            // Reflection wraps whatever the platform threw, and the wrapper
-            // carries no message of its own. Report the cause, and its type:
-            // a NullPointerException with nothing to say is the usual shape
-            // here and the type is the only clue.
-            Throwable cause = (t.getCause() != null) ? t.getCause() : t;
-            String detail = (cause.getMessage() != null)
-                    ? cause.getClass().getSimpleName() + ": " + cause.getMessage()
-                    : cause.getClass().getName();
-            StatusReporter.warn("Could not apply property changes: " + detail);
-            return List.of();
+        } catch (ReflectiveOperationException e) {
+            pending.addAll(edited.keySet());
         }
-
-        if (!rejected.isEmpty()) {
-            StatusReporter.warn("The platform did not take "
-                    + Plural.of(rejected.size(), "property change")
-                    + ": " + rejected
-                    + ". They need a restart.");
+        snapshots.acceptKeys(candidate, accepted);
+        if (!pending.isEmpty()) {
+            StatusReporter.warn("Property changes not applied: " + pending
+                    + ". Unresolved placeholders need platform startup; other failures can be retried by saving.");
             RestartLedger.note(candidate.file().getFileName().toString(),
-                    Plural.word(rejected.size(), "a property change", "property changes")
-                            + " the platform refused: " + rejected);
+                    "property changes still pending: " + pending);
         }
-
-        return applied;
+        return new Result(applied, pending, true);
     }
 
     /**

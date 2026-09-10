@@ -35,7 +35,7 @@ public class ImpexAutoImporter {
      * which begin with something else.
      */
     private static final java.util.regex.Pattern REMOVE_HEADER =
-            java.util.regex.Pattern.compile("(?im)^[ \\t]*REMOVE[ \\t]+\\w");
+            java.util.regex.Pattern.compile("(?im)^[ \\t]*\"?REMOVE[ \\t]+\\S");
 
     private final boolean allowRemove;
 
@@ -54,8 +54,36 @@ public class ImpexAutoImporter {
      */
     static int firstRemoveHeaderLine(String content) {
         String[] lines = content.split("\\R", -1);
+        java.util.Map<String, String> macros = new java.util.TreeMap<>(
+                java.util.Comparator.comparingInt(String::length).reversed()
+                        .thenComparing(java.util.Comparator.naturalOrder()));
         for (int i = 0; i < lines.length; i++) {
-            if (REMOVE_HEADER.matcher(lines[i]).find()) return i + 1;
+            String line = lines[i].stripLeading();
+            if (i == 0 && line.startsWith("\uFEFF")) line = line.substring(1).stripLeading();
+            if (line.startsWith("#") || line.startsWith(";") || line.isBlank()) continue;
+            var definition = java.util.regex.Pattern.compile("^(\\$[^=;\\s]+)[ \\t]*=(.*)$")
+                    .matcher(line);
+            if (definition.matches()) {
+                macros.put(definition.group(1), definition.group(2));
+                continue;
+            }
+            // Expand only a possible header. A bounded expansion also refuses
+            // recursive/unresolved header macros instead of certifying them safe.
+            for (int round = 0; round < 32; round++) {
+                String previous = line;
+                for (var macro : macros.entrySet()) {
+                    // Avoid expanding a recursive macro into an unbounded allocation.
+                    if (line.contains(macro.getKey())) {
+                        long occurrences = (line.length() - line.replace(macro.getKey(), "").length()) / macro.getKey().length();
+                        long expandedSize = line.length() + occurrences * ((long) macro.getValue().length() - macro.getKey().length());
+                        if (expandedSize > 65536) return i + 1;
+                        line = line.replace(macro.getKey(), macro.getValue());
+                    }
+                }
+                if (line.equals(previous)) break;
+            }
+            String firstCell = line.split(";", 2)[0];
+            if (REMOVE_HEADER.matcher(line).find() || firstCell.contains("$")) return i + 1;
         }
         return -1;
     }
@@ -105,14 +133,14 @@ public class ImpexAutoImporter {
             int removeLine = firstRemoveHeaderLine(content);
             if (removeLine > 0 && !allowRemove) {
                 StatusReporter.warn("ImpEx not imported: " + impexFile.getFileName()
-                        + " has a REMOVE header at line " + removeLine
+                        + " has a REMOVE or unresolved macro header at line " + removeLine
                         + ". Auto-import will not delete data. Import it from HAC, or "
                         + "pass impexAllowRemove=true to the agent if you mean it.");
                 return;
             }
             if (removeLine > 0) {
                 StatusReporter.warn("ImpEx " + impexFile.getFileName()
-                        + " contains REMOVE (line " + removeLine + "); importing because "
+                        + " contains a REMOVE or unresolved macro header (line " + removeLine + "); importing because "
                         + "impexAllowRemove is set.");
             }
 
@@ -146,7 +174,10 @@ public class ImpexAutoImporter {
             // The watcher thread has no tenant — activate the master tenant
             // (Registry loaded via the context's classloader).
             ClassLoader hybrisCl = appContext.getClass().getClassLoader();
-            PlatformTenant.ensureActive(hybrisCl);
+            if (!PlatformTenant.ensureActive(hybrisCl)) {
+                StatusReporter.warn("ImpEx not imported: platform tenant unavailable; save again to retry.");
+                return;
+            }
 
             // Create ImpExResource from the file content
             Class<?> streamBasedClass = Class.forName(
