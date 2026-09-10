@@ -16,6 +16,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Refreshes just the edited bean's listeners, including supported added methods. */
 public class SpringEventReloader {
@@ -23,7 +24,8 @@ public class SpringEventReloader {
     // Spring owns listeners. This bookkeeping must not retain closed contexts,
     // application classloaders, or hidden classes after their last registration.
     private final Map<Object, List<Owned>> adapters = new WeakHashMap<>();
-    private record Owned(WeakReference<Class<?>> type, WeakReference<Object> listener) { }
+    private record Owned(WeakReference<Class<?>> type, WeakReference<Object> listener, AtomicBoolean active) { }
+    private record Prepared(List<Object> listeners, AtomicBoolean active) { }
 
     public SpringEventReloader(PlatformContext platformContext) {
         this.platformContext = platformContext;
@@ -55,13 +57,14 @@ public class SpringEventReloader {
                 if (!plan.methods().isEmpty()) {
                     for (String bean : beans) {
                         try {
-                            List<Object> listeners = prepareAdded(context, processor, type, bean, plan);
+                            Prepared prepared = prepareAdded(context, processor, type, bean, plan);
+                            List<Object> listeners = prepared.listeners();
                             Method add = multicaster.getClass().getMethod("addApplicationListener", listenerType(multicaster));
                             List<Owned> owned = adapters.computeIfAbsent(multicaster, ignored -> new ArrayList<>());
                             for (Object listener : listeners) {
                                 // Index before add: even a custom multicaster that adds and
                                 // then throws can be cleaned up by the failure path.
-                                owned.add(new Owned(new WeakReference<>(type), new WeakReference<>(listener)));
+                                owned.add(new Owned(new WeakReference<>(type), new WeakReference<>(listener), prepared.active()));
                                 add.invoke(multicaster, listener);
                             }
                             changed |= !listeners.isEmpty();
@@ -115,7 +118,7 @@ public class SpringEventReloader {
         return removed.get() > 0 || listeners.size() > before;
     }
 
-    private static List<Object> prepareAdded(Object context, Object processor, Class<?> type, String bean,
+    private static Prepared prepareAdded(Object context, Object processor, Class<?> type, String bean,
                                              AddedEventListenerAdapter.Plan plan) throws Throwable {
         Object factory = SpringBeans.getBeanFactory(context);
         if (!(Boolean) factory.getClass().getMethod("isSingleton", String.class).invoke(factory, bean))
@@ -129,10 +132,29 @@ public class SpringEventReloader {
         // A custom factory can interpret names, declaring classes, or advice.
         // A synthetic delegate cannot promise those semantics, even when its
         // copied EventListener annotation happens to satisfy supportsMethod.
-        for (Object candidate : list)
-            if (!candidate.getClass().getName().equals("org.springframework.context.event.DefaultEventListenerFactory"))
+        String normal = "org.springframework.context.event.DefaultEventListenerFactory";
+        String transactional = "org.springframework.transaction.event.TransactionalEventListenerFactory";
+        List<String> names = new ArrayList<>();
+        for (Object candidate : list) {
+            String name = candidate.getClass().getName();
+            if (!name.equals(normal) && !name.equals(transactional))
                 throw new IllegalStateException("custom event listener factories require a restart for added methods");
-        List<Object> listeners = AddedEventListenerAdapter.create(type, bean, current, plan);
+            if (names.contains(name)) throw new IllegalStateException("duplicate event listener factories are unsupported");
+            names.add(name);
+        }
+        if (plan.methods().stream().anyMatch(AddedEventListenerAdapter::transactional)
+                && (!names.contains(transactional) || (names.contains(normal) && names.indexOf(normal) < names.indexOf(transactional))))
+            throw new IllegalStateException("standard transactional event listener factory must precede the default factory");
+        if (plan.methods().stream().anyMatch(m -> !AddedEventListenerAdapter.transactional(m)) && !names.contains(normal))
+            throw new IllegalStateException("standard default event listener factory is unavailable");
+        AtomicBoolean active = new AtomicBoolean(true);
+        Method isActive = context.getClass().getMethod("isActive");
+        java.util.function.BooleanSupplier enabled = () -> {
+            try { return active.get() && (Boolean) isActive.invoke(context); }
+            catch (ReflectiveOperationException failure) { return false; }
+        };
+        List<Object> listeners = AddedEventListenerAdapter.create(type, bean,
+                () -> enabled.getAsBoolean() ? current.get() : null, plan, enabled);
         ClassLoader loader = processor.getClass().getClassLoader();
         Class<?> evaluatorType = Class.forName("org.springframework.context.event.EventExpressionEvaluator", false, loader);
         Class<?> contextType = Class.forName("org.springframework.context.ApplicationContext", false, loader);
@@ -141,7 +163,7 @@ public class SpringEventReloader {
         if (init == null) throw new IllegalStateException("event adapter initialization is inaccessible");
         Object evaluator = freshEvaluator(evaluatorType, Reflect.readField(processor, "evaluator"));
         for (Object listener : listeners) init.invoke(listener, context, evaluator);
-        return listeners;
+        return new Prepared(listeners, active);
     }
 
     private static Object freshEvaluator(Class<?> type, Object original) throws Exception {
@@ -166,6 +188,8 @@ public class SpringEventReloader {
     private boolean removeAdded(Object multicaster, Class<?> type) throws Exception {
         List<Owned> owned = adapters.get(multicaster);
         if (owned == null) return false;
+        // Retire every registration first, even if removing one adapter fails.
+        for (Owned entry : owned) if (entry.type().get() == type) entry.active().set(false);
         Method remove = multicaster.getClass().getMethod("removeApplicationListener", listenerType(multicaster));
         boolean changed = false;
         for (Iterator<Owned> it = owned.iterator(); it.hasNext();) {

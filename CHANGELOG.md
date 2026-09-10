@@ -24,6 +24,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   constant check no longer claims Hibernate L2 coverage.
 
 ### Added
+- **Transaction listeners added after startup.** Supported direct `void`
+  `@TransactionalEventListener` methods use Spring's native four transaction
+  phases, fallback, conditions and ordering. Ordinary added listeners also work
+  with the standard transaction factory present. Reload/removal retires pending
+  callbacks before condition evaluation; new events use the new registration.
+  Cleanup failures remain retryable. Real H2 and startup-agent regressions cover
+  commit/rollback and transactions held open across edits, removal and restoration.
+  See [scope](docs/usage.md#transactional-event-listeners-added-after-startup).
 - **Selected Spring XML singleton recreation.** Existing constructor arguments,
   static/instance factory methods and explicit init/destroy metadata can change
   in `*-spring.xml`. Native replacement recreates supported dependents and repairs
