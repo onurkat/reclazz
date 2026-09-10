@@ -24,6 +24,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   constant check no longer claims Hibernate L2 coverage.
 
 ### Added
+- **Richer arguments for added `@Bean` factories.** Instance and static factories
+  now accept concrete generic collections/maps, reference arrays, `Optional`,
+  Spring `ObjectProvider`/`ObjectFactory`, and direct `@Value` parameters including
+  primitives. Spring retains generic selection, qualifiers, ordering and lazy
+  provider lookup. Saved parameter names remain local to hidden metadata, including
+  names after wide primitive slots. Failed resolution prevents factory invocation;
+  a corrected configuration save recovers. Property-only saves do not recreate
+  these factories. Generic returns, wildcards and raw generic injection remain
+  unsupported. See [scope](docs/usage.md#bean-methods-added-after-startup).
 - **YAML and removed Boot configuration keys.** Already-loaded local YAML and
   properties files reload through their original source positions. Nested values,
   lists, key/file deletion and restoration preserve higher-priority overrides.

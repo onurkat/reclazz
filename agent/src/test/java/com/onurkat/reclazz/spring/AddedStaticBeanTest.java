@@ -253,7 +253,7 @@ class AddedStaticBeanTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"primitive", "array", "generic", "rawList", "value", "nativeFactory"})
+    @ValueSource(strings = {"primitive", "rawList", "nativeFactory"})
     void unsupportedStaticFactoriesStillFailWithoutRegistration(String name) throws Exception {
         try (Scope scope = new Scope()) {
             assertFalse(scope.reload(beans(name)));

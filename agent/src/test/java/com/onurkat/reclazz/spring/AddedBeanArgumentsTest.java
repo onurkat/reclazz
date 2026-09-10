@@ -218,7 +218,7 @@ class AddedBeanArgumentsTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"primitive", "array", "generic", "rawList", "rawMap", "optional", "provider", "value", "lazy", "nullable"})
+    @ValueSource(strings = {"primitive", "rawList", "rawMap", "optional", "provider", "lazy", "nullable"})
     void unsupportedParametersAreNamedWithoutRegistering(String name) throws Exception {
         try (Scope scope = new Scope()) {
             assertFalse(scope.reload(bytes(name)));

@@ -200,13 +200,36 @@ so an added product can inject another added bean regardless of declaration orde
 including through factory parameters. Only contexts containing the edited
 configuration participate.
 
-Factory parameters are required reference beans. Spring selects candidates by
+Factory parameters can be required reference beans. Spring selects candidates by
 type, honors primary candidates and direct parameter `@Qualifier("fast")`,
 and uses the original parameter name to break ties when javac preserved it with
 `-parameters` or debug local-variable information. Without a preserved name, no
 name is invented: unique type/primary/qualifier selection still works, and an
 unresolved ambiguity is reported. Parent-context candidates and dependency
 proxies are passed through as the objects Spring resolves.
+
+Concrete generic parameters also work: `List<T>`, `Set<T>`, `Collection<T>`,
+`Map<String,T>`, `Optional<T>`, and Spring `ObjectProvider<T>`/`ObjectFactory<T>`.
+One-dimensional reference arrays such as `Transport[]` are supported. Spring
+filters generic element types and qualifiers, orders lists/arrays, and supplies
+empty containers or an empty optional when no candidate exists. Providers keep
+Spring's lazy lookup semantics: creating the added product does not instantiate
+their target, and subsequent provider calls look up the current bean.
+
+Direct parameter `@Value` uses the application's Spring value resolution and
+conversion, including all eight primitive types and explicit reference nulls:
+
+```java
+@Bean
+Client client(List<Transport> transports, Optional<Metrics> metrics,
+              ObjectProvider<Token> tokens, @Value("${client.retries:3}") int retries) {
+    return new Client(transports, metrics, tokens, retries);
+}
+```
+
+Values are resolved when the product is created or recreated. Property-only
+edits do not automatically recreate these added factories; compile the
+configuration again to apply a new factory argument value.
 
 Added factory methods can also carry direct `@Primary` and `@Qualifier`.
 For example, a method named `remoteTransport` carrying `@Bean @Qualifier("fast")`
@@ -227,7 +250,7 @@ again recovers. Existing singleton holders are not globally re-injected.
 Arguments are resolved on every product creation. Dependency names are registered
 with the creating bean factory so its normal dependency destruction applies,
 including for dependencies that were already cached singletons. If an argument
-is missing, ambiguous or resolves to null, the factory body is not called and
+is required but missing, ambiguous, or cannot be converted, the factory body is not called and
 its failed owned definition is removed. The message identifies the parameter
 and Spring's failure. Fix the dependency or qualifier and compile the
 configuration again to recover; registering a missing dependency alone does not
@@ -248,8 +271,8 @@ selection metadata and product lifecycle. Registration still requires the
 configuration singleton described below; supporting a static method does not
 enable configuration-free registration or early infrastructure factories.
 
-Supported factories carry direct `@Bean`, return an object
-(not a primitive, array or `void`), and have no generic signature. Private instance
+Supported factories carry direct `@Bean` and return a non-generic object
+(not a primitive, array or `void`). Private instance
 and static methods work; native and abstract methods do not. The class must carry
 direct `@Configuration(proxyBeanMethods=false)`, extend only `Object`, implement
 no interfaces and have exactly one local, unproxied singleton configuration in
@@ -257,12 +280,16 @@ each affected bean factory. Extra runtime class annotations are limited to
 `@Deprecated`; methods additionally allow direct `@Primary` and `@Qualifier`.
 Conditions, profiles, scopes, advice, lazy metadata, class-level primary/qualifier
 policies, composed annotations and proxied configurations require a restart.
-Parameters allow the direct `@Qualifier` described above. Primitive,
-array, collection/map, optional, stream and provider parameters are unsupported,
-as are generic signatures and extra runtime parameter/type annotations such as
-`@Value`, `@Lazy`, nullable annotations and composed qualifiers. Parameter names
-come from the saved bytecode; custom name-discovery policies and custom lazy
-resolution hooks are not used by this path. No-argument factories remain supported.
+Parameters allow direct `@Qualifier` and `@Value`. Primitive parameters without
+`@Value`, primitive/multidimensional arrays, raw generic parameters, wildcard or
+unresolved type variables, generic return types and generic factory methods
+remain unsupported. Collection/map implementations other than the interfaces
+listed above, maps with non-String keys, streams, suppliers, custom provider
+interfaces and JSR provider APIs are also unsupported. Extra runtime
+parameter/type annotations such as `@Lazy`, nullable annotations and composed
+qualifiers require a restart. Parameter names come from the saved bytecode;
+custom name-discovery policies are not used by this path. No-argument factories
+remain supported.
 
 The default method name or explicit `name`/`value` names are supported, along with
 `initMethod` and `destroyMethod`. For `@Bean({"transport", "legacyTransport"})`, the
@@ -308,6 +335,12 @@ and callback side effects are not rolled back. Correct the factory and compile
 again to recover. The ordinary configuration-bean refresh still runs before this
 registration step, with its existing lifecycle effects. This feature does not
 rerun configuration parsing or add `@Bean` to methods that existed at startup.
+
+The richer argument path is covered with Spring 5.3.39 on SapMachine 21,
+including real startup-agent reloads in both application and child classloaders.
+Those tests cover successive saves, same-save dependencies, lazy lookup,
+conversion failure, removal, recovery and destruction. Other Spring versions
+and a JDK 17 runtime have not been verified for this extension.
 
 ### Exception handlers added after startup
 

@@ -12,10 +12,11 @@ import org.objectweb.asm.*;
 import org.objectweb.asm.tree.*;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 /** A factory delegate for a method that reflection cannot see on a stock JDK. */
@@ -25,6 +26,7 @@ public final class AddedBeanAdapter {
     private static final String DEPRECATED = "Ljava/lang/Deprecated;";
     private static final String QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
     private static final String PRIMARY = "Lorg/springframework/context/annotation/Primary;";
+    private static final String VALUE = "Lorg/springframework/beans/factory/annotation/Value;";
     private static final String PARAMETERS = InjectedNames.PREFIX + "parameters";
     private AddedBeanAdapter() { }
 
@@ -55,16 +57,18 @@ public final class AddedBeanAdapter {
                         "requires direct @Configuration(proxyBeanMethods=false), without inheritance or additional class annotations");
                 Type signature = Type.getMethodType(method.desc);
                 if (signature.getReturnType().getSort() != Type.OBJECT
-                        || (method.access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC)) != 0
-                        || method.signature != null)
-                    throw new IllegalArgumentException("only non-generic, object-returning factories are supported");
-                for (Type argument : signature.getArgumentTypes())
-                    if (argument.getSort() != Type.OBJECT)
-                        throw new IllegalArgumentException("factory parameters must be required reference beans; primitive/array parameters are unsupported");
+                        || (method.access & (Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC)) != 0)
+                    throw new IllegalArgumentException("only concrete, object-returning factories are supported");
+                requireConcreteParameters(method.signature);
+                Type[] arguments = signature.getArgumentTypes();
+                for (int i = 0; i < arguments.length; i++)
+                    if (arguments[i].getSort() < Type.ARRAY && (method.visibleParameterAnnotations == null
+                            || annotation(method.visibleParameterAnnotations[i], VALUE) == null))
+                        throw new IllegalArgumentException("primitive factory parameters require direct @Value");
                 if (method.visibleParameterAnnotations != null)
                     for (var annotations : method.visibleParameterAnnotations)
-                        if (annotations != null && annotations.stream().anyMatch(a -> !a.desc.equals(QUALIFIER)))
-                            throw new IllegalArgumentException("only direct @Qualifier is supported on factory parameters");
+                        if (annotations != null && annotations.stream().anyMatch(a -> !a.desc.equals(QUALIFIER) && !a.desc.equals(VALUE)))
+                            throw new IllegalArgumentException("only direct @Qualifier and @Value are supported on factory parameters");
                 if (signature.getArgumentTypes().length > 0
                         && method.visibleTypeAnnotations != null && !method.visibleTypeAnnotations.isEmpty())
                     throw new IllegalArgumentException("factory type annotations are not supported");
@@ -107,6 +111,27 @@ public final class AddedBeanAdapter {
         return annotations == null ? null : annotations.stream().filter(a -> a.desc.equals(descriptor)).findFirst().orElse(null);
     }
 
+    private static void requireConcreteParameters(String signature) {
+        if (signature == null) return;
+        new org.objectweb.asm.signature.SignatureReader(signature).accept(new org.objectweb.asm.signature.SignatureVisitor(Opcodes.ASM9) {
+            @Override public void visitFormalTypeParameter(String name) { throw new IllegalArgumentException("generic factory methods are unsupported"); }
+            @Override public org.objectweb.asm.signature.SignatureVisitor visitParameterType() { return type(false); }
+            @Override public org.objectweb.asm.signature.SignatureVisitor visitReturnType() { return type(true); }
+            @Override public org.objectweb.asm.signature.SignatureVisitor visitExceptionType() { return type(false); }
+            private org.objectweb.asm.signature.SignatureVisitor type(boolean result) {
+                return new org.objectweb.asm.signature.SignatureVisitor(Opcodes.ASM9) {
+                    @Override public void visitTypeVariable(String name) { throw new IllegalArgumentException("unresolved factory type variable: " + name); }
+                    @Override public void visitTypeArgument() { throw new IllegalArgumentException("wildcard factory types are unsupported"); }
+                    @Override public org.objectweb.asm.signature.SignatureVisitor visitTypeArgument(char wildcard) {
+                        if (result || wildcard != '=') throw new IllegalArgumentException("generic returns and wildcard factory types are unsupported");
+                        return this;
+                    }
+                    @Override public org.objectweb.asm.signature.SignatureVisitor visitArrayType() { return this; }
+                };
+            }
+        });
+    }
+
     private static boolean extraAnnotations(List<AnnotationNode> annotations, String... allowed) {
         Set<String> supported = Set.of(allowed);
         return annotations != null && annotations.stream().anyMatch(a -> !supported.contains(a.desc) && !a.desc.equals(DEPRECATED));
@@ -122,11 +147,11 @@ public final class AddedBeanAdapter {
     static Supplier<?> create(Class<?> owner, Supplier<?> currentConfig, Factory factory) throws Throwable {
         if (Type.getArgumentTypes(factory.method().desc).length != 0)
             throw new IllegalArgumentException("parameterized factory requires an argument resolver");
-        return create(owner, currentConfig, factory, ignored -> () -> new Object[0]);
+        return create(owner, currentConfig, factory, (ignored, constructor) -> () -> new Object[0]);
     }
 
     static Supplier<?> create(Class<?> owner, Supplier<?> currentConfig, Factory factory,
-                              Function<Method, Supplier<Object[]>> argumentResolver) throws Throwable {
+                              BiFunction<Method, MethodHandle, Supplier<Object[]>> argumentResolver) throws Throwable {
         MethodHandles.Lookup lookup = LookupCapture.get(owner);
         if (lookup == null) throw new IllegalStateException("no captured lookup for " + owner.getName());
         String internal = Type.getInternalName(owner);
@@ -171,7 +196,19 @@ public final class AddedBeanAdapter {
             mv.visitVarInsn(Opcodes.ALOAD, 1);
             mv.visitLdcInsn(i);
             mv.visitInsn(Opcodes.AALOAD);
-            mv.visitTypeInsn(Opcodes.CHECKCAST, argumentTypes[i].getInternalName());
+            Type argument = argumentTypes[i];
+            if (argument.getSort() >= Type.ARRAY) mv.visitTypeInsn(Opcodes.CHECKCAST, argument.getInternalName());
+            else {
+                String wrapper = switch (argument.getSort()) {
+                    case Type.BOOLEAN -> "Boolean"; case Type.BYTE -> "Byte"; case Type.CHAR -> "Character";
+                    case Type.SHORT -> "Short"; case Type.INT -> "Integer"; case Type.LONG -> "Long";
+                    case Type.FLOAT -> "Float"; case Type.DOUBLE -> "Double";
+                    default -> throw new IllegalArgumentException("unsupported primitive parameter");
+                };
+                mv.visitTypeInsn(Opcodes.CHECKCAST, "java/lang/" + wrapper);
+                mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "java/lang/" + wrapper,
+                        argument.getClassName() + "Value", "()" + argument.getDescriptor(), false);
+            }
         }
         Handle bootstrap = new Handle(Opcodes.H_INVOKESTATIC,
                 "com/onurkat/reclazz/bootstrap/ReclazzBootstrap", isStatic ? "bootstrapStaticMethod" : "bootstrapMethod",
@@ -184,7 +221,8 @@ public final class AddedBeanAdapter {
         mv.visitMaxs(0, 0);
         mv.visitEnd();
         MethodVisitor metadata = writer.visitMethod(Opcodes.ACC_PUBLIC | Opcodes.ACC_SYNTHETIC,
-                PARAMETERS, factory.method().desc, null, null);
+                PARAMETERS, factory.method().desc, factory.method().signature, null);
+        int parameterSlot = isStatic ? 0 : 1;
         for (int i = 0; i < argumentTypes.length; i++) {
             String name = null;
             int access = 0;
@@ -193,11 +231,12 @@ public final class AddedBeanAdapter {
                 name = parameter.name;
                 access = parameter.access;
             } else if (factory.method().localVariables != null) {
-                int slot = i + (isStatic ? 0 : 1); // all supported parameters occupy one slot
+                int slot = parameterSlot;
                 name = factory.method().localVariables.stream().filter(v -> v.index == slot)
                         .map(v -> v.name).findFirst().orElse(null);
             }
             metadata.visitParameter(name, access);
+            parameterSlot += argumentTypes[i].getSize();
             if (factory.method().visibleParameterAnnotations != null
                     && i < factory.method().visibleParameterAnnotations.length
                     && factory.method().visibleParameterAnnotations[i] != null)
@@ -214,7 +253,9 @@ public final class AddedBeanAdapter {
         MethodHandles.Lookup hidden = lookup.defineHiddenClass(writer.toByteArray(), true, MethodHandles.Lookup.ClassOption.NESTMATE);
         Class<?>[] parameters = MethodType.fromMethodDescriptorString(factory.method().desc, owner.getClassLoader()).parameterArray();
         Method reflected = hidden.lookupClass().getDeclaredMethod(PARAMETERS, parameters);
-        Supplier<Object[]> resolved = argumentResolver.apply(reflected);
+        MethodHandle descriptor = argumentTypes.length == 0 ? null : AddedBeanDependencyDescriptor.constructor(lookup,
+                Class.forName("org.springframework.core.MethodParameter", false, owner.getClassLoader()));
+        Supplier<Object[]> resolved = argumentResolver.apply(reflected, descriptor);
         return (Supplier<?>) hidden.findConstructor(hidden.lookupClass(), MethodType.methodType(void.class, Supplier.class, Supplier.class))
                 .invoke(currentConfig, resolved);
     }
