@@ -190,6 +190,8 @@ public final class AddedMethodVisibility {
                                     || annotationDescriptor.equals("Lorg/springframework/transaction/event/TransactionalEventListener;")
                                     || annotationDescriptor.equals("Ljavax/annotation/PostConstruct;")
                                     || annotationDescriptor.equals("Ljavax/annotation/PreDestroy;")
+                                    || annotationDescriptor.equals("Ljakarta/annotation/PostConstruct;")
+                                    || annotationDescriptor.equals("Ljakarta/annotation/PreDestroy;")
                                     || annotationDescriptor.equals("Lorg/springframework/kafka/annotation/KafkaListener;")
                                     || annotationDescriptor.equals("Lorg/springframework/jms/annotation/JmsListener;")
                                     || annotationDescriptor.equals("Lorg/springframework/amqp/rabbit/annotation/RabbitListener;")))

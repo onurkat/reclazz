@@ -101,14 +101,30 @@ public final class SpringLifecycleReloader {
             if (!lifecycle.isInstance(candidate)) continue;
             if (!candidate.getClass().getName().equals(COMMON))
                 throw new IllegalArgumentException("custom lifecycle processors are unsupported");
-            if (!(Reflect.readField(candidate, "initAnnotationType") instanceof Class<?> init)
-                    || !init.getName().equals("javax.annotation.PostConstruct")
-                    || !(Reflect.readField(candidate, "destroyAnnotationType") instanceof Class<?> destroy)
-                    || !destroy.getName().equals("javax.annotation.PreDestroy"))
-                throw new IllegalArgumentException("requires the standard javax lifecycle annotations");
+            // Spring 5 wires javax through singular fields; Spring 6.1 wires
+            // jakarta (and javax) through a Set. Accept the standard JSR-250
+            // annotations in either namespace and refuse any custom type.
+            if (!onlyStandard(candidate, "initAnnotationType", "initAnnotationTypes", "PostConstruct")
+                    || !onlyStandard(candidate, "destroyAnnotationType", "destroyAnnotationTypes", "PreDestroy"))
+                throw new IllegalArgumentException("requires the standard javax or jakarta lifecycle annotations");
             standard++;
         }
         if (standard != 1) throw new IllegalArgumentException("requires one standard CommonAnnotationBeanPostProcessor");
+    }
+
+    // The processor's configured annotation types must all be the standard
+    // JSR-250 annotation, in the javax or jakarta namespace, and there must be
+    // at least one. Spring 5 exposes a single Class field; Spring 6.1 a Set.
+    private static boolean onlyStandard(Object processor, String singular, String plural, String simpleName) {
+        java.util.List<Class<?>> types = new java.util.ArrayList<>();
+        if (Reflect.readField(processor, singular) instanceof Class<?> one) types.add(one);
+        if (Reflect.readField(processor, plural) instanceof java.util.Collection<?> many)
+            for (Object candidate : many) if (candidate instanceof Class<?> type) types.add(type);
+        if (types.isEmpty()) return false;
+        for (Class<?> type : types)
+            if (!type.getName().equals("javax.annotation." + simpleName)
+                    && !type.getName().equals("jakarta.annotation." + simpleName)) return false;
+        return true;
     }
 
     final class Prepared {
