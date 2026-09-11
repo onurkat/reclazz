@@ -614,8 +614,9 @@ up the containers it created; failures are reported in the restart ledger.
 
 The supported addition uses a literal nonempty `id`, and `topics` that are each a
 literal or a `${property}` placeholder resolved by the application's own value
-resolver (a `#{SpEL}` expression stays out of scope); optional literal
-`groupId`, `containerFactory`, `idIsGroup`, `autoStartup` and positive integer
+resolver (a `#{SpEL}` expression stays out of scope); an optional `groupId` may
+also be a literal or `${property}` placeholder, and optional literal
+`containerFactory`, `idIsGroup`, `autoStartup` and positive integer
 `concurrency` are accepted. Other explicitly supplied `@KafkaListener` options
 are refused. The class directly extends `Object`, has no interfaces/type
 variables and carries only the component stereotypes above or `@Deprecated`.
@@ -679,8 +680,9 @@ belonging to unrelated beans keep their identity.
 
 Use a literal nonempty `id` and a `destination` that is a literal or a
 `${property}` placeholder resolved by the application's own value resolver (a
-`#{SpEL}` expression stays out of scope). Optional literal `containerFactory`,
-`selector` and positive `concurrency` (a number or ascending range) are supported.
+`#{SpEL}` expression stays out of scope). An optional `selector` may also be a
+literal or `${property}` placeholder; optional literal `containerFactory` and
+positive `concurrency` (a number or ascending range) are supported.
 The class must directly extend `Object`, have no interfaces/type variables, and
 carry only the stereotypes above or `@Deprecated`. Added callback annotations
 are direct `@JmsListener` and optional `@Deprecated`; parameter annotations are

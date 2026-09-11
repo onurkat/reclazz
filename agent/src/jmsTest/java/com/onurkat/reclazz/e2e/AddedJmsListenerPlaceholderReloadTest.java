@@ -38,7 +38,7 @@ class AddedJmsListenerPlaceholderReloadTest {
         String dest = "reclazz-jms-ph-" + UUID.randomUUID();
         var producer = new JmsTemplate(new ActiveMQConnectionFactory(brokerUrl));
         try (var app = WatchedApp.in(tmp).classpath(jmsClasspath())
-                .jvmArgs("-Dtest.brokers=" + brokerUrl, "-Dapp.dest=" + dest)
+                .jvmArgs("-Dtest.brokers=" + brokerUrl, "-Dapp.dest=" + dest, "-Dapp.selector=tag = 'keep'")
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(false)).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "JMS app did not start");
@@ -52,8 +52,12 @@ class AddedJmsListenerPlaceholderReloadTest {
             assertEquals(before + 1, reloads(app), app.tail());
             waitState(port, "added:assigned", app);
 
-            producer.convertAndSend(dest, "hello");
-            assertTrue(app.awaits("ADDED:hello", 20), app.tail());
+            // The resolved selector "tag = 'keep'" admits only the matching message.
+            producer.convertAndSend(dest, "dropped", m -> { m.setStringProperty("tag", "drop"); return m; });
+            producer.convertAndSend(dest, "kept", m -> { m.setStringProperty("tag", "keep"); return m; });
+            assertTrue(app.awaits("ADDED:kept", 20), app.tail());
+            Thread.sleep(500);
+            assertFalse(app.output().stream().anyMatch(s -> s.equals("ADDED:dropped")), app.tail());
             assertFalse(app.output().stream().anyMatch(s -> s.contains("@JmsListener is found by scanning")), app.tail());
 
             app.rewrite("Listener", listener(false));
@@ -91,7 +95,7 @@ class AddedJmsListenerPlaceholderReloadTest {
     }
     private static String listener(boolean added) {
         String method = added ? """
-                @org.springframework.jms.annotation.JmsListener(id="added", destination="${app.dest}")
+                @org.springframework.jms.annotation.JmsListener(id="added", destination="${app.dest}", selector="${app.selector}")
                 public void added(String value) { System.out.println("ADDED:" + value); }
                 """ : "";
         return """
