@@ -7,6 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Inline list and map `@Value` expressions follow property changes.** A
+  computed `@Value` on a `List`, `Set`, `Map` or array field, such as
+  `#{ {${a}, ${b}} }` or `#{ {'x': ${a}} }`, is re-evaluated when a referenced
+  property changes, alongside the scalar expressions already supported. The
+  inline collection AST is side-effect-free and every branch is still checked
+  before evaluation, so an uncheckable candidate holds the whole save and leaves
+  all old values in place. The type converter now receives the field, so generic
+  element types convert. Bean/method calls, `T(...)`, `new` and templates stay
+  out of scope.
 - **Jakarta lifecycle methods added after startup on Spring 6.** A
   `@PostConstruct` or `@PreDestroy` added to a running singleton is now honoured
   in the `jakarta.annotation` namespace as well as `javax.annotation`, so the
