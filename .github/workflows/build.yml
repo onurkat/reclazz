@@ -99,6 +99,9 @@ jobs:
 
       - name: Build and test on Windows (Linux RabbitMQ broker suite explicitly omitted)
         if: matrix.os == 'windows-latest'
+        # Git Bash, not the default PowerShell: pwsh splits the -P property
+        # argument, so Gradle saw a bogus task name and the build never ran.
+        shell: bash
         run: ./gradlew build buildPlugin -Preclazz.skipRabbitBroker=true
 
       # Marketplace runs this on submission; failing here instead means we
