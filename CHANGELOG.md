@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **`${property}` in a message listener's selection metadata.** Beyond the
+  destination, a `@KafkaListener` `groupId` and a `@JmsListener` `selector` added
+  at runtime may now be a `${property}` placeholder, resolved by the
+  application's own value resolver. Real-broker tests confirm the Kafka consumer
+  group is the resolved value and the JMS selector filters as configured. Tracking
+  identifiers stay literal, and `#{SpEL}` stays out of scope.
 - **Template `@Value` expressions follow property changes.** A mixed text and
   `#{...}` value such as `host:#{${port} + 1}` on a scalar field or constructor
   parameter is now re-evaluated when a referenced property changes, alongside the

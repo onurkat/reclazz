@@ -35,7 +35,7 @@ class AddedKafkaListenerPlaceholderReloadTest {
         var producerFactory = new DefaultKafkaProducerFactory<Integer,String>(KafkaTestUtils.producerProps(broker));
         var producer = new KafkaTemplate<Integer,String>(producerFactory);
         try (var app = WatchedApp.in(tmp).classpath(kafkaClasspath())
-                .jvmArgs("-Dtest.brokers=" + broker.getBrokersAsString(), "-Dapp.topic=" + topic)
+                .jvmArgs("-Dtest.brokers=" + broker.getBrokersAsString(), "-Dapp.topic=" + topic, "-Dapp.group=resolved-kafka-group")
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
                 .with("Listener", listener(false)).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
@@ -53,6 +53,7 @@ class AddedKafkaListenerPlaceholderReloadTest {
             producer.send(topic, "hello").get(10, TimeUnit.SECONDS);
             assertTrue(app.awaits("ADDED:hello", 20), app.tail());
             assertFalse(app.output().stream().anyMatch(s -> s.contains("@KafkaListener is found by scanning")), app.tail());
+            assertEquals("resolved-kafka-group", http(port, "/group"), app.tail());
 
             // Remove it: the container is gone.
             app.rewrite("Listener", listener(false));
@@ -90,7 +91,7 @@ class AddedKafkaListenerPlaceholderReloadTest {
     }
     private static String listener(boolean added) {
         String method = added ? """
-                @org.springframework.kafka.annotation.KafkaListener(id="added", topics="${app.topic}", groupId="ph-group")
+                @org.springframework.kafka.annotation.KafkaListener(id="added", topics="${app.topic}", groupId="${app.group}")
                 public void added(String value) { System.out.println("ADDED:" + value); }
                 """ : "";
         return """
@@ -126,7 +127,10 @@ class AddedKafkaListenerPlaceholderReloadTest {
                     var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
                     server.createContext("/", exchange -> {
                         var b = new StringBuilder();
-                        for (String id : registry.getListenerContainerIds()) {
+                        if (exchange.getRequestURI().getPath().equals("/group")) {
+                            var c = registry.getListenerContainer("added");
+                            b.append(c == null ? "none" : c.getGroupId());
+                        } else for (String id : registry.getListenerContainerIds()) {
                             var c = registry.getListenerContainer(id); var partitions = c.getAssignedPartitions();
                             b.append(id).append(partitions != null && !partitions.isEmpty() ? ":assigned;" : ":waiting;");
                         }

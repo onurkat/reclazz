@@ -70,8 +70,10 @@ public final class AddedKafkaListenerAdapter {
                 // resolves it through the application's own value resolver. A
                 // #{SpEL} expression stays out of scope.
                 for (Object topic : list) destination(topic, "topic");
-                for (String option : List.of("groupId", "containerFactory"))
-                    if (options.containsKey(option)) literal(options.get(option), option);
+                // groupId may be a ${property} placeholder; containerFactory is
+                // resolved by Reclazz itself, so it stays a literal.
+                if (options.containsKey("groupId")) destination(options.get("groupId"), "groupId");
+                if (options.containsKey("containerFactory")) literal(options.get("containerFactory"), "containerFactory");
                 if (options.containsKey("autoStartup") && !Set.of("true", "false").contains(options.get("autoStartup")))
                     throw new IllegalArgumentException("autoStartup must be literal true or false");
                 if (options.containsKey("concurrency") && Integer.parseInt(literal(options.get("concurrency"), "concurrency")) <= 0)

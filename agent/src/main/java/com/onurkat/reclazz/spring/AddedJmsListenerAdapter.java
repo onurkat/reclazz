@@ -66,8 +66,10 @@ public final class AddedJmsListenerAdapter {
                 // A destination may be a ${property} placeholder: the real
                 // processor resolves it. A #{SpEL} expression stays out of scope.
                 destination(options.get("destination"), "destination");
-                for (String option : List.of("containerFactory", "selector"))
-                    if (options.containsKey(option)) literal(options.get(option), option);
+                // selector may be a ${property} placeholder; containerFactory is
+                // resolved by Reclazz itself, so it stays a literal.
+                if (options.containsKey("containerFactory")) literal(options.get("containerFactory"), "containerFactory");
+                if (options.containsKey("selector")) destination(options.get("selector"), "selector");
                 if (options.containsKey("concurrency")) {
                     String[] limits = literal(options.get("concurrency"), "concurrency").split("-", -1);
                     if (limits.length > 2 || Integer.parseInt(limits[0]) <= 0
