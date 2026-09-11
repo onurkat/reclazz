@@ -53,10 +53,27 @@ class AddedJacksonPropertyReloadTest {
                 long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(25);
                 while (System.nanoTime() < deadline && reloads(app) < stage) Thread.sleep(25);
                 assertEquals(stage, reloads(app), app.tail());
+                String input = "{\"existing\":\"kept\",\"score\":\"12\",\"tags\":[\"a\",\"b\"],"
+                        + "\"note\":null,\"secret\":\"must-not-leak\""
+                        + (stage == 3 ? "" : ",\"label\":\"name" + stage + "\"") + "}";
+                // The reload log line can precede the Jackson mapper picking up
+                // the new shape under load, so wait for it before the strict
+                // checks instead of racing the first request.
+                long settle = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
+                while (System.nanoTime() < settle) {
+                    var probe = client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/new"))
+                            .timeout(Duration.ofSeconds(10)).header("Content-Type", "application/json")
+                            .POST(HttpRequest.BodyPublishers.ofString(input)).build(), HttpResponse.BodyHandlers.ofString());
+                    if (probe.statusCode() == 200) {
+                        var b = json.readTree(probe.body());
+                        boolean ready = stage == 3
+                                ? !b.path("json").has("display_name") && !b.path("json").has("renamed")
+                                : b.path("json").path(stage == 2 ? "renamed" : "display_name").asText().equals("NAME" + stage);
+                        if (ready) break;
+                    }
+                    Thread.sleep(50);
+                }
                 for (String age : new String[]{"new", "old"}) {
-                    String input = "{\"existing\":\"kept\",\"score\":\"12\",\"tags\":[\"a\",\"b\"],"
-                            + "\"note\":null,\"secret\":\"must-not-leak\""
-                            + (stage == 3 ? "" : ",\"label\":\"name" + stage + "\"") + "}";
                     String response = post(client, port, age, input, 200);
                     System.out.println("[jackson-input] fields=" + fields + " child=" + childLoader
                             + " stage=" + stage + " " + age + " " + response);
