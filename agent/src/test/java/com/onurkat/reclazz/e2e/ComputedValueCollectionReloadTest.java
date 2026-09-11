@@ -25,25 +25,25 @@ class ComputedValueCollectionReloadTest {
         Files.writeString(properties, content("1", "2", "old"));
         try (var app = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath())
                 .jvmArgs("-Dprobe.dir=" + tmp).with("App", APP).start()) {
-            app.awaitOrFail("CFG_READY=[1, 2]:{x=1, y=2}:old", "Spring must evaluate the initial collections");
+            app.awaitOrFail("CFG_READY=[1, 2]:{x=1, y=2}:[1, 2]:[1, 2]:old", "Spring must evaluate the initial collections");
             app.awaitOrFail("] Watching 1 director", "watcher did not start");
 
             Files.writeString(properties, content("7", "8", "new"));
             app.awaitOrFail("Applied 3 property changes", "valid candidate was not applied");
-            probe(app, 1, "[7, 8]:{x=7, y=8}:new");
+            probe(app, 1, "[7, 8]:{x=7, y=8}:[7, 8]:[7, 8]:new");
 
             // A non-numeric value parses as a SpEL identifier, which the checker
             // cannot evaluate: the whole save is held and every value stays.
             Files.writeString(properties, content("oops", "8", "rejected"));
             app.awaitOrFail("Uncheckable: the running configuration is unchanged", "unsupported expression was not held");
-            probe(app, 2, "[7, 8]:{x=7, y=8}:new");
+            probe(app, 2, "[7, 8]:{x=7, y=8}:[7, 8]:[7, 8]:new");
 
             Files.writeString(properties, content("10", "11", "recovered"));
             long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
             while (System.nanoTime() < deadline && app.output().stream()
                     .filter(s -> s.contains("Applied 3 property changes")).count() < 2) Thread.sleep(25);
             assertEquals(2, app.output().stream().filter(s -> s.contains("Applied 3 property changes")).count(), app.tail());
-            probe(app, 3, "[10, 11]:{x=10, y=11}:recovered");
+            probe(app, 3, "[10, 11]:{x=10, y=11}:[10, 11]:[10, 11]:recovered");
         }
     }
 
@@ -69,16 +69,18 @@ class ComputedValueCollectionReloadTest {
             public class App {
                 @Value("#{ {${coll.a}, ${coll.b}} }") java.util.List<Integer> ports;
                 @Value("#{ {'x': ${coll.a}, 'y': ${coll.b}} }") java.util.Map<String,Integer> weights;
+                @Value("#{ {${coll.a}, ${coll.b}} }") java.util.Set<Integer> portSet;
+                @Value("#{ {${coll.a}, ${coll.b}} }") int[] portArray;
                 @Value("${coll.label}") String label;
                 public static void main(String[] args) throws Exception {
                     try (var context = new AnnotationConfigApplicationContext(App.class)) {
                         App original = context.getBean(App.class);
-                        System.out.println("CFG_READY=" + original.ports + ":" + original.weights + ":" + original.label);
+                        System.out.println("CFG_READY=" + original.ports + ":" + original.weights + ":" + original.portSet + ":" + java.util.Arrays.toString(original.portArray) + ":" + original.label);
                         for (int i = 1; i <= 3; i++) {
                             Path probe = Path.of(System.getProperty("probe.dir"), "probe" + i);
                             while (!Files.exists(probe)) Thread.sleep(20);
                             App bean = context.getBean(App.class);
-                            System.out.println("PROBE" + i + "=" + bean.ports + ":" + bean.weights + ":" + bean.label);
+                            System.out.println("PROBE" + i + "=" + bean.ports + ":" + bean.weights + ":" + bean.portSet + ":" + java.util.Arrays.toString(bean.portArray) + ":" + bean.label);
                         }
                     }
                 }
