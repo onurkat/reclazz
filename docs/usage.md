@@ -1343,7 +1343,9 @@ candidate, including its other keys and logger levels. Fix the value and save
 again to retry the pending keys.
 
 The supported subset is one whole `#{...}` expression on a writable instance
-field of primitive, boxed primitive, `String`, collection, map or array type. A
+field of primitive, boxed primitive, `String`, collection, map or array type, or
+a mixed text and `#{...}` template on a scalar field such as
+`host:#{${port} + 1}`, whose every embedded expression is checked the same way. A
 changed key can be referenced directly or through a
 [property-value chain](#indirect-value-dependencies); placeholder defaults and
 nested placeholders are resolved. Expressions can use numeric, string, boolean
@@ -1356,9 +1358,9 @@ arithmetic); this is not an overflow checker. The bean factory's conversion
 service is used inside expressions, and its type converter performs the final
 field conversion, honouring the field's generic element types.
 
-Bean references, property/method access, `T(...)`, `new`, variables, assignment,
-regex and mixed text/expression templates are unsupported. Every
-AST branch is checked before evaluation, even a branch that would not execute.
+Bean references, property/method access, `T(...)`, `new`, variables, assignment
+and regex are unsupported, in a whole expression or inside a template segment.
+Every AST branch is checked before evaluation, even a branch that would not execute.
 An affected unsupported field holds the whole candidate as **Uncheckable** and
 names the field and reason. It is not evaluated through the application's bean
 expression resolver. Custom resolver/parser implementations and non-default

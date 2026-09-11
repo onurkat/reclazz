@@ -55,8 +55,6 @@ final class PropertyValueExpression {
             throw new Unsupported("only primitive, boxed primitive, String, collection, map and array values are supported");
         if (!(resolved instanceof String text)) throw new Unsupported("placeholder resolution did not return text");
         if (text.length() > MAX_LENGTH) throw new Unsupported("expression exceeds " + MAX_LENGTH + " characters");
-        if (!text.startsWith("#{") || !text.endsWith("}") || text.indexOf("#{", 2) >= 0)
-            throw new Unsupported("only a single whole #{...} expression is supported");
 
         Object factory = SpringBeans.getBeanFactory(context);
         Object resolver = PropertyChangeCheck.call(factory, "getBeanExpressionResolver");
@@ -67,30 +65,26 @@ final class PropertyValueExpression {
         Object parser = Reflect.readField(resolver, "expressionParser");
         if (parser == null || !parser.getClass().getName().equals(PARSER))
             throw new Unsupported("custom or unavailable expression parser");
+        ClassLoader loader = parser.getClass().getClassLoader();
 
         // Parse only. Never call the bean resolver's evaluate: its context
         // exposes application beans, methods, types, and constructors.
-        Object expression = PropertyChangeCheck.call(parser, "parseRaw", text.substring(2, text.length() - 1));
-        Object root = PropertyChangeCheck.call(expression, "getAST");
-        record Node(Object value, int depth) { }
-        var pending = new ArrayDeque<Node>();
-        pending.add(new Node(root, 1));
-        int count = 0;
-        while (!pending.isEmpty()) {
-            Node node = pending.removeFirst();
-            if (++count > MAX_NODES || node.depth() > MAX_DEPTH)
-                throw new Unsupported("expression exceeds the node/depth limit");
-            String type = node.value().getClass().getName();
-            if (!type.startsWith(AST) || !NODES.contains(type.substring(AST.length())))
-                throw new Unsupported("operation " + node.value().getClass().getSimpleName() + " is unsupported");
-            int children = (Integer) PropertyChangeCheck.call(node.value(), "getChildCount");
-            // Check every branch, including one evaluation would short-circuit.
-            for (int i = 0; i < children; i++)
-                pending.addLast(new Node(node.value().getClass().getMethod("getChild", int.class)
-                        .invoke(node.value(), i), node.depth() + 1));
+        boolean single = text.startsWith("#{") && text.endsWith("}") && text.indexOf("#{", 2) < 0;
+        Object expression;
+        if (single) {
+            expression = PropertyChangeCheck.call(parser, "parseRaw", text.substring(2, text.length() - 1));
+            validateAst(PropertyChangeCheck.call(expression, "getAST"));
+        } else {
+            // A mixed text and #{...} template evaluates to a String, so it must
+            // target a scalar. Every embedded expression is checked as usual.
+            if (!scalar) throw new Unsupported("a text and #{...} template must target a scalar value");
+            Class<?> parserContext = Class.forName("org.springframework.expression.ParserContext", false, loader);
+            Object templateContext = Class.forName("org.springframework.expression.common.TemplateParserContext", true, loader)
+                    .getConstructor().newInstance();
+            expression = parser.getClass().getMethod("parseExpression", String.class, parserContext).invoke(parser, text, templateContext);
+            for (Object part : spelParts(expression, loader)) validateAst(PropertyChangeCheck.call(part, "getAST"));
         }
 
-        ClassLoader loader = parser.getClass().getClassLoader();
         Class<?> simple = Class.forName("org.springframework.expression.spel.support.SimpleEvaluationContext", true, loader);
         Object builder = simple.getMethod("forReadOnlyDataBinding").invoke(null);
         // StandardBeanExpressionResolver uses the factory's ConversionService
@@ -106,5 +100,39 @@ final class PropertyValueExpression {
         if (value instanceof String string && string.length() > MAX_LENGTH)
             throw new Unsupported("expression result exceeds " + MAX_LENGTH + " characters");
         return value;
+    }
+
+    // Walk the parsed expression tree and refuse any node outside the
+    // side-effect-free set, checking every branch even one that would not run.
+    private static void validateAst(Object root) throws Exception {
+        record Node(Object value, int depth) { }
+        var pending = new ArrayDeque<Node>();
+        pending.add(new Node(root, 1));
+        int count = 0;
+        while (!pending.isEmpty()) {
+            Node node = pending.removeFirst();
+            if (++count > MAX_NODES || node.depth() > MAX_DEPTH)
+                throw new Unsupported("expression exceeds the node/depth limit");
+            String type = node.value().getClass().getName();
+            if (!type.startsWith(AST) || !NODES.contains(type.substring(AST.length())))
+                throw new Unsupported("operation " + node.value().getClass().getSimpleName() + " is unsupported");
+            int children = (Integer) PropertyChangeCheck.call(node.value(), "getChildCount");
+            for (int i = 0; i < children; i++)
+                pending.addLast(new Node(node.value().getClass().getMethod("getChild", int.class)
+                        .invoke(node.value(), i), node.depth() + 1));
+        }
+    }
+
+    // The SpEL parts of a parsed template: a literal segment carries no AST and
+    // is safe text, so only the #{...} expressions are returned for checking.
+    private static java.util.List<Object> spelParts(Object expression, ClassLoader loader) throws Exception {
+        String spel = "org.springframework.expression.spel.standard.SpelExpression";
+        Class<?> composite = Class.forName("org.springframework.expression.common.CompositeStringExpression", false, loader);
+        var parts = new java.util.ArrayList<>();
+        if (composite.isInstance(expression))
+            for (Object part : (Object[]) composite.getMethod("getExpressions").invoke(expression))
+                if (part.getClass().getName().equals(spel)) parts.add(part);
+        else if (expression.getClass().getName().equals(spel)) parts.add(expression);
+        return parts;
     }
 }

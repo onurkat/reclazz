@@ -314,8 +314,8 @@ class ComputedValueConstructorsTest {
     public static class BootBound {
         BootBound(@Value("#{${cfg.seconds}}") int value) { }
     }
-    @Test void nonScalarTemplatesAndBootBindingAreNamedAsUnsupported() {
-        for (Class<?> type : List.of(NonScalar.class, Template.class, BootBound.class)) {
+    @Test void nonScalarAndBootBindingAreNamedAsUnsupported() {
+        for (Class<?> type : List.of(NonScalar.class, BootBound.class)) {
             try (var context = context(type)) {
                 Object original = context.getBean(type);
                 var outcome = new SpringPropertyRebinder(List.of(context)).apply(Map.of("cfg.seconds", "8"));
@@ -324,6 +324,14 @@ class ComputedValueConstructorsTest {
                 assertSame(original, context.getBean(type));
                 assertEquals("5", context.getEnvironment().getProperty("cfg.seconds"));
             }
+        }
+        // A mixed text and #{...} template on a scalar constructor parameter is
+        // now checkable, so the bean recreates with the new value.
+        try (var context = context(Template.class)) {
+            Object original = context.getBean(Template.class);
+            var outcome = new SpringPropertyRebinder(List.of(context)).apply(Map.of("cfg.seconds", "8"));
+            assertEquals(PropertyChangeOutcome.State.APPLIED, outcome.state(), outcome.findings().toString());
+            assertNotSame(original, context.getBean(Template.class));
         }
     }
 
