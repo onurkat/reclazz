@@ -21,7 +21,10 @@ final class PropertyValueExpression {
     private static final Set<String> NODES = Set.of(
             "IntLiteral", "LongLiteral", "FloatLiteral", "RealLiteral", "StringLiteral", "BooleanLiteral", "NullLiteral",
             "OpPlus", "OpMinus", "OpMultiply", "OpDivide", "OpModulus",
-            "OpEQ", "OpNE", "OpLT", "OpLE", "OpGT", "OpGE", "OpAnd", "OpOr", "OperatorNot", "Ternary", "Elvis");
+            "OpEQ", "OpNE", "OpLT", "OpLE", "OpGT", "OpGE", "OpAnd", "OpOr", "OperatorNot", "Ternary", "Elvis",
+            // Side-effect-free inline collections: their children are checked too,
+            // so a list or map of literals and operators is safe to evaluate.
+            "InlineList", "InlineMap");
     private static final Set<Class<?>> SCALARS = Set.of(
             String.class, Boolean.class, Character.class, Byte.class, Short.class,
             Integer.class, Long.class, Float.class, Double.class);
@@ -44,8 +47,12 @@ final class PropertyValueExpression {
         if (target.field() != null && (Modifier.isStatic(target.field().getModifiers())
                 || Modifier.isFinal(target.field().getModifiers())))
             throw new Unsupported("only writable instance fields are supported");
-        if (!target.type().isPrimitive() && !SCALARS.contains(target.type()))
-            throw new Unsupported("only primitive, boxed primitive and String values are supported");
+        Class<?> targetType = target.type();
+        boolean scalar = targetType.isPrimitive() || SCALARS.contains(targetType);
+        boolean collection = java.util.Collection.class.isAssignableFrom(targetType)
+                || java.util.Map.class.isAssignableFrom(targetType) || targetType.isArray();
+        if (!scalar && !collection)
+            throw new Unsupported("only primitive, boxed primitive, String, collection, map and array values are supported");
         if (!(resolved instanceof String text)) throw new Unsupported("placeholder resolution did not return text");
         if (text.length() > MAX_LENGTH) throw new Unsupported("expression exceeds " + MAX_LENGTH + " characters");
         if (!text.startsWith("#{") || !text.endsWith("}") || text.indexOf("#{", 2) >= 0)

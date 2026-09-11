@@ -125,7 +125,7 @@ class ComputedValueFieldsTest {
     void everyForbiddenBranchIsCheckedBeforeAnyApplicationCodeCanRun() {
         String name = Effects.class.getName();
         List<String> expressions = List.of("T(" + name + ").touch()", "@effects.next()", "@effects.value",
-                "new " + name + "()", "#root", "#x=1", "{'a','b'}", "{'a':1}",
+                "new " + name + "()", "#root", "#x=1",
                 "'a' matches 'a'", "'abc'.length()", "systemProperties['java.version']",
                 "false ? T(" + name + ").touch() : 1");
         try (var context = context(ExpressionReader.class)) {

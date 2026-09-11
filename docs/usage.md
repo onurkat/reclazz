@@ -1343,17 +1343,21 @@ candidate, including its other keys and logger levels. Fix the value and save
 again to retry the pending keys.
 
 The supported subset is one whole `#{...}` expression on a writable instance
-field of primitive, boxed primitive or `String` type. A changed key can be
-referenced directly or through a [property-value chain](#indirect-value-dependencies);
-placeholder defaults and nested placeholders are resolved. Expressions can use numeric, string, boolean and null literals,
-`+`, `-`, `*`, `/`, `%`, comparisons, boolean operators, `?:` conditionals and
-Elvis defaults. Arithmetic follows Spring's operator semantics (including its
-integer arithmetic); this is not an overflow checker. The bean factory's
-conversion service is used inside expressions, and its type converter performs
-the final field conversion.
+field of primitive, boxed primitive, `String`, collection, map or array type. A
+changed key can be referenced directly or through a
+[property-value chain](#indirect-value-dependencies); placeholder defaults and
+nested placeholders are resolved. Expressions can use numeric, string, boolean
+and null literals, `+`, `-`, `*`, `/`, `%`, comparisons, boolean operators,
+`?:` conditionals, Elvis defaults, and inline lists `{a, b}` and inline maps
+`{k: v}` whose elements are themselves supported. So a list or map assembled
+from changed placeholders, such as `#{ {${a}, ${b}} }`, is re-evaluated on save.
+Arithmetic follows Spring's operator semantics (including its integer
+arithmetic); this is not an overflow checker. The bean factory's conversion
+service is used inside expressions, and its type converter performs the final
+field conversion, honouring the field's generic element types.
 
 Bean references, property/method access, `T(...)`, `new`, variables, assignment,
-collections, regex and mixed text/expression templates are unsupported. Every
+regex and mixed text/expression templates are unsupported. Every
 AST branch is checked before evaluation, even a branch that would not execute.
 An affected unsupported field holds the whole candidate as **Uncheckable** and
 names the field and reason. It is not evaluated through the application's bean

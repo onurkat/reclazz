@@ -159,7 +159,10 @@ public final class SpringPropertyRebinder {
             try {
                 Object resolved = PropertyChangeCheck.call(factory, "resolveEmbeddedValue", target.expression());
                 resolved = PropertyValueExpression.evaluate(context, target, resolved);
-                Object converted = PropertyChangeCheck.call(converter, "convertIfNecessary", resolved, target.type());
+                // Pass the field so the converter honours its generic element
+                // types, so an inline list or map converts each element.
+                Object converted = PropertyChangeCheck.call(converter, "convertIfNecessary",
+                        resolved, target.type(), target.field());
                 target.field().setAccessible(true);
                 target.field().set(target.bean(), converted);
                 injected++;
