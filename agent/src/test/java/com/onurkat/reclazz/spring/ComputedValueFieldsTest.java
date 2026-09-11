@@ -198,13 +198,19 @@ class ComputedValueFieldsTest {
     }
 
     @Test
-    void templatesNonScalarAndFinalFieldsAreNamedAsUnsupported() {
-        for (Class<?> type : List.of(TemplateReader.class, ObjectReader.class, FinalReader.class)) {
+    void nonScalarAndFinalFieldsAreNamedAsUnsupported() {
+        for (Class<?> type : List.of(ObjectReader.class, FinalReader.class)) {
             try (var context = context(type)) {
                 var outcome = new SpringPropertyRebinder(List.of(context)).apply(Map.of("cfg.seconds", "8"));
                 assertEquals(PropertyChangeOutcome.State.UNCHECKABLE, outcome.state(), outcome.findings().toString());
                 assertEquals("5", context.getEnvironment().getProperty("cfg.seconds"));
             }
+        }
+        // A mixed text and #{...} template into a scalar field is supported.
+        try (var context = context(TemplateReader.class)) {
+            var outcome = new SpringPropertyRebinder(List.of(context)).apply(Map.of("cfg.seconds", "8"));
+            assertEquals(PropertyChangeOutcome.State.APPLIED, outcome.state(), outcome.findings().toString());
+            assertEquals("delay=8", context.getBean(TemplateReader.class).value);
         }
     }
 

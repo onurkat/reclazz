@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Template `@Value` expressions follow property changes.** A mixed text and
+  `#{...}` value such as `host:#{${port} + 1}` on a scalar field or constructor
+  parameter is now re-evaluated when a referenced property changes, alongside the
+  single-expression and inline-collection forms. Each embedded expression is
+  checked against the same side-effect-free rules, so a placeholder that resolves
+  into a bean or type call holds the whole save as uncheckable and leaves every
+  old value in place.
 - **Inline list and map `@Value` expressions follow property changes.** A
   computed `@Value` on a `List`, `Set`, `Map` or array field, such as
   `#{ {${a}, ${b}} }` or `#{ {'x': ${a}} }`, is re-evaluated when a referenced
