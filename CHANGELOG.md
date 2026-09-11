@@ -7,6 +7,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- **Jakarta lifecycle methods added after startup on Spring 6.** A
+  `@PostConstruct` or `@PreDestroy` added to a running singleton is now honoured
+  in the `jakarta.annotation` namespace as well as `javax.annotation`, so the
+  feature works on Spring 6 as it did on Spring 5. The adapter recognises both
+  descriptors and the reloader accepts a `CommonAnnotationBeanPostProcessor`
+  wired for either namespace, including Spring 6.1's set of annotation types. A
+  separate real Spring 6.1 test graph exercises init/destroy order, instance
+  identity, six saves, removal and context close with jakarta annotations.
 - **Custom stereotypes register a new bean class after startup.** A brand-new
   class carrying a custom meta-annotated stereotype, not only a direct
   `@Component`/`@Service`/`@Repository`/`@Controller`/`@RestController`, is now

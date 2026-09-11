@@ -123,15 +123,15 @@ class AddedMethodVisibilityTest {
     }
 
     @Test
-    void lifecycleAdapterOwnsOnlyJavaxDiagnosticsWhenSpringRuns() {
+    void lifecycleAdapterOwnsJavaxAndJakartaDiagnosticsWhenSpringRuns() {
         for (String annotation : List.of("PostConstruct", "PreDestroy")) {
-            byte[] supported = classWith(new Method(Opcodes.ACC_PRIVATE, "callback", "()V",
-                    "Ljavax/annotation/" + annotation + ";"));
-            assertEquals(0, AddedMethodVisibility.check(supported, added("callback", "()V"), true).size());
-            assertEquals(1, AddedMethodVisibility.check(supported, added("callback", "()V"), false).size());
-            byte[] jakarta = classWith(new Method(Opcodes.ACC_PRIVATE, "callback", "()V",
-                    "Ljakarta/annotation/" + annotation + ";"));
-            assertEquals(1, AddedMethodVisibility.check(jakarta, added("callback", "()V"), true).size());
+            for (String namespace : List.of("javax", "jakarta")) {
+                byte[] supported = classWith(new Method(Opcodes.ACC_PRIVATE, "callback", "()V",
+                        "L" + namespace + "/annotation/" + annotation + ";"));
+                // Owned when a Spring adapter runs; named when it does not.
+                assertEquals(0, AddedMethodVisibility.check(supported, added("callback", "()V"), true).size());
+                assertEquals(1, AddedMethodVisibility.check(supported, added("callback", "()V"), false).size());
+            }
         }
     }
 

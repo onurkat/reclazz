@@ -21,8 +21,12 @@ import java.util.Set;
 
 /** Captures callback entry bodies for one generation of Spring instances. */
 public final class AddedLifecycleAdapter {
-    private static final String INIT = "Ljavax/annotation/PostConstruct;";
-    private static final String DESTROY = "Ljavax/annotation/PreDestroy;";
+    // Both the javax (Spring 5) and jakarta (Spring 6) namespaces of the
+    // standard JSR-250 lifecycle annotations are recognised by descriptor.
+    private static final Set<String> INIT = Set.of(
+            "Ljavax/annotation/PostConstruct;", "Ljakarta/annotation/PostConstruct;");
+    private static final Set<String> DESTROY = Set.of(
+            "Ljavax/annotation/PreDestroy;", "Ljakarta/annotation/PreDestroy;");
     private static final Set<String> COMPONENTS = Set.of(
             "Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Service;",
             "Lorg/springframework/stereotype/Repository;", "Lorg/springframework/stereotype/Controller;",
@@ -43,14 +47,14 @@ public final class AddedLifecycleAdapter {
         List<String> refused = new ArrayList<>();
         for (MethodNode method : source.methods) {
             if (!added.contains(method.name + ":" + method.desc) || method.visibleAnnotations == null) continue;
-            boolean isInit = method.visibleAnnotations.stream().anyMatch(a -> a.desc.equals(INIT));
-            boolean isDestroy = method.visibleAnnotations.stream().anyMatch(a -> a.desc.equals(DESTROY));
+            boolean isInit = method.visibleAnnotations.stream().anyMatch(a -> INIT.contains(a.desc));
+            boolean isDestroy = method.visibleAnnotations.stream().anyMatch(a -> DESTROY.contains(a.desc));
             if (!isInit && !isDestroy) continue;
             if (!method.desc.equals("()V") || (method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT
                     | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC)) != 0)
                 refused.add(method.name + method.desc + ": requires a no-argument void instance method");
-            if (method.visibleAnnotations.stream().anyMatch(a -> !a.desc.equals(INIT)
-                    && !a.desc.equals(DESTROY) && !a.desc.equals("Ljava/lang/Deprecated;")))
+            if (method.visibleAnnotations.stream().anyMatch(a -> !INIT.contains(a.desc)
+                    && !DESTROY.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")))
                 refused.add(method.name + ": additional method annotations are unsupported");
             if (isInit && isDestroy) refused.add(method.name + ": init and destroy must be distinct methods");
             if (isInit) {

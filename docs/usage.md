@@ -170,10 +170,12 @@ integration and a JDK 17 runtime have not been verified for this extension.
 
 ### Lifecycle methods added after startup
 
-On a stock JDK, supported `javax.annotation.PostConstruct` and
-`javax.annotation.PreDestroy` methods added to a running Spring singleton now
-participate in its lifecycle. Verified with real Spring 5.3.39 and a startup
-agent, including private callbacks and a resource field added in the same save.
+On a stock JDK, supported `@PostConstruct` and `@PreDestroy` methods added to a
+running Spring singleton now participate in its lifecycle, in the
+`javax.annotation` namespace on Spring 5 and the `jakarta.annotation` namespace
+on Spring 6. Verified with real Spring 5.3.39 and, on a separate dependency
+graph, real Spring 6.1 with jakarta annotations and a startup agent, including
+private callbacks and a resource field added in the same save.
 
 The lifetime policy is per instance:
 
@@ -206,7 +208,8 @@ bean. The saved class may carry direct Spring component/service/repository/
 controller/rest-controller stereotypes and `@Deprecated`; other class annotations
 are outside this subset. A callback also named as a configured init/destroy
 method is refused to avoid duplicate invocation. One standard, unmodified
-`CommonAnnotationBeanPostProcessor` using the javax annotations must be present.
+`CommonAnnotationBeanPostProcessor` using the standard JSR-250 annotations, in
+either the javax or the jakarta namespace, must be present.
 
 Proxy, inherited, lazy/uninitialized, non-singleton, custom lifecycle processor,
 additional advice/annotation and `jakarta.annotation` cases are not covered by

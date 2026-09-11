@@ -164,7 +164,37 @@ val hibernateTest by tasks.registering(Test::class) {
     testLogging { events("passed", "failed", "skipped") }
 }
 
+// Spring 6 moved the lifecycle annotations to the jakarta namespace and wires
+// CommonAnnotationBeanPostProcessor against them. That path cannot be proven on
+// the Spring 5 test classpath, so it gets its own isolated graph. Spring 6
+// needs JDK 17+, which this build already targets. Test-only; never packaged.
+val springSixTests = sourceSets.create("springSixTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+}
+dependencies {
+    add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    add(springSixTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
+    add(springSixTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
+}
+val springSixTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Real Spring 6 / Jakarta lifecycle regressions on an isolated dependency graph"
+    useJUnitPlatform()
+    testClassesDirs = springSixTests.output.classesDirs
+    classpath = springSixTests.runtimeClasspath
+    outputs.upToDateWhen { false }
+    dependsOn(tasks.named("shadowJar"))
+    systemProperty("reclazz.agent.jar",
+        tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
+    jvmArgs("-Djdk.attach.allowAttachSelf=true")
+    testLogging { events("passed", "failed", "skipped") }
+}
+
 tasks.test {
+    dependsOn(springSixTest)
     dependsOn(hibernateTest)
     dependsOn(rabbitTest)
     dependsOn(jmsTest)
