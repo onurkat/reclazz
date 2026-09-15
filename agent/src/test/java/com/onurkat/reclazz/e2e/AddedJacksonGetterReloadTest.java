@@ -46,32 +46,45 @@ class AddedJacksonGetterReloadTest {
                     long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(25);
                     while (System.nanoTime() < deadline && reloads(app) < stage) Thread.sleep(25);
                     assertEquals(stage, reloads(app), app.tail());
-                    for (String policy : new String[]{"plain", "snake"}) {
-                        for (String age : new String[]{"old", "new"}) {
-                            String response = get(client, port, policy + "/" + age);
-                            System.out.println("[jackson-http] stage=" + stage + " " + policy + "/" + age + " " + response);
-                            JsonNode json = new ObjectMapper().readTree(response);
-                            assertEquals(7, json.path("count").asInt(), response);
-                            assertEquals("alpha", json.path(policy.equals("plain") ? "displayName" : "display_name").asText());
-                            assertEquals("LABEL" + stage, json.path("public_label").asText());
-                            assertEquals("VALUE" + stage, json.path("formatted").asText());
-                            assertEquals(stage, json.path("nested").path("version").asInt());
-                            assertEquals("tag", json.path("tags").get(0).asText());
-                            assertFalse(json.has("secret"), response);
-                            assertFalse(json.has("empty"), response);
-                            assertEquals(policy.equals("plain"), json.has("nickname"), response);
-                            if (policy.equals("plain")) assertTrue(json.get("nickname").isNull());
-                            if (stage == 3) {
-                                assertFalse(json.has("email")); assertFalse(json.has("contact_address"));
-                            } else {
-                                String key = stage == 2 ? "contact_address" : "email";
-                                assertEquals("email" + stage, json.path(key).asText(), response + "\n" + app.tail());
-                                assertFalse(json.has(stage == 2 ? "email" : "contact_address"));
+                    // The reload log line can precede the Jackson mapper serving
+                    // the new getters under load, and a request landing mid-reload
+                    // can see the old shape. Verify the whole stage on a poll and
+                    // retry a not-yet-consistent response rather than racing the
+                    // first request after the reload is logged.
+                    long settle = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+                    while (true) {
+                        try {
+                            for (String policy : new String[]{"plain", "snake"}) {
+                                for (String age : new String[]{"old", "new"}) {
+                                    String response = get(client, port, policy + "/" + age);
+                                    JsonNode json = new ObjectMapper().readTree(response);
+                                    assertEquals(7, json.path("count").asInt(), response);
+                                    assertEquals("alpha", json.path(policy.equals("plain") ? "displayName" : "display_name").asText());
+                                    assertEquals("LABEL" + stage, json.path("public_label").asText());
+                                    assertEquals("VALUE" + stage, json.path("formatted").asText());
+                                    assertEquals(stage, json.path("nested").path("version").asInt());
+                                    assertEquals("tag", json.path("tags").get(0).asText());
+                                    assertFalse(json.has("secret"), response);
+                                    assertFalse(json.has("empty"), response);
+                                    assertEquals(policy.equals("plain"), json.has("nickname"), response);
+                                    if (policy.equals("plain")) assertTrue(json.get("nickname").isNull());
+                                    if (stage == 3) {
+                                        assertFalse(json.has("email")); assertFalse(json.has("contact_address"));
+                                    } else {
+                                        String key = stage == 2 ? "contact_address" : "email";
+                                        assertEquals("email" + stage, json.path(key).asText(), response + "\n" + app.tail());
+                                        assertFalse(json.has(stage == 2 ? "email" : "contact_address"));
+                                    }
+                                }
                             }
+                            assertEquals("false", get(client, port, "reflection"), "ordinary reflection must stay unchanged");
+                            assertEquals("\"custom-alpha\"", get(client, port, "custom/old"), "user's DTO serializer must stay in charge");
+                            break;
+                        } catch (AssertionError | java.io.IOException notConsistentYet) {
+                            if (System.nanoTime() >= settle) throw notConsistentYet;
+                            Thread.sleep(50);
                         }
                     }
-                    assertEquals("false", get(client, port, "reflection"), "ordinary reflection must stay unchanged");
-                    assertEquals("\"custom-alpha\"", get(client, port, "custom/old"), "user's DTO serializer must stay in charge");
                 }
             }
             assertFalse(app.output().stream().anyMatch(s -> s.contains("Dto.") && s.contains("was added")), app.tail());

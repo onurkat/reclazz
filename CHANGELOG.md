@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   before registration instead of silently becoming ordinary singletons.
 - Correct the usage guide's stale Jakarta/proxy exclusions and its claim that
   additional transaction/cache advice on added scheduled/event methods is supported.
+- Retry the config write's atomic move past a transient Windows sharing violation,
+  so a save no longer fails when another process has the target file open.
 
 ### Added
 - **`${property}` in a message listener's selection metadata.** Beyond the
