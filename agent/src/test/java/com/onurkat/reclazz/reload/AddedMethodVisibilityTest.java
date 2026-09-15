@@ -148,6 +148,17 @@ class AddedMethodVisibilityTest {
     }
 
     @Test
+    void asyncWarningIsOwnedOnlyForPublishedOperationsWithSpringOrchestration() {
+        String desc = "(Ljava/lang/String;)V";
+        byte[] bytes = classWith(new Method(Opcodes.ACC_PUBLIC, "listen", desc,
+                "Lorg/springframework/scheduling/annotation/Async;"));
+        var covered = java.util.Set.of("listen" + desc);
+        assertEquals(0, AddedMethodVisibility.check(bytes, added("listen", desc), true, java.util.Set.of(), covered).size());
+        assertEquals(1, AddedMethodVisibility.check(bytes, added("listen", desc), false, java.util.Set.of(), covered).size());
+        assertEquals(1, AddedMethodVisibility.check(bytes, added("listen", desc), true, java.util.Set.of(), java.util.Set.of()).size());
+    }
+
+    @Test
     void aPrivateGetterIsNotAProperty() {
         byte[] bytes = classWith(new Method(Opcodes.ACC_PRIVATE, "getSecret",
                 "()Ljava/lang/String;", null));

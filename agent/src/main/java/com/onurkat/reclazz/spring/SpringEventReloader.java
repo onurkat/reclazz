@@ -216,7 +216,9 @@ public class SpringEventReloader {
             try {
                 Object bean = read.invoke(factory, name);
                 if (bean == null) return null;
-                return AddedProxyTarget.resolve(bean, type);
+                Object target = AddedProxyTarget.resolve(bean, type, true);
+                if (bean != target) SpringAsyncAdvice.validateProxy(bean, factory, bean.getClass().getClassLoader());
+                return target;
             } catch (IllegalStateException unsupported) {
                 if (warned.compareAndSet(false, true)) report(type, name + ": " + unsupported.getMessage() + "; added listener paused");
                 return null;

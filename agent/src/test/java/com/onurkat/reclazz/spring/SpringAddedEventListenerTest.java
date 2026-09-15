@@ -159,7 +159,28 @@ class SpringAddedEventListenerTest {
             var advice = new AnnotationNode("Lorg/springframework/scheduling/annotation/Async;");
             if (onClass) source.visibleAnnotations = new ArrayList<>(List.of(advice));
             else method(source, "first").visibleAnnotations.add(advice);
-            assertEquals(1, AddedEventListenerAdapter.inspect(write(source), ADDED).refused().size());
+            var plan = AddedEventListenerAdapter.inspect(write(source), ADDED);
+            assertEquals(onClass ? 1 : 0, plan.refused().size());
+            assertEquals(onClass ? 0 : 1, plan.methods().size());
+        }
+    }
+
+    @Test
+    void customAsyncAnnotationCannotBeBypassedByAnOrdinaryEventDelegate() throws Exception {
+        try (Scope scope = new Scope()) {
+            var async = new org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor();
+            async.setAsyncAnnotationType(org.springframework.context.event.EventListener.class);
+            async.setBeanFactory(scope.context.getBeanFactory());
+            scope.context.getBeanFactory().registerSingleton("async", async);
+            Handlers target = scope.context.getBean(Handlers.class);
+            var proxy = new org.springframework.aop.framework.ProxyFactory(target);
+            proxy.setProxyTargetClass(true);
+            proxy.addAdvisor((org.springframework.aop.Advisor) com.onurkat.reclazz.util.Reflect.readField(async, "advisor"));
+            scope.context.getDefaultListableBeanFactory().destroySingleton("handlers");
+            scope.context.getBeanFactory().registerSingleton("handlers", proxy.getProxy());
+            reloader(scope).reloadEventListeners(Handlers.class, ADDED, annotated("first"));
+            scope.context.publishEvent("must-not-run-inline");
+            assertTrue(target.calls.isEmpty(), "custom async semantics must be refused before the raw target runs");
         }
     }
 

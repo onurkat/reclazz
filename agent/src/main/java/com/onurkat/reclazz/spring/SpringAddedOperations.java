@@ -34,11 +34,14 @@ public final class SpringAddedOperations {
         state.contexts = contexts.stream().map(WeakReference::new).toList();
         state.discover(); // Capture identities before the ordinary bean refresh can replace them.
         state.clearMetadataCaches();
+        state.metadata = plan.entries().stream().map(AddedOperationMetadata.Entry::method).toList();
         Map<String, AddedOperationBridge.Invocation> routes = new HashMap<>();
         Set<String> covered = new HashSet<>();
         for (var entry : plan.entries()) {
             routes.put(entry.key(), (receiver, args, direct) -> state.invoke(entry, receiver, args, direct));
-            covered.add(entry.method().getName() + org.objectweb.asm.Type.getMethodDescriptor(entry.method()));
+            // Unsupported standalone async methods still need the scan warning.
+            if (!entry.async() || entry.reason() == null)
+                covered.add(entry.method().getName() + org.objectweb.asm.Type.getMethodDescriptor(entry.method()));
         }
         for (String removed : state.keys) routes.putIfAbsent(removed, (receiver, args, direct) -> {
             throw refused(owner.getName() + "." + removed, "operation method was removed");
@@ -54,6 +57,7 @@ public final class SpringAddedOperations {
         volatile List<WeakReference<Object>> contexts = List.of();
         volatile Set<String> keys = Set.of();
         boolean active;
+        List<Method> metadata = List.of();
         State(Class<?> owner) { this.owner = owner; }
 
         synchronized void discover() throws Exception {
@@ -109,7 +113,7 @@ public final class SpringAddedOperations {
             if (binding == null) {
                 // A prototype/unmanaged instance cannot be distinguished from a known service by type alone.
                 // Do not infer transaction ownership for it, or silently execute an annotated operation.
-                if (entry.transaction() || entry.cache()) throw refused(owner.getName(), "receiver is not a captured singleton bean");
+                if (entry.transaction() || entry.cache() || entry.async()) throw refused(owner.getName(), "receiver is not a captured singleton bean");
                 return body(direct, receiver, args);
             }
             String subject = owner.getName() + "." + entry.method().getName() + " [" + binding.name + "]";
@@ -120,20 +124,32 @@ public final class SpringAddedOperations {
             if (entry.reason() != null) throw refused(subject, entry.reason());
             ClassLoader loader = context.getClass().getClassLoader();
             Class<?> advised = Class.forName("org.springframework.aop.framework.Advised", false, loader);
-            if (advised.isInstance(receiver)) {
-                if ((boolean) advised.getMethod("isFrozen").invoke(receiver)) throw refused(subject, "frozen proxy");
-                Object source = advised.getMethod("getTargetSource").invoke(receiver);
+            Object asyncAdvisor = null;
+            Object bean = binding.bean.get();
+            if (entry.async()) asyncAdvisor = SpringAsyncAdvice.advisor(factory, loader);
+            if (advised.isInstance(bean)) {
+                if ((boolean) advised.getMethod("isFrozen").invoke(bean)) throw refused(subject, "frozen proxy");
+                Object source = advised.getMethod("getTargetSource").invoke(bean);
                 if (!source.getClass().getName().equals("org.springframework.aop.target.SingletonTargetSource"))
                     throw refused(subject, "dynamic or custom target source");
                 if (call(source, "getTarget") != target) throw refused(subject, "proxy target changed after capture");
-                for (Object advisor : (Object[]) advised.getMethod("getAdvisors").invoke(receiver)) {
-                    if (!supported(advisor)) throw refused(subject, "additional proxy advisor " + advisor.getClass().getName());
+                int advisorIndex = 0;
+                for (Object advisor : (Object[]) advised.getMethod("getAdvisors").invoke(bean)) {
+                    if (SpringAsyncAdvice.isAdvisor(advisor)) {
+                        if (advisorIndex != 0) throw refused(subject, "async proxy advisor must occur once and first");
+                        if (asyncAdvisor == null) asyncAdvisor = SpringAsyncAdvice.advisor(factory, loader);
+                        if (advisor != asyncAdvisor) throw refused(subject, "foreign async proxy advisor");
+                    } else if (!supported(advisor)) throw refused(subject, "additional proxy advisor " + advisor.getClass().getName());
+                    advisorIndex++;
                 }
             }
             Class<?> creatorType = Class.forName("org.springframework.aop.framework.autoproxy.AbstractAdvisorAutoProxyCreator", false, loader);
             String[] names = (String[]) call(factory, "getBeanNamesForType",
                     new Class<?>[]{Class.class, boolean.class, boolean.class}, creatorType, false, false);
-            if (names.length == 0 && !entry.transaction() && !entry.cache()) return body(direct, target, args);
+            var advice = new ArrayList<Object>();
+            if (entry.async()) advice.add(SpringAsyncAdvice.interceptor(asyncAdvisor, entry.method(), owner, loader));
+            if (names.length == 0 && !entry.transaction() && !entry.cache())
+                return new Invocation(entry.method(), target, args, direct, advice, loader).proceed();
             if (names.length != 1) throw refused(subject, "expected one operation auto-proxy creator");
             Object creator = call(factory, "getBean", new Class<?>[]{String.class}, names[0]);
             if (!CREATORS.contains(creator.getClass().getName())) throw refused(subject, "custom auto-proxy creator");
@@ -157,7 +173,6 @@ public final class SpringAddedOperations {
             if (entry.transaction() && !transaction) throw refused(subject, "no matching transaction advisor");
             if (entry.cache() && !cache) throw refused(subject, "no matching cache advisor");
             List<?> sorted = (List<?>) inherited(creator, "sortAdvisors", List.class).invoke(creator, applicable);
-            var advice = new ArrayList<Object>();
             Class<?> advisorType = Class.forName("org.springframework.aop.Advisor", false, loader);
             for (Object advisor : sorted) {
                 Object interceptor = advisorType.getMethod("getAdvice").invoke(advisor);
@@ -183,6 +198,7 @@ public final class SpringAddedOperations {
                 for (String name : (String[]) call(factory, "getSingletonNames")) {
                     Object bean = call(factory, "getSingleton", new Class<?>[]{String.class}, name);
                     if (bean == null) continue;
+                    SpringAsyncAdvice.forget(bean, metadata);
                     String type = bean.getClass().getName();
                     if (type.equals("org.springframework.cache.interceptor.CacheInterceptor"))
                         inherited(bean, "clearMetadataCache").invoke(bean);

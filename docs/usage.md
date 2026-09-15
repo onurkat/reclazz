@@ -1256,7 +1256,8 @@ recognized by Reclazz. Extra runtime method annotations are limited to
 `@Order`, `@Deprecated` and the [operation subset below](#transaction-and-cache-advice-on-added-callbacks).
 Added `@TransactionalEventListener` methods have the
 [separate scope below](#transactional-event-listeners-added-after-startup).
-Added `@Async` methods, composed listener annotations, generic signatures, unsupported proxies/subclasses,
+Direct `@Async` on a public void ordinary listener has the [scope below](#async-event-listeners-added-after-startup).
+Composed listener annotations, generic signatures, unsupported proxies/subclasses,
 prototype beans, and classes registered only through XML or `@Bean` without a
 recognized stereotype require a restart. The added path requires the default
 Spring event listener factory; the standard transactional factory can coexist
@@ -1308,8 +1309,8 @@ non-final class directly extending Object without interfaces. The existing
 singleton, standard-advisor and direct-stereotype constraints still apply.
 Unadvised private callbacks retain their previous support. Additional advice on
 `@TransactionalEventListener`, class-level advice, composed operation annotations,
-`@Async`, arbitrary aspects and method-security annotations are outside this
-extension. Unsupported operation infrastructure fails before the callback body.
+scheduled `@Async`, arbitrary aspects and method-security annotations are outside this
+extension. Ordinary void events can also use the [async scope below](#async-event-listeners-added-after-startup). Unsupported operation infrastructure fails before the callback body.
 
 Real-agent tests with Spring 5.3.39 and H2 exercise ordinary and child classloaders,
 commit/checked rollback, successful versus failed cache eviction, event cache hits
@@ -1318,6 +1319,59 @@ and old proxy references over four saves. They invoke Spring's registered schedu
 Runnable explicitly to control the database assertions; timer behavior remains
 covered by the separate scheduling reload tests. Same-class self calls retain the
 existing service-operation behavior and do not acquire transaction interception.
+
+### Async event listeners added after startup
+
+A supported singleton can gain a public void listener that runs on the application's
+Spring executor without restarting:
+
+```java
+@EventListener
+@Async("notifications")
+@Transactional(rollbackFor = Exception.class)
+public void accepted(OrderAccepted event) throws Exception {
+    notifications.record(event.id());
+}
+```
+
+Enable Spring's async infrastructure beforehand and supply the named executor.
+Omitting the name uses Spring's configured default executor selection. Reclazz uses
+the existing `AsyncAnnotationBeanPostProcessor` advisor and its native interceptor;
+it does not create a separate executor. Conditions run before submission. `@Order`
+orders listener admission, not completion of work on different executor threads.
+The configured async uncaught-exception handler receives void callback failures;
+executor lookup errors and rejected submissions still fail on the submitting thread.
+
+Direct transaction/cache annotations from the callback subset above can coexist.
+Async advice runs first, so a transaction begins on the worker thread. The publisher's
+thread-bound transaction is not carried to that thread. Native rollback and cache
+rules still apply; cache work is not automatically rolled back with a database.
+
+This scope requires a public, concrete, non-final void method with one reference
+parameter, no generic signature, and direct `@Async` plus ordinary `@EventListener`.
+The non-final owner uses direct `@Component`, `@Service` or `@Repository` metadata
+and directly extends Object without interfaces. Supported receivers
+are plain singletons and mutable CGLIB singleton proxies carrying only standard
+transaction/cache advisors and, optionally, the same standard async advisor first.
+Unknown, duplicated or reordered async advisors and custom/uninitialized async
+postprocessors are refused. Class/composed async annotations, Future or event-returning
+async methods, standalone added async service methods, async scheduled callbacks and
+async transactional-phase listeners remain outside this scope.
+
+Each newly submitted invocation uses current metadata, executor selection and singleton.
+Already submitted work retains its admitted target and direct callback body across
+reload or removal. It can finish after the old listener is retired; removing the
+listener stops subsequent event submissions. This does not freeze every method the
+body calls or provide atomic event delivery across a reload. The application owns
+executor shutdown and pending-work policy. Ordinary bean recreation may already
+have run destruction callbacks on an admitted old target; its resources are not
+restored by retaining the callback. Superseded hidden method entries are
+removed from native executor-resolution caches without clearing unrelated methods.
+
+Verified with Spring 5.3.39 and stock JDK 21: configured and named default executors,
+qualifier changes, conditions, native error handling, worker transaction rollback,
+old proxy calls, reload/removal with queued work, and ordinary/child classloaders.
+No additional Spring-version compatibility is claimed by these tests.
 
 ### Transactional event listeners added after startup
 
