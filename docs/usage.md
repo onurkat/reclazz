@@ -195,8 +195,8 @@ startup configuration processing. Custom scan filters, imports, auto-configurati
 ordering and re-evaluation of existing or previously filtered classes on later
 profile/property saves remain outside this support. Web/custom scopes and scoped
 proxies are still refused. [Added factory methods](#bean-methods-added-after-startup)
-have separate metadata support; arbitrary conditions on added factories remain
-unsupported. The condition adapter uses an internal Spring API and refuses
+have separate metadata support, including direct method-level `@Conditional`.
+The condition adapter uses an internal Spring API and refuses
 conditional registration if that API is unavailable or inaccessible.
 
 The condition contract is tested on Spring 5.3.39 and 6.1.14. Real-agent tests on
@@ -376,18 +376,45 @@ one local configuration singleton in each affected bean factory. Lite
 configuration (`proxyBeanMethods=false`) requires an unproxied instance; default
 configuration requires Spring's direct enhanced subclass as described below. Extra runtime class annotations are limited to
 `@Deprecated`; methods additionally allow direct `@Primary`, `@Qualifier`,
-`@Lazy`, `@Scope` and `@Profile`. A direct `@Lazy` makes the added bean lazy, so
+`@Lazy`, `@Scope`, `@Profile` and `@Conditional`. A direct `@Lazy` makes the added bean lazy, so
 it is created on first access rather than when the save is applied; `@Lazy(false)`
 keeps it eager. A direct `@Scope("prototype")` gives every lookup a new instance;
 `@Scope("singleton")` is the default. A direct `@Profile` registers the bean only
 when the running environment accepts its expression, evaluated by Spring's own
 `Environment`, and a later save that changes the expression re-evaluates it, so a
-bean can join or leave on an edit. Arbitrary `@Conditional`, web or custom scopes,
+bean can join or leave on an edit. Web or custom scopes,
 scoped-proxy `@Scope`, advice, class-level primary/qualifier policies, composed
 annotations and additional proxies require a restart. A prototype bean is not
 tracked for destruction by Spring, so its destroy method and `close()` are not
 called when the context closes; a lazy singleton is destroyed normally once it
 has been created.
+
+A direct `@Conditional(MyCondition.class)` on a supported added factory uses
+Spring's native condition evaluator in the `REGISTER_BEAN` phase, just as a
+startup `@Bean` method does. Conditions receive native `MethodMetadata` read from
+the saved bytecode, with the original declaring class, method name, return type,
+static flag and annotations. This also selects the correct overloaded method;
+it does not reflect on a generated delegate. The condition context supplies the
+current environment and bean factory/registry, application classloader and context
+resource lookup. Classpath resources use the application's loader when the context
+has no explicit classloader for resource lookup; custom context protocol resolvers remain active.
+A direct `@Profile` on the same method participates in Spring's
+condition ordering and short-circuit evaluation.
+
+Recompiling the configuration re-evaluates its added factories. As with other
+added-factory reloads, prior Reclazz-owned products and aliases are removed first.
+A false condition leaves no replacement definition or aliases; an evaluation
+error reports a failure and leaves that factory unregistered until a later
+successful save. Old products and condition callback side effects are not rolled
+back. Conditions see definitions already registered at that point in source order,
+not a completed dependency graph of all factories from the save. Property-only
+changes do not trigger this registration pass. Composed annotations such as
+`@ConditionalOnProperty`, class-level conditions on the configuration, repeated
+configuration parsing and Boot auto-configuration ordering remain unsupported.
+An unavailable native condition API refuses the factory. Shared tests cover
+Spring 5.3.39 and 6.1.14; real-agent activation/error/removal/restoration tests cover
+Spring 5.3.39 with lite/default configurations on normal and child classloaders.
+
 Parameters allow direct `@Qualifier` and `@Value`. Primitive parameters without
 `@Value`, primitive/multidimensional arrays, raw generic parameters, wildcard or
 unresolved type variables, generic return types and generic factory methods

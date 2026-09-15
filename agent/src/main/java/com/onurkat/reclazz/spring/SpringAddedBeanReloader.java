@@ -76,8 +76,15 @@ public final class SpringAddedBeanReloader {
                         // leaves the bean unregistered, the same as Spring at
                         // startup. The remove-then-add above already dropped a
                         // prior registration whose profile no longer matches.
-                        if (!profileAccepted(environment, spring, method.profiles())) {
-                            ReloadEffects.note("added bean " + method.name() + " not registered: profile inactive");
+                        // When Conditional is present, Profile must join the
+                        // same ordered native evaluation rather than bypass an
+                        // earlier custom condition with a separate profile gate.
+                        boolean skipped = method.conditional()
+                                ? SpringBeanConditions.shouldSkip(bytes, method.method(), context, factory, spring)
+                                : !profileAccepted(environment, spring, method.profiles());
+                        if (skipped) {
+                            ReloadEffects.note("added bean " + method.name() + " not registered: "
+                                    + (method.conditional() ? "condition did not match" : "profile inactive"));
                             continue;
                         }
                         registerDefinition(type, factory, configName, method, registrations, plan.full());
