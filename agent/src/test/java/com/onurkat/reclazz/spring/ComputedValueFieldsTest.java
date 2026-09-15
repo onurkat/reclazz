@@ -261,6 +261,29 @@ class ComputedValueFieldsTest {
         }
     }
 
+    public static class QuotedTemplatePrefix {
+        @Value("#{${cfg.expression:1}}") String value;
+    }
+
+    @Test
+    void quotedTemplatePrefixDoesNotBypassDormantBranchValidation() {
+        try (var context = context(QuotedTemplatePrefix.class)) {
+            for (String expression : List.of("true ? 2 : '#{' matches '.*'",
+                    "true ? 2 : T(" + Effects.class.getName() + ").touch() + '#{'")) {
+                var outcome = new SpringPropertyRebinder(List.of(context)).apply(
+                        Map.of("cfg.expression", expression, "cfg.label", "new"));
+                assertEquals(PropertyChangeOutcome.State.UNCHECKABLE, outcome.state(), outcome.findings().toString());
+                assertEquals("1", context.getBean(QuotedTemplatePrefix.class).value);
+                assertNull(context.getEnvironment().getProperty("cfg.expression"));
+                assertEquals("old", context.getEnvironment().getProperty("cfg.label"));
+            }
+            var retry = new SpringPropertyRebinder(List.of(context)).apply(
+                    Map.of("cfg.expression", "true ? 2 : '#{'"));
+            assertEquals(PropertyChangeOutcome.State.APPLIED, retry.state(), retry.findings().toString());
+            assertEquals("2", context.getBean(QuotedTemplatePrefix.class).value);
+        }
+    }
+
     private static AnnotationConfigApplicationContext context(Class<?>... types) {
         var context = new AnnotationConfigApplicationContext();
         context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("original",

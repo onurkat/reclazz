@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- Register new components with the application loader captured by Spring's bean
+  factory, so background file watching also finds classes in a child classloader.
+- Validate the AST even when a quoted `#{` inside a single `@Value` expression
+  sends it through template parsing. Unsupported operations in dormant branches
+  now hold the property save without changing the environment or live fields.
+- New component classes honour singleton/prototype scope and defer lazy or
+  prototype creation until lookup. Custom scopes and scoped proxies are refused
+  before registration instead of silently becoming ordinary singletons.
+- Correct the usage guide's stale Jakarta/proxy exclusions and its claim that
+  additional transaction/cache advice on added scheduled/event methods is supported.
+
 ### Added
 - **`${property}` in a message listener's selection metadata.** Beyond the
   destination, a `@KafkaListener` `groupId` and a `@JmsListener` `selector` added
@@ -43,8 +55,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   registered as a live bean. The registrar resolves the stereotype and the bean
   name through Spring's own merged-annotation and bean-name generation, so a
   composed stereotype and an `@AliasFor` name are read exactly as component
-  scanning reads them at startup, and `@Scope`/`@Lazy`/`@Primary`/`@DependsOn`
-  on the class are honoured. A class with no stereotype is still left alone.
+  scanning reads them at startup. Common definition metadata is retained; the
+  scope and lazy-creation corrections are listed above. A class with no stereotype is still left alone.
 - **`${property}` destinations for message listeners added after startup.** A
   `@KafkaListener` topic, a `@JmsListener` destination or a `@RabbitListener`
   queue added at runtime may now be a `${property}` placeholder instead of a
@@ -56,9 +68,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - **`@Scheduled` and `@EventListener` methods added to a proxied singleton.** A
   service that is already a standard transaction or cache proxy can gain a
   scheduled task or an event listener after startup. The method is unwrapped to
-  run on the real target, so it reads the live fields instead of the proxy's,
-  and if the added method itself carries `@Transactional` or `@Cacheable` that
-  advice is applied through the same bridge as any added service method. The
+  run on the real target, so it reads the live fields instead of the proxy's.
+  Additional transaction/cache advice on the added callback itself remains
+  unsupported. The
   existing proxy advice keeps working, and a later save can edit or remove the
   method. A frozen proxy, a non-singleton target source, or a proxy carrying a
   non-standard advisor is named and left for a restart; `@Async` stays out of

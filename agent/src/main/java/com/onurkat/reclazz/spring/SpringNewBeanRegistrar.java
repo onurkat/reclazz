@@ -30,7 +30,7 @@ import com.onurkat.reclazz.util.Reflect;
  * already has a reloader. Failures unregister the definition again, so a
  * constructor that throws leaves the context exactly as it was.
  *
- * <p>Scope, stated: any class Spring's own component scan would accept,
+ * <p>Scope: concrete components with singleton or prototype scope and no scoped proxy,
  * resolved once the class is loaded through the context's Spring. A direct
  * stereotype, a custom meta-annotated stereotype, and an {@code @AliasFor} bean
  * name are all read the way scanning reads them at startup. Generic type
@@ -118,6 +118,10 @@ public final class SpringNewBeanRegistrar {
             // exactly as component scanning would at startup.
             Stereotype stereotype = resolveStereotype(clazz, beanFactory, springLoader);
             if (stereotype == null) return Outcome.NOT_A_COMPONENT;
+            if (java.lang.reflect.Modifier.isAbstract(clazz.getModifiers())) {
+                StatusReporter.warn("New component " + className + " is abstract; no definition registered.");
+                return Outcome.DECLINED;
+            }
             String beanName = stereotype.beanName;
 
             Method containsBeanDefinition = Reflect.findMethod(
@@ -146,10 +150,12 @@ public final class SpringNewBeanRegistrar {
             register.invoke(beanFactory, beanName, definition);
 
             try {
-                Object bean = home.getClass().getMethod("getBean", String.class)
-                        .invoke(home, beanName);
+                boolean eager = Boolean.TRUE.equals(definition.getClass().getMethod("isSingleton").invoke(definition))
+                        && !Boolean.TRUE.equals(definition.getClass().getMethod("isLazyInit").invoke(definition));
+                if (eager) home.getClass().getMethod("getBean", String.class).invoke(home, beanName);
                 StatusReporter.success("New bean registered: '" + beanName + "' ("
-                        + clazz.getName() + "), dependencies injected, ready to serve.");
+                        + clazz.getName() + "), " + (eager ? "dependencies injected, ready to serve."
+                        : "created on demand."));
 
                 if (stereotype.controller) {
                     boolean mapped = mvcReloader.reloadMappings(clazz);
@@ -158,7 +164,7 @@ public final class SpringNewBeanRegistrar {
                                 + "controller " + clazz.getSimpleName() + ".");
                     }
                 }
-                return bean != null ? Outcome.REGISTERED : Outcome.DECLINED;
+                return Outcome.REGISTERED;
             } catch (Throwable creation) {
                 // The context goes back to exactly what it was.
                 Method remove = Reflect.findMethod(beanFactory.getClass(),
@@ -183,6 +189,13 @@ public final class SpringNewBeanRegistrar {
 
     private static ClassLoader contextClassLoader(Object context) {
         try {
+            // DefaultResourceLoader may consult the caller's TCCL. The watcher
+            // is not the application thread; use the loader captured at refresh.
+            Object factory = SpringBeans.getBeanFactory(context);
+            if (factory != null) {
+                Method getter = Reflect.findMethod(factory.getClass(), "getBeanClassLoader");
+                if (getter != null && getter.invoke(factory) instanceof ClassLoader loader) return loader;
+            }
             return (ClassLoader) context.getClass().getMethod("getClassLoader").invoke(context);
         } catch (Throwable t) {
             return null;
@@ -237,13 +250,24 @@ public final class SpringNewBeanRegistrar {
 
             Class<?> annotatedDefinition = Class.forName("org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition", true, springLoader);
             Object definition = annotatedDefinition.getConstructor(Class.class).newInstance(clazz);
-            // Honour @Scope, @Lazy, @Primary, @DependsOn on the class, as the scanner would.
+            // Common metadata covers @Lazy, @Primary and @DependsOn; scope is resolved separately below.
             Class<?> annotatedBeanDefinition = Class.forName("org.springframework.beans.factory.annotation.AnnotatedBeanDefinition", false, springLoader);
             Class<?> configUtils = Class.forName("org.springframework.context.annotation.AnnotationConfigUtils", true, springLoader);
             configUtils.getMethod("processCommonDefinitionAnnotations", annotatedBeanDefinition).invoke(null, definition);
 
             Class<?> registryType = Class.forName("org.springframework.beans.factory.support.BeanDefinitionRegistry", false, springLoader);
             Class<?> beanDefinitionType = Class.forName("org.springframework.beans.factory.config.BeanDefinition", false, springLoader);
+            Object scopeResolver = Class.forName("org.springframework.context.annotation.AnnotationScopeMetadataResolver", true, springLoader)
+                    .getConstructor().newInstance();
+            Object scope = scopeResolver.getClass().getMethod("resolveScopeMetadata", beanDefinitionType)
+                    .invoke(scopeResolver, definition);
+            String scopeName = (String) scope.getClass().getMethod("getScopeName").invoke(scope);
+            // An explicitly empty @Scope uses Spring's default singleton scope.
+            if (scopeName.isEmpty()) scopeName = "singleton";
+            String proxyMode = scope.getClass().getMethod("getScopedProxyMode").invoke(scope).toString();
+            if (!java.util.Set.of("singleton", "prototype").contains(scopeName) || !proxyMode.equals("NO"))
+                throw new IllegalArgumentException("new components require singleton or prototype scope without a scoped proxy");
+            beanDefinitionType.getMethod("setScope", String.class).invoke(definition, scopeName);
             Object generator = Class.forName("org.springframework.context.annotation.AnnotationBeanNameGenerator", true, springLoader)
                     .getConstructor().newInstance();
             String name = (String) generator.getClass().getMethod("generateBeanName", beanDefinitionType, registryType)
