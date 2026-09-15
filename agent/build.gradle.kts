@@ -170,7 +170,9 @@ val hibernateTest by tasks.registering(Test::class) {
 // needs JDK 17+, which this build already targets. Test-only; never packaged.
 val springSixTests = sourceSets.create("springSixTest") {
     compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
-    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    // Direct registrar tests need the agent's existing ASM runtime as well as
+    // its classes. This adds no Spring 5 test dependencies to the isolated graph.
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
 }
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
