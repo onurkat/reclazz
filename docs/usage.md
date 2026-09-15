@@ -1694,6 +1694,58 @@ Verified on Spring 5.3.39 / Boot 2.7.18 test dependencies and JDK 21, including 
 real agent JVM watching saves, rejection, recovery and holder replacement.
 Spring 6, JDK 17 and live SAP runtime tests have not been run for this feature.
 
+### @Value factory method parameters
+
+An existing singleton created by a native `@Bean` method can refresh its factory
+arguments when their properties change:
+
+```java
+@Bean
+Client client(@Value("#{${client.timeout.seconds:5} * 1000L}") long timeoutMillis) {
+    return new Client(timeoutMillis);
+}
+```
+
+Saving `client.timeout.seconds=8` recreates this client with `8000`, even when
+`Client` itself has no injection annotations. Direct `${...}` scalar arguments,
+[restricted computed values](#computed-value-fields), scalar text templates and
+[indirect property references](#indirect-value-dependencies) are supported.
+Spring resolves ordinary bean dependencies alongside these arguments. Static
+factories, lite configurations and full `@Configuration` factories use their native
+creation path; aliases still identify the recreated singleton.
+
+Before live application, every direct `@Value` parameter of an affected factory
+is checked, including unchanged arguments and placeholders that resolve to SpEL.
+The check does not invoke the factory body. Invalid values hold the entire
+candidate; unsupported expressions or creation metadata report **Uncheckable**.
+Unrelated changes do not recreate the product. The factory's parameter metadata
+owns this path; annotations on a constructor invoked inside its body do not.
+
+This requires an already instantiated, unproxied singleton product, a direct
+`@Bean` method, scalar parameters (primitive, boxed primitive or `String`), the
+standard expression resolver/parser, and readable Spring metadata proving that
+native factory arguments will be re-resolved. Instance factory owners must be
+existing singletons without additional AOP advice; normal full-configuration
+CGLIB enhancement is supported. Generic factory methods, collection/custom value
+types, composed annotations, `FactoryBean`, instance suppliers, explicit factory
+arguments, method overrides and `@ConfigurationProperties` binding are outside
+this path. Added factory methods with synthetic/supplier creation metadata are
+not included. Uninstantiated lazy beans and prototype beans are not swept or
+eagerly created; later lookup uses Spring's ordinary property resolution.
+
+Recreation runs the factory body, injection and lifecycle callbacks. Local state
+resets, and Spring may destroy dependent beans. Writable references in surviving
+singletons in the same context are healed using the existing recreation mechanism;
+locals, collections, other contexts and destroyed holders are not covered. This
+is not general callback/container retirement. Custom converters may execute during
+checking. A factory or initialization failure during live application reports
+**Partial**, leaves the candidate pending and may leave changed environment values
+and an already destroyed old bean. There is no rollback or background-reader pause.
+
+Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies on JDK 21, including
+watched property saves in ordinary and child-classloader agent JVMs. This does not
+establish Spring 6, JDK 17 or live SAP compatibility for factory-argument refresh.
+
 ### Indirect @Value dependencies
 
 Properties can refer to other properties:
@@ -1710,8 +1762,8 @@ private long timeoutMillis;
 
 Saving only `shared.timeout=8` updates this field to `8000`. The same dependency
 selection applies to ordinary `${...}` fields and constructor parameters, and to
-supported computed constructor parameters. Fields are re-injected and constructor
-beans are rebuilt under their existing scope and lifecycle rules.
+supported computed constructor and [factory parameters](#value-factory-method-parameters).
+Fields are re-injected and affected beans are rebuilt under their scope and lifecycle rules.
 
 Reclazz follows the placeholder reads through the candidate property sources,
 using Spring's placeholder helper and source priority. Several alias hops,
