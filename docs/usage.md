@@ -676,9 +676,10 @@ belonging to another container is refused. A failed registration attempt cleans
 up the containers it created; failures are reported in the restart ledger.
 
 The supported addition uses a literal nonempty `id`, and `topics` that are each a
-literal or a `${property}` placeholder resolved by the application's own value
-resolver (a `#{SpEL}` expression stays out of scope); an optional `groupId` may
-also be a literal or `${property}` placeholder, and optional literal
+literal, `${property}` placeholder or `#{SpEL}` expression resolved by the
+application's native processor. Topic expressions may return a String, String
+array or iterable of strings; `groupId` expressions must resolve to a String
+(native null/default behavior is retained). Optional literal
 `containerFactory`, `idIsGroup`, `autoStartup` and positive integer
 `concurrency` are accepted. Other explicitly supplied `@KafkaListener` options
 are refused. The class directly extends `Object`, has no interfaces/type
@@ -688,13 +689,25 @@ extra advice annotations, non-void/static/abstract/native/bridge/synthetic
 methods and type-variable signatures are refused. Parameter names require
 explicit annotation names or compilation with `-parameters`.
 
+`topics = "#{__listener.topics}"` and `groupId = "#{__listener.group}"` read
+properties on the real listener singleton, while messages still invoke the saved
+callback through its delegate. Named application beans and property/expression
+combinations also use the native resolver. The temporary listener binding is
+restored after registration, including expression errors. Custom `beanRef`
+options remain unsupported. A later listener save re-evaluates current topic/group
+values; property or bean changes alone do not reroute an existing consumer.
+Expression syntax/type errors occur during registration after old consumers have
+retired. Partial additions are removed and a valid save retries, but old consumers
+and user expression side effects are not rolled back. A different group may replay
+retained messages according to the application's offset policy.
+
 Use the standard `KafkaListenerAnnotationBeanPostProcessor`,
 `KafkaListenerEndpointRegistry` and `ConcurrentKafkaListenerContainerFactory`
 in record mode. Added listeners refuse annotation enhancers, retry-topic
 configuration, filtered/retry-template/batch factories and container
 customizers. Proxy/subclass receivers are not unwrapped past advice. This
-scope does not cover class-level or repeatable listeners, SpEL/property-based
-listener attributes, container groups, arbitrary wrapper/container types,
+scope does not cover class-level or repeatable listeners, expressions/placeholders
+in other listener attributes, container groups, arbitrary wrapper/container types,
 scoped/prototype beans or sharing one registry between multiple contexts.
 
 If consumer stop does not complete within 30 seconds, container entries remain
@@ -713,7 +726,10 @@ Verified with Spring Kafka 2.9.13, Spring Framework 5.3.39 and a real embedded
 Kafka 3.2.3 broker on stock JDK 21. Real-agent tests cover both the first listener
 on an already used bean and addition beside an existing listener, unique test
 message delivery across six saves, topic changes, retired consumer state,
-unrelated container identity and context close. Start with `-javaagent` before
+unrelated container identity and context close. Expression tests on normal and
+child classloaders cover self-referencing topics/groups, expression failure,
+multiple-topic recovery, group replay and removal. Native startup comparison
+also covers named beans and property/expression arrays. Start with `-javaagent` before
 application classes load. Other broker/framework versions, JDK 17 runtime,
 external clusters, transactions and rebalance/failure delivery guarantees were
 not exercised. Kafka libraries and the embedded broker are test dependencies

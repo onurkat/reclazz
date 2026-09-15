@@ -120,13 +120,12 @@ public final class SpringKafkaReloader {
                 for (var method : plan.methods()) requireFactory(scope, method);
                 var delegate = AddedKafkaListenerAdapter.create(type, current, plan);
                 Class<?> annotation = Class.forName("org.springframework.kafka.annotation.KafkaListener", false, type.getClassLoader());
-                Method process = Reflect.findMethod(scope.processor().getClass(), "processKafkaListener", annotation, Method.class, Object.class, String.class);
-                if (process == null) throw new IllegalStateException("Kafka listener processor method is inaccessible");
                 for (int i = 0; i < delegate.methods().size(); i++) {
                     Method method = delegate.methods().get(i);
                     Object metadata = Arrays.stream(method.getDeclaredAnnotations()).filter(a -> a.annotationType() == annotation).findFirst().orElseThrow();
                     try {
-                        process.invoke(scope.processor(), metadata, method, delegate.bean(), name);
+                        SpringKafkaListenerExpressions.register(scope.processor(), annotation, metadata, method,
+                                delegate.bean(), current.get(), name);
                     } finally {
                         Object registered = container(scope.registry(), plan.ids().get(i));
                         if (registered != null && listenerBean(messageListener(registered)) == delegate.bean()) {

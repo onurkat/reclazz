@@ -60,7 +60,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | `@ExceptionHandler` / `@InitBinder` / `@ModelAttribute` | **Yes** on a method that was already there, instead of the endpoint going on answering the framework's default | Yes (restart) | Yes |
 | Entirely new `@ExceptionHandler` method | **Yes for supported plain controllers and controller advice on a stock JDK** — existing and newly added endpoints use Spring's handler selection, including local priority and advice selectors. Later saves can edit, remove and restore the handler. [Scope](docs/usage.md#exception-handlers-added-after-startup) | Not verified here | Not verified here |
 | Entirely new `@InitBinder` / `@ModelAttribute` methods | **Yes for supported plain controllers and controller advice on a stock JDK** — named binding rules and model initialization apply to existing and new endpoints, with Spring advice order/selectors preserved. [Scope](docs/usage.md#binding-and-model-methods-added-after-startup) | Not verified here | Not verified here |
-| Entirely new `@KafkaListener` method | **Yes for supported plain singleton components on a stock JDK** — literal IDs/topics, existing listener preservation, topic edits, removal and restoration, with consumer shutdown before bean recreation. [Scope](docs/usage.md#kafka-listeners-added-after-startup) | Not verified here | Not verified here |
+| Entirely new `@KafkaListener` method | **Yes for supported plain singleton components on a stock JDK**: literal IDs; literal, property or Spring-expression topics/group IDs, including `__listener` references to the real bean; existing listener preservation, edits/removal/restoration and consumer shutdown before bean recreation. [Scope](docs/usage.md#kafka-listeners-added-after-startup) | Not verified here | Not verified here |
 | Entirely new `@JmsListener` method | **Yes for supported plain singleton components on a stock JDK** — literal queue destinations, edits/removal/restoration, existing listener preservation and consumer destruction before bean recreation. [Scope](docs/usage.md#jms-listeners-added-after-startup) | Not verified here | Not verified here |
 | Entirely new `@RabbitListener` method | **Yes for supported plain singleton components on a stock JDK**: literal, property or Spring-expression queue names/lists, edits/removal/restoration and complete worker retirement before bean recreation. [Scope](docs/usage.md#rabbit-listeners-added-after-startup) | Not verified here | Not verified here |
 | New service methods with `@Transactional` / `@Cacheable` / `@CachePut` / `@CacheEvict` | **Yes for supported singleton beans on a stock JDK** — external added-method calls use the application's real Spring interceptors and target. Commit/rollback, cache hits, updates and eviction are verified; unsupported advice shapes fail explicitly. [Scope](docs/usage.md#operations-on-added-service-methods) | Yes (restart) | Not verified here |
@@ -176,7 +176,8 @@ than either.
   existing model values, advice ordering and later saves are covered by real
   Spring requests. [Scope](docs/usage.md#binding-and-model-methods-added-after-startup).
 - **New Kafka consumers**: add a supported `@KafkaListener` to a running
-  component. Real broker tests cover repeated edits, topic changes, removal,
+  component, including topics and groups selected by Spring expressions on the bean.
+  Real broker tests cover repeated edits, topic/group changes, removal,
   restoration and shutdown of replaced consumers.
   [Scope](docs/usage.md#kafka-listeners-added-after-startup).
 - **New JMS consumers**: add a supported `@JmsListener` to a running component.
