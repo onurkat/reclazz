@@ -179,13 +179,30 @@ An eager singleton still initializes immediately, and a failed eager creation
 removes its definition. On context close, Spring destroys created singletons;
 prototype cleanup remains the caller's responsibility.
 
-Web/custom scopes and scoped proxies are refused before registration. This is
-not a repeat of the application's component scan: custom scan filters and new
-class-level `@Profile`/`@Conditional` evaluation are not implemented. Do not rely
-on conditional new components before restarting. These limits concern brand-new
-classes; [added factory methods](#bean-methods-added-after-startup) have separate
-metadata support. Real-agent tests cover lazy/prototype identity and destruction
-on the ordinary and child application classloaders with Spring 5.3.39.
+Class-level `@Profile` and `@Conditional`, including composed annotations, now use
+the application's native Spring condition evaluator before registration. Profile
+expressions and default profiles follow the current environment. Custom conditions
+receive the live bean factory and definition registry, the application's captured
+classloader, and resource lookup through the context. Both parse and registration
+phases are checked, with Spring's condition ordering and short-circuit behavior.
+A false result records a filtered component; an evaluation error records a failure.
+Neither proceeds to registration or the ordinary reload path that would initialize
+the rejected class. Condition callbacks themselves are application code: their own
+side effects cannot be rolled back.
+
+This is a registration-time decision against the current context, not a repeat of
+startup configuration processing. Custom scan filters, imports, auto-configuration
+ordering and re-evaluation of existing or previously filtered classes on later
+profile/property saves remain outside this support. Web/custom scopes and scoped
+proxies are still refused. [Added factory methods](#bean-methods-added-after-startup)
+have separate metadata support; arbitrary conditions on added factories remain
+unsupported. The condition adapter uses an internal Spring API and refuses
+conditional registration if that API is unavailable or inaccessible.
+
+The condition contract is tested on Spring 5.3.39 and 6.1.14. Real-agent tests on
+Spring 5.3.39 cover normal and child classloaders, class-file watching and automatic
+source compilation, including rejected classes' static initialization. Lazy/prototype
+identity and destruction are separately tested on both application classloaders.
 
 ### Lifecycle methods added after startup
 

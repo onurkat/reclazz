@@ -40,7 +40,25 @@ import com.onurkat.reclazz.util.Reflect;
 public final class SpringNewBeanRegistrar {
 
     /** What was done with the new class. */
-    public enum Outcome { REGISTERED, NOT_A_COMPONENT, DECLINED }
+    public enum Outcome {
+        REGISTERED("registered as a new bean", true),
+        FILTERED("component conditions did not match", true),
+        CONDITION_FAILED("component condition evaluation failed", false),
+        NOT_A_COMPONENT(null, false), DECLINED(null, false);
+
+        private final String description;
+        private final boolean success;
+
+        Outcome(String description, boolean success) {
+            this.description = description;
+            this.success = success;
+        }
+
+        /** A terminal result must not fall through to a reload that initializes the class. */
+        public boolean isHandled() { return description != null; }
+        public boolean isSuccess() { return success; }
+        public String description() { return description; }
+    }
 
     private final PlatformContext platformContext;
     private final SpringMvcReloader mvcReloader;
@@ -137,6 +155,18 @@ public final class SpringNewBeanRegistrar {
             // The annotated definition Spring's own scanner would register,
             // carrying the class's merged metadata.
             Object definition = stereotype.definition;
+            try {
+                if (SpringComponentConditions.shouldSkip(definition, home, beanFactory,
+                        contextClassLoader(home), springLoader)) {
+                    StatusReporter.info("New component " + className
+                            + " conditions did not match; no definition registered.");
+                    return Outcome.FILTERED;
+                }
+            } catch (Throwable evaluation) {
+                StatusReporter.warn("New component " + className + " conditions could not be evaluated: "
+                        + rootCause(evaluation) + "; no definition registered.");
+                return Outcome.CONDITION_FAILED;
+            }
 
             Method register = Reflect.findMethod(beanFactory.getClass(),
                     "registerBeanDefinition", String.class,

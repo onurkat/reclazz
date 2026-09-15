@@ -79,12 +79,11 @@ public class SpringReloadOrchestrator {
      * A brand-new class file whose class the JVM has never loaded: register it
      * as a bean when it carries a stereotype.
      *
-     * @return true when a bean was registered and the ordinary reload path
-     *         has nothing left to do for this file
+     * @return the registration result, including terminal condition outcomes
+     *         that must not enter the ordinary class-initializing reload path
      */
-    public boolean registerNewBeanClass(String className, byte[] bytecode) {
-        return newBeanRegistrar.registerIfComponent(className, bytecode)
-                == SpringNewBeanRegistrar.Outcome.REGISTERED;
+    public SpringNewBeanRegistrar.Outcome registerNewBeanClass(String className, byte[] bytecode) {
+        return newBeanRegistrar.registerIfComponent(className, bytecode);
     }
 
     /**

@@ -900,8 +900,9 @@ public class ReclazzAgent {
             // it carries a Spring stereotype it becomes a live bean here, and
             // the ordinary reload machinery has nothing left to do for it.
             if (!alreadyLoaded(className)) {
-                if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
-                    recordOutcome(className, true, "registered as a new bean", source);
+                var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
+                if (registration.isHandled()) {
+                    recordOutcome(className, registration.isSuccess(), registration.description(), source);
                     ReloadEffects.end();
                     return;
                 }
@@ -1164,9 +1165,11 @@ public class ReclazzAgent {
             // Same as the single-file path: a never-loaded stereotype class
             // becomes a live bean and is done.
             if (!alreadyLoaded(className)) {
-                if (springOrchestrator.registerNewBeanClass(className, bytecode)) {
-                    recordOutcome(className, true, "registered as a new bean", sources.get(className));
-                    successCount++;
+                var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
+                if (registration.isHandled()) {
+                    recordOutcome(className, registration.isSuccess(), registration.description(), sources.get(className));
+                    if (registration.isSuccess()) successCount++;
+                    else failCount++;
                     continue;
                 }
                 JpaMappingRefresh.maybeMapNewEntity(
@@ -1240,7 +1243,7 @@ public class ReclazzAgent {
         // Emit STRUCTURAL_RELOAD vs RELOAD per class. The autoCompile path
         // used to always emit plain RELOAD, so STRUCTURAL_RELOAD events (and
         // the IDE widget's structural counter) never fired in this mode.
-        if (compiledClasses.size() == 1 && successCount == 1) {
+        if (compiledClasses.size() == 1 && swappedClasses.size() == 1) {
             var only = swappedClasses.entrySet().iterator().next();
             reloadLanded(only.getKey(), only.getValue(), elapsed,
                     swappedShapes.get(only.getKey()), sources.get(only.getKey()),

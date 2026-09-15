@@ -160,7 +160,10 @@ than either.
   dependencies injected and mappings registered, with the bean name resolved the
   way component scanning would (including `@AliasFor`), instead of waiting for
   the next restart's component scan. Lazy components wait for first access;
-  prototype components are created for each lookup. Web/custom scopes and scoped
+  prototype components are created for each lookup. Class-level `@Profile` and
+  `@Conditional`, including composed annotations, are checked against the current
+  context before registration; a rejected component is neither registered nor
+  initialized by the reload path. Web/custom scopes and scoped
   proxies require a restart. [Scope](docs/usage.md#new-component-classes-after-startup).
 - **Annotation metadata**: an edited `@Transactional` or `@Cacheable` takes
   effect, not just the method body it sits on

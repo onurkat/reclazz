@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- New component classes evaluate class-level `@Profile` and `@Conditional`
+  against the running Spring context before registration, including composed
+  annotations and both condition phases. Rejected or unevaluable conditions stop
+  both reload paths before class initialization. A single auto-compiled component
+  no longer tries to report a class swap when it was only registered or filtered.
 - A method first called after reload retains a receiver's proxy/override dispatch,
   so an existing Spring proxy still applies its advice on that first call.
 - Register new components with the application loader captured by Spring's bean
