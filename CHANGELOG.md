@@ -34,6 +34,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Added ordinary service methods accept supported runtime composed transaction
+  annotations, including nested composition, `@AliasFor` and class defaults.
+  Native Spring owns transaction manager selection, propagation and rollback;
+  unsupported mixed metadata is refused before the method body runs.
 - Computed constructor and native scalar `@Bean` property arguments refresh on
   supported standard transaction-only JDK/CGLIB proxies. Native Spring recreation
   preserves commit/rollback and replaces surviving plain holders' proxy references.
