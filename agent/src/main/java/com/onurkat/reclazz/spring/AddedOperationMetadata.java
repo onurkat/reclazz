@@ -13,6 +13,8 @@ import java.util.*;
 
 /** Saved annotations for Spring's real operation sources; methods never execute here. */
 final class AddedOperationMetadata {
+    static final String ASYNC = "Lorg/springframework/scheduling/annotation/Async;";
+    private static final String EVENT = "Lorg/springframework/context/event/EventListener;";
     private static final String TX = "Lorg/springframework/transaction/annotation/Transactional;";
     private static final Set<String> CACHE = Set.of("Lorg/springframework/cache/annotation/Cacheable;",
             "Lorg/springframework/cache/annotation/CachePut;", "Lorg/springframework/cache/annotation/CacheEvict;",
@@ -28,7 +30,7 @@ final class AddedOperationMetadata {
             "Lorg/springframework/scheduling/annotation/Schedules;",
             "Lorg/springframework/context/event/EventListener;",
             "Lorg/springframework/transaction/event/TransactionalEventListener;");
-    record Entry(Method method, String key, String reason, boolean transaction, boolean cache) { }
+    record Entry(Method method, String key, String reason, boolean transaction, boolean cache, boolean async) { }
     record Plan(List<Entry> entries, boolean operations) { }
 
     static Plan create(Class<?> owner, byte[] bytes, MethodHandles.Lookup lookup, boolean previouslyActive) throws IllegalAccessException {
@@ -37,7 +39,7 @@ final class AddedOperationMetadata {
         boolean classTx = has(source.visibleAnnotations, Set.of(TX));
         boolean classCache = has(source.visibleAnnotations, CACHE);
         boolean operations = classTx || classCache || source.methods.stream().anyMatch(m ->
-                has(m.visibleAnnotations, Set.of(TX)) || has(m.visibleAnnotations, CACHE));
+                has(m.visibleAnnotations, Set.of(TX, ASYNC)) || has(m.visibleAnnotations, CACHE));
         if (!operations && !previouslyActive) return new Plan(List.of(), false);
         Set<String> reflected = new HashSet<>();
         for (Method method : owner.getDeclaredMethods()) reflected.add(method.getName() + Type.getMethodDescriptor(method));
@@ -60,11 +62,20 @@ final class AddedOperationMetadata {
                 if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !CLASS_METADATA.contains(a.desc))
                     reason = "unsupported class annotation " + a.desc;
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations)
-                if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
+                if (!a.desc.equals(TX) && !a.desc.equals(ASYNC) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
                         && !OTHER_ADAPTERS.contains(a.desc)
                         && !(a.desc.equals("Lorg/springframework/core/annotation/Order;")
                         && has(method.visibleAnnotations, Set.of("Lorg/springframework/context/event/EventListener;"))))
                     reason = "unsupported method annotation " + a.desc;
+            if (has(method.visibleAnnotations, Set.of(ASYNC))) {
+                if (!has(method.visibleAnnotations, Set.of(EVENT))
+                        || has(method.visibleAnnotations, Set.of("Lorg/springframework/transaction/event/TransactionalEventListener;",
+                        "Lorg/springframework/scheduling/annotation/Scheduled;", "Lorg/springframework/scheduling/annotation/Schedules;"))
+                        || Type.getReturnType(method.desc).getSort() != Type.VOID)
+                    reason = "unsupported method annotation " + ASYNC + ": requires a direct void EventListener";
+                String callback = callbackProblem(source, method);
+                if (callback != null) reason = callback;
+            }
             if (reason != null) reasons.put(method.name + method.desc, reason);
             MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, method.name, method.desc, null,
                     method.exceptions.toArray(String[]::new));
@@ -87,7 +98,7 @@ final class AddedOperationMetadata {
                     || java.util.concurrent.CompletionStage.class.isAssignableFrom(method.getReturnType())
                     || publisher(method.getReturnType())) reason = "asynchronous operation result";
             entries.add(new Entry(method, InjectedNames.siteKey(method.getName(), InjectedNames.descHash(descriptor)), reason,
-                    classTx || has(node.visibleAnnotations, Set.of(TX)), classCache || has(node.visibleAnnotations, CACHE)));
+                    classTx || has(node.visibleAnnotations, Set.of(TX)), classCache || has(node.visibleAnnotations, CACHE), has(node.visibleAnnotations, Set.of(ASYNC))));
         }
         return new Plan(entries, operations);
     }
@@ -99,7 +110,7 @@ final class AddedOperationMetadata {
     // covers newly added public methods. Refuse shapes that could miss that route.
     static String callbackProblem(ClassNode owner, MethodNode method) {
         if (method.visibleAnnotations == null || method.visibleAnnotations.stream()
-                .noneMatch(a -> isOperationAnnotation(a.desc))) return null;
+                .noneMatch(a -> isOperationAnnotation(a.desc) || ASYNC.equals(a.desc))) return null;
         if ((method.access & Opcodes.ACC_PUBLIC) == 0 || (method.access & (Opcodes.ACC_FINAL
                 | Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE
                 | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_BRIDGE)) != 0

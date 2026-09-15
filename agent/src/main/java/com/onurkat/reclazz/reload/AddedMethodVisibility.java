@@ -178,7 +178,8 @@ public final class AddedMethodVisibility {
                                     && annotationDescriptor.equals("Lorg/springframework/web/bind/annotation/ExceptionHandler;")) return null;
                             if (operationMethods.contains(name + descriptor)
                                     && (annotationDescriptor.equals("Lorg/springframework/transaction/annotation/Transactional;")
-                                    || annotationDescriptor.startsWith("Lorg/springframework/cache/annotation/"))) return null;
+                                    || annotationDescriptor.startsWith("Lorg/springframework/cache/annotation/")
+                                    || (springAdaptersHandled && annotationDescriptor.equals("Lorg/springframework/scheduling/annotation/Async;")))) return null;
                             if (jacksonGetters.contains(name + descriptor)
                                     && annotationDescriptor.startsWith("Lcom/fasterxml/jackson/")) return null;
                             // The Spring reloaders register the supported

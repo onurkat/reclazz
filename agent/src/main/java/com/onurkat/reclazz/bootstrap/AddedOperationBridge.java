@@ -23,7 +23,7 @@ public final class AddedOperationBridge {
     static {
         try {
             INVOKE = MethodHandles.lookup().findStatic(AddedOperationBridge.class, "invoke",
-                    MethodType.methodType(Object.class, Routes.class, String.class, MethodHandle.class, Object[].class));
+                    MethodType.methodType(Object.class, Routes.class, String.class, CallSite.class, Object[].class));
             HAS_ROUTES = MethodHandles.lookup().findStatic(AddedOperationBridge.class, "hasRoutes",
                     MethodType.methodType(boolean.class, Routes.class));
         } catch (ReflectiveOperationException failure) { throw new ExceptionInInitializerError(failure); }
@@ -37,7 +37,7 @@ public final class AddedOperationBridge {
         MethodType type = direct.type();
         Routes ownerRoutes = routes.get(owner);
         MethodHandle raw = direct.dynamicInvoker();
-        MethodHandle call = MethodHandles.insertArguments(INVOKE, 0, ownerRoutes, key, raw);
+        MethodHandle call = MethodHandles.insertArguments(INVOKE, 0, ownerRoutes, key, direct);
         MethodHandle guarded = MethodHandles.guardWithTest(HAS_ROUTES.bindTo(ownerRoutes),
                 call.asCollector(Object[].class, type.parameterCount()).asType(type), raw);
         return new ConstantCallSite(guarded);
@@ -47,7 +47,9 @@ public final class AddedOperationBridge {
         // Plain owners keep their exact invoker: no argument array or boxing.
         return !routes.methods.isEmpty();
     }
-    private static Object invoke(Routes routes, String key, MethodHandle direct, Object[] all) throws Throwable {
+    private static Object invoke(Routes routes, String key, CallSite site, Object[] all) throws Throwable {
+        // Freeze the admitted body before an interceptor can enqueue the invocation.
+        MethodHandle direct = site.getTarget();
         Invocation operation = routes.methods.get(key);
         if (operation == null) return direct.invokeWithArguments(all);
         return operation.invoke(all[0], Arrays.copyOfRange(all, 1, all.length), direct);

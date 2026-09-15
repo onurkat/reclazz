@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Async bean refresh does not install the same standard advisor twice on an
+  existing proxy. Supported added async event callbacks no longer receive the
+  generic scan-invisible method warning.
 - Condition resource lookup uses the application's classloader during reload,
   preserving context protocol resolvers and restoring the caller's loader even
   when resource resolution fails.
@@ -31,6 +34,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Direct `@Async` on supported added public void `@EventListener` methods uses the
+  application's native executor and uncaught-exception handler. Transaction/cache
+  advice runs inside the submitted invocation. Queued work retains its admitted
+  target and direct body across reload/removal, while later events use the new
+  listener. Standalone, scheduled and transactional-phase async additions remain
+  outside this scope.
 - Added `@KafkaListener` methods resolve topic and group expressions through the
   application's native processor. `__listener` refers to the real singleton;
   temporary bindings are restored on success/error, and later saves re-evaluate

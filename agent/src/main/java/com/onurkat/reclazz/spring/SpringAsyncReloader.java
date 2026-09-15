@@ -55,6 +55,9 @@ public class SpringAsyncReloader {
             if (targetBeanName != null) {
                 Object bean = getBean.invoke(appContext, targetBeanName);
 
+                // Re-processing an already advised bean prepends the same advisor
+                // again. The existing interceptor already dispatches current bodies.
+                if (alreadyAdvised(processor, bean)) return false;
                 Method postProcess = processor.getClass().getMethod(
                         "postProcessAfterInitialization", Object.class, String.class);
                 postProcess.invoke(processor, bean, targetBeanName);
@@ -66,6 +69,18 @@ public class SpringAsyncReloader {
         } catch (Exception e) {
             StatusReporter.warn("Spring async reload failed: " + Failures.describe(e));
         }
+        return false;
+    }
+
+    private static boolean alreadyAdvised(Object processor, Object bean) throws ReflectiveOperationException {
+        if (!processor.getClass().getName().equals("org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor"))
+            return false;
+        Object advisor = com.onurkat.reclazz.util.Reflect.readField(processor, "advisor");
+        if (advisor == null) return false;
+        Class<?> advised = Class.forName("org.springframework.aop.framework.Advised", false, processor.getClass().getClassLoader());
+        if (!advised.isInstance(bean)) return false;
+        for (Object existing : (Object[]) advised.getMethod("getAdvisors").invoke(bean))
+            if (existing == advisor) return true;
         return false;
     }
 

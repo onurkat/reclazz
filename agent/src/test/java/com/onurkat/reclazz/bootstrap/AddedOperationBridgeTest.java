@@ -54,4 +54,26 @@ class AddedOperationBridgeTest {
             AddedOperationBridge.publish(Owner.class, Map.of());
         }
     }
+    @Test
+    void admittedInvocationKeepsItsBodyAfterTheRawSiteIsRetargeted() throws Throwable {
+        var lookup = MethodHandles.lookup();
+        var type = MethodType.methodType(int.class, int.class, int.class);
+        var direct = new MutableCallSite(lookup.findVirtual(Owner.class, "sum", type));
+        var saved = new java.util.concurrent.atomic.AtomicReference<java.lang.invoke.MethodHandle>();
+        AddedOperationBridge.publish(Owner.class, Map.of("queued", (receiver, args, body) -> {
+            saved.set(body); return 0;
+        }));
+        try {
+            var owner = new Owner();
+            var call = AddedOperationBridge.externalCall(Owner.class, "queued", direct).dynamicInvoker();
+            assertEquals(0, (int) call.invokeExact(owner, 2, 3));
+            var admitted = saved.get();
+            direct.setTarget(lookup.findVirtual(Owner.class, "product", type));
+            MutableCallSite.syncAll(new MutableCallSite[]{direct});
+            assertEquals(5, (int) admitted.invokeExact(owner, 2, 3));
+            assertEquals(0, (int) call.invokeExact(owner, 2, 3));
+            assertEquals(6, (int) saved.get().invokeExact(owner, 2, 3));
+        } finally { AddedOperationBridge.publish(Owner.class, Map.of()); }
+    }
+
 }

@@ -43,11 +43,17 @@ class AddedCallbackAdviceTest {
         }
     }
 
-    @Test void asyncAndTransactionPhaseCallbacksDoNotAcquireAdditionalAdvice() {
+    @Test void asyncIsLimitedToOrdinaryPublicVoidEvents() {
         for (boolean event : List.of(false, true)) {
-            assertEquals(0, accepted(fixture(event, "Lorg/springframework/scheduling/annotation/Async;", Opcodes.ACC_PUBLIC, false), event));
+            assertEquals(event ? 1 : 0, accepted(fixture(event, "Lorg/springframework/scheduling/annotation/Async;", Opcodes.ACC_PUBLIC, false), event));
         }
         assertEquals(0, accepted(fixture(true, TX, Opcodes.ACC_PUBLIC, true), true));
+        String async = "Lorg/springframework/scheduling/annotation/Async;";
+        assertEquals(0, accepted(fixture(true, async, Opcodes.ACC_PUBLIC, true), true));
+        assertEquals(0, accepted(fixture(true, async, Opcodes.ACC_PRIVATE, false), true));
+        var returning = fixture(true, async, Opcodes.ACC_PUBLIC, false);
+        returning.methods.get(0).desc = "(Ljava/lang/String;)Ljava/lang/Object;";
+        assertEquals(0, accepted(returning, true));
     }
 
     private static int accepted(ClassNode node, boolean event) {
