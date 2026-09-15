@@ -39,7 +39,7 @@ public final class SpringAddedOperations {
         Set<String> covered = new HashSet<>();
         for (var entry : plan.entries()) {
             routes.put(entry.key(), (receiver, args, direct) -> state.invoke(entry, receiver, args, direct));
-            // Unsupported standalone async methods still need the scan warning.
+            // Unsupported async method shapes still need the scan warning.
             if (!entry.async() || entry.reason() == null)
                 covered.add(entry.method().getName() + org.objectweb.asm.Type.getMethodDescriptor(entry.method()));
         }

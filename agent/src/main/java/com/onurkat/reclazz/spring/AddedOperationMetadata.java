@@ -56,7 +56,8 @@ final class AddedOperationMetadata {
         Map<String, String> reasons = new HashMap<>();
         for (MethodNode method : added) {
             String reason = null;
-            if (source.signature != null || method.signature != null) reason = "generic operation metadata";
+            if (source.signature != null || (method.signature != null && !signatureMetadata(method, classTx, classCache)))
+                reason = "generic operation metadata";
             if ((source.access & Opcodes.ACC_FINAL) != 0 || (method.access & Opcodes.ACC_FINAL) != 0) reason = "final class or method";
             if (source.visibleAnnotations != null) for (var a : source.visibleAnnotations)
                 if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !CLASS_METADATA.contains(a.desc))
@@ -68,16 +69,19 @@ final class AddedOperationMetadata {
                         && has(method.visibleAnnotations, Set.of("Lorg/springframework/context/event/EventListener;"))))
                     reason = "unsupported method annotation " + a.desc;
             if (has(method.visibleAnnotations, Set.of(ASYNC))) {
-                if (!has(method.visibleAnnotations, Set.of(EVENT))
+                if (!asyncService(method) && (!has(method.visibleAnnotations, Set.of(EVENT))
                         || has(method.visibleAnnotations, Set.of("Lorg/springframework/transaction/event/TransactionalEventListener;",
                         "Lorg/springframework/scheduling/annotation/Scheduled;", "Lorg/springframework/scheduling/annotation/Schedules;"))
-                        || Type.getReturnType(method.desc).getSort() != Type.VOID)
+                        || Type.getReturnType(method.desc).getSort() != Type.VOID))
                     reason = "unsupported method annotation " + ASYNC + ": requires a direct void EventListener";
-                String callback = callbackProblem(source, method);
+                if (asyncService(method) && !asyncReturn(method.desc))
+                    reason = "unsupported method annotation " + ASYNC + ": service return must be void, Future or CompletableFuture";
+                String callback = callbackProblem(source, method, asyncService(method));
                 if (callback != null) reason = callback;
             }
             if (reason != null) reasons.put(method.name + method.desc, reason);
-            MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, method.name, method.desc, null,
+            MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, method.name, method.desc,
+                    signatureMetadata(method, classTx, classCache) ? method.signature : null,
                     method.exceptions.toArray(String[]::new));
             if (method.parameters != null) for (var p : method.parameters) mv.visitParameter(p.name, p.access);
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations) a.accept(mv.visitAnnotation(a.desc, true));
@@ -94,9 +98,11 @@ final class AddedOperationMetadata {
             String descriptor = Type.getMethodDescriptor(method);
             MethodNode node = added.stream().filter(m -> m.name.equals(method.getName()) && m.desc.equals(descriptor)).findFirst().orElseThrow();
             String reason = reasons.get(node.name + node.desc);
-            if (java.util.concurrent.Future.class.isAssignableFrom(method.getReturnType())
+            boolean signature = signatureMetadata(node, classTx, classCache);
+            if (signature && !concreteSignature(method)) reason = "generic async operation metadata requires concrete types";
+            if (!signature && (java.util.concurrent.Future.class.isAssignableFrom(method.getReturnType())
                     || java.util.concurrent.CompletionStage.class.isAssignableFrom(method.getReturnType())
-                    || publisher(method.getReturnType())) reason = "asynchronous operation result";
+                    || publisher(method.getReturnType()))) reason = "asynchronous operation result";
             entries.add(new Entry(method, InjectedNames.siteKey(method.getName(), InjectedNames.descHash(descriptor)), reason,
                     classTx || has(node.visibleAnnotations, Set.of(TX)), classCache || has(node.visibleAnnotations, CACHE), has(node.visibleAnnotations, Set.of(ASYNC))));
         }
@@ -109,6 +115,10 @@ final class AddedOperationMetadata {
     // Callback delegates use bootstrapMethod, whose operation metadata only
     // covers newly added public methods. Refuse shapes that could miss that route.
     static String callbackProblem(ClassNode owner, MethodNode method) {
+        return callbackProblem(owner, method, false);
+    }
+
+    private static String callbackProblem(ClassNode owner, MethodNode method, boolean concreteGenerics) {
         if (method.visibleAnnotations == null || method.visibleAnnotations.stream()
                 .noneMatch(a -> isOperationAnnotation(a.desc) || ASYNC.equals(a.desc))) return null;
         if ((method.access & Opcodes.ACC_PUBLIC) == 0 || (method.access & (Opcodes.ACC_FINAL
@@ -116,11 +126,51 @@ final class AddedOperationMetadata {
                 | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_BRIDGE)) != 0
                 || (owner.access & Opcodes.ACC_FINAL) != 0)
             return "operation callbacks require public non-final concrete instance methods on a non-final class";
-        if (owner.signature != null || method.signature != null)
+        if (owner.signature != null || (method.signature != null && !concreteGenerics))
             return "generic operation callbacks are unsupported";
         if (!"java/lang/Object".equals(owner.superName) || !owner.interfaces.isEmpty())
             return "operation callbacks require a direct Object subclass without interfaces";
         return null;
+    }
+
+    private static boolean asyncService(MethodNode method) {
+        return has(method.visibleAnnotations, Set.of(ASYNC)) && !has(method.visibleAnnotations, OTHER_ADAPTERS);
+    }
+
+    private static boolean asyncReturn(String descriptor) {
+        String result = Type.getReturnType(descriptor).getDescriptor();
+        return result.equals("V") || result.equals("Ljava/util/concurrent/Future;")
+                || result.equals("Ljava/util/concurrent/CompletableFuture;");
+    }
+
+    private static boolean signatureMetadata(MethodNode method, boolean classTx, boolean classCache) {
+        if (asyncService(method)) return asyncReturn(method.desc);
+        // Removing Async restores an ordinary synchronous Future-returning method.
+        // It must not inherit a refusal merely because this owner once had advice.
+        return !classTx && !classCache && !has(method.visibleAnnotations, Set.of(TX, ASYNC))
+                && !has(method.visibleAnnotations, CACHE) && !has(method.visibleAnnotations, OTHER_ADAPTERS)
+                && Type.getReturnType(method.desc).getSort() != Type.VOID && asyncReturn(method.desc);
+    }
+
+    private static boolean concreteSignature(Method method) {
+        try {
+            if (method.getTypeParameters().length != 0 || !concrete(method.getGenericReturnType())) return false;
+            for (var parameter : method.getGenericParameterTypes()) if (!concrete(parameter)) return false;
+            for (var exception : method.getGenericExceptionTypes()) if (!concrete(exception)) return false;
+            return true;
+        } catch (RuntimeException | LinkageError invalid) { return false; }
+    }
+
+    private static boolean concrete(java.lang.reflect.Type type) {
+        if (type instanceof Class<?>) return true;
+        if (type instanceof java.lang.reflect.GenericArrayType array) return concrete(array.getGenericComponentType());
+        if (type instanceof java.lang.reflect.ParameterizedType parameterized) {
+            if (!concrete(parameterized.getRawType())) return false;
+            if (parameterized.getOwnerType() != null && !concrete(parameterized.getOwnerType())) return false;
+            for (var argument : parameterized.getActualTypeArguments()) if (!concrete(argument)) return false;
+            return true;
+        }
+        return false; // Type variables and wildcards are outside the saved metadata contract.
     }
 
     private static boolean has(List<AnnotationNode> annotations, Set<String> names) {

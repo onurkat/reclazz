@@ -989,7 +989,9 @@ This does not add interface methods to existing JDK proxies, add reflective
 methods to the original class, or cover new overrides of already-resolvable
 inherited methods. Static/private/final methods, final service classes, generic
 metadata, composed/additional advice annotations, scoped/dynamic/opaque/nested
-proxies and declared async/reactive return types are outside this path. Existing
+proxies and reactive return types are outside this path. Future-returning transaction/cache
+operations require the direct [async service scope](#async-service-methods-added-after-startup)
+below; without `@Async`, those advised Future operations remain unsupported. Existing
 methods follow their existing dispatch; this boundary is installed only for
 external calls whose method is absent from the loaded class. Framework reflection
 calls, method references/lambdas, and async values hidden behind a declared
@@ -1355,8 +1357,9 @@ are plain singletons and mutable CGLIB singleton proxies carrying only standard
 transaction/cache advisors and, optionally, the same standard async advisor first.
 Unknown, duplicated or reordered async advisors and custom/uninitialized async
 postprocessors are refused. Class/composed async annotations, Future or event-returning
-async methods, standalone added async service methods, async scheduled callbacks and
-async transactional-phase listeners remain outside this scope.
+async event methods, async scheduled callbacks and
+async transactional-phase listeners remain outside this scope. Normal service methods
+can use the [separate async service scope below](#async-service-methods-added-after-startup).
 
 Each newly submitted invocation uses current metadata, executor selection and singleton.
 Already submitted work retains its admitted target and direct callback body across
@@ -1372,6 +1375,65 @@ Verified with Spring 5.3.39 and stock JDK 21: configured and named default execu
 qualifier changes, conditions, native error handling, worker transaction rollback,
 old proxy calls, reload/removal with queued work, and ordinary/child classloaders.
 No additional Spring-version compatibility is claimed by these tests.
+
+### Async service methods added after startup
+
+Add a direct public `@Async` method to a supported service and compile it together
+with its caller. The caller can receive a result through Spring's native future:
+
+```java
+@Async("workers")
+public CompletableFuture<String> summarize(int orderId) {
+    return CompletableFuture.completedFuture(reports.summarize(orderId));
+}
+```
+
+The method can return `void`, exactly `Future` or exactly `CompletableFuture`.
+Concrete generic arguments are retained in saved metadata, including nested types
+such as `CompletableFuture<List<Order>>` and `List<Order>` parameters. Generic
+class/method type variables, wildcards, custom Future subclasses, declared
+`CompletionStage`/`ListenableFuture` and reactive returns remain unsupported.
+These restrictions concern the declared return type; an implementation can return
+a Future subtype behind a supported `Future<T>` declaration.
+
+The existing [async infrastructure constraints](#async-event-listeners-added-after-startup)
+apply. The method is public, concrete and non-final on a non-final, non-generic owner
+directly extending Object without interfaces. Plain singleton and supported mutable
+CGLIB receivers, including retained old bean references, use the native executor.
+Unknown/custom advisors and class/composed `@Async` remain outside this scope.
+Class-internal calls retain normal Spring self-invocation semantics and run directly.
+This does not expose the added method through original-class reflection or promise
+an unadapted method-reference/lambda call path.
+
+A Future-returning invocation immediately returns a native outer future; Spring
+obtains the value of the Future returned by the body. A thrown exception or an
+exceptional returned Future fails that outer future. `void` failures go to the
+configured uncaught-exception handler. Executor lookup/submission errors still fail
+on the submitting thread. Cancellation uses the native returned handle; cancellation
+before execution is tested. It is not a promise to interrupt running work, cancel an
+inner future or reverse side effects. Executor capacity must account for Spring's
+native waiting on the body-returned future.
+
+Supported direct transaction/cache annotations run on the worker. On the tested
+Spring 5.3.39 stack, a checked exception thrown by a body with a matching rollback
+rule rolls back its transaction. Returning an exceptional or incomplete Future does
+not extend the transaction until completion or retroactively roll back its writes.
+Spring 5 caching stores the body-returned future, not an automatically unwrapped
+payload; each external async invocation still gets its own outer future. Cache values
+retain normal cache lifetime across reloads.
+
+Later saves update metadata/executor selection and the callback body. Already admitted
+jobs retain the body and target captured before the save. Removing only `@Async` and
+any transaction/cache advice restores synchronous Future-returning calls. Removing the
+method makes retained call sites fail; restoring it makes them usable again. The prior
+queued-target/resource and executor-lifecycle limits still apply. This adds service
+invocation support, not an async MVC/WebFlux request boundary or new scheduled/transactional
+listener shapes.
+
+Verified with native Spring 5.3.39, H2 and stock JDK 21, including real agent runs on
+ordinary and child classloaders, old/current bean references, five saves, qualifier
+changes, worker rollback, cancellation, synchronous annotation removal, method
+removal/restoration, and self-invocation. No additional Spring-version claim is made.
 
 ### Transactional event listeners added after startup
 
