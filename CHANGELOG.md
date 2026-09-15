@@ -34,6 +34,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Direct `@Async` on supported added service methods with `void`, `Future` or
+  `CompletableFuture` results. Concrete generic signatures reach native metadata
+  consumers, while Spring owns executor selection, outer future completion,
+  exception handling and worker transaction/cache behavior. Removing async advice
+  can restore ordinary synchronous Future-returning calls.
 - Direct `@Async` on supported added public void `@EventListener` methods uses the
   application's native executor and uncaught-exception handler. Transaction/cache
   advice runs inside the submitted invocation. Queued work retains its admitted
