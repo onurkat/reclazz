@@ -371,8 +371,8 @@ public final class SpringPropertyRebinder {
     /** Prove Spring will re-resolve this constructor, rather than call a factory or supplier. */
     private static String constructorExpressionProblem(Object factory, String name, Object singleton, Class<?> type) {
         try {
-            if (singleton.getClass() != type)
-                return "computed constructor parameters require an unproxied bean";
+            if (PropertyTransactionProxy.target(singleton, factory.getClass().getClassLoader()).getClass() != type)
+                return "computed constructor metadata does not describe the creation target";
             if (type.getDeclaredConstructors().length != 1)
                 return "computed constructor parameters require exactly one constructor";
             for (var annotation : type.getAnnotations()) {

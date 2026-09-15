@@ -77,12 +77,12 @@ final class SpringFactoryValues {
                 return "factory values require the standard bean expression resolver and parser";
             if (!Boolean.TRUE.equals(PropertyChangeCheck.call(definition, "isSingleton")))
                 return "factory values require singleton scope";
-            if (isProxy(singleton, loader)) return "factory values require an unproxied product";
-            if (Class.forName("org.springframework.beans.factory.FactoryBean", false, loader).isInstance(singleton))
+            Object target = PropertyTransactionProxy.target(singleton, loader);
+            if (Class.forName("org.springframework.beans.factory.FactoryBean", false, loader).isInstance(target))
                 return "FactoryBean products use a separate creation policy";
-            if (!method.getReturnType().isInstance(singleton))
+            if (!method.getReturnType().isInstance(target))
                 return "factory method return type does not describe the live product";
-            if (hasProperties(method.getAnnotations()) || hasProperties(singleton.getClass().getAnnotations()))
+            if (hasProperties(method.getAnnotations()) || hasProperties(target.getClass().getAnnotations()))
                 return "factory @ConfigurationProperties uses its own binding path";
             if (PropertyChangeCheck.call(definition, "getInstanceSupplier") != null)
                 return "factory instance suppliers are unsupported";

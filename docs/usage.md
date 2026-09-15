@@ -1682,8 +1682,9 @@ unsupported constructor expression or creation policy holds it as **Uncheckable*
 and identifies the bean and constructor parameter. A corrected save retries the
 pending keys. Unrelated property saves do not recreate the bean.
 
-This support requires an existing, unproxied singleton, one declared constructor,
-and a bean definition that directly constructs that class. Spring's cached
+This support requires an existing singleton that is unproxied or has a
+[supported transaction proxy](#transaction-proxies-and-property-recreation), one
+declared constructor, and a bean definition that directly constructs that class. Spring's cached
 constructor and re-resolvable arguments must be readable and agree with that
 constructor. Factory methods (including `@Bean`), instance suppliers, manually
 registered singletons, explicit constructor arguments, method overrides and
@@ -1739,8 +1740,9 @@ candidate; unsupported expressions or creation metadata report **Uncheckable**.
 Unrelated changes do not recreate the product. The factory's parameter metadata
 owns this path; annotations on a constructor invoked inside its body do not.
 
-This requires an already instantiated, unproxied singleton product, a direct
-`@Bean` method, scalar parameters (primitive, boxed primitive or `String`), the
+This requires an already instantiated singleton product that is unproxied or has
+a [supported transaction proxy](#transaction-proxies-and-property-recreation), a
+direct `@Bean` method, scalar parameters (primitive, boxed primitive or `String`), the
 standard expression resolver/parser, and readable Spring metadata proving that
 native factory arguments will be re-resolved. Instance factory owners must be
 existing singletons without additional AOP advice; normal full-configuration
@@ -1763,6 +1765,39 @@ and an already destroyed old bean. There is no rollback or background-reader pau
 Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies on JDK 21, including
 watched property saves in ordinary and child-classloader agent JVMs. This does not
 establish Spring 6, JDK 17 or live SAP compatibility for factory-argument refresh.
+
+### Transaction proxies and property recreation
+
+Computed constructor and native scalar `@Bean` factory arguments also refresh on
+existing singletons with a standard transaction-only JDK or CGLIB proxy. For
+example, changing an immutable timeout supplied by `@Value` to a transactional
+service recreates the service through Spring, including its transaction proxy.
+Calls through the replacement keep native transaction commit and rollback behavior.
+
+Eligibility requires an unfrozen, inspectable Spring proxy with exactly one
+standard transaction advisor, an already initialized standard transaction
+interceptor and annotation metadata source, and a `SingletonTargetSource` holding
+one plain target. Additional cache, async, security or custom advice, custom
+transaction metadata, dynamic/custom target sources and nested proxies are outside
+this path. Such an affected creation policy holds the candidate as **Uncheckable**.
+The constructor/factory metadata and expression restrictions above still apply.
+
+Spring destroys and recreates the singleton; Reclazz does not strip its advice or
+send application calls directly to its target. Writable reference fields in
+surviving plain singleton holders in the same context are updated from the old
+proxy to the new one. Raw target references, locals, collections, proxied holders
+and destroyed dependents are not guaranteed to be healed. Local state resets,
+background readers are not paused, and live constructor/factory or initialization
+failures still report **Partial** without rollback. This does not add cache
+invalidation, arbitrary advice support or property refresh for added supplier-backed
+factories. Existing direct-placeholder constructor and field-discovery behavior is
+unchanged; in particular, legacy field discovery can consult custom target sources
+before creation eligibility is checked.
+
+Verified with real H2 commit/rollback, repeated saves, held invalid values, native
+lifecycle and holder replacement on Spring 5.3.39 / Boot 2.7.18 dependencies and
+JDK 21. File-watcher tests exercise ordinary and child-classloader agent JVMs.
+Spring 6, JDK 17 and live SAP compatibility have not been established for this path.
 
 ### Indirect @Value dependencies
 
