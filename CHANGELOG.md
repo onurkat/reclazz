@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Condition resource lookup uses the application's classloader during reload,
+  preserving context protocol resolvers and restoring the caller's loader even
+  when resource resolution fails.
 - New component classes evaluate class-level `@Profile` and `@Conditional`
   against the running Spring context before registration, including composed
   annotations and both condition phases. Rejected or unevaluable conditions stop
@@ -28,6 +31,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Direct `@Conditional` on supported added `@Bean` methods evaluates saved native
+  method metadata against the live Spring context in the registration phase.
+  Later saves re-evaluate conditions, remove inactive products and aliases, and
+  recover after condition errors. Composed Boot conditions remain unsupported.
 - Direct transaction/cache advice on supported public methods added with
   `@Scheduled` or ordinary `@EventListener`. Native operation interceptors now
   handle these callbacks, including checked rollback, cache eviction and cached

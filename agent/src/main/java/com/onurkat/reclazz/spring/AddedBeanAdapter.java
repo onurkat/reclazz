@@ -30,6 +30,7 @@ public final class AddedBeanAdapter {
     private static final String LAZY = "Lorg/springframework/context/annotation/Lazy;";
     private static final String SCOPE = "Lorg/springframework/context/annotation/Scope;";
     private static final String PROFILE = "Lorg/springframework/context/annotation/Profile;";
+    private static final String CONDITIONAL = "Lorg/springframework/context/annotation/Conditional;";
     private static final String PARAMETERS = InjectedNames.PREFIX + "parameters";
     private AddedBeanAdapter() { }
 
@@ -38,6 +39,7 @@ public final class AddedBeanAdapter {
         String name() { return names.get(0); }
         List<String> aliases() { return names.subList(1, names.size()); }
         boolean prototype() { return "prototype".equals(scope); }
+        boolean conditional() { return annotation(method.visibleAnnotations, CONDITIONAL) != null; }
     }
     record Plan(List<Factory> factories, List<String> refused, boolean full) { }
 
@@ -80,8 +82,15 @@ public final class AddedBeanAdapter {
                 if (signature.getArgumentTypes().length > 0
                         && method.visibleTypeAnnotations != null && !method.visibleTypeAnnotations.isEmpty())
                     throw new IllegalArgumentException("factory type annotations are not supported");
-                if (extraAnnotations(method.visibleAnnotations, BEAN, PRIMARY, QUALIFIER, LAZY, SCOPE, PROFILE))
+                if (extraAnnotations(method.visibleAnnotations, BEAN, PRIMARY, QUALIFIER, LAZY, SCOPE, PROFILE, CONDITIONAL))
                     throw new IllegalArgumentException("additional method annotations cannot be applied to the factory delegate");
+                AnnotationNode conditional = annotation(method.visibleAnnotations, CONDITIONAL);
+                if (conditional != null) {
+                    Object conditions = value(conditional, "value", null);
+                    if (!(conditions instanceof List<?> types) || types.stream().anyMatch(
+                            t -> !(t instanceof Type type) || type.getSort() != Type.OBJECT))
+                        throw new IllegalArgumentException("@Conditional requires an explicit condition class array");
+                }
                 if (bean.values != null) for (int i = 0; i < bean.values.size(); i += 2)
                     if (!Set.of("name", "value", "initMethod", "destroyMethod").contains(bean.values.get(i)))
                         throw new IllegalArgumentException("unsupported @Bean option " + bean.values.get(i));

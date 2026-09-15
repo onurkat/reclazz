@@ -63,8 +63,31 @@ in your own file and set `TURN` back rather than working ahead.
               |                        FIX  -> TURN=astra PHASE=fix
               |                        PASS -> PHASE=commit
               v
- [commit]  Claude   commits, archives .collab/current      -> PHASE=idle
+ [commit]  Claude   commits, archives .collab/current      -> TURN=astra PHASE=plan
 ```
+
+### Owner correction: automatic continuation (2026-09-15)
+
+Onur explicitly clarified: after Claude reports audit PASS and successfully
+commits, the turn returns to Astra. Do not leave both agents idle or wait for
+another "sıra sende" message. After archiving the completed task, Claude sets:
+
+```
+TURN=astra PHASE=plan TASK=next-capability ROUND=1
+```
+
+This is the next-item selection phase, not a fabricated feature plan. Astra
+checks the current approved capability queue, chooses an unfinished item, and
+replaces the placeholder task name with its concrete scope. For this continuing
+owner-authorized queue, Astra may write an explicitly owner-directed TASK/PLAN,
+gather evidence, implement and test, then return the work to Claude for independent
+audit. Required dependency approvals and the two-round limit still apply.
+Unrelated work still follows the original planning/review loop above.
+
+PASS without a successful commit does not start the next item. If an older
+handoff leaves STATE idle, Astra may repair it only after verifying the previous
+task's archived PASS, corresponding commit and empty current directory. Stop
+at idle when the owner pauses work or the approved queue is exhausted.
 
 Two rounds is the budget. A third disagreement on the same point, in
 either direction, stops the loop and goes to the owner with the two

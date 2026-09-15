@@ -66,7 +66,7 @@ class AddedBeanConditionalTest {
     }
 
     @Test
-    void scopedProxyRequestScopeAndConditionalAreRefused() throws Exception {
+    void scopedProxyRequestScopeAndMalformedConditionalAreRefused() throws Exception {
         ClassNode source = beans("scopedProxyBean", "requestBean", "conditionalBean");
         AnnotationNode proxy = new AnnotationNode(SCOPE);
         proxy.values = new ArrayList<>(List.of("value", "prototype", "proxyMode", new String[]{PROXY_MODE, "TARGET_CLASS"}));

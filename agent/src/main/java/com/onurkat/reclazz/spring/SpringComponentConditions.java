@@ -8,14 +8,22 @@ import com.onurkat.reclazz.util.Reflect;
 
 import java.lang.reflect.Proxy;
 
-/** Registration-time conditions for a new component, using the application's Spring. */
+/** Native condition evaluation using the application's Spring and current context. */
 final class SpringComponentConditions {
     private SpringComponentConditions() { }
 
     static boolean shouldSkip(Object definition, Object home, Object beanFactory,
                               ClassLoader applicationLoader, ClassLoader springLoader) throws ReflectiveOperationException {
-        Class<?> metadataType = Class.forName("org.springframework.core.type.AnnotatedTypeMetadata", false, springLoader);
         Object metadata = definition.getClass().getMethod("getMetadata").invoke(definition);
+        // Components participate in parsing and registration, unlike Bean methods.
+        return shouldSkipMetadata(metadata, home, beanFactory, applicationLoader, springLoader,
+                "PARSE_CONFIGURATION", "REGISTER_BEAN");
+    }
+
+    static boolean shouldSkipMetadata(Object metadata, Object home, Object beanFactory,
+                                      ClassLoader applicationLoader, ClassLoader springLoader,
+                                      String... phases) throws ReflectiveOperationException {
+        Class<?> metadataType = Class.forName("org.springframework.core.type.AnnotatedTypeMetadata", false, springLoader);
         if (!Boolean.TRUE.equals(metadataType.getMethod("isAnnotated", String.class)
                 .invoke(metadata, "org.springframework.context.annotation.Conditional"))) return false;
 
@@ -34,7 +42,17 @@ final class SpringComponentConditions {
                     default -> "Reclazz component condition resources";
                 };
             }
-            return method.invoke(home, args);
+            // DefaultResourceLoader consults the caller's TCCL unless the context
+            // has an explicit loader. Preserve context resolvers and path policy
+            // while making their default classpath lookup use the application.
+            Thread thread = Thread.currentThread();
+            ClassLoader previous = thread.getContextClassLoader();
+            try {
+                thread.setContextClassLoader(applicationLoader);
+                return method.invoke(home, args);
+            } finally {
+                thread.setContextClassLoader(previous);
+            }
         });
 
         // ConditionEvaluator is internal in both Spring 5.3 and 6.1. Any missing
@@ -50,7 +68,7 @@ final class SpringComponentConditions {
         // The single-argument overload infers PARSE_CONFIGURATION for components.
         // Registration-phase conditions (including bean-presence checks) need
         // the second pass that startup's configuration reader normally performs.
-        for (String phase : new String[]{"PARSE_CONFIGURATION", "REGISTER_BEAN"}) {
+        for (String phase : phases) {
             if (Boolean.TRUE.equals(shouldSkip.invoke(evaluator, metadata, phaseType.getField(phase).get(null)))) return true;
         }
         return false;
