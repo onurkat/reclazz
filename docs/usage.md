@@ -168,6 +168,25 @@ Multiple owning contexts resolve placeholders independently, using the same Spri
 classes. Other Spring versions, separate Spring installations, SAP Commerce runtime
 integration and a JDK 17 runtime have not been verified for this extension.
 
+### New component classes after startup
+
+A new class with a direct or composed Spring component stereotype can register
+in a running context, using Spring's merged annotation names (including
+`@AliasFor`). Singleton and prototype scopes are resolved through Spring's own
+scope metadata resolver. A lazy singleton is instantiated on its first lookup;
+a prototype is instantiated on each lookup. Registration itself creates neither.
+An eager singleton still initializes immediately, and a failed eager creation
+removes its definition. On context close, Spring destroys created singletons;
+prototype cleanup remains the caller's responsibility.
+
+Web/custom scopes and scoped proxies are refused before registration. This is
+not a repeat of the application's component scan: custom scan filters and new
+class-level `@Profile`/`@Conditional` evaluation are not implemented. Do not rely
+on conditional new components before restarting. These limits concern brand-new
+classes; [added factory methods](#bean-methods-added-after-startup) have separate
+metadata support. Real-agent tests cover lazy/prototype identity and destruction
+on the ordinary and child application classloaders with Spring 5.3.39.
+
 ### Lifecycle methods added after startup
 
 On a stock JDK, supported `@PostConstruct` and `@PreDestroy` methods added to a
@@ -212,7 +231,7 @@ method is refused to avoid duplicate invocation. One standard, unmodified
 either the javax or the jakarta namespace, must be present.
 
 Proxy, inherited, lazy/uninitialized, non-singleton, custom lifecycle processor,
-additional advice/annotation and `jakarta.annotation` cases are not covered by
+additional advice/annotation cases are not covered by
 this adapter. Unsupported additions are named as requiring a restart. Validation
 runs before singleton recreation and does not replace a previously installed
 callback plan on refusal. The compiled application code has already reloaded;
@@ -1047,9 +1066,9 @@ are not verified; this support targets Jackson's normal reflective accessor path
 With the agent attached at startup, add this method to an existing singleton
 `@Service` or `@Component`, compile, and it starts running without a restart.
 The bean may already be a standard transaction or cache proxy: the task is
-unwrapped to run on the real target, so it reads the live fields, and if the
-added method itself carries `@Transactional` or `@Cacheable`, that advice is
-applied through the same path as any added service method. A frozen proxy, a
+unwrapped to run on the real target, so it reads the live fields. Adding
+`@Transactional` or cache advice to the scheduled method itself remains
+unsupported. A frozen proxy, a
 non-singleton target source, or a proxy carrying a non-standard advisor is
 named and left for a restart. Scheduling must already be enabled in the
 application, for example with `@EnableScheduling`.
@@ -1083,8 +1102,9 @@ Spring stereotypes). It also works when the application had no scheduled tasks
 at startup. The existing scheduler, unrelated tasks and scheduling configuration
 are retained.
 
-Static methods, parameters, non-void/reactive return types, proxies/subclass
-instances and additional runtime method annotations (other than `@Deprecated`)
+Static methods, parameters, non-void/reactive return types, proxies other than
+the standard transaction/cache singleton proxies above, other subclass instances,
+and additional runtime method annotations (other than `@Deprecated`)
 are reported as unsupported for the added-method path. In particular, Reclazz
 does not schedule an added method while silently bypassing its advice.
 Custom composed scheduling annotations and classes registered only through
@@ -1101,8 +1121,8 @@ Correct the declaration and compile again to retry.
 With the agent attached at startup, add a listener to an existing singleton
 `@Service` or `@Component` and compile. It can be the class's first listener.
 The bean may already be a standard transaction or cache proxy: the listener is
-unwrapped to run on the real target, and advice the added method carries is
-applied through the same path as any added service method. A frozen proxy, a
+unwrapped to run on the real target. Additional transaction or cache advice
+on the added listener itself remains unsupported. A frozen proxy, a
 non-singleton target source, or a proxy carrying a non-standard advisor is
 named and left for a restart. Spring's event listener processor must already be
 present (as in an annotation-configured Spring context).
@@ -1151,7 +1171,7 @@ other beans and manually registered listeners keep their registrations.
 Multiple singleton instances and multiple contexts are handled separately.
 Each invocation reads the current singleton, so dependency refreshes can replace
 the bean without leaving its listener on a destroyed instance. An absent bean
-is skipped without being created; a replacement proxy is skipped and reported.
+is skipped without being created; an unsupported replacement proxy is skipped and reported.
 
 The added-method scope is a direct `@EventListener` on an instance method returning
 `void` or a single event object, including a private method, with exactly one
@@ -1159,7 +1179,7 @@ reference event parameter and no generic method signature. The bean class must c
 recognized by Reclazz. Extra runtime method annotations are limited to
 `@Order` and `@Deprecated`. Added `@TransactionalEventListener` methods have the
 [separate scope below](#transactional-event-listeners-added-after-startup).
-Added `@Async` methods, composed listener annotations, generic signatures, proxies/subclasses,
+Added `@Async` methods, composed listener annotations, generic signatures, unsupported proxies/subclasses,
 prototype beans, and classes registered only through XML or `@Bean` without a
 recognized stereotype require a restart. The added path requires the default
 Spring event listener factory; the standard transactional factory can coexist

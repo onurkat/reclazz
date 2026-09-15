@@ -159,7 +159,9 @@ than either.
   or a custom meta-annotated stereotype file becomes a live bean on any JDK 17+,
   dependencies injected and mappings registered, with the bean name resolved the
   way component scanning would (including `@AliasFor`), instead of waiting for
-  the next restart's component scan
+  the next restart's component scan. Lazy components wait for first access;
+  prototype components are created for each lookup. Web/custom scopes and scoped
+  proxies require a restart. [Scope](docs/usage.md#new-component-classes-after-startup).
 - **Annotation metadata**: an edited `@Transactional` or `@Cacheable` takes
   effect, not just the method body it sits on
 - **New exception handlers**: add an `@ExceptionHandler` method to a supported

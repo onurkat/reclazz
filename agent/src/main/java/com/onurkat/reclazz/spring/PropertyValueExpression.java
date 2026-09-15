@@ -129,10 +129,12 @@ final class PropertyValueExpression {
         String spel = "org.springframework.expression.spel.standard.SpelExpression";
         Class<?> composite = Class.forName("org.springframework.expression.common.CompositeStringExpression", false, loader);
         var parts = new java.util.ArrayList<>();
-        if (composite.isInstance(expression))
+        if (composite.isInstance(expression)) {
             for (Object part : (Object[]) composite.getMethod("getExpressions").invoke(expression))
                 if (part.getClass().getName().equals(spel)) parts.add(part);
-        else if (expression.getClass().getName().equals(spel)) parts.add(expression);
+        } else if (expression.getClass().getName().equals(spel)) {
+            parts.add(expression);
+        }
         return parts;
     }
 }
