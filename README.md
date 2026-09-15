@@ -240,8 +240,10 @@ than either.
   a changed `@Value` through its constructor is rebuilt the same way the
   constructor-bound properties bean is. Scalar `@Value` fields can also compute
   arithmetic and conditional expressions from changed placeholders; unsupported
-  expression operations hold the candidate without being evaluated. Constructor
-  SpEL remains outside this support. See [computed fields](docs/usage.md#computed-value-fields)
+  expression operations hold the candidate without being evaluated. Supported
+  scalar [constructor](docs/usage.md#computed-value-constructor-parameters) and
+  native [`@Bean` factory arguments](docs/usage.md#value-factory-method-parameters)
+  are checked before singleton recreation too. See [computed fields](docs/usage.md#computed-value-fields)
 - **Logging configuration**: `logging.level.<logger>` in a properties file, or a
   saved `logback.xml` / `log4j2.xml`, is applied to the running logging context.
   Raising a logger to debug is one of the most common reasons to restart a
@@ -650,7 +652,7 @@ compile with an older `--release` while you develop, or update Reclazz.
 | Spring bean logic | Yes | None |
 | New Spring beans (@Component) | **Yes**, a new class carrying a direct or custom meta-annotated stereotype is registered and wired with the scanner's own bean name, and `*-spring.xml` still works for XML-defined beans | None |
 | Spring XML/YAML changes | XML property edits and [selected singleton recreation](docs/usage.md#xml-singleton-recreation); [loaded Boot properties/YAML](docs/usage.md#yaml-and-removed-configuration-keys) | XML removal, new complex definitions and unsupported dependency graphs require restart |
-| Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved, beans taking changed direct or supported computed `@Value` constructor arguments rebuilt; supported scalar field SpEL recomputed; [property-value chains are followed for `@Value`](docs/usage.md#indirect-value-dependencies) | Unsupported expressions or constructor creation policies hold the candidate. [Fields](docs/usage.md#computed-value-fields) and [constructors](docs/usage.md#computed-value-constructor-parameters) |
+| Property changes | Rebound into `@ConfigurationProperties` beans, constructor-bound beans rebuilt, `@Value` fields re-resolved, beans taking changed direct or supported computed `@Value` constructor or native scalar `@Bean` factory arguments rebuilt; supported scalar field SpEL recomputed; [property-value chains are followed for `@Value`](docs/usage.md#indirect-value-dependencies) | Unsupported expressions or creation policies hold the candidate. [Factory arguments](docs/usage.md#value-factory-method-parameters), [fields](docs/usage.md#computed-value-fields) and [constructors](docs/usage.md#computed-value-constructor-parameters) |
 | Log levels and logging config | Yes (`logging.level.*`, `logback.xml`, `log4j2.xml`) | Appenders are rebuilt, so a reconfigure resets the context |
 | Superclass changes | No | None |
 

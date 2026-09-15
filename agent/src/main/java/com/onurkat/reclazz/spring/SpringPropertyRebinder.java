@@ -38,7 +38,8 @@ import com.onurkat.reclazz.util.Reflect;
  * the same way the constructor-bound properties bean is. Scalar field SpEL
  * can use literals and arithmetic/conditional operators over placeholders;
  * application-code access is rejected before live values change. The same subset
- * is supported on scalar constructor parameters of directly constructed singletons.
+ * is supported on scalar constructor parameters of directly constructed singletons
+ * and on scalar @Bean factory parameters with verified native creation metadata.
  */
 public final class SpringPropertyRebinder {
 
@@ -124,8 +125,8 @@ public final class SpringPropertyRebinder {
             StatusReporter.success("Rebuilt "
                     + Plural.of(rebuilt.size(), "bean")
                     + Plural.word(rebuilt.size(),
-                            " that takes a changed @Value through its constructor: ",
-                            " that take a changed @Value through their constructor: ")
+                            " that takes a changed @Value at creation: ",
+                            " that take a changed @Value at creation: ")
                     + rebuilt);
         }
         return new PropertyChangeOutcome(failures.isEmpty() ? PropertyChangeOutcome.State.APPLIED
@@ -204,6 +205,13 @@ public final class SpringPropertyRebinder {
                     if (affected.test(expression))
                         targets.add(new ValueTarget(bean, field, field.getType(), expression, name + "." + field.getName(), null));
                 }
+            }
+            var factoryValues = SpringFactoryValues.inspect(factory, name, singleton, annotation, value, affected);
+            if (factoryValues != null) {
+                targets.addAll(factoryValues.targets());
+                // The factory, not a constructor on its returned class, owns
+                // argument resolution. Even an unrelated save follows this rule.
+                continue;
             }
             // Recreation re-evaluates every argument, not just the one whose
             // property changed. Validate the unchanged @Value arguments too.
@@ -285,6 +293,16 @@ public final class SpringPropertyRebinder {
                 if (bean == null) continue;
 
                 Class<?> type = userClass(unwrapAopProxy(bean).getClass());
+                var factoryValues = SpringFactoryValues.inspect(beanFactory, name, bean,
+                        valueAnnotation, valueMember, affected);
+                if (factoryValues != null) {
+                    if (factoryValues.targets().isEmpty()) continue;
+                    if (factoryValues.targets().stream().anyMatch(target -> target.unsupportedReason() != null))
+                        failures.add(name + ": @Value factory creation policy changed after validation");
+                    else if (rebuildSingleton(context, name, type)) rebuilt.add(name);
+                    else failures.add(name + ": @Value factory bean could not be rebuilt");
+                    continue;
+                }
                 if (propertiesAnnotation != null && type.getAnnotation(propertiesAnnotation) != null) {
                     continue;
                 }
@@ -396,8 +414,8 @@ public final class SpringPropertyRebinder {
             Object[] pair = SpringBeanReloader.destroyAndRefreshBean(context, beanName);
             if (pair == null || pair[1] == null) {
                 RestartLedger.note(beanName,
-                        "a @Value constructor parameter that could not be rebuilt in place");
-                StatusReporter.warn(beanName + " takes a changed @Value through its constructor "
+                        "a @Value construction parameter that could not be rebuilt in place");
+                StatusReporter.warn(beanName + " takes a changed @Value at creation "
                         + "and could not be rebuilt in place. A restart is what applies it.");
                 return false;
             }
@@ -409,10 +427,10 @@ public final class SpringPropertyRebinder {
             return true;
         } catch (Throwable t) {
             RestartLedger.note(beanName,
-                    "a @Value constructor parameter that could not be rebuilt in place");
+                    "a @Value construction parameter that could not be rebuilt in place");
             StatusReporter.warn("Rebuilding " + beanName + " (" + type.getSimpleName()
                     + ") failed (" + (Failures.describe(t) == null ? t.getClass().getSimpleName() : Failures.describe(t))
-                    + "); the value it was given at startup is the one it keeps. "
+                    + "); the old bean may already be destroyed. "
                     + "A restart is what applies the new one.");
             return false;
         }

@@ -34,6 +34,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Property saves recreate existing native `@Bean` singleton products whose scalar
+  `@Value` factory arguments change. Every factory value is checked before live
+  recreation, including unchanged expressions, while Spring retains dependency
+  injection, lifecycle and alias behavior. Unsupported creation policies hold the
+  candidate; factory failures report partial application without a rollback claim.
 - Direct `@Async` on supported added service methods with `void`, `Future` or
   `CompletableFuture` results. Concrete generic signatures reach native metadata
   consumers, while Spring owns executor selection, outer future completion,
