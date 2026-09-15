@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.plugin.hybris
 
+import java.nio.file.AccessDeniedException
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -42,16 +43,40 @@ internal fun writeAtomically(target: Path, content: String) {
     try {
         Files.writeString(temporary, content)
         carryPermissions(target, temporary)
-        try {
-            Files.move(
-                temporary, target,
-                StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING
-            )
-        } catch (_: AtomicMoveNotSupportedException) {
-            Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING)
-        }
+        moveOnto(temporary, target)
     } finally {
         Files.deleteIfExists(temporary)
+    }
+}
+
+/**
+ * The move that replaces the target, retried past a Windows sharing violation.
+ *
+ * On POSIX filesystems a rename onto a file a reader has open just succeeds; the
+ * reader keeps reading the old inode. Windows refuses it with
+ * `AccessDeniedException` while any handle is open, so a reader polling the file
+ * makes an otherwise fine write fail. The handle is released in moments, so this
+ * retries briefly rather than surfacing a transient lock as a lost write. Any
+ * other failure, a target that is a non-empty directory among them, is not a
+ * sharing violation and is raised at once.
+ */
+private fun moveOnto(temporary: Path, target: Path) {
+    val deadline = System.nanoTime() + 2_000_000_000L // two seconds
+    while (true) {
+        try {
+            try {
+                Files.move(
+                    temporary, target,
+                    StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING
+                )
+            } catch (_: AtomicMoveNotSupportedException) {
+                Files.move(temporary, target, StandardCopyOption.REPLACE_EXISTING)
+            }
+            return
+        } catch (denied: AccessDeniedException) {
+            if (System.nanoTime() >= deadline) throw denied
+            Thread.sleep(5)
+        }
     }
 }
 

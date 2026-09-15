@@ -56,50 +56,45 @@ class AddedJacksonPropertyReloadTest {
                 String input = "{\"existing\":\"kept\",\"score\":\"12\",\"tags\":[\"a\",\"b\"],"
                         + "\"note\":null,\"secret\":\"must-not-leak\""
                         + (stage == 3 ? "" : ",\"label\":\"name" + stage + "\"") + "}";
-                // The reload log line can precede the Jackson mapper picking up
-                // the new shape under load, so wait for it before the strict
-                // checks instead of racing the first request.
-                long settle = System.nanoTime() + TimeUnit.SECONDS.toNanos(10);
-                while (System.nanoTime() < settle) {
-                    var probe = client.send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/new"))
-                            .timeout(Duration.ofSeconds(10)).header("Content-Type", "application/json")
-                            .POST(HttpRequest.BodyPublishers.ofString(input)).build(), HttpResponse.BodyHandlers.ofString());
-                    if (probe.statusCode() == 200) {
-                        var b = json.readTree(probe.body());
-                        boolean ready = stage == 3
-                                ? !b.path("json").has("display_name") && !b.path("json").has("renamed")
-                                : b.path("json").path(stage == 2 ? "renamed" : "display_name").asText().equals("NAME" + stage);
-                        if (ready) break;
+                // The reload log line can precede the Jackson mapper serving the
+                // new shape under load, and a request landing mid-reload can see a
+                // transient status or the old shape. Verify the whole stage on a
+                // poll and retry a not-yet-consistent response rather than racing
+                // the first request after the reload is logged.
+                long settle = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+                while (true) {
+                    try {
+                        for (String age : new String[]{"new", "old"}) {
+                            String response = post(client, port, age, input, 200);
+                            var body = json.readTree(response);
+                            assertEquals("kept", body.path("json").path("existing").asText());
+                            assertEquals(12, body.path("json").path("score").asInt());
+                            assertEquals(12, body.path("state").path("score").asInt(), "same storage as application field reads");
+                            assertEquals("b", body.path("state").path("tags").get(1).asText());
+                            assertEquals("initial", body.path("json").path("note").asText(), "nulls=SKIP preserves initializer");
+                            assertFalse(body.path("json").has("secret"), response);
+                            assertEquals("hidden", body.path("state").path("secret").asText());
+                            assertFalse(body.path("reflected").asBoolean(), "original reflection stays unchanged");
+                            if (stage == 3) {
+                                assertFalse(body.path("json").has("display_name"));
+                                assertFalse(body.path("json").has("renamed"));
+                            } else {
+                                String key = stage == 2 ? "renamed" : "display_name";
+                                assertEquals("NAME" + stage, body.path("json").path(key).asText(), response);
+                                assertEquals("NAME" + stage, body.path("state").path("display").asText());
+                                assertFalse(body.path("json").has(stage == 2 ? "display_name" : "renamed"));
+                            }
+                        }
+                        post(client, port, "new", "{\"score\":\"invalid-number\"}", 400);
+                        if (stage == 3) post(client, port, "new", "{\"label\":\"removed\"}", 400);
+                        assertEquals("custom", json.readTree(post(client, port, "custom", "{\"unknown\":1}", 200))
+                                .path("json").path("existing").asText(), "custom DTO deserializer stays in charge");
+                        break;
+                    } catch (AssertionError | java.io.IOException notConsistentYet) {
+                        if (System.nanoTime() >= settle) throw notConsistentYet;
+                        Thread.sleep(50);
                     }
-                    Thread.sleep(50);
                 }
-                for (String age : new String[]{"new", "old"}) {
-                    String response = post(client, port, age, input, 200);
-                    System.out.println("[jackson-input] fields=" + fields + " child=" + childLoader
-                            + " stage=" + stage + " " + age + " " + response);
-                    var body = json.readTree(response);
-                    assertEquals("kept", body.path("json").path("existing").asText());
-                    assertEquals(12, body.path("json").path("score").asInt());
-                    assertEquals(12, body.path("state").path("score").asInt(), "same storage as application field reads");
-                    assertEquals("b", body.path("state").path("tags").get(1).asText());
-                    assertEquals("initial", body.path("json").path("note").asText(), "nulls=SKIP preserves initializer");
-                    assertFalse(body.path("json").has("secret"), response);
-                    assertEquals("hidden", body.path("state").path("secret").asText());
-                    assertFalse(body.path("reflected").asBoolean(), "original reflection stays unchanged");
-                    if (stage == 3) {
-                        assertFalse(body.path("json").has("display_name"));
-                        assertFalse(body.path("json").has("renamed"));
-                    } else {
-                        String key = stage == 2 ? "renamed" : "display_name";
-                        assertEquals("NAME" + stage, body.path("json").path(key).asText(), response);
-                        assertEquals("NAME" + stage, body.path("state").path("display").asText());
-                        assertFalse(body.path("json").has(stage == 2 ? "display_name" : "renamed"));
-                    }
-                }
-                post(client, port, "new", "{\"score\":\"invalid-number\"}", 400);
-                if (stage == 3) post(client, port, "new", "{\"label\":\"removed\"}", 400);
-                assertEquals("custom", json.readTree(post(client, port, "custom", "{\"unknown\":1}", 200))
-                        .path("json").path("existing").asText(), "custom DTO deserializer stays in charge");
             }
         }
     }
