@@ -31,6 +31,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Added `@RabbitListener` methods resolve queue expressions through the application's
+  Spring processor, including bean-provided names, `Queue` objects and lists.
+  Later listener saves re-evaluate routing; expression errors clean up partial
+  registrations and a valid save retries.
 - Direct `@Conditional` on supported added `@Bean` methods evaluates saved native
   method metadata against the live Spring context in the registration phase.
   Later saves re-evaluate conditions, remove inactive products and aliases, and

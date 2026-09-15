@@ -241,6 +241,102 @@ class SpringRabbitReloaderTest {
             assertFalse(s.reloader.reloadRabbitListeners(Owner.class, ADDED, annotated("first", "id")));
         }
     }
+    public static class Routing {
+        String name = "route-one";
+        int evaluations;
+        public String getName() { return name; }
+        public String getCountedName() { evaluations++; return name; }
+        public org.springframework.amqp.core.Queue getQueue() { return new org.springframework.amqp.core.Queue(name); }
+        public List<String> getNames() { return List.of(name, "route-two"); }
+        public List<Object> getMixed() { return List.of(getQueue(), "route-two"); }
+    }
+    public static class NativeExpressionOwner {
+        @RabbitListener(id = "native-expression", queues = "${route.expression}")
+        public void receive(String value) { }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {
+            "#{@routing.name}", "#{@routing.queue}", "#{@routing.names}",
+            "#{@routing.mixed}", "#{'${route.names}'.split(',')}"})
+    void queueExpressionsMatchNativeAnnotationProcessing(String expression) throws Exception {
+        var routing = new Routing();
+        String[] expected;
+        try (var nativeContext = new AnnotationConfigApplicationContext()) {
+            nativeContext.getEnvironment().getPropertySources().addFirst(new org.springframework.core.env.MapPropertySource(
+                    "routes", Map.of("route.expression", expression, "route.names", "route-one,route-two")));
+            nativeContext.registerBean("rabbitConnectionFactory", CachingConnectionFactory.class,
+                    () -> new CachingConnectionFactory("127.0.0.1", 1));
+            nativeContext.registerBean("routing", Routing.class, () -> routing);
+            nativeContext.register(Config.class, NativeExpressionOwner.class);
+            nativeContext.refresh();
+            var registry = nativeContext.getBean(RabbitListenerEndpointRegistry.class);
+            expected = ((SimpleMessageListenerContainer) registry.getListenerContainer("native-expression")).getQueueNames();
+            assertTrue(expected.length > 0);
+        }
+        try (var s = new Scope()) {
+            s.context.getBeanFactory().registerSingleton("routing", routing);
+            s.context.getEnvironment().getPropertySources().addFirst(new org.springframework.core.env.MapPropertySource(
+                    "routes", Map.of("route.names", "route-one,route-two")));
+            assertTrue(s.reloader.reloadRabbitListeners(Owner.class, ADDED, expressionBytes("first", "added", expression)),
+                    RestartLedger.digest().toString());
+            assertArrayEquals(expected, s.container("added").getQueueNames());
+            invoke(s.container("added"), "message");
+            assertEquals(List.of("first:message"), s.owner().calls);
+        }
+    }
+
+    @Test void queueExpressionsReevaluateOnSaveAndRecoverAfterResolutionFailure() throws Exception {
+        try (var s = new Scope()) {
+            var routing = new Routing();
+            s.context.getBeanFactory().registerSingleton("routing", routing);
+            byte[] bytes = expressionBytes("first", "added", "#{@routing.name}");
+            assertTrue(s.reloader.reloadRabbitListeners(Owner.class, ADDED, bytes));
+            var old = s.container("added");
+            routing.name = "route-edited";
+            assertArrayEquals(new String[]{"route-one"}, old.getQueueNames(), "bean changes alone do not reroute consumers");
+            assertTrue(s.reloader.beforeBeanRefresh(Owner.class));
+            assertTrue(s.reloader.reloadRabbitListeners(Owner.class, ADDED, bytes));
+            assertNotSame(old, s.container("added"));
+            assertArrayEquals(new String[]{"route-edited"}, s.container("added").getQueueNames());
+            assertTrue(s.reloader.beforeBeanRefresh(Owner.class));
+            assertFalse(s.reloader.reloadRabbitListeners(Owner.class, ADDED,
+                    expressionBytes("first", "added", "#{@missingRouting.name}")));
+            assertNull(s.container("added"));
+            assertFalse(RestartLedger.digest().isEmpty());
+            assertTrue(s.reloader.reloadRabbitListeners(Owner.class, ADDED, bytes));
+            assertArrayEquals(new String[]{"route-edited"}, s.container("added").getQueueNames());
+        }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"#{42}", "#{broken(}", "#{@missingRouting.name}"})
+    void queueExpressionFailuresRemovePartialRegistrations(String expression) throws Exception {
+        try (var s = new Scope()) {
+            register(s, "unrelated", new Other(), "first");
+            var unrelated = s.container("unrelated");
+            var routing = new Routing();
+            s.context.getBeanFactory().registerSingleton("routing", routing);
+            var n = read(expressionBytes("first", "first-id", "#{@routing.countedName}"));
+            var second = read(expressionBytes("second", "second-id", expression));
+            method(n, "second").visibleAnnotations = method(second, "second").visibleAnnotations;
+            assertFalse(s.reloader.reloadRabbitListeners(Owner.class, ADDED, write(n)));
+            assertEquals(1, routing.evaluations, "the first listener reached native resolution before the second failed");
+            assertEquals(Set.of("unrelated"), s.registry.getListenerContainerIds());
+            assertSame(unrelated, s.container("unrelated"));
+            assertFalse(RestartLedger.digest().isEmpty());
+            assertTrue(s.reloader.reloadRabbitListeners(Owner.class, ADDED, expressionBytes("first", "first-id", "#{'route-one'}")));
+            assertArrayEquals(new String[]{"route-one"}, s.container("first-id").getQueueNames());
+        }
+    }
+
+    private static byte[] expressionBytes(String method, String id, String expression) throws Exception {
+        var n = read(annotated(method, id));
+        var a = method(n, method).visibleAnnotations.get(0);
+        a.values.set(a.values.indexOf("queues") + 1, new ArrayList<>(List.of(expression)));
+        return write(n);
+    }
+
     @Test void invalidMetadataCannotCreatePartialRegistration() throws Exception {
         try (var s = new Scope()) {
             var n=read(annotated("first", "id")); var a=annotation("second-id");
@@ -250,7 +346,8 @@ class SpringRabbitReloaderTest {
         }
     }
     @Test void unsupportedShapesAndMethodAdviceAreExplicitlyRefused() throws Exception {
-        for (var pair : List.of(List.of("autoStartup","false"),List.of("id","${id}"), List.of("concurrency","3-1"))) {
+        for (var pair : List.of(List.of("autoStartup","false"),List.of("id","${id}"), List.of("concurrency","3-1"),
+                List.of("id", "#{'id'}"), List.of("containerFactory", "#{'factory'}"), List.of("concurrency", "#{2}"))) {
             var n=read(annotated("first","id")); var a=method(n,"first").visibleAnnotations.get(0);
             a.values.addAll(pair); assertFalse(AddedRabbitListenerAdapter.inspect(write(n),ADDED).refused().isEmpty());
         }

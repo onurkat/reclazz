@@ -822,16 +822,24 @@ annotations, and restore them. Original listeners are registered again after
 bean recreation; unrelated containers retain their identity.
 
 For newly added methods, use an explicit nonempty literal `id` and `queues` that
-are each a literal or a `${property}` placeholder resolved by the application's
-own value resolver (a `#{SpEL}` expression stays out of scope), naming existing
-queues. Optional literal `containerFactory` and positive `concurrency` (number or ascending
+are each a literal, `${property}` placeholder or `#{SpEL}` expression resolved by
+the application's own Spring processor. Expressions may produce queue names,
+Spring AMQP `Queue` objects, String arrays or iterables of those supported values,
+naming existing queues. For example, `queues = "#{@routing.queues}"` reads an
+application bean's queue list; `queues = "#{'${orders.queues}'.split(',')}"`
+combines a property with an expression. Saving the listener again resolves the
+current values and replaces its consumers. Changing a routing bean or property
+alone does not move existing consumers. Resolution errors leave the failed added
+registration absent and clean up partial registrations from that pass; unrelated
+container IDs remain. A later valid save retries. Old containers and expression
+side effects are not rolled back. Optional literal `containerFactory` and positive `concurrency` (number or ascending
 range) are accepted. Explicit `autoStartup` is outside this stage: Spring's late
 registration can start a container even when that flag is false. The class directly extends
 `Object`, has no interfaces/type variables, and uses only the stereotypes above
 and optional `@Deprecated`. Callback annotations are direct `@RabbitListener`
 and optional `@Deprecated`; parameter annotations are `@Payload`, `@Header` and
-`@Headers`. Composed/repeatable/class-level handlers, `#{SpEL}` expression queue
-names, inline queue/exchange/binding declarations, return/reply/async methods,
+`@Headers`. Composed/repeatable/class-level handlers,
+expression IDs/factories/concurrency, inline queue/exchange/binding declarations, return/reply/async methods,
 proxies, method advice and inheritance are outside this support.
 
 Existing methods are re-scanned by Spring and do not use the added-method option
@@ -850,8 +858,10 @@ simple factory without a customizer. Local channel transactions are preserved.
 Manual/automatic-without-ack modes, external transaction managers, container
 advice, custom executors, direct/stream/batch containers and custom listener
 adapters are refused for retirement of either original or added consumers.
-Unsupported added-method metadata, foreign added IDs and mixed Rabbit/JMS/Kafka
-owners are checked before owned consumers are retired. Original consumers are
+Unsupported static metadata shapes, foreign added IDs and mixed Rabbit/JMS/Kafka
+owners are checked before owned consumers are retired. Queue expression parsing
+and evaluation occur later during native registration, after retirement; an
+expression failure does not restore the old consumers. Original consumers are
 checked against the runtime lifecycle restrictions above, not the added-method
 metadata restrictions. Unknown broker ownership also requires a restart. Unsupported Rabbit infrastructure does not block unrelated
 beans.
@@ -877,7 +887,11 @@ Verified locally with Spring Rabbit 2.4.17, Spring Framework 5.3.39, RabbitMQ
 4.3.5 and stock JDK 21. Real-agent tests cover six saves both on an already used
 bean with no listeners and beside both explicitly named and ID-less original
 listeners, including payload/header
-conversion, rollback/redelivery and context close. A blocked real original
+conversion, rollback/redelivery and context close. Queue-expression tests on
+normal and child classloaders cover bean-driven rerouting, invalid result types,
+recovery to multiple queues and removal, with real message delivery. Native
+annotation comparison also covers `Queue` values, mixed lists and property/expression
+composition. A blocked real original
 callback checks force-close, timeout, repeat, interruption and retry. Other
 framework/broker versions, late attach and JDK 17 runtime were not verified
 locally. Linux CI is configured for JDK 17/21; those runs are separate evidence.
