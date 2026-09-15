@@ -67,8 +67,11 @@ public final class AddedEventListenerAdapter {
             else if (transactional(method) && (result != Type.VOID
                     || method.visibleAnnotations.stream().anyMatch(a -> a.desc.equals(EVENT))))
                 reason = "transactional listeners require a void return and only the direct TransactionalEventListener annotation";
+            else if (AddedOperationMetadata.callbackProblem(source, method) != null)
+                reason = AddedOperationMetadata.callbackProblem(source, method);
             else if (classAdvice || method.visibleAnnotations.stream().anyMatch(a ->
-                    !carried(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")))
+                    !carried(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
+                            && (transactional(method) || !AddedOperationMetadata.isOperationAnnotation(a.desc))))
                 reason = "additional advice or method annotations cannot be applied to the event delegate";
             if (reason == null) methods.add(method);
             else refused.add(method.name + method.desc + ": " + reason);

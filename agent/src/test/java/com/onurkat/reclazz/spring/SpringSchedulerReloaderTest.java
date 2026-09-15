@@ -151,7 +151,7 @@ class SpringSchedulerReloaderTest {
         }
         ClassNode source = read(scheduled("first", "fixedDelay", 1000L));
         source.methods.stream().filter(m -> m.name.equals("first")).findFirst().orElseThrow().visibleAnnotations
-                .add(new AnnotationNode("Lorg/springframework/transaction/annotation/Transactional;"));
+                .add(new AnnotationNode("Lorg/springframework/scheduling/annotation/Async;"));
         var plan = AddedScheduledAdapter.inspect(write(source), ADDED);
         assertTrue(plan.methods().isEmpty());
         assertTrue(plan.refused().get(0).contains("additional method annotations"));

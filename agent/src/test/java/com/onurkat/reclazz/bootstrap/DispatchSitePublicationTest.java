@@ -87,4 +87,19 @@ class DispatchSitePublicationTest {
         dispatch.retarget(Map.of("before", good));
         assertEquals("good", (String) site.getTarget().invoke());
     }
+    public static class Base { public String value() { return "original"; } }
+    public static class ProxyReceiver extends Base { @Override public String value() { return "intercepted"; } }
+
+    @Test
+    void aColdSiteAfterReloadStillUsesTheReceiversOverride() throws Throwable {
+        var dispatch = DispatchTable.getOrCreate(Base.class);
+        var body = MethodHandles.dropArguments(MethodHandles.constant(String.class, "updated"), 0, Base.class);
+        dispatch.retarget(Map.of("coldProxy", body));
+        var publicCall = MethodHandles.lookup().findVirtual(Base.class, "value", MethodType.methodType(String.class));
+        dispatch.registerOverrideGuard("coldProxy", Base.class, "value", publicCall);
+        var site = dispatch.getOrCreateMethodSite("coldProxy", new MutableCallSite(publicCall));
+        assertEquals("intercepted", (String) site.dynamicInvoker().invokeExact((Base) new ProxyReceiver()));
+        assertEquals("updated", (String) site.dynamicInvoker().invokeExact(new Base()));
+    }
+
 }

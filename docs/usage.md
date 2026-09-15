@@ -1066,9 +1066,9 @@ are not verified; this support targets Jackson's normal reflective accessor path
 With the agent attached at startup, add this method to an existing singleton
 `@Service` or `@Component`, compile, and it starts running without a restart.
 The bean may already be a standard transaction or cache proxy: the task is
-unwrapped to run on the real target, so it reads the live fields. Adding
-`@Transactional` or cache advice to the scheduled method itself remains
-unsupported. A frozen proxy, a
+unwrapped to run on the real target, so it reads the live fields. Supported
+public callbacks may also carry direct transaction/cache annotations, as described
+[below](#transaction-and-cache-advice-on-added-callbacks). A frozen proxy, a
 non-singleton target source, or a proxy carrying a non-standard advisor is
 named and left for a restart. Scheduling must already be enabled in the
 application, for example with `@EnableScheduling`.
@@ -1104,7 +1104,8 @@ are retained.
 
 Static methods, parameters, non-void/reactive return types, proxies other than
 the standard transaction/cache singleton proxies above, other subclass instances,
-and additional runtime method annotations (other than `@Deprecated`)
+and additional runtime method annotations outside `@Deprecated` and the
+[operation subset below](#transaction-and-cache-advice-on-added-callbacks)
 are reported as unsupported for the added-method path. In particular, Reclazz
 does not schedule an added method while silently bypassing its advice.
 Custom composed scheduling annotations and classes registered only through
@@ -1121,8 +1122,9 @@ Correct the declaration and compile again to retry.
 With the agent attached at startup, add a listener to an existing singleton
 `@Service` or `@Component` and compile. It can be the class's first listener.
 The bean may already be a standard transaction or cache proxy: the listener is
-unwrapped to run on the real target. Additional transaction or cache advice
-on the added listener itself remains unsupported. A frozen proxy, a
+unwrapped to run on the real target. Supported public callbacks may also carry
+[direct transaction/cache annotations](#transaction-and-cache-advice-on-added-callbacks).
+A frozen proxy, a
 non-singleton target source, or a proxy carrying a non-standard advisor is
 named and left for a restart. Spring's event listener processor must already be
 present (as in an annotation-configured Spring context).
@@ -1177,7 +1179,8 @@ The added-method scope is a direct `@EventListener` on an instance method return
 `void` or a single event object, including a private method, with exactly one
 reference event parameter and no generic method signature. The bean class must carry a Spring stereotype
 recognized by Reclazz. Extra runtime method annotations are limited to
-`@Order` and `@Deprecated`. Added `@TransactionalEventListener` methods have the
+`@Order`, `@Deprecated` and the [operation subset below](#transaction-and-cache-advice-on-added-callbacks).
+Added `@TransactionalEventListener` methods have the
 [separate scope below](#transactional-event-listeners-added-after-startup).
 Added `@Async` methods, composed listener annotations, generic signatures, unsupported proxies/subclasses,
 prototype beans, and classes registered only through XML or `@Bean` without a
@@ -1196,6 +1199,51 @@ remain subject to Spring's normal event delivery behavior.
 
 This path is runtime-tested on Spring 5.3.39 with JDK 21. Spring 6 compatibility
 has source-level checks but has not been verified in a running application.
+
+### Transaction and cache advice on added callbacks
+
+A supported public `@Scheduled` or ordinary `@EventListener` method added after
+startup can carry direct `@Transactional`, `@Cacheable`, `@CachePut`, `@CacheEvict`
+or `@Caching`. It uses the same application transaction/cache interceptors as
+[added service operations](#operations-on-added-service-methods). Scheduling and
+event annotations stay on the framework delegate; operation annotations stay on
+the saved method metadata, so the delegate does not add a second advice chain.
+Event conditions and `@Order` still apply. A cached returned event is still
+published on a cache hit, although the callback body is not executed again.
+
+For example, a newly added cleanup job can commit its writes and evict a cache
+only after a successful invocation:
+
+```java
+@Scheduled(fixedDelay = 60000)
+@Transactional(rollbackFor = Exception.class)
+@CacheEvict(cacheNames = "orders", allEntries = true)
+public void cleanup() throws Exception {
+    orderStore.removeExpired();
+}
+```
+
+The application must already enable the relevant Spring operation infrastructure.
+Its configured advice order, propagation, rollback and cache rules are preserved;
+this does not make an ordinary cache transactional. For eviction after commit,
+configure cache advice outside transaction advice. A failure remains subject to
+the configured rollback/eviction rules; the example's checked exceptions roll back.
+
+The advised callback must be public, concrete, non-final and non-generic, on a
+non-final class directly extending Object without interfaces. The existing
+singleton, standard-advisor and direct-stereotype constraints still apply.
+Unadvised private callbacks retain their previous support. Additional advice on
+`@TransactionalEventListener`, class-level advice, composed operation annotations,
+`@Async`, arbitrary aspects and method-security annotations are outside this
+extension. Unsupported operation infrastructure fails before the callback body.
+
+Real-agent tests with Spring 5.3.39 and H2 exercise ordinary and child classloaders,
+commit/checked rollback, successful versus failed cache eviction, event cache hits
+and returned-event publication, removal of advice, removal/restoration of callbacks,
+and old proxy references over four saves. They invoke Spring's registered scheduled
+Runnable explicitly to control the database assertions; timer behavior remains
+covered by the separate scheduling reload tests. Same-class self calls retain the
+existing service-operation behavior and do not acquire transaction interception.
 
 ### Transactional event listeners added after startup
 
