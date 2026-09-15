@@ -970,6 +970,7 @@ Calls from other watched application classes now run the application's real
 Spring transaction/cache interceptors around the added companion method. This
 covers direct `@Transactional`, `@Cacheable`, `@CachePut`, `@CacheEvict` and
 `@Caching` metadata, plus class-level transaction settings and `@CacheConfig`.
+Ordinary service methods also accept [composed transaction annotations](#composed-transaction-annotations-on-added-services).
 Spring owns manager selection, rollback rules, cache keys, conditions, `unless`
 and advisor ordering. Saved parameter names (when compiled with `-parameters`)
 and indexed arguments such as `#p0` are available. A configured key generator
@@ -1006,8 +1007,8 @@ be a singleton merely because its class matches one.
 This does not add interface methods to existing JDK proxies, add reflective
 methods to the original class, or cover new overrides of already-resolvable
 inherited methods. Static/private/final methods, final service classes, generic
-metadata, composed/additional advice annotations, scoped/dynamic/opaque/nested
-proxies and reactive return types are outside this path. Future-returning transaction/cache
+metadata, composed annotations outside the transaction scope below, additional
+advice annotations, scoped/dynamic/opaque/nested proxies and reactive return types are outside this path. Future-returning transaction/cache
 operations require the direct [async service scope](#async-service-methods-added-after-startup)
 below; without `@Async`, those advised Future operations remain unsupported. Existing
 methods follow their existing dispatch; this boundary is installed only for
@@ -1029,6 +1030,50 @@ parameter names, custom key generation, annotation changes, method removal and
 restoration, and old/new bean references. Other Spring versions and a JDK 17
 runtime were not exercised. Spring JDBC/TX and H2 are test-only dependencies of
 Reclazz and are absent from the production agent.
+
+### Composed transaction annotations on added services
+
+An added ordinary service method can use an existing runtime annotation that
+centralizes transaction rules:
+
+```java
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Transactional(rollbackFor = Exception.class)
+public @interface Work {
+    @AliasFor(annotation = Transactional.class, attribute = "readOnly")
+    boolean readOnly() default false;
+}
+
+// Added to a supported singleton service after startup:
+@Work(readOnly = true)
+public Order findOrder(long id) { /* ... */ }
+```
+
+Nested transaction composition, class defaults and method overrides are supported.
+The saved annotation values are passed to Spring's native transaction attribute
+source. Spring owns `@AliasFor` merging, manager selection, propagation, read-only
+hints and rollback rules. Editing the service's annotation usage refreshes that
+metadata; removing just the annotation removes transaction interception, and
+removing/restoring the method follows the existing retained-call-site contract.
+Read-only remains Spring's transaction hint, not a new database write prohibition.
+
+The annotation graph must contain only transaction semantics and Java `@Target`,
+`@Retention`, `@Documented`, `@Inherited` or `@Deprecated` metadata. Custom markers,
+stereotypes or other framework semantics combined into the same annotation,
+repeatable containers and cyclic graphs are outside this scope. A recognized
+transaction graph with unsupported companion metadata is refused before its body
+runs. Annotation classes must already be resolvable through the application
+loader. Editing the annotation type's own definition is not covered; save edits
+to its usage on the service instead. Composed cache/async/security annotations and
+composed transaction callbacks remain separate limitations. All ordinary operation
+receiver, proxy, advice, visibility and generic restrictions above still apply.
+
+Verified with Spring 5.3.39, H2 2.2.224 and JDK 21: native attribute comparisons,
+checked-exception rollback, read-only hints, manager aliases and `REQUIRES_NEW`
+inside an outer rollback. Real agent tests cover five saves through a held CGLIB
+proxy in ordinary and child classloaders, including annotation removal and method
+removal/restoration. No new Spring 6, JDK 17 or live SAP compatibility claim.
 
 ### Edited aspect pointcuts
 

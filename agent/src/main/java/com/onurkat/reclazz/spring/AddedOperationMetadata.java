@@ -36,10 +36,12 @@ final class AddedOperationMetadata {
     static Plan create(Class<?> owner, byte[] bytes, MethodHandles.Lookup lookup, boolean previouslyActive) throws IllegalAccessException {
         var source = new ClassNode();
         new ClassReader(bytes).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
-        boolean classTx = has(source.visibleAnnotations, Set.of(TX));
+        var transactions = new ComposedTransactionAnnotations(owner.getClassLoader());
+        boolean classTx = transactions.has(source.visibleAnnotations);
+        boolean composedClassTx = transactions.composed(source.visibleAnnotations);
         boolean classCache = has(source.visibleAnnotations, CACHE);
         boolean operations = classTx || classCache || source.methods.stream().anyMatch(m ->
-                has(m.visibleAnnotations, Set.of(TX, ASYNC)) || has(m.visibleAnnotations, CACHE));
+                transactions.has(m.visibleAnnotations) || has(m.visibleAnnotations, Set.of(ASYNC)) || has(m.visibleAnnotations, CACHE));
         if (!operations && !previouslyActive) return new Plan(List.of(), false);
         Set<String> reflected = new HashSet<>();
         for (Method method : owner.getDeclaredMethods()) reflected.add(method.getName() + Type.getMethodDescriptor(method));
@@ -56,18 +58,22 @@ final class AddedOperationMetadata {
         Map<String, String> reasons = new HashMap<>();
         for (MethodNode method : added) {
             String reason = null;
-            if (source.signature != null || (method.signature != null && !signatureMetadata(method, classTx, classCache)))
+            boolean methodTx = transactions.has(method.visibleAnnotations);
+            if (source.signature != null || (method.signature != null && !signatureMetadata(method, classTx || methodTx, classCache)))
                 reason = "generic operation metadata";
             if ((source.access & Opcodes.ACC_FINAL) != 0 || (method.access & Opcodes.ACC_FINAL) != 0) reason = "final class or method";
             if (source.visibleAnnotations != null) for (var a : source.visibleAnnotations)
-                if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !CLASS_METADATA.contains(a.desc))
+                if (!transactions.supported(a.desc) && !CACHE.contains(a.desc) && !CLASS_METADATA.contains(a.desc))
                     reason = "unsupported class annotation " + a.desc;
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations)
-                if (!a.desc.equals(TX) && !a.desc.equals(ASYNC) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
+                if (!transactions.supported(a.desc) && !a.desc.equals(ASYNC) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
                         && !OTHER_ADAPTERS.contains(a.desc)
                         && !(a.desc.equals("Lorg/springframework/core/annotation/Order;")
                         && has(method.visibleAnnotations, Set.of("Lorg/springframework/context/event/EventListener;"))))
                     reason = "unsupported method annotation " + a.desc;
+            if ((composedClassTx || transactions.composed(method.visibleAnnotations))
+                    && has(method.visibleAnnotations, OTHER_ADAPTERS))
+                reason = "composed transaction annotations require an ordinary service method";
             if (has(method.visibleAnnotations, Set.of(ASYNC))) {
                 if (!asyncService(method) && (!has(method.visibleAnnotations, Set.of(EVENT))
                         || has(method.visibleAnnotations, Set.of("Lorg/springframework/transaction/event/TransactionalEventListener;",
@@ -81,7 +87,7 @@ final class AddedOperationMetadata {
             }
             if (reason != null) reasons.put(method.name + method.desc, reason);
             MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, method.name, method.desc,
-                    signatureMetadata(method, classTx, classCache) ? method.signature : null,
+                    signatureMetadata(method, classTx || methodTx, classCache) ? method.signature : null,
                     method.exceptions.toArray(String[]::new));
             if (method.parameters != null) for (var p : method.parameters) mv.visitParameter(p.name, p.access);
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations) a.accept(mv.visitAnnotation(a.desc, true));
@@ -98,13 +104,13 @@ final class AddedOperationMetadata {
             String descriptor = Type.getMethodDescriptor(method);
             MethodNode node = added.stream().filter(m -> m.name.equals(method.getName()) && m.desc.equals(descriptor)).findFirst().orElseThrow();
             String reason = reasons.get(node.name + node.desc);
-            boolean signature = signatureMetadata(node, classTx, classCache);
+            boolean signature = signatureMetadata(node, classTx || transactions.has(node.visibleAnnotations), classCache);
             if (signature && !concreteSignature(method)) reason = "generic async operation metadata requires concrete types";
             if (!signature && (java.util.concurrent.Future.class.isAssignableFrom(method.getReturnType())
                     || java.util.concurrent.CompletionStage.class.isAssignableFrom(method.getReturnType())
                     || publisher(method.getReturnType()))) reason = "asynchronous operation result";
             entries.add(new Entry(method, InjectedNames.siteKey(method.getName(), InjectedNames.descHash(descriptor)), reason,
-                    classTx || has(node.visibleAnnotations, Set.of(TX)), classCache || has(node.visibleAnnotations, CACHE), has(node.visibleAnnotations, Set.of(ASYNC))));
+                    classTx || transactions.has(node.visibleAnnotations), classCache || has(node.visibleAnnotations, CACHE), has(node.visibleAnnotations, Set.of(ASYNC))));
         }
         return new Plan(entries, operations);
     }
