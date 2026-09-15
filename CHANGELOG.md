@@ -31,6 +31,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Added `@KafkaListener` methods resolve topic and group expressions through the
+  application's native processor. `__listener` refers to the real singleton;
+  temporary bindings are restored on success/error, and later saves re-evaluate
+  routing while preserving consumer retirement and partial-registration cleanup.
 - Added `@RabbitListener` methods resolve queue expressions through the application's
   Spring processor, including bean-provided names, `Queue` objects and lists.
   Later listener saves re-evaluate routing; expression errors clean up partial

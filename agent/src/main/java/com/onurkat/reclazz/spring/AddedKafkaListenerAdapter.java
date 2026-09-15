@@ -66,11 +66,10 @@ public final class AddedKafkaListenerAdapter {
                 String id = literal(options.get("id"), "id");
                 Object topics = options.get("topics");
                 if (!(topics instanceof List<?> list) || list.isEmpty()) throw new IllegalArgumentException("topics are required");
-                // A topic may be a ${property} placeholder: the real processor
-                // resolves it through the application's own value resolver. A
-                // #{SpEL} expression stays out of scope.
+                // Topic/group expressions are resolved by the application's
+                // native processor, with __listener bound to the real owner.
                 for (Object topic : list) destination(topic, "topic");
-                // groupId may be a ${property} placeholder; containerFactory is
+                // groupId may be a placeholder or expression; containerFactory is
                 // resolved by Reclazz itself, so it stays a literal.
                 if (options.containsKey("groupId")) destination(options.get("groupId"), "groupId");
                 if (options.containsKey("containerFactory")) literal(options.get("containerFactory"), "containerFactory");
@@ -89,11 +88,10 @@ public final class AddedKafkaListenerAdapter {
             throw new IllegalArgumentException(name + " must be a nonempty literal");
         return (String) value;
     }
-    // A destination may carry a ${property} placeholder but not a #{SpEL}
-    // expression, which the added-listener path does not evaluate here.
+    // The native processor validates the resolved topic/group value types.
     private static String destination(Object value, String name) {
-        if (!(value instanceof String s) || s.isBlank() || s.contains("#{"))
-            throw new IllegalArgumentException(name + " must be a nonempty literal or ${property} placeholder");
+        if (!(value instanceof String s) || s.isBlank())
+            throw new IllegalArgumentException(name + " must be a nonempty literal, ${property} placeholder or #{expression}");
         return (String) value;
     }
     private static boolean typeVariables(String signature) {

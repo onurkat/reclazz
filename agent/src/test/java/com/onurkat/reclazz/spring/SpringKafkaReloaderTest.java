@@ -27,6 +27,12 @@ class SpringKafkaReloaderTest {
     private static final Set<String> ADDED = Set.of("first:" + STRING, "second:" + STRING);
     @org.springframework.stereotype.Component public static class Owner {
         final List<String> calls = new ArrayList<>();
+        String topic = "route-one", group = "group-one";
+        int evaluations;
+        public String getTopic() { return topic; }
+        public String getGroup() { return group; }
+        public List<String> getTopics() { return List.of(topic, "route-two"); }
+        public String getCountedTopic() { evaluations++; return topic; }
         public void first(String value) { calls.add("first:" + value); }
         private void second(String value) { calls.add("second:" + value); }
         public void record(ConsumerRecord<Integer,String> value) { calls.add("record:" + value.value()); }
@@ -190,6 +196,117 @@ class SpringKafkaReloaderTest {
             assertTrue(scope.reloader.beforeBeanRefresh(Owner.class));
             assertTrue(scope.registry.getListenerContainerIds().isEmpty());
         }
+    }
+
+    public static class NativeExpressionOwner extends Owner {
+        @org.springframework.kafka.annotation.KafkaListener(id = "native-expression", topics = "${route.expression}",
+                groupId = "#{__listener.group}", autoStartup = "false")
+        public void receive(String value) { }
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"#{__listener.topic}", "#{__listener.topics}",
+            "#{@routing}", "#{'${route.names}'.split(',')}", "#{{@routing, __listener.topic}}"})
+    void topicAndGroupExpressionsMatchNativeStartup(String expression) throws Exception {
+        String[] expected; String group;
+        try (var context = new AnnotationConfigApplicationContext()) {
+            context.getEnvironment().getPropertySources().addFirst(new org.springframework.core.env.MapPropertySource(
+                    "routes", Map.of("route.expression", expression, "route.names", "route-one,route-two")));
+            context.registerBean("routing", String.class, () -> "named-route");
+            context.register(Config.class, NativeExpressionOwner.class);
+            context.refresh();
+            var container = context.getBean(KafkaListenerEndpointRegistry.class).getListenerContainer("native-expression");
+            expected = container.getContainerProperties().getTopics(); group = container.getGroupId();
+            assertNotNull(expected); assertTrue(expected.length > 0);
+        }
+        try (var s = new Scope()) {
+            s.context.getBeanFactory().registerSingleton("routing", "named-route");
+            s.context.getEnvironment().getPropertySources().addFirst(new org.springframework.core.env.MapPropertySource(
+                    "routes", Map.of("route.names", "route-one,route-two")));
+            assertTrue(s.reloader.reloadKafkaListeners(Owner.class, ADDED,
+                    expressionBytes("first", "added", expression, "#{__listener.group}")), RestartLedger.digest().toString());
+            var c = s.registry.getListenerContainer("added");
+            assertArrayEquals(expected, c.getContainerProperties().getTopics());
+            assertEquals(group, c.getGroupId());
+            invoke(c, "body"); assertEquals(List.of("first:body"), s.owner().calls);
+            assertNull(listenerScope(s).resolveContextualObject("__listener"));
+        }
+    }
+
+    @Test void expressionScopeRestoresItsPreviousBindingAfterSuccessAndFailure() throws Exception {
+        try (var s = new Scope()) {
+            var scope = listenerScope(s);
+            Object outer = new Object();
+            var add = com.onurkat.reclazz.util.Reflect.findMethod(scope.getClass(), "addListener", String.class, Object.class);
+            assertNotNull(add); add.invoke(scope, "__listener", outer);
+            add.invoke(scope, "unrelated", outer);
+            assertTrue(s.reloader.reloadKafkaListeners(Owner.class, ADDED,
+                    expressionBytes("first", "added", "#{__listener.topic}", "#{__listener.group}")));
+            assertSame(outer, scope.resolveContextualObject("__listener"));
+            assertSame(outer, scope.resolveContextualObject("unrelated"));
+            assertTrue(s.reloader.beforeBeanRefresh(Owner.class));
+            assertFalse(s.reloader.reloadKafkaListeners(Owner.class, ADDED,
+                    expressionBytes("first", "added", "#{42}", "group")));
+            assertNull(s.registry.getListenerContainer("added"));
+            assertSame(outer, scope.resolveContextualObject("__listener"));
+            assertSame(outer, scope.resolveContextualObject("unrelated"));
+        }
+    }
+
+    @Test void expressionRoutingBelongsToEachContextAndReevaluatesOnSave() throws Exception {
+        try (var one = new Scope(); var two = new Scope()) {
+            two.owner().topic = "other-topic"; two.owner().group = "other-group";
+            byte[] bytes = expressionBytes("first", "added", "#{__listener.topic}", "#{__listener.group}");
+            assertTrue(one.reloader.reloadKafkaListeners(Owner.class, ADDED, bytes));
+            assertTrue(two.reloader.reloadKafkaListeners(Owner.class, ADDED, bytes));
+            var original = one.registry.getListenerContainer("added");
+            one.owner().topic = "edited-topic"; one.owner().group = "edited-group";
+            assertArrayEquals(new String[]{"route-one"}, original.getContainerProperties().getTopics());
+            assertTrue(one.reloader.beforeBeanRefresh(Owner.class));
+            assertTrue(one.reloader.reloadKafkaListeners(Owner.class, ADDED, bytes));
+            var changed = one.registry.getListenerContainer("added");
+            assertNotSame(original, changed);
+            assertArrayEquals(new String[]{"edited-topic"}, changed.getContainerProperties().getTopics());
+            assertEquals("edited-group", changed.getGroupId());
+            assertArrayEquals(new String[]{"other-topic"}, two.registry.getListenerContainer("added").getContainerProperties().getTopics());
+            assertEquals("other-group", two.registry.getListenerContainer("added").getGroupId());
+        }
+    }
+
+    static java.util.stream.Stream<org.junit.jupiter.params.provider.Arguments> invalidExpressions() {
+        return java.util.stream.Stream.of(
+                org.junit.jupiter.params.provider.Arguments.of("#{42}", "group"),
+                org.junit.jupiter.params.provider.Arguments.of("#{broken(}", "group"),
+                org.junit.jupiter.params.provider.Arguments.of("#{@missingRoute}", "group"),
+                org.junit.jupiter.params.provider.Arguments.of("topic", "#{42}"));
+    }
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.MethodSource("invalidExpressions")
+    void expressionFailuresCleanPartialRegistrationsAndScope(String topic, String group) throws Exception {
+        try (var s = new Scope()) {
+            register(s, "unrelated", new Other(), "first"); var unrelated = s.registry.getListenerContainer("unrelated");
+            var n = read(expressionBytes("first", "first-id", "#{__listener.countedTopic}", "group"));
+            method(n, "second").visibleAnnotations = method(read(expressionBytes("second", "second-id", topic, group)), "second").visibleAnnotations;
+            assertFalse(s.reloader.reloadKafkaListeners(Owner.class, ADDED, write(n)));
+            assertEquals(1, s.owner().evaluations, "the first registration must reach native expression resolution");
+            assertEquals(Set.of("unrelated"), s.registry.getListenerContainerIds());
+            assertSame(unrelated, s.registry.getListenerContainer("unrelated"));
+            assertNull(listenerScope(s).resolveContextualObject("__listener"));
+            assertTrue(s.reloader.reloadKafkaListeners(Owner.class, ADDED,
+                    expressionBytes("first", "first-id", "#{__listener.topic}", "#{__listener.group}")));
+            invoke(s.registry.getListenerContainer("first-id"), "recovered");
+            assertEquals(List.of("first:recovered"), s.owner().calls);
+        }
+    }
+
+    private static org.springframework.beans.factory.config.Scope listenerScope(Scope s) {
+        Object processor = s.context.getBean(org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor.class);
+        return (org.springframework.beans.factory.config.Scope) com.onurkat.reclazz.util.Reflect.readField(processor, "listenerScope");
+    }
+    private static byte[] expressionBytes(String name, String id, String topic, String group) throws Exception {
+        var n = read(annotated(name, id)); var a = method(n, name).visibleAnnotations.get(0);
+        a.values.set(a.values.indexOf("topics") + 1, new ArrayList<>(List.of(topic)));
+        a.values.addAll(List.of("groupId", group)); return write(n);
     }
 
     @Test void unsupportedOptionsShapesAndExtraAdviceAreExplicitlyRejected() throws Exception {
