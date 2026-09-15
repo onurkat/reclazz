@@ -156,7 +156,12 @@ public final class SpringAddedBeanReloader {
                     throw new IllegalStateException("configuration is no longer a supported singleton");
                 return current;
             } catch (Exception failure) { throw new IllegalStateException("configuration cannot be resolved", failure); }
-        }, method, (metadata, descriptor) -> AddedBeanArguments.prepare(factory, name, metadata, descriptor));
+        }, method, (metadata, descriptor) -> {
+            Supplier<Object[]> resolved = AddedBeanArguments.prepare(factory, name, metadata, descriptor);
+            return full && (method.method().access & org.objectweb.asm.Opcodes.ACC_STATIC) == 0
+                    && metadata.getParameterCount() != 0
+                    ? SpringConfigurationCalls.arguments(factory, type, method, resolved) : resolved;
+        });
         Supplier<?> checked = () -> {
             Object product = Objects.requireNonNull(delegate.get(), "added @Bean factory returned null");
             try { rejectInfrastructure(product.getClass(), spring); }

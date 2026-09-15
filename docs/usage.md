@@ -427,8 +427,8 @@ custom name-discovery policies are not used by this path. No-argument factories
 remain supported.
 
 Default `@Configuration` (including explicit `proxyBeanMethods=true`) supports
-added instance factories with no parameters that are neither private nor final.
-For example:
+added instance factories that are neither private nor final, including the same
+supported parameters as lite/static factories. For example:
 
 ```java
 @Configuration
@@ -437,27 +437,45 @@ public class Clients {
     public Transport transport() { return new Transport(); }
 
     @Bean
-    public Client client() { return new Client(transport()); }
+    public Client client(Transport transport, @Value("${client.limit:5}") int limit) {
+        return new Client(transport, limit);
+    }
+
+    public Client currentClient() { return client(null, 0); }
 }
 ```
 
-The call to `transport()` resolves the same singleton as `getBean("transport")`
-and its alias. Calls from an existing configuration reference or another
-instrumented application class use that same reference path. The container's
-factory supplier executes the method body to create a product; nested instance
-factory calls go back through Spring. A method reference such as `this::transport`
-created in the edited configuration follows the same route, including when it is
-retained across later saves. Reflection, arbitrary method handles and method
-references created in other classes are outside this added-factory scope.
-Spring tracks their dependencies and rejects
-unresolvable creation cycles. Correcting the factory and saving again recovers.
-Static factory calls and manually constructed configurations retain ordinary Java
-semantics; calling a static factory directly can create another object.
+Container creation resolves the dependency and value arguments through Spring.
+A call to `client(...)` on the enhanced configuration resolves the container's
+singleton, including through an existing configuration reference, another
+instrumented application class or a method reference created in the edited
+configuration. If the singleton already exists, explicit arguments do not replace
+it. On first creation, non-null explicit arguments are used; if **any** argument
+is null, Spring's singleton-reference policy resolves **all** arguments instead.
+Thus `client(null, 0)` resolves both the transport and the configured limit.
+For a supported prototype factory, each call creates a new product using its
+explicit arguments, including null. Aliases still identify the same definition.
 
-Parameterized instance factories in full configuration remain unsupported: the
-added supplier path does not implement explicit argument calls to those methods.
-Their parameter annotations do not make them supported. The richer parameter
-support above remains available for lite configuration and static factories.
+The container's supplier executes the direct method body; nested factory calls
+return through Spring. Supplied arguments are isolated between calls, threads and
+contexts, and a failed call cannot carry its arguments into the next lookup.
+A method reference created in the edited configuration, such as `this::client`,
+follows later saves even when retained. Removing the factory deletes its Spring
+registration; old retained callers follow the general removed-method policy and
+can run their captured Java body outside the container, which may predate the
+latest edit. Restoring the factory brings
+back its container reference route. Reflection, arbitrary method handles and
+method references created in other classes remain outside this added-factory
+scope. Spring tracks dependencies and rejects unresolvable creation cycles.
+Correcting a factory and saving again recovers. Static factory calls and manually
+constructed configurations retain ordinary Java semantics, including their supplied
+arguments; a direct static or manual-config call can create another object.
+
+This supports argument passing through configuration-method calls. Explicit
+arguments passed directly to `BeanFactory.getBean(name, args)` are not forwarded
+to supplier-backed added factories; ordinary `getBean(name)` resolves their
+parameters. It does not add new supported parameter types or annotations, and
+it does not implement Spring's general circular-reference permissiveness.
 Full configuration must be Spring's direct enhanced subclass with its native bean
 factory binding; additional AOP proxies, user subclasses, inheritance and changing
 configuration mode at runtime are outside this scope. Existing lifecycle and

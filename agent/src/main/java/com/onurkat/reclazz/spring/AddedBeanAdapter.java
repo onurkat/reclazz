@@ -69,8 +69,8 @@ public final class AddedBeanAdapter {
                 requireConcreteParameters(method.signature);
                 Type[] arguments = signature.getArgumentTypes();
                 if (full && (method.access & Opcodes.ACC_STATIC) == 0
-                        && (arguments.length != 0 || (method.access & (Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL)) != 0))
-                    throw new IllegalArgumentException("full Configuration instance factories require no parameters and must be overridable");
+                        && (method.access & (Opcodes.ACC_PRIVATE | Opcodes.ACC_FINAL)) != 0)
+                    throw new IllegalArgumentException("full Configuration instance factories must be overridable");
                 for (int i = 0; i < arguments.length; i++)
                     if (arguments[i].getSort() < Type.ARRAY && (method.visibleParameterAnnotations == null
                             || annotation(method.visibleParameterAnnotations[i], VALUE) == null))

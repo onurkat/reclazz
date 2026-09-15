@@ -34,6 +34,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Added instance `@Bean` methods in default/full `@Configuration` accept supported
+  dependency and `@Value` arguments. Enhanced configuration calls preserve first
+  creation arguments, singleton identity, native null-stub resolution and prototype
+  arguments, with nested/concurrent/context isolation and exception cleanup.
 - Property saves recreate existing native `@Bean` singleton products whose scalar
   `@Value` factory arguments change. Every factory value is checked before live
   recreation, including unchanged expressions, while Spring retains dependency

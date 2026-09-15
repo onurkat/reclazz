@@ -30,7 +30,9 @@ class AddedFullConfigurationTest {
     @Test void acceptsDefaultAndExplicitFullButRefusesUnsupportedInstanceShapes() throws Exception {
         var plan = plan("product", "stat");
         assertTrue(plan.full()); assertEquals(2, plan.factories().size()); assertTrue(plan.refused().isEmpty());
-        for (String name : List.of("withArgument", "hidden", "fixed"))
+        assertEquals(1, plan("withArgument").factories().size());
+        assertTrue(plan("withArgument").refused().isEmpty());
+        for (String name : List.of("hidden", "fixed"))
             assertEquals(1, plan(name).refused().size(), name);
         ClassNode node = read(); node.visibleAnnotations.get(0).values = new ArrayList<>(List.of("proxyBeanMethods", true));
         assertTrue(AddedBeanAdapter.inspect(write(node), Set.of()).full());
