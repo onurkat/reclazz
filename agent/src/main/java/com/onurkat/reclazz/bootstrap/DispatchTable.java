@@ -142,7 +142,9 @@ public final class DispatchTable {
                     MethodHandle latest = latestMethodTargets.get(key);
                     if (latest != null) {
                         try {
-                            site.setTarget(latest);
+                            // A first external call can arrive after the reload.
+                            // It needs the same proxy/override guard as a warm site.
+                            site.setTarget(respectingOverrides(key, latest));
                         } catch (Exception ignored) {
                             // type mismatch — leave the v0 handle in place
                         }

@@ -61,7 +61,9 @@ final class AddedOperationMetadata {
                     reason = "unsupported class annotation " + a.desc;
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations)
                 if (!a.desc.equals(TX) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
-                        && !OTHER_ADAPTERS.contains(a.desc))
+                        && !OTHER_ADAPTERS.contains(a.desc)
+                        && !(a.desc.equals("Lorg/springframework/core/annotation/Order;")
+                        && has(method.visibleAnnotations, Set.of("Lorg/springframework/context/event/EventListener;"))))
                     reason = "unsupported method annotation " + a.desc;
             if (reason != null) reasons.put(method.name + method.desc, reason);
             MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, method.name, method.desc, null,
@@ -89,6 +91,27 @@ final class AddedOperationMetadata {
         }
         return new Plan(entries, operations);
     }
+    static boolean isOperationAnnotation(String descriptor) {
+        return TX.equals(descriptor) || CACHE.contains(descriptor);
+    }
+
+    // Callback delegates use bootstrapMethod, whose operation metadata only
+    // covers newly added public methods. Refuse shapes that could miss that route.
+    static String callbackProblem(ClassNode owner, MethodNode method) {
+        if (method.visibleAnnotations == null || method.visibleAnnotations.stream()
+                .noneMatch(a -> isOperationAnnotation(a.desc))) return null;
+        if ((method.access & Opcodes.ACC_PUBLIC) == 0 || (method.access & (Opcodes.ACC_FINAL
+                | Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE
+                | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_BRIDGE)) != 0
+                || (owner.access & Opcodes.ACC_FINAL) != 0)
+            return "operation callbacks require public non-final concrete instance methods on a non-final class";
+        if (owner.signature != null || method.signature != null)
+            return "generic operation callbacks are unsupported";
+        if (!"java/lang/Object".equals(owner.superName) || !owner.interfaces.isEmpty())
+            return "operation callbacks require a direct Object subclass without interfaces";
+        return null;
+    }
+
     private static boolean has(List<AnnotationNode> annotations, Set<String> names) {
         return annotations != null && annotations.stream().anyMatch(a -> names.contains(a.desc));
     }

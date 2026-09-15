@@ -41,7 +41,10 @@ public final class AddedScheduledAdapter {
             String reason = null;
             if (!method.desc.equals("()V") || (method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) != 0)
                 reason = "only no-argument void instance methods are supported";
+            else if (AddedOperationMetadata.callbackProblem(source, method) != null)
+                reason = AddedOperationMetadata.callbackProblem(source, method);
             else if (method.visibleAnnotations.stream().anyMatch(a -> !isScheduling(a.desc)
+                    && !AddedOperationMetadata.isOperationAnnotation(a.desc)
                     && !a.desc.equals("Ljava/lang/Deprecated;")))
                 reason = "additional method annotations cannot be applied to the scheduled delegate";
             if (reason == null) methods.add(method);

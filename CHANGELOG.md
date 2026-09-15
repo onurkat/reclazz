@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- A method first called after reload retains a receiver's proxy/override dispatch,
+  so an existing Spring proxy still applies its advice on that first call.
 - Register new components with the application loader captured by Spring's bean
   factory, so background file watching also finds classes in a child classloader.
 - Validate the AST even when a quoted `#{` inside a single `@Value` expression
@@ -21,6 +23,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Direct transaction/cache advice on supported public methods added with
+  `@Scheduled` or ordinary `@EventListener`. Native operation interceptors now
+  handle these callbacks, including checked rollback, cache eviction and cached
+  returned events. Private/final/generic or inherited advised callback shapes
+  remain refused; added transaction-phase listeners and Async remain separate.
 - **`${property}` in a message listener's selection metadata.** Beyond the
   destination, a `@KafkaListener` `groupId` and a `@JmsListener` `selector` added
   at runtime may now be a `${property}` placeholder, resolved by the
