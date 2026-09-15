@@ -65,8 +65,8 @@ public final class AddedRabbitListenerAdapter {
                 String id = literal(options.get("id"), "id");
                 if (!(options.get("queues") instanceof List<?> queues) || queues.isEmpty())
                     throw new IllegalArgumentException("queues must contain existing queue names");
-                // A queue may be a ${property} placeholder: the real processor
-                // resolves it. A #{SpEL} expression stays out of scope.
+                // Queue placeholders and expressions are resolved by the real
+                // application's processor, including bean-backed queue lists.
                 for (Object queue : queues) destination(queue, "queue");
                 for (String option : List.of("containerFactory"))
                     if (options.containsKey(option)) literal(options.get(option), option);
@@ -83,8 +83,8 @@ public final class AddedRabbitListenerAdapter {
         return new Plan(List.copyOf(methods), List.copyOf(ids), List.copyOf(refused));
     }
     private static String destination(Object value, String name) {
-        if (!(value instanceof String s) || s.isBlank() || s.contains("#{"))
-            throw new IllegalArgumentException(name + " must be a nonempty literal or ${property} placeholder");
+        if (!(value instanceof String s) || s.isBlank())
+            throw new IllegalArgumentException(name + " must be a nonempty literal, ${property} placeholder or #{expression}");
         return (String) value;
     }
     private static String literal(Object value, String name) {
