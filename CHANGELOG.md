@@ -34,6 +34,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   so a save no longer fails when another process has the target file open.
 
 ### Added
+- Computed constructor and native scalar `@Bean` property arguments refresh on
+  supported standard transaction-only JDK/CGLIB proxies. Native Spring recreation
+  preserves commit/rollback and replaces surviving plain holders' proxy references.
+  Invalid candidates stay held; extra/custom advice and unsupported target sources
+  remain outside this path, and live lifecycle failures still report Partial.
 - Added instance `@Bean` methods in default/full `@Configuration` accept supported
   dependency and `@Value` arguments. Enhanced configuration calls preserve first
   creation arguments, singleton identity, native null-stub resolution and prototype
