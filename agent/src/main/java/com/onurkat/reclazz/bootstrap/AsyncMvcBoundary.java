@@ -13,14 +13,14 @@ public final class AsyncMvcBoundary {
     private static final String ASYNC = "org.springframework.web.context.request.async.";
     private AsyncMvcBoundary() { }
 
-    public static Object enter(Object request, Class<?> frameworkServlet) {
-        return enter(request, frameworkServlet.getClassLoader(), RequestGate.global());
+    public static Object enter(Object request, Class<?> frameworkServlet, String namespace) {
+        return enter(request, frameworkServlet.getClassLoader(), RequestGate.global(), namespace);
     }
 
-    static Object enter(Object request, ClassLoader loader, RequestGate gate) {
+    static Object enter(Object request, ClassLoader loader, RequestGate gate, String namespace) {
         Frame frame = new Frame(gate);
         try {
-            Class<?> api = Class.forName("javax.servlet.ServletRequest", false, loader);
+            Class<?> api = Class.forName(namespace + ".servlet.ServletRequest", false, loader);
             Object existing = api.getMethod("getAttribute", String.class).invoke(request, KEY);
             Token token = existing == null ? new Token(gate) : (Token) existing;
             gate.enter(token.lease);

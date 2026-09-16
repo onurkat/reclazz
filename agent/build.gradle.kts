@@ -178,7 +178,7 @@ val hibernateTest by tasks.registering(Test::class) {
 // the Spring 5 test classpath, so it gets its own isolated graph. Spring 6
 // needs JDK 17+, which this build already targets. Test-only; never packaged.
 val springSixTests = sourceSets.create("springSixTest") {
-    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
     // Direct registrar tests need the agent's existing ASM runtime as well as
     // its classes. This adds no Spring 5 test dependencies to the isolated graph.
     runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
@@ -186,6 +186,13 @@ val springSixTests = sourceSets.create("springSixTest") {
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:10.1.60") {
+        // jakarta.annotation-api below already supplies these classes.
+        exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
+    }
     // Native modern method authorization; isolated from Spring 5 and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-config:6.3.4")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.

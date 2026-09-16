@@ -16,9 +16,9 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.objectweb.asm.Opcodes.*;
 
-class RequestBoundaryTransformerTest {
+class JakartaRequestBoundaryTransformerTest {
     @ParameterizedTest
-    @ValueSource(strings = {"javax"})
+    @ValueSource(strings = {"jakarta"})
     void normalCaughtAndUncaughtExitsReleaseTheBoundary(String api) throws Exception {
         String request = api + "/servlet/http/HttpServletRequest";
         String response = api + "/servlet/http/HttpServletResponse";
