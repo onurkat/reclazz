@@ -376,14 +376,15 @@ one local configuration singleton in each affected bean factory. Lite
 configuration (`proxyBeanMethods=false`) requires an unproxied instance; default
 configuration requires Spring's direct enhanced subclass as described below. Extra runtime class annotations are limited to
 `@Deprecated`; methods additionally allow direct `@Primary`, `@Qualifier`,
-`@Lazy`, `@Scope`, `@Profile` and `@Conditional`. A direct `@Lazy` makes the added bean lazy, so
+`@Lazy`, `@Scope`, `@Profile`, `@Conditional` and the three Boot condition annotations
+described below. A direct `@Lazy` makes the added bean lazy, so
 it is created on first access rather than when the save is applied; `@Lazy(false)`
 keeps it eager. A direct `@Scope("prototype")` gives every lookup a new instance;
 `@Scope("singleton")` is the default. A direct `@Profile` registers the bean only
 when the running environment accepts its expression, evaluated by Spring's own
 `Environment`, and a later save that changes the expression re-evaluates it, so a
 bean can join or leave on an edit. Web or custom scopes,
-scoped-proxy `@Scope`, advice, class-level primary/qualifier policies, composed
+scoped-proxy `@Scope`, advice, class-level primary/qualifier policies, other composed
 annotations and additional proxies require a restart. A prototype bean is not
 tracked for destruction by Spring, so its destroy method and `close()` are not
 called when the context closes; a lazy singleton is destroyed normally once it
@@ -408,11 +409,30 @@ error reports a failure and leaves that factory unregistered until a later
 successful save. Old products and condition callback side effects are not rolled
 back. Conditions see definitions already registered at that point in source order,
 not a completed dependency graph of all factories from the save. Property-only
-changes do not trigger this registration pass. Composed annotations such as
-`@ConditionalOnProperty`, class-level conditions on the configuration, repeated
-configuration parsing and Boot auto-configuration ordering remain unsupported.
-An unavailable native condition API refuses the factory. Shared tests cover
-Spring 5.3.39 and 6.1.14; real-agent activation/error/removal/restoration tests cover
+changes do not trigger this registration pass.
+
+Direct Boot `@ConditionalOnProperty`, `@ConditionalOnBean` and
+`@ConditionalOnMissingBean` on these factories use the same native evaluation path.
+Boot reads the saved annotation attributes and live environment/bean registry;
+property prefixes, multiple names, `havingValue` and `matchIfMissing` retain Boot's
+semantics. Bean conditions can select a name/type, search the parent context, or
+infer a non-generic type from the saved factory return type. This does not require
+the added method to become visible through reflection. Existing lazy definitions
+participate in bean-presence checks without forcing their creation. A factory with
+`@ConditionalOnMissingBean` does not veto itself on a later save: its old owned
+definition is retired before the replacement is evaluated. Unrelated beans remain
+untouched. The three conditions can combine with each other and direct `@Profile`.
+Verified with Boot 2.7.18 / Spring 5.3.39, using native-startup comparisons and real
+agent reloads on lite/default configurations with normal/child classloaders.
+
+Other Boot condition annotations, custom composed conditions, class-level conditions
+on the configuration, repeated configuration parsing and Boot auto-configuration
+ordering remain unsupported. Changes to unrelated beans do not automatically
+re-evaluate conditions; save the configuration again. Generic return deduction is
+outside the existing supported factory signatures. Boot 3 condition behavior has
+not been verified here. An unavailable Boot annotation or native condition API
+refuses the factory. The underlying direct `@Conditional` tests cover
+Spring 5.3.39 and 6.1.14; their real-agent activation/error/removal/restoration tests cover
 Spring 5.3.39 with lite/default configurations on normal and child classloaders.
 
 Parameters allow direct `@Qualifier` and `@Value`. Primitive parameters without

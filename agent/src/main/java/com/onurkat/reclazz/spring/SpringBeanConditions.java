@@ -19,6 +19,13 @@ final class SpringBeanConditions {
         // loaders. Conditions belong to the context evaluating this factory.
         ClassLoader applicationLoader = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
         if (applicationLoader == null) throw new IllegalStateException("conditional factory requires an application classloader");
+        // Spring's metadata reader can omit an annotation it cannot resolve.
+        // A missing Boot API must refuse, never turn a conditional bean into an
+        // unconditional one. Resolve through this context's application loader.
+        if (method.visibleAnnotations != null) for (var annotation : method.visibleAnnotations) {
+            if (AddedBeanAdapter.BOOT_CONDITIONS.contains(annotation.desc))
+                Class.forName(Type.getType(annotation.desc).getClassName(), false, applicationLoader);
+        }
         // MethodMetadata does not expose a JVM descriptor. Select the exact
         // overload before Spring reads it, preserving its real owner and name.
         // This bytecode is only a metadata view; it is never defined as a class.
