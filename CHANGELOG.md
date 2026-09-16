@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Added service method authorization also works with native `@EnableMethodSecurity`
+  on Spring 6.1.14 / Security 6.3.4. Both pre/post policies are required independently;
+  saved class defaults, lazy authentication, native observations and transaction/cache
+  ordering are preserved. Unsupported matching filter/result advice is refused.
 - Added ordinary singleton service methods can use direct `@PreAuthorize` and
   `@PostAuthorize` through the application's classic native Spring Security
   interceptor. Saved policies, class defaults, old CGLIB references and native

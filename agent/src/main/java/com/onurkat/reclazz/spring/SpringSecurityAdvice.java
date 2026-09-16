@@ -44,7 +44,7 @@ final class SpringSecurityAdvice {
         return false;
     }
     private static boolean securityName(String name) {
-        return name.startsWith(ROOT) || name.startsWith("javax.annotation.security.") || name.startsWith("jakarta.annotation.security.");
+        return name.startsWith(ROOT) || name.startsWith("org.springframework.security.authorization.") || name.startsWith("javax.annotation.security.") || name.startsWith("jakarta.annotation.security.");
     }
 
     static Object interceptor(Object advisor) throws ReflectiveOperationException {

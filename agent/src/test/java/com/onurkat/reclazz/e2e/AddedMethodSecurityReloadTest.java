@@ -15,10 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AddedMethodSecurityReloadTest {
     @TempDir Path tmp;
+    String applicationClasspath() { return WatchedApp.springClasspath(); }
+    String applicationSource() { return APP; }
     @ParameterizedTest @ValueSource(booleans={false,true})
     void heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean child) throws Exception {
-        var builder=WatchedApp.in(tmp).classpath(WatchedApp.springClasspath()).jvmArgs("-Dprobe.dir="+tmp)
-                .with("App",APP).with("Store",store(0)).with("Probe",probe(false));
+        var builder=WatchedApp.in(tmp).classpath(applicationClasspath()).jvmArgs("-Dprobe.dir="+tmp)
+                .with("App",applicationSource()).with("Store",store(0)).with("Probe",probe(false));
         if(child)builder.childClassLoader();
         try(var app=builder.start()) {
             app.awaitOrFail("READY=true","native security proxy missing");
