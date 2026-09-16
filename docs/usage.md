@@ -1979,7 +1979,7 @@ and identifies the bean and constructor parameter. A corrected save retries the
 pending keys. Unrelated property saves do not recreate the bean.
 
 This support requires an existing singleton that is unproxied or has a
-[supported transaction proxy](#transaction-proxies-and-property-recreation), one
+[supported transaction/security proxy](#transaction-proxies-and-property-recreation), one
 declared constructor, and a bean definition that directly constructs that class. Spring's cached
 constructor and re-resolvable arguments must be readable and agree with that
 constructor. Factory methods (including `@Bean`), instance suppliers, manually
@@ -2037,7 +2037,7 @@ Unrelated changes do not recreate the product. The factory's parameter metadata
 owns this path; annotations on a constructor invoked inside its body do not.
 
 This requires an already instantiated singleton product that is unproxied or has
-a [supported transaction proxy](#transaction-proxies-and-property-recreation), a
+a [supported transaction/security proxy](#transaction-proxies-and-property-recreation), a
 direct `@Bean` method, scalar parameters (primitive, boxed primitive or `String`), the
 standard expression resolver/parser, and readable Spring metadata proving that
 native factory arguments will be re-resolved. Instance factory owners must be
@@ -2106,20 +2106,32 @@ property saves after adding a method to lite/default configurations on normal an
 child classloaders. Spring 6 and live SAP factory-property compatibility have not
 been verified for this added-factory path.
 
-### Transaction proxies and property recreation
+<a id="transaction-proxies-and-property-recreation"></a>
+
+### Transaction and security proxies on property changes
 
 Computed constructor and native scalar `@Bean` factory arguments also refresh on
-existing singletons with a standard transaction-only JDK or CGLIB proxy. For
-example, changing an immutable timeout supplied by `@Value` to a transactional
-service recreates the service through Spring, including its transaction proxy.
-Calls through the replacement keep native transaction commit and rollback behavior.
+existing singletons with a supported transaction or method-security JDK/CGLIB proxy,
+including their combination. For example, changing an immutable timeout supplied
+by `@Value` to a protected service recreates the service through Spring, including
+its proxy. Calls through the replacement retain native authorization and, when
+configured, transaction commit and rollback behavior.
 
-Eligibility requires an unfrozen, inspectable Spring proxy with exactly one
-standard transaction advisor, an already initialized standard transaction
-interceptor and annotation metadata source, and a `SingletonTargetSource` holding
-one plain target. Additional cache, async, security or custom advice, custom
-transaction metadata, dynamic/custom target sources and nested proxies are outside
-this path. Such an affected creation policy holds the candidate as **Uncheckable**.
+Eligibility requires an unfrozen, inspectable Spring proxy and a
+`SingletonTargetSource` holding one plain target. Supported advice is one standard
+transaction advisor, standard pre/post method security, or both. Transaction advice
+must have an initialized standard interceptor and annotation metadata source.
+Security uses either the standard classic shared pre/post interceptor or distinct
+modern pre/post advisors with the standard managers, pointcuts and handlers. Each
+policy required by the target's security metadata must have its advisor. Direct
+`@PreAuthorize`/`@PostAuthorize` and fixed composed markers are supported; filtering,
+JSR-250/`@Secured`, parameterized markers and result-proxy policies are excluded.
+
+Candidate validation inspects already initialized security advice; it does not
+initialize a deferred interceptor or call a service method. Cold, missing, duplicate
+or custom security infrastructure holds the candidate as **Uncheckable**. Additional
+cache/async/custom advice, custom transaction metadata, dynamic/custom target sources
+and nested proxies remain outside this path and also hold affected candidates.
 The constructor/factory metadata and expression restrictions above still apply.
 
 Spring destroys and recreates the singleton; Reclazz does not strip its advice or
@@ -2130,14 +2142,21 @@ and destroyed dependents are not guaranteed to be healed. Local state resets,
 background readers are not paused, and live constructor/factory or initialization
 failures still report **Partial** without rollback. This does not add cache
 invalidation or arbitrary advice support. Added supplier-backed factories use the
-unproxied-product scope above; this transaction-proxy support does not extend to them. Existing direct-placeholder constructor and field-discovery behavior is
+unproxied-product scope above; this proxy support does not extend to them.
+Existing direct-placeholder constructor and field-discovery behavior is
 unchanged; in particular, legacy field discovery can consult custom target sources
 before creation eligibility is checked.
 
 Verified with real H2 commit/rollback, repeated saves, held invalid values, native
-lifecycle and holder replacement on Spring 5.3.39 / Boot 2.7.18 dependencies and
-JDK 21. File-watcher tests exercise ordinary and child-classloader agent JVMs.
-Spring 6, JDK 17 and live SAP compatibility have not been established for this path.
+lifecycle and holder replacement on JDK 21. Security controls cover missing
+authentication, denied pre-authorization and post-authorization after the body.
+The configurations are Spring 5.3.39 / Security 5.7.11 with
+`@EnableGlobalMethodSecurity(prePostEnabled=true)` and Spring 6.1.14 / Security 6.3.4
+with `@EnableMethodSecurity`, each with JDK/CGLIB, constructor/factory and optional
+transaction variants. The Spring 5 graph includes Boot 2.7.18; the isolated Spring 6
+graph uses plain Spring configuration. File-watcher tests exercise both generations
+with ordinary and child-classloader agent JVMs. JDK 17 and live SAP compatibility
+have not been established for this path.
 
 ### Indirect @Value dependencies
 

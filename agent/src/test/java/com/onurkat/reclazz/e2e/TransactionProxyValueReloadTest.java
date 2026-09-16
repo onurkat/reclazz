@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionProxyValueReloadTest {
     @TempDir Path tmp;
+    String applicationClasspath() { return WatchedApp.springClasspath(); }
+    String applicationSource() { return APP; }
 
     @ParameterizedTest @ValueSource(booleans={false,true})
     void watchedSettingsRecreateBothTransactionProductsAndRetainRollback(boolean child) throws Exception {
@@ -26,8 +28,8 @@ class TransactionProxyValueReloadTest {
         assertFalse(h2.isEmpty());
         Path properties=Files.createDirectories(tmp.resolve("classes")).resolve("application.properties");
         Files.writeString(properties,"cfg.seconds=5\n");
-        var builder=WatchedApp.in(tmp).classpath(WatchedApp.springClasspath()+File.pathSeparator+h2)
-                .jvmArgs("-Dprobe.dir="+tmp).with("App",APP);
+        var builder=WatchedApp.in(tmp).classpath(applicationClasspath()+File.pathSeparator+h2)
+                .jvmArgs("-Dprobe.dir="+tmp).with("App",applicationSource());
         if(child)builder.childClassLoader();
         try(var app=builder.start()) {
             app.awaitOrFail("READY=5000:5000:2:10000","initial native transactions failed");

@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Computed constructor and native scalar factory `@Value` changes can recreate
+  singletons protected by standard classic/modern method security, optionally with
+  transaction advice. Native authorization, commit/rollback and supported holder
+  repair survive property saves on JDK and CGLIB proxies. Candidate checks never
+  initialize deferred security advice; missing/custom/filtering infrastructure is
+  held before live changes. Verified on Spring 5.3.39 / Security 5.7.11 and
+  Spring 6.1.14 / Security 6.3.4, including real file-watcher tests.
 - Added ordinary service methods accept fixed, parameterless composed
   `@PreAuthorize`/`@PostAuthorize` markers on the supported classic and modern
   Spring Security paths. Nested policies and class defaults use native authorization;

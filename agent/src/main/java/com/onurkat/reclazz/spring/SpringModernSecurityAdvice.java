@@ -35,6 +35,19 @@ final class SpringModernSecurityAdvice {
     static boolean isAdvisor(Object advisor) { return TYPES.contains(advisor.getClass().getName()); }
     record Advice(Object interceptor, int policies, boolean inactiveOnly) { }
 
+    /** Property candidate checks must not initialize application advice through get(). */
+    static Advice inspectInitialized(Object advisor) throws ReflectiveOperationException {
+        Object current = advisor;
+        if (current.getClass().getName().equals(WRAPPER)) current = field(current, "advisor");
+        if (current.getClass().getName().equals(DEFERRED)) {
+            Object supplier = field(current, "delegate");
+            exact(supplier, "org.springframework.util.function.SingletonSupplier");
+            if (field(supplier, "singletonInstance") == null)
+                throw refused("security interceptor is not initialized", null);
+        }
+        return inspect(advisor);
+    }
+
     static Advice inspect(Object advisor) throws ReflectiveOperationException {
         Object interceptor = unwrap(advisor);
         String type = interceptor.getClass().getName();
