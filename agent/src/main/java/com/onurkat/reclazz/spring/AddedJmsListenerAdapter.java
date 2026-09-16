@@ -18,6 +18,9 @@ import java.util.function.Supplier;
 public final class AddedJmsListenerAdapter {
     static final String JMS = "Lorg/springframework/jms/annotation/JmsListener;";
     private static final String TARGET = InjectedNames.PREFIX + "target";
+    private static final String SEND_TO = "Lorg/springframework/messaging/handler/annotation/SendTo;";
+    private static final Set<String> RESULTS = Set.of("V", "Ljava/lang/String;", "[B", "Ljava/util/Map;",
+            "Ljavax/jms/Message;", "Lorg/springframework/messaging/Message;");
     private static final Set<String> OPTIONS = Set.of("id", "destination", "containerFactory", "selector", "concurrency");
     private static final Set<String> CLASS_ANNOTATIONS = Set.of("Lorg/springframework/stereotype/Component;",
             "Lorg/springframework/stereotype/Service;", "Lorg/springframework/stereotype/Repository;", "Ljava/lang/Deprecated;");
@@ -50,9 +53,9 @@ public final class AddedJmsListenerAdapter {
                 if (node.visibleAnnotations != null) for (var a : node.visibleAnnotations)
                     if (!CLASS_ANNOTATIONS.contains(a.desc)) throw new IllegalArgumentException("unsupported class annotation " + a.desc);
                 if ((m.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_BRIDGE | Opcodes.ACC_SYNTHETIC)) != 0
-                        || Type.getReturnType(m.desc).getSort() != Type.VOID || Type.getArgumentTypes(m.desc).length == 0 || typeVariables(m.signature))
-                    throw new IllegalArgumentException("only void instance callbacks with arguments and no type variables are supported");
-                for (var a : m.visibleAnnotations) if (!a.desc.equals(JMS) && !a.desc.equals("Ljava/lang/Deprecated;"))
+                        || !RESULTS.contains(Type.getReturnType(m.desc).getDescriptor()) || Type.getArgumentTypes(m.desc).length == 0 || typeVariables(m.signature))
+                    throw new IllegalArgumentException("only synchronous instance callbacks with supported reply types, arguments and no type variables are supported");
+                for (var a : m.visibleAnnotations) if (!a.desc.equals(JMS) && !a.desc.equals(SEND_TO) && !a.desc.equals("Ljava/lang/Deprecated;"))
                     throw new IllegalArgumentException("unsupported listener annotation " + a.desc);
                 if (m.visibleParameterAnnotations != null) for (var annotations : m.visibleParameterAnnotations)
                     if (annotations != null) for (var a : annotations) if (!PARAMETERS.contains(a.desc))
@@ -132,7 +135,8 @@ public final class AddedJmsListenerAdapter {
             Handle bootstrap = new Handle(Opcodes.H_INVOKESTATIC, "com/onurkat/reclazz/bootstrap/ReclazzBootstrap", "bootstrapMethod",
                     "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/invoke/CallSite;", false);
             mv.visitInvokeDynamicInsn(m.name, "(" + Type.getDescriptor(owner) + m.desc.substring(1), bootstrap, internal, CallSiteAdapter.descHash(m.desc));
-            mv.visitInsn(Opcodes.RETURN); mv.visitMaxs(0, 0); mv.visitEnd();
+            // Native Spring JMS owns conversion, correlation and destination selection.
+            mv.visitInsn(Type.getReturnType(m.desc).getOpcode(Opcodes.IRETURN)); mv.visitMaxs(0, 0); mv.visitEnd();
         }
         writer.visitEnd();
         var hidden = lookup.defineHiddenClass(writer.toByteArray(), false, MethodHandles.Lookup.ClassOption.NESTMATE);

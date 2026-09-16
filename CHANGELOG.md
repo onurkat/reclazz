@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Added JMS listener methods can return synchronous String, byte array, Map,
+  JMS Message or Spring Message replies through Spring's native adapter.
+  Direct method `@SendTo`, caller `JMSReplyTo` priority, correlation, null results
+  and local transaction redelivery are verified with Spring JMS 5.3.39 and
+  ActiveMQ 5.19.11, including actual-agent saves in normal and child class loaders.
 - `reloadBoundary=request` also protects Spring 6 Jakarta MVC `Callable`,
   `WebAsyncTask` and `DeferredResult` lifetimes through native completion, including
   timed-out Callable workers that ignore cancellation. The transformed servlet

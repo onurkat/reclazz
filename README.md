@@ -182,8 +182,9 @@ than either.
   restoration and shutdown of replaced consumers.
   [Scope](docs/usage.md#kafka-listeners-added-after-startup).
 - **New JMS consumers**: add a supported `@JmsListener` to a running component.
-  Real broker tests cover queue edits, removal/restoration, consumer shutdown
-  and local transaction rollback/redelivery.
+  Synchronous replies support direct `@SendTo` and the caller's `JMSReplyTo`.
+  Real broker tests cover reply conversion/correlation, queue edits,
+  removal/restoration, consumer shutdown and local transaction rollback/redelivery.
   [Scope](docs/usage.md#jms-listeners-added-after-startup).
 - **New RabbitMQ consumers**: add a supported `@RabbitListener` to a running
   component, including queues selected by Spring expressions from application beans.
