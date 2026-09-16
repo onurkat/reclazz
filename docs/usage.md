@@ -789,13 +789,38 @@ public void onOrder(@Payload String payload, @Header("tenant") String tenant) {
 ```
 
 Spring's actual listener processor and container factory register the saved
-metadata. Public/private instance `void` methods with arguments are supported.
+metadata. Public/private instance methods with arguments may declare `void`,
+`String`, `byte[]`, `java.util.Map`, `javax.jms.Message` or
+`org.springframework.messaging.Message` as their return type.
 Spring resolves the payload, headers and JMS message/session arguments. Calls
 reach the current plain singleton; a missing/proxied replacement throws rather
 than silently consuming a message. Later saves can edit bodies or queue
 destinations, remove a method or its annotation, and restore it. Original
 listeners on the same bean are registered again after recreation. Containers
 belonging to unrelated beans keep their identity.
+
+For request/reply, return a supported value and optionally declare a default
+reply queue directly on the method:
+
+```java
+@JmsListener(id = "order-status", destination = "order-status-requests")
+@SendTo("${order.status.replies}")
+public String status(String orderId) {
+    return findOrderStatus(orderId);
+}
+```
+
+Spring's native adapter converts the result and sends the reply. The request's
+`JMSReplyTo` takes precedence over `@SendTo`; without `@SendTo`, the caller must
+supply `JMSReplyTo` for a non-null result. Reply correlation uses the incoming
+`JMSCorrelationID`, or its `JMSMessageID` when no correlation ID was supplied.
+A null result sends no reply. Direct method `@SendTo` accepts one destination,
+including an application-resolved `${property}` placeholder. Later class saves
+can change it; property-only reply-route refresh is outside this scope.
+The application's converter remains responsible for payload support, including
+Map entries and Spring Message payloads. Arbitrary DTO/`Object`, concrete message
+subtype declarations, primitive, Future and reactive return types are excluded.
+Class-level or composed `@SendTo` is not supported.
 
 Use a literal nonempty `id` and a `destination` that is a literal or a
 `${property}` placeholder resolved by the application's own value resolver (a
@@ -804,8 +829,8 @@ literal or `${property}` placeholder; optional literal `containerFactory` and
 positive `concurrency` (a number or ascending range) are supported.
 The class must directly extend `Object`, have no interfaces/type variables, and
 carry only the stereotypes above or `@Deprecated`. Added callback annotations
-are direct `@JmsListener` and optional `@Deprecated`; parameter annotations are
-`@Payload`, `@Header` and `@Headers`. Extra advice, static/non-void/synthetic
+are direct `@JmsListener`, optional direct `@SendTo` and `@Deprecated`; parameter
+annotations are `@Payload`, `@Header` and `@Headers`. Extra advice, static/synthetic
 methods, type-variable signatures and other explicitly supplied listener
 options are refused. Parameter names require explicit annotation names or
 compilation with `-parameters`.
@@ -817,7 +842,7 @@ The application factory retains its conversion, selector and local session
 transaction settings. Added listeners refuse custom factories/executors,
 external transaction managers and topic/durable/shared subscription factories.
 Proxies and subclass receivers are not unwrapped. Repeatable/composed listeners,
-reply methods, scoped/prototype beans and registries shared between contexts are
+scoped/prototype beans and registries shared between contexts are
 outside this scope. Custom argument factories that depend on the exact original
 declaring class are not verified: the added method is reflected on a hidden
 metadata delegate.
@@ -848,7 +873,11 @@ listener on an already used bean, addition beside an original listener, six
 saves, payload/header/message conversion, local transaction rollback/redelivery,
 selector filtering, consumer retirement, and context close. A deliberately
 blocked real consumer proves timeout/interruption and retry using a shorter
-internal test wait. Other JMS providers, Spring versions, JDK 17 runtime,
+internal test wait. Request/reply tests cover native Spring controls, text/bytes/
+map/native and Spring messages, correlation, `JMSReplyTo` priority, null results,
+rollback followed by a reply on redelivery, and invalid `@SendTo` recovery.
+Actual-agent reply tests cover normal/child class loaders, repeated saves,
+private restoration and reply queue changes. Other JMS providers, Spring versions, JDK 17 runtime,
 Jakarta Messaging 3, late attach, XA and durable topics were not exercised.
 
 Spring JMS and ActiveMQ are isolated test dependencies. Existing tests retain
