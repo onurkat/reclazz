@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Added `@Bean` factories can refresh scalar `@Value` arguments on property saves
+  for their existing unproxied singleton products. Saved parameter metadata drives
+  candidate checks and recreation; invalid values preserve the live product and
+  environment. Definition/supplier ownership is verified, aliases and supported
+  holder references follow replacements, and arbitrary suppliers remain excluded.
 - Added `@Bean` factories support direct Boot `@ConditionalOnProperty`,
   `@ConditionalOnBean` and `@ConditionalOnMissingBean` through native saved-metadata
   evaluation. Configuration saves re-evaluate conditions and retire owned products

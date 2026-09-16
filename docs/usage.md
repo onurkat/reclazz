@@ -324,8 +324,10 @@ Client client(List<Transport> transports, Optional<Metrics> metrics,
 ```
 
 Values are resolved when the product is created or recreated. Property-only
-edits do not automatically recreate these added factories; compile the
-configuration again to apply a new factory argument value.
+edits can now recreate an existing unproxied singleton when its scalar `@Value`
+arguments change, after candidate validation; see [the exact scope below](#added-factory-values-on-property-changes).
+For shapes outside that scope, compile the configuration again to apply a new
+factory argument value.
 
 Added factory methods can also carry direct `@Primary` and `@Qualifier`.
 For example, a method named `remoteTransport` carrying `@Bean @Qualifier("fast")`
@@ -1864,8 +1866,8 @@ existing singletons without additional AOP advice; normal full-configuration
 CGLIB enhancement is supported. Generic factory methods, collection/custom value
 types, composed annotations, `FactoryBean`, instance suppliers, explicit factory
 arguments, method overrides and `@ConfigurationProperties` binding are outside
-this path. Added factory methods with synthetic/supplier creation metadata are
-not included. Uninstantiated lazy beans and prototype beans are not swept or
+this native path. Reclazz-owned added factories have the separate support below.
+Uninstantiated lazy beans and prototype beans are not swept or
 eagerly created; later lookup uses Spring's ordinary property resolution.
 
 Recreation runs the factory body, injection and lifecycle callbacks. Local state
@@ -1880,6 +1882,50 @@ and an already destroyed old bean. There is no rollback or background-reader pau
 Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies on JDK 21, including
 watched property saves in ordinary and child-classloader agent JVMs. This does not
 establish Spring 6, JDK 17 or live SAP compatibility for factory-argument refresh.
+
+### Added factory values on property changes
+
+A supported `@Bean` method added after startup can also refresh its scalar
+`@Value` arguments on a property save. Reclazz keeps the saved parameter metadata
+with the definition it created, so the method need not appear in ordinary class
+reflection. Instance and static factories use the same argument resolution as their
+initial registration. A later configuration save replaces this metadata; future
+property checks follow the new expressions rather than the old dependencies.
+
+For an already instantiated, **unproxied singleton** product, a changed input
+checks every direct `@Value` parameter before applying any live values, including
+unchanged parameters that recreation will re-evaluate. Primitive, boxed primitive
+and `String` values use the same restricted scalar expressions, templates,
+conversion and indirect-property tracking as native factories. Ordinary bean
+parameters may accompany them. Checking does not invoke the factory body, and
+unsupported method/bean-call expressions hold the candidate as **Uncheckable**.
+Invalid arithmetic or conversion rejects the entire candidate; the existing
+product and environment remain unchanged. Annotations on a constructor called
+inside the factory body are not treated as factory arguments.
+
+An accepted candidate recreates the product through its original supplier and
+Spring's lifecycle. Aliases still resolve the new singleton, and writable fields
+in surviving plain singleton holders in the same context are healed. Locals,
+collections, cross-context references, destroyed dependents and background readers
+have the same limitations as native property recreation. Initialization or factory
+failure during live application is **Partial**, with no rollback of the environment
+or the destroyed product. After correcting the candidate, a missing singleton
+is created on its next lookup; it is not eagerly restored by the property sweep.
+
+Only the original Reclazz-owned definition, bean factory and supplier qualify;
+copied or changed creation metadata is held as **Uncheckable**. The configuration
+must still be its supported singleton, and the expression resolver/parser must
+remain standard. Arbitrary suppliers, proxy products, collection/custom `@Value`
+types and `@ConfigurationProperties` binding are excluded. Uninstantiated lazy
+beans and prototypes are not eagerly created or swept; future creation reads
+current values. Property refresh does not re-evaluate registration conditions or
+activate a missing conditional bean. It does not perform general callback or
+listener-container retirement.
+
+Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies, including watched
+property saves after adding a method to lite/default configurations on normal and
+child classloaders. Spring 6 and live SAP factory-property compatibility have not
+been verified for this added-factory path.
 
 ### Transaction proxies and property recreation
 
@@ -1904,8 +1950,8 @@ proxy to the new one. Raw target references, locals, collections, proxied holder
 and destroyed dependents are not guaranteed to be healed. Local state resets,
 background readers are not paused, and live constructor/factory or initialization
 failures still report **Partial** without rollback. This does not add cache
-invalidation, arbitrary advice support or property refresh for added supplier-backed
-factories. Existing direct-placeholder constructor and field-discovery behavior is
+invalidation or arbitrary advice support. Added supplier-backed factories use the
+unproxied-product scope above; this transaction-proxy support does not extend to them. Existing direct-placeholder constructor and field-discovery behavior is
 unchanged; in particular, legacy field discovery can consult custom target sources
 before creation eligibility is checked.
 
