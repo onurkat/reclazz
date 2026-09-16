@@ -82,11 +82,8 @@ final class AddedOperationMetadata {
                     && (has(method.visibleAnnotations, OTHER_ADAPTERS) || has(method.visibleAnnotations, Set.of(ASYNC))))
                 reason = "composed cache annotations require an ordinary synchronous service method";
             if (has(method.visibleAnnotations, Set.of(ASYNC))) {
-                if (!asyncService(method) && (!has(method.visibleAnnotations, Set.of(EVENT))
-                        || has(method.visibleAnnotations, Set.of("Lorg/springframework/transaction/event/TransactionalEventListener;",
-                        "Lorg/springframework/scheduling/annotation/Scheduled;", "Lorg/springframework/scheduling/annotation/Schedules;"))
-                        || Type.getReturnType(method.desc).getSort() != Type.VOID))
-                    reason = "unsupported method annotation " + ASYNC + ": requires a direct void EventListener";
+                if (!asyncService(method) && !asyncCallback(method))
+                    reason = "unsupported method annotation " + ASYNC + ": requires a direct void EventListener or no-argument void Scheduled method";
                 if (asyncService(method) && !asyncReturn(method.desc))
                     reason = "unsupported method annotation " + ASYNC + ": service return must be void, Future or CompletableFuture";
                 String callback = callbackProblem(source, method, asyncService(method));
@@ -155,6 +152,14 @@ final class AddedOperationMetadata {
 
     private static boolean asyncService(MethodNode method) {
         return has(method.visibleAnnotations, Set.of(ASYNC)) && !has(method.visibleAnnotations, OTHER_ADAPTERS);
+    }
+
+    private static boolean asyncCallback(MethodNode method) {
+        if (has(method.visibleAnnotations, Set.of("Lorg/springframework/transaction/event/TransactionalEventListener;"))) return false;
+        boolean event = has(method.visibleAnnotations, Set.of(EVENT));
+        boolean scheduled = has(method.visibleAnnotations, Set.of(AddedScheduledAdapter.SCHEDULED, AddedScheduledAdapter.SCHEDULES));
+        return scheduled ? !event && method.desc.equals("()V")
+                : event && Type.getReturnType(method.desc).getSort() == Type.VOID;
     }
 
     private static boolean asyncReturn(String descriptor) {
