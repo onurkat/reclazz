@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- New JPA entities can join a single Spring ORM persistence unit with
+  `jpaRefresh=true` and Hibernate `hbm2ddl.auto=validate` when their schema is
+  already prepared. Failed validation preserves the old native factory and
+  managed-class list; a later body-only save retries the pending mapping.
+  Candidate metamodels are checked before installation. Conflicting schema
+  actions and changed pending metadata are refused. Verified on Spring ORM
+  6.1.14 / Hibernate 6.5.3.Final / H2 with normal and AutoCompile reload paths.
 - Opt-in `reloadBoundary=request` now keeps Spring 5 `javax` MVC `Callable` /
   `WebAsyncTask` and `DeferredResult` requests protected through native servlet
   completion. Admitted redispatches can finish while a reload drains; a Callable

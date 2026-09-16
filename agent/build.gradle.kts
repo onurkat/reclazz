@@ -182,6 +182,10 @@ val springSixTests = sourceSets.create("springSixTest") {
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    // Owner-approved real JPA/schema validation tests; isolated and never packaged.
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
+    add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.2.224")
     add(springSixTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
     add(springSixTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
 }
