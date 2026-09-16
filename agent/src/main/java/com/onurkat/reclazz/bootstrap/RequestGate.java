@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.bootstrap;
 
-/** Admission for synchronous MVC dispatches and the single reload thread. */
+/** Admission for MVC dispatches, supported async lifetimes and the reload thread. */
 public final class RequestGate {
     private static final RequestGate GLOBAL = new RequestGate();
     private final ThreadLocal<Integer> depth = new ThreadLocal<>();
@@ -27,7 +27,32 @@ public final class RequestGate {
         notifyAll();
     }
 
-    public void enter() {
+    public void enter() { enter(null); }
+
+    Lease lease() { return new Lease(); }
+
+    final class Lease implements AutoCloseable {
+        private boolean held, complete;
+        private RequestGate owner() { return RequestGate.this; }
+        void start() {
+            synchronized (RequestGate.this) {
+                if (depth.get() == null) throw new IllegalStateException("Async request was not admitted");
+                if (complete) throw new IllegalStateException("Async request already completed");
+                if (!held) { held = true; active++; }
+            }
+        }
+        boolean held() { synchronized (RequestGate.this) { return held; } }
+        @Override public void close() {
+            synchronized (RequestGate.this) {
+                complete = true;
+                if (held) { held = false; active--; RequestGate.this.notifyAll(); }
+            }
+        }
+    }
+
+    void enter(Lease continuation) {
+        if (continuation != null && continuation.owner() != this)
+            throw new IllegalArgumentException("Foreign request lease");
         Integer nested = depth.get();
         if (nested != null) {
             depth.set(nested + 1);
@@ -37,7 +62,8 @@ public final class RequestGate {
         synchronized (this) {
             // A forward/include from an existing request must not wait for the
             // writer that is waiting for that very request to return.
-            while (closed && writer != Thread.currentThread()) {
+            while (closed && writer != Thread.currentThread()
+                    && !(writer == null && continuation != null && continuation.held)) {
                 try { wait(); }
                 catch (InterruptedException e) { interrupted = true; }
             }
@@ -102,6 +128,6 @@ public final class RequestGate {
     public synchronized String waitingFor() {
         if (failure != null) return failure;
         if (!installed) return "Spring MVC request hook has not loaded";
-        return active + " active synchronous MVC requests";
+        return active + " active MVC dispatches, async requests or workers";
     }
 }

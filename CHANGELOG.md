@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Opt-in `reloadBoundary=request` now keeps Spring 5 `javax` MVC `Callable` /
+  `WebAsyncTask` and `DeferredResult` requests protected through native servlet
+  completion. Admitted redispatches can finish while a reload drains; a Callable
+  worker ignoring timeout cancellation remains counted until it exits. Default
+  immediate reloads are unchanged. Verified with Spring 5.3.39 and test-only
+  embedded Tomcat 9.0.121; Jakarta async and WebFlux remain outside this scope.
 - Async bean refresh does not install the same standard advisor twice on an
   existing proxy. Supported added async event callbacks no longer receive the
   generic scan-invisible method warning.
