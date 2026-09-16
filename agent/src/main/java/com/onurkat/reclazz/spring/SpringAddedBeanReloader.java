@@ -148,6 +148,7 @@ public final class SpringAddedBeanReloader {
         Class<?> resultType = MethodType.fromMethodDescriptorString(method.method().desc, type.getClassLoader()).returnType();
         ClassLoader spring = factory.getClass().getClassLoader();
         rejectInfrastructure(resultType, spring);
+        AtomicReference<java.lang.reflect.Method> savedParameters = new AtomicReference<>();
         Supplier<?> delegate = AddedBeanAdapter.create(type, () -> {
             try {
                 Object current = call(factory, "getBean", configName);
@@ -157,6 +158,7 @@ public final class SpringAddedBeanReloader {
                 return current;
             } catch (Exception failure) { throw new IllegalStateException("configuration cannot be resolved", failure); }
         }, method, (metadata, descriptor) -> {
+            savedParameters.set(metadata);
             Supplier<Object[]> resolved = AddedBeanArguments.prepare(factory, name, metadata, descriptor);
             return full && (method.method().access & org.objectweb.asm.Opcodes.ACC_STATIC) == 0
                     && metadata.getParameterCount() != 0
@@ -186,6 +188,8 @@ public final class SpringAddedBeanReloader {
                     "org.springframework.beans.factory.annotation.Qualifier", method.qualifier());
             definitionType.getMethod("addQualifier", qualifierType).invoke(definition, qualifier);
         }
+        SpringAddedFactoryValues.attach(factory, definition, type, configName, method.method().name,
+                full, savedParameters.get(), checked);
         factory.getClass().getMethod("registerBeanDefinition", String.class, definitionInterface).invoke(factory, name, definition);
         Owned registration = new Owned(new WeakReference<>(type), new WeakReference<>(definition),
                 new AtomicReference<>(new WeakReference<>(null)), method.aliases());

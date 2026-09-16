@@ -27,6 +27,8 @@ final class SpringFactoryValues {
             Class<? extends Annotation> annotation, Method value, PropertyValueDependencies affected) throws Exception {
         if (!Boolean.TRUE.equals(PropertyChangeCheck.call(factory, "containsBeanDefinition", name))) return null;
         Object definition = PropertyChangeCheck.call(factory, "getMergedBeanDefinition", name);
+        Values added = SpringAddedFactoryValues.inspect(factory, definition, name, singleton, annotation, value, affected);
+        if (added != null) return added;
         if (PropertyChangeCheck.call(definition, "getFactoryMethodName") == null) return null;
         Object resolved = PropertyChangeCheck.call(definition, "getResolvedFactoryMethod");
         if (!(resolved instanceof Method)) resolved = Reflect.readField(definition, "resolvedConstructorOrFactoryMethod");
@@ -45,12 +47,16 @@ final class SpringFactoryValues {
         if (targets.isEmpty()) return null;
         if (!selected) return new Values(List.of());
         String problem = policy(factory, definition, singleton, method, annotation.getClassLoader());
+        return checked(targets, problem);
+    }
+
+    static Values checked(List<SpringPropertyRebinder.ValueTarget> targets, String problem) {
         List<SpringPropertyRebinder.ValueTarget> checked = new ArrayList<>();
         for (var target : targets) {
             String reason = problem;
             if (reason == null && !target.type().isPrimitive() && !SCALARS.contains(target.type()))
                 reason = "factory @Value parameters require primitive, boxed primitive or String values";
-            checked.add(new SpringPropertyRebinder.ValueTarget(singleton, null, target.type(),
+            checked.add(new SpringPropertyRebinder.ValueTarget(target.bean(), null, target.type(),
                     target.expression(), target.member(), reason));
         }
         return new Values(List.copyOf(checked));
@@ -64,17 +70,8 @@ final class SpringFactoryValues {
                     "org.springframework.context.annotation.Bean", false, loader);
             if (!method.isAnnotationPresent(bean)) return "factory values require a direct @Bean method";
             if (method.getTypeParameters().length != 0) return "generic factory methods are unsupported";
-            // Even a direct placeholder is passed to this resolver on native
-            // recreation. A custom resolver need not obey standard delimiters.
-            Object resolver = PropertyChangeCheck.call(factory, "getBeanExpressionResolver");
-            Object parser = resolver == null ? null : Reflect.readField(resolver, "expressionParser");
-            if (resolver == null || !resolver.getClass().getName().equals(
-                    "org.springframework.context.expression.StandardBeanExpressionResolver")
-                    || !"#{".equals(Reflect.readField(resolver, "expressionPrefix"))
-                    || !"}".equals(Reflect.readField(resolver, "expressionSuffix"))
-                    || parser == null || !parser.getClass().getName().equals(
-                    "org.springframework.expression.spel.standard.SpelExpressionParser"))
-                return "factory values require the standard bean expression resolver and parser";
+            String expressionProblem = expressionPolicy(factory);
+            if (expressionProblem != null) return expressionProblem;
             if (!Boolean.TRUE.equals(PropertyChangeCheck.call(definition, "isSingleton")))
                 return "factory values require singleton scope";
             Object target = PropertyTransactionProxy.target(singleton, loader);
@@ -123,13 +120,28 @@ final class SpringFactoryValues {
         }
     }
 
-    private static boolean isProxy(Object bean, ClassLoader loader) throws Exception {
+    static String expressionPolicy(Object factory) throws Exception {
+        // Even a direct placeholder is passed to this resolver on native
+        // recreation. A custom resolver need not obey standard delimiters.
+        Object resolver = PropertyChangeCheck.call(factory, "getBeanExpressionResolver");
+        Object parser = resolver == null ? null : Reflect.readField(resolver, "expressionParser");
+        if (resolver == null || !resolver.getClass().getName().equals(
+                "org.springframework.context.expression.StandardBeanExpressionResolver")
+                || !"#{".equals(Reflect.readField(resolver, "expressionPrefix"))
+                || !"}".equals(Reflect.readField(resolver, "expressionSuffix"))
+                || parser == null || !parser.getClass().getName().equals(
+                "org.springframework.expression.spel.standard.SpelExpressionParser"))
+            return "factory values require the standard bean expression resolver and parser";
+        return null;
+    }
+
+    static boolean isProxy(Object bean, ClassLoader loader) throws Exception {
         if (java.lang.reflect.Proxy.isProxyClass(bean.getClass())) return true;
         return (boolean) Class.forName("org.springframework.aop.support.AopUtils", false, loader)
                 .getMethod("isAopProxy", Object.class).invoke(null, bean);
     }
 
-    private static boolean hasProperties(Annotation[] annotations) {
+    static boolean hasProperties(Annotation[] annotations) {
         for (Annotation annotation : annotations)
             if (annotation.annotationType().getName().equals(PROPERTIES)) return true;
         return false;
