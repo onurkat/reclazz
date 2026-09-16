@@ -26,10 +26,14 @@ class RequestBoundaryTransformerTest {
         byte[] transformed = new RequestBoundaryTransformer().transform(getClass().getClassLoader(),
                 target, null, null, servlet(target, request, response));
         assertNotNull(transformed);
-        Map<String, byte[]> definitions = Map.of(
+        Map<String, byte[]> definitions = new java.util.HashMap<>(Map.of(
                 target.replace('/', '.'), transformed,
                 request.replace('/', '.'), apiInterface(request, true),
-                response.replace('/', '.'), apiInterface(response, false));
+                response.replace('/', '.'), apiInterface(response, false)));
+        if (api.equals("javax")) {
+            definitions.remove(request.replace('/', '.'));
+            definitions.remove(response.replace('/', '.'));
+        }
         ClassLoader loader = new ClassLoader(getClass().getClassLoader()) {
             @Override
             protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
@@ -49,9 +53,13 @@ class RequestBoundaryTransformerTest {
         var process = servlet.getMethod("processRequest", reqType, loader.loadClass(response.replace('/', '.')));
         for (Throwable failure : new Throwable[] { null, new IllegalArgumentException("caught"),
                 new IllegalStateException("implicit throw"), new AssertionError("error") }) {
+            var nativeRequest = new org.springframework.mock.web.MockHttpServletRequest();
             Object req = Proxy.newProxyInstance(loader, new Class<?>[] { reqType }, (proxy, method, args) -> {
-                if (failure != null) throw failure;
-                return "GET";
+                if (method.getName().equals("getMethod")) {
+                    if (failure != null) throw failure;
+                    return "GET";
+                }
+                return method.invoke(nativeRequest, args);
             });
             if (failure == null || failure instanceof IllegalArgumentException) process.invoke(instance, req, null);
             else assertSame(failure, assertThrows(InvocationTargetException.class,

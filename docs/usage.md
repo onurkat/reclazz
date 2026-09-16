@@ -98,7 +98,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `transformDumpDir` | (none) | Write every transformed class file here, for looking at what the agent emitted |
 | `verifyTransform` | `false` | Run the bytecode verifier over every transformed class and print what it says |
 | `sessionLog` | (none) | Append every status line to this file with an ISO timestamp and level, no colour: the session's record, to read back or attach to a report |
-| `reloadBoundary` | `immediate` | `request` waits for synchronous Spring MVC dispatches to finish before applying a class reload batch; requires `-javaagent` at JVM startup. See [Reload between requests](#reload-between-requests) |
+| `reloadBoundary` | `immediate` | `request` waits for synchronous MVC dispatches and supported Spring 5 `javax` MVC async requests before applying a class reload batch; requires `-javaagent` at JVM startup. See [Reload between requests](#reload-between-requests) |
 
 Arguments are never removed or renamed within a major version: a line that
 worked with an older 1.x agent works with a newer one. An argument the agent
@@ -1489,9 +1489,9 @@ Later saves update metadata/executor selection and the callback body. Already ad
 jobs retain the body and target captured before the save. Removing only `@Async` and
 any transaction/cache advice restores synchronous Future-returning calls. Removing the
 method makes retained call sites fail; restoring it makes them usable again. The prior
-queued-target/resource and executor-lifecycle limits still apply. This adds service
-invocation support, not an async MVC/WebFlux request boundary or new scheduled/transactional
-listener shapes.
+queued-target/resource and executor-lifecycle limits still apply. This service invocation support does not add new scheduled/transactional listener
+shapes. MVC request lifetime protection is a separate opt-in
+[request boundary](#reload-between-requests); WebFlux remains outside it.
 
 Verified with native Spring 5.3.39, H2 and stock JDK 21, including real agent runs on
 ordinary and child classloaders, old/current bean references, five saves, qualifier
@@ -1587,7 +1587,7 @@ Limits: this is a validation step before application, not rollback for arbitrary
 application code. Constructors, setters, converters, validators and advisors
 can have side effects; Reclazz cannot isolate state they keep themselves.
 If a setter or bean rebuild fails after a clean check, changes already made
-are not rolled back. Request isolation covers the synchronous MVC scope of
+are not rolled back. Request isolation covers the supported MVC scope of
 [the existing boundary](#reload-between-requests); background readers are not
 paused. Connection pools still have their existing limitations.
 
@@ -1953,8 +1953,8 @@ operation is open; during observation it also records a class identity.
 
 ### Reload between requests
 
-Add `reloadBoundary=request` to the agent arguments to keep a synchronous
-Spring MVC request from crossing a class reload. For example:
+Add `reloadBoundary=request` to the agent arguments to keep a supported Spring
+MVC request from crossing a class reload. For example:
 
 ```bash
 java -javaagent:/path/to/reclazz-agent.jar=reloadBoundary=request -jar app.jar
@@ -1967,7 +1967,8 @@ starts. New requests wait while the class batch and its framework follow-up
 run, then enter against the updated code. The default, `immediate`, keeps
 the existing reload behavior and installs no request hook.
 
-The agent waits up to one second for active dispatches to drain. If a long
+The agent waits up to one second for active dispatches, supported async requests
+and Callable workers to drain. If a long
 request or a breakpoint outlasts that deadline, it prints
 `Request boundary deferred`, reopens admission, and retains the queued edit.
 It then waits for a natural idle boundary instead of repeatedly stopping new
@@ -1985,12 +1986,30 @@ stay within the outer boundary. Normal returns and exceptions both release it.
 AutoCompile still compiles outside the boundary and applies its compiled
 batch inside it.
 
-The guarantee covers successful method-body changes during synchronous MVC
-dispatches. Servlet filters before or after that dispatch, asynchronous MVC
-work, WebFlux, scheduled jobs and other background threads are outside it.
-Resource/configuration reloads are also outside this boundary. It is not a
-database snapshot or an all-or-nothing deployment: structural changes and a
-partially failed batch retain the existing reload limitations.
+For Spring 5 `javax.servlet` MVC, `Callable` (including `WebAsyncTask`) and
+`DeferredResult` also retain the boundary after the initial dispatch returns.
+Producing a result or starting an async redispatch does not end protection:
+the native servlet completion event does. A redispatch belonging to an admitted
+request can proceed while reload is draining, so it can finish without waiting
+on its own reload. Timeout and error handling retain Spring's native results.
+A Callable worker that ignores cancellation stays counted until its body exits, even if the HTTP response has already timed out. An
+uncompleted request or worker can therefore defer a reload indefinitely; new
+traffic is admitted again after the one-second drain deadline.
+
+Verified with Spring 5.3.39, Tomcat 9.0.121 and stock JDK 21, using real HTTP
+requests on ordinary and child application classloaders. Immediate results,
+startup failures, executor rejection, cancellation before execution and native
+completion are also exercised by focused lifecycle tests. Jakarta MVC retains
+synchronous dispatch coverage only; no Jakarta async support is claimed.
+
+The guarantee covers successful method-body changes during these supported
+lifetimes. Servlet filters outside the MVC dispatch, WebFlux, streaming/SSE,
+scheduled jobs and other background threads are outside it. A DeferredResult
+producer still running after its request completes is also outside protection.
+Custom async lifecycle implementations are not covered. Resource/configuration
+reloads retain their own documented boundaries (validated property updates use
+this gate). This is not a database snapshot or an all-or-nothing deployment:
+structural changes and a partially failed batch retain existing limitations.
 
 Use this option at JVM startup. Attach mode, missing bootstrap support, or
 Spring MVC already loaded by an earlier agent refuses initialization rather

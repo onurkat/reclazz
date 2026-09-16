@@ -63,6 +63,11 @@ dependencies {
     testImplementation("org.springframework:spring-webmvc:5.3.39")
     testImplementation("org.springframework:spring-test:5.3.39")
     testImplementation("javax.servlet:javax.servlet-api:4.0.1")
+    // Real local servlet async lifecycle tests; never shipped in the agent.
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.121") {
+        // javax.annotation-api above already supplies these API classes.
+        exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
+    }
     // The Bean Validation API under its pre-Jakarta name, for the test that
     // a Boot 2 application's validator is found by it.
     testImplementation("javax.validation:validation-api:2.0.1.Final")
