@@ -322,7 +322,7 @@ public class ReclazzAgent {
                     }
                 }
                 instrumentation.addTransformer(new RequestBoundaryTransformer(), false);
-                StatusReporter.info("Request boundary enabled: class reloads wait for MVC dispatches and supported javax async requests");
+                StatusReporter.info("Request boundary enabled: class reloads wait for MVC dispatches and supported javax/Jakarta async requests");
             }
 
             // Detect platform and create context

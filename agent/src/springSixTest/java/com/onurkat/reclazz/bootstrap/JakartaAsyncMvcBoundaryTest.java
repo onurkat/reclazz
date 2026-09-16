@@ -11,14 +11,14 @@ import org.springframework.core.task.support.TaskExecutorAdapter;
 import org.springframework.mock.web.*;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.async.*;
-import javax.servlet.AsyncEvent;
+import jakarta.servlet.AsyncEvent;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.*;
 import static com.onurkat.reclazz.bootstrap.AsyncRequestGateTest.assertReloadable;
 
-class AsyncMvcBoundaryTest {
+class JakartaAsyncMvcBoundaryTest {
     @Test void resultAndRedispatchDoNotImpersonateNativeCompletion() throws Exception {
         var f = new Fixture(); var frame = f.enter(); var result = new DeferredResult<String>();
         f.manager.startDeferredResultProcessing(result); AsyncMvcBoundary.exit(frame);
@@ -168,10 +168,32 @@ class AsyncMvcBoundaryTest {
 
     @Test void missingRequestApiKeepsReloadDisabledInsteadOfSilentlyDroppingProtection() throws Exception {
         var f = new Fixture();
-        var frame = AsyncMvcBoundary.enter(new Object(), getClass().getClassLoader(), f.gate, "javax");
+        var frame = AsyncMvcBoundary.enter(new Object(), getClass().getClassLoader(), f.gate, "jakarta");
         AsyncMvcBoundary.exit(frame);
         assertFalse(f.gate.tryBeginReload(1));
         assertTrue(f.gate.waitingFor().startsWith("Spring MVC async request hook failed:"));
+    }
+
+    @Test void anotherVisibleServletNamespaceCannotOverrideTheFrameworkSignature() throws Exception {
+        var writer = new org.objectweb.asm.ClassWriter(0);
+        writer.visit(org.objectweb.asm.Opcodes.V17,
+                org.objectweb.asm.Opcodes.ACC_PUBLIC | org.objectweb.asm.Opcodes.ACC_INTERFACE | org.objectweb.asm.Opcodes.ACC_ABSTRACT,
+                "javax/servlet/ServletRequest", null, "java/lang/Object", null);
+        writer.visitEnd();
+        byte[] otherApi = writer.toByteArray();
+        ClassLoader both = new ClassLoader(getClass().getClassLoader()) {
+            @Override protected Class<?> findClass(String name) throws ClassNotFoundException {
+                if (name.equals("javax.servlet.ServletRequest")) return defineClass(name, otherApi, 0, otherApi.length);
+                throw new ClassNotFoundException(name);
+            }
+        };
+        assertSame(both, Class.forName("javax.servlet.ServletRequest", false, both).getClassLoader());
+        assertSame(jakarta.servlet.ServletRequest.class, Class.forName("jakarta.servlet.ServletRequest", false, both));
+        var f = new Fixture();
+        var frame = AsyncMvcBoundary.enter(f.request, both, f.gate, "jakarta");
+        f.manager.startDeferredResultProcessing(new DeferredResult<>()); AsyncMvcBoundary.exit(frame);
+        assertFalse(f.gate.tryBeginReload(1));
+        f.context().complete(); assertReloadable(f.gate);
     }
 
     private static final class Fixture {
@@ -183,7 +205,7 @@ class AsyncMvcBoundaryTest {
             gate.installed(); request.setAsyncSupported(true);
             manager.setAsyncWebRequest(new StandardServletAsyncWebRequest(request, response));
         }
-        Object enter() { return AsyncMvcBoundary.enter(request, getClass().getClassLoader(), gate, "javax"); }
+        Object enter() { return AsyncMvcBoundary.enter(request, getClass().getClassLoader(), gate, "jakarta"); }
         MockAsyncContext context() { return (MockAsyncContext) request.getAsyncContext(); }
     }
 }

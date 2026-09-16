@@ -15,23 +15,15 @@ import java.security.ProtectionDomain;
 /** A finally block around FrameworkServlet.processRequest, for javax and jakarta MVC. */
 public final class RequestBoundaryTransformer implements ClassFileTransformer {
     public static final String TARGET = "org/springframework/web/servlet/FrameworkServlet";
-    private static final String GATE = "com/onurkat/reclazz/bootstrap/RequestGate";
-
-    private static InsnList gate(String operation) {
-        InsnList instructions = new InsnList();
-        instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, GATE, "global", "()L" + GATE + ";", false));
-        instructions.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, GATE, operation, "()V", false));
-        return instructions;
-    }
-
-    private static InsnList async(String operation, int slot) {
+    private static InsnList async(String operation, int slot, String namespace) {
         String bridge = "com/onurkat/reclazz/bootstrap/AsyncMvcBoundary";
         InsnList code = new InsnList();
         if (operation.equals("enter")) {
             code.add(new VarInsnNode(Opcodes.ALOAD, 1));
             code.add(new LdcInsnNode(Type.getObjectType(TARGET)));
+            code.add(new LdcInsnNode(namespace));
             code.add(new MethodInsnNode(Opcodes.INVOKESTATIC, bridge, "enter",
-                    "(Ljava/lang/Object;Ljava/lang/Class;)Ljava/lang/Object;", false));
+                    "(Ljava/lang/Object;Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Object;", false));
             code.add(new VarInsnNode(Opcodes.ASTORE, slot));
         } else {
             code.add(new VarInsnNode(Opcodes.ALOAD, slot));
@@ -58,20 +50,20 @@ public final class RequestBoundaryTransformer implements ClassFileTransformer {
                         || method.desc.equals("(Ljakarta/servlet/http/HttpServletRequest;Ljakarta/servlet/http/HttpServletResponse;)V");
                 if (!method.name.equals("processRequest") || !servlet) continue;
                 found = true;
-                boolean async = method.desc.startsWith("(Ljavax/");
+                String namespace = method.desc.startsWith("(Ljavax/") ? "javax" : "jakarta";
                 int frame = method.maxLocals++;
                 for (AbstractInsnNode instruction : method.instructions.toArray()) {
                     if (instruction.getOpcode() == Opcodes.RETURN) {
-                        method.instructions.insertBefore(instruction, async ? async("exit", frame) : gate("exit"));
+                        method.instructions.insertBefore(instruction, async("exit", frame, namespace));
                     }
                 }
                 LabelNode start = new LabelNode();
-                InsnList entry = async ? async("enter", frame) : gate("enter");
+                InsnList entry = async("enter", frame, namespace);
                 entry.add(start);
                 method.instructions.insert(entry);
                 LabelNode end = new LabelNode();
                 method.instructions.add(end);
-                method.instructions.add(async ? async("exit", frame) : gate("exit"));
+                method.instructions.add(async("exit", frame, namespace));
                 method.instructions.add(new InsnNode(Opcodes.ATHROW));
                 // Preserve the original handlers' priority, including Spring's own finally blocks.
                 method.tryCatchBlocks.add(new TryCatchBlockNode(start, end, end, null));
@@ -80,7 +72,7 @@ public final class RequestBoundaryTransformer implements ClassFileTransformer {
             type.accept(writer);
             byte[] result = writer.toByteArray();
             RequestGate.global().installed();
-            StatusReporter.info("Request boundary installed for MVC dispatches and supported javax async requests");
+            StatusReporter.info("Request boundary installed for MVC dispatches and supported javax/Jakarta async requests");
             return result;
         } catch (Throwable failure) {
             RequestGate.global().unavailable("Spring MVC request hook failed: " + failure.getClass().getSimpleName());

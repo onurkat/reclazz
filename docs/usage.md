@@ -98,7 +98,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `transformDumpDir` | (none) | Write every transformed class file here, for looking at what the agent emitted |
 | `verifyTransform` | `false` | Run the bytecode verifier over every transformed class and print what it says |
 | `sessionLog` | (none) | Append every status line to this file with an ISO timestamp and level, no colour: the session's record, to read back or attach to a report |
-| `reloadBoundary` | `immediate` | `request` waits for synchronous MVC dispatches and supported Spring 5 `javax` MVC async requests before applying a class reload batch; requires `-javaagent` at JVM startup. See [Reload between requests](#reload-between-requests) |
+| `reloadBoundary` | `immediate` | `request` waits for synchronous MVC dispatches and supported Spring 5 `javax` and Spring 6 Jakarta MVC async requests before applying a class reload batch; requires `-javaagent` at JVM startup. See [Reload between requests](#reload-between-requests) |
 
 Arguments are never removed or renamed within a major version: a line that
 worked with an older 1.x agent works with a newer one. An argument the agent
@@ -2250,8 +2250,10 @@ stay within the outer boundary. Normal returns and exceptions both release it.
 AutoCompile still compiles outside the boundary and applies its compiled
 batch inside it.
 
-For Spring 5 `javax.servlet` MVC, `Callable` (including `WebAsyncTask`) and
-`DeferredResult` also retain the boundary after the initial dispatch returns.
+For Spring 5 `javax.servlet` and Spring 6 `jakarta.servlet` MVC, `Callable`
+(including `WebAsyncTask`) and `DeferredResult` also retain the boundary after the
+initial dispatch returns. The hook uses the actual FrameworkServlet method's servlet
+namespace and classloader, including when both servlet APIs are visible.
 Producing a result or starting an async redispatch does not end protection:
 the native servlet completion event does. A redispatch belonging to an admitted
 request can proceed while reload is draining, so it can finish without waiting
@@ -2260,11 +2262,14 @@ A Callable worker that ignores cancellation stays counted until its body exits, 
 uncompleted request or worker can therefore defer a reload indefinitely; new
 traffic is admitted again after the one-second drain deadline.
 
-Verified with Spring 5.3.39, Tomcat 9.0.121 and stock JDK 21, using real HTTP
-requests on ordinary and child application classloaders. Immediate results,
-startup failures, executor rejection, cancellation before execution and native
-completion are also exercised by focused lifecycle tests. Jakarta MVC retains
-synchronous dispatch coverage only; no Jakarta async support is claimed.
+Verified with Spring 5.3.39 / Tomcat 9.0.121 and Spring 6.1.14 / Tomcat 10.1.60
+on stock JDK 21, using real HTTP requests on ordinary and child application
+classloaders. Both graphs exercise Callable/DeferredResult requests, a timed-out
+WebAsyncTask whose worker ignores cancellation, and the unchanged immediate-mode
+control. Focused native lifecycle tests cover immediate results, failure before
+async startup, executor rejection, cancellation before execution, interceptor errors,
+redispatch and native completion. This does not claim a Boot auto-configuration
+matrix or compatibility with other Spring/container versions.
 
 The guarantee covers successful method-body changes during these supported
 lifetimes. Servlet filters outside the MVC dispatch, WebFlux, streaming/SSE,

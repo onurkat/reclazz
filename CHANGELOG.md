@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- `reloadBoundary=request` also protects Spring 6 Jakarta MVC `Callable`,
+  `WebAsyncTask` and `DeferredResult` lifetimes through native completion, including
+  timed-out Callable workers that ignore cancellation. The transformed servlet
+  descriptor selects the API namespace. Real HTTP and lifecycle tests cover
+  Spring 6.1.14 / Tomcat 10.1.60 alongside the existing Spring 5 path.
 - Newly added public no-argument void scheduled methods support direct `@Async`
   through the application's native executor and error handler on Spring 5.3.39.
   Direct transaction/cache advice runs on the worker. Saves update subsequent
