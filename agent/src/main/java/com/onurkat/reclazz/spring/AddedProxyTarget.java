@@ -11,8 +11,9 @@ import java.util.Set;
  * singleton is returned as is; a standard transaction/cache proxy is unwrapped
  * to its target so the method runs against the real fields, while any advice the
  * method needs is applied by the added-operation bridge on its call site. Any
- * other proxy shape is refused with a named reason. Ordinary events can also
- * admit the standard async advisor; their operation route validates its identity.
+ * other proxy shape is refused with a named reason. Scheduled callbacks and
+ * ordinary events can also admit the standard async advisor; the current-target
+ * resolver validates its identity even when the added method has no advice.
  */
 final class AddedProxyTarget {
     // The standard tx/cache advisors are the supported proxy shape, matching
@@ -27,7 +28,7 @@ final class AddedProxyTarget {
         return resolve(bean, type, false);
     }
 
-    static Object resolve(Object bean, Class<?> type, boolean asyncEvent) throws ReflectiveOperationException {
+    static Object resolve(Object bean, Class<?> type, boolean asyncCallback) throws ReflectiveOperationException {
         if (bean == null || bean.getClass() == type) return bean;
         ClassLoader spring = bean.getClass().getClassLoader();
         Class<?> advised;
@@ -42,7 +43,7 @@ final class AddedProxyTarget {
             throw new IllegalStateException("a dynamic or custom target source is not supported");
         for (Object advisor : (Object[]) advised.getMethod("getAdvisors").invoke(bean))
             if (!SUPPORTED_ADVISORS.contains(advisor.getClass().getName())
-                    && !(asyncEvent && SpringAsyncAdvice.isAdvisor(advisor)))
+                    && !(asyncCallback && SpringAsyncAdvice.isAdvisor(advisor)))
                 throw new IllegalStateException("an added method is not supported beside advisor " + advisor.getClass().getName());
         Object target = source.getClass().getMethod("getTarget").invoke(source);
         if (target == null || target.getClass() != type)

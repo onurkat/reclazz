@@ -106,12 +106,12 @@ public class SpringSchedulerReloader {
             postProcess.invoke(processor, bean, beanName);
         }
         if (plan.methods().isEmpty()) return original;
-        // A standard tx/cache proxy is unwrapped so the task runs on the real
+        // A standard tx/cache/async proxy is unwrapped so the task runs on the real
         // target. Any advice the added method needs is applied by the
         // added-operation bridge, keyed on the method's own annotations, so a
         // plain task runs directly and an annotated one keeps its advice.
         try {
-            resolveTarget(bean, type);
+            resolveTarget(bean, type, factory);
         } catch (Exception reason) {
             report(type, beanName + ": " + reason.getMessage());
             return original;
@@ -154,7 +154,7 @@ public class SpringSchedulerReloader {
                 // instance, and never create one while Spring is rebuilding it.
                 Object bean = read.invoke(factory, beanName);
                 if (bean == null) return null;
-                return resolveTarget(bean, type);
+                return resolveTarget(bean, type, factory);
             } catch (IllegalStateException unsupported) {
                 if (warned.compareAndSet(false, true))
                     report(type, beanName + ": " + unsupported.getMessage() + "; added tasks are paused");
@@ -165,8 +165,10 @@ public class SpringSchedulerReloader {
         };
     }
 
-    private static Object resolveTarget(Object bean, Class<?> type) throws ReflectiveOperationException {
-        return AddedProxyTarget.resolve(bean, type);
+    private static Object resolveTarget(Object bean, Class<?> type, Object factory) throws ReflectiveOperationException {
+        Object target = AddedProxyTarget.resolve(bean, type, true);
+        if (bean != target) SpringAsyncAdvice.validateProxy(bean, factory, bean.getClass().getClassLoader());
+        return target;
     }
 
     private static void report(Class<?> type, String reason) {

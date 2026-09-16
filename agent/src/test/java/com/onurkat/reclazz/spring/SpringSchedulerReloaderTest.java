@@ -126,6 +126,40 @@ class SpringSchedulerReloaderTest {
     }
 
     @Test
+    void standardAsyncProxyIsValidatedAtRegistrationAndEveryTick() throws Exception {
+        try (Scope scope = new Scope()) {
+            var async = new org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor();
+            async.setBeanFactory(scope.context.getBeanFactory());
+            scope.context.getBeanFactory().registerSingleton("async", async);
+            var configured = (org.springframework.aop.Advisor) com.onurkat.reclazz.util.Reflect.readField(async, "advisor");
+            Jobs target = new Jobs();
+            var proxy = new org.springframework.aop.framework.ProxyFactory(target);
+            proxy.setProxyTargetClass(true); proxy.addAdvisor(configured);
+            scope.context.getDefaultListableBeanFactory().destroySingleton("jobs");
+            var bean = (org.springframework.aop.framework.Advised) proxy.getProxy();
+            scope.context.getBeanFactory().registerSingleton("jobs", bean);
+            var reloader = reloader(scope);
+            byte[] saved = scheduled("first", "fixedDelay", 60_000L);
+            assertTrue(reloader.reloadScheduledMethods(Jobs.class, ADDED, saved));
+            Runnable tick = scope.processor.getScheduledTasks().iterator().next().getTask().getRunnable();
+            tick.run(); assertEquals(1, target.calls);
+            bean.addAdvisor(configured);
+            RestartLedger.clear(); tick.run(); assertEquals(1, target.calls, "duplicate async advice must pause existing tasks");
+            assertTrue(RestartLedger.digest().stream().anyMatch(line -> line.contains("once and first")));
+            assertFalse(reloader.reloadScheduledMethods(Jobs.class, ADDED, saved));
+            assertTrue(scope.processor.getScheduledTasks().isEmpty());
+            bean.removeAdvisor(1); bean.removeAdvisor(0);
+            bean.addAdvisor(new org.springframework.scheduling.annotation.AsyncAnnotationAdvisor());
+            assertFalse(reloader.reloadScheduledMethods(Jobs.class, ADDED, saved));
+            assertTrue(scope.processor.getScheduledTasks().isEmpty());
+            bean.removeAdvisor(0); bean.addAdvisor(configured);
+            assertTrue(reloader.reloadScheduledMethods(Jobs.class, ADDED, saved));
+            scope.processor.getScheduledTasks().iterator().next().getTask().getRunnable().run();
+            assertEquals(2, target.calls);
+        } finally { RestartLedger.clear(); }
+    }
+
+    @Test
     void prototypeIsNotCreatedToScheduleAnAddedMethod() throws Exception {
         try (Scope scope = new Scope()) {
             scope.context.getDefaultListableBeanFactory().destroySingleton("jobs");
@@ -151,7 +185,7 @@ class SpringSchedulerReloaderTest {
         }
         ClassNode source = read(scheduled("first", "fixedDelay", 1000L));
         source.methods.stream().filter(m -> m.name.equals("first")).findFirst().orElseThrow().visibleAnnotations
-                .add(new AnnotationNode("Lorg/springframework/scheduling/annotation/Async;"));
+                .add(new AnnotationNode("Lorg/springframework/context/event/EventListener;"));
         var plan = AddedScheduledAdapter.inspect(write(source), ADDED);
         assertTrue(plan.methods().isEmpty());
         assertTrue(plan.refused().get(0).contains("additional method annotations"));

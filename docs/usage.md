@@ -1330,10 +1330,11 @@ are not verified; this support targets Jackson's normal reflective accessor path
 
 With the agent attached at startup, add this method to an existing singleton
 `@Service` or `@Component`, compile, and it starts running without a restart.
-The bean may already be a standard transaction or cache proxy: the task is
+The bean may already be a standard transaction, cache or async proxy: the task is
 unwrapped to run on the real target, so it reads the live fields. Supported
 public callbacks may also carry direct transaction/cache annotations, as described
-[below](#transaction-and-cache-advice-on-added-callbacks). A frozen proxy, a
+[below](#transaction-and-cache-advice-on-added-callbacks), and direct `@Async`
+within the [scheduled async scope](#async-scheduled-methods-added-after-startup). A frozen proxy, a
 non-singleton target source, or a proxy carrying a non-standard advisor is
 named and left for a restart. Scheduling must already be enabled in the
 application, for example with `@EnableScheduling`.
@@ -1368,7 +1369,7 @@ at startup. The existing scheduler, unrelated tasks and scheduling configuration
 are retained.
 
 Static methods, parameters, non-void/reactive return types, proxies other than
-the standard transaction/cache singleton proxies above, other subclass instances,
+the standard transaction/cache/async singleton proxies above, other subclass instances,
 and additional runtime method annotations outside `@Deprecated` and the
 [operation subset below](#transaction-and-cache-advice-on-added-callbacks)
 are reported as unsupported for the added-method path. In particular, Reclazz
@@ -1500,8 +1501,10 @@ non-final class directly extending Object without interfaces. The existing
 singleton, standard-advisor and direct-stereotype constraints still apply.
 Unadvised private callbacks retain their previous support. Additional advice on
 `@TransactionalEventListener`, class-level advice, composed operation annotations,
-scheduled `@Async`, arbitrary aspects and method-security annotations are outside this
-extension. Ordinary void events can also use the [async scope below](#async-event-listeners-added-after-startup). Unsupported operation infrastructure fails before the callback body.
+arbitrary aspects and method-security annotations are outside this extension.
+Direct async callbacks have separate [scheduled](#async-scheduled-methods-added-after-startup)
+and [ordinary event](#async-event-listeners-added-after-startup) scopes below.
+Unsupported operation infrastructure fails before the callback body.
 
 Real-agent tests with Spring 5.3.39 and H2 exercise ordinary and child classloaders,
 commit/checked rollback, successful versus failed cache eviction, event cache hits
@@ -1510,6 +1513,57 @@ and old proxy references over four saves. They invoke Spring's registered schedu
 Runnable explicitly to control the database assertions; timer behavior remains
 covered by the separate scheduling reload tests. Same-class self calls retain the
 existing service-operation behavior and do not acquire transaction interception.
+
+### Async scheduled methods added after startup
+
+A supported singleton can gain a periodic job using the application's existing
+async infrastructure. Enable scheduling and async processing before the save:
+
+```java
+@Scheduled(fixedDelayString = "${cleanup.delay:1000}")
+@Async("backgroundJobs")
+@Transactional(rollbackFor = Exception.class)
+public void cleanup() throws Exception {
+    expiredOrders.remove();
+}
+```
+
+Direct `@Async` is supported on a newly added public, concrete, non-final,
+non-generic, no-argument void method with direct `@Scheduled` or repeated
+`@Scheduled` declarations. The non-final owner directly extends Object without
+interfaces and uses a supported direct Spring stereotype. Receivers are plain
+singletons or mutable CGLIB singleton proxies with standard transaction/cache
+advisors and optionally the application's configured async advisor, once and first.
+Class-level/composed async annotations, custom advisors, other target sources and
+non-void/reactive scheduled methods remain unsupported. Class-level async metadata,
+including composed and inherited declarations, is refused even for private
+scheduled methods; it is not silently bypassed.
+
+The saved executor qualifier is resolved by Spring's native async interceptor;
+omitting it uses the configured default selection. Direct transaction/cache advice
+runs on the worker, with native rollback/eviction rules. Void-body failures go to
+the configured async uncaught-exception handler. Missing/wrong executors and rejected
+submissions fail on the scheduler's submitting thread and follow its error policy;
+they do not execute the body synchronously as a fallback.
+
+Each scheduled tick resolves the current singleton. A later save changes the
+metadata/executor for subsequent submissions. Already accepted work retains its
+admitted target and direct body, and may finish after reload or removal; nested
+calls are not frozen. Removing `@Async` restores synchronous scheduled execution.
+Removing the method/schedule or closing the context cancels future scheduled ticks.
+The application owns worker shutdown and queued-work policy; retaining an old
+target does not restore resources destroyed during bean recreation.
+
+With `@Async`, `fixedDelay` measures completion of submission, not completion of the
+worker body. Work can overlap; executor capacity and rejection policy still matter.
+This does not add a drain boundary around scheduled work.
+
+Verified on Spring 5.3.39 with stock JDK 21, including normal and child classloaders,
+executor changes, queued work across reload/removal, checked-exception transaction
+rollback, error handling, synchronous restoration and existing proxy advice.
+The agent tests explicitly invoke Spring's registered scheduled Runnable on a
+scheduler probe thread for deterministic queue checks. Existing scheduling tests
+cover actual timers. Other Spring versions are not claimed by these tests.
 
 ### Async event listeners added after startup
 
@@ -1546,8 +1600,8 @@ are plain singletons and mutable CGLIB singleton proxies carrying only standard
 transaction/cache advisors and, optionally, the same standard async advisor first.
 Unknown, duplicated or reordered async advisors and custom/uninitialized async
 postprocessors are refused. Class/composed async annotations, Future or event-returning
-async event methods, async scheduled callbacks and
-async transactional-phase listeners remain outside this scope. Normal service methods
+async event methods and async transactional-phase listeners remain outside this scope.
+Scheduled callbacks have the [separate scope above](#async-scheduled-methods-added-after-startup). Normal service methods
 can use the [separate async service scope below](#async-service-methods-added-after-startup).
 
 Each newly submitted invocation uses current metadata, executor selection and singleton.

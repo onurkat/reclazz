@@ -15,6 +15,7 @@ import org.objectweb.asm.tree.MethodNode;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -40,11 +41,14 @@ public final class AddedScheduledAdapter {
         var caches = new ComposedCacheAnnotations(loader);
         ClassNode source = new ClassNode();
         new ClassReader(bytecode).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG);
+        boolean classAsync = classAsync(source, loader);
         for (MethodNode method : source.methods) {
             if (!added.contains(method.name + ":" + method.desc) || method.visibleAnnotations == null) continue;
             if (method.visibleAnnotations.stream().noneMatch(a -> isScheduling(a.desc))) continue;
             String reason = null;
-            if (SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, loader)
+            if (classAsync)
+                reason = "class-level async or unreadable annotation metadata is unsupported";
+            else if (SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, loader)
                     || SpringSecurityAdvice.hasSecurity(method.visibleAnnotations, loader))
                 reason = "security annotations require an ordinary synchronous service method";
             else if (caches.composed(source.visibleAnnotations) || caches.composed(method.visibleAnnotations))
@@ -56,12 +60,42 @@ public final class AddedScheduledAdapter {
                 reason = AddedOperationMetadata.callbackProblem(source, method);
             else if (method.visibleAnnotations.stream().anyMatch(a -> !isScheduling(a.desc)
                     && !AddedOperationMetadata.isOperationAnnotation(a.desc)
+                    && !AddedOperationMetadata.ASYNC.equals(a.desc)
                     && !a.desc.equals("Ljava/lang/Deprecated;")))
                 reason = "additional method annotations cannot be applied to the scheduled delegate";
             if (reason == null) methods.add(method);
             else refused.add(method.name + method.desc + ": " + reason);
         }
         return new Plan(methods, refused);
+    }
+
+    // Unwrapping an async proxy must not silently turn class-level async work
+    // into synchronous work, including a composed annotation on a private task.
+    private static boolean classAsync(ClassNode source, ClassLoader loader) {
+        try {
+            if (source.visibleAnnotations != null) for (var annotation : source.visibleAnnotations) {
+                if (AddedOperationMetadata.ASYNC.equals(annotation.desc)) return true;
+                Class<?> type = Class.forName(Type.getType(annotation.desc).getClassName(), false, loader);
+                if (asyncType(type, new HashSet<>())) return true;
+            }
+            if (source.superName != null && asyncType(Class.forName(source.superName.replace('/', '.'), false, loader), new HashSet<>())) return true;
+            for (String parent : source.interfaces)
+                if (asyncType(Class.forName(parent.replace('/', '.'), false, loader), new HashSet<>())) return true;
+            return false;
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError | java.lang.annotation.AnnotationFormatError unreadable) {
+            return true;
+        }
+    }
+
+    private static boolean asyncType(Class<?> type, Set<Class<?>> seen) {
+        if (type.getName().equals("org.springframework.scheduling.annotation.Async")) return true;
+        if (type.getName().startsWith("java.") || !seen.add(type)) return false;
+        if (seen.size() >= 64) return true;
+        for (var annotation : type.getDeclaredAnnotations())
+            if (asyncType(annotation.annotationType(), seen)) return true;
+        if (type.getSuperclass() != null && asyncType(type.getSuperclass(), seen)) return true;
+        for (Class<?> parent : type.getInterfaces()) if (asyncType(parent, seen)) return true;
+        return false;
     }
 
     private static boolean isScheduling(String descriptor) {

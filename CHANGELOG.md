@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Newly added public no-argument void scheduled methods support direct `@Async`
+  through the application's native executor and error handler on Spring 5.3.39.
+  Direct transaction/cache advice runs on the worker. Saves update subsequent
+  submissions while accepted work retains its target/body; removal cancels future
+  ticks. Standard async proxy identity/order is checked, and class-level async
+  metadata is refused instead of silently running synchronously.
 - Ordinary added service methods support pure composed `@Cacheable`, `@CachePut`,
   `@CacheEvict` and `@Caching` annotations through native Spring cache operations.
   Nested aliases, class defaults, saved metadata changes and held CGLIB references

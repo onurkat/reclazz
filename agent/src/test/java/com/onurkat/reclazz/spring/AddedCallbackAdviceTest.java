@@ -43,10 +43,23 @@ class AddedCallbackAdviceTest {
         }
     }
 
-    @Test void asyncIsLimitedToOrdinaryPublicVoidEvents() {
+    @Test void asyncSupportsPublicVoidEventsAndNoArgumentSchedules() {
         for (boolean event : List.of(false, true)) {
-            assertEquals(event ? 1 : 0, accepted(fixture(event, "Lorg/springframework/scheduling/annotation/Async;", Opcodes.ACC_PUBLIC, false), event));
+            assertEquals(1, accepted(fixture(event, "Lorg/springframework/scheduling/annotation/Async;", Opcodes.ACC_PUBLIC, false), event));
         }
+        for (boolean event : List.of(false, true)) {
+            for (int access : List.of(Opcodes.ACC_PRIVATE, Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL))
+                assertEquals(0, accepted(fixture(event, AddedOperationMetadata.ASYNC, access, false), event));
+            var generic = fixture(event, AddedOperationMetadata.ASYNC, Opcodes.ACC_PUBLIC, false);
+            generic.signature = "<T:Ljava/lang/Object;>Ljava/lang/Object;";
+            assertEquals(0, accepted(generic, event));
+        }
+        var parameter = fixture(false, AddedOperationMetadata.ASYNC, Opcodes.ACC_PUBLIC, false);
+        parameter.methods.get(0).desc = "(Ljava/lang/String;)V";
+        assertEquals(0, accepted(parameter, false));
+        var future = fixture(false, AddedOperationMetadata.ASYNC, Opcodes.ACC_PUBLIC, false);
+        future.methods.get(0).desc = "()Ljava/util/concurrent/Future;";
+        assertEquals(0, accepted(future, false));
         assertEquals(0, accepted(fixture(true, TX, Opcodes.ACC_PUBLIC, true), true));
         String async = "Lorg/springframework/scheduling/annotation/Async;";
         assertEquals(0, accepted(fixture(true, async, Opcodes.ACC_PUBLIC, true), true));
