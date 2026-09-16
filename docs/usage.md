@@ -91,7 +91,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know |
 | `excludeClasses` | (none) | Semicolon-separated class name patterns the transform leaves alone; the way out when instrumenting one class is the problem |
 | `impexAllowRemove` | `false` | Let auto-imported ImpEx files run `REMOVE` lines |
-| `jpaRefresh` | `false` | Rebuild the persistence unit when an entity gains a field or a new entity appears (JBR/DCEVM, `ddl-auto` at update/create) |
+| `jpaRefresh` | `false` | Opt-in mapping rebuild. Existing fields require enhanced redefinition; new entities also work on stock JDKs, including supported Hibernate `validate` with a prepared schema. See [scope](#new-jpa-entities-with-a-prepared-schema) |
 | `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
 | `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |
 | `wrapOutput` | `auto` | Wrap console lines to the terminal width: `auto`, `true`, `false` |
@@ -1950,6 +1950,46 @@ Spring 6 signatures as well, but this change does not add a real Spring 6 E2E
 matrix. A watched method pays a volatile activity check even when no cache
 operation is open; during observation it also records a class identity.
 `verbose=true` names targeted evictions and computations crossing reloads.
+
+### New JPA entities with a prepared schema
+
+With `jpaRefresh=true`, a new `@Entity` class can be mapped after startup when
+its table is already present and `hibernate.hbm2ddl.auto=validate`. This supports
+keeping schema changes in your own migration process: apply the schema change,
+then add and compile the entity. Reclazz asks Hibernate to validate the candidate
+mapping, verifies that its metamodel contains the new entity, then replaces the
+native factory behind Spring's existing client proxy. Existing injected factory
+and shared EntityManager references follow the new mapping. No schema action is
+changed to `update` or `create` by this path.
+
+Missing tables, missing columns and incompatible column types leave the previous
+factory open and its data accessible. The failed candidate's managed-class name
+is removed again. After correcting the schema, compile another body-only edit to
+the pending entity to retry; AutoCompile follows the same rule. An identical
+class file is normally ignored by change detection. Changing its declarations
+or mapping annotations while pending is refused: restore the original mapping
+and compile a body edit, or restart for the changed mapping. A normal save of
+an already mapped entity does not trigger this new-entity rebuild again.
+
+Verified with standard `LocalContainerEntityManagerFactoryBean`, the standard
+Hibernate provider, Spring ORM 6.1.14, Hibernate 6.5.3.Final and H2 2.2.224 on stock
+JDK 21, including real agent runs on ordinary and child application classloaders.
+Only one persistence unit is supported for new-entity selection. The factory or
+unit must explicitly configure Hibernate `validate`. JPA database/script action
+overrides (including `none`), contributor-specific actions, custom schema tools,
+schema filters, factory subclasses and custom providers are refused on this path.
+`none`/unset modes, automatic migration execution and multi-unit selection are
+not added here. Hibernate's own schema validation determines what is checked;
+this is not a check of every index, constraint or application data invariant.
+
+Successful rebuilds retire the old native factory. Finish active database work
+before triggering one; retaining old persistence contexts or active transactions
+across a successful rebuild is not supported. The failure guarantee applies
+before installing the candidate, not to rolling back arbitrary provider callback
+side effects. A failure closing the old factory after installation is reported
+separately; the new mapping remains installed. Existing entity field additions
+on stock JVMs still require enhanced redefinition or a restart. Existing
+DDL-enabled mapping refresh keeps its previous behavior.
 
 ### Reload between requests
 

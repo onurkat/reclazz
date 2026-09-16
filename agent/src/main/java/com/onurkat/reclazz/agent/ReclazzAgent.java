@@ -899,7 +899,8 @@ public class ReclazzAgent {
             // stock-JDK wall does not stand: everything about it is real. If
             // it carries a Spring stereotype it becomes a live bean here, and
             // the ordinary reload machinery has nothing left to do for it.
-            if (!alreadyLoaded(className)) {
+            boolean wasLoaded = alreadyLoaded(className);
+            if (!wasLoaded) {
                 var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
                 if (registration.isHandled()) {
                     recordOutcome(className, registration.isSuccess(), registration.description(), source);
@@ -918,6 +919,8 @@ public class ReclazzAgent {
                     reloadResult.isSuccess() ? kindOf(reloadResult) : reloadResult.getError(), source);
 
             if (reloadResult.isSuccess()) {
+                // Mapping reads reflection: first restore/reload the class's annotations.
+                if (wasLoaded) JpaMappingRefresh.retryPendingEntity(className, bytecode);
                 // The framework steps first, the line last, so that the line
                 // can say what the steps did.
                 var interceptorRefresh = reloadResult.isInterceptor() && interceptorReloader != null
@@ -1140,6 +1143,7 @@ public class ReclazzAgent {
         // dropped it from every one of them.
         java.util.LinkedHashMap<String, String> swappedShapes = new java.util.LinkedHashMap<>();
         java.util.LinkedHashMap<String, String> swappedEffects = new java.util.LinkedHashMap<>();
+        java.util.List<String> pendingJpaRetries = new java.util.ArrayList<>();
 
         // Dependent cascade + stale-reference healing sweep every singleton
         // in every context, so run them once for the whole batch; the JVM
@@ -1164,7 +1168,8 @@ public class ReclazzAgent {
 
             // Same as the single-file path: a never-loaded stereotype class
             // becomes a live bean and is done.
-            if (!alreadyLoaded(className)) {
+            boolean wasLoaded = alreadyLoaded(className);
+            if (!wasLoaded) {
                 var registration = springOrchestrator.registerNewBeanClass(className, bytecode);
                 if (registration.isHandled()) {
                     recordOutcome(className, registration.isSuccess(), registration.description(), sources.get(className));
@@ -1190,6 +1195,7 @@ public class ReclazzAgent {
                     sources.get(className));
 
             if (reloadResult.isSuccess()) {
+                if (wasLoaded) pendingJpaRetries.add(className);
                 successCount++;
                 swappedClasses.put(className, reloadResult.isStructuralReload());
                 if (reloadResult.getShape() != null) {
@@ -1238,6 +1244,10 @@ public class ReclazzAgent {
             }
         }
 
+        // AutoCompile defers native annotation redefinition until endBatch above.
+        for (String name : pendingJpaRetries) {
+            JpaMappingRefresh.retryPendingEntity(name, compiledClasses.get(name));
+        }
         long elapsed = System.currentTimeMillis() - startTime;
 
         // Emit STRUCTURAL_RELOAD vs RELOAD per class. The autoCompile path

@@ -88,6 +88,10 @@ public final class JpaMappingRefresh {
      * the honest move is to decline and name the ambiguity.
      */
     public static void applyForNewEntity(String className, Class<?> entityClass) {
+        applyForNewEntity(className, entityClass, null);
+    }
+
+    static void applyForNewEntity(String className, Class<?> entityClass, byte[] bytecode) {
         try {
             if (!optedIn()) {
                 StatusReporter.info("New entity " + className
@@ -110,7 +114,17 @@ public final class JpaMappingRefresh {
             // lookup walks "the factory managing this entity", which for a
             // NEW entity is by definition nobody (measured: it answered unset
             // while the property said update).
-            String ddlAuto = JpaSchemaAdvice.settingOf(nativeFactoryField(factoryBean).get(factoryBean));
+            Field nativeField = nativeFactoryField(factoryBean);
+            Object current = nativeField.get(factoryBean);
+            if (JpaSchemaAdvice.managesEntity(current, entityClass)) {
+                JpaPreparedSchemaRefresh.mapped(className, entityClass);
+                return;
+            }
+            String ddlAuto = JpaSchemaAdvice.settingOf(current);
+            if ("validate".equals(ddlAuto)) {
+                JpaPreparedSchemaRefresh.apply(className, entityClass, factoryBean, nativeField, bytecode);
+                return;
+            }
             if (!ddlAutoQualifies(ddlAuto)) {
                 StatusReporter.warn("New entity " + className
                         + " needs its table, and hbm2ddl.auto="
@@ -165,7 +179,7 @@ public final class JpaMappingRefresh {
                             .getMethod("getClassLoader").invoke(context);
                     if (loader == null) continue;
                     Class<?> entityClass = Class.forName(className, false, loader);
-                    applyForNewEntity(className, entityClass);
+                    applyForNewEntity(className, entityClass, bytecode);
                     return;
                 } catch (Throwable notHere) {
                     // the next context may resolve it
@@ -174,6 +188,11 @@ public final class JpaMappingRefresh {
         } catch (Throwable never) {
             // A probe that cannot run maps nothing and breaks nothing.
         }
+    }
+
+    /** Retry only a previously failed prepared-schema candidate, never an arbitrary loaded entity. */
+    public static void retryPendingEntity(String className, byte[] bytecode) {
+        JpaPreparedSchemaRefresh.retry(className, bytecode);
     }
 
     private static boolean carriesEntityAnnotation(byte[] bytecode) {
@@ -223,7 +242,7 @@ public final class JpaMappingRefresh {
     }
 
     /** The one factory bean across every context, or null when it is not one. */
-    private static Object soleFactoryBean() {
+    static Object soleFactoryBean() {
         Object found = null;
         for (Object context : ApplicationContextHolder.getAllContexts()) {
             try {

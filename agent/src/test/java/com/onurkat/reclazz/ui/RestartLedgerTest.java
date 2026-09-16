@@ -64,6 +64,20 @@ class RestartLedgerTest {
                 "one is waiting for a value, the other cannot work at all");
     }
 
+    @Test
+    void verifiedRecoveryRemovesOnlyItsOwnConcern() {
+        RestartLedger.note("demo.Entity", "mapping validation failed");
+        RestartLedger.note("demo.Entity", "field needs enhanced redefinition");
+        RestartLedger.note("other.Entity", "mapping validation failed");
+        RestartLedger.resolve("demo.Entity", "mapping validation failed");
+        RestartLedger.resolve("demo.Entity", "mapping validation failed");
+        assertEquals(2, RestartLedger.size());
+        String digest = String.join("\n", RestartLedger.digest());
+        assertTrue(digest.contains("field needs enhanced redefinition"));
+        assertTrue(digest.contains("other.Entity: mapping validation failed"));
+        assertFalse(digest.contains("demo.Entity: mapping validation failed"));
+    }
+
     /**
      * A session left running for days must not turn its own warnings into a
      * leak.
