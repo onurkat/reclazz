@@ -65,6 +65,7 @@ class SpringAddedMethodSecurityTest {
     @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
     @PreAuthorize("denyAll()") public @interface Restricted { }
     public static class Composed { @Restricted public String work(String name) { return null; } }
+    public static class MixedComposed { @Restricted @org.springframework.scheduling.annotation.Async public String work(String name) { return null; } }
     public static class Combined {
         @PreAuthorize("hasAuthority('WRITE')") @Transactional(rollbackFor=Exception.class)
         @Cacheable(cacheNames="secured", key="#p0") public String work(String name) { return null; }
@@ -198,13 +199,19 @@ class SpringAddedMethodSecurityTest {
             assertThrows(IllegalStateException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
         }
     }
-    @Test void unsupportedAsyncCallbackFilteringAndComposedSecurityRefuseBeforeBody() throws Throwable {
+    @Test void unsupportedAsyncCallbackFilteringAndMixedSecurityRefuseBeforeBody() throws Throwable {
         try(var scope=new Scope(Config.class)) {
             login("WRITE");
-            for(Class<?> metadata:List.of(Async.class,Callback.class,Filter.class,Composed.class)) {
+            for(Class<?> metadata:List.of(Async.class,Callback.class,Filter.class,MixedComposed.class)) {
                 scope.publish(metadata); assertThrows(IllegalStateException.class,()->scope.invoke("alice"),metadata.getName());
                 assertEquals(0,scope.target.calls);
             }
+        }
+    }
+    @Test void pureComposedDenyAllNowUsesNativeDenialBeforeBody() throws Throwable {
+        try(var scope=new Scope(Config.class)) {
+            scope.publish(Composed.class); login("WRITE");
+            assertThrows(AccessDeniedException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
         }
     }
     @Test void unknownReceiverIsRefusedBeforeBody() throws Throwable {
@@ -253,7 +260,7 @@ class SpringAddedMethodSecurityTest {
         }
     }
     @Test void unsupportedSecurityAloneActivatesARefusalWithoutPreviousOperations() throws Exception {
-        for(Class<?> metadata:List.of(Filter.class,Composed.class,Async.class,Callback.class,FutureResult.class)) {
+        for(Class<?> metadata:List.of(Filter.class,MixedComposed.class,Async.class,Callback.class,FutureResult.class)) {
             var plan=AddedOperationMetadata.create(Owner.class,bytes(metadata),MethodHandles.privateLookupIn(Owner.class,MethodHandles.lookup()),false);
             assertTrue(plan.operations(),metadata.getName()); assertEquals(1,plan.entries().size());
             assertTrue(plan.entries().get(0).security()); assertNotNull(plan.entries().get(0).reason());

@@ -42,6 +42,7 @@ final class AddedOperationMetadata {
         var caches = new ComposedCacheAnnotations(owner.getClassLoader());
         boolean classCache = caches.has(source.visibleAnnotations);
         boolean composedClassCache = caches.composed(source.visibleAnnotations);
+        var securityAnnotations = new ComposedSecurityAnnotations(owner.getClassLoader());
         boolean classSecurity = SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, owner.getClassLoader());
         boolean operations = classTx || classCache || classSecurity || source.methods.stream().anyMatch(m ->
                 transactions.has(m.visibleAnnotations) || SpringSecurityAdvice.hasSecurity(m.visibleAnnotations, owner.getClassLoader()) || has(m.visibleAnnotations, Set.of(ASYNC)) || caches.has(m.visibleAnnotations));
@@ -67,10 +68,10 @@ final class AddedOperationMetadata {
                 reason = "generic operation metadata";
             if ((source.access & Opcodes.ACC_FINAL) != 0 || (method.access & Opcodes.ACC_FINAL) != 0) reason = "final class or method";
             if (source.visibleAnnotations != null) for (var a : source.visibleAnnotations)
-                if (!transactions.supported(a.desc) && !caches.supported(a.desc) && !SpringSecurityAdvice.annotation(a.desc) && !CLASS_METADATA.contains(a.desc))
+                if (!transactions.supported(a.desc) && !caches.supported(a.desc) && !securityAnnotations.supported(a.desc) && !CLASS_METADATA.contains(a.desc))
                     reason = "unsupported class annotation " + a.desc;
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations)
-                if (!transactions.supported(a.desc) && !a.desc.equals(ASYNC) && !SpringSecurityAdvice.annotation(a.desc) && !caches.supported(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
+                if (!transactions.supported(a.desc) && !a.desc.equals(ASYNC) && !securityAnnotations.supported(a.desc) && !caches.supported(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
                         && !OTHER_ADAPTERS.contains(a.desc)
                         && !(a.desc.equals("Lorg/springframework/core/annotation/Order;")
                         && has(method.visibleAnnotations, Set.of("Lorg/springframework/context/event/EventListener;"))))
@@ -90,6 +91,9 @@ final class AddedOperationMetadata {
                 if (callback != null) reason = callback;
             }
             boolean security = classSecurity || SpringSecurityAdvice.hasSecurity(method.visibleAnnotations, owner.getClassLoader());
+            if (securityAnnotations.duplicatePolicies(source.visibleAnnotations)
+                    || securityAnnotations.duplicatePolicies(method.visibleAnnotations))
+                reason = "multiple security annotations declare the same pre/post policy";
             if (security && (has(method.visibleAnnotations, OTHER_ADAPTERS) || has(method.visibleAnnotations, Set.of(ASYNC))))
                 reason = "security requires an ordinary synchronous service method";
             if (security && (!"java/lang/Object".equals(source.superName) || !source.interfaces.isEmpty()))
