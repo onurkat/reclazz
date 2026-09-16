@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Added ordinary singleton service methods can use direct `@PreAuthorize` and
+  `@PostAuthorize` through the application's classic native Spring Security
+  interceptor. Saved policies, class defaults, old CGLIB references and native
+  transaction/cache ordering are covered on Spring 5.3.39 / Security 5.7.11.
+  Unsupported security infrastructure and async/callback combinations refuse;
+  pre-authorization denies before the body, post-authorization checks its result.
 - New JPA entities can join a single Spring ORM persistence unit with
   `jpaRefresh=true` and Hibernate `hbm2ddl.auto=validate` when their schema is
   already prepared. Failed validation preserves the old native factory and

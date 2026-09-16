@@ -43,6 +43,10 @@ public final class AddedEventListenerAdapter {
     record Plan(List<MethodNode> methods, List<String> refused) { }
 
     static Plan inspect(byte[] bytes, Set<String> added) {
+        return inspect(bytes, added, AddedEventListenerAdapter.class.getClassLoader());
+    }
+
+    static Plan inspect(byte[] bytes, Set<String> added, ClassLoader loader) {
         List<MethodNode> methods = new ArrayList<>();
         List<String> refused = new ArrayList<>();
         if (bytes == null || added.isEmpty()) return new Plan(methods, refused);
@@ -58,6 +62,10 @@ public final class AddedEventListenerAdapter {
             Type[] args = Type.getArgumentTypes(method.desc);
             int result = Type.getReturnType(method.desc).getSort();
             String reason = null;
+            if (SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, loader)
+                    || SpringSecurityAdvice.hasSecurity(method.visibleAnnotations, loader))
+                reason = "security annotations require an ordinary synchronous service method";
+            else
             if ((method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) != 0
                     || (result != Type.VOID && result != Type.OBJECT) || args.length != 1
                     || (args[0].getSort() != Type.OBJECT && args[0].getSort() != Type.ARRAY))

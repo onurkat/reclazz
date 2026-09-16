@@ -997,8 +997,9 @@ Supported calls require a captured live singleton, a direct target or mutable
 CGLIB proxy with `SingletonTargetSource`, and one standard Spring
 `InfrastructureAdvisorAutoProxyCreator` or `AnnotationAwareAspectJAutoProxyCreator`.
 The configured candidate/proxy advisor sets must contain only the standard
-transaction/cache advisors, interceptors and annotation sources. Additional
-aspect, security or other custom advisors are refused, including candidate
+transaction/cache advisors, interceptors and annotation sources, plus the classic
+security infrastructure described below. Additional aspect or custom advisors
+are refused, including candidate
 advisors that have not been attached to this proxy. Missing infrastructure,
 unknown receivers and unsupported metadata also cause an explicit exception
 before the operation body runs. No unmanaged/prototype instance is assumed to
@@ -1030,6 +1031,43 @@ parameter names, custom key generation, annotation changes, method removal and
 restoration, and old/new bean references. Other Spring versions and a JDK 17
 runtime were not exercised. Spring JDBC/TX and H2 are test-only dependencies of
 Reclazz and are absent from the production agent.
+
+### Authorization on added service methods
+
+Direct `@PreAuthorize` and `@PostAuthorize` annotations on added ordinary service
+methods use the application's classic native `MethodSecurityInterceptor`. Verified
+with Spring 5.3.39 / Spring Security 5.7.11 and
+`@EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)`. Direct
+class defaults and method overrides follow Spring's precedence. Saved parameter
+names compiled with `-parameters`, indexed arguments such as `#p0`, authentication,
+the actual target (`this`) and `returnObject` are available to native expressions.
+
+A denied `@PreAuthorize` call never enters the added body. `@PostAuthorize` checks
+its result **after** the body runs; it does not prevent that body's side effects.
+The native authentication context and exception types are preserved. An already
+held singleton/CGLIB reference follows subsequent policy/body changes, annotation
+removal, method removal and restoration. Unrelated existing methods retain their
+normal Spring interception. Same-class self-invocation retains its existing advice
+bypass; this feature is an external added-method boundary.
+
+The transaction/cache singleton and proxy restrictions above still apply. For
+security, the service must directly extend `Object` without interfaces. The native
+advisor and interceptor must share the standard delegating pre/post annotation
+source, standard affirmative decision manager/voters and default pre/post expression
+handlers. Disabled/missing infrastructure, custom sources, decision managers,
+expression-handler subclasses or extra advisors are refused before the body runs.
+The application's advisor order is preserved: when combining authorization and
+caching, configure security before cache advice if cached results must be checked
+on every call (the regression uses security order 0, transactions 1, caching 2).
+Reclazz does not reorder the application's security policy.
+
+This scope excludes `@EnableMethodSecurity`/AuthorizationManager infrastructure,
+Spring Security 6, `@Secured`/JSR-250 annotations on added methods, composed security
+annotations, `@PreFilter`/`@PostFilter`, async methods and framework callbacks.
+Unsupported security annotations refuse rather than silently becoming public;
+added event/scheduled callbacks also refuse class-level security, including composed
+annotations. Original-class reflection still cannot discover added methods, and
+custom code that needs the original declaring `Method` is outside this scope.
 
 ### Composed transaction annotations on added services
 

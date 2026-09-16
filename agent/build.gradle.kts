@@ -58,6 +58,8 @@ dependencies {
     testImplementation("com.h2database:h2:2.2.224")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.22.1")
+    // Native method authorization regressions only; never packaged in the agent.
+    testImplementation("org.springframework.security:spring-security-config:5.7.11")
     // Spring MVC, its test support and the servlet API, for driving a real
     // RequestMappingHandlerMapping under load while a controller is re-scanned.
     testImplementation("org.springframework:spring-webmvc:5.3.39")
