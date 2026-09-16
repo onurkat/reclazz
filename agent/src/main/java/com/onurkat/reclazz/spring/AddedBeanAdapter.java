@@ -31,6 +31,10 @@ public final class AddedBeanAdapter {
     private static final String SCOPE = "Lorg/springframework/context/annotation/Scope;";
     private static final String PROFILE = "Lorg/springframework/context/annotation/Profile;";
     private static final String CONDITIONAL = "Lorg/springframework/context/annotation/Conditional;";
+    private static final String ON_PROPERTY = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnProperty;";
+    private static final String ON_BEAN = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnBean;";
+    private static final String ON_MISSING_BEAN = "Lorg/springframework/boot/autoconfigure/condition/ConditionalOnMissingBean;";
+    static final Set<String> BOOT_CONDITIONS = Set.of(ON_PROPERTY, ON_BEAN, ON_MISSING_BEAN);
     private static final String PARAMETERS = InjectedNames.PREFIX + "parameters";
     private AddedBeanAdapter() { }
 
@@ -39,7 +43,10 @@ public final class AddedBeanAdapter {
         String name() { return names.get(0); }
         List<String> aliases() { return names.subList(1, names.size()); }
         boolean prototype() { return "prototype".equals(scope); }
-        boolean conditional() { return annotation(method.visibleAnnotations, CONDITIONAL) != null; }
+        boolean conditional() {
+            return method.visibleAnnotations != null && method.visibleAnnotations.stream()
+                    .anyMatch(a -> a.desc.equals(CONDITIONAL) || BOOT_CONDITIONS.contains(a.desc));
+        }
     }
     record Plan(List<Factory> factories, List<String> refused, boolean full) { }
 
@@ -82,7 +89,8 @@ public final class AddedBeanAdapter {
                 if (signature.getArgumentTypes().length > 0
                         && method.visibleTypeAnnotations != null && !method.visibleTypeAnnotations.isEmpty())
                     throw new IllegalArgumentException("factory type annotations are not supported");
-                if (extraAnnotations(method.visibleAnnotations, BEAN, PRIMARY, QUALIFIER, LAZY, SCOPE, PROFILE, CONDITIONAL))
+                if (extraAnnotations(method.visibleAnnotations, BEAN, PRIMARY, QUALIFIER, LAZY, SCOPE, PROFILE,
+                        CONDITIONAL, ON_PROPERTY, ON_BEAN, ON_MISSING_BEAN))
                     throw new IllegalArgumentException("additional method annotations cannot be applied to the factory delegate");
                 AnnotationNode conditional = annotation(method.visibleAnnotations, CONDITIONAL);
                 if (conditional != null) {

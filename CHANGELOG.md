@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Added `@Bean` factories support direct Boot `@ConditionalOnProperty`,
+  `@ConditionalOnBean` and `@ConditionalOnMissingBean` through native saved-metadata
+  evaluation. Configuration saves re-evaluate conditions and retire owned products
+  and aliases; missing Boot metadata refuses registration. Verified with Boot
+  2.7.18 / Spring 5.3.39, including inferred return types, parent contexts and
+  normal/child-loader reloads. Other composed conditions remain unsupported.
 - Added service method authorization also works with native `@EnableMethodSecurity`
   on Spring 6.1.14 / Security 6.3.4. Both pre/post policies are required independently;
   saved class defaults, lazy authentication, native observations and transaction/cache
