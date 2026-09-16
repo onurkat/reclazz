@@ -1060,7 +1060,7 @@ be a singleton merely because its class matches one.
 This does not add interface methods to existing JDK proxies, add reflective
 methods to the original class, or cover new overrides of already-resolvable
 inherited methods. Static/private/final methods, final service classes, generic
-metadata, composed annotations outside the transaction/cache scopes below, additional
+metadata, composed annotations outside the transaction/cache/security scopes below, additional
 advice annotations, scoped/dynamic/opaque/nested proxies and reactive return types are outside this path. Future-returning transaction/cache
 operations require the direct [async service scope](#async-service-methods-added-after-startup)
 below; without `@Async`, those advised Future operations remain unsupported. Existing
@@ -1087,8 +1087,9 @@ Reclazz and are absent from the production agent.
 
 ### Authorization on added service methods
 
-Direct `@PreAuthorize` and `@PostAuthorize` annotations on added ordinary service
-methods use the application's native security interceptors. Verified configurations:
+Direct `@PreAuthorize` and `@PostAuthorize`, and supported composed security markers
+on added ordinary service methods, use the application's native security interceptors.
+Verified configurations:
 
 - Spring 5.3.39 / Security 5.7.11 with
   `@EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)`.
@@ -1096,7 +1097,7 @@ methods use the application's native security interceptors. Verified configurati
   and its default pre/post support. Native `AuthorizationManager` interception,
   lazy advisor wrappers and standard Micrometer authorization observations are preserved.
 
-Direct class defaults and method overrides follow Spring's precedence. Saved parameter
+Supported class defaults and method overrides follow Spring's precedence. Saved parameter
 names compiled with `-parameters`, indexed arguments such as `#p0`, authentication,
 the actual target (`this`) and `returnObject` are available to native expressions.
 
@@ -1123,8 +1124,8 @@ on every call. The classic regression uses orders 0/1/2; the modern regression u
 native pre-authorization order 200, transactions 300 and caching 400. Reclazz does
 not reorder the application's security policy.
 
-This scope excludes `@Secured`/JSR-250 annotations on added methods, composed security
-annotations, `@PreFilter`/`@PostFilter`, `@AuthorizeReturnObject`, custom denial handlers,
+This scope excludes `@Secured`/JSR-250 annotations on added methods,
+`@PreFilter`/`@PostFilter`, `@AuthorizeReturnObject`, custom denial handlers,
 async methods and framework callbacks. Modern default filter/result advisors may
 remain present only when they do not match the added call; matching unsupported
 advice is refused. Other Security versions/configurations were not validated.
@@ -1132,6 +1133,46 @@ Unsupported security annotations refuse rather than silently becoming public;
 added event/scheduled callbacks also refuse class-level security, including composed
 annotations. Original-class reflection still cannot discover added methods, and
 custom code that needs the original declaring `Method` is outside this scope.
+
+### Composed security annotations on added services
+
+An application can keep a fixed authorization rule in a runtime marker annotation
+and use it on a newly added ordinary service method:
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+@PreAuthorize("hasAuthority('ADMIN')")
+public @interface AdminOnly { }
+
+@AdminOnly
+public String administrativeReport(String account) {
+    return buildReport(account);
+}
+```
+
+Supported markers declare no attributes and contain only `@PreAuthorize`,
+`@PostAuthorize`, nested supported markers and Java annotation metadata
+(`@Target`, `@Retention`, `@Documented`, `@Inherited`, `@Deprecated`). One marker
+can carry both pre- and post-authorization. Method and class policies keep native
+Spring precedence. A repeated pre or post policy on the same declaration, including
+through different nested paths, is refused. Attribute-bearing annotations,
+`@AliasFor` parameters, expression templates, mixed advice/framework markers,
+unknown markers and cycles are outside this scope.
+
+Changing which marker is used on a service, removing it and restoring it follows
+later saves. Annotation types must already resolve through the application loader;
+editing the marker type's own definition is not covered. Existing direct transaction
+and cache annotations can remain separate on the service method, subject to the
+advisor ordering and receiver restrictions above. Composed security does not extend
+support to async methods, framework callbacks, inheritance or generic operations.
+
+Verified on both security configurations listed above: native nested-policy controls,
+deny-before-body, post-authorization after side effects, class/method precedence,
+cache/database protection and rejection of mixed or ambiguous policies. Modern tests
+remove each required pre/post advisor independently and prove that the body cannot
+run with only the other advisor. Actual-agent tests cover six saves through retained
+proxies, normal and child class loaders, rule/body edits, removal and restoration.
 
 ### Composed transaction annotations on added services
 
@@ -1168,7 +1209,8 @@ transaction graph with unsupported companion metadata is refused before its body
 runs. Annotation classes must already be resolvable through the application
 loader. Editing the annotation type's own definition is not covered; save edits
 to its usage on the service instead. Pure composed cache annotations have the
-separate support below. Composed async/security annotations and composed transaction
+separate support below. Pure composed security markers have the scope above.
+Composed async annotations and composed transaction
 callbacks remain separate limitations. All ordinary operation
 receiver, proxy, advice, visibility and generic restrictions above still apply.
 

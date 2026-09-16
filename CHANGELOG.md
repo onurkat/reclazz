@@ -7,6 +7,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Added ordinary service methods accept fixed, parameterless composed
+  `@PreAuthorize`/`@PostAuthorize` markers on the supported classic and modern
+  Spring Security paths. Nested policies and class defaults use native authorization;
+  each required modern pre/post advisor must be present. Mixed, parameterized and
+  duplicate-policy graphs are refused before the body. Real-agent tests cover
+  saved policy/body changes and removal/restoration on both application loaders.
 - Added JMS listener methods can return synchronous String, byte array, Map,
   JMS Message or Spring Message replies through Spring's native adapter.
   Direct method `@SendTo`, caller `JMSReplyTo` priority, correlation, null results

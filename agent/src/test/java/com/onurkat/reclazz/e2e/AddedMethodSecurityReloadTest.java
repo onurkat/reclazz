@@ -50,7 +50,7 @@ class AddedMethodSecurityReloadTest {
         return "package app; public class Probe { public static String call(Store store,String name) { return "
                 +(added?"store.work(name)":"\"ready\"")+"; } }";
     }
-    private static String store(int version) {
+    String store(int version) {
         String annotation=switch(version) {
             case 1,6 -> "@org.springframework.security.access.prepost.PreAuthorize(\"hasAuthority('WRITE') and #p0 == authentication.name\")";
             case 2 -> "@org.springframework.security.access.prepost.PreAuthorize(\"hasAuthority('ADMIN')\")";

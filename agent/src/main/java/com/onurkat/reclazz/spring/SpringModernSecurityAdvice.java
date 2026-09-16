@@ -61,11 +61,10 @@ final class SpringModernSecurityAdvice {
 
     static int requiredPolicies(Method metadata) {
         int flags = 0;
+        var annotations = new ComposedSecurityAnnotations(metadata.getDeclaringClass().getClassLoader());
         for (var element : List.of(metadata, metadata.getDeclaringClass())) {
             for (var annotation : element.getDeclaredAnnotations()) {
-                String type = annotation.annotationType().getName();
-                if (type.equals("org.springframework.security.access.prepost.PreAuthorize")) flags |= 1;
-                if (type.equals("org.springframework.security.access.prepost.PostAuthorize")) flags |= 2;
+                flags |= annotations.policies(annotation.annotationType());
             }
         }
         return flags;

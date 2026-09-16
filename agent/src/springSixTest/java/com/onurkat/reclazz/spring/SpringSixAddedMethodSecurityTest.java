@@ -168,11 +168,17 @@ class SpringSixAddedMethodSecurityTest {
             scope.publish(Before.class); login("WRITE"); assertThrows(IllegalStateException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
         }
     }
+    @Test void pureComposedDenyAllNowUsesNativeDenialBeforeBody() throws Throwable {
+        try(var scope=new Scope(Config.class)) {
+            scope.publish(Composed.class); login("WRITE");
+            assertThrows(AccessDeniedException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
+        }
+    }
     @Test void unknownReceiverAndUnsupportedCombinationsRefuse() throws Throwable {
         try(var scope=new Scope(Config.class)) {
             login("WRITE"); scope.publish(Before.class); Owner stranger=new Owner();
             assertThrows(IllegalStateException.class,()->scope.site.dynamicInvoker().invokeWithArguments(stranger,"alice")); assertEquals(0,stranger.calls);
-            for(Class<?> metadata:List.of(Async.class,Callback.class,Filter.class,Composed.class)) {
+            for(Class<?> metadata:List.of(Async.class,Callback.class,Filter.class,MixedComposed.class)) {
                 scope.publish(metadata); assertThrows(IllegalStateException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
             }
         }
