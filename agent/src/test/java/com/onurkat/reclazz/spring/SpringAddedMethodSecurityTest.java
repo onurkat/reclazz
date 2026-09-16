@@ -277,7 +277,7 @@ class SpringAddedMethodSecurityTest {
         if(name.equals("fail"))throw new Exception("rollback"); return name;
     }
     static byte[] bytes(Class<?> metadata) throws Exception {
-        byte[] bytes; try(var stream=metadata.getResourceAsStream("SpringAddedMethodSecurityTest$"+metadata.getSimpleName()+".class")) { bytes=stream.readAllBytes(); }
+        byte[] bytes; try(var stream=metadata.getResourceAsStream("/"+metadata.getName().replace('.','/')+".class")) { bytes=stream.readAllBytes(); }
         var node=new ClassNode(); new ClassReader(bytes).accept(node,0); node.name=org.objectweb.asm.Type.getInternalName(Owner.class);
         node.methods.stream().filter(m->m.name.equals("work")).forEach(m->m.parameters=List.of(new ParameterNode("name",0)));
         var writer=new ClassWriter(0); node.accept(writer); return writer.toByteArray();

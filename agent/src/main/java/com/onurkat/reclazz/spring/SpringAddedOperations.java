@@ -155,6 +155,7 @@ public final class SpringAddedOperations {
             if (!CREATORS.contains(creator.getClass().getName())) throw refused(subject, "custom auto-proxy creator");
             var applicable = new ArrayList<Object>();
             boolean transaction = false, cache = false, security = false;
+            int securityPolicies = 0;
             Set<Object> securityAdvisors = Collections.newSetFromMap(new IdentityHashMap<>());
             for (Object advisor : (List<?>) inherited(creator, "findCandidateAdvisors").invoke(creator)) {
                 if (!supported(advisor)) throw refused(subject, "additional candidate advisor " + advisor.getClass().getName());
@@ -162,24 +163,42 @@ public final class SpringAddedOperations {
                     SpringSecurityAdvice.interceptor(advisor);
                     securityAdvisors.add(advisor);
                 }
+                SpringModernSecurityAdvice.Advice modern = null;
+                if (SpringModernSecurityAdvice.isAdvisor(advisor)) {
+                    modern = SpringModernSecurityAdvice.inspect(advisor);
+                    securityAdvisors.add(advisor);
+                }
+                Class<?> matchingType = modern == null ? owner : entry.method().getDeclaringClass();
                 Object pointcut = Class.forName("org.springframework.aop.PointcutAdvisor", false, loader).getMethod("getPointcut").invoke(advisor);
                 Class<?> pointcutType = Class.forName("org.springframework.aop.Pointcut", false, loader);
                 Object filter = pointcutType.getMethod("getClassFilter").invoke(pointcut);
-                if (!(boolean) Class.forName("org.springframework.aop.ClassFilter", false, loader).getMethod("matches", Class.class).invoke(filter, owner)) continue;
+                Class<?> filterType = Class.forName("org.springframework.aop.ClassFilter", false, loader);
                 Object matcher = pointcutType.getMethod("getMethodMatcher").invoke(pointcut);
                 Class<?> matcherType = Class.forName("org.springframework.aop.MethodMatcher", false, loader);
                 if ((boolean) matcherType.getMethod("isRuntime").invoke(matcher)) throw refused(subject, "runtime operation pointcut");
-                if ((boolean) matcherType.getMethod("matches", Method.class, Class.class).invoke(matcher, entry.method(), owner)) {
+                // Unsupported result/filter advice must not be bypassed by using
+                // saved metadata instead of the original target class for matching.
+                if (modern != null && modern.inactiveOnly()
+                        && (boolean) filterType.getMethod("matches", Class.class).invoke(filter, owner)
+                        && (boolean) matcherType.getMethod("matches", Method.class, Class.class).invoke(matcher, entry.method(), owner))
+                    throw refused(subject, "unsupported matching modern security advice");
+                if (!(boolean) filterType.getMethod("matches", Class.class).invoke(filter, matchingType)) continue;
+                if ((boolean) matcherType.getMethod("matches", Method.class, Class.class).invoke(matcher, entry.method(), matchingType)) {
+                    if (modern != null && modern.inactiveOnly()) throw refused(subject, "unsupported matching modern security advice");
                     applicable.add(advisor);
                     transaction |= advisor.getClass().getName().equals(TX_ADVISOR);
                     cache |= advisor.getClass().getName().equals(CACHE_ADVISOR);
-                    security |= SpringSecurityAdvice.isAdvisor(advisor);
+                    security |= SpringSecurityAdvice.isAdvisor(advisor) || modern != null;
+                    securityPolicies |= modern == null ? (SpringSecurityAdvice.isAdvisor(advisor) ? 3 : 0) : modern.policies();
                 }
             }
             if (advised.isInstance(bean)) for (Object advisor : (Object[]) advised.getMethod("getAdvisors").invoke(bean))
-                if (SpringSecurityAdvice.isAdvisor(advisor) && !securityAdvisors.contains(advisor))
+                if ((SpringSecurityAdvice.isAdvisor(advisor) || SpringModernSecurityAdvice.isAdvisor(advisor)) && !securityAdvisors.contains(advisor))
                     throw refused(subject, "foreign security proxy advisor");
             if (entry.security() && !security) throw refused(subject, "no matching standard security advisor");
+            int requiredPolicies = SpringModernSecurityAdvice.requiredPolicies(entry.method());
+            if ((securityPolicies & requiredPolicies) != requiredPolicies)
+                throw refused(subject, "no matching advisor for each required pre/post security policy");
             if (entry.transaction() && !transaction) throw refused(subject, "no matching transaction advisor");
             if (entry.cache() && !cache) throw refused(subject, "no matching cache advisor");
             List<?> sorted = (List<?>) inherited(creator, "sortAdvisors", List.class).invoke(creator, applicable);
@@ -188,6 +207,10 @@ public final class SpringAddedOperations {
                 Object interceptor = advisorType.getMethod("getAdvice").invoke(advisor);
                 if (SpringSecurityAdvice.isAdvisor(advisor)) {
                     advice.add(SpringSecurityAdvice.interceptor(advisor));
+                    continue;
+                }
+                if (SpringModernSecurityAdvice.isAdvisor(advisor)) {
+                    advice.add(SpringModernSecurityAdvice.inspect(advisor).interceptor());
                     continue;
                 }
                 boolean tx = advisor.getClass().getName().equals(TX_ADVISOR);
@@ -214,6 +237,7 @@ public final class SpringAddedOperations {
                     if (bean == null) continue;
                     SpringAsyncAdvice.forget(bean, metadata);
                     SpringSecurityAdvice.forget(bean, metadata);
+                    SpringModernSecurityAdvice.forget(bean, metadata);
                     String type = bean.getClass().getName();
                     if (type.equals("org.springframework.cache.interceptor.CacheInterceptor"))
                         inherited(bean, "clearMetadataCache").invoke(bean);
@@ -258,7 +282,7 @@ public final class SpringAddedOperations {
 
     private static boolean supported(Object advisor) {
         String name = advisor.getClass().getName();
-        return name.equals(TX_ADVISOR) || name.equals(CACHE_ADVISOR) || SpringSecurityAdvice.isAdvisor(advisor);
+        return name.equals(TX_ADVISOR) || name.equals(CACHE_ADVISOR) || SpringSecurityAdvice.isAdvisor(advisor) || SpringModernSecurityAdvice.isAdvisor(advisor);
     }
     private static Object body(MethodHandle direct, Object target, Object[] args) throws Throwable {
         Object[] all = new Object[args.length + 1]; all[0] = target;

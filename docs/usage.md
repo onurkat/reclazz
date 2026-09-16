@@ -997,7 +997,7 @@ Supported calls require a captured live singleton, a direct target or mutable
 CGLIB proxy with `SingletonTargetSource`, and one standard Spring
 `InfrastructureAdvisorAutoProxyCreator` or `AnnotationAwareAspectJAutoProxyCreator`.
 The configured candidate/proxy advisor sets must contain only the standard
-transaction/cache advisors, interceptors and annotation sources, plus the classic
+transaction/cache advisors, interceptors and annotation sources, plus the classic or modern
 security infrastructure described below. Additional aspect or custom advisors
 are refused, including candidate
 advisors that have not been attached to this proxy. Missing infrastructure,
@@ -1028,17 +1028,23 @@ add a concurrent consistency guarantee.
 Verified with Spring Framework 5.3.39, H2 2.2.224 and a stock JDK 21: real database
 commit/checked-exception rollback, cache hit/put/evict, combined transaction/cache,
 parameter names, custom key generation, annotation changes, method removal and
-restoration, and old/new bean references. Other Spring versions and a JDK 17
-runtime were not exercised. Spring JDBC/TX and H2 are test-only dependencies of
+restoration, and old/new bean references. Spring 6 transaction/cache advice combined
+with authorization is verified in the next section; a JDK 17 runtime was not exercised.
+Spring JDBC/TX and H2 are test-only dependencies of
 Reclazz and are absent from the production agent.
 
 ### Authorization on added service methods
 
 Direct `@PreAuthorize` and `@PostAuthorize` annotations on added ordinary service
-methods use the application's classic native `MethodSecurityInterceptor`. Verified
-with Spring 5.3.39 / Spring Security 5.7.11 and
-`@EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)`. Direct
-class defaults and method overrides follow Spring's precedence. Saved parameter
+methods use the application's native security interceptors. Verified configurations:
+
+- Spring 5.3.39 / Security 5.7.11 with
+  `@EnableGlobalMethodSecurity(prePostEnabled=true, proxyTargetClass=true)`.
+- Spring 6.1.14 / Security 6.3.4 with `@EnableMethodSecurity(proxyTargetClass=true)`
+  and its default pre/post support. Native `AuthorizationManager` interception,
+  lazy advisor wrappers and standard Micrometer authorization observations are preserved.
+
+Direct class defaults and method overrides follow Spring's precedence. Saved parameter
 names compiled with `-parameters`, indexed arguments such as `#p0`, authentication,
 the actual target (`this`) and `returnObject` are available to native expressions.
 
@@ -1051,19 +1057,25 @@ normal Spring interception. Same-class self-invocation retains its existing advi
 bypass; this feature is an external added-method boundary.
 
 The transaction/cache singleton and proxy restrictions above still apply. For
-security, the service must directly extend `Object` without interfaces. The native
-advisor and interceptor must share the standard delegating pre/post annotation
-source, standard affirmative decision manager/voters and default pre/post expression
-handlers. Disabled/missing infrastructure, custom sources, decision managers,
-expression-handler subclasses or extra advisors are refused before the body runs.
+security, the service must directly extend `Object` without interfaces. Classic
+security requires the standard shared pre/post annotation source, affirmative
+decision manager/voters and default expression handlers. Modern security requires
+the native pre/post managers, standard pointcuts and expression handlers; a method
+requiring both policies must have a matching advisor for each. Missing one cannot
+be treated as a public operation. Native `permitAll()` keeps its lazy authentication
+semantics. Disabled/missing infrastructure, custom sources/managers,
+expression-handler subclasses or extra advice are refused before the body runs.
 The application's advisor order is preserved: when combining authorization and
 caching, configure security before cache advice if cached results must be checked
-on every call (the regression uses security order 0, transactions 1, caching 2).
-Reclazz does not reorder the application's security policy.
+on every call. The classic regression uses orders 0/1/2; the modern regression uses
+native pre-authorization order 200, transactions 300 and caching 400. Reclazz does
+not reorder the application's security policy.
 
-This scope excludes `@EnableMethodSecurity`/AuthorizationManager infrastructure,
-Spring Security 6, `@Secured`/JSR-250 annotations on added methods, composed security
-annotations, `@PreFilter`/`@PostFilter`, async methods and framework callbacks.
+This scope excludes `@Secured`/JSR-250 annotations on added methods, composed security
+annotations, `@PreFilter`/`@PostFilter`, `@AuthorizeReturnObject`, custom denial handlers,
+async methods and framework callbacks. Modern default filter/result advisors may
+remain present only when they do not match the added call; matching unsupported
+advice is refused. Other Security versions/configurations were not validated.
 Unsupported security annotations refuse rather than silently becoming public;
 added event/scheduled callbacks also refuse class-level security, including composed
 annotations. Original-class reflection still cannot discover added methods, and

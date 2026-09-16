@@ -89,6 +89,14 @@ handoff leaves STATE idle, Astra may repair it only after verifying the previous
 task's archived PASS, corresponding commit and empty current directory. Stop
 at idle when the owner pauses work or the approved queue is exhausted.
 
+### Owner correction: test-only dependencies (2026-09-16)
+
+Onur explicitly authorized adding dependencies used only by tests without asking
+for approval again. Verify the version and scope, keep them out of the production
+agent/plugin artifacts, and report what was added. This standing authorization
+includes isolated test source sets. Production/runtime dependency additions still
+require approval. Research and validation requirements remain unchanged.
+
 Two rounds is the budget. A third disagreement on the same point, in
 either direction, stops the loop and goes to the owner with the two
 positions stated in one paragraph each. Do not keep trading documents.

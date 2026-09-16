@@ -184,6 +184,8 @@ val springSixTests = sourceSets.create("springSixTest") {
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    // Native modern method authorization; isolated from Spring 5 and never packaged.
+    add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-config:6.3.4")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
