@@ -37,6 +37,7 @@ public final class AddedScheduledAdapter {
         List<MethodNode> methods = new ArrayList<>();
         List<String> refused = new ArrayList<>();
         if (bytecode == null || added.isEmpty()) return new Plan(methods, refused);
+        var caches = new ComposedCacheAnnotations(loader);
         ClassNode source = new ClassNode();
         new ClassReader(bytecode).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG);
         for (MethodNode method : source.methods) {
@@ -46,6 +47,8 @@ public final class AddedScheduledAdapter {
             if (SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, loader)
                     || SpringSecurityAdvice.hasSecurity(method.visibleAnnotations, loader))
                 reason = "security annotations require an ordinary synchronous service method";
+            else if (caches.composed(source.visibleAnnotations) || caches.composed(method.visibleAnnotations))
+                reason = "composed cache annotations require an ordinary synchronous service method";
             else
             if (!method.desc.equals("()V") || (method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) != 0)
                 reason = "only no-argument void instance methods are supported";

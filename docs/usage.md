@@ -992,7 +992,8 @@ Calls from other watched application classes now run the application's real
 Spring transaction/cache interceptors around the added companion method. This
 covers direct `@Transactional`, `@Cacheable`, `@CachePut`, `@CacheEvict` and
 `@Caching` metadata, plus class-level transaction settings and `@CacheConfig`.
-Ordinary service methods also accept [composed transaction annotations](#composed-transaction-annotations-on-added-services).
+Ordinary service methods also accept [composed transaction](#composed-transaction-annotations-on-added-services)
+and [composed cache annotations](#composed-cache-annotations-on-added-services).
 Spring owns manager selection, rollback rules, cache keys, conditions, `unless`
 and advisor ordering. Saved parameter names (when compiled with `-parameters`)
 and indexed arguments such as `#p0` are available. A configured key generator
@@ -1030,7 +1031,7 @@ be a singleton merely because its class matches one.
 This does not add interface methods to existing JDK proxies, add reflective
 methods to the original class, or cover new overrides of already-resolvable
 inherited methods. Static/private/final methods, final service classes, generic
-metadata, composed annotations outside the transaction scope below, additional
+metadata, composed annotations outside the transaction/cache scopes below, additional
 advice annotations, scoped/dynamic/opaque/nested proxies and reactive return types are outside this path. Future-returning transaction/cache
 operations require the direct [async service scope](#async-service-methods-added-after-startup)
 below; without `@Async`, those advised Future operations remain unsupported. Existing
@@ -1137,8 +1138,9 @@ repeatable containers and cyclic graphs are outside this scope. A recognized
 transaction graph with unsupported companion metadata is refused before its body
 runs. Annotation classes must already be resolvable through the application
 loader. Editing the annotation type's own definition is not covered; save edits
-to its usage on the service instead. Composed cache/async/security annotations and
-composed transaction callbacks remain separate limitations. All ordinary operation
+to its usage on the service instead. Pure composed cache annotations have the
+separate support below. Composed async/security annotations and composed transaction
+callbacks remain separate limitations. All ordinary operation
 receiver, proxy, advice, visibility and generic restrictions above still apply.
 
 Verified with Spring 5.3.39, H2 2.2.224 and JDK 21: native attribute comparisons,
@@ -1146,6 +1148,58 @@ checked-exception rollback, read-only hints, manager aliases and `REQUIRES_NEW`
 inside an outer rollback. Real agent tests cover five saves through a held CGLIB
 proxy in ordinary and child classloaders, including annotation removal and method
 removal/restoration. No new Spring 6, JDK 17 or live SAP compatibility claim.
+
+### Composed cache annotations on added services
+
+An ordinary added synchronous service method can use an application annotation
+composed from `@Cacheable`, `@CachePut`, `@CacheEvict` or `@Caching`:
+
+```java
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Cacheable(cacheNames = "catalog", key = "#p0")
+public @interface CachedCatalog {
+    @AliasFor(annotation = Cacheable.class, attribute = "cacheNames")
+    String[] regions() default {"catalog"};
+}
+
+// Added after startup to a supported singleton service:
+@CachedCatalog(regions = "products")
+public Product findProduct(String code) { /* ... */ }
+```
+
+Nested annotation aliases, class-level cache operation defaults, method overrides
+and direct `@CacheConfig` defaults are retained in saved metadata. Spring's own
+operation source merges the annotations; the existing native interceptors own
+cache keys, conditions, `unless`, put/evict behavior and grouped `@Caching`
+operations. A custom key generator receives the actual target and saved method.
+Named keys require saved `MethodParameters` (for example `javac -parameters`);
+indexed arguments such as `#p0` do not require parameter names.
+
+Editing annotation usage on the service updates the operation metadata. Removing
+the annotation removes that interception, while method removal/restoration follows
+the retained-call-site contract above. Metadata refresh itself does not flush cache
+values; normal region/key semantics and the separate code-change invalidation path
+still apply. Calls through captured plain singleton and supported old CGLIB proxy
+references use the actual target, including its existing state.
+
+The custom annotation graph must contain only cache operation semantics and Java
+`@Target`, `@Retention`, `@Documented`, `@Inherited` or `@Deprecated` metadata.
+Mixed transaction/async/security/framework semantics within the same annotation,
+custom markers, repeatable containers, cyclic graphs and custom `@CacheConfig`-only
+annotations are outside this scope. Recognized cache graphs with unsupported
+metadata refuse before the service body. Composed cache advice on added event,
+transactional-event or scheduled callbacks is refused, including class-level
+policies on private callbacks. Future/generic operations are also excluded here.
+The ordinary receiver/proxy/advisor restrictions above remain in force.
+Annotation types must already resolve through the application's loader; editing
+the annotation type definition itself is not covered, so save changes to its usage.
+
+Verified with Spring 5.3.39: native operation comparisons, alias/default selection,
+condition/unless checks, before-invocation eviction on a throwing body and grouped
+cache operations. Real agent tests run seven saves through a held CGLIB proxy with
+normal and child classloaders. No broader Spring-version compatibility is claimed
+for composed cache operations here.
 
 ### Edited aspect pointcuts
 
