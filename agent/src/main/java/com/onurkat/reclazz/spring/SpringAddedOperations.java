@@ -113,7 +113,7 @@ public final class SpringAddedOperations {
             if (binding == null) {
                 // A prototype/unmanaged instance cannot be distinguished from a known service by type alone.
                 // Do not infer transaction ownership for it, or silently execute an annotated operation.
-                if (entry.transaction() || entry.cache() || entry.async()) throw refused(owner.getName(), "receiver is not a captured singleton bean");
+                if (entry.transaction() || entry.cache() || entry.async() || entry.security()) throw refused(owner.getName(), "receiver is not a captured singleton bean");
                 return body(direct, receiver, args);
             }
             String subject = owner.getName() + "." + entry.method().getName() + " [" + binding.name + "]";
@@ -148,15 +148,20 @@ public final class SpringAddedOperations {
                     new Class<?>[]{Class.class, boolean.class, boolean.class}, creatorType, false, false);
             var advice = new ArrayList<Object>();
             if (entry.async()) advice.add(SpringAsyncAdvice.interceptor(asyncAdvisor, entry.method(), owner, loader));
-            if (names.length == 0 && !entry.transaction() && !entry.cache())
+            if (names.length == 0 && !entry.transaction() && !entry.cache() && !entry.security())
                 return new Invocation(entry.method(), target, args, direct, advice, loader).proceed();
             if (names.length != 1) throw refused(subject, "expected one operation auto-proxy creator");
             Object creator = call(factory, "getBean", new Class<?>[]{String.class}, names[0]);
             if (!CREATORS.contains(creator.getClass().getName())) throw refused(subject, "custom auto-proxy creator");
             var applicable = new ArrayList<Object>();
-            boolean transaction = false, cache = false;
+            boolean transaction = false, cache = false, security = false;
+            Set<Object> securityAdvisors = Collections.newSetFromMap(new IdentityHashMap<>());
             for (Object advisor : (List<?>) inherited(creator, "findCandidateAdvisors").invoke(creator)) {
                 if (!supported(advisor)) throw refused(subject, "additional candidate advisor " + advisor.getClass().getName());
+                if (SpringSecurityAdvice.isAdvisor(advisor)) {
+                    SpringSecurityAdvice.interceptor(advisor);
+                    securityAdvisors.add(advisor);
+                }
                 Object pointcut = Class.forName("org.springframework.aop.PointcutAdvisor", false, loader).getMethod("getPointcut").invoke(advisor);
                 Class<?> pointcutType = Class.forName("org.springframework.aop.Pointcut", false, loader);
                 Object filter = pointcutType.getMethod("getClassFilter").invoke(pointcut);
@@ -168,14 +173,23 @@ public final class SpringAddedOperations {
                     applicable.add(advisor);
                     transaction |= advisor.getClass().getName().equals(TX_ADVISOR);
                     cache |= advisor.getClass().getName().equals(CACHE_ADVISOR);
+                    security |= SpringSecurityAdvice.isAdvisor(advisor);
                 }
             }
+            if (advised.isInstance(bean)) for (Object advisor : (Object[]) advised.getMethod("getAdvisors").invoke(bean))
+                if (SpringSecurityAdvice.isAdvisor(advisor) && !securityAdvisors.contains(advisor))
+                    throw refused(subject, "foreign security proxy advisor");
+            if (entry.security() && !security) throw refused(subject, "no matching standard security advisor");
             if (entry.transaction() && !transaction) throw refused(subject, "no matching transaction advisor");
             if (entry.cache() && !cache) throw refused(subject, "no matching cache advisor");
             List<?> sorted = (List<?>) inherited(creator, "sortAdvisors", List.class).invoke(creator, applicable);
             Class<?> advisorType = Class.forName("org.springframework.aop.Advisor", false, loader);
             for (Object advisor : sorted) {
                 Object interceptor = advisorType.getMethod("getAdvice").invoke(advisor);
+                if (SpringSecurityAdvice.isAdvisor(advisor)) {
+                    advice.add(SpringSecurityAdvice.interceptor(advisor));
+                    continue;
+                }
                 boolean tx = advisor.getClass().getName().equals(TX_ADVISOR);
                 String expected = tx ? "org.springframework.transaction.interceptor.TransactionInterceptor"
                         : "org.springframework.cache.interceptor.CacheInterceptor";
@@ -199,6 +213,7 @@ public final class SpringAddedOperations {
                     Object bean = call(factory, "getSingleton", new Class<?>[]{String.class}, name);
                     if (bean == null) continue;
                     SpringAsyncAdvice.forget(bean, metadata);
+                    SpringSecurityAdvice.forget(bean, metadata);
                     String type = bean.getClass().getName();
                     if (type.equals("org.springframework.cache.interceptor.CacheInterceptor"))
                         inherited(bean, "clearMetadataCache").invoke(bean);
@@ -243,7 +258,7 @@ public final class SpringAddedOperations {
 
     private static boolean supported(Object advisor) {
         String name = advisor.getClass().getName();
-        return name.equals(TX_ADVISOR) || name.equals(CACHE_ADVISOR);
+        return name.equals(TX_ADVISOR) || name.equals(CACHE_ADVISOR) || SpringSecurityAdvice.isAdvisor(advisor);
     }
     private static Object body(MethodHandle direct, Object target, Object[] args) throws Throwable {
         Object[] all = new Object[args.length + 1]; all[0] = target;

@@ -30,6 +30,10 @@ public final class AddedScheduledAdapter {
     record Plan(List<MethodNode> methods, List<String> refused) { }
 
     static Plan inspect(byte[] bytecode, Set<String> added) {
+        return inspect(bytecode, added, AddedScheduledAdapter.class.getClassLoader());
+    }
+
+    static Plan inspect(byte[] bytecode, Set<String> added, ClassLoader loader) {
         List<MethodNode> methods = new ArrayList<>();
         List<String> refused = new ArrayList<>();
         if (bytecode == null || added.isEmpty()) return new Plan(methods, refused);
@@ -39,6 +43,10 @@ public final class AddedScheduledAdapter {
             if (!added.contains(method.name + ":" + method.desc) || method.visibleAnnotations == null) continue;
             if (method.visibleAnnotations.stream().noneMatch(a -> isScheduling(a.desc))) continue;
             String reason = null;
+            if (SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, loader)
+                    || SpringSecurityAdvice.hasSecurity(method.visibleAnnotations, loader))
+                reason = "security annotations require an ordinary synchronous service method";
+            else
             if (!method.desc.equals("()V") || (method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) != 0)
                 reason = "only no-argument void instance methods are supported";
             else if (AddedOperationMetadata.callbackProblem(source, method) != null)

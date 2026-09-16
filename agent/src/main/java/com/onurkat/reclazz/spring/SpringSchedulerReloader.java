@@ -49,7 +49,7 @@ public class SpringSchedulerReloader {
 
     public synchronized boolean reloadScheduledMethods(Class<?> reloadedClass,
                                                         Set<String> addedMethods, byte[] bytecode) {
-        AddedScheduledAdapter.Plan plan = AddedScheduledAdapter.inspect(bytecode, addedMethods);
+        AddedScheduledAdapter.Plan plan = AddedScheduledAdapter.inspect(bytecode, addedMethods, reloadedClass.getClassLoader());
         for (String reason : plan.refused()) report(reloadedClass, reason);
         boolean original = hasScheduledAnnotation(reloadedClass);
         if (!original && plan.methods().isEmpty() && adapters.isEmpty()) return false;

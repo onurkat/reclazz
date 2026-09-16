@@ -36,7 +36,7 @@ public class SpringEventReloader {
     }
 
     public synchronized boolean reloadEventListeners(Class<?> type, Set<String> added, byte[] bytes) {
-        var plan = AddedEventListenerAdapter.inspect(bytes, added);
+        var plan = AddedEventListenerAdapter.inspect(bytes, added, type.getClassLoader());
         for (String reason : plan.refused()) report(type, reason);
         boolean changed = false;
         boolean found = false;
