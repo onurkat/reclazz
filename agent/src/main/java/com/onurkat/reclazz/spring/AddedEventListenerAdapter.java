@@ -50,6 +50,7 @@ public final class AddedEventListenerAdapter {
         List<MethodNode> methods = new ArrayList<>();
         List<String> refused = new ArrayList<>();
         if (bytes == null || added.isEmpty()) return new Plan(methods, refused);
+        var caches = new ComposedCacheAnnotations(loader);
         ClassNode source = new ClassNode();
         // Keep debug parameter names for conditions compiled without -parameters.
         new ClassReader(bytes).accept(source, ClassReader.SKIP_FRAMES);
@@ -65,6 +66,8 @@ public final class AddedEventListenerAdapter {
             if (SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, loader)
                     || SpringSecurityAdvice.hasSecurity(method.visibleAnnotations, loader))
                 reason = "security annotations require an ordinary synchronous service method";
+            else if (caches.composed(source.visibleAnnotations) || caches.composed(method.visibleAnnotations))
+                reason = "composed cache annotations require an ordinary synchronous service method";
             else
             if ((method.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT)) != 0
                     || (result != Type.VOID && result != Type.OBJECT) || args.length != 1

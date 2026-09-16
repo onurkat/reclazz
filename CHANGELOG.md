@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Fixed
+- Ordinary added service methods support pure composed `@Cacheable`, `@CachePut`,
+  `@CacheEvict` and `@Caching` annotations through native Spring cache operations.
+  Nested aliases, class defaults, saved metadata changes and held CGLIB references
+  are verified on Spring 5.3.39. Unsupported mixed graphs, async/generic operations
+  and composed-cache callbacks are refused before their bodies.
 - Added `@Bean` factories can refresh scalar `@Value` arguments on property saves
   for their existing unproxied singleton products. Saved parameter metadata drives
   candidate checks and recreation; invalid values preserve the live product and

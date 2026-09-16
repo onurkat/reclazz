@@ -39,10 +39,12 @@ final class AddedOperationMetadata {
         var transactions = new ComposedTransactionAnnotations(owner.getClassLoader());
         boolean classTx = transactions.has(source.visibleAnnotations);
         boolean composedClassTx = transactions.composed(source.visibleAnnotations);
-        boolean classCache = has(source.visibleAnnotations, CACHE);
+        var caches = new ComposedCacheAnnotations(owner.getClassLoader());
+        boolean classCache = caches.has(source.visibleAnnotations);
+        boolean composedClassCache = caches.composed(source.visibleAnnotations);
         boolean classSecurity = SpringSecurityAdvice.hasSecurity(source.visibleAnnotations, owner.getClassLoader());
         boolean operations = classTx || classCache || classSecurity || source.methods.stream().anyMatch(m ->
-                transactions.has(m.visibleAnnotations) || SpringSecurityAdvice.hasSecurity(m.visibleAnnotations, owner.getClassLoader()) || has(m.visibleAnnotations, Set.of(ASYNC)) || has(m.visibleAnnotations, CACHE));
+                transactions.has(m.visibleAnnotations) || SpringSecurityAdvice.hasSecurity(m.visibleAnnotations, owner.getClassLoader()) || has(m.visibleAnnotations, Set.of(ASYNC)) || caches.has(m.visibleAnnotations));
         if (!operations && !previouslyActive) return new Plan(List.of(), false);
         Set<String> reflected = new HashSet<>();
         for (Method method : owner.getDeclaredMethods()) reflected.add(method.getName() + Type.getMethodDescriptor(method));
@@ -60,14 +62,15 @@ final class AddedOperationMetadata {
         for (MethodNode method : added) {
             String reason = null;
             boolean methodTx = transactions.has(method.visibleAnnotations);
-            if (source.signature != null || (method.signature != null && !signatureMetadata(method, classTx || methodTx, classCache)))
+            boolean methodCache = caches.has(method.visibleAnnotations);
+            if (source.signature != null || (method.signature != null && !signatureMetadata(method, classTx || methodTx, classCache || methodCache)))
                 reason = "generic operation metadata";
             if ((source.access & Opcodes.ACC_FINAL) != 0 || (method.access & Opcodes.ACC_FINAL) != 0) reason = "final class or method";
             if (source.visibleAnnotations != null) for (var a : source.visibleAnnotations)
-                if (!transactions.supported(a.desc) && !CACHE.contains(a.desc) && !SpringSecurityAdvice.annotation(a.desc) && !CLASS_METADATA.contains(a.desc))
+                if (!transactions.supported(a.desc) && !caches.supported(a.desc) && !SpringSecurityAdvice.annotation(a.desc) && !CLASS_METADATA.contains(a.desc))
                     reason = "unsupported class annotation " + a.desc;
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations)
-                if (!transactions.supported(a.desc) && !a.desc.equals(ASYNC) && !SpringSecurityAdvice.annotation(a.desc) && !CACHE.contains(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
+                if (!transactions.supported(a.desc) && !a.desc.equals(ASYNC) && !SpringSecurityAdvice.annotation(a.desc) && !caches.supported(a.desc) && !a.desc.equals("Ljava/lang/Deprecated;")
                         && !OTHER_ADAPTERS.contains(a.desc)
                         && !(a.desc.equals("Lorg/springframework/core/annotation/Order;")
                         && has(method.visibleAnnotations, Set.of("Lorg/springframework/context/event/EventListener;"))))
@@ -75,6 +78,9 @@ final class AddedOperationMetadata {
             if ((composedClassTx || transactions.composed(method.visibleAnnotations))
                     && has(method.visibleAnnotations, OTHER_ADAPTERS))
                 reason = "composed transaction annotations require an ordinary service method";
+            if ((composedClassCache || caches.composed(method.visibleAnnotations))
+                    && (has(method.visibleAnnotations, OTHER_ADAPTERS) || has(method.visibleAnnotations, Set.of(ASYNC))))
+                reason = "composed cache annotations require an ordinary synchronous service method";
             if (has(method.visibleAnnotations, Set.of(ASYNC))) {
                 if (!asyncService(method) && (!has(method.visibleAnnotations, Set.of(EVENT))
                         || has(method.visibleAnnotations, Set.of("Lorg/springframework/transaction/event/TransactionalEventListener;",
@@ -93,7 +99,7 @@ final class AddedOperationMetadata {
                 reason = "security requires a direct Object subclass without interfaces";
             if (reason != null) reasons.put(method.name + method.desc, reason);
             MethodVisitor mv = writer.visitMethod(Opcodes.ACC_PUBLIC, method.name, method.desc,
-                    signatureMetadata(method, classTx || methodTx, classCache) ? method.signature : null,
+                    signatureMetadata(method, classTx || methodTx, classCache || methodCache) ? method.signature : null,
                     method.exceptions.toArray(String[]::new));
             if (method.parameters != null) for (var p : method.parameters) mv.visitParameter(p.name, p.access);
             if (method.visibleAnnotations != null) for (var a : method.visibleAnnotations) a.accept(mv.visitAnnotation(a.desc, true));
@@ -110,14 +116,14 @@ final class AddedOperationMetadata {
             String descriptor = Type.getMethodDescriptor(method);
             MethodNode node = added.stream().filter(m -> m.name.equals(method.getName()) && m.desc.equals(descriptor)).findFirst().orElseThrow();
             String reason = reasons.get(node.name + node.desc);
-            boolean signature = signatureMetadata(node, classTx || transactions.has(node.visibleAnnotations), classCache);
+            boolean signature = signatureMetadata(node, classTx || transactions.has(node.visibleAnnotations), classCache || caches.has(node.visibleAnnotations));
             if (signature && !concreteSignature(method)) reason = "generic async operation metadata requires concrete types";
             boolean security = classSecurity || SpringSecurityAdvice.hasSecurity(node.visibleAnnotations, owner.getClassLoader());
             if ((!signature || security) && (java.util.concurrent.Future.class.isAssignableFrom(method.getReturnType())
                     || java.util.concurrent.CompletionStage.class.isAssignableFrom(method.getReturnType())
                     || publisher(method.getReturnType()))) reason = "asynchronous operation result";
             entries.add(new Entry(method, InjectedNames.siteKey(method.getName(), InjectedNames.descHash(descriptor)), reason,
-                    classTx || transactions.has(node.visibleAnnotations), classCache || has(node.visibleAnnotations, CACHE), has(node.visibleAnnotations, Set.of(ASYNC)),
+                    classTx || transactions.has(node.visibleAnnotations), classCache || caches.has(node.visibleAnnotations), has(node.visibleAnnotations, Set.of(ASYNC)),
                     security));
         }
         return new Plan(entries, operations);
