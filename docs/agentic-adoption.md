@@ -85,7 +85,7 @@ DOCS means documentation or content, OWNER means an account or publishing
 action only the owner can take.
 
 Distribution and build integration
-- [ ] Publish the agent jar to Maven Central under a stable coordinate. (BUILD + OWNER)
+- [~] Publish the agent jar to Maven Central under a stable coordinate. Build wiring done and verified locally (the published main artifact is the fat agent jar with the Premain manifest; see [publishing.md](publishing.md)); the account, namespace and the publish click remain owner steps. (BUILD done, OWNER pending)
 - [x] Gradle plugin that applies the `-javaagent` to `bootRun` and `test`. Code in `:gradle-plugin`, id `com.onurkat.reclazz`, functional tests pass; see [gradle-plugin.md](gradle-plugin.md). (BUILD)
 - [ ] Maven plugin equivalent for `spring-boot:run` and the surefire or dev run. (BUILD)
 - [ ] Publish the Gradle plugin to the Gradle Plugin Portal. (BUILD + OWNER)
