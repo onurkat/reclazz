@@ -3,7 +3,7 @@ import org.gradle.kotlin.dsl.support.serviceOf
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.25"
-    id("org.jetbrains.intellij.platform") version "2.2.1"
+    id("org.jetbrains.intellij.platform") version "2.18.1"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -40,8 +40,8 @@ dependencies {
 
     // StartupMustNotShowDialogTest reads our own compiled classes to walk the
     // call graph out of the startup activity. Same version the agent uses.
-    testImplementation("org.ow2.asm:asm:9.8")
-    testImplementation("org.ow2.asm:asm-tree:9.8")
+    testImplementation("org.ow2.asm:asm:9.10.1")
+    testImplementation("org.ow2.asm:asm-tree:9.10.1")
 
     // BasePlatformTestCase descends from junit.framework.TestCase, so the
     // IDE fixtures need JUnit 3/4 on the classpath and the vintage engine to
