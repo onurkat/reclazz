@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-09-17
+
 ### Fixed
 - Computed constructor and native scalar factory `@Value` changes can recreate
   singletons protected by standard classic/modern method security, optionally with
