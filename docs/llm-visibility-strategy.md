@@ -114,21 +114,32 @@ Tier 1, alternative and comparison directories (highest citation value):
   libhunt.com/r/reclazz). Fifteen topics; HotswapAgent and Dcevm added as
   alternatives with factual comparison notes. Needs a Cloudflare human check
   the owner clears, and a GitHub repo URL rather than a website.
-- Openbase / Libraries.io. Open-source package discovery.
+- Libraries.io. Open-source package discovery, useful only once the agent jar
+  is published to a registry such as Maven Central. (Openbase shut down in
+  2023, so skip it.)
 
 Tier 2, community and consensus (where most citations originate, about 88%):
-- GitHub "awesome" lists: awesome-java, awesome-spring-boot, an SAP
-  Commerce / Hybris list. Add by pull request where the inclusion criteria fit.
+- GitHub "awesome" lists, by pull request where the inclusion criteria fit.
+  Best fit: awesome-sap-commerce (github.com/eminyagiz42/awesome-sap-commerce)
+  has a Tools section that already lists JRebel, so Reclazz belongs right
+  beside it as the free open-source option. Then awesome-java (akullpp) and an
+  awesome-spring list, which are stricter.
+- GitHub repo topics on reclazz itself: sap-commerce, hybris, hot-reload,
+  spring-boot, jrebel-alternative, intellij-plugin, java-agent. The topic
+  pages (github.com/topics/sap-commerce) are browsed directly by developers.
 - dev.to / Medium / Hashnode: a post mirroring the /compare/ content, so the
   same accurate facts repeat across domains.
-- Reddit (r/java, r/SpringBoot) and Stack Overflow: one honest, disclosed
-  answer per genuinely relevant existing thread. Never astroturf.
+- Reddit (r/java, r/SpringBoot, r/SAP) and Stack Overflow: one honest,
+  disclosed answer per genuinely relevant existing thread. Never astroturf.
 - Hacker News "Show HN": a one-time launch.
 
-Tier 3, knowledge graph and launch:
-- Wikidata: a machine-readable entity record; far easier than Wikipedia and
-  it feeds knowledge graphs and assistants.
+Tier 3, launch platforms and knowledge graph:
+- DevHunt (devhunt.org): a Product Hunt for developer tools, open-source
+  friendly and giving followed links.
+- Peerlist: a developer-heavy audience, high authority, good for a dev tool.
 - Product Hunt: a one-time launch, timing-sensitive.
+- Crunchbase and Wikidata: machine-readable entity records that feed the
+  knowledge graphs and assistants (Wikidata is far easier than Wikipedia).
 - SourceForge: open-source listing or mirror.
 
 Lower priority: G2 and Capterra (enterprise-SaaS oriented, weak return for a
