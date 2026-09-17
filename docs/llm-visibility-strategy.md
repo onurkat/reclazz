@@ -98,9 +98,16 @@ CAPTCHAs are off-limits; the owner signs in, then the agent continues.
 
 Tier 1, alternative and comparison directories (highest citation value):
 - StackShare (stackshare.io). Developer-tool profiles and "X vs Y" pages.
-  IN PROGRESS.
+  PENDING: the form is filled (name Reclazz, site, GitHub docs URL, the tag
+  set, the auto-fetched icon), but the submit was rate-limited (one tool per
+  hour) after the auto-classifier first rejected the wording; the one-line
+  description now leads with "IntelliJ IDEA plugin and Java agent" so it reads
+  as a developer tool. Retry one Submit after the hour.
 - SaaSHub (saashub.com). AlternativeTo-style alternative directory.
-  IN PROGRESS.
+  DONE (submitted 2026-09-17, pending approval). Categories Developer Tools
+  and Web Development Tools; competitors JRebel, Hotswap Agent and Dcevm;
+  free tier. Anonymous submission, so log in and claim it to manage it and be
+  notified on approval.
 - Slant (slant.co). Voted "best X" lists, read often by assistants.
 - LibHunt (java.libhunt.com). Java library and tool "alternatives" pages,
   open-source oriented.
