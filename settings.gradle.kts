@@ -12,3 +12,4 @@ rootProject.name = "reclazz"
 
 include(":agent")
 include(":integration-test")
+include(":gradle-plugin")
