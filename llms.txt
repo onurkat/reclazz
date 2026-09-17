@@ -38,18 +38,20 @@ ground a Java-only reload does not.
   method you add is served on the next request, on a stock JDK and inside a
   Tomcat webapp as well, and so are an `@ExceptionHandler`, `@InitBinder` or
   `@ModelAttribute`, a `@Bean` factory (collections, `Optional`, providers and
-  `@Value` arguments resolved by Spring), a `@Scheduled`, `@EventListener` or
+  `@Value` arguments resolved by Spring, and a direct `@Conditional` or the Boot `@ConditionalOnProperty`/`@ConditionalOnBean`/`@ConditionalOnMissingBean`), a `@Scheduled`, `@EventListener` or
   `@TransactionalEventListener`, a `@PostConstruct` or `@PreDestroy`, a
-  `@Transactional` or `@Cacheable` service method, and a `@KafkaListener`,
+  `@Transactional`, `@Cacheable`, `@Async` or `@PreAuthorize`/`@PostAuthorize` service method (composed forms and both the Spring 5 and Spring 6 security stacks included), and a `@KafkaListener`,
   `@JmsListener` or `@RabbitListener`, whose previous consumer is stopped and
-  waited for before the bean is recreated. A
+  waited for before the bean is recreated; an added `@KafkaListener` or `@RabbitListener` topic, group or queue can be a `#{SpEL}` expression, and an added `@JmsListener` can return a `@SendTo` reply. A
   brand-new `@Service`, `@Component` or `@RestController` class becomes a live
   bean with its constructor autowired, because a fresh class is entirely real
   and only its definition was missing. An edited `@Transactional` or
   `@Cacheable` takes effect rather than answering from the metadata Spring
   parsed once. An edited security configuration is rebuilt into the running
   filter chain, and method security (`@PreAuthorize`, `@Secured`) is re-read on
-  the service class that carries it. A constructor-bound
+  the service class that carries it, and a `@PreAuthorize` or `@PostAuthorize` you
+  add to a service method is enforced on both the classic Spring 5 and modern
+  Spring 6 stacks. A constructor-bound
   `@ConfigurationProperties` bean is replaced rather than mutated, a `@Value`
   field is re-resolved in place, and a bean that takes a changed `@Value`
   through its constructor is rebuilt the same way. A saved `.properties` or
