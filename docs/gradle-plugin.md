@@ -14,21 +14,16 @@ The plugin id is `com.onurkat.reclazz`.
 - Resolves the agent jar from the coordinate
   `com.onurkat.reclazz:reclazz-agent:<version>`, or from an explicit path you set.
 
-## Today: point at the agent jar
+## Apply it
 
-The agent is not on a public registry yet, so for now give the plugin the jar
-you downloaded from the GitHub releases page.
+The agent is on Maven Central, so applying the plugin is enough for a standard
+Spring Boot project:
 
 ```kotlin
 plugins {
     java
     id("org.springframework.boot") version "3.3.0"
-    id("com.onurkat.reclazz")
-}
-
-reclazz {
-    // The reclazz-agent jar from https://github.com/onurkat/reclazz/releases
-    agentJar.set(file("libs/reclazz-agent-1.3.0.jar"))
+    id("com.onurkat.reclazz") version "1.3.0"
 }
 ```
 
@@ -38,16 +33,19 @@ Then run your app the way you already do:
 ./gradlew bootRun
 ```
 
-## Once the agent is on Maven Central
+The plugin resolves `com.onurkat.reclazz:reclazz-agent` at the version you
+applied and attaches it. No `reclazz` block is needed for the common case.
 
-When the agent is published, drop `agentJar` and the plugin resolves it by
-version (the version defaults to the plugin's own):
+### Offline, or pinned to a local jar
+
+To use a jar you already have rather than resolving one, set `agentJar`. It
+wins over the coordinate, so nothing is downloaded:
 
 ```kotlin
-plugins {
-    id("com.onurkat.reclazz") version "1.3.0"
+reclazz {
+    // e.g. the jar from https://github.com/onurkat/reclazz/releases
+    agentJar.set(file("libs/reclazz-agent-1.3.0.jar"))
 }
-// no reclazz block needed for a standard Spring Boot project
 ```
 
 ## Options
@@ -75,6 +73,5 @@ for example `arguments.put("hybrisHome", "/opt/hybris")`.
 
 - The agent only reloads classes it transformed at load time, so the flag must
   be present at JVM startup. The plugin adds it to task startup for you.
-- Publishing the plugin to the Gradle Plugin Portal and the agent to Maven
-  Central are the two steps that make the `version`-only form above work for
-  everyone. Until then, use the `agentJar` path.
+- The agent is published at `com.onurkat.reclazz:reclazz-agent` on Maven
+  Central, which is what the version-only form resolves.
