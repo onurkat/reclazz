@@ -327,3 +327,45 @@ The contracts are the ones the tests pin: the argument table
 (`ProtocolContractTest`), the persisted settings (`SettingsContractTest`)
 and the JFR events (`ReloadEventsTest`). A change that fails one of them is
 a major bump or a migration, never a quiet rename.
+
+## Maven Central: the agent jar
+
+The agent is published to Maven Central as `com.onurkat.reclazz:reclazz-agent`,
+so the Gradle plugin and any build can resolve it by version. The published
+main artifact is the shadow (fat) jar with the agent manifest, alongside a
+sources jar, a javadoc jar, a POM and their signatures. The build wiring is in
+`agent/build.gradle.kts` (`maven-publish`, `signing`, a `centralBundle` zip).
+
+One-time account setup (owner):
+
+- A Sonatype Central account at central.sonatype.com with the `com.onurkat`
+  namespace verified, and a user token (a username and password pair).
+- A GPG key whose public half is on a keyserver.
+
+Credentials live in the owner's `~/.gradle/gradle.properties`, never in the
+repository:
+
+```
+mavenCentralUsername=<token username>
+mavenCentralPassword=<token password>
+signing.keyId=<last 8 hex of the key id>
+signing.password=<gpg passphrase>
+signing.secretKeyRingFile=/Users/<you>/.gnupg/secring.gpg
+```
+
+Modern GnuPG does not keep `secring.gpg`, so export it once:
+
+```
+gpg --export-secret-keys <KEY_ID> > ~/.gnupg/secring.gpg
+```
+
+To cut a release:
+
+```
+./gradlew :agent:centralBundle
+```
+
+That signs the artifacts and writes `agent/build/reclazz-agent-<version>-central-bundle.zip`.
+Upload it at central.sonatype.com (Publish, then Upload a bundle), or POST it to
+the Publisher API, and click Publish once it validates. The publication is
+staged, not auto-released, so nothing goes public until that click.

@@ -2,6 +2,8 @@ plugins {
     id("java")
     id("jacoco")
     id("com.gradleup.shadow") version "8.3.5"
+    `maven-publish`
+    signing
 }
 
 group = "com.onurkat.reclazz"
@@ -10,6 +12,14 @@ version = rootProject.version
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+    withSourcesJar()
+    withJavadocJar()
+}
+
+// The javadoc jar exists to satisfy the Central Portal, not to be exhaustive,
+// so missing tags on internal classes must not fail the release build.
+tasks.withType<Javadoc>().configureEach {
+    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
 }
 
 repositories {
@@ -424,4 +434,77 @@ tasks.shadowJar {
             "Implementation-Version" to project.version
         )
     }
+}
+
+// Maven Central publication of the standalone agent, so the Gradle plugin and
+// any build can resolve com.onurkat.reclazz:reclazz-agent by version. The
+// published main artifact is the shadow (fat) jar with the agent manifest, the
+// same jar people attach with -javaagent; sources and javadoc jars accompany
+// it because the Central Portal requires them.
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "reclazz-agent"
+            artifact(tasks.named("shadowJar"))
+            artifact(tasks.named("sourcesJar"))
+            artifact(tasks.named("javadocJar"))
+            pom {
+                name.set("Reclazz agent")
+                description.set(
+                    "Hot-reload agent for Spring Boot and SAP Commerce (Hybris): " +
+                        "redefines classes in place on a stock JDK 17+ with no restart."
+                )
+                url.set("https://reclazz.com")
+                inceptionYear.set("2026")
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("onurkat")
+                        name.set("Onur Kat")
+                        url.set("https://www.onurkat.com")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/onurkat/reclazz")
+                    connection.set("scm:git:https://github.com/onurkat/reclazz.git")
+                    developerConnection.set("scm:git:ssh://git@github.com/onurkat/reclazz.git")
+                }
+            }
+        }
+    }
+}
+
+// Signing is required only when a key is configured, so publishToMavenLocal and
+// the build work without one; the release machine that has signing.keyId signs.
+signing {
+    isRequired = providers.gradleProperty("signing.keyId").isPresent
+    sign(publishing.publications["maven"])
+}
+
+// A local Maven layout the Central Portal accepts as an upload bundle. Publish
+// the signed publication here, then zip it and upload at central.sonatype.com,
+// or POST it to the Publisher API. This keeps the exact artifact set under our
+// control (fat jar + sources + javadoc + pom + signatures + checksums) without
+// depending on a portal-upload plugin's moving DSL.
+publishing {
+    repositories {
+        maven {
+            name = "centralBundle"
+            url = layout.buildDirectory.dir("central-bundle").get().asFile.toURI()
+        }
+    }
+}
+
+val centralBundle by tasks.registering(Zip::class) {
+    group = "publishing"
+    description = "Zips the signed Maven bundle for a Central Portal upload"
+    dependsOn("publishMavenPublicationToCentralBundleRepository")
+    from(layout.buildDirectory.dir("central-bundle"))
+    archiveFileName.set("reclazz-agent-${project.version}-central-bundle.zip")
+    destinationDirectory.set(layout.buildDirectory)
 }
