@@ -116,9 +116,13 @@ than either.
 |---|---|
 | [docs/installation.md](docs/installation.md) | Getting the plugin or the standalone agent onto a machine, and checking it works |
 | [docs/usage.md](docs/usage.md) | The four ways to run it, every agent argument, debugging reloaded code, what to do when a reload goes wrong, Flight Recorder events |
+| [docs/gradle-plugin.md](docs/gradle-plugin.md) | The Gradle plugin that attaches the agent to bootRun and test with no manual -javaagent flag |
 | [docs/protocol.md](docs/protocol.md) | The status socket, for a client other than the IntelliJ plugin: an IDE extension, a build tool that nudges the agent, a log shipper |
 | [docs/test-guide.md](docs/test-guide.md) | Trying each capability by hand on a SAP Commerce install |
 | [docs/publishing.md](docs/publishing.md) | Cutting a release: the scripts, the two release-note files, what a version number means |
+| [docs/llm-visibility-strategy.md](docs/llm-visibility-strategy.md) | How to get assistants and search to recommend Reclazz, and the directory listings that support it |
+| [docs/alternativeto-listing.md](docs/alternativeto-listing.md) | Copy-ready text for the AlternativeTo submission |
+| [docs/agentic-adoption.md](docs/agentic-adoption.md) | Getting AI coding agents to use Reclazz in a project, and the task list for it |
 | [CHANGELOG.md](CHANGELOG.md) | Every change, with the measurement behind each claim |
 
 ## Features
