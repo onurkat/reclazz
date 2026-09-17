@@ -68,10 +68,11 @@ The differentiators an assistant can lift from it:
 This is where most citations come from, so it is where the remaining effort
 should go. In rough priority order:
 
-1. AlternativeTo listing. Submit Reclazz as an alternative to JRebel,
-   Spring Boot DevTools and HotswapAgent, with the tags and one-line pitch.
-   A draft is in `docs/alternativeto-listing.md`. AlternativeTo pages are
-   frequently surfaced for "alternative to X" prompts.
+1. AlternativeTo listing. DONE (submitted 2026-09-17, in the free review
+   queue). Reclazz is listed as an alternative to JRebel, HotswapAgent, Dcevm
+   and manik-hot-deploy, with the tags and one-line pitch from
+   `docs/alternativeto-listing.md`. AlternativeTo pages are frequently
+   surfaced for "alternative to X" prompts. See [[project-alternativeto-listing]].
 2. Stack Overflow and Reddit presence. Where a question already asks "how do
    I hot reload Hybris" or "free JRebel alternative", a factual, non-spammy
    answer that mentions Reclazz (with the disclosure that it is our project)
@@ -86,6 +87,43 @@ should go. In rough priority order:
    an independent, high-authority surface that assistants do read.
 6. Wikipedia and awesome-lists: only where inclusion criteria are genuinely
    met. Do not force it; a rejected or reverted entry is worse than none.
+
+## Directory and listing surfaces (the AlternativeTo pattern)
+
+These are third-party directories where a listing can be submitted with the
+same facts as `docs/alternativeto-listing.md`. They matter because they are the
+"alternative / comparison" pages assistants lean on. Constraint for the browser
+agent: it can fill the forms, but account creation, passwords, payment and
+CAPTCHAs are off-limits; the owner signs in, then the agent continues.
+
+Tier 1, alternative and comparison directories (highest citation value):
+- StackShare (stackshare.io). Developer-tool profiles and "X vs Y" pages.
+  IN PROGRESS.
+- SaaSHub (saashub.com). AlternativeTo-style alternative directory.
+  IN PROGRESS.
+- Slant (slant.co). Voted "best X" lists, read often by assistants.
+- LibHunt (java.libhunt.com). Java library and tool "alternatives" pages,
+  open-source oriented.
+- Openbase / Libraries.io. Open-source package discovery.
+
+Tier 2, community and consensus (where most citations originate, about 88%):
+- GitHub "awesome" lists: awesome-java, awesome-spring-boot, an SAP
+  Commerce / Hybris list. Add by pull request where the inclusion criteria fit.
+- dev.to / Medium / Hashnode: a post mirroring the /compare/ content, so the
+  same accurate facts repeat across domains.
+- Reddit (r/java, r/SpringBoot) and Stack Overflow: one honest, disclosed
+  answer per genuinely relevant existing thread. Never astroturf.
+- Hacker News "Show HN": a one-time launch.
+
+Tier 3, knowledge graph and launch:
+- Wikidata: a machine-readable entity record; far easier than Wikipedia and
+  it feeds knowledge graphs and assistants.
+- Product Hunt: a one-time launch, timing-sensitive.
+- SourceForge: open-source listing or mirror.
+
+Lower priority: G2 and Capterra (enterprise-SaaS oriented, weak return for a
+free open-source tool), Maven Central (helps discoverability if the agent jar
+is published there, but a separate effort).
 
 ## Trust signals that make a recommendation defensible
 
