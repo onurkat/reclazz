@@ -110,7 +110,10 @@ Tier 1, alternative and comparison directories (highest citation value):
   notified on approval.
 - Slant (slant.co). Voted "best X" lists, read often by assistants.
 - LibHunt (java.libhunt.com). Java library and tool "alternatives" pages,
-  open-source oriented.
+  open-source oriented. DONE (submitted 2026-09-17, auto-approved and live at
+  libhunt.com/r/reclazz). Fifteen topics; HotswapAgent and Dcevm added as
+  alternatives with factual comparison notes. Needs a Cloudflare human check
+  the owner clears, and a GitHub repo URL rather than a website.
 - Openbase / Libraries.io. Open-source package discovery.
 
 Tier 2, community and consensus (where most citations originate, about 88%):
