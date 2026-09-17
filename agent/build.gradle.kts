@@ -43,18 +43,18 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Spring for XML reloader tests only — production code stays
     // reflection-only and has no Spring compile dependency.
-    testImplementation("org.springframework:spring-beans:5.3.39")
-    testImplementation("org.springframework:spring-context:5.3.39")
+    testImplementation("org.springframework:spring-beans:7.0.9")
+    testImplementation("org.springframework:spring-context:7.0.9")
     // Real JSR-250 lifecycle regressions only; never packaged with the agent.
     testImplementation("javax.annotation:javax.annotation-api:1.3.2")
     // Real local Kafka broker regressions only; never packaged with the agent.
     testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
     testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
-    testImplementation("org.springframework:spring-messaging:5.3.39")
+    testImplementation("org.springframework:spring-messaging:7.0.9")
     // Real Rabbit listener regressions only; production remains reflection-only.
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
     // Real commit/rollback regressions against a local in-memory database only.
-    testImplementation("org.springframework:spring-jdbc:5.3.39")
+    testImplementation("org.springframework:spring-jdbc:7.0.9")
     testImplementation("com.h2database:h2:2.2.224")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.22.1")
@@ -62,8 +62,8 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-config:5.7.11")
     // Spring MVC, its test support and the servlet API, for driving a real
     // RequestMappingHandlerMapping under load while a controller is re-scanned.
-    testImplementation("org.springframework:spring-webmvc:5.3.39")
-    testImplementation("org.springframework:spring-test:5.3.39")
+    testImplementation("org.springframework:spring-webmvc:7.0.9")
+    testImplementation("org.springframework:spring-test:7.0.9")
     testImplementation("javax.servlet:javax.servlet-api:4.0.1")
     // Real local servlet async lifecycle tests; never shipped in the agent.
     testImplementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.121") {
@@ -93,7 +93,7 @@ val jmsTests = sourceSets.create("jmsTest") {
 configurations[jmsTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[jmsTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
 dependencies {
-    add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:5.3.39")
+    add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:7.0.9")
     add(jmsTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:5.19.11")
 }
 val jmsTest by tasks.registering(Test::class) {
@@ -185,10 +185,10 @@ val springSixTests = sourceSets.create("springSixTest") {
 }
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:7.0.9")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:7.0.9")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:7.0.9")
     add(springSixTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:10.1.60") {
         // jakarta.annotation-api below already supplies these classes.
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
@@ -196,7 +196,7 @@ dependencies {
     // Native modern method authorization; isolated from Spring 5 and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-config:6.3.4")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:7.0.9")
     add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
     add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.2.224")
     add(springSixTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
