@@ -68,6 +68,11 @@ public class ReclazzPlugin implements Plugin<Project> {
                 task.getJvmArgumentProviders().add(newProvider(project, ext, agentJar, argumentString));
             }
         });
+
+        project.getTasks().register("reclazzStatus", ReclazzStatusTask.class, task -> {
+            task.setGroup("reclazz");
+            task.setDescription("Print, as JSON, whether the Reclazz agent is attached and how it is doing.");
+        });
     }
 
     private AgentArgumentProvider newProvider(Project project, ReclazzExtension ext,

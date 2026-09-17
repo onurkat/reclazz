@@ -71,6 +71,15 @@ class ReclazzPluginFunctionalTest {
         assertFalse(result.getOutput().contains("-javaagent:"), result.getOutput());
     }
 
+    @Test
+    void reclazzStatusReportsNotAttachedWithNoAgent() throws IOException {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n");
+
+        BuildResult result = run("reclazzStatus");
+        assertTrue(result.getOutput().contains("\"attached\":false"), result.getOutput());
+    }
+
     private BuildResult run(String task) {
         return GradleRunner.create()
                 .withProjectDir(projectDir.toFile())

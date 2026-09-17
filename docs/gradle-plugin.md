@@ -69,9 +69,30 @@ Anything in `arguments` is appended as `key=value` and overrides the computed
 accepts. For SAP Commerce, set `platform` and the Hybris arguments explicitly,
 for example `arguments.put("hybrisHome", "/opt/hybris")`.
 
+## Checking status
+
+The plugin adds a `reclazzStatus` task that prints, as one JSON line, whether
+the agent is attached to a running app and how it is doing. It is meant for a
+person or a coding agent to check the inner loop:
+
+```
+./gradlew reclazzStatus
+```
+
+```json
+{"attached":true,"agent":"1.3.0","protocol":1,"port":54123,"health":["Reloads: 3, failures: 0, median 12ms"]}
+```
+
+When nothing is attached it prints `{"attached":false,"reason":"..."}`. It reads
+the agent's loopback status socket and asks nothing of the agent beyond its own
+state. Options: `--port-file`, `--port`, `--hybris-home`, `--timeout-ms`.
+
 ## Notes
 
 - The agent only reloads classes it transformed at load time, so the flag must
   be present at JVM startup. The plugin adds it to task startup for you.
 - The agent is published at `com.onurkat.reclazz:reclazz-agent` on Maven
   Central, which is what the version-only form resolves.
+- `reclazzStatus` lives in the plugin, not the agent jar, because the agent's
+  tests forbid the shipped agent from opening a client socket; the status
+  client that must open one to loopback belongs beside the build.
