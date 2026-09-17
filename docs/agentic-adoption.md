@@ -98,7 +98,7 @@ Agent-facing docs
 
 MCP and verification
 - [ ] reclazz-mcp server exposing reload, status and what-changed. (BUILD)
-- [ ] `reclazz status` (or an agent flag) printing machine-readable JSON: attached, watched paths, last reload, JDK mode. (BUILD)
+- [x] Machine-readable status: the `reclazzStatus` Gradle task prints one JSON line (attached, agent, protocol, port, health). It lives in `:gradle-plugin` because the agent's own tests forbid the shipped agent from opening a client socket; see [gradle-plugin.md](gradle-plugin.md). (BUILD)
 
 Starters and templates
 - [ ] reclazz-spring-boot-starter that auto-configures under the dev profile. (BUILD)
