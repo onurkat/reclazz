@@ -1,5 +1,6 @@
 plugins {
     id("java-gradle-plugin")
+    id("com.gradle.plugin-publish") version "1.3.1"
 }
 
 group = providers.gradleProperty("pluginGroup").get()
@@ -22,6 +23,8 @@ dependencies {
 }
 
 gradlePlugin {
+    website.set("https://reclazz.com")
+    vcsUrl.set("https://github.com/onurkat/reclazz")
     plugins {
         create("reclazz") {
             id = "com.onurkat.reclazz"
@@ -29,6 +32,7 @@ gradlePlugin {
             displayName = "Reclazz hot-reload Gradle plugin"
             description = "Wires the Reclazz hot-reload agent into bootRun and test, " +
                 "so a Spring Boot or SAP Commerce project reloads in place with no manual -javaagent flag."
+            tags.set(listOf("hot-reload", "spring-boot", "sap-commerce", "jrebel-alternative", "java-agent"))
         }
     }
 }
