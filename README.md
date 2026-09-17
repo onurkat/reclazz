@@ -118,6 +118,7 @@ than either.
 | [docs/usage.md](docs/usage.md) | The four ways to run it, every agent argument, debugging reloaded code, what to do when a reload goes wrong, Flight Recorder events |
 | [docs/gradle-plugin.md](docs/gradle-plugin.md) | The Gradle plugin that attaches the agent to bootRun and test with no manual -javaagent flag |
 | [docs/mcp-server.md](docs/mcp-server.md) | The MCP server that exposes Reclazz to coding agents as tools (status, scan, pending, diagnose) |
+| [docs/maven.md](docs/maven.md) | Attaching the agent in a Maven build: the prepare-agent plugin, or a few lines of POM with no plugin |
 | [docs/protocol.md](docs/protocol.md) | The status socket, for a client other than the IntelliJ plugin: an IDE extension, a build tool that nudges the agent, a log shipper |
 | [docs/test-guide.md](docs/test-guide.md) | Trying each capability by hand on a SAP Commerce install |
 | [docs/publishing.md](docs/publishing.md) | Cutting a release: the scripts, the two release-note files, what a version number means |
