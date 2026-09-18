@@ -84,7 +84,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       # One Gradle invocation for both: the second one paid the whole
       # configuration again, on every job, for a task the first could have
