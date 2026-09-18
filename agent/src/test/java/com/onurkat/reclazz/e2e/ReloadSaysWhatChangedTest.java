@@ -48,7 +48,12 @@ class ReloadSaysWhatChangedTest {
             assertTrue(app.awaits("GREET=v2", RELOAD_TIMEOUT_SEC),
                     () -> "hot reload did not reach the running app:\n" + app.tail());
 
-            List<String> agentLines = agentLines(app.output().subList(before, app.output().size()));
+            // Snapshot the live output before slicing it: the reader thread keeps
+            // appending, and a subList view over a CopyOnWriteArrayList throws
+            // ConcurrentModificationException when the backing list grows under it
+            // (seen intermittently on slower Windows CI).
+            List<String> snapshot = new ArrayList<>(app.output());
+            List<String> agentLines = agentLines(snapshot.subList(before, snapshot.size()));
             System.out.println("[diag] agent lines for one save: " + agentLines.size());
             for (String line : agentLines) System.out.println("[diag]   " + line);
 
