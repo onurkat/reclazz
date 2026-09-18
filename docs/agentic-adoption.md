@@ -92,9 +92,9 @@ Distribution and build integration
 - [ ] One copy-pasteable dev-run command block at the top of the README. (DOCS)
 
 Agent-facing docs
-- [ ] A downstream AGENTS.md recipe file that projects can drop in, naming the exact dev command with Reclazz. (DOCS)
-- [ ] A "For AI agents" section on reclazz.com and in the README. (DOCS)
-- [ ] An llms.txt aimed at agent and dev-doc retrieval. (DOCS)
+- [x] A downstream AGENTS.md recipe that projects can drop in, naming the exact dev command with Reclazz. It ships inside [for-ai-agents.md](for-ai-agents.md) as a copy-paste block. (DOCS)
+- [x] A "For AI agents" section in the README (and page [for-ai-agents.md](for-ai-agents.md)); the reclazz.com llms.txt links it. (DOCS)
+- [x] An llms.txt aimed at agent and dev-doc retrieval, served at reclazz.com/llms.txt (gh-pages). (DOCS)
 
 MCP and verification
 - [x] reclazz-mcp server exposing status, scan, pending and diagnose. Built in `:mcp-server` (JSON-RPC over stdio, `java -jar reclazz-mcp.jar`); see [mcp-server.md](mcp-server.md). (BUILD)
