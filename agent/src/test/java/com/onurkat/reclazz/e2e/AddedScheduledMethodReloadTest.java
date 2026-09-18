@@ -127,8 +127,18 @@ class AddedScheduledMethodReloadTest {
                     System.out.println("READY");
                     for (int stage = 0; stage < 8; stage++) {
                         Path probe = dir.resolve("probe" + stage);
-                        while (!Files.exists(probe)) Thread.sleep(10);
-                        int expected = Integer.parseInt(Files.readString(probe));
+                        // The writer creates then fills the file; on Windows this
+                        // process can see it exist while still empty, so an
+                        // unguarded readString/parseInt would crash the app and no
+                        // PROBE line would ever print. Retry until it parses.
+                        int expected;
+                        while (true) {
+                            try {
+                                String s = Files.exists(probe) ? Files.readString(probe).trim() : "";
+                                if (!s.isEmpty()) { expected = Integer.parseInt(s); break; }
+                            } catch (Exception retry) { }
+                            Thread.sleep(10);
+                        }
                         if (stage == 3) {
                             Object old = context.getBean(Jobs.class);
                             context.getDefaultListableBeanFactory().destroySingleton("jobs");
