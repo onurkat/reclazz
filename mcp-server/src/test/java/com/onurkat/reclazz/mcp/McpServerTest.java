@@ -75,7 +75,9 @@ class McpServerTest {
 
     @Test
     void statusToolReportsNotAttachedWithNoAgent() {
-        String portFile = dir.resolve("missing.port").toString();
+        // Escape backslashes: on Windows the temp path is C:\... and an
+        // unescaped backslash is an invalid JSON string escape.
+        String portFile = dir.resolve("missing.port").toString().replace("\\", "\\\\");
         JsonObject r = server.handle(req(
                 "{\"jsonrpc\":\"2.0\",\"id\":4,\"method\":\"tools/call\",\"params\":{"
                         + "\"name\":\"reclazz_status\",\"arguments\":{\"portFile\":\"" + portFile + "\"}}}"));
