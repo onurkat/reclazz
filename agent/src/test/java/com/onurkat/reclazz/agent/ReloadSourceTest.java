@@ -23,20 +23,26 @@ class ReloadSourceTest {
     private static final List<Path> BATCH = List.of(
             Path.of("/src/demo/Cart.java"), Path.of("/src/demo/Order.java"));
 
+    // sourceOf returns Path.toString(), which is the OS-native separator, so the
+    // expected strings are built the same way rather than hardcoding '/' (which
+    // failed on Windows, where the separator is '\').
+    private static final String CART = Path.of("/src/demo/Cart.java").toString();
+    private static final String ORDER = Path.of("/src/demo/Order.java").toString();
+
     @Test
     void aTopLevelClassIsTracedToTheFileNamedAfterIt() {
-        assertEquals("/src/demo/Order.java", ReclazzAgent.sourceOf("demo.Order", BATCH));
+        assertEquals(ORDER, ReclazzAgent.sourceOf("demo.Order", BATCH));
     }
 
     @Test
     void anInnerClassIsTracedToItsOuterClassesFile() {
-        assertEquals("/src/demo/Cart.java", ReclazzAgent.sourceOf("demo.Cart$Line", BATCH));
-        assertEquals("/src/demo/Cart.java", ReclazzAgent.sourceOf("demo.Cart$1", BATCH));
+        assertEquals(CART, ReclazzAgent.sourceOf("demo.Cart$Line", BATCH));
+        assertEquals(CART, ReclazzAgent.sourceOf("demo.Cart$1", BATCH));
     }
 
     @Test
     void aClassDeclaredInAnotherClassesFileNamesTheOnlyFileWhenThereIsOne() {
-        assertEquals("/src/demo/Cart.java",
+        assertEquals(CART,
                 ReclazzAgent.sourceOf("demo.CartHelper", List.of(Path.of("/src/demo/Cart.java"))));
     }
 
