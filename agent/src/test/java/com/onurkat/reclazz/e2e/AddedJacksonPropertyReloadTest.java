@@ -174,6 +174,14 @@ class AddedJacksonPropertyReloadTest {
             import com.fasterxml.jackson.databind.*;
             import org.springframework.context.support.GenericApplicationContext;
             public class App {
+                // A real app keeps its ApplicationContext alive for the JVM's
+                // life (the running server, beans and shutdown hook reference it).
+                // Hold it here too: otherwise this minimal context is only weakly
+                // reachable after main() returns, gets GC'd, and Reclazz can no
+                // longer find the ObjectMapper beans to flush after a reload,
+                // which made the Jackson property reload flaky (GC-timing) and
+                // fail on JDK 17.
+                static GenericApplicationContext KEPT;
                 public static void main(String[] args) throws Exception {
                     Dto old = new Dto();
                     var mapper = new ObjectMapper();
@@ -190,6 +198,7 @@ class AddedJacksonPropertyReloadTest {
                     context.registerBean("mapper", ObjectMapper.class, () -> mapper);
                     context.registerBean("custom", ObjectMapper.class, () -> custom);
                     context.refresh();
+                    KEPT = context;
                     var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
                     server.createContext("/", exchange -> {
                         byte[] response; int status = 200;
