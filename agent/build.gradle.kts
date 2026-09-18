@@ -16,6 +16,13 @@ java {
     withJavadocJar()
 }
 
+// Sources are UTF-8 (the status banner uses box-drawing characters). Pin the
+// compiler encoding so a Windows runner, which defaults to windows-1252, does not
+// fail with "unmappable character".
+tasks.withType<JavaCompile>().configureEach {
+    options.encoding = "UTF-8"
+}
+
 // The javadoc jar exists to satisfy the Central Portal, not to be exhaustive,
 // so missing tags on internal classes must not fail the release build.
 tasks.withType<Javadoc>().configureEach {
