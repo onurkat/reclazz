@@ -270,9 +270,15 @@ public final class WatchedApp implements AutoCloseable {
         return -1;
     }
 
-    /** Everything the application has printed so far. */
+    /**
+     * A snapshot of everything the application has printed so far. A copy, not
+     * the live list: the reader thread keeps appending, so handing out the live
+     * CopyOnWriteArrayList let callers that sliced or iterated it race the writer
+     * (a subList view threw ConcurrentModificationException on slower CI). Copying
+     * a COW list is itself thread-safe.
+     */
     public List<String> output() {
-        return output;
+        return new java.util.ArrayList<>(output);
     }
 
     /** Waits for a line containing this, and says whether it arrived. */
