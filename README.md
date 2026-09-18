@@ -141,6 +141,7 @@ than either.
 | [docs/mcp-server.md](docs/mcp-server.md) | The MCP server that exposes Reclazz to coding agents as tools (status, scan, pending, diagnose) |
 | [docs/spring-boot-starter.md](docs/spring-boot-starter.md) | The Spring Boot starter: reports whether the agent is attached and exposes a reclazz actuator endpoint |
 | [docs/for-ai-agents.md](docs/for-ai-agents.md) | How a coding agent runs a project with Reclazz: turn it on, verify a reload, and a drop-in AGENTS.md recipe |
+| [docs/sap-commerce.md](docs/sap-commerce.md) | The SAP Commerce (Hybris) counterpart for a coding agent: enable from the shell, verify, and a drop-in AGENTS.md recipe |
 | [docs/maven.md](docs/maven.md) | Attaching the agent in a Maven build: the prepare-agent plugin, or a few lines of POM with no plugin |
 | [docs/protocol.md](docs/protocol.md) | The status socket, for a client other than the IntelliJ plugin: an IDE extension, a build tool that nudges the agent, a log shipper |
 | [docs/test-guide.md](docs/test-guide.md) | Trying each capability by hand on a SAP Commerce install |
