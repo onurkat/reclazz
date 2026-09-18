@@ -88,7 +88,8 @@ its `jvmArguments`, or set `reclazz.propertyName` to a name you pass there.
 Configure the platform and any agent argument through the plugin's
 `<configuration>` (`platform`, `watchDirs`, `agentArgs`).
 
-The plugin's sources are in `maven-plugin/`. This repository builds with Gradle,
-so the Maven plugin is built with Maven separately (`cd maven-plugin && mvn
-install`) and published on its own; the no-plugin wiring above needs none of
-that.
+The plugin is on Maven Central as `com.onurkat.reclazz:reclazz-maven-plugin`, so
+the coordinate above resolves with no extra setup. Its sources are in
+`maven-plugin/`; this repository builds with Gradle, so the Maven plugin is built
+with Maven separately (`cd maven-plugin && mvn install`) and published on its
+own. The no-plugin wiring above needs none of that.
