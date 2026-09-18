@@ -24,9 +24,14 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 // The javadoc jar exists to satisfy the Central Portal, not to be exhaustive,
-// so missing tags on internal classes must not fail the release build.
+// so missing tags on internal classes must not fail the release build. Javadoc
+// reads the sources with its own encoding, so it needs UTF-8 too or a Windows
+// runner fails on the same box-drawing characters that compileJava now handles.
 tasks.withType<Javadoc>().configureEach {
-    (options as StandardJavadocDocletOptions).addStringOption("Xdoclint:none", "-quiet")
+    (options as StandardJavadocDocletOptions).apply {
+        encoding = "UTF-8"
+        addStringOption("Xdoclint:none", "-quiet")
+    }
 }
 
 repositories {

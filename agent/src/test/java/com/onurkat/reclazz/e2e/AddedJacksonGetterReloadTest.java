@@ -142,6 +142,12 @@ class AddedJacksonGetterReloadTest {
             import com.fasterxml.jackson.annotation.*;
             import org.springframework.context.support.GenericApplicationContext;
             public class App {
+                // A real app keeps its ApplicationContext alive for the JVM's
+                // life; hold it here too, so this minimal context is not GC'd
+                // after main() returns. Reclazz finds ObjectMapper beans through
+                // the (weakly held) context to flush after a reload, and a
+                // collected context left the Jackson caches stale on JDK 17.
+                static GenericApplicationContext KEPT;
                 public static void main(String[] args) throws Exception {
                     Dto old = new Dto();
                     ObjectMapper plain = new ObjectMapper();
@@ -161,6 +167,7 @@ class AddedJacksonGetterReloadTest {
                     context.registerBean("snake", ObjectMapper.class, () -> snake);
                     context.registerBean("custom", ObjectMapper.class, () -> custom);
                     context.refresh();
+                    KEPT = context;
                     var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
                     server.createContext("/", exchange -> {
                         byte[] body; int status = 200;
