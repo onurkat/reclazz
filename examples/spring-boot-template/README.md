@@ -33,18 +33,20 @@ JVM at startup. `build.gradle.kts` resolves it from Maven Central into a separat
 confirms the agent is attached, so a broken wiring fails the build instead of
 silently reloading nothing.
 
-## A cleaner setup, once published
+## A cleaner setup
 
-This template wires the agent by hand so it works today with only the agent on
-Maven Central. Two ecosystem pieces make it a single line each; use them once
-they are published:
+This template wires the agent by hand so the flag and paths are visible. Two
+ecosystem pieces make it a single line each:
 
-- The Gradle plugin: `id("com.onurkat.reclazz") version "1.3.0"` attaches the
-  agent to `bootRun` and `test` for you. See
-  [gradle-plugin.md](https://github.com/onurkat/reclazz/blob/main/docs/gradle-plugin.md).
-- The Spring Boot starter: `reclazz-spring-boot-starter` reports at startup
-  whether the agent is attached and adds a `reclazz` actuator endpoint. See
+- The Spring Boot starter (on Maven Central):
+  `developmentOnly("com.onurkat.reclazz:reclazz-spring-boot-starter:1.3.0")`
+  reports at startup whether the agent is attached and adds a `reclazz` actuator
+  endpoint. See
   [spring-boot-starter.md](https://github.com/onurkat/reclazz/blob/main/docs/spring-boot-starter.md).
+- The Gradle plugin: `id("com.onurkat.reclazz") version "1.3.0"` attaches the
+  agent to `bootRun` and `test` for you. It is pending Gradle Plugin Portal
+  approval; use it once it is live. See
+  [gradle-plugin.md](https://github.com/onurkat/reclazz/blob/main/docs/gradle-plugin.md).
 
 ## For coding agents
 
