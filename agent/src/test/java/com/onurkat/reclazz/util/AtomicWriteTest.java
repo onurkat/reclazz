@@ -5,6 +5,8 @@
 package com.onurkat.reclazz.util;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
@@ -104,6 +106,14 @@ class AtomicWriteTest {
      * this size and count: {@code Files.writeString} was caught mid-flight by 7
      * and then 9 of 22 reads. Here it has to be none of them.
      */
+    // Windows cannot replace a file another handle holds open: Files.move throws
+    // AccessDeniedException there, because it does not open with FILE_SHARE_DELETE
+    // and there is no POSIX rename-over-open. The atomic-replace-visible-to-a-
+    // concurrent-reader guarantee this measures is a POSIX property; the util's
+    // ordinary use (writing when nothing else has the file open) works on Windows,
+    // exercised by the other tests here.
+    @DisabledOnOs(value = OS.WINDOWS,
+            disabledReason = "atomic replace under a concurrent open reader is a POSIX-only guarantee")
     @Test
     void aReaderNeverSeesHalfOfIt() throws Exception {
         String before = "a".repeat(64_000);
