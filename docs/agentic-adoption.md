@@ -101,7 +101,7 @@ MCP and verification
 - [x] Machine-readable status: the `reclazzStatus` Gradle task prints one JSON line (attached, agent, protocol, port, health). It lives in `:gradle-plugin` because the agent's own tests forbid the shipped agent from opening a client socket; see [gradle-plugin.md](gradle-plugin.md). (BUILD)
 
 Starters and templates
-- [ ] reclazz-spring-boot-starter that auto-configures under the dev profile. (BUILD)
+- [x] reclazz-spring-boot-starter: reports at startup whether the agent is attached (and how to attach it), and exposes a `reclazz` actuator endpoint. Code in `:spring-boot-starter`; see [spring-boot-starter.md](spring-boot-starter.md). It cannot attach the agent itself (a `-javaagent` must be present at JVM startup), so the build plugins remain the way to turn it on. (BUILD)
 - [ ] A GitHub template repository: Spring Boot plus Reclazz, dev-ready. (BUILD + OWNER)
 - [ ] A SAP Commerce equivalent recipe or template where feasible. (BUILD + DOCS)
 
