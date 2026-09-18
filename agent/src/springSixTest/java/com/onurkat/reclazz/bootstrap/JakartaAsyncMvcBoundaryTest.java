@@ -83,7 +83,8 @@ class JakartaAsyncMvcBoundaryTest {
     void completedCallableRemainsCountedUntilItsIgnoringWorkerActuallyExits(boolean error) throws Exception {
         var f = new Fixture(); var entered = new CountDownLatch(1); var release = new CountDownLatch(1);
         var interrupted = new CountDownLatch(1);
-        try (var executor = Executors.newSingleThreadExecutor()) {
+        var executor = Executors.newSingleThreadExecutor();
+        try {
             f.manager.setTaskExecutor(new TaskExecutorAdapter(executor));
             var frame = f.enter();
             f.manager.startCallableProcessing(() -> {
@@ -109,13 +110,14 @@ class JakartaAsyncMvcBoundaryTest {
             } finally { release.countDown(); }
             // The same worker must be reusable with no stale ThreadLocal depth.
             executor.submit(() -> { f.gate.enter(); f.gate.exit(); }).get(2, TimeUnit.SECONDS);
-        }
+        } finally { executor.shutdownNow(); }
         assertReloadable(f.gate);
     }
 
     @Test void throwingLaterCallablePostProcessDoesNotPreventWorkerRelease() throws Exception {
         var f = new Fixture(); var cause = new IllegalStateException("postProcess");
-        try (var executor = Executors.newSingleThreadExecutor()) {
+        var executor = Executors.newSingleThreadExecutor();
+        try {
             f.manager.setTaskExecutor(new TaskExecutorAdapter(executor));
             var frame = f.enter();
             f.manager.registerCallableInterceptor("later", new CallableProcessingInterceptor() {
@@ -125,7 +127,7 @@ class JakartaAsyncMvcBoundaryTest {
             executor.submit(() -> { }).get(2, TimeUnit.SECONDS);
             assertSame(cause, f.manager.getConcurrentResult());
             f.context().complete(); assertReloadable(f.gate);
-        }
+        } finally { executor.shutdownNow(); }
     }
 
     @ParameterizedTest @ValueSource(booleans = {false, true})
@@ -156,14 +158,15 @@ class JakartaAsyncMvcBoundaryTest {
         if (earlier) f.manager.registerCallableInterceptor("failure", interceptor);
         var frame = f.enter();
         if (!earlier) f.manager.registerCallableInterceptor("failure", interceptor);
-        try (var executor = Executors.newSingleThreadExecutor()) {
+        var executor = Executors.newSingleThreadExecutor();
+        try {
             f.manager.setTaskExecutor(new TaskExecutorAdapter(executor));
             f.manager.startCallableProcessing(() -> { fail("preProcess must prevent the body"); return null; });
             AsyncMvcBoundary.exit(frame);
             executor.submit(() -> { }).get(2, TimeUnit.SECONDS);
             assertSame(cause, f.manager.getConcurrentResult());
             f.context().complete(); assertReloadable(f.gate);
-        }
+        } finally { executor.shutdownNow(); }
     }
 
     @Test void missingRequestApiKeepsReloadDisabledInsteadOfSilentlyDroppingProtection() throws Exception {
