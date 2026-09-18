@@ -50,7 +50,8 @@ class AsyncRequestGateTest {
         gate.enter(); lease.start(); gate.exit();
         var entered = new CountDownLatch(1);
         var release = new CountDownLatch(1);
-        try (var executor = Executors.newSingleThreadExecutor()) {
+        var executor = Executors.newSingleThreadExecutor();
+        try {
             var worker = executor.submit(() -> {
                 gate.enter(lease); entered.countDown();
                 try { assertTrue(release.await(2, TimeUnit.SECONDS)); }
@@ -63,7 +64,7 @@ class AsyncRequestGateTest {
                 assertFalse(gate.tryBeginReload(1));
             } finally { release.countDown(); }
             worker.get(2, TimeUnit.SECONDS);
-        }
+        } finally { executor.shutdownNow(); }
         assertReloadable(gate);
     }
 
