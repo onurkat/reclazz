@@ -37,7 +37,8 @@ class JakartaAsyncMvcRequestBoundaryReloadTest {
                 .agentArgs("startupDelaySec=1,debounceMs=100"+(boundary?",reloadBoundary=request":""))
                 .jvmArgs("-Dprobe.dir="+tmp).with("App",APP).with("Controller",CONTROLLER).with("Rules",rules(1));
         if(child)builder.childClassLoader();
-        try(var app=builder.start();var client=HttpClient.newHttpClient()) {
+        var client=HttpClient.newHttpClient();
+        try(var app=builder.start()) {
             app.awaitOrFail("PORT=","Tomcat did not start"); app.awaitOrFail("] Watching ","watcher missing");
             int port=Integer.parseInt(app.latest("PORT=").substring(5));
             assertEquals("1:1",get(client,port,"fast").body());
