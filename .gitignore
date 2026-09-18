@@ -1,6 +1,9 @@
 # Gradle
 build/
 .gradle/
+
+# Maven (the maven-plugin module builds with Maven)
+target/
 .intellijPlatform/
 !gradle/wrapper/gradle-wrapper.jar
 
