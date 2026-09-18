@@ -31,6 +31,27 @@ java -javaagent:/path/to/reclazz-agent.jar=watchDirs=/path/to/target/classes -ja
 
 Build your project (`mvn compile` or `gradle classes`), and Reclazz hot-swaps the changes automatically. No restart needed.
 
+## For AI agents
+
+If you are a coding agent (Claude Code, Cursor, Copilot, Windsurf, Aider) working on a Spring Boot or SAP Commerce project, you can enable Reclazz from a build edit and keep your edit-run loop hot instead of restarting.
+
+Gradle, one line:
+
+```kotlin
+plugins {
+    id("org.springframework.boot") version "3.3.0"
+    id("com.onurkat.reclazz") version "1.3.0"
+}
+```
+
+Then run the app, edit code, recompile (`./gradlew classes`), and the agent swaps it in place. Confirm the swap with a machine-readable status:
+
+```
+./gradlew reclazzStatus
+```
+
+Maven wiring, an MCP server with `reclazz_status` / `reclazz_scan` / `reclazz_pending` / `reclazz_diagnose` tools, and a drop-in `AGENTS.md` recipe for the target project are in [docs/for-ai-agents.md](docs/for-ai-agents.md).
+
 ## Why Reclazz?
 
 Spring Boot DevTools restarts the entire application context on every change. JRebel costs $550+/year. Reclazz is **free, open-source**, and performs true in-place class redefinition, so your application state is preserved.
@@ -118,6 +139,7 @@ than either.
 | [docs/usage.md](docs/usage.md) | The four ways to run it, every agent argument, debugging reloaded code, what to do when a reload goes wrong, Flight Recorder events |
 | [docs/gradle-plugin.md](docs/gradle-plugin.md) | The Gradle plugin that attaches the agent to bootRun and test with no manual -javaagent flag |
 | [docs/mcp-server.md](docs/mcp-server.md) | The MCP server that exposes Reclazz to coding agents as tools (status, scan, pending, diagnose) |
+| [docs/for-ai-agents.md](docs/for-ai-agents.md) | How a coding agent runs a project with Reclazz: turn it on, verify a reload, and a drop-in AGENTS.md recipe |
 | [docs/maven.md](docs/maven.md) | Attaching the agent in a Maven build: the prepare-agent plugin, or a few lines of POM with no plugin |
 | [docs/protocol.md](docs/protocol.md) | The status socket, for a client other than the IntelliJ plugin: an IDE extension, a build tool that nudges the agent, a log shipper |
 | [docs/test-guide.md](docs/test-guide.md) | Trying each capability by hand on a SAP Commerce install |
