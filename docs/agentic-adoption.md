@@ -103,7 +103,7 @@ MCP and verification
 Starters and templates
 - [x] reclazz-spring-boot-starter: reports at startup whether the agent is attached (and how to attach it), and exposes a `reclazz` actuator endpoint. Code in `:spring-boot-starter`; see [spring-boot-starter.md](spring-boot-starter.md). It cannot attach the agent itself (a `-javaagent` must be present at JVM startup), so the build plugins remain the way to turn it on. (BUILD)
 - [~] A GitHub template repository: Spring Boot plus Reclazz, dev-ready. The content is built and runs today at `examples/spring-boot-template/` (bootRun with hot reload, a smoke test proving the agent attaches, an AGENTS.md recipe); creating the GitHub template repo from it remains an owner step. (BUILD done, OWNER pending)
-- [ ] A SAP Commerce equivalent recipe or template where feasible. (BUILD + DOCS)
+- [x] A SAP Commerce equivalent recipe. A runnable template is not feasible (the platform is licensed), so the deliverable is an agent-facing recipe: enable from the shell via the documented `tomcat.javaoptions` seam, verify with the MCP tools, and a drop-in AGENTS.md block; see [sap-commerce.md](sap-commerce.md). (DOCS)
 
 Discovery that reaches agents at run time
 - [ ] GitHub repo topics current and specific. (OWNER)
