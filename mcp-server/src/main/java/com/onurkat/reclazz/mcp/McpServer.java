@@ -41,16 +41,16 @@ public final class McpServer {
         if (request.has("params") && !request.get("params").isJsonObject()) {
             return error(request, -32602, "params must be an object");
         }
-        if (method.equals("initialize") && request.has("params")) {
-            JsonObject params = request.getAsJsonObject("params");
-            if (params.has("protocolVersion") && !isString(params.get("protocolVersion"))) {
-                return error(request, -32602, "protocolVersion must be a string");
+        if (method.equals("initialize")) {
+            JsonObject params = request.has("params") ? request.getAsJsonObject("params") : new JsonObject();
+            if (!isString(params.get("protocolVersion")) || params.get("protocolVersion").getAsString().isBlank()) {
+                return error(request, -32602, "initialize requires a nonblank string protocolVersion");
             }
         }
 
         switch (method) {
             case "initialize":
-                return success(request, initialize(request));
+                return success(request, initialize());
             case "ping":
                 return success(request, new JsonObject());
             case "tools/list":
@@ -62,13 +62,11 @@ public final class McpServer {
         }
     }
 
-    private JsonObject initialize(JsonObject request) {
-        String requested = PROTOCOL_VERSION;
-        if (request.has("params") && request.getAsJsonObject("params").has("protocolVersion")) {
-            requested = request.getAsJsonObject("params").get("protocolVersion").getAsString();
-        }
+    private JsonObject initialize() {
         JsonObject result = new JsonObject();
-        result.addProperty("protocolVersion", requested);
+        // Only this baseline is implemented: accept it or offer it as the supported alternative.
+        // The client decides whether it can continue with the returned version.
+        result.addProperty("protocolVersion", PROTOCOL_VERSION);
         JsonObject capabilities = new JsonObject();
         capabilities.add("tools", new JsonObject());
         result.add("capabilities", capabilities);

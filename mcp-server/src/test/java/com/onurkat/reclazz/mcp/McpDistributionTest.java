@@ -63,6 +63,7 @@ class McpDistributionTest {
         assertEquals(3, lines.size(), run.out);
         JsonObject init = JsonParser.parseString(lines.get(0)).getAsJsonObject();
         assertEquals(1, init.get("id").getAsInt());
+        assertEquals("2024-11-05", init.getAsJsonObject("result").get("protocolVersion").getAsString());
         JsonObject info = init.getAsJsonObject("result").getAsJsonObject("serverInfo");
         assertEquals("reclazz-mcp", info.get("name").getAsString());
         assertEquals(System.getProperty("reclazz.mcp.releaseVersion"), info.get("version").getAsString());
@@ -77,6 +78,49 @@ class McpDistributionTest {
         String text = response.getAsJsonObject("result").getAsJsonArray("content").get(0)
                 .getAsJsonObject().get("text").getAsString();
         assertFalse(JsonParser.parseString(text).getAsJsonObject().get("attached").getAsBoolean());
+    }
+
+    @Test
+    void installedJarNegotiatesFallbackBeforeListingTools() throws Exception {
+        Run run = run(List.of("-jar", installJar().toString()), """
+                {"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2099-01-01","capabilities":{},"clientInfo":{"name":"fallback-test","version":"1"}}}
+                {"jsonrpc":"2.0","method":"notifications/initialized"}
+                {"jsonrpc":"2.0","id":2,"method":"tools/list"}
+                """);
+        assertEquals(0, run.exit, run.err);
+        assertEquals("", run.err);
+        List<String> lines = run.out.lines().toList();
+        assertEquals(2, lines.size(), run.out);
+        JsonObject init = JsonParser.parseString(lines.get(0)).getAsJsonObject();
+        assertEquals(1, init.get("id").getAsInt());
+        assertEquals("2024-11-05", init.getAsJsonObject("result").get("protocolVersion").getAsString());
+        JsonObject tools = JsonParser.parseString(lines.get(1)).getAsJsonObject();
+        assertEquals(2, tools.get("id").getAsInt());
+        assertEquals(6, tools.getAsJsonObject("result").getAsJsonArray("tools").size());
+    }
+
+    @Test
+    void installedJarRecoversAfterMissingVersion() throws Exception {
+        Run run = run(List.of("-jar", installJar().toString()), """
+                {"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}
+                {"jsonrpc":"2.0","id":2,"method":"initialize","params":{"protocolVersion":"2024-11-05"}}
+                {"jsonrpc":"2.0","method":"notifications/initialized"}
+                {"jsonrpc":"2.0","id":3,"method":"ping"}
+                """);
+        assertEquals(0, run.exit, run.err);
+        assertEquals("", run.err);
+        List<String> lines = run.out.lines().toList();
+        assertEquals(3, lines.size(), run.out);
+        JsonObject invalid = JsonParser.parseString(lines.get(0)).getAsJsonObject();
+        assertTrue(invalid.has("error"), invalid.toString());
+        assertEquals(1, invalid.get("id").getAsInt());
+        assertEquals(-32602, invalid.getAsJsonObject("error").get("code").getAsInt());
+        JsonObject init = JsonParser.parseString(lines.get(1)).getAsJsonObject();
+        assertEquals(2, init.get("id").getAsInt());
+        assertEquals("2024-11-05", init.getAsJsonObject("result").get("protocolVersion").getAsString());
+        JsonObject ping = JsonParser.parseString(lines.get(2)).getAsJsonObject();
+        assertEquals(3, ping.get("id").getAsInt());
+        assertTrue(ping.has("result"));
     }
 
     @Test
