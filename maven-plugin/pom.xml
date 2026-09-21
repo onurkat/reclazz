@@ -143,6 +143,19 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
                         <version>3.2.7</version>
+                        <configuration>
+                            <!-- Sign without a prompt. The passphrase comes from
+                                 the MAVEN_GPG_PASSPHRASE env var, which release.sh
+                                 sets from the same signing.password the Gradle
+                                 bundles sign with; loopback pinentry keeps gpg
+                                 from popping its own dialog, so the whole release
+                                 runs unattended. Without the env var gpg falls
+                                 back to prompting, so a by-hand build still works. -->
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>

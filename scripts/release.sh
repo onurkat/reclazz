@@ -146,14 +146,19 @@ if [ "$skip_distribution" = false ]; then
     # The Maven plugin is its own POM; -Prelease signs and stages it to the
     # Central Portal (autoPublish=false, so it waits for the same manual click).
     # It resolves reclazz-agent from ~/.m2 (published just above), not from the
-    # not-yet-synced Central. maven-gpg-plugin signs through gpg, which may
-    # prompt for the passphrase.
+    # not-yet-synced Central. Sign unattended: feed maven-gpg-plugin the same
+    # passphrase the Gradle bundles use (signing.password) through the env var it
+    # reads, so it signs via loopback pinentry (configured in the POM) instead of
+    # prompting. Set on the environment, never through `run`, so it is not echoed.
+    mvn_gpg_pass="$(grep '^signing.password=' "$gradle_props" 2>/dev/null | cut -d= -f2- || true)"
+    [ -n "$mvn_gpg_pass" ] && export MAVEN_GPG_PASSPHRASE="$mvn_gpg_pass"
     if command -v mvn >/dev/null 2>&1; then
         run mvn -q -f maven-plugin/pom.xml -Prelease clean deploy
     else
         echo "! mvn not found; stage the Maven plugin by hand:"
         echo "    mvn -f maven-plugin/pom.xml -Prelease clean deploy"
     fi
+    unset MAVEN_GPG_PASSPHRASE
 
     # The Gradle plugin publishes outright, given the Portal key in
     # ~/.gradle/gradle.properties (gradle.publish.key / gradle.publish.secret).
