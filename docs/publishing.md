@@ -435,6 +435,18 @@ as the agent, so keeping that one file current keeps the plugin and the agent it
 resolves on the same version. A Portal version is immutable: to correct a
 published build you bump the version and publish again, never overwrite.
 
+This is why a release is all four registries at once, not the plugin alone. The
+plugin defaults the agent it resolves to its own version (`ReclazzPlugin` sets
+`agentVersion` to `project.version`), so a plugin published as X.Y.Z resolves
+`reclazz-agent:X.Y.Z` from Central. Publishing the plugin without the matching
+agent on Central leaves every user of it unable to resolve the agent. The Maven
+plugin has the same coupling: its POM depends on `reclazz-agent` at its own
+version, so its build needs that agent resolvable. `release.sh` handles the
+build-time half by running `:agent:publishToMavenLocal` before `mvn deploy`, so
+the Maven plugin resolves the agent from `~/.m2` rather than waiting for the
+Central sync; the runtime half is the manual Publish click that puts the agent
+on Central for real users.
+
 ## Verify what actually shipped
 
 A registry can end up serving an older build than the source. It happened once:
