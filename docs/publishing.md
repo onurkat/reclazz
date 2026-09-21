@@ -47,9 +47,19 @@ That runs the sequence below in order, after refusing when anything it
 needs is missing: a dirty tree, a branch other than main, a
 `gradle.properties` version that is not X.Y.Z, a changelog or plugin.xml
 without an entry for it, a tag that already exists, an unset password or
-token (`--skip-publish` leaves the Marketplace out). It waits for the tag's
+token (`--skip-publish` leaves the Marketplace out), or a
+`maven-plugin/pom.xml` whose version does not match. It waits for the tag's
 release to appear and attaches the signed zip under the name every release
-has used. The steps, for reference and for doing one by hand:
+has used.
+
+After the Marketplace release it runs the distribution phase: it builds the
+Maven Central bundles for the agent and the starter, stages the Maven plugin,
+and publishes the Gradle plugin to the Portal, each step gated on its own
+credential and skipped with a printed note when that credential is absent
+(`--skip-distribution` leaves the phase out entirely). The Central bundles
+still end in a manual Publish click; see [Maven Central](#maven-central-the-agent-the-starter-and-the-maven-plugin)
+and [the Gradle Plugin Portal](#gradle-plugin-portal-the-gradle-plugin) below.
+The Marketplace steps, for reference and for doing one by hand:
 
 ```bash
 
@@ -328,13 +338,24 @@ The contracts are the ones the tests pin: the argument table
 and the JFR events (`ReloadEventsTest`). A change that fails one of them is
 a major bump or a migration, never a quiet rename.
 
-## Maven Central: the agent jar
+## Maven Central: the agent, the starter, and the Maven plugin
 
-The agent is published to Maven Central as `com.onurkat.reclazz:reclazz-agent`,
-so the Gradle plugin and any build can resolve it by version. The published
-main artifact is the shadow (fat) jar with the agent manifest, alongside a
-sources jar, a javadoc jar, a POM and their signatures. The build wiring is in
-`agent/build.gradle.kts` (`maven-publish`, `signing`, a `centralBundle` zip).
+Three artifacts go to Maven Central under `com.onurkat.reclazz`, all at the same
+version as the plugin:
+
+- `reclazz-agent`: the shadow (fat) jar with the agent manifest, so the Gradle
+  plugin and any build can resolve it by version. Wiring in
+  `agent/build.gradle.kts`.
+- `reclazz-spring-boot-starter`: the startup reporter and actuator endpoint.
+  Wiring in `spring-boot-starter/build.gradle.kts`.
+- `reclazz-maven-plugin`: the `prepare-agent` Maven plugin. It is a separate
+  Maven module (`maven-plugin/pom.xml`), published with `mvn`, not Gradle.
+
+The agent and the starter each publish the main jar alongside a sources jar, a
+javadoc jar, a POM and their signatures, through `maven-publish` + `signing` +
+a `centralBundle` zip. `scripts/release.sh` builds both bundles in its
+distribution phase; the section below is what each does and how to do one by
+hand.
 
 One-time account setup (owner):
 
@@ -359,13 +380,82 @@ Modern GnuPG does not keep `secring.gpg`, so export it once:
 gpg --export-secret-keys <KEY_ID> > ~/.gnupg/secring.gpg
 ```
 
-To cut a release:
+To build the agent and starter bundles:
 
 ```
-./gradlew :agent:centralBundle
+./gradlew :agent:centralBundle :spring-boot-starter:centralBundle
 ```
 
-That signs the artifacts and writes `agent/build/reclazz-agent-<version>-central-bundle.zip`.
-Upload it at central.sonatype.com (Publish, then Upload a bundle), or POST it to
-the Publisher API, and click Publish once it validates. The publication is
+That signs the artifacts and writes
+`agent/build/reclazz-agent-<version>-central-bundle.zip` and
+`spring-boot-starter/build/reclazz-spring-boot-starter-<version>-central-bundle.zip`.
+Upload each at central.sonatype.com (Publish, then Upload a bundle), or POST it
+to the Publisher API, and click Publish once it validates. The publication is
 staged, not auto-released, so nothing goes public until that click.
+
+The Maven plugin stages itself through its own `release` profile
+(`maven-source-plugin`, `maven-javadoc-plugin`, `maven-gpg-plugin`, and
+`central-publishing-maven-plugin` with `autoPublish=false`):
+
+```
+mvn -f maven-plugin/pom.xml -Prelease clean deploy
+```
+
+Its signing goes through `gpg` rather than Gradle's own signing, so it prompts
+for the GPG passphrase through pinentry and needs a real terminal; it cannot
+sign unattended the way the Gradle bundles can. It appears in the same staged
+list at central.sonatype.com, waiting for the same Publish click.
+
+## Gradle Plugin Portal: the Gradle plugin
+
+The Gradle plugin is published to the Gradle Plugin Portal as
+`com.onurkat.reclazz` (a separate registry from Maven Central), so
+`id("com.onurkat.reclazz") version "X.Y.Z"` resolves from a plain `plugins {}`
+block. Wiring is in `gradle-plugin/build.gradle.kts` (the
+`com.gradle.plugin-publish` plugin and the `gradlePlugin` block).
+
+One-time setup (owner), already done for 1.x:
+
+- A Gradle Plugin Portal account, with its API key and secret in
+  `~/.gradle/gradle.properties` as `gradle.publish.key` and
+  `gradle.publish.secret`.
+- The first publication of a new plugin id needs manual Gradle approval and,
+  because the id is under `com.onurkat`, ownership of `onurkat.com` proven with
+  a DNS TXT record. Later versions of an approved id publish with no further
+  approval.
+
+To publish:
+
+```
+./gradlew :gradle-plugin:publishPlugins
+```
+
+The version comes from `pluginVersion` in `gradle.properties`, the same source
+as the agent, so keeping that one file current keeps the plugin and the agent it
+resolves on the same version. A Portal version is immutable: to correct a
+published build you bump the version and publish again, never overwrite.
+
+## Verify what actually shipped
+
+A registry can end up serving an older build than the source. It happened once:
+the Gradle plugin's 1.3.0 was published from a build taken before the
+`reclazzStatus` task and the `reclazz {}` extension existed, so the Portal
+served a plugin the docs described features it did not have. The publish step
+does not catch this, because it uploads whatever the last build produced. Check
+the served artifact against the source before calling a release done:
+
+```
+# the Gradle plugin: the served jar has every class the source has
+./gradlew :gradle-plugin:jar
+unzip -l gradle-plugin/build/libs/gradle-plugin-<version>.jar | grep -E 'ReclazzStatusTask|ReclazzExtension|AgentStatus'
+
+# the agent on Central resolves and carries the Premain manifest
+# (a day or so after Publish, once it syncs to repo1)
+curl -sI https://repo1.maven.org/maven2/com/onurkat/reclazz/reclazz-agent/<version>/reclazz-agent-<version>.jar
+```
+
+The Gradle plugin also carries a `reclazzStatus`/`reclazz {}` claim in its own
+docs, so the quickest end-to-end check is a throwaway project with
+`plugins { id("com.onurkat.reclazz") version "<version>" }` and
+`./gradlew reclazzStatus`: a "task not found" there means the Portal is serving
+a build without it, the exact failure the drift above produced.

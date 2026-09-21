@@ -38,8 +38,25 @@ if grep -q "<h3>$version</h3>" "$plugin_xml"; then
     exit 1
 fi
 
-# 1. the version
+# 1. the version. gradle.properties drives the plugin, the agent jar, the
+#    Spring Boot starter and the Gradle Plugin Portal artifact. The Maven
+#    plugin is a separate POM with its own hardcoded version and a hardcoded
+#    reclazz-agent dependency, so it has to be bumped in lockstep here; missing
+#    it once is how a registry ends up a version behind the others.
 sed -i.bak -E "s/^pluginVersion=.*/pluginVersion=$version/" gradle.properties && rm gradle.properties.bak
+
+pom="maven-plugin/pom.xml"
+if [ -f "$pom" ]; then
+    awk -v v="$version" '
+        prev ~ /<artifactId>reclazz-maven-plugin<\/artifactId>/ && /<version>[^<]*<\/version>/ {
+            sub(/<version>[^<]*<\/version>/, "<version>" v "</version>")
+        }
+        prev ~ /<artifactId>reclazz-agent<\/artifactId>/ && /<version>[^<]*<\/version>/ {
+            sub(/<version>[^<]*<\/version>/, "<version>" v "</version>")
+        }
+        { print; prev = $0 }
+    ' "$pom" > "$pom.tmp" && mv "$pom.tmp" "$pom"
+fi
 
 # 2. the changelog: [Unreleased] becomes [X.Y.Z] - date, with a new empty
 #    [Unreleased] above it
@@ -71,6 +88,7 @@ rm -f /tmp/reclazz-notes.$$
 
 echo "Prepared $version ($date):"
 echo "  gradle.properties     pluginVersion=$version"
+[ -f "$pom" ] && echo "  $pom  <version> and the reclazz-agent dependency -> $version"
 echo "  $changelog          [Unreleased] -> [$version] - $date, new [Unreleased] above"
 echo "  $plugin_xml  <h3>$version</h3> inserted; edit the items into the IDE's words"
 echo "Then: review, commit, and scripts/release.sh $version"
