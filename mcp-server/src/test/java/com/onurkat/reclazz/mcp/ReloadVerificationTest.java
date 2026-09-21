@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ReloadVerificationTest {
     static final String HASH = "a".repeat(64);
     static JsonObject request(int port, String name, String hash) {
-        JsonObject request = JsonParser.parseString("{\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"reclazz_verify\",\"arguments\":{}}}").getAsJsonObject();
+        JsonObject request = JsonParser.parseString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"reclazz_verify\",\"arguments\":{}}}").getAsJsonObject();
         JsonObject args = request.getAsJsonObject("params").getAsJsonObject("arguments");
         args.addProperty("port", "" + port); args.addProperty("className", name); args.addProperty("sha256", hash);
         args.addProperty("timeoutMs", "300");
@@ -92,7 +92,7 @@ class ReloadVerificationTest {
         JsonObject invalid = request(1, "A", HASH);
         invalid.getAsJsonObject("params").getAsJsonObject("arguments").add("sha256", new JsonObject());
         assertEquals(-32602, server.handle(invalid).getAsJsonObject("error").get("code").getAsInt());
-        String tools = server.handle(JsonParser.parseString("{\"id\":1,\"method\":\"tools/list\"}").getAsJsonObject()).toString();
+        String tools = server.handle(JsonParser.parseString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}").getAsJsonObject()).toString();
         assertTrue(tools.contains("reclazz_verify")); assertTrue(tools.contains("\"required\":[\"className\",\"sha256\"]"));
     }
 }

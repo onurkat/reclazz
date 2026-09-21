@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Receipt support requires the updated agent; it does not prove reload completion.
 
 ### Fixed
+- MCP rejects malformed request shapes, non-string tool arguments, invalid timeouts
+  and control characters without ending the stdio session. Bounded strict JSON
+  frames resume at the next line, and diagnose names cannot inject socket commands.
 - The Gradle plugin resolves the agent at its own packaged version, independently
   of the application's version, and does not resolve the agent when disabled.
 - Maven agent arguments preserve paths containing spaces or quotes as a single

@@ -120,7 +120,7 @@ class BuildSafetyTest {
                 agent.verify();
             }
         }
-        String tools = server.handle(JsonParser.parseString("{\"id\":1,\"method\":\"tools/list\"}")
+        String tools = server.handle(JsonParser.parseString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}")
                 .getAsJsonObject()).toString();
         assertTrue(tools.contains("reclazz_build"));
         assertTrue(tools.contains("\"enum\":[\"started\",\"ok\",\"failed\"]"));
@@ -135,7 +135,7 @@ class BuildSafetyTest {
     }
 
     private static JsonObject request(String state, int port) {
-        return JsonParser.parseString("{\"id\":1,\"method\":\"tools/call\",\"params\":{"
+        return JsonParser.parseString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{"
                 + "\"name\":\"reclazz_build\",\"arguments\":{\"port\":\"" + port + "\",\"state\":" + state + "}}}")
                 .getAsJsonObject();
     }

@@ -109,6 +109,28 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 Each tool accepts optional `portFile`, `port` and `hybrisHome` arguments to
 locate the agent; `reclazz_diagnose` also requires `className`.
 
+## Input validation
+
+Each stdio line carries one JSON-RPC 2.0 object. Requests have a string method,
+a string or integer ID (not null), and optional object params. Notifications
+have no ID and receive no response. Batch arrays are not supported by this server.
+Malformed JSON returns `-32700`, invalid request envelopes return `-32600`, and
+invalid method/tool parameters return `-32602`. When an ID cannot be determined,
+the error has `id:null`. The process continues reading subsequent lines.
+
+Frames are limited to 65,536 Java characters, excluding the newline; an oversized
+line is drained and rejected before the next line is read. Known tool arguments
+must be strings, at most 4,096 Java characters, without control characters.
+`className` for diagnose/verify must be a binary Java name of at most 256
+characters (Unicode identifiers and `$` inner classes are supported).
+`timeoutMs` is an integer string in 1–60,000, with defaults of 5,000 for
+build/verify and 2,000 for other tools. Paths with spaces are supported.
+Invalid numeric ports retain the existing not-attached result.
+
+Diagnose rejects invalid names before connecting. The socket writer additionally
+rejects commands containing control characters or exceeding 512 Java characters,
+so a supplied name cannot insert a second line command.
+
 ## What it does not do
 
 It opens one connection, to `127.0.0.1`, to the agent already running on this

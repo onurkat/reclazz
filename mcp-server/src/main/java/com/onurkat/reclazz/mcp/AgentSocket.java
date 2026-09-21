@@ -48,6 +48,10 @@ final class AgentSocket {
     /** Connect and, if {@code command} is non-null, send it and gather the answer. */
     static Result run(Map<String, String> opts, String command) {
         Result result = new Result();
+        if (command != null && (command.length() > 512 || command.codePoints().anyMatch(Character::isISOControl))) {
+            result.reason = "invalid agent command";
+            return result;
+        }
         resolvePort(opts, result);
         if (result.reason != null) return result;
         int port = result.port;

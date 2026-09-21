@@ -78,10 +78,13 @@ final class BuildSession implements AutoCloseable {
     }
 
     static boolean validVerification(String name, String hash) {
+        return validClassName(name) && hash != null && hash.matches("[0-9a-f]{64}");
+    }
+
+    static boolean validClassName(String name) {
         return name != null && name.length() <= 256
                 && name.codePoints().noneMatch(Character::isIdentifierIgnorable)
-                && name.matches("[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*(\\.[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*)*")
-                && hash != null && hash.matches("[0-9a-f]{64}");
+                && name.matches("[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*(\\.[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*)*");
     }
 
     JsonObject verify(String name, String hash) throws IOException {
