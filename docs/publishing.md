@@ -88,8 +88,16 @@ directly publishes it as `reclazz-X.Y.Z-signed.zip` and breaks the run.
 `.github/workflows/release.yml` fires on `vX.Y.Z` and creates the release:
 it checks that the tag and `gradle.properties` agree, takes the notes from
 that version's section of `CHANGELOG.md` (`scripts/changelog-section.sh`,
-which fails when there is no such section), builds the agent jar, and
-attaches it with a `.sha256` beside it.
+which fails when there is no such section), builds the agent jar, tests the
+standalone MCP distribution, and attaches both jars with a `.sha256` beside each:
+`reclazz-agent-X.Y.Z.jar` and `reclazz-mcp-X.Y.Z.jar`.
+
+Before releasing, `./gradlew :mcp-server:test :mcp-server:mcpRelease` locally stages
+`mcp-server/build/distributions/mcp/reclazz-mcp-X.Y.Z.jar` and its checksum.
+The tests relocate the packaged jar and launch both entry points without Gradle's
+classpath, checking the reported version and stdio tools. This task does not
+publish anything. The tag workflow attaches those exact tested MCP assets;
+older releases are not retroactively changed. See [MCP installation](mcp-server.md#running-it).
 
 Signing is not in there and cannot be: the private key and its passphrase
 live on your machine and are deliberately not repository secrets. So the
