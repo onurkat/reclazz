@@ -129,19 +129,25 @@ if [ "$skip_distribution" = false ]; then
 
     # Central bundles: signed local Maven layouts, zipped for upload. Building
     # them needs signing.keyId/signing.password in ~/.gradle/gradle.properties.
+    # publishToMavenLocal puts this version's agent in ~/.m2 as well, because
+    # the Maven plugin below depends on reclazz-agent at this same version and
+    # Central has not served it yet (the bundle is staged, not published), so
+    # its build would otherwise fail to resolve the dependency.
     if [ "$dry_run" = true ] || grep -q '^signing.keyId=' "$gradle_props" 2>/dev/null; then
-        run ./gradlew :agent:centralBundle :spring-boot-starter:centralBundle --no-daemon
+        run ./gradlew :agent:centralBundle :agent:publishToMavenLocal :spring-boot-starter:centralBundle --no-daemon
         echo "Central bundles built (staged upload, then a manual Publish click):"
         echo "  agent/build/reclazz-agent-$version-central-bundle.zip"
         echo "  spring-boot-starter/build/reclazz-spring-boot-starter-$version-central-bundle.zip"
     else
         echo "! signing.keyId not in ~/.gradle/gradle.properties; build the Central bundles by hand:"
-        echo "    ./gradlew :agent:centralBundle :spring-boot-starter:centralBundle"
+        echo "    ./gradlew :agent:centralBundle :agent:publishToMavenLocal :spring-boot-starter:centralBundle"
     fi
 
     # The Maven plugin is its own POM; -Prelease signs and stages it to the
     # Central Portal (autoPublish=false, so it waits for the same manual click).
-    # maven-gpg-plugin signs through gpg, which may prompt for the passphrase.
+    # It resolves reclazz-agent from ~/.m2 (published just above), not from the
+    # not-yet-synced Central. maven-gpg-plugin signs through gpg, which may
+    # prompt for the passphrase.
     if command -v mvn >/dev/null 2>&1; then
         run mvn -q -f maven-plugin/pom.xml -Prelease clean deploy
     else
