@@ -80,6 +80,54 @@ class ReclazzPluginFunctionalTest {
         assertTrue(result.getOutput().contains("\"attached\":false"), result.getOutput());
     }
 
+    @Test
+    void defaultsToPackagedVersionInsteadOfConsumerVersion() throws Exception {
+        assertDefaultVersion("version = '0.0.1-SNAPSHOT'\n");
+    }
+
+    @Test
+    void defaultsToPackagedVersionWithoutConsumerVersion() throws Exception {
+        assertDefaultVersion("");
+    }
+
+    private void assertDefaultVersion(String consumerVersion) throws Exception {
+        String version = System.getProperty("reclazz.plugin.version");
+        write("settings.gradle", "rootProject.name = 'sample'");
+        Path artifact = projectDir.resolve("repo/com/onurkat/reclazz/reclazz-agent/" + version);
+        Files.createDirectories(artifact);
+        try (var jar = new java.util.jar.JarOutputStream(Files.newOutputStream(
+                artifact.resolve("reclazz-agent-" + version + ".jar")))) { }
+        write("repo/com/onurkat/reclazz/reclazz-agent/" + version + "/reclazz-agent-" + version + ".pom",
+                "<project><modelVersion>4.0.0</modelVersion><groupId>com.onurkat.reclazz</groupId>"
+                + "<artifactId>reclazz-agent</artifactId><version>" + version + "</version></project>");
+        write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n"
+                + consumerVersion
+                + "repositories { maven { url = uri('repo') } }\n"
+                + "tasks.register('resolveAgent') { doLast { println 'AGENT:' + configurations.reclazzAgent.singleFile.name } }\n");
+        String out = run("resolveAgent").getOutput();
+        assertTrue(out.contains("AGENT:reclazz-agent-" + version + ".jar"), out);
+    }
+
+    @Test
+    void explicitAgentVersionOverridesDefault() throws Exception {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n"
+                + "reclazz { agentVersion = '7.8.9' }\n"
+                + "tasks.register('versionCheck') { doLast { println 'VERSION:' + reclazz.agentVersion.get() } }\n");
+        assertTrue(run("versionCheck").getOutput().contains("VERSION:7.8.9"));
+    }
+
+    @Test
+    void disabledBootRunDoesNotResolveAgent() throws Exception {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("src/main/java/Main.java", "public class Main { public static void main(String[] args) {"
+                + "System.out.println(\"APPLICATION_RAN\"); } }");
+        write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n"
+                + "reclazz { enabled = false; agentVersion = 'does-not-exist' }\n"
+                + "tasks.register('bootRun', JavaExec) { mainClass = 'Main'; classpath = sourceSets.main.runtimeClasspath }\n");
+        assertTrue(run("bootRun").getOutput().contains("APPLICATION_RAN"));
+    }
+
     private BuildResult run(String task) {
         return GradleRunner.create()
                 .withProjectDir(projectDir.toFile())

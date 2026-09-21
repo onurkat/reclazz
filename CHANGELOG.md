@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+- The Gradle plugin resolves the agent at its own packaged version, independently
+  of the application's version, and does not resolve the agent when disabled.
+- Maven agent arguments preserve paths containing spaces or quotes as a single
+  JVM argument. The quoting parser is tested without adding a runtime dependency.
+- Invalid MCP ports return a not-attached result without terminating the stdio
+  session. Gradle status requires an agent handshake before reporting attached.
+
 ## [1.3.0] - 2026-09-17
 
 ### Fixed

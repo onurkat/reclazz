@@ -39,4 +39,12 @@ gradlePlugin {
 
 tasks.test {
     useJUnitPlatform()
+    systemProperty("reclazz.plugin.version", project.version.toString())
+}
+
+tasks.processResources {
+    inputs.property("pluginVersion", project.version.toString())
+    filesMatching("com/onurkat/reclazz/gradle/version.properties") {
+        expand("version" to project.version.toString())
+    }
 }

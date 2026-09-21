@@ -85,6 +85,13 @@
             <version>5.10.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- Test only: parse argLine exactly as Surefire does, never ship a splitter. -->
+        <dependency>
+            <groupId>org.apache.maven.surefire</groupId>
+            <artifactId>surefire-shared-utils</artifactId>
+            <version>3.5.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

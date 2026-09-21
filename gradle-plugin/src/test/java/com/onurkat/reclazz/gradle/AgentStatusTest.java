@@ -69,4 +69,23 @@ class AgentStatusTest {
         assertFalse(AgentStatus.isAttached(json), json);
         assertTrue(json.contains("\"attached\":false"), json);
     }
+    @Test
+    void ignoresSocketWithoutAgentHandshake() throws Exception {
+        for (String response : new String[] {"", "{\"level\":\"INFO\",\"message\":\"hello\",\"timestamp\":\"t\"}\n"}) {
+            try (ServerSocket server = new ServerSocket(0, 1, InetAddress.getLoopbackAddress())) {
+                Thread responder = new Thread(() -> {
+                    try (Socket socket = server.accept()) {
+                        socket.getOutputStream().write(response.getBytes(StandardCharsets.UTF_8));
+                    } catch (Exception e) { throw new RuntimeException(e); }
+                });
+                responder.setDaemon(true);
+                responder.start();
+                String json = AgentStatus.query(Map.of("port", String.valueOf(server.getLocalPort())));
+                assertFalse(AgentStatus.isAttached(json), json);
+                assertTrue(json.contains("no CONNECTED"), json);
+                responder.join(2000);
+            }
+        }
+    }
+
 }

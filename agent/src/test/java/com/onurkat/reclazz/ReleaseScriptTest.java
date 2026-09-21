@@ -53,6 +53,11 @@ class ReleaseScriptTest {
         Files.writeString(repo.resolve("src/main/resources/META-INF/plugin.xml"),
                 "<idea-plugin><change-notes><![CDATA[<h3>1.2.3</h3><ul><li>A thing.</li></ul>]]></change-notes></idea-plugin>\n");
         Files.writeString(repo.resolve("gradlew"), "#!/bin/sh\nexit 0\n");
+        Files.createDirectories(repo.resolve("bin"));
+        Path mvn = repo.resolve("bin/mvn");
+        Files.writeString(mvn, "#!/bin/sh\nexit 97\n"); // discovery only; dry-run must never execute it
+        Files.setPosixFilePermissions(mvn, Set.of(PosixFilePermission.OWNER_READ,
+                PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE));
         git("init", "-q", "-b", "main");
         git("config", "user.email", "test@example.com");
         git("config", "user.name", "Test");
@@ -73,7 +78,10 @@ class ReleaseScriptTest {
                 "would run: git push origin main --follow-tags",
                 "would wait for: gh release view v1.2.3",
                 "would run: cp build/distributions/reclazz-1.2.3-signed.zip /tmp/reclazz-1.2.3.zip",
-                "would run: gh release upload v1.2.3 /tmp/reclazz-1.2.3.zip"), steps);
+                "would run: gh release upload v1.2.3 /tmp/reclazz-1.2.3.zip",
+                "would run: ./gradlew :agent:centralBundle :agent:publishToMavenLocal :spring-boot-starter:centralBundle --no-daemon",
+                "would run: mvn -q -f maven-plugin/pom.xml -Prelease clean deploy",
+                "would run: ./gradlew :gradle-plugin:publishPlugins --no-daemon"), steps);
         assertEquals("", git("tag", "-l").out().trim(), "a dry run tags nothing");
     }
 
@@ -81,8 +89,20 @@ class ReleaseScriptTest {
     void skippingTheMarketplaceLeavesOutOnlyTheUpload() throws Exception {
         Run run = release("1.2.3", "--dry-run", "--skip-publish");
         assertEquals(0, run.exit(), run.err());
-        assertFalse(run.out().contains("publishPlugin"));
+        assertFalse(run.out().lines().anyMatch(l -> l.equals("would run: ./gradlew publishPlugin --no-daemon")));
+        assertTrue(run.out().contains("would run: ./gradlew :gradle-plugin:publishPlugins --no-daemon"),
+                "skipping Marketplace must preserve the Gradle Plugin Portal upload");
         assertTrue(run.out().contains("signPlugin"), "the signed zip is still built for the GitHub release");
+    }
+
+    @Test
+    void skippingDistributionPreservesMarketplacePublication() throws Exception {
+        Run run = release("1.2.3", "--dry-run", "--skip-distribution");
+        assertEquals(0, run.exit(), run.err());
+        assertTrue(run.out().lines().anyMatch(l -> l.equals("would run: ./gradlew publishPlugin --no-daemon")));
+        assertFalse(run.out().contains("centralBundle"));
+        assertFalse(run.out().contains("mvn -q"));
+        assertFalse(run.out().contains(":gradle-plugin:publishPlugins"));
     }
 
     @Test
@@ -133,7 +153,10 @@ class ReleaseScriptTest {
     }
 
     private Run run(List<String> command) throws Exception {
-        Process p = new ProcessBuilder(command).directory(repo.toFile()).start();
+        ProcessBuilder builder = new ProcessBuilder(command).directory(repo.toFile());
+        builder.environment().put("PATH", repo.resolve("bin") + java.io.File.pathSeparator
+                + builder.environment().getOrDefault("PATH", ""));
+        Process p = builder.start();
         byte[] out = p.getInputStream().readAllBytes();
         byte[] err = p.getErrorStream().readAllBytes();
         assertTrue(p.waitFor(60, TimeUnit.SECONDS), "timed out: " + command);

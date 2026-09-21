@@ -5,12 +5,15 @@
 package com.onurkat.reclazz.gradle;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.gradle.api.Plugin;
+import org.gradle.api.GradleException;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileCollection;
@@ -38,7 +41,7 @@ public class ReclazzPlugin implements Plugin<Project> {
     public void apply(Project project) {
         ReclazzExtension ext = project.getExtensions().create("reclazz", ReclazzExtension.class);
         ext.getEnabled().convention(true);
-        ext.getAgentVersion().convention(project.provider(() -> project.getVersion().toString()));
+        ext.getAgentVersion().convention(project.provider(ReclazzPlugin::pluginVersion));
         ext.getApplyToTest().convention(true);
         ext.getApplyToBootRun().convention(true);
 
@@ -53,8 +56,11 @@ public class ReclazzPlugin implements Plugin<Project> {
         });
 
         ConfigurableFileCollection agentJar = project.getObjects().fileCollection();
-        agentJar.from(project.provider(() ->
-                ext.getAgentJar().isPresent() ? ext.getAgentJar().getAsFile().get() : agentConf.getSingleFile()));
+        agentJar.from(project.provider(() -> {
+            if (!ext.getEnabled().get()) return List.of();
+            return List.of(ext.getAgentJar().isPresent()
+                    ? ext.getAgentJar().getAsFile().get() : agentConf.getSingleFile());
+        }));
 
         Provider<String> argumentString = project.provider(() -> buildArguments(project, ext));
 
@@ -104,6 +110,21 @@ public class ReclazzPlugin implements Plugin<Project> {
         return args.entrySet().stream()
                 .map(e -> e.getKey() + "=" + e.getValue())
                 .collect(Collectors.joining(","));
+    }
+
+    private static String pluginVersion() {
+        try (var in = ReclazzPlugin.class.getResourceAsStream("version.properties")) {
+            if (in == null) throw new GradleException("Reclazz plugin version resource is missing");
+            Properties properties = new Properties();
+            properties.load(in);
+            String version = properties.getProperty("version");
+            if (version == null || version.isBlank() || version.contains("${")) {
+                throw new GradleException("Reclazz plugin version resource is invalid");
+            }
+            return version;
+        } catch (IOException e) {
+            throw new GradleException("Cannot read Reclazz plugin version", e);
+        }
     }
 
     private static String mainOutput(Project project) {
