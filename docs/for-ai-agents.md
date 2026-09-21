@@ -28,10 +28,9 @@ plugins {
 ```
 
 The plugin resolves `com.onurkat.reclazz:reclazz-agent` from Maven Central and
-wires the flag into `bootRun` and `Test`. Details and options:
-[gradle-plugin.md](gradle-plugin.md). The plugin itself is pending Gradle Plugin
-Portal approval; until it is live, use the Maven or plain-JVM path below, which
-work today.
+wires the flag into `bootRun` and `Test`. It is published on the Gradle Plugin
+Portal, so the `id(...) version "1.3.0"` form above resolves as-is. Details and
+options: [gradle-plugin.md](gradle-plugin.md).
 
 ### Maven
 
