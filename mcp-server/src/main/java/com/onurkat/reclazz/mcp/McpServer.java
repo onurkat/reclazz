@@ -5,8 +5,11 @@
 package com.onurkat.reclazz.mcp;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,14 +31,21 @@ public final class McpServer {
 
     /** Handle one JSON-RPC request. Returns the response, or null for a notification. */
     public JsonObject handle(JsonObject request) {
-        String method = request.has("method") ? request.get("method").getAsString() : "";
-        boolean isNotification = !request.has("id") || request.get("id").isJsonNull();
-
-        if (method.startsWith("notifications/")) {
-            return null;
+        if (!isString(request.get("jsonrpc")) || !"2.0".equals(request.get("jsonrpc").getAsString())
+                || !isString(request.get("method")) || (request.has("id") && !validId(request.get("id")))) {
+            return error(request, -32600, "Invalid Request");
         }
-        if (isNotification) {
-            return null;
+        // A notification has no ID, regardless of the method name or its parameters.
+        if (!request.has("id")) return null;
+        String method = request.get("method").getAsString();
+        if (request.has("params") && !request.get("params").isJsonObject()) {
+            return error(request, -32602, "params must be an object");
+        }
+        if (method.equals("initialize") && request.has("params")) {
+            JsonObject params = request.getAsJsonObject("params");
+            if (params.has("protocolVersion") && !isString(params.get("protocolVersion"))) {
+                return error(request, -32602, "protocolVersion must be a string");
+            }
         }
 
         switch (method) {
@@ -121,9 +131,13 @@ public final class McpServer {
         props.add("portFile", stringProp("Path to the agent port file (optional; auto-located otherwise)."));
         props.add("port", stringProp("Connect directly to this agent status port (optional)."));
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
+        props.add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default "
+                + (name.equals("reclazz_build") || name.equals("reclazz_verify") ? "5000." : "2000.")));
         JsonArray required = new JsonArray();
         if (needsClassName) {
-            props.add("className", stringProp("Fully qualified class name."));
+            JsonObject className = stringProp("Binary Java class name, at most 256 characters.");
+            className.addProperty("maxLength", 256);
+            props.add("className", className);
             required.add("className");
         }
         schema.add("properties", props);
@@ -135,25 +149,41 @@ public final class McpServer {
     private JsonObject stringProp(String description) {
         JsonObject p = new JsonObject();
         p.addProperty("type", "string");
+        p.addProperty("maxLength", 4096);
         p.addProperty("description", description);
         return p;
     }
 
     private JsonObject toolsCall(JsonObject request) {
         JsonObject params = request.has("params") ? request.getAsJsonObject("params") : new JsonObject();
-        String name = params.has("name") ? params.get("name").getAsString() : "";
-        JsonObject arguments = params.has("arguments") && params.get("arguments").isJsonObject()
-                ? params.getAsJsonObject("arguments") : new JsonObject();
+        if (!isString(params.get("name"))) return error(request, -32602, "name must be a string");
+        String name = params.get("name").getAsString();
+        if (params.has("arguments") && !params.get("arguments").isJsonObject()) {
+            return error(request, -32602, "arguments must be an object");
+        }
+        JsonObject arguments = params.has("arguments") ? params.getAsJsonObject("arguments") : new JsonObject();
 
         Map<String, String> opts = new LinkedHashMap<>();
         opts.put("baseDir", System.getProperty("user.dir"));
-        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256")) {
-            if (key.equals("sha256") && !name.equals("reclazz_verify")) continue;
-            if (arguments.has(key) && !arguments.get(key).isJsonNull()) {
-                if (name.equals("reclazz_verify") && (!arguments.get(key).isJsonPrimitive() || !arguments.getAsJsonPrimitive(key).isString())) {
-                    return error(request, -32602, key + " must be a string");
-                }
-                opts.put(key, arguments.get(key).getAsString());
+        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state")) {
+            if (!arguments.has(key)) continue;
+            if (!isString(arguments.get(key))) return error(request, -32602, key + " must be a string");
+            String value = arguments.get(key).getAsString();
+            if (value.length() > 4096 || value.codePoints().anyMatch(Character::isISOControl)) {
+                return error(request, -32602, key + " exceeds 4096 characters or contains a control character");
+            }
+            if (key.equals("portFile") || key.equals("hybrisHome")) {
+                try { Path.of(value); }
+                catch (InvalidPathException invalid) { return error(request, -32602, key + " is not a valid path"); }
+            }
+            opts.put(key, value);
+        }
+        if (opts.containsKey("timeoutMs")) {
+            try {
+                int timeout = Integer.parseInt(opts.get("timeoutMs"));
+                if (timeout < 1 || timeout > 60000) throw new NumberFormatException();
+            } catch (NumberFormatException invalid) {
+                return error(request, -32602, "timeoutMs must be an integer string between 1 and 60000");
             }
         }
 
@@ -212,8 +242,8 @@ public final class McpServer {
                 break;
             }
             case "reclazz_diagnose": {
-                if (!opts.containsKey("className")) {
-                    return error(request, -32602, "reclazz_diagnose requires className");
+                if (!BuildSession.validClassName(opts.get("className"))) {
+                    return error(request, -32602, "reclazz_diagnose requires a valid binary className of at most 256 characters");
                 }
                 AgentSocket.Result r = AgentSocket.run(opts, "DIAGNOSE " + opts.get("className"));
                 text = !r.connected ? "Not attached: " + r.reason
@@ -260,15 +290,30 @@ public final class McpServer {
         return response;
     }
 
-    private JsonObject error(JsonObject request, int code, String message) {
+    static JsonObject error(JsonObject request, int code, String message) {
         JsonObject error = new JsonObject();
         error.addProperty("code", code);
         error.addProperty("message", message);
         JsonObject response = new JsonObject();
         response.addProperty("jsonrpc", "2.0");
-        response.add("id", request.has("id") ? request.get("id") : new JsonPrimitive(0));
+        response.add("id", request != null && validId(request.get("id")) ? request.get("id") : JsonNull.INSTANCE);
         response.add("error", error);
         return response;
+    }
+
+    private static boolean isString(JsonElement value) {
+        return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString();
+    }
+
+    private static boolean validId(JsonElement value) {
+        if (isString(value)) return true;
+        if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) return false;
+        try {
+            // Inspect the scale without expanding exponents into a huge integer.
+            return value.getAsBigDecimal().stripTrailingZeros().scale() <= 0;
+        } catch (NumberFormatException | ArithmeticException invalid) {
+            return false;
+        }
     }
 
     private String version() {
