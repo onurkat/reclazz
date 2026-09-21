@@ -37,6 +37,7 @@ they look in the usual places (`.reclazz/agent.port`, `.idea/reclazz/agent.port`
 |---|---|
 | `reclazz_status` | Whether the agent is attached and how it is doing (reloads, failures, latency, watched directories), as JSON |
 | `reclazz_build` | Signal `started`, `ok` or `failed`; waits for the agent to acknowledge the signal, and returns a tool error if unconfirmed |
+| `reclazz_verify` | Structured exact-byte reload receipt; requires `className` and lower-case `sha256`; only `status:applied` is success |
 | `reclazz_scan` | Ask the agent to look at the watched directories now and reload changed classes, instead of waiting for its next poll |
 | `reclazz_pending` | What still needs a restart in this session |
 | `reclazz_diagnose` | Why a given class did or did not reload last time (requires `className`) |
@@ -101,3 +102,29 @@ the terminal wrapper is preferable when one persistent connection is required.
 `reclazz_scan` alone provides no failed-build protection and cannot release a
 hold. The MCP server signals states; it does not launch arbitrary build commands
 or place compiler output into its JSON-RPC stream.
+
+## Verifying the compiled change
+
+Build and attach matching current agent/MCP jars; older published agents may not
+support this tool's socket command. After a successful protected compilation,
+compute SHA-256 of each changed `.class` file and call `reclazz_verify` with its
+binary name (`com.acme.OrderService`, or `com.acme.OrderService$Nested`), `sha256`,
+and the same `portFile`/`port` used for the build. It returns JSON text with
+requestId, sessionId, className, expectedSha256, observedSha256, status, source,
+detail and completedAt. Request IDs are generated and checked by the MCP client.
+
+Require `isError:false` and `status:"applied"`, matching both hashes. All other
+states have `isError:true`: `running`, `not_observed`, `mismatch`, `failed` or
+`unverified`. Read the detail and poll with a bounded deadline for asynchronous
+completion; do not infer success from an increasing global counter. Connection,
+timeout and malformed-receipt failures return `status:"unavailable"` and
+`isError:true`. Bad input returns JSON-RPC invalid params. Optional string
+`timeoutMs` bounds each socket request (default 5000, range 1–60000).
+
+A fresh session ID invalidates assumptions from the earlier app. The receipt is
+bounded, latest-only evidence that the exact captured bytes finished the reload
+batch, including deferred refresh; it is not a build job ID or an atomic result
+for several classes. Warnings, ambiguous classloaders and never-loaded classes
+cannot produce a positive receipt. See [the receipt contract](protocol.md#verifying-exact-compiled-bytes).
+After verifying the relevant classes, exercise the live endpoint or test to
+prove the intended application behavior.

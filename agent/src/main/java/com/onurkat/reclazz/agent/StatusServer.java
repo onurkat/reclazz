@@ -65,6 +65,10 @@ public class StatusServer implements StatusReporter.StatusListener {
     private volatile Runnable scanner;
     private volatile java.util.function.Consumer<String> build;
     private static final String BUILD = "BUILD";
+    private static final String VERIFY = "VERIFY";
+    private volatile ReloadVerification verification;
+
+    void setVerification(ReloadVerification verification) { this.verification = verification; }
 
     public void setBuildListener(java.util.function.Consumer<String> build) { this.build = build; }
 
@@ -162,6 +166,18 @@ public class StatusServer implements StatusReporter.StatusListener {
         if (trimmed.length() > MAX_COMMAND_LENGTH) return;
 
         try {
+            if (trimmed.startsWith(VERIFY + " ")) {
+                String[] parts = trimmed.split("\\s+");
+                ReloadVerification answering = verification;
+                if (parts.length == 4 && answering != null
+                        && ReloadVerification.validQuery(parts[1], parts[2], parts[3])) {
+                    String message = "VERIFY_RESULT " + parts[1] + " " + answering.query(parts[1], parts[2], parts[3]);
+                    reply.accept(String.format(
+                            "{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                            escapeJson(message), Instant.now().toString()));
+                }
+                return;
+            }
             if (trimmed.regionMatches(true, 0, BUILD + " ", 0, BUILD.length() + 1)) {
                 String[] parts = trimmed.substring(BUILD.length() + 1).strip().split("\\s+");
                 if (parts.length > 2) return;
@@ -287,6 +303,8 @@ public class StatusServer implements StatusReporter.StatusListener {
             try {
                 Socket clientSocket = serverSocket.accept();
 
+                // Read-only receipt polling may emit no broadcast to prune closed clients.
+                clients.removeIf(client -> client.socket.isClosed());
                 if (clients.size() >= MAX_CLIENTS) {
                     clientSocket.close();
                     continue;

@@ -1,6 +1,6 @@
 # The Status Socket
 
-What the agent says while it runs, and the five things it can be asked, so
+What the agent says while it runs, and the commands it accepts, so
 that something other than the IntelliJ plugin can listen: a VS Code or
 Eclipse extension, a build script that nudges the agent when it has finished
 writing class files, a log shipper.
@@ -54,10 +54,10 @@ a client that stops reading rather than blocking a reload on it.
 
 ## Commands
 
-A client may send one line at a time, at most 512 bytes; anything not
+A client may send one line at a time, at most 512 characters; anything not
 listed here is ignored without an answer, and a line that never ends closes
 the connection. Every answer arrives as ordinary `INFO` lines on the stream,
-to every client, except the requested BUILD receipt described below.
+to every client, except requested BUILD receipts and VERIFY results, which go only to the requesting connection.
 
 | Command | Answer |
 |---|---|
@@ -65,6 +65,7 @@ to every client, except the requested BUILD receipt described below.
 | `PENDING` | what still needs a restart in this session |
 | `HEALTH` | how the session is going: reloads, failures, latency, watched directories, a reload that is still running |
 | `BUILD <state> [request=<token>]` | hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. States are case-insensitive; `request=` is literal and its token is echoed unchanged. An unknown argument is ignored |
+| `VERIFY <token> <class> <sha256>` | read the latest exact-byte reload receipt for one class; requester-only structured result (below) |
 | `SCAN` | look at the watched directories now, instead of on the file watcher's next poll; what changed is reloaded as usual. Send it when a build has just finished |
 
 Nothing a client sends makes the agent load, reload or run anything it
@@ -144,3 +145,59 @@ From a shell, after `mvn compile`:
 ```bash
 printf 'SCAN\n' | nc 127.0.0.1 "$(cat .reclazz/agent.port)"
 ```
+
+## Verifying exact compiled bytes
+
+With matching current agent/MCP jars, send `VERIFY <token> <class> <sha256>`.
+VERIFY is uppercase; token is 1–64 ASCII letters/digits/underscores/hyphens.
+Class is a dot-separated Java binary name, up to 256 characters, including `$`
+for nested classes; identifier-ignorable control characters are rejected.
+SHA-256 is exactly 64 lower-case hex digits, calculated from the compiled class
+file the caller expects to have been applied. The agent never reads a path
+supplied by this query. Invalid commands or an unavailable verifier get no reply.
+
+The requester receives an INFO event with `message` equal to
+`VERIFY_RESULT <token> <json>`. Parse the event first, then parse the JSON suffix.
+Existing readers can continue treating message as text. The nested object has
+these string fields:
+
+| Receipt member | Meaning |
+|---|---|
+| requestId | The unchanged request token; check it before accepting a result |
+| sessionId | Random ID of this agent verifier; changes on initialization |
+| className | The requested binary name |
+| expectedSha256 | The requested hash |
+| observedSha256 | Hash of the latest captured reload input, or empty if absent |
+| status | One of the states below |
+| source | Origin path, bounded to 200 characters |
+| detail | Outcome or reason, bounded to 200 characters |
+| completedAt | ISO UTC batch completion time; empty before completion or if absent |
+
+Only **applied** is positive evidence. It means the expected input bytes matched,
+a successful reload outcome was recorded, the class was uniquely loaded before
+the attempt, and the entire batch returned, including deferred redefinition and
+framework refresh, with no WARN/ERROR on the applying thread. A warning in any
+member conservatively prevents success for the other members too.
+
+- `running`: matching bytes are being applied; no completion yet.
+- `failed`: the matching attempt reported failure or the batch threw; detail says why.
+- `unverified`: matching attempt finished without sufficient evidence: absent
+  outcome, unloaded/ambiguous class, duplicate input name, or a batch warning/error.
+- `mismatch`: the latest attempt used different bytes; an older success cannot
+  certify a newer edit. Inspect observedSha256 and source.
+- `not_observed`: no retained receipt in this session. This includes eviction,
+  restart, classes never reloaded, and untracked mutations invalidating old proof.
+
+The ledger retains at most 512 latest class receipts, not an operation history.
+It observes external class-file and autoCompile batches; hashes come from the
+captured input, never from a file rewritten while a reload is running. Starting
+a new attempt supersedes old proof even if that attempt later fails. A failed
+compiler that leaves files held creates no receipt for those new bytes.
+
+This is a point-in-time receipt for one class, not a transaction across classes,
+a full snapshot of all classloaders, or a business-behaviour test. It cannot prove
+that an identical-byte recompile caused a new reload, or that another agent or
+instrumentation tool has not subsequently changed the JVM. Keep one builder per
+agent; verify each changed class with a bounded polling deadline, keep sessionId
+consistent, then exercise the endpoint or application test. No reply, disconnect,
+old-agent timeout or a non-applied state must ever be treated as success.

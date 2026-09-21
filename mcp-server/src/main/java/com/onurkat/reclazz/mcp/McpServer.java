@@ -96,6 +96,16 @@ public final class McpServer {
         build.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("state", state);
         build.getAsJsonObject("inputSchema").getAsJsonArray("required").add("state");
         tools.add(build);
+        JsonObject verify = tool("reclazz_verify",
+                "Check completion for exact compiled class bytes. Requires className and lower-case SHA-256 sha256. "
+                        + "Only status applied proves a completed reload attempt; other statuses are not success. "
+                        + "Point-in-time receipt, not an application behavior test. Poll with a bounded deadline.", true);
+        verify.getAsJsonObject("inputSchema").getAsJsonObject("properties")
+                .add("sha256", stringProp("Lower-case SHA-256 of the compiled class file to verify."));
+        verify.getAsJsonObject("inputSchema").getAsJsonArray("required").add("sha256");
+        verify.getAsJsonObject("inputSchema").getAsJsonObject("properties")
+                .add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default 5000."));
+        tools.add(verify);
         JsonObject result = new JsonObject();
         result.add("tools", tools);
         return result;
@@ -113,7 +123,7 @@ public final class McpServer {
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
         JsonArray required = new JsonArray();
         if (needsClassName) {
-            props.add("className", stringProp("Fully qualified class name to diagnose."));
+            props.add("className", stringProp("Fully qualified class name."));
             required.add("className");
         }
         schema.add("properties", props);
@@ -137,8 +147,12 @@ public final class McpServer {
 
         Map<String, String> opts = new LinkedHashMap<>();
         opts.put("baseDir", System.getProperty("user.dir"));
-        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className")) {
+        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256")) {
+            if (key.equals("sha256") && !name.equals("reclazz_verify")) continue;
             if (arguments.has(key) && !arguments.get(key).isJsonNull()) {
+                if (name.equals("reclazz_verify") && (!arguments.get(key).isJsonPrimitive() || !arguments.getAsJsonPrimitive(key).isString())) {
+                    return error(request, -32602, key + " must be a string");
+                }
                 opts.put(key, arguments.get(key).getAsString());
             }
         }
@@ -146,6 +160,25 @@ public final class McpServer {
         String text;
         boolean isError = false;
         switch (name) {
+            case "reclazz_verify": {
+                if (!BuildSession.validVerification(opts.get("className"), opts.get("sha256"))) {
+                    return error(request, -32602, "reclazz_verify requires className and a lower-case 64-digit sha256");
+                }
+                try (BuildSession session = BuildSession.open(opts)) {
+                    JsonObject receipt = session.verify(opts.get("className"), opts.get("sha256"));
+                    text = receipt.toString();
+                    isError = !"applied".equals(receipt.get("status").getAsString());
+                } catch (java.io.IOException | IllegalArgumentException e) {
+                    isError = true;
+                    JsonObject failure = new JsonObject();
+                    failure.addProperty("status", "unavailable");
+                    failure.addProperty("className", opts.get("className"));
+                    failure.addProperty("expectedSha256", opts.get("sha256"));
+                    failure.addProperty("detail", e.getMessage());
+                    text = failure.toString();
+                }
+                break;
+            }
             case "reclazz_build": {
                 if (!arguments.has("state") || !arguments.get("state").isJsonPrimitive()
                         || !arguments.getAsJsonPrimitive("state").isString()

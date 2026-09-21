@@ -35,6 +35,67 @@ class StatusSocketSurfaceTest {
     }
 
     @Test
+    void verificationValidatesItsGrammarAndRepliesOnlyToRequester() throws Exception {
+        StatusServer status = server();
+        var replies = new java.util.ArrayList<String>();
+        String hash = "a".repeat(64);
+        status.handleCommand("VERIFY request A " + hash, replies::add);
+        assertTrue(replies.isEmpty(), "unavailable ledger must not invent a result");
+        status.setVerification(new ReloadVerification(java.util.Map::of));
+        for (String bad : List.of("VERIFY", "VERIFY x A", "VERIFY x A " + hash + " extra",
+                "VERIFY a/b A " + hash, "VERIFY x ../A " + hash, "VERIFY x A nope",
+                "VERIFY x A " + "A".repeat(64), "VERIFY x A\u0001 " + hash)) {
+            status.handleCommand(bad, replies::add);
+        }
+        assertTrue(replies.isEmpty());
+        var port = java.nio.file.Files.createTempDirectory("verify-socket").resolve("port");
+        status = new StatusServer(0, port);
+        status.setVerification(new ReloadVerification(java.util.Map::of));
+        status.start();
+        try (var requester = new java.net.Socket("127.0.0.1", Integer.parseInt(java.nio.file.Files.readString(port)));
+             var observer = new java.net.Socket("127.0.0.1", requester.getPort())) {
+            requester.setSoTimeout(2000); observer.setSoTimeout(2000);
+            var in = new java.io.BufferedReader(StatusServer.readerFor(requester.getInputStream()));
+            var other = new java.io.BufferedReader(StatusServer.readerFor(observer.getInputStream()));
+            assertTrue(in.readLine().contains("CONNECTED")); assertTrue(other.readLine().contains("CONNECTED"));
+            requester.getOutputStream().write(("VERIFY request-1 A " + hash + "\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            requester.getOutputStream().flush();
+            var mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+            String message = mapper.readTree(in.readLine()).get("message").asText();
+            assertTrue(message.startsWith("VERIFY_RESULT request-1 "));
+            var result = mapper.readTree(message.substring("VERIFY_RESULT request-1 ".length()));
+            assertEquals("request-1", result.get("requestId").asText());
+            assertEquals(hash, result.get("expectedSha256").asText());
+            assertEquals("not_observed", result.get("status").asText());
+            observer.setSoTimeout(200);
+            assertThrows(java.net.SocketTimeoutException.class, other::readLine);
+        } finally {
+            status.stop(); java.nio.file.Files.deleteIfExists(port); java.nio.file.Files.deleteIfExists(port.getParent());
+        }
+    }
+
+    @Test
+    void repeatedReceiptQueriesReleaseClientSlotsWithoutABroadcast() throws Exception {
+        var port = java.nio.file.Files.createTempDirectory("verify-poll").resolve("port");
+        StatusServer status = new StatusServer(0, port);
+        status.setVerification(new ReloadVerification(java.util.Map::of)); status.start();
+        try {
+            for (int i = 0; i < 12; i++) {
+                try (var socket = new java.net.Socket("127.0.0.1", Integer.parseInt(java.nio.file.Files.readString(port)))) {
+                    socket.setSoTimeout(2000);
+                    var in = new java.io.BufferedReader(StatusServer.readerFor(socket.getInputStream()));
+                    assertTrue(in.readLine().contains("CONNECTED"));
+                    socket.getOutputStream().write(("VERIFY poll A " + "a".repeat(64) + "\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                    socket.getOutputStream().flush();
+                    assertTrue(in.readLine().contains("VERIFY_RESULT poll"));
+                }
+                // Let the socket reader observe EOF; no heartbeat/broadcast is needed.
+                Thread.sleep(25);
+            }
+        } finally { status.stop(); java.nio.file.Files.deleteIfExists(port.getParent()); }
+    }
+
+    @Test
     void invalidOrUnavailableBuildSignalsNeverGetReceipts() {
         StatusServer status = server();
         java.util.List<String> replies = new java.util.ArrayList<>();

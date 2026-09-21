@@ -50,13 +50,101 @@ class BuildSafetyIntegrationTest {
                     "compiler must have replaced A.class before failing B");
             Thread.sleep(1500);
             assertFalse(Files.readString(log).contains("VALUES=2:"), Files.readString(log));
+            String failedHash = hash(classes.resolve("A.class"));
+            assertNotEquals("applied", verify(port, "A", failedHash).get("status").getAsString());
             assertEquals(0, runWrapper(port, compileCommand(source, classes, 3, false)));
             await(log, "VALUES=3:3");
+            String appliedHash = hash(classes.resolve("A.class"));
+            var receiptA = awaitReceipt(port, "A", appliedHash, "applied");
+            var receiptB = awaitReceipt(port, "B", hash(classes.resolve("B.class")), "applied");
+            assertEquals(receiptA.get("sessionId"), receiptB.get("sessionId"));
+            assertNotEquals(receiptA.get("requestId"), receiptB.get("requestId"));
+            assertEquals(appliedHash, receiptA.get("observedSha256").getAsString());
+            assertEquals("mismatch", verify(port, "A", failedHash).get("status").getAsString());
+
+            // A failed later compiler must not turn its new disk bytes into proof.
+            assertEquals(1, runWrapper(port, compileCommand(source, classes, 4, true)));
+            assertEquals("mismatch", verify(port, "A", hash(classes.resolve("A.class"))).get("status").getAsString());
+            assertEquals("applied", verify(port, "A", appliedHash).get("status").getAsString());
+            assertFalse(Files.readString(log).contains("VALUES=4:"));
+
+            // A successful compiler may still produce an unsupported reload.
+            try (BuildSession session = BuildSession.open(Map.of("portFile", port.toString()))) {
+                session.signal("started");
+                Files.writeString(source.resolve("A.java"),
+                        "public class A extends java.util.ArrayList<String> { public int value() { return 5; } }");
+                assertEquals(0, ToolProvider.getSystemJavaCompiler().run(null, null, null,
+                        "-d", classes.toString(), source.resolve("A.java").toString()));
+                session.signal("ok");
+            }
+            var failed = awaitReceipt(port, "A", hash(classes.resolve("A.class")), "unverified");
+            assertFalse(failed.get("detail").getAsString().isBlank());
+            assertEquals("mismatch", verify(port, "A", appliedHash).get("status").getAsString());
+            assertTrue(failed.get("detail").getAsString().contains("superclass"));
             assertTrue(app.isAlive(), "same application JVM remains alive");
         } finally {
             app.destroyForcibly();
             assertTrue(app.waitFor(10, TimeUnit.SECONDS));
         }
+    }
+
+    @Test void autoCompileProducesExactByteReceiptsToo() throws Exception {
+        Path agent = Path.of(System.getProperty("reclazz.agent.jar"));
+        assertTrue(Files.isRegularFile(agent));
+        Path classes = Files.createDirectories(dir.resolve("target/classes"));
+        Path source = Files.createDirectories(dir.resolve("src/main/java"));
+        Compiler.compile(source, classes, "A", 1, false);
+        Path appSource = source.resolve("App.java");
+        Files.writeString(appSource, """
+                public class App {
+                    public static void main(String[] args) throws Exception {
+                        A a = new A();
+                        while (true) { System.out.println("VALUE=" + a.value()); Thread.sleep(25); }
+                    }
+                }
+                """);
+        assertEquals(0, ToolProvider.getSystemJavaCompiler().run(null, null, null,
+                "-cp", classes.toString(), "-d", classes.toString(), appSource.toString()));
+        Path port = dir.resolve("auto.port"), log = dir.resolve("auto.log");
+        Process app = new ProcessBuilder(BuildSafetyTest.java(), "-javaagent:" + agent
+                + "=watchDirs=" + classes + ",startupDelaySec=1,debounceMs=100,autoCompile=true,portFile=" + port,
+                "-cp", classes.toString(), "App").redirectErrorStream(true).redirectOutput(log.toFile()).start();
+        try {
+            await(log, "VALUE=1"); await(log, "] Watching ");
+            Files.writeString(source.resolve("A.java"), "public class A { public int value() { return 8; } }");
+            await(log, "VALUE=8");
+            var receipt = awaitReceipt(port, "A", hash(classes.resolve("A.class")), "applied");
+            assertEquals("A", receipt.get("className").getAsString());
+            assertTrue(app.isAlive());
+        } finally { app.destroyForcibly(); assertTrue(app.waitFor(10, TimeUnit.SECONDS)); }
+    }
+
+    private static String hash(Path file) throws Exception {
+        byte[] digest = java.security.MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(file));
+        StringBuilder hex = new StringBuilder();
+        for (byte b : digest) hex.append(Character.forDigit((b >>> 4) & 15, 16)).append(Character.forDigit(b & 15, 16));
+        return hex.toString();
+    }
+
+    private static com.google.gson.JsonObject verify(Path port, String name, String hash) {
+        var request = ReloadVerificationTest.request(1, name, hash);
+        var args = request.getAsJsonObject("params").getAsJsonObject("arguments");
+        args.remove("port"); args.addProperty("portFile", port.toString()); args.addProperty("timeoutMs", "3000");
+        var result = new McpServer().handle(request).getAsJsonObject("result");
+        var receipt = ReloadVerificationTest.text(result);
+        assertEquals(!receipt.get("status").getAsString().equals("applied"), result.get("isError").getAsBoolean());
+        return receipt;
+    }
+
+    private static com.google.gson.JsonObject awaitReceipt(Path port, String name, String hash, String status) throws Exception {
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+        com.google.gson.JsonObject receipt;
+        do {
+            receipt = verify(port, name, hash);
+            if (status.equals(receipt.get("status").getAsString())) return receipt;
+            Thread.sleep(50);
+        } while (System.nanoTime() < deadline);
+        throw new AssertionError("Expected " + status + ": " + receipt);
     }
 
     private int runWrapper(Path port, List<String> compile) throws Exception {

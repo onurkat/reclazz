@@ -128,6 +128,7 @@ public class ReclazzAgent {
      * assembled from what the watcher, the transformer and the JVM each know.
      */
     private static volatile ReloadDiagnostics diagnostics;
+    private static volatile ReloadVerification verification;
     private static volatile JvmCapabilityProbe.ProbeResult probeResult;
     private static volatile TransformContext transformContext;
     private static volatile StructuralReloader structuralReloader;
@@ -464,7 +465,15 @@ public class ReclazzAgent {
             // the class in question.
             diagnostics = new ReloadDiagnostics(instrumentation, platformContext, transformContext,
                     java.time.Instant.now());
+            verification = new ReloadVerification(() -> {
+                Map<String, Integer> counts = new java.util.HashMap<>();
+                for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
+                    counts.merge(loaded.getName(), 1, Integer::sum);
+                }
+                return counts;
+            });
             if (statusServer != null) {
+                statusServer.setVerification(verification);
                 statusServer.setDiagnoser(diagnostics::explain);
             }
 
@@ -573,6 +582,7 @@ public class ReclazzAgent {
                             springOrchestrator, interceptorReloader, impexImporter, config),
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
 
+            reloadQueue.setVerification(verification);
             if (statusServer != null) statusServer.setBuildListener(state -> reloadQueue.build(state, watcher::scanNow));
 
             // Register the reload pipeline. Java changes are queued BEFORE
@@ -994,6 +1004,8 @@ public class ReclazzAgent {
 
     /** What DIAGNOSE will say about this class next time it is asked. */
     private static void recordOutcome(String className, boolean success, String detail, String source) {
+        ReloadVerification v = verification;
+        if (v != null) v.outcome(className, success, detail);
         ReloadDiagnostics d = diagnostics;
         if (d != null) d.record(className, success, detail, source);
     }
@@ -1108,14 +1120,21 @@ public class ReclazzAgent {
         for (String compiled : compiledClasses.keySet()) sources.put(compiled, sourceOf(compiled, files));
         if (compiledClasses.isEmpty()) return;
 
-        Runnable apply = () -> applyCompiledClasses(compiledClasses, sources, reloader,
+        Runnable reload = () -> applyCompiledClasses(compiledClasses, sources, reloader,
                 springOrchestrator, interceptorReloader);
+        Runnable apply = () -> {
+            ReloadVerification v = verification;
+            if (v == null) reload.run();
+            else v.apply(compiledClasses, sources, reload);
+        };
         if (agentConfig != null && agentConfig.isRequestBoundary()) RequestReloadBoundary.run(apply);
         else apply.run();
     }
 
     private static ClassReloader.ReloadResult reloadWithCacheBoundary(String className, String internalName,
                                                                      byte[] bytecode, ClassReloader reloader) {
+        ReloadVerification v = verification;
+        if (v != null) v.invalidateUntracked(className);
         if (cacheTrackingInstalled) CacheDependencyLedger.beginMutation();
         try {
             if (structuralReloader != null && transformContext != null && transformContext.isWatched(internalName)) {

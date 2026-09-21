@@ -77,6 +77,47 @@ final class BuildSession implements AutoCloseable {
         }
     }
 
+    static boolean validVerification(String name, String hash) {
+        return name != null && name.length() <= 256
+                && name.codePoints().noneMatch(Character::isIdentifierIgnorable)
+                && name.matches("[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*(\\.[\\p{javaJavaIdentifierStart}][\\p{javaJavaIdentifierPart}]*)*")
+                && hash != null && hash.matches("[0-9a-f]{64}");
+    }
+
+    JsonObject verify(String name, String hash) throws IOException {
+        if (!validVerification(name, hash)) throw new IOException("Expected className and lower-case SHA-256");
+        String token = UUID.randomUUID().toString();
+        socket.getOutputStream().write(("VERIFY " + token + " " + name + " " + hash + "\n")
+                .getBytes(StandardCharsets.UTF_8));
+        socket.getOutputStream().flush();
+        String prefix = "VERIFY_RESULT " + token + " ";
+        long deadline = deadline();
+        try {
+            while (true) {
+                JsonObject event = read(deadline);
+                String message = text(event, "message");
+                if (!"INFO".equals(text(event, "level")) || !message.startsWith(prefix)) continue;
+                JsonObject result = JsonParser.parseString(message.substring(prefix.length())).getAsJsonObject();
+                for (String field : Set.of("requestId", "sessionId", "className", "expectedSha256",
+                        "observedSha256", "status", "source", "detail", "completedAt")) {
+                    if (!result.has(field) || !result.get(field).isJsonPrimitive()
+                            || !result.getAsJsonPrimitive(field).isString()) throw new IOException("Invalid VERIFY field: " + field);
+                }
+                String status = text(result, "status");
+                if (!token.equals(text(result, "requestId")) || !name.equals(text(result, "className"))
+                        || !hash.equals(text(result, "expectedSha256")) || text(result, "sessionId").isBlank()
+                        || !Set.of("applied", "failed", "unverified", "running", "mismatch", "not_observed").contains(status)) {
+                    throw new IOException("Uncorrelated VERIFY result");
+                }
+                if (status.equals("applied") && (!hash.equals(text(result, "observedSha256"))
+                        || text(result, "completedAt").isBlank())) throw new IOException("Incomplete applied receipt");
+                return result;
+            }
+        } catch (IOException | RuntimeException e) {
+            throw new IOException("Reload not verified: no valid correlated receipt", e);
+        }
+    }
+
     private long deadline() { return System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs); }
 
     private JsonObject read(long deadline) throws IOException {
