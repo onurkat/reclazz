@@ -38,4 +38,18 @@ class PrepareAgentMojoTest {
         String arg = PrepareAgentMojo.buildAgentArg(jar, null, null, null);
         assertEquals("-javaagent:" + jar.getAbsolutePath(), arg);
     }
+    @Test
+    void quotesPathsForSurefire() throws Exception {
+        for (String name : new String[] {"user space", "user's space", "user\"s space"}) {
+            File spacedJar = new File(name, "reclazz-agent.jar");
+            String watched = "project space/target/classes";
+            String arg = PrepareAgentMojo.buildAgentArg(spacedJar, "spring", watched, null);
+            var command = new org.apache.maven.surefire.shared.utils.cli.Commandline();
+            command.createArg().setLine(arg);
+            org.junit.jupiter.api.Assertions.assertArrayEquals(new String[] {
+                    "-javaagent:" + spacedJar.getAbsolutePath() + "=platform=spring,watchDirs=" + watched
+            }, command.getArguments());
+        }
+    }
+
 }

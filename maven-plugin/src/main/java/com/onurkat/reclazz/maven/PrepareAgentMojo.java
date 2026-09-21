@@ -107,6 +107,13 @@ public class PrepareAgentMojo extends AbstractMojo {
             joined.append(e.getKey()).append("=").append(e.getValue());
         }
         String flag = "-javaagent:" + agentJar.getAbsolutePath();
-        return joined.length() == 0 ? flag : flag + "=" + joined;
+        String argument = joined.length() == 0 ? flag : flag + "=" + joined;
+        if (argument.chars().noneMatch(c -> Character.isWhitespace(c) || c == '"' || c == '\'')) {
+            return argument;
+        }
+        // argLine is tokenized by Maven's command-line parser. Keep this as one
+        // argument; a literal double quote is a single-quoted segment between
+        // double-quoted segments. Backslashes (including Windows paths) survive.
+        return "\"" + argument.replace("\"", "\"'\"'\"") + "\"";
     }
 }

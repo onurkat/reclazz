@@ -99,6 +99,9 @@ final class AgentStatus {
                 }
             }
 
+            if (agent == null || agent.isBlank() || protocol <= 0) {
+                return json(notAttached("connected but no CONNECTED agent handshake", port));
+            }
             Map<String, Object> result = new LinkedHashMap<>();
             result.put("attached", true);
             result.put("agent", agent);

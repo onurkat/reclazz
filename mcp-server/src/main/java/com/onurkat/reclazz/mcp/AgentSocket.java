@@ -71,6 +71,10 @@ final class AgentSocket {
             }
         }
         result.port = port;
+        if (port < 1 || port > 65535) {
+            result.reason = "invalid port: " + port;
+            return result;
+        }
 
         int timeoutMs = intOption(opts, "timeoutMs", 2000);
         try (Socket socket = new Socket()) {

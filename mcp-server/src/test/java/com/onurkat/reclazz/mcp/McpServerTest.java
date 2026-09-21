@@ -124,4 +124,38 @@ class McpServerTest {
             assertTrue(text.contains("Reloads: 3"), text);
         }
     }
+    @Test
+    void invalidPortsDoNotEndStdioSession() throws Exception {
+        for (String port : new String[] {"-1", "0", "65536"}) {
+            Path portFile = dir.resolve("invalid.port");
+            Files.writeString(portFile, port);
+            for (boolean fromFile : new boolean[] {false, true}) {
+                JsonObject request = req("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\","
+                        + "\"params\":{\"name\":\"reclazz_status\",\"arguments\":{}}}");
+                request.getAsJsonObject("params").getAsJsonObject("arguments").addProperty(
+                        fromFile ? "portFile" : "port", fromFile ? portFile.toString() : port);
+                String javaCommand = Path.of(System.getProperty("java.home"), "bin", "java").toString();
+                String cp = Path.of(McpMain.class.getProtectionDomain().getCodeSource().getLocation().toURI())
+                        + java.io.File.pathSeparator
+                        + Path.of(JsonObject.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+                Process child = new ProcessBuilder(javaCommand, "-cp", cp, McpMain.class.getName())
+                        .redirectError(dir.resolve("stderr.txt").toFile()).start();
+                try {
+                    try (var input = child.getOutputStream()) {
+                        input.write((request + "\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}\n")
+                                .getBytes(StandardCharsets.UTF_8));
+                    }
+                    assertTrue(child.waitFor(10, java.util.concurrent.TimeUnit.SECONDS), "MCP did not exit");
+                    String output = new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                    assertEquals(0, child.exitValue(), Files.readString(dir.resolve("stderr.txt")));
+                    String[] lines = output.strip().split("\\R");
+                    assertEquals(2, lines.length, output);
+                    assertTrue(lines[0].contains("invalid port"), output);
+                    assertEquals(2, req(lines[1]).get("id").getAsInt());
+                    assertTrue(req(lines[1]).has("result"), output);
+                } finally { child.destroyForcibly(); }
+            }
+        }
+    }
+
 }
