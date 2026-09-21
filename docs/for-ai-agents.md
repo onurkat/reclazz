@@ -126,3 +126,36 @@ superclass or a reordered enum). Check with `./gradlew reclazzStatus`, or the
 - Loopback only: the status socket and the MCP server open one connection to
   `127.0.0.1` and reach nothing off the machine. The shipped agent jar opens no
   client socket at all; its own tests enforce that.
+
+## Reproducing the packaged consumer workflow
+
+From a Reclazz source checkout with a JDK 17+ toolchain, run:
+
+```sh
+./gradlew :mcp-server:test --rerun --tests '*AgenticEndToEndTest'
+```
+
+This test builds the current agent and MCP distribution, then creates a clean
+standalone Java consumer project in a temporary directory. It copies both jars
+to an installation path containing spaces, compiles with the real JDK `javac`,
+and attaches the agent at application startup. A separate `java -jar` MCP
+process receives actual JSON-RPC stdio requests throughout the scenario.
+
+The proof covers:
+
+- Attached status, a successful source edit compiled through the packaged
+  `BuildMain`, an exact-hash `reclazz_verify` receipt, and changed live behavior.
+- An acknowledged MCP build hold across a two-stage compilation: the first
+  `javac` writes a changed class, the second fails on invalid source. The partial
+  output cannot change the running application during or after that failed build.
+- A complete repaired build releasing the hold, with matching hash evidence and
+  changed live behavior. A stale hash returns `mismatch`.
+- The same application PID, startup identity, agent session and increasing
+  counter on the existing service object across edits and recovery.
+
+The test uses only local artifacts and JDK tools, without a running IDE or
+registry download. It exercises the documented direct `-javaagent` route. It does
+not establish end-to-end coverage of Gradle/Maven plugin resolution, Spring Boot
+or a third-party MCP client's configuration. Those remain separate integration
+surfaces. The application, compiler, wrapper and MCP subprocesses have bounded
+waits and are cleaned up; their transcripts appear in the test report.

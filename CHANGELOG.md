@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- A packaged agentic end-to-end test exercises a clean Java consumer, real javac,
+  stdio MCP receipts and live behavior in the same JVM, including failed-build
+  output isolation and recovery with preserved service state.
 - `:mcp-server:mcpRelease` stages the versioned standalone MCP jar and portable
   SHA-256 sidecar. Future tag releases attach both after packaged-jar tests;
   installation and client configuration are documented. No publication implied.
