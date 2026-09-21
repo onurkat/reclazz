@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- `:mcp-server:mcpRelease` stages the versioned standalone MCP jar and portable
+  SHA-256 sidecar. Future tag releases attach both after packaged-jar tests;
+  installation and client configuration are documented. No publication implied.
 - `reclazz_verify` and the requester-only VERIFY socket command return structured,
   correlated receipts for exact compiled class bytes. Receipts wait for the whole
   reload batch, distinguish failures and uncertainty, and supersede stale proof.

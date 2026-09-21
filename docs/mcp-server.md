@@ -11,25 +11,89 @@ forbid the shipped agent from opening a client socket.
 
 ## Running it
 
-The server speaks JSON-RPC over stdio, so an MCP client launches it as a
-process. Build the jar with `./gradlew :mcp-server:shadowJar` (or take it from
-a release), then point your client at it. A typical `mcpServers` entry:
+The server requires Java 17 or newer and speaks JSON-RPC over stdio. It is a
+standalone jar containing its runtime dependencies; it does not need IntelliJ,
+Gradle or a separately installed Gson at runtime.
+
+### Build and install locally
+
+From a source checkout, build matching agent/MCP jars and test the MCP package:
+
+```sh
+./gradlew :agent:shadowJar :mcp-server:test :mcp-server:mcpRelease
+version=$(sed -n 's/^pluginVersion=//p' gradle.properties)
+install_dir="$HOME/.local/share/reclazz/$version"
+mkdir -p "$install_dir"
+cp "mcp-server/build/distributions/mcp/reclazz-mcp-$version.jar" \
+   "mcp-server/build/distributions/mcp/reclazz-mcp-$version.jar.sha256" "$install_dir/"
+(cd "$install_dir" && shasum -a 256 -c "reclazz-mcp-$version.jar.sha256")
+```
+
+These are macOS/Linux shell commands; Linux can use `sha256sum -c` in place of
+`shasum -a 256 -c`. On Windows copy the same two files to a permanent directory
+and compare the SHA-256 from [Get-FileHash](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/get-filehash?view=powershell-5.1)
+with the first field of the sidecar (ignoring hex letter case). The sidecar names only the jar, so relocation is supported.
+Stop on a checksum mismatch. This stages/installs local files; it does not publish.
+
+### Release assets
+
+The updated tag workflow will attach `reclazz-mcp-X.Y.Z.jar` and
+`reclazz-mcp-X.Y.Z.jar.sha256` to future GitHub releases, next to the matching
+agent jar. **This change is unreleased; it does not add MCP assets to existing
+releases.** When a release contains these assets, download both from that same
+tag, put them together in a permanent directory and verify the checksum as above.
+Use matching agent and MCP builds for BUILD/VERIFY support. A checksum detects
+file corruption; it is not a signature or proof of publisher identity.
+
+### Configure a stdio client
+
+For clients using an `mcpServers` JSON configuration, merge this entry into their
+existing configuration. Replace both example paths and `X.Y.Z`; use the absolute
+path to your Java 17+ executable if the client cannot find `java` on its PATH:
 
 ```json
 {
   "mcpServers": {
     "reclazz": {
-      "command": "java",
-      "args": ["-jar", "/path/to/reclazz-mcp.jar"]
+      "command": "/absolute/path/to/java",
+      "args": ["-jar", "/absolute/path/to/reclazz-mcp-X.Y.Z.jar"]
     }
   }
 }
 ```
 
-The tools only return useful data while an application is running with the
-Reclazz agent attached (that is what opens the status socket). Point them at a
-specific agent with the `portFile`, `port` or `hybrisHome` arguments; otherwise
-they look in the usual places (`.reclazz/agent.port`, `.idea/reclazz/agent.port`).
+Keep each argument separate, even for paths with spaces. Do not include shell
+quotes inside the JSON strings. On Windows use escaped backslashes or forward
+slashes (for example `C:/Tools/Reclazz/reclazz-mcp-X.Y.Z.jar`). Client-specific
+configuration file locations vary; this entry does not modify them automatically.
+Clients with another configuration format need the same executable and arguments.
+Restart/reconnect the MCP client after changing the entry.
+
+The application must separately run with the Reclazz agent attached. Client
+working directories vary: use an **absolute** `portFile` in tool arguments, for
+example `{"portFile":"/absolute/project/.reclazz/agent.port"}`. `port` and
+`hybrisHome` are alternatives. Without an explicit address, discovery looks for
+`.reclazz/agent.port` and `.idea/reclazz/agent.port` relative to the server process
+working directory. They are tool arguments, not MCP server startup flags.
+
+### Smoke check without an attached application
+
+Set `MCP_JAR` to the absolute installed jar path and run in a macOS/Linux shell:
+
+```sh
+printf '%s\n' \
+  '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05"}}' \
+  '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+  '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+  | java -jar "$MCP_JAR"
+```
+
+Expect two JSON response lines: initialization reports `reclazz-mcp` and the
+jar's version; the tools list contains the six tools below. The notification
+has no response. EOF closes the server. If Java cannot open the jar, check the
+absolute path; if it cannot load its classes, use the packaged jar from
+`build/distributions/mcp`, not the plain development jar. A missing attached
+application is a separate condition: `reclazz_status` reports `attached:false`.
 
 ## Tools
 
