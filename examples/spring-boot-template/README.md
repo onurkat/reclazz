@@ -43,9 +43,9 @@ ecosystem pieces make it a single line each:
   reports at startup whether the agent is attached and adds a `reclazz` actuator
   endpoint. See
   [spring-boot-starter.md](https://github.com/onurkat/reclazz/blob/main/docs/spring-boot-starter.md).
-- The Gradle plugin: `id("com.onurkat.reclazz") version "1.3.0"` attaches the
-  agent to `bootRun` and `test` for you. It is pending Gradle Plugin Portal
-  approval; use it once it is live. See
+- The Gradle plugin (on the Gradle Plugin Portal):
+  `id("com.onurkat.reclazz") version "1.3.0"` attaches the agent to `bootRun` and
+  `test` for you. See
   [gradle-plugin.md](https://github.com/onurkat/reclazz/blob/main/docs/gradle-plugin.md).
 
 ## For coding agents
