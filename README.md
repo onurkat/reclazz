@@ -17,19 +17,29 @@ Reclazz is a Java agent that watches your compiled class files and hot-swaps the
 
 ## Quick Start (Spring Boot)
 
-Add the agent to your JVM arguments:
+**Gradle, one line then run.** The plugin resolves the agent from Maven Central and attaches it to `bootRun` and `test`, so this is the whole dev-run, with no path to fill in:
+
+```kotlin
+plugins {
+    id("org.springframework.boot") version "3.3.0"
+    id("com.onurkat.reclazz") version "1.3.0"
+}
+```
+
+```bash
+./gradlew bootRun
+```
+
+Edit code, recompile in another terminal (`./gradlew classes`), and Reclazz hot-swaps the change into the running app. No restart needed.
+
+**Any JVM, no build tool.** Attach the agent by hand; with explicit watch directories if the compiled classes are not on the default path:
 
 ```bash
 java -javaagent:/path/to/reclazz-agent.jar -jar myapp.jar
-```
-
-Or with explicit watch directories:
-
-```bash
 java -javaagent:/path/to/reclazz-agent.jar=watchDirs=/path/to/target/classes -jar myapp.jar
 ```
 
-Build your project (`mvn compile` or `gradle classes`), and Reclazz hot-swaps the changes automatically. No restart needed.
+Maven wiring (a no-plugin POM and a `prepare-agent` plugin) is in [docs/maven.md](docs/maven.md); the full agent argument table is in [docs/usage.md](docs/usage.md).
 
 ## For AI agents
 

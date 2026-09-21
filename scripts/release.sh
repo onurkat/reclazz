@@ -7,21 +7,25 @@
 # them, refuses early when a precondition is missing, and prints what it
 # would do under --dry-run so a test can hold it to the order.
 #
-#   scripts/release.sh X.Y.Z [--dry-run] [--skip-publish]
+#   scripts/release.sh X.Y.Z [--dry-run] [--skip-publish] [--skip-distribution]
 #
 # --skip-publish leaves the Marketplace upload out (the signed zip is still
 # built and attached to the GitHub release).
+# --skip-distribution leaves the Maven Central and Gradle Plugin Portal steps
+# out (the Marketplace release still goes ahead).
 set -euo pipefail
 
-version="${1:?usage: release.sh X.Y.Z [--dry-run] [--skip-publish]}"
+version="${1:?usage: release.sh X.Y.Z [--dry-run] [--skip-publish] [--skip-distribution]}"
 version="${version#v}"
 shift
 dry_run=false
 skip_publish=false
+skip_distribution=false
 for arg in "$@"; do
     case "$arg" in
         --dry-run) dry_run=true ;;
         --skip-publish) skip_publish=true ;;
+        --skip-distribution) skip_distribution=true ;;
         *) echo "unknown option: $arg" >&2; exit 2 ;;
     esac
 done
@@ -42,6 +46,14 @@ fi
 declared="$(grep -E '^pluginVersion=' gradle.properties | cut -d= -f2 || true)"
 if [ "$declared" != "$version" ]; then
     problems+=("gradle.properties says pluginVersion=$declared, not $version")
+fi
+# The Maven plugin is a separate POM; its version has to agree, or Central ends
+# up a version behind the others. scripts/bump-version.sh keeps them in step.
+if [ "$skip_distribution" = false ] && [ -f maven-plugin/pom.xml ]; then
+    pom_version="$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' maven-plugin/pom.xml | head -1 || true)"
+    if [ "$pom_version" != "$version" ]; then
+        problems+=("maven-plugin/pom.xml is version $pom_version, not $version (run scripts/bump-version.sh $version)")
+    fi
 fi
 if ! "$root/scripts/changelog-section.sh" "$version" "$root/CHANGELOG.md" >/dev/null 2>&1; then
     problems+=("CHANGELOG.md has no '## [$version]' section")
@@ -102,5 +114,55 @@ fi
 run cp "$signed" "$asset"
 run gh release upload "$tag" "$asset"
 
-echo "Released $version. Left to do by hand: the site (git worktree add /tmp/reclazz-site gh-pages)"
-echo "and hiding the superseded Marketplace version; see docs/publishing.md."
+# ---- distribution: Maven Central + Gradle Plugin Portal ------------------
+# The Marketplace is one of four registries a release goes to. The others are
+# Maven Central (the agent, the Spring Boot starter, the Maven plugin) and the
+# Gradle Plugin Portal (the Gradle plugin). Those were published by hand once,
+# which is how the Portal ended up a build behind the source. Folding them in
+# here keeps every registry on one version. Each step is gated on its own
+# credential and prints what is left to do rather than failing the release,
+# because the Central publish ends in a manual click either way.
+gradle_props="$HOME/.gradle/gradle.properties"
+if [ "$skip_distribution" = false ]; then
+    echo
+    echo "== distribution: Maven Central + Gradle Plugin Portal =="
+
+    # Central bundles: signed local Maven layouts, zipped for upload. Building
+    # them needs signing.keyId/signing.password in ~/.gradle/gradle.properties.
+    if [ "$dry_run" = true ] || grep -q '^signing.keyId=' "$gradle_props" 2>/dev/null; then
+        run ./gradlew :agent:centralBundle :spring-boot-starter:centralBundle --no-daemon
+        echo "Central bundles built (staged upload, then a manual Publish click):"
+        echo "  agent/build/reclazz-agent-$version-central-bundle.zip"
+        echo "  spring-boot-starter/build/reclazz-spring-boot-starter-$version-central-bundle.zip"
+    else
+        echo "! signing.keyId not in ~/.gradle/gradle.properties; build the Central bundles by hand:"
+        echo "    ./gradlew :agent:centralBundle :spring-boot-starter:centralBundle"
+    fi
+
+    # The Maven plugin is its own POM; -Prelease signs and stages it to the
+    # Central Portal (autoPublish=false, so it waits for the same manual click).
+    # maven-gpg-plugin signs through gpg, which may prompt for the passphrase.
+    if command -v mvn >/dev/null 2>&1; then
+        run mvn -q -f maven-plugin/pom.xml -Prelease clean deploy
+    else
+        echo "! mvn not found; stage the Maven plugin by hand:"
+        echo "    mvn -f maven-plugin/pom.xml -Prelease clean deploy"
+    fi
+
+    # The Gradle plugin publishes outright, given the Portal key in
+    # ~/.gradle/gradle.properties (gradle.publish.key / gradle.publish.secret).
+    if [ "$dry_run" = true ] || grep -q '^gradle.publish.key=' "$gradle_props" 2>/dev/null; then
+        run ./gradlew :gradle-plugin:publishPlugins --no-daemon
+    else
+        echo "! gradle.publish.key not in ~/.gradle/gradle.properties; publish the Gradle plugin by hand:"
+        echo "    ./gradlew :gradle-plugin:publishPlugins"
+    fi
+
+    echo "Then at https://central.sonatype.com: Publish > Upload a bundle for the"
+    echo "agent and starter, and click Publish on all three staged deployments."
+    echo "Verify each registry served $version; see docs/publishing.md."
+fi
+
+echo
+echo "Released $version. Left to do by hand: the site (git worktree add /tmp/reclazz-site gh-pages),"
+echo "the Central Publish click, and hiding the superseded Marketplace version; see docs/publishing.md."
