@@ -109,6 +109,19 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 Each tool accepts optional `portFile`, `port` and `hybrisHome` arguments to
 locate the agent; `reclazz_diagnose` also requires `className`.
 
+## Protocol version negotiation
+
+The server implements the `2024-11-05` protocol baseline. Send a nonblank string
+`params.protocolVersion` with `initialize`; a missing, blank or non-string version
+returns JSON-RPC `-32602`. A request for `2024-11-05` returns that same version.
+Any other nonblank version receives `2024-11-05` as the supported alternative;
+the server does not claim support for the requested version by echoing it.
+
+Following the [MCP version negotiation rule](https://modelcontextprotocol.io/specification/2024-11-05/basic/lifecycle#version-negotiation),
+a client that supports the returned version sends `notifications/initialized`
+and continues. A client that cannot support it should disconnect. This behavior
+does not add newer protocol features or enforce the entire initialization lifecycle.
+
 ## Input validation
 
 Each stdio line carries one JSON-RPC 2.0 object. Requests have a string method,

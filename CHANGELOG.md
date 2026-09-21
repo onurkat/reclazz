@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Receipt support requires the updated agent; it does not prove reload completion.
 
 ### Fixed
+- MCP initialization negotiates its implemented `2024-11-05` protocol instead of
+  echoing unsupported client versions, and rejects missing or blank versions.
 - MCP rejects malformed request shapes, non-string tool arguments, invalid timeouts
   and control characters without ending the stdio session. Bounded strict JSON
   frames resume at the next line, and diagnose names cannot inject socket commands.

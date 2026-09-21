@@ -45,6 +45,34 @@ class McpServerTest {
     }
 
     @Test
+    void unsupportedVersionsNegotiateImplementedProtocol() {
+        for (String requested : new String[] {"2023-01-01", "2025-06-18", "2099-01-01", "custom-version"}) {
+            JsonObject request = req("{\"jsonrpc\":\"2.0\",\"id\":\"init\",\"method\":\"initialize\",\"params\":{}}");
+            request.getAsJsonObject("params").addProperty("protocolVersion", requested);
+            JsonObject response = server.handle(request);
+            assertEquals("init", response.get("id").getAsString());
+            JsonObject result = response.getAsJsonObject("result");
+            assertEquals("2024-11-05", result.get("protocolVersion").getAsString(), requested);
+            assertTrue(result.getAsJsonObject("capabilities").has("tools"));
+            assertEquals("reclazz-mcp", result.getAsJsonObject("serverInfo").get("name").getAsString());
+        }
+    }
+
+    @Test
+    void initializeRequiresProtocolVersion() {
+        for (String params : new String[] {"", ",\"params\":{}", ",\"params\":null",
+                ",\"params\":{\"protocolVersion\":null}", ",\"params\":{\"protocolVersion\":123}",
+                ",\"params\":{\"protocolVersion\":{}}", ",\"params\":{\"protocolVersion\":[]}",
+                ",\"params\":{\"protocolVersion\":true}", ",\"params\":{\"protocolVersion\":\"\"}",
+                ",\"params\":{\"protocolVersion\":\"   \"}"}) {
+            JsonObject response = server.handle(req("{\"jsonrpc\":\"2.0\",\"id\":7,\"method\":\"initialize\"" + params + "}"));
+            assertTrue(response.has("error"), response.toString());
+            assertEquals(-32602, response.getAsJsonObject("error").get("code").getAsInt());
+            assertEquals(7, response.get("id").getAsInt());
+        }
+    }
+
+    @Test
     void toolsListExposesTheReclazzTools() {
         JsonObject r = server.handle(req("{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\"}"));
         String tools = r.getAsJsonObject("result").getAsJsonArray("tools").toString();
