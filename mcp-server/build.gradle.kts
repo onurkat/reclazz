@@ -23,6 +23,10 @@ dependencies {
 }
 
 tasks.test {
+    dependsOn(":agent:shadowJar")
+    val agentJar = project(":agent").tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").flatMap { it.archiveFile }
+    inputs.file(agentJar).withPropertyName("agentJar")
+    systemProperty("reclazz.agent.jar", agentJar.get().asFile.absolutePath)
     useJUnitPlatform()
 }
 

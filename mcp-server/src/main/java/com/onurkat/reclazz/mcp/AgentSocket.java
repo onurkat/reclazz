@@ -48,33 +48,9 @@ final class AgentSocket {
     /** Connect and, if {@code command} is non-null, send it and gather the answer. */
     static Result run(Map<String, String> opts, String command) {
         Result result = new Result();
-        Integer port = null;
-        if (opts.containsKey("port")) {
-            try {
-                port = Integer.parseInt(opts.get("port").trim());
-            } catch (NumberFormatException e) {
-                result.reason = "invalid port: " + opts.get("port");
-                return result;
-            }
-        }
-        if (port == null) {
-            Path portFile = locatePortFile(opts);
-            if (portFile == null) {
-                result.reason = "no port file found; run the app with the Reclazz agent, or pass port/portFile";
-                return result;
-            }
-            try {
-                port = Integer.parseInt(Files.readString(portFile).trim());
-            } catch (IOException | NumberFormatException e) {
-                result.reason = "unreadable port file: " + portFile;
-                return result;
-            }
-        }
-        result.port = port;
-        if (port < 1 || port > 65535) {
-            result.reason = "invalid port: " + port;
-            return result;
-        }
+        resolvePort(opts, result);
+        if (result.reason != null) return result;
+        int port = result.port;
 
         int timeoutMs = intOption(opts, "timeoutMs", 2000);
         try (Socket socket = new Socket()) {
@@ -122,6 +98,35 @@ final class AgentSocket {
         } catch (IOException e) {
             result.reason = "cannot reach the agent on 127.0.0.1:" + port;
             return result;
+        }
+    }
+
+    static void resolvePort(Map<String, String> opts, Result result) {
+        Integer port = null;
+        if (opts.containsKey("port")) {
+            try {
+                port = Integer.parseInt(opts.get("port").trim());
+            } catch (NumberFormatException e) {
+                result.reason = "invalid port: " + opts.get("port");
+                return;
+            }
+        }
+        if (port == null) {
+            Path portFile = locatePortFile(opts);
+            if (portFile == null) {
+                result.reason = "no port file found; run the app with the Reclazz agent, or pass port/portFile";
+                return;
+            }
+            try {
+                port = Integer.parseInt(Files.readString(portFile).trim());
+            } catch (IOException | NumberFormatException e) {
+                result.reason = "unreadable port file: " + portFile;
+                return;
+            }
+        }
+        result.port = port;
+        if (port < 1 || port > 65535) {
+            result.reason = "invalid port: " + port;
         }
     }
 

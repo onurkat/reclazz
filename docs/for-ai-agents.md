@@ -72,7 +72,11 @@ Do not assume the swap happened; check it. Two machine-readable ways:
   tools during your loop. Setup and the tool table:
   [mcp-server.md](mcp-server.md).
 
-The loop that works: edit code, recompile (`./gradlew classes` or `mvn
+For failed-build protection, use the [terminal build wrapper or acknowledged
+MCP build sequence](mcp-server.md#protecting-terminal-builds) with matching jars
+that support build receipts. Plain compile commands do not provide that barrier.
+
+The basic loop: edit code, recompile (`./gradlew classes` or `mvn
 compile`), let the agent swap it, then hit the endpoint or run the test. If a
 change did not take, `reclazz_diagnose <class>` or the logs say why, and
 `reclazz_pending` lists what genuinely needs a restart (a changed superclass, a
@@ -97,7 +101,10 @@ Run the app (agent attaches automatically):
 
 Apply a code change while it runs:
 1. Edit the code.
-2. Recompile: `./gradlew classes` (Gradle) or `mvn compile` (Maven).
+2. Recompile with the configured Reclazz build wrapper around `./gradlew classes`
+   or `mvn compile`. If using MCP, require acknowledged `reclazz_build started`
+   before compilation, then send `ok` only on exit zero or `failed` otherwise.
+   This requires an agent with build receipt support; stop if unconfirmed.
 3. The agent hot-swaps the changed classes in place. Do not restart.
 4. Verify: `./gradlew reclazzStatus` shows "attached":true and a rising
    reload count. Then exercise the endpoint or run the test.

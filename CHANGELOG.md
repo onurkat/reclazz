@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+- Terminal Gradle/Maven compilation can be wrapped by the MCP jar's `BuildMain`.
+  It waits for a correlated BUILD receipt before launching the compiler and holds
+  partial output on failure. The `reclazz_build` MCP tool exposes the same signals.
+  Receipt support requires the updated agent; it does not prove reload completion.
+
 ### Fixed
 - The Gradle plugin resolves the agent at its own packaged version, independently
   of the application's version, and does not resolve the agent when disabled.
