@@ -150,18 +150,38 @@ public class StatusServer implements StatusReporter.StatusListener {
     /**
      * Runs a client's command and sends the answer to every client, so the
      * report lands in the reload log the developer is already looking at.
+     * Requested BUILD receipts go only to the requesting connection.
      */
     void handleCommand(String line) {
+        handleCommand(line, ignored -> { });
+    }
+
+    void handleCommand(String line, java.util.function.Consumer<String> reply) {
         if (line == null) return;
         String trimmed = line.strip();
         if (trimmed.length() > MAX_COMMAND_LENGTH) return;
 
         try {
             if (trimmed.regionMatches(true, 0, BUILD + " ", 0, BUILD.length() + 1)) {
-                String state = trimmed.substring(BUILD.length() + 1).strip();
+                String[] parts = trimmed.substring(BUILD.length() + 1).strip().split("\\s+");
+                if (parts.length > 2) return;
+                String state = parts[0];
+                String token = null;
+                if (parts.length == 2) {
+                    if (!parts[1].matches("request=[A-Za-z0-9_-]{1,64}")) return;
+                    token = parts[1].substring("request=".length());
+                }
                 if (state.equalsIgnoreCase("started") || state.equalsIgnoreCase("ok") || state.equalsIgnoreCase("failed")) {
                     java.util.function.Consumer<String> listener = build;
-                    if (listener != null) listener.accept(state);
+                    if (listener != null) {
+                        listener.accept(state);
+                        // The started/failed hold is installed before this receipt. For ok,
+                        // this confirms scheduling only, never that a reload has completed.
+                        if (token != null) reply.accept(String.format(
+                                "{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                                "BUILD_ACK " + token + " " + state.toLowerCase(java.util.Locale.ROOT),
+                                Instant.now().toString()));
+                    }
                 }
                 return;
             }
@@ -454,7 +474,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                     readerFor(socket.getInputStream()))) {
                 String line;
                 while (alive && (line = readBoundedLine(reader)) != null) {
-                    handleCommand(line);
+                    handleCommand(line, this::send);
                 }
             } catch (Exception closed) {
                 // A client that went away is not an error worth reporting.

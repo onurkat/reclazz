@@ -85,6 +85,17 @@ public final class McpServer {
         tools.add(tool("reclazz_diagnose",
                 "Explain why a specific class did or did not reload last time. Requires className.",
                 true));
+        JsonObject build = tool("reclazz_build",
+                "Signal compilation state. Wait for acknowledged started BEFORE compiling. Send ok only "
+                        + "after exit zero, failed otherwise. SCAN cannot release a failed build. "
+                        + "One ordered builder per agent; receipt is not reload completion.", false);
+        JsonObject state = stringProp("started, ok or failed");
+        JsonArray states = new JsonArray();
+        for (String value : List.of("started", "ok", "failed")) states.add(value);
+        state.add("enum", states);
+        build.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("state", state);
+        build.getAsJsonObject("inputSchema").getAsJsonArray("required").add("state");
+        tools.add(build);
         JsonObject result = new JsonObject();
         result.add("tools", tools);
         return result;
@@ -133,7 +144,24 @@ public final class McpServer {
         }
 
         String text;
+        boolean isError = false;
         switch (name) {
+            case "reclazz_build": {
+                if (!arguments.has("state") || !arguments.get("state").isJsonPrimitive()
+                        || !arguments.getAsJsonPrimitive("state").isString()
+                        || !BuildSession.validState(arguments.get("state").getAsString())) {
+                    return error(request, -32602, "reclazz_build requires state: started, ok or failed");
+                }
+                String state = arguments.get("state").getAsString();
+                try (BuildSession session = BuildSession.open(opts)) {
+                    session.signal(state);
+                    text = "Acknowledged BUILD " + state + ". This is not reload completion.";
+                } catch (java.io.IOException | IllegalArgumentException e) {
+                    isError = true;
+                    text = "Build signal not confirmed: " + e.getMessage();
+                }
+                break;
+            }
             case "reclazz_status":
                 text = statusJson(AgentSocket.run(opts, "HEALTH"));
                 break;
@@ -170,7 +198,7 @@ public final class McpServer {
         contents.add(content);
         JsonObject result = new JsonObject();
         result.add("content", contents);
-        result.addProperty("isError", false);
+        result.addProperty("isError", isError);
         return success(request, result);
     }
 

@@ -35,6 +35,64 @@ class StatusSocketSurfaceTest {
     }
 
     @Test
+    void invalidOrUnavailableBuildSignalsNeverGetReceipts() {
+        StatusServer status = server();
+        java.util.List<String> replies = new java.util.ArrayList<>();
+        status.handleCommand("BUILD started request=valid", replies::add);
+        assertTrue(replies.isEmpty());
+        AtomicInteger calls = new AtomicInteger();
+        status.setBuildListener(state -> calls.incrementAndGet());
+        for (String input : List.of("BUILD nope request=x", "BUILD ok extra", "BUILD ok request=",
+                "BUILD started request=a/b", "BUILD started request=x extra")) {
+            status.handleCommand(input, replies::add);
+        }
+        assertEquals(0, calls.get());
+        assertTrue(replies.isEmpty());
+        status.setBuildListener(state -> { throw new IllegalStateException("not installed"); });
+        status.handleCommand("BUILD started request=valid", replies::add);
+        assertTrue(replies.isEmpty());
+    }
+
+    @Test
+    void buildReceiptFollowsTheHoldAndGoesOnlyToItsRequester() throws Exception {
+        java.nio.file.Path port = java.nio.file.Files.createTempDirectory("build-ack").resolve("port");
+        StatusServer status = new StatusServer(0, port);
+        java.util.concurrent.CountDownLatch entered = new java.util.concurrent.CountDownLatch(1);
+        java.util.concurrent.CountDownLatch release = new java.util.concurrent.CountDownLatch(1);
+        status.setBuildListener(state -> {
+            assertEquals("started", state);
+            entered.countDown();
+            try { assertTrue(release.await(5, java.util.concurrent.TimeUnit.SECONDS)); }
+            catch (InterruptedException e) { throw new AssertionError(e); }
+        });
+        status.start();
+        try (java.net.Socket socket = new java.net.Socket("127.0.0.1",
+                Integer.parseInt(java.nio.file.Files.readString(port)));
+             java.net.Socket observer = new java.net.Socket("127.0.0.1", socket.getPort())) {
+            socket.setSoTimeout(2000);
+            observer.setSoTimeout(2000);
+            var in = new java.io.BufferedReader(StatusServer.readerFor(socket.getInputStream()));
+            var other = new java.io.BufferedReader(StatusServer.readerFor(observer.getInputStream()));
+            assertTrue(in.readLine().contains("CONNECTED"));
+            assertTrue(other.readLine().contains("CONNECTED"));
+            socket.getOutputStream().write("BUILD started request=receipt-1\n".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            socket.getOutputStream().flush();
+            assertTrue(entered.await(2, java.util.concurrent.TimeUnit.SECONDS), "BUILD request was not accepted");
+            socket.setSoTimeout(200);
+            observer.setSoTimeout(200);
+            assertThrows(java.net.SocketTimeoutException.class, in::readLine, "ack escaped before hold");
+            release.countDown();
+            socket.setSoTimeout(2000);
+            assertTrue(in.readLine().contains("BUILD_ACK receipt-1 started"));
+            assertThrows(java.net.SocketTimeoutException.class, other::readLine, "ack was broadcast");
+        } finally {
+            release.countDown(); status.stop();
+            java.nio.file.Files.deleteIfExists(port);
+            java.nio.file.Files.deleteIfExists(port.getParent());
+        }
+    }
+
+    @Test
     void buildAcceptsOnlyItsThreeStatesCaseInsensitively() {
         StatusServer server = server();
         java.util.List<String> received = new java.util.ArrayList<>();

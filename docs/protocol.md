@@ -57,14 +57,14 @@ a client that stops reading rather than blocking a reload on it.
 A client may send one line at a time, at most 512 bytes; anything not
 listed here is ignored without an answer, and a line that never ends closes
 the connection. Every answer arrives as ordinary `INFO` lines on the stream,
-to every client.
+to every client, except the requested BUILD receipt described below.
 
 | Command | Answer |
 |---|---|
 | `DIAGNOSE <class>` | why the class did or did not reload last time: the class file the bytes came from, the outcome, what a restart would change |
 | `PENDING` | what still needs a restart in this session |
 | `HEALTH` | how the session is going: reloads, failures, latency, watched directories, a reload that is still running |
-| `BUILD <state>` | hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. Arguments are case-insensitive. An unknown argument is ignored |
+| `BUILD <state> [request=<token>]` | hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. States are case-insensitive; `request=` is literal and its token is echoed unchanged. An unknown argument is ignored |
 | `SCAN` | look at the watched directories now, instead of on the file watcher's next poll; what changed is reloaded as usual. Send it when a build has just finished |
 
 Nothing a client sends makes the agent load, reload or run anything it
@@ -92,24 +92,31 @@ These commands describe one ordered build stream per agent. Multiple
 independent builders writing the same output directories are not supported.
 Agents receiving no BUILD signals keep their usual behavior.
 
-For a whole Gradle or Maven build, send the start before invoking the build
-tool. A `classes.doFirst` hook runs after its compilation dependencies and
-is too late to protect them. This local wrapper sends the result too:
+For a whole Gradle or Maven build, install the hold **before** invoking the
+build tool. A `classes.doFirst` hook runs after its compilation dependencies
+and is too late to protect them. Sending bytes is not proof that the hold has
+been installed: wait for a receipt before starting the compiler.
 
-```python
-import pathlib, socket, subprocess
-port = int(pathlib.Path(".reclazz/agent.port").read_text().strip())
-with socket.create_connection(("127.0.0.1", port)) as client:
-    def signal(state):
-        client.sendall(("BUILD " + state + "\n").encode("utf-8"))
-    signal("started")
-    result = subprocess.run(["./gradlew", "classes"])  # or ["mvn", "compile"]
-    signal("ok" if result.returncode == 0 else "failed")
-raise SystemExit(result.returncode)
-```
+An optional `request=<token>` suffix asks for an acknowledgement. Tokens are
+1–64 ASCII letters, digits, underscores or hyphens; an invalid suffix causes
+the entire command to be ignored. After the build listener returns, only the
+requesting connection receives an `INFO` event whose `message` is exactly
+`BUILD_ACK <token> <state>` (state lower-case). For started/failed the hold is
+installed before this receipt. For ok it confirms scheduling the capture,
+**not** completion of capture or reload. There is no receipt when the listener
+is unavailable or throws. Legacy BUILD commands still work without receipts.
 
-Sending only `BUILD ok` on a connection releases an abandoned hold after a verified build.
-Run only one wrapper at a time for a given agent.
+Use the terminal wrapper in the MCP jar for either build tool; see
+[mcp-server.md](mcp-server.md#protecting-terminal-builds). It requires this
+receipt support, so an older agent refuses the wrapped build before any
+compiler runs. A missing receipt is a failure, never permission to proceed.
+If an ok receipt is lost, its result is uncertain: the agent may already have
+accepted output; verify live behavior rather than reporting success.
+
+Sending only `BUILD ok` releases an abandoned hold after a verified successful
+build. Run only one wrapper/builder at a time for a given agent. The wrapper
+protects only compilation launched through it; applying an attachment plugin
+does not automatically wrap later terminal compilations.
 
 ## Nudging the agent from a build
 
