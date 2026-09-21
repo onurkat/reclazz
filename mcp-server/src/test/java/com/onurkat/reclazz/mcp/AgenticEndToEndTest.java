@@ -7,6 +7,7 @@ package com.onurkat.reclazz.mcp;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
@@ -14,18 +15,38 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** Consumer-side proof: only installed jars, JDK tools, stdio and live application probes. */
 class AgenticEndToEndTest {
-    @TempDir Path dir;
+    // Not @TempDir: the installed agent keeps the consumer's class files open past
+    // destroyForcibly on Windows, and JUnit's temp cleanup would then throw. Delete
+    // best-effort so a lingering handle cannot fail a test that already passed.
+    Path dir;
+
+    @BeforeEach void createTempDir() throws IOException { dir = Files.createTempDirectory("reclazz-agentic-e2e"); }
+
+    @AfterEach void deleteTempDir() {
+        if (dir == null) return;
+        for (int attempt = 0; attempt < 5 && Files.exists(dir); attempt++) {
+            try (var paths = Files.walk(dir)) {
+                paths.sorted(Comparator.reverseOrder()).forEach(p -> {
+                    try { Files.deleteIfExists(p); } catch (IOException ignored) { }
+                });
+            } catch (IOException ignored) { }
+            if (!Files.exists(dir)) return;
+            try { Thread.sleep(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
+        }
+    }
     private Path project, source, classes, port, mcpJar;
     private int requestId;
     private long lastCounter;

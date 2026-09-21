@@ -4,8 +4,10 @@
  */
 package com.onurkat.reclazz.mcp;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
+import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +15,28 @@ import javax.tools.ToolProvider;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BuildSafetyIntegrationTest {
-    @TempDir Path dir;
+    // Not @TempDir: on Windows the child JVM's agent keeps class files open past
+    // destroyForcibly, and JUnit's temp cleanup then throws IOException. Manage the
+    // directory here and delete it best-effort, so a lingering handle cannot fail a
+    // test whose assertions already passed.
+    Path dir;
+
+    @BeforeEach void createTempDir() throws IOException { dir = Files.createTempDirectory("reclazz-build-safety"); }
+
+    @AfterEach void deleteTempDir() { bestEffortDelete(dir); }
+
+    static void bestEffortDelete(Path root) {
+        if (root == null) return;
+        for (int attempt = 0; attempt < 5 && Files.exists(root); attempt++) {
+            try (var paths = Files.walk(root)) {
+                paths.sorted(Comparator.reverseOrder()).forEach(p -> {
+                    try { Files.deleteIfExists(p); } catch (IOException ignored) { }
+                });
+            } catch (IOException ignored) { }
+            if (!Files.exists(root)) return;
+            try { Thread.sleep(200); } catch (InterruptedException e) { Thread.currentThread().interrupt(); return; }
+        }
+    }
 
     @Test void partialFailedCompilationStaysOutOfTheRunningJvm() throws Exception {
         Path agent = Path.of(System.getProperty("reclazz.agent.jar"));
