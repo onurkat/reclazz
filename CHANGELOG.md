@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- `reclazz_verify` and the requester-only VERIFY socket command return structured,
+  correlated receipts for exact compiled class bytes. Receipts wait for the whole
+  reload batch, distinguish failures and uncertainty, and supersede stale proof.
+  Matching current agent/MCP jars are required; no publication is implied.
 - Terminal Gradle/Maven compilation can be wrapped by the MCP jar's `BuildMain`.
   It waits for a correlated BUILD receipt before launching the compiler and holds
   partial output on failure. The `reclazz_build` MCP tool exposes the same signals.

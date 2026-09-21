@@ -87,6 +87,10 @@ public final class ReloadQueue {
     private final LinkedHashMap<Path, ChangeEvent> pendingClassFiles = new LinkedHashMap<>();
     private volatile boolean running = true;
     private ExecutorService ownedExecutor;
+    private ReloadVerification verification;
+
+    void setVerification(ReloadVerification verification) { this.verification = verification; }
+
     private Consumer<Runnable> classBoundary = Runnable::run;
 
     /** The production queue: its own daemon thread, a real clock, real sleeps, and the stall watch started. */
@@ -316,6 +320,11 @@ public final class ReloadQueue {
     }
 
     private void applyClassBatch(List<ChangeEvent> batch) {
+        if (verification == null) applyCaptured(batch);
+        else verification.applyFiles(batch, () -> applyCaptured(batch));
+    }
+
+    private void applyCaptured(List<ChangeEvent> batch) {
         if (batch.size() == 1) {
             handler.handle(batch.get(0));
             return;

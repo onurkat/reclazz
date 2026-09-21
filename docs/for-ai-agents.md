@@ -68,7 +68,7 @@ Do not assume the swap happened; check it. Two machine-readable ways:
   [gradle-plugin.md](gradle-plugin.md#checking-status).
 
 - MCP server, if your client speaks MCP: point it at `reclazz-mcp.jar` and call
-  the `reclazz_status`, `reclazz_scan`, `reclazz_pending` and `reclazz_diagnose`
+  the `reclazz_status`, `reclazz_verify`, `reclazz_pending` and `reclazz_diagnose`
   tools during your loop. Setup and the tool table:
   [mcp-server.md](mcp-server.md).
 
@@ -106,8 +106,12 @@ Apply a code change while it runs:
    before compilation, then send `ok` only on exit zero or `failed` otherwise.
    This requires an agent with build receipt support; stop if unconfirmed.
 3. The agent hot-swaps the changed classes in place. Do not restart.
-4. Verify: `./gradlew reclazzStatus` shows "attached":true and a rising
-   reload count. Then exercise the endpoint or run the test.
+4. Verify each changed compiled class with `reclazz_verify`, passing className,
+   its compiled file's lower-case SHA-256 as sha256, and the same agent address.
+   Require status applied, matching hashes and the same sessionId. Poll with a
+   bounded deadline; any other status is not proof of success. This requires
+   matching agent/MCP jars with VERIFY support. Then exercise the endpoint or
+   run the test. An attached status or rising reload count alone proves no edit.
 
 Restart only when Reclazz reports the change as pending (for example a changed
 superclass or a reordered enum). Check with `./gradlew reclazzStatus`, or the
