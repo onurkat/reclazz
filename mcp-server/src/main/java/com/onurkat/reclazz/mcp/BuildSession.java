@@ -23,6 +23,7 @@ final class BuildSession implements AutoCloseable {
     private final BufferedReader in;
     private final int timeoutMs;
     private final String owner;
+    private RequestCancellation cancellation;
 
     private BuildSession(Socket socket, int timeoutMs, String owner) throws IOException {
         this.socket = socket;
@@ -32,6 +33,10 @@ final class BuildSession implements AutoCloseable {
     }
 
     static BuildSession open(Map<String, String> opts) throws IOException {
+        return open(opts, null, 0);
+    }
+
+    static BuildSession open(Map<String, String> opts, RequestCancellation cancellation, long until) throws IOException {
         String owner = opts.getOrDefault("owner", UUID.randomUUID().toString());
         if (!validOwner(owner)) throw new IOException("owner must be 1-64 ASCII letters, digits, _ or -");
         AgentSocket.Result address = new AgentSocket.Result();
@@ -45,9 +50,11 @@ final class BuildSession implements AutoCloseable {
         if (timeout < 1 || timeout > 60000) throw new IOException("timeoutMs must be between 1 and 60000");
         Socket socket = new Socket();
         try {
-            socket.connect(new InetSocketAddress("127.0.0.1", address.port), timeout);
+            if (cancellation != null) cancellation.attach(socket);
+            socket.connect(new InetSocketAddress("127.0.0.1", address.port), until == 0 ? timeout : remainingMillis(until));
             BuildSession session = new BuildSession(socket, timeout, owner);
-            JsonObject hello = session.read(session.deadline());
+            session.cancellation = cancellation;
+            JsonObject hello = session.read(until == 0 ? session.deadline() : until);
             if (!"CONNECTED".equals(text(hello, "level")) || text(hello, "agent").isBlank()
                     || !hello.has("version") || hello.get("version").getAsInt() < 1) {
                 throw new IOException("No valid agent handshake");
@@ -55,6 +62,7 @@ final class BuildSession implements AutoCloseable {
             return session;
         } catch (IOException | RuntimeException e) {
             socket.close();
+            if (cancellation != null) cancellation.detach(socket);
             throw new IOException("Cannot open build session: " + e.getMessage(), e);
         }
     }
@@ -119,16 +127,21 @@ final class BuildSession implements AutoCloseable {
     }
 
     JsonObject verify(String name, String hash) throws IOException {
+        return verify(name, hash, deadline());
+    }
+
+    JsonObject verify(String name, String hash, long until) throws IOException {
+        remainingMillis(until);
         if (!validVerification(name, hash)) throw new IOException("Expected className and lower-case SHA-256");
         String token = UUID.randomUUID().toString();
         socket.getOutputStream().write(("VERIFY " + token + " " + name + " " + hash + "\n")
                 .getBytes(StandardCharsets.UTF_8));
         socket.getOutputStream().flush();
         String prefix = "VERIFY_RESULT " + token + " ";
-        long deadline = deadline();
+
         try {
             while (true) {
-                JsonObject event = read(deadline);
+                JsonObject event = read(until);
                 String message = text(event, "message");
                 if (!"INFO".equals(text(event, "level")) || !message.startsWith(prefix)) continue;
                 JsonObject result = JsonParser.parseString(message.substring(prefix.length())).getAsJsonObject();
@@ -150,6 +163,12 @@ final class BuildSession implements AutoCloseable {
         } catch (IOException | RuntimeException e) {
             throw new IOException("Reload not verified: no valid correlated receipt", e);
         }
+    }
+
+    private static int remainingMillis(long until) throws IOException {
+        long remaining = until - System.nanoTime();
+        if (remaining <= 0) throw new IOException("Verification deadline exceeded");
+        return (int) Math.max(1, Math.min(60000, TimeUnit.NANOSECONDS.toMillis(remaining)));
     }
 
     private long deadline() { return System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs); }
@@ -175,5 +194,8 @@ final class BuildSession implements AutoCloseable {
         return object.has(key) ? object.get(key).getAsString() : "";
     }
 
-    @Override public void close() throws IOException { socket.close(); }
+    @Override public void close() throws IOException {
+        try { socket.close(); }
+        finally { if (cancellation != null) cancellation.detach(socket); }
+    }
 }

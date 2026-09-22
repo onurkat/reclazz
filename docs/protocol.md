@@ -258,3 +258,13 @@ If evidence cannot be produced within these bounds, `status:unavailable` include
 only correlation and a detail message. Older agents can give no response; clients
 must report unavailable rather than assume support. The existing loopback socket
 trust boundary still applies.
+
+## Client-side batch verification
+
+MCP `reclazz_verify_batch` composes 1–32 existing VERIFY queries on one connection.
+There is no batch agent command and no atomic snapshot. Every item has its own
+correlation token; the client requires the same sessionId across validated
+receipts and one total time budget. It preserves earlier receipts and marks
+remaining items unavailable on connection/evidence failure. Cancelling the MCP
+request closes only that observation connection; the running agent's reload and
+build ownership are unaffected. See [MCP batch and cancellation](mcp-server.md#bounded-batch-verification-and-cancellation).

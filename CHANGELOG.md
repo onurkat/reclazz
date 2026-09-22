@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- `reclazz_verify_batch` checks up to 32 unique class/hash pairs on one connection
+  with a shared deadline and per-item receipts. Stdio cancellation frees the
+  observation socket while ping stays responsive; results never claim atomic reload.
 - Read-only `reclazz_doctor` and correlated DOCTOR receipts expose target JVM,
   VERIFY session, live watcher registrations and wired capabilities with bounded
   evidence and next checks. Unavailable evidence never implies readiness or reload.

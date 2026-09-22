@@ -117,6 +117,20 @@ class AgenticEndToEndTest {
             assertFalse(session.isBlank());
             assertEquals(session, doctor.get("sessionId").getAsString());
             probe(app, 2);
+            JsonObject batchArgs = new JsonObject();
+            var batchItems = BatchVerificationTest.items("consumer.Service", "consumer.App");
+            batchItems.get(0).getAsJsonObject().addProperty("sha256", appliedHash);
+            batchItems.get(1).getAsJsonObject().addProperty("sha256", HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(classes.resolve("consumer/App.class")))));
+            batchArgs.add("items", batchItems);
+            JsonObject batchResult = tool(mcp, "reclazz_verify_batch", batchArgs);
+            JsonObject batch = text(batchResult);
+            assertTrue(batchResult.get("isError").getAsBoolean()); // App was initially loaded, never reloaded.
+            assertEquals("incomplete", batch.get("status").getAsString());
+            assertEquals("applied", batch.getAsJsonArray("results").get(0).getAsJsonObject().get("status").getAsString());
+            assertEquals("not_observed", batch.getAsJsonArray("results").get(1).getAsJsonObject().get("status").getAsString());
+            assertEquals(session, batch.get("sessionId").getAsString());
+            assertFalse(batch.get("allApplied").getAsBoolean()); assertFalse(batch.get("atomic").getAsBoolean());
+            probe(app, 2);
 
             // A multi-stage build emits a real new class, then fails a later javac invocation.
             buildSignal(mcp, "started");
