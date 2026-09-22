@@ -30,6 +30,8 @@ final class ReloadVerification {
         this.loadedCounts = loadedCounts;
     }
 
+    String sessionId() { return session; }
+
     record Receipt(String sha256, String source, String status, String detail, String completedAt) { }
     private static final class Attempt {
         final Receipt running;

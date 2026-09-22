@@ -89,7 +89,7 @@ printf '%s\n' \
 ```
 
 Expect two JSON response lines: initialization reports `reclazz-mcp` and the
-jar's version; the tools list contains the six tools below. The notification
+jar's version; the tools list contains the seven tools below. The notification
 has no response. EOF closes the server. If Java cannot open the jar, check the
 absolute path; if it cannot load its classes, use the packaged jar from
 `build/distributions/mcp`, not the plain development jar. A missing attached
@@ -99,6 +99,7 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 
 | Tool | What it does |
 |---|---|
+| `reclazz_doctor` | Read correlated target JVM, session, live watch registration and capability evidence, with next checks |
 | `reclazz_status` | Whether the agent is attached and how it is doing (reloads, failures, latency, watched directories), as JSON |
 | `reclazz_build` | Signal `started`, `ok` or `failed`; waits for the agent to acknowledge the signal, and returns a tool error if unconfirmed |
 | `reclazz_verify` | Structured exact-byte reload receipt; requires `className` and lower-case `sha256`; only `status:applied` is success |
@@ -161,6 +162,7 @@ these newer fields.
 
 | Tool | Structured result |
 |---|---|
+| `reclazz_doctor` | `status:observed` with JVM/watch/capability evidence, or `unavailable`; separate `clientWorkingDirectory`, `nextActions`, `reloadConfirmed:false` |
 | `reclazz_status` | Existing `attached`, optional `agent`, `protocol`, `port`, `health`, `reason` fields |
 | `reclazz_scan` | `status:sent` or `unavailable`, `detail`, `reloadConfirmed:false` |
 | `reclazz_build` | `status:acknowledged` or `unavailable`, requested `state` and `owner`, `detail`, `reloadConfirmed:false` |
@@ -174,7 +176,7 @@ The diagnostic `complete:false` reflects the lack of a response end marker in
 the broadcast stream. VERIFY preserves its exact-byte checks, and application
 behavior still needs its own test.
 
-Status, pending, diagnose and verify advertise `readOnlyHint:true` and
+Status, doctor, pending, diagnose and verify advertise `readOnlyHint:true` and
 `openWorldHint:false`. Scan and build advertise `readOnlyHint:false`,
 `destructiveHint:true`, `idempotentHint:false` and `openWorldHint:true`: live
 reload can replace behavior and invoke application callbacks with external
@@ -314,3 +316,26 @@ for several classes. Warnings, ambiguous classloaders and never-loaded classes
 cannot produce a positive receipt. See [the receipt contract](protocol.md#verifying-exact-compiled-bytes).
 After verifying the relevant classes, exercise the live endpoint or test to
 prove the intended application behavior.
+
+## Check the target before an agentic build
+
+Call `reclazz_doctor` using the same endpoint arguments as the other tools.
+Its default timeout is 5000 ms. The tool reads one correlated DOCTOR response and
+validates its types and bounds. Missing, old, malformed, oversized or uncorrelated
+responses produce `isError:true`, `status:unavailable`; capability support remains
+unknown. Both supported MCP versions receive JSON text; 2025-06-18 also receives
+the identical object as structured content.
+
+Compare the target `pid`, `workingDirectory` and `sessionId` against the application
+intended for the build. `clientWorkingDirectory` belongs to the MCP process;
+neither directory is an inferred repository root. `sessionId` matches VERIFY for
+this agent instance. Capability booleans reflect installed handlers; observation
+can legitimately show incomplete startup. `watcherState`, live directory count,
+refused registration count and a bounded path sample expose watcher evidence.
+`watchSampleTruncated:true` means absence from the sample proves nothing about
+coverage. The sample can include source and resource watches too.
+
+Follow `nextActions` to inspect startup, output paths or a held build. `buildHold`
+reports only the kind of hold, never its owner token, and doctor cannot release it.
+Even a successful `status:observed` reports `reloadConfirmed:false`; follow the
+owned-build, exact-byte VERIFY and application behavior checks for actual proof.

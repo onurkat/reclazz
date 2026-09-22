@@ -57,7 +57,7 @@ a client that stops reading rather than blocking a reload on it.
 A client may send one line at a time, at most 512 characters; anything not
 listed here is ignored without an answer, and a line that never ends closes
 the connection. Every answer arrives as ordinary `INFO` lines on the stream,
-to every client, except requested BUILD receipts and VERIFY results, which go only to the requesting connection.
+to every client, except requested BUILD receipts, DOCTOR observations and VERIFY results, which go only to the requesting connection.
 
 | Command | Answer |
 |---|---|
@@ -66,6 +66,7 @@ to every client, except requested BUILD receipts and VERIFY results, which go on
 | `HEALTH` | how the session is going: reloads, failures, latency, watched directories, a reload that is still running |
 | `BUILD <state> [request=<token>] [owner=<token>]` | hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. States are case-insensitive; `request=` is literal and its token is echoed unchanged. An unknown argument makes the entire command ignored |
 | `VERIFY <token> <class> <sha256>` | read the latest exact-byte reload receipt for one class; requester-only structured result (below) |
+| `DOCTOR <token>` | read bounded JVM, session, watcher and capability evidence; requester-only result (below) |
 | `SCAN` | look at the watched directories now, instead of on the file watcher's next poll; what changed is reloaded as usual. Send it when a build has just finished |
 
 Nothing a client sends makes the agent load, reload or run anything it
@@ -225,3 +226,35 @@ instrumentation tool has not subsequently changed the JVM. Keep one builder per
 agent; verify each changed class with a bounded polling deadline, keep sessionId
 consistent, then exercise the endpoint or application test. No reply, disconnect,
 old-agent timeout or a non-applied state must ever be treated as success.
+
+## Doctor observation
+
+`DOCTOR <token>` accepts a token of 1–64 ASCII letters, digits, underscores or
+hyphens. The requesting connection receives an INFO event whose message is
+`DOCTOR_RESULT <token> <json>`. Parse the event, match the token, then parse the
+JSON suffix. No build, scan, reload or hold change is performed.
+
+`status:observed` carries `requestId`, `detail`, `sessionId` (the same process
+identity used by VERIFY), `agentVersion`, string `pid`, `javaVersion`, `vmName`,
+and target JVM `workingDirectory`. A working directory is not a repository root.
+`watcherState` is starting, watching, stopped or unavailable. `buildHold` is none,
+named, legacy or unavailable; owner tokens are never disclosed. Boolean
+`buildOwnershipSupported`, `verifySupported` and `scanSupported` describe wired
+handlers, not capabilities inferred from a version string. Before wiring, support
+can be false and the verification session empty.
+
+`watchedDirectoryCount` counts currently valid registrations whose directories
+still exist. `watchedDirectories` samples at most eight normalized absolute paths,
+each at most 256 characters; longer paths are omitted. `watchSampleTruncated`
+explicitly marks omitted entries. `unwatchableDirectoryCount` reports refused
+registrations. Registrations can include class, source and resource directories;
+this sample does not prove coverage of a particular compiled output. The snapshot
+is observational, not atomic with watcher or build changes.
+
+`reloadConfirmed` is always false. Observation is neither readiness nor reload
+proof. Metadata strings are bounded to 512 characters and the JSON receipt to
+3900 characters so the enclosing 4096-character message limit cannot truncate it.
+If evidence cannot be produced within these bounds, `status:unavailable` includes
+only correlation and a detail message. Older agents can give no response; clients
+must report unavailable rather than assume support. The existing loopback socket
+trust boundary still applies.

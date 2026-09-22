@@ -103,5 +103,10 @@ class ProtocolContractTest {
         assertTrue(replies.get(0).contains("BUILD_ACK r1 started owner=alice"));
         assertTrue(replies.get(1).contains("BUILD_REJECTED r2 started owner=bob"));
     }
+    @Test void doctorContractDocumentsTheBoundedEvidence() throws IOException {
+        String text=doc();
+        for(String part:List.of("DOCTOR <token>","DOCTOR_RESULT <token>","watchSampleTruncated","workingDirectory","buildOwnershipSupported","reloadConfirmed"))
+            assertTrue(text.contains(part),part);
+    }
 
 }

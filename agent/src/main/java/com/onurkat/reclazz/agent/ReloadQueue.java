@@ -238,6 +238,12 @@ public final class ReloadQueue {
         return true;
     }
 
+    String buildHoldKind() {
+        synchronized (buildLock) {
+            return !holding ? "none" : buildOwner == null ? "legacy" : "named";
+        }
+    }
+
     void checkBuildHold() {
         synchronized (buildLock) {
             if (holding && !holdWarned && clock.getAsLong() - heldSince >= BUILD_WARN_MS) {

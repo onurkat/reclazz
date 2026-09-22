@@ -67,6 +67,14 @@ public class StatusServer implements StatusReporter.StatusListener {
     private volatile java.util.function.BiPredicate<String, String> ownedBuild;
     private static final String BUILD = "BUILD";
     private static final String VERIFY = "VERIFY";
+    private static final String DOCTOR = "DOCTOR";
+    private volatile com.onurkat.reclazz.watcher.FileWatcher doctorWatcher;
+    private volatile java.util.function.Supplier<String> buildHold;
+
+    void setDoctorContext(com.onurkat.reclazz.watcher.FileWatcher watcher, java.util.function.Supplier<String> hold) {
+        doctorWatcher = watcher;
+        buildHold = hold;
+    }
     private volatile ReloadVerification verification;
 
     void setVerification(ReloadVerification verification) { this.verification = verification; }
@@ -169,6 +177,20 @@ public class StatusServer implements StatusReporter.StatusListener {
         if (trimmed.length() > MAX_COMMAND_LENGTH) return;
 
         try {
+            if (trimmed.startsWith(DOCTOR + " ")) {
+                String token = trimmed.substring(DOCTOR.length() + 1);
+                if (!token.matches("[A-Za-z0-9_-]{1,64}")) return;
+                String result;
+                try {
+                    var hold = buildHold;
+                    result = DoctorReport.snapshot(token, verification, doctorWatcher,
+                            hold == null ? "unavailable" : hold.get(), ownedBuild != null, scanner != null);
+                } catch (RuntimeException unavailable) { result = DoctorReport.unavailable(token); }
+                String message = "DOCTOR_RESULT " + token + " " + result;
+                reply.accept(String.format("{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                        escapeJson(message), Instant.now().toString()));
+                return;
+            }
             if (trimmed.startsWith(VERIFY + " ")) {
                 String[] parts = trimmed.split("\\s+");
                 ReloadVerification answering = verification;

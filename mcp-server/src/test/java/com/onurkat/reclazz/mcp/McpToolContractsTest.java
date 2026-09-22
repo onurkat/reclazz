@@ -21,7 +21,7 @@ class McpToolContractsTest {
     private static final String MODERN = "2025-06-18";
     private static final String LEGACY = "2024-11-05";
     private static final List<String> TOOLS = List.of("reclazz_status", "reclazz_scan", "reclazz_pending",
-            "reclazz_diagnose", "reclazz_build", "reclazz_verify");
+            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor");
     @TempDir Path dir;
 
     private static JsonObject rpc(String method, JsonObject params) {
@@ -79,7 +79,7 @@ class McpToolContractsTest {
         assertTrue(tools(modern).get("reclazz_status").has("outputSchema"));
     }
 
-    @Test void sixToolsAdvertiseTypedOutputsAndConservativeHints() {
+    @Test void sevenToolsAdvertiseTypedOutputsAndConservativeHints() {
         Map<String, JsonObject> t = tools(client(MODERN)); assertEquals(new HashSet<>(TOOLS), t.keySet());
         for (String name : TOOLS) {
             JsonObject tool = t.get(name);
@@ -98,7 +98,7 @@ class McpToolContractsTest {
         }
     }
 
-    @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_scan","reclazz_pending","reclazz_diagnose","reclazz_build","reclazz_verify"})
+    @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_scan","reclazz_pending","reclazz_diagnose","reclazz_build","reclazz_verify","reclazz_doctor"})
     void offlineResultsAreStructuredAndLegacyRemainsText(String name) throws Exception {
         JsonObject data = checked(client(MODERN), name, args(), !name.equals("reclazz_status"), "offline");
         if (name.equals("reclazz_status")) assertFalse(data.get("attached").getAsBoolean());
@@ -147,6 +147,17 @@ class McpToolContractsTest {
                 assertEquals(ack ? "acknowledged" : "unavailable", d.get("status").getAsString());
                 assertEquals(state,d.get("state").getAsString()); assertFalse(d.get("reloadConfirmed").getAsBoolean()); agent.verify();
             }
+        }
+    }
+
+    @Test void doctorReturnsCorrelatedStructuredEvidence() throws Exception {
+        try(var agent=new BuildSafetyTest.FakeAgent((in,out)->{
+            String command=in.readLine();DoctorTest.send(out,command,DoctorTest.evidence(command));
+        })) {
+            JsonObject a=args();a.addProperty("port",""+agent.server.getLocalPort());
+            JsonObject d=checked(client(MODERN),"reclazz_doctor",a,false,"observed");
+            assertEquals("observed",d.get("status").getAsString());assertFalse(d.get("reloadConfirmed").getAsBoolean());
+            agent.verify();
         }
     }
 

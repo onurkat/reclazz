@@ -89,6 +89,25 @@ final class BuildSession implements AutoCloseable {
         }
     }
 
+    JsonObject doctor() throws IOException {
+        String token = UUID.randomUUID().toString();
+        socket.getOutputStream().write(("DOCTOR " + token + "\n").getBytes(StandardCharsets.UTF_8));
+        socket.getOutputStream().flush();
+        String prefix = "DOCTOR_RESULT " + token + " ";
+        long until = deadline();
+        try {
+            while (true) {
+                JsonObject event = read(until);
+                if (!"INFO".equals(text(event, "level"))) continue;
+                String message = text(event, "message");
+                if (!message.startsWith(prefix)) continue;
+                return DoctorResult.parse(message.substring(prefix.length()), token);
+            }
+        } catch (IOException | RuntimeException e) {
+            throw new IOException("Doctor evidence unavailable: no valid correlated response; check the endpoint and matching agent version", e);
+        }
+    }
+
     static boolean validVerification(String name, String hash) {
         return validClassName(name) && hash != null && hash.matches("[0-9a-f]{64}");
     }

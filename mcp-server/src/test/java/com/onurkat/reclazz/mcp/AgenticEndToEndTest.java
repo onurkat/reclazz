@@ -97,6 +97,13 @@ class AgenticEndToEndTest {
                     init.getAsJsonObject("serverInfo").get("version").getAsString());
             mcp.send("{\"jsonrpc\":\"2.0\",\"method\":\"notifications/initialized\"}");
             assertTrue(text(tool(mcp, "reclazz_status", new JsonObject())).get("attached").getAsBoolean());
+            JsonObject doctor = text(tool(mcp, "reclazz_doctor", new JsonObject()));
+            assertEquals("observed", doctor.get("status").getAsString());
+            assertEquals(Long.toString(app.process.pid()), doctor.get("pid").getAsString());
+            assertEquals(project.toRealPath(), Path.of(doctor.get("workingDirectory").getAsString()).toRealPath());
+            assertTrue(doctor.get("buildOwnershipSupported").getAsBoolean());
+            assertTrue(doctor.get("verifySupported").getAsBoolean());
+            assertFalse(doctor.get("reloadConfirmed").getAsBoolean());
             probe(app, 1);
             String initialHash = hash();
 
@@ -108,6 +115,7 @@ class AgenticEndToEndTest {
             JsonObject applied = awaitApplied(mcp, appliedHash);
             String session = applied.get("sessionId").getAsString();
             assertFalse(session.isBlank());
+            assertEquals(session, doctor.get("sessionId").getAsString());
             probe(app, 2);
 
             // A multi-stage build emits a real new class, then fails a later javac invocation.
