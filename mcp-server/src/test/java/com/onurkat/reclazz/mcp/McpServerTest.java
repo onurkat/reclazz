@@ -46,13 +46,13 @@ class McpServerTest {
 
     @Test
     void unsupportedVersionsNegotiateImplementedProtocol() {
-        for (String requested : new String[] {"2023-01-01", "2025-06-18", "2099-01-01", "custom-version"}) {
+        for (String requested : new String[] {"2023-01-01", "2025-03-26", "2099-01-01", "custom-version"}) {
             JsonObject request = req("{\"jsonrpc\":\"2.0\",\"id\":\"init\",\"method\":\"initialize\",\"params\":{}}");
             request.getAsJsonObject("params").addProperty("protocolVersion", requested);
             JsonObject response = server.handle(request);
             assertEquals("init", response.get("id").getAsString());
             JsonObject result = response.getAsJsonObject("result");
-            assertEquals("2024-11-05", result.get("protocolVersion").getAsString(), requested);
+            assertEquals("2025-06-18", result.get("protocolVersion").getAsString(), requested);
             assertTrue(result.getAsJsonObject("capabilities").has("tools"));
             assertEquals("reclazz-mcp", result.getAsJsonObject("serverInfo").get("name").getAsString());
         }

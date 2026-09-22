@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- MCP 2025-06-18 sessions expose typed output schemas, structured results with
+  matching JSON text, and conservative tool behavior annotations for all six tools.
+  Explicit 2024-11-05 sessions retain legacy text; unknown versions negotiate
+  2025-06-18. Dispatch, build acknowledgement and reload proof stay distinct.
 - A packaged agentic end-to-end test exercises a clean Java consumer, real javac,
   stdio MCP receipts and live behavior in the same JVM, including failed-build
   output isolation and recovery with preserved service state.
