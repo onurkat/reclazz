@@ -185,8 +185,9 @@ class McpToolErrorsTest {
                     input.write((request + "\n{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"ping\"}\n")
                             .getBytes(StandardCharsets.UTF_8));
                 }
-                assertTrue(child.waitFor(10, TimeUnit.SECONDS));
+                // Drain stdout before waiting, so a full OS pipe buffer cannot deadlock the child.
                 String output = new String(child.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+                assertTrue(child.waitFor(10, TimeUnit.SECONDS));
                 assertEquals(0, child.exitValue(), output);
                 String[] lines = output.strip().split("\\R");
                 assertEquals(2, lines.length, output);
