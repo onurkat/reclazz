@@ -153,11 +153,18 @@ class ReclazzPluginFunctionalTest {
     void continuousAndConfigurationCacheCannotBypassOuterGraphGuard() throws Exception {
         write("settings.gradle", "rootProject.name = 'sample'");
         write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n");
-        for (String flag : java.util.List.of("--configuration-cache", "--continuous")) {
-            String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
-                    .withArguments("reclazzSafeBuild", flag, "--stacktrace").buildAndFail().getOutput();
-            assertTrue(out.contains("Invoke reclazzSafeBuild alone"), out);
-        }
+        String cache = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+                .withArguments("reclazzSafeBuild", "--configuration-cache", "--stacktrace").buildAndFail().getOutput();
+        assertTrue(cache.contains("Invoke reclazzSafeBuild alone"), cache);
+        // Continuous mode must never run the wrapper. The task-graph guard rejects it where Gradle can
+        // start continuous; on a host without file system watching (Windows CI TestKit) Gradle refuses
+        // continuous outright before the graph is ready. Either refusal proves the wrapper cannot run,
+        // and neither reaches the task action, which would instead report "Configure mcpJar".
+        String continuous = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+                .withArguments("reclazzSafeBuild", "--continuous", "--stacktrace").buildAndFail().getOutput();
+        assertTrue(continuous.contains("Invoke reclazzSafeBuild alone")
+                || continuous.contains("Continuous build does not work"), continuous);
+        assertFalse(continuous.contains("Configure mcpJar"), continuous);
     }
 
     @Test
