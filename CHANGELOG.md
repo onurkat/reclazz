@@ -23,6 +23,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Receipt support requires the updated agent; it does not prove reload completion.
 
 ### Fixed
+- MCP scan/pending/diagnose report connection, invalid-handshake and missing
+  diagnostic-response failures as tool errors. Malformed agent handshakes no
+  longer end stdio; scan success describes dispatch without claiming completion.
 - MCP initialization negotiates its implemented `2024-11-05` protocol instead of
   echoing unsupported client versions, and rejects missing or blank versions.
 - MCP rejects malformed request shapes, non-string tool arguments, invalid timeouts

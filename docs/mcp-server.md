@@ -109,6 +109,31 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 Each tool accepts optional `portFile`, `port` and `hybrisHome` arguments to
 locate the agent; `reclazz_diagnose` also requires `className`.
 
+## Tool execution errors
+
+`reclazz_scan`, `reclazz_pending` and `reclazz_diagnose` return `isError:true`
+with a text explanation when the agent cannot be reached or its handshake is
+invalid. Before sending a command, the client requires a JSON `CONNECTED` event
+with numeric status-socket `version:1` and a nonblank string `agent` release.
+Malformed or unsupported handshakes do not terminate the MCP stdio session.
+
+Pending/diagnose also return a tool error if the connection fails, a diagnostic
+response is malformed, or no `INFO` answer arrives before disconnect/timeout.
+Silence does not mean nothing needs a restart or no diagnosis exists. An explicit
+empty-ledger answer from the agent remains a successful result. Invalid tool
+arguments still return a JSON-RPC error rather than a tool execution result.
+
+`reclazz_status` remains an attachment diagnostic: `attached:false` is a
+successful observation. If the handshake succeeds but health cannot be read,
+it reports `attached:true` with a `reason` describing the missing health data.
+
+SCAN has no acknowledgement in the status-socket protocol. Its `isError:false`
+means the command was written to a validated connection; acceptance and reload
+completion are unconfirmed. Use `reclazz_verify` for exact-byte reload evidence.
+The legacy pending/diagnose `INFO` stream is broadcast and has no request ID or
+end marker. Collected lines are diagnostic observations, not proof that the
+entire response was received or that every line belongs to this request.
+
 ## Protocol version negotiation
 
 The server implements the `2024-11-05` protocol baseline. Send a nonblank string
@@ -138,7 +163,8 @@ must be strings, at most 4,096 Java characters, without control characters.
 characters (Unicode identifiers and `$` inner classes are supported).
 `timeoutMs` is an integer string in 1–60,000, with defaults of 5,000 for
 build/verify and 2,000 for other tools. Paths with spaces are supported.
-Invalid numeric ports retain the existing not-attached result.
+Invalid numeric ports produce tool errors for scan/pending/diagnose; status
+reports them as `attached:false`.
 
 Diagnose rejects invalid names before connecting. The socket writer additionally
 rejects commands containing control characters or exceeding 512 Java characters,

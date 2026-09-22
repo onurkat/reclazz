@@ -228,15 +228,15 @@ public final class McpServer {
                 break;
             case "reclazz_scan": {
                 AgentSocket.Result r = AgentSocket.run(opts, "SCAN");
-                text = r.connected
-                        ? "Requested a scan; the agent reloads any changed classes as usual."
-                        : "Not attached: " + r.reason;
+                isError = r.reason != null;
+                text = isError ? "Scan request failed: " + r.reason
+                        : "Sent SCAN to the agent. Acceptance and reload completion are not confirmed.";
                 break;
             }
             case "reclazz_pending": {
                 AgentSocket.Result r = AgentSocket.run(opts, "PENDING");
-                text = !r.connected ? "Not attached: " + r.reason
-                        : r.lines.isEmpty() ? "Nothing pending a restart." : String.join("\n", r.lines);
+                isError = r.reason != null;
+                text = isError ? "Pending query failed: " + r.reason : String.join("\n", r.lines);
                 break;
             }
             case "reclazz_diagnose": {
@@ -244,8 +244,8 @@ public final class McpServer {
                     return error(request, -32602, "reclazz_diagnose requires a valid binary className of at most 256 characters");
                 }
                 AgentSocket.Result r = AgentSocket.run(opts, "DIAGNOSE " + opts.get("className"));
-                text = !r.connected ? "Not attached: " + r.reason
-                        : r.lines.isEmpty() ? "No diagnosis for " + opts.get("className") : String.join("\n", r.lines);
+                isError = r.reason != null;
+                text = isError ? "Diagnosis query failed: " + r.reason : String.join("\n", r.lines);
                 break;
             }
             default:
@@ -267,6 +267,7 @@ public final class McpServer {
         JsonObject o = new JsonObject();
         o.addProperty("attached", r.connected);
         if (r.connected) {
+            if (r.reason != null) o.addProperty("reason", r.reason);
             o.addProperty("agent", r.agent);
             o.addProperty("protocol", r.protocol);
             o.addProperty("port", r.port);
