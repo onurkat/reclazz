@@ -1,0 +1,272 @@
+{
+  "reclazz_status": {
+    "type": "object",
+    "properties": {
+      "attached": {
+        "type": "boolean"
+      },
+      "agent": {
+        "type": "string"
+      },
+      "protocol": {
+        "type": "integer",
+        "const": 1
+      },
+      "port": {
+        "type": "integer"
+      },
+      "health": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "reason": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "attached"
+    ],
+    "anyOf": [
+      {
+        "properties": {
+          "attached": {
+            "const": true
+          }
+        },
+        "required": [
+          "agent",
+          "protocol",
+          "port",
+          "health"
+        ]
+      },
+      {
+        "properties": {
+          "attached": {
+            "const": false
+          }
+        },
+        "required": [
+          "reason"
+        ]
+      }
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_scan": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "sent",
+          "unavailable"
+        ]
+      },
+      "detail": {
+        "type": "string"
+      },
+      "reloadConfirmed": {
+        "type": "boolean",
+        "const": false
+      }
+    },
+    "required": [
+      "status",
+      "detail",
+      "reloadConfirmed"
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_build": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "acknowledged",
+          "unavailable"
+        ]
+      },
+      "state": {
+        "type": "string",
+        "enum": [
+          "started",
+          "ok",
+          "failed"
+        ]
+      },
+      "detail": {
+        "type": "string"
+      },
+      "reloadConfirmed": {
+        "type": "boolean",
+        "const": false
+      }
+    },
+    "required": [
+      "status",
+      "state",
+      "detail",
+      "reloadConfirmed"
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_pending": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "observed",
+          "unavailable"
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "detail": {
+        "type": "string"
+      },
+      "complete": {
+        "type": "boolean",
+        "const": false
+      }
+    },
+    "required": [
+      "status",
+      "lines",
+      "detail",
+      "complete"
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_diagnose": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "observed",
+          "unavailable"
+        ]
+      },
+      "lines": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "detail": {
+        "type": "string"
+      },
+      "complete": {
+        "type": "boolean",
+        "const": false
+      },
+      "className": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "lines",
+      "detail",
+      "complete",
+      "className"
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_verify": {
+    "type": "object",
+    "properties": {
+      "requestId": {
+        "type": "string"
+      },
+      "sessionId": {
+        "type": "string"
+      },
+      "className": {
+        "type": "string"
+      },
+      "expectedSha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "observedSha256": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "applied",
+          "failed",
+          "unverified",
+          "running",
+          "mismatch",
+          "not_observed",
+          "unavailable"
+        ]
+      },
+      "source": {
+        "type": "string"
+      },
+      "detail": {
+        "type": "string"
+      },
+      "completedAt": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "status",
+      "className",
+      "expectedSha256",
+      "detail"
+    ],
+    "anyOf": [
+      {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "unavailable"
+            ]
+          }
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "applied",
+              "failed",
+              "unverified",
+              "running",
+              "mismatch",
+              "not_observed"
+            ]
+          }
+        },
+        "required": [
+          "requestId",
+          "sessionId",
+          "className",
+          "expectedSha256",
+          "observedSha256",
+          "status",
+          "source",
+          "detail",
+          "completedAt"
+        ]
+      }
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
+  }
+}

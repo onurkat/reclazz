@@ -26,7 +26,9 @@ import java.util.Map;
  */
 public final class McpServer {
 
-    private static final String PROTOCOL_VERSION = "2024-11-05";
+    private static final String LEGACY_PROTOCOL = "2024-11-05";
+    private static final String STRUCTURED_PROTOCOL = "2025-06-18";
+    private String protocolVersion = LEGACY_PROTOCOL;
     private static final String SERVER_NAME = "reclazz-mcp";
 
     /** Handle one JSON-RPC request. Returns the response, or null for a notification. */
@@ -50,7 +52,7 @@ public final class McpServer {
 
         switch (method) {
             case "initialize":
-                return success(request, initialize());
+                return success(request, initialize(request.getAsJsonObject("params").get("protocolVersion").getAsString()));
             case "ping":
                 return success(request, new JsonObject());
             case "tools/list":
@@ -62,11 +64,12 @@ public final class McpServer {
         }
     }
 
-    private JsonObject initialize() {
+    private JsonObject initialize(String requestedVersion) {
+        protocolVersion = LEGACY_PROTOCOL.equals(requestedVersion) ? LEGACY_PROTOCOL : STRUCTURED_PROTOCOL;
         JsonObject result = new JsonObject();
-        // Only this baseline is implemented: accept it or offer it as the supported alternative.
+        // Honor either supported version; otherwise offer our newest implemented version.
         // The client decides whether it can continue with the returned version.
-        result.addProperty("protocolVersion", PROTOCOL_VERSION);
+        result.addProperty("protocolVersion", protocolVersion);
         JsonObject capabilities = new JsonObject();
         capabilities.add("tools", new JsonObject());
         result.add("capabilities", capabilities);
@@ -85,7 +88,7 @@ public final class McpServer {
                 false));
         tools.add(tool("reclazz_scan",
                 "Ask the agent to look at the watched directories now and reload changed classes, "
-                        + "instead of waiting for its next poll. Use it right after a build.",
+                        + "instead of waiting for its next poll. Dispatch only, not acceptance or reload completion.",
                 false));
         tools.add(tool("reclazz_pending",
                 "List what still needs a restart in this session (changes the agent could not apply live).",
@@ -114,6 +117,9 @@ public final class McpServer {
         verify.getAsJsonObject("inputSchema").getAsJsonObject("properties")
                 .add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default 5000."));
         tools.add(verify);
+        if (STRUCTURED_PROTOCOL.equals(protocolVersion)) {
+            for (JsonElement tool : tools) ToolContracts.describe(tool.getAsJsonObject());
+        }
         JsonObject result = new JsonObject();
         result.add("tools", tools);
         return result;
@@ -186,6 +192,7 @@ public final class McpServer {
         }
 
         String text;
+        JsonObject data;
         boolean isError = false;
         switch (name) {
             case "reclazz_verify": {
@@ -194,6 +201,7 @@ public final class McpServer {
                 }
                 try (BuildSession session = BuildSession.open(opts)) {
                     JsonObject receipt = session.verify(opts.get("className"), opts.get("sha256"));
+                    data = receipt;
                     text = receipt.toString();
                     isError = !"applied".equals(receipt.get("status").getAsString());
                 } catch (java.io.IOException | IllegalArgumentException e) {
@@ -203,6 +211,7 @@ public final class McpServer {
                     failure.addProperty("className", opts.get("className"));
                     failure.addProperty("expectedSha256", opts.get("sha256"));
                     failure.addProperty("detail", e.getMessage());
+                    data = failure;
                     text = failure.toString();
                 }
                 break;
@@ -221,22 +230,27 @@ public final class McpServer {
                     isError = true;
                     text = "Build signal not confirmed: " + e.getMessage();
                 }
+                data = ToolContracts.operation(isError ? "unavailable" : "acknowledged", text);
+                data.addProperty("state", state);
                 break;
             }
             case "reclazz_status":
-                text = statusJson(AgentSocket.run(opts, "HEALTH"));
+                data = statusJson(AgentSocket.run(opts, "HEALTH"));
+                text = data.toString();
                 break;
             case "reclazz_scan": {
                 AgentSocket.Result r = AgentSocket.run(opts, "SCAN");
                 isError = r.reason != null;
                 text = isError ? "Scan request failed: " + r.reason
                         : "Sent SCAN to the agent. Acceptance and reload completion are not confirmed.";
+                data = ToolContracts.operation(isError ? "unavailable" : "sent", text);
                 break;
             }
             case "reclazz_pending": {
                 AgentSocket.Result r = AgentSocket.run(opts, "PENDING");
                 isError = r.reason != null;
                 text = isError ? "Pending query failed: " + r.reason : String.join("\n", r.lines);
+                data = ToolContracts.diagnostic(r.lines, text, isError);
                 break;
             }
             case "reclazz_diagnose": {
@@ -246,6 +260,8 @@ public final class McpServer {
                 AgentSocket.Result r = AgentSocket.run(opts, "DIAGNOSE " + opts.get("className"));
                 isError = r.reason != null;
                 text = isError ? "Diagnosis query failed: " + r.reason : String.join("\n", r.lines);
+                data = ToolContracts.diagnostic(r.lines, text, isError);
+                data.addProperty("className", opts.get("className"));
                 break;
             }
             default:
@@ -254,16 +270,18 @@ public final class McpServer {
 
         JsonObject content = new JsonObject();
         content.addProperty("type", "text");
-        content.addProperty("text", text);
+        boolean structured = STRUCTURED_PROTOCOL.equals(protocolVersion);
+        content.addProperty("text", structured ? data.toString() : text);
         JsonArray contents = new JsonArray();
         contents.add(content);
         JsonObject result = new JsonObject();
         result.add("content", contents);
         result.addProperty("isError", isError);
+        if (structured) result.add("structuredContent", data);
         return success(request, result);
     }
 
-    private String statusJson(AgentSocket.Result r) {
+    private JsonObject statusJson(AgentSocket.Result r) {
         JsonObject o = new JsonObject();
         o.addProperty("attached", r.connected);
         if (r.connected) {
@@ -278,7 +296,7 @@ public final class McpServer {
             o.addProperty("reason", r.reason);
             if (r.port != 0) o.addProperty("port", r.port);
         }
-        return o.toString();
+        return o;
     }
 
     private JsonObject success(JsonObject request, JsonObject result) {

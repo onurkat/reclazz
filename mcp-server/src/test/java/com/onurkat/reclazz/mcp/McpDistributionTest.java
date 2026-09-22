@@ -93,7 +93,7 @@ class McpDistributionTest {
         assertEquals(2, lines.size(), run.out);
         JsonObject init = JsonParser.parseString(lines.get(0)).getAsJsonObject();
         assertEquals(1, init.get("id").getAsInt());
-        assertEquals("2024-11-05", init.getAsJsonObject("result").get("protocolVersion").getAsString());
+        assertEquals("2025-06-18", init.getAsJsonObject("result").get("protocolVersion").getAsString());
         JsonObject tools = JsonParser.parseString(lines.get(1)).getAsJsonObject();
         assertEquals(2, tools.get("id").getAsInt());
         assertEquals(6, tools.getAsJsonObject("result").getAsJsonArray("tools").size());

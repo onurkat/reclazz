@@ -136,16 +136,62 @@ entire response was received or that every line belongs to this request.
 
 ## Protocol version negotiation
 
-The server implements the `2024-11-05` protocol baseline. Send a nonblank string
+The server supports `2025-06-18` and `2024-11-05`. Send a nonblank string
 `params.protocolVersion` with `initialize`; a missing, blank or non-string version
-returns JSON-RPC `-32602`. A request for `2024-11-05` returns that same version.
-Any other nonblank version receives `2024-11-05` as the supported alternative;
-the server does not claim support for the requested version by echoing it.
+returns JSON-RPC `-32602`. Either supported requested version is returned unchanged.
+Any other nonblank version receives `2025-06-18` as the supported alternative;
+the server does not echo arbitrary versions. The selected version belongs to that
+stdio session. An invalid initialization request does not change it.
 
-Following the [MCP version negotiation rule](https://modelcontextprotocol.io/specification/2024-11-05/basic/lifecycle#version-negotiation),
+Following the [MCP version negotiation rule](https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#version-negotiation),
 a client that supports the returned version sends `notifications/initialized`
-and continues. A client that cannot support it should disconnect. This behavior
-does not add newer protocol features or enforce the entire initialization lifecycle.
+and continues. A client that cannot support it should disconnect. This server
+advertises tools only. It does not implement HTTP transport, resources, prompts,
+sampling or elicitation. Full initialization-order enforcement is not added here;
+for compatibility, direct calls before initialization retain the legacy format.
+
+## Structured tool contracts
+
+Sessions negotiating `2025-06-18` receive `outputSchema` and `annotations` from
+`tools/list`. Every tool execution result, including `isError:true`, has a JSON
+object in `structuredContent` and the identical serialized JSON in its text
+content block. Invalid requests/arguments remain JSON-RPC errors without a tool
+result. Explicit `2024-11-05` sessions retain the existing text results and omit
+these newer fields.
+
+| Tool | Structured result |
+|---|---|
+| `reclazz_status` | Existing `attached`, optional `agent`, `protocol`, `port`, `health`, `reason` fields |
+| `reclazz_scan` | `status:sent` or `unavailable`, `detail`, `reloadConfirmed:false` |
+| `reclazz_build` | `status:acknowledged` or `unavailable`, requested `state`, `detail`, `reloadConfirmed:false` |
+| `reclazz_pending` | `status:observed` or `unavailable`, `lines`, `detail`, `complete:false` |
+| `reclazz_diagnose` | Same diagnostic fields plus requested `className` |
+| `reclazz_verify` | Existing correlated receipt fields; `status:applied` alone is success, or the existing `unavailable` failure object |
+
+`sent` confirms a socket write, `acknowledged` confirms the BUILD signal, and
+`observed` describes collected diagnostic lines. None proves reload completion.
+The diagnostic `complete:false` reflects the lack of a response end marker in
+the broadcast stream. VERIFY preserves its exact-byte checks, and application
+behavior still needs its own test.
+
+Status, pending, diagnose and verify advertise `readOnlyHint:true` and
+`openWorldHint:false`. Scan and build advertise `readOnlyHint:false`,
+`destructiveHint:true`, `idempotentHint:false` and `openWorldHint:true`: live
+reload can replace behavior and invoke application callbacks with external
+effects. These conservative hints are metadata, not permission or safety proof.
+
+The schemas use JSON Schema 2020-12. The contract tests export real responses to
+`mcp-server/build/tool-contract-fixtures`. An independent check can be run with
+an existing Python `jsonschema` 4.x installation after the tests:
+
+```sh
+./gradlew :mcp-server:test --rerun
+python3 mcp-server/src/test/python/check_tool_contracts.py
+```
+
+The Python checker validates the schemas, successful and failed results, and
+rejects deliberate missing fields, wrong types, invalid statuses and invented
+completion flags. It is an optional development check, not a runtime dependency.
 
 ## Input validation
 

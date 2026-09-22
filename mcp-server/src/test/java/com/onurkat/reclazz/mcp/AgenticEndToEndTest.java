@@ -23,7 +23,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
 
 /** Consumer-side proof: only installed jars, JDK tools, stdio and live application probes. */
@@ -51,9 +52,12 @@ class AgenticEndToEndTest {
     private int requestId;
     private long lastCounter;
     private String identity;
+    private String protocolVersion;
 
-    @Test
-    void packagedWorkflowPreservesJvmAndHoldsFailedBuild() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"2024-11-05", "2025-06-18"})
+    void packagedWorkflowPreservesJvmAndHoldsFailedBuild(String version) throws Exception {
+        protocolVersion = version;
         project = Files.createDirectories(dir.resolve("clean consumer with spaces"));
         source = Files.createDirectories(project.resolve("src/consumer"));
         classes = project.resolve("classes");
@@ -87,7 +91,7 @@ class AgenticEndToEndTest {
                 "-cp", classes.toString(), "consumer.App"), "app");
              Child mcp = new Child(List.of(java(), "-jar", mcpJar.toString()), "mcp")) {
             app.await(line -> line.contains("] Watching 1 director"));
-            JsonObject params = new JsonObject(); params.addProperty("protocolVersion", "2024-11-05");
+            JsonObject params = new JsonObject(); params.addProperty("protocolVersion", protocolVersion);
             var init = rpc(mcp, "initialize", params).getAsJsonObject("result");
             assertEquals(System.getProperty("reclazz.mcp.releaseVersion"),
                     init.getAsJsonObject("serverInfo").get("version").getAsString());
@@ -206,7 +210,13 @@ class AgenticEndToEndTest {
     private JsonObject tool(Child mcp, String name, JsonObject args) throws Exception {
         args.addProperty("portFile", port.toString()); args.addProperty("timeoutMs", "3000");
         JsonObject params = new JsonObject(); params.addProperty("name", name); params.add("arguments", args);
-        return rpc(mcp, "tools/call", params).getAsJsonObject("result");
+        JsonObject result = rpc(mcp, "tools/call", params).getAsJsonObject("result");
+        assertEquals(protocolVersion.equals("2025-06-18"), result.has("structuredContent"));
+        if (result.has("structuredContent")) {
+            assertEquals(result.get("structuredContent"), JsonParser.parseString(result.getAsJsonArray("content")
+                    .get(0).getAsJsonObject().get("text").getAsString()));
+        }
+        return result;
     }
 
     private void buildSignal(Child mcp, String state) throws Exception {
