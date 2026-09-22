@@ -45,6 +45,26 @@ public class ReclazzPlugin implements Plugin<Project> {
         ext.getApplyToTest().convention(true);
         ext.getApplyToBootRun().convention(true);
 
+        if (project == project.getRootProject()) {
+            var safe = project.getTasks().register("reclazzSafeBuild", ReclazzSafeBuildTask.class, task -> {
+                task.setGroup("reclazz");
+                task.setDescription("Run a whole child build under an acknowledged, owned Reclazz hold.");
+                task.getTimeoutMs().convention(5000);
+                task.getBuildArguments().convention(List.of("build"));
+                task.getBuildDirectory().convention(project.getLayout().getProjectDirectory());
+                task.getGradleExecutable().convention(new File(project.getGradle().getGradleHomeDir(),
+                        "bin/gradle" + (System.getProperty("os.name").startsWith("Windows") ? ".bat" : "")).getAbsolutePath());
+                task.notCompatibleWithConfigurationCache("Whole-build safety requires validating the outer task graph");
+            });
+            project.getGradle().getTaskGraph().whenReady(graph -> {
+                if (!graph.hasTask(safe.get())) return;
+                if (graph.getAllTasks().size() != 1 || project.getGradle().getStartParameter().isContinuous()
+                        || project.getGradle().getStartParameter().isConfigurationCacheRequested()) {
+                    throw new GradleException("Invoke reclazzSafeBuild alone, without dependencies/finalizers, continuous mode or configuration cache");
+                }
+            });
+        }
+
         Configuration agentConf = project.getConfigurations().create("reclazzAgent");
         agentConf.setCanBeConsumed(false);
         agentConf.setCanBeResolved(true);
