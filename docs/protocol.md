@@ -64,7 +64,7 @@ to every client, except requested BUILD receipts and VERIFY results, which go on
 | `DIAGNOSE <class>` | why the class did or did not reload last time: the class file the bytes came from, the outcome, what a restart would change |
 | `PENDING` | what still needs a restart in this session |
 | `HEALTH` | how the session is going: reloads, failures, latency, watched directories, a reload that is still running |
-| `BUILD <state> [request=<token>]` | hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. States are case-insensitive; `request=` is literal and its token is echoed unchanged. An unknown argument is ignored |
+| `BUILD <state> [request=<token>] [owner=<token>]` | hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. States are case-insensitive; `request=` is literal and its token is echoed unchanged. An unknown argument makes the entire command ignored |
 | `VERIFY <token> <class> <sha256>` | read the latest exact-byte reload receipt for one class; requester-only structured result (below) |
 | `SCAN` | look at the watched directories now, instead of on the file watcher's next poll; what changed is reloaded as usual. Send it when a build has just finished |
 
@@ -89,8 +89,8 @@ A missing result or disconnected client never releases output. After five
 minutes there is one warning; `HEALTH` shows the held count and start time.
 After verifying that the output directory contains a successful build,
 `BUILD ok` can also recover a hold left by an IDE that closed mid-build.
-These commands describe one ordered build stream per agent. Multiple
-independent builders writing the same output directories are not supported.
+Unowned (legacy) commands describe one ordered build stream per agent. They
+cannot alter a named hold, and a named builder cannot take a legacy hold.
 Agents receiving no BUILD signals keep their usual behavior.
 
 For a whole Gradle or Maven build, install the hold **before** invoking the
@@ -105,7 +105,7 @@ requesting connection receives an `INFO` event whose `message` is exactly
 `BUILD_ACK <token> <state>` (state lower-case). For started/failed the hold is
 installed before this receipt. For ok it confirms scheduling the capture,
 **not** completion of capture or reload. There is no receipt when the listener
-is unavailable or throws. Legacy BUILD commands still work without receipts.
+is unavailable or throws. Legacy BUILD commands still work without receipts when no named hold exists.
 
 Use the terminal wrapper in the MCP jar for either build tool; see
 [mcp-server.md](mcp-server.md#protecting-terminal-builds). It requires this
@@ -114,10 +114,34 @@ compiler runs. A missing receipt is a failure, never permission to proceed.
 If an ok receipt is lost, its result is uncertain: the agent may already have
 accepted output; verify live behavior rather than reporting success.
 
-Sending only `BUILD ok` releases an abandoned hold after a verified successful
-build. Run only one wrapper/builder at a time for a given agent. The wrapper
-protects only compilation launched through it; applying an attachment plugin
-does not automatically wrap later terminal compilations.
+### Build ownership
+
+Add `owner=<token>` together with `request=<token>` to protect a named build.
+Both tokens use 1–64 ASCII letters, digits, underscores or hyphens. Options may
+appear in either order; duplicate or invalid options are ignored as a whole.
+Only `started` acquires a free named hold. A different owner, or an unowned
+command, cannot change it with started, ok or failed. Successful requests receive
+`BUILD_ACK <token> <state> owner=<owner>`; ownership conflicts or completion
+without an active named hold receive `BUILD_REJECTED <token> <state> owner=<owner>`.
+An unowned request rejected by a named hold receives `BUILD_REJECTED <token> <state>`.
+Replies go only to the requesting connection. An unavailable listener produces
+no receipt, including when an older listener cannot enforce named ownership.
+
+Ownership survives failure and disconnect. Reuse the same owner for recovery:
+start another complete build, then signal ok only after successful compilation.
+Scan or read failure retains ownership too. The ok receipt precedes asynchronous
+capture; another owner's start is rejected until that capture is accepted.
+Already accepted batches can finish reloading while the next build is held.
+There is no timeout unlock or force takeover. If the owner token is lost,
+restart the application/agent to reset the hold.
+
+Choose a unique owner per independent build. This is cooperative correlation,
+not authentication: sharing a token deliberately shares ownership. It cannot
+isolate output from a process that writes without acquiring the hold. Legacy
+unowned builders still require a single ordered builder. An unowned ok can
+recover only an unowned hold after a verified successful build. Attachment
+plugins do not automatically wrap terminal compilation. New wrappers require
+an exact owner-correlated receipt and refuse to compile against older agents.
 
 ## Nudging the agent from a build
 

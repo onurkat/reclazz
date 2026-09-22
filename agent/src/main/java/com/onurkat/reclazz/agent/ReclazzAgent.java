@@ -583,7 +583,7 @@ public class ReclazzAgent {
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
 
             reloadQueue.setVerification(verification);
-            if (statusServer != null) statusServer.setBuildListener(state -> reloadQueue.build(state, watcher::scanNow));
+            if (statusServer != null) statusServer.setOwnedBuildListener((owner, state) -> reloadQueue.build(owner, state, watcher::scanNow));
 
             // Register the reload pipeline. Java changes are queued BEFORE
             // the executor task is submitted: while one batch compiles, new

@@ -64,6 +64,7 @@ public class StatusServer implements StatusReporter.StatusListener {
     /** Acts on SCAN: the watcher looks now instead of waiting for the JDK. */
     private volatile Runnable scanner;
     private volatile java.util.function.Consumer<String> build;
+    private volatile java.util.function.BiPredicate<String, String> ownedBuild;
     private static final String BUILD = "BUILD";
     private static final String VERIFY = "VERIFY";
     private volatile ReloadVerification verification;
@@ -71,6 +72,8 @@ public class StatusServer implements StatusReporter.StatusListener {
     void setVerification(ReloadVerification verification) { this.verification = verification; }
 
     public void setBuildListener(java.util.function.Consumer<String> build) { this.build = build; }
+
+    public void setOwnedBuildListener(java.util.function.BiPredicate<String, String> build) { this.ownedBuild = build; }
 
     public StatusServer(int port, Path portFile) {
         this.requestedPort = port;
@@ -180,24 +183,31 @@ public class StatusServer implements StatusReporter.StatusListener {
             }
             if (trimmed.regionMatches(true, 0, BUILD + " ", 0, BUILD.length() + 1)) {
                 String[] parts = trimmed.substring(BUILD.length() + 1).strip().split("\\s+");
-                if (parts.length > 2) return;
+                if (parts.length > 3) return;
                 String state = parts[0];
                 String token = null;
-                if (parts.length == 2) {
-                    if (!parts[1].matches("request=[A-Za-z0-9_-]{1,64}")) return;
-                    token = parts[1].substring("request=".length());
+                String owner = null;
+                for (int i = 1; i < parts.length; i++) {
+                    if (parts[i].matches("request=[A-Za-z0-9_-]{1,64}") && token == null) {
+                        token = parts[i].substring("request=".length());
+                    } else if (parts[i].matches("owner=[A-Za-z0-9_-]{1,64}") && owner == null) {
+                        owner = parts[i].substring("owner=".length());
+                    } else return;
                 }
+                if (owner != null && token == null) return;
                 if (state.equalsIgnoreCase("started") || state.equalsIgnoreCase("ok") || state.equalsIgnoreCase("failed")) {
+                    java.util.function.BiPredicate<String, String> guarded = ownedBuild;
                     java.util.function.Consumer<String> listener = build;
-                    if (listener != null) {
-                        listener.accept(state);
-                        // The started/failed hold is installed before this receipt. For ok,
-                        // this confirms scheduling only, never that a reload has completed.
-                        if (token != null) reply.accept(String.format(
-                                "{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
-                                "BUILD_ACK " + token + " " + state.toLowerCase(java.util.Locale.ROOT),
-                                Instant.now().toString()));
-                    }
+                    boolean accepted;
+                    if (guarded != null) accepted = guarded.test(owner, state);
+                    else if (owner == null && listener != null) { listener.accept(state); accepted = true; }
+                    else return;
+                    // Acknowledgement follows the hold update; ok confirms scheduling, not admission.
+                    if (token != null) reply.accept(String.format(
+                            "{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                            (accepted ? "BUILD_ACK " : "BUILD_REJECTED ") + token + " "
+                                    + state.toLowerCase(java.util.Locale.ROOT)
+                                    + (owner == null ? "" : " owner=" + owner), Instant.now().toString()));
                 }
                 return;
             }

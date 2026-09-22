@@ -162,7 +162,7 @@ class AgenticEndToEndTest {
 
     private int wrappedCompile(List<String> compile, String name) throws Exception {
         List<String> args = new ArrayList<>(List.of(java(), "-cp", mcpJar.toString(),
-                "com.onurkat.reclazz.mcp.BuildMain", "--port-file", port.toString(), "--"));
+                "com.onurkat.reclazz.mcp.BuildMain", "--port-file", port.toString(), "--owner", "workflow", "--"));
         args.addAll(compile);
         return run(args, name);
     }
@@ -220,7 +220,7 @@ class AgenticEndToEndTest {
     }
 
     private void buildSignal(Child mcp, String state) throws Exception {
-        JsonObject args = new JsonObject(); args.addProperty("state", state);
+        JsonObject args = new JsonObject(); args.addProperty("state", state); args.addProperty("owner", "workflow");
         JsonObject result = tool(mcp, "reclazz_build", args);
         assertFalse(result.get("isError").getAsBoolean(), result.toString());
         assertTrue(result.getAsJsonArray("content").get(0).getAsJsonObject().get("text")

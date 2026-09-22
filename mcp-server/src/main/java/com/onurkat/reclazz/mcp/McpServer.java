@@ -99,13 +99,18 @@ public final class McpServer {
         JsonObject build = tool("reclazz_build",
                 "Signal compilation state. Wait for acknowledged started BEFORE compiling. Send ok only "
                         + "after exit zero, failed otherwise. SCAN cannot release a failed build. "
-                        + "One ordered builder per agent; receipt is not reload completion.", false);
+                        + "Use a unique owner token and retain it for recovery; receipt is not reload completion.", false);
         JsonObject state = stringProp("started, ok or failed");
         JsonArray states = new JsonArray();
         for (String value : List.of("started", "ok", "failed")) states.add(value);
         state.add("enum", states);
         build.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("state", state);
         build.getAsJsonObject("inputSchema").getAsJsonArray("required").add("state");
+        JsonObject owner = stringProp("Unique builder token; retain across started/ok/failed and recovery. Not authentication.");
+        owner.addProperty("maxLength", 64);
+        owner.addProperty("pattern", "^[A-Za-z0-9_-]{1,64}$");
+        build.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("owner", owner);
+        build.getAsJsonObject("inputSchema").getAsJsonArray("required").add("owner");
         tools.add(build);
         JsonObject verify = tool("reclazz_verify",
                 "Check completion for exact compiled class bytes. Requires className and lower-case SHA-256 sha256. "
@@ -169,7 +174,7 @@ public final class McpServer {
 
         Map<String, String> opts = new LinkedHashMap<>();
         opts.put("baseDir", System.getProperty("user.dir"));
-        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state")) {
+        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner")) {
             if (!arguments.has(key)) continue;
             if (!isString(arguments.get(key))) return error(request, -32602, key + " must be a string");
             String value = arguments.get(key).getAsString();
@@ -217,6 +222,9 @@ public final class McpServer {
                 break;
             }
             case "reclazz_build": {
+                if (!BuildSession.validOwner(opts.get("owner"))) {
+                    return error(request, -32602, "reclazz_build requires owner: 1-64 ASCII letters, digits, _ or -");
+                }
                 if (!arguments.has("state") || !arguments.get("state").isJsonPrimitive()
                         || !arguments.getAsJsonPrimitive("state").isString()
                         || !BuildSession.validState(arguments.get("state").getAsString())) {
@@ -232,6 +240,7 @@ public final class McpServer {
                 }
                 data = ToolContracts.operation(isError ? "unavailable" : "acknowledged", text);
                 data.addProperty("state", state);
+                data.addProperty("owner", opts.get("owner"));
                 break;
             }
             case "reclazz_status":

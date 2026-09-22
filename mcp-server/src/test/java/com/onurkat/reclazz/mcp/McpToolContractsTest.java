@@ -45,7 +45,7 @@ class McpToolContractsTest {
     }
     private JsonObject args() {
         JsonObject a = new JsonObject(); a.addProperty("className", "A");
-        a.addProperty("sha256", ReloadVerificationTest.HASH); a.addProperty("state", "started");
+        a.addProperty("sha256", ReloadVerificationTest.HASH); a.addProperty("state", "started"); a.addProperty("owner", "contract-owner");
         a.addProperty("portFile", dir.resolve("missing.port").toString()); a.addProperty("timeoutMs", "500"); return a;
     }
     private static JsonObject call(McpServer s, String tool, JsonObject args) {

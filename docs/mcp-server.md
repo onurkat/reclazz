@@ -163,7 +163,7 @@ these newer fields.
 |---|---|
 | `reclazz_status` | Existing `attached`, optional `agent`, `protocol`, `port`, `health`, `reason` fields |
 | `reclazz_scan` | `status:sent` or `unavailable`, `detail`, `reloadConfirmed:false` |
-| `reclazz_build` | `status:acknowledged` or `unavailable`, requested `state`, `detail`, `reloadConfirmed:false` |
+| `reclazz_build` | `status:acknowledged` or `unavailable`, requested `state` and `owner`, `detail`, `reloadConfirmed:false` |
 | `reclazz_pending` | `status:observed` or `unavailable`, `lines`, `detail`, `complete:false` |
 | `reclazz_diagnose` | Same diagnostic fields plus requested `className` |
 | `reclazz_verify` | Existing correlated receipt fields; `status:applied` alone is success, or the existing `unavailable` failure object |
@@ -244,18 +244,29 @@ the receipt timeout (default 5000; range 1–60000). Command arguments after `--
 are passed directly, without a shell. Quote paths containing spaces. On Windows,
 use your command interpreter explicitly for `.bat`/`.cmd` build launchers.
 
-The wrapper waits for an acknowledged `started` before launching the command.
+The wrapper generates a unique owner token and prints it to stderr before
+connecting. Retain that token: `--owner TOKEN` reuses it for recovery after a
+failed or disconnected build. Owner tokens are 1–64 ASCII letters, digits,
+underscores or hyphens. A fresh token cannot take another outstanding hold.
+The wrapper waits for an owner-correlated `started` receipt before launching the command.
 It sends `ok` only after exit zero, and `failed` after a nonzero exit, launch
 failure or interruption. A lost connection is never replaced mid-build. A
 missing agent or missing start receipt prevents compilation; an unconfirmed
 finish returns nonzero. A confirmed finish preserves the command's exit code.
 The app keeps running. Class output from a failed build stays held until a
-subsequent successful build. If the wrapper is killed, the installed hold stays
-in place. Run another complete wrapped build to recover; do not send ok merely
+subsequent successful build by the same owner. If the wrapper is killed, the
+installed hold stays in place. Run another complete wrapped build with the
+printed `--owner TOKEN` to recover; do not send ok merely
 to clear the warning. A lost ok receipt leaves an uncertain result, not proof
 that no reload occurred.
 
-Only one builder may target a given agent at a time, including IDE builds.
+Different named owners and unowned IDE commands cannot change an owned hold.
+A named start cannot take an active legacy hold. Ownership releases after
+successful output capture, asynchronously after the ok receipt. Lost owner
+tokens require an application/agent restart; no timeout or force unlock exists.
+Tokens identify cooperating builds; they are not authentication and cannot
+protect output from a compiler that bypasses the hold. Use a unique token for
+each independent build and retain it until recovery is complete.
 Use compile-only commands, not long-running `bootRun`/`spring-boot:run`. Normal
 unwrapped builds retain legacy behavior. The Gradle/Maven attachment plugins
 do not install this wrapper automatically. Receipt confirms the build signal,
@@ -264,15 +275,19 @@ not completion of live reload; exercise the endpoint/test to verify behavior.
 ## Protecting a build through MCP
 
 For a client that launches its own compiler, call `reclazz_build` with
-`{"state":"started","portFile":"/absolute/path/.reclazz/agent.port"}` and
+`{"state":"started","owner":"build-unique-id","portFile":"/absolute/path/.reclazz/agent.port"}` and
 require `isError:false` **before** launching compilation. Afterwards call the
-same tool against the same running agent with `state:"ok"` only for exit zero,
+same tool against the same running agent with the same `owner` and `state:"ok"` only for exit zero,
 or `state:"failed"` for failure/cancellation. Do not restart the app or run
 another builder between those calls. If the target changes, stop the sequence;
 the terminal wrapper is preferable when one persistent connection is required.
 `reclazz_scan` alone provides no failed-build protection and cannot release a
 hold. The MCP server signals states; it does not launch arbitrary build commands
-or place compiler output into its JSON-RPC stream.
+or place compiler output into its JSON-RPC stream. The caller must choose and
+retain a unique owner; it is required in both supported MCP protocol versions.
+Missing or malformed owner is an invalid argument. Ownership rejection or an
+old/wrong-owner receipt is a tool error. Use the retained owner for started,
+failed and successful recovery; a disconnected MCP call does not release it.
 
 ## Verifying the compiled change
 

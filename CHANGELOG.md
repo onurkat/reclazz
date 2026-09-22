@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Named BUILD ownership prevents competing or legacy clients from changing a held
+  build, including after failure or disconnect. MCP build calls require an owner;
+  the terminal wrapper generates one and supports `--owner` for recovery. Ownership
+  lasts through output capture; acknowledgements still do not prove live reload.
 - MCP 2025-06-18 sessions expose typed output schemas, structured results with
   matching JSON text, and conservative tool behavior annotations for all six tools.
   Explicit 2024-11-05 sessions retain legacy text; unknown versions negotiate

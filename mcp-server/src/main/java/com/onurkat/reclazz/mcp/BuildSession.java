@@ -22,14 +22,18 @@ final class BuildSession implements AutoCloseable {
     private final Socket socket;
     private final BufferedReader in;
     private final int timeoutMs;
+    private final String owner;
 
-    private BuildSession(Socket socket, int timeoutMs) throws IOException {
+    private BuildSession(Socket socket, int timeoutMs, String owner) throws IOException {
         this.socket = socket;
         this.timeoutMs = timeoutMs;
+        this.owner = owner;
         this.in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
     }
 
     static BuildSession open(Map<String, String> opts) throws IOException {
+        String owner = opts.getOrDefault("owner", UUID.randomUUID().toString());
+        if (!validOwner(owner)) throw new IOException("owner must be 1-64 ASCII letters, digits, _ or -");
         AgentSocket.Result address = new AgentSocket.Result();
         AgentSocket.resolvePort(opts, address);
         if (address.reason != null) throw new IOException(address.reason);
@@ -42,7 +46,7 @@ final class BuildSession implements AutoCloseable {
         Socket socket = new Socket();
         try {
             socket.connect(new InetSocketAddress("127.0.0.1", address.port), timeout);
-            BuildSession session = new BuildSession(socket, timeout);
+            BuildSession session = new BuildSession(socket, timeout, owner);
             JsonObject hello = session.read(session.deadline());
             if (!"CONNECTED".equals(text(hello, "level")) || text(hello, "agent").isBlank()
                     || !hello.has("version") || hello.get("version").getAsInt() < 1) {
@@ -55,6 +59,10 @@ final class BuildSession implements AutoCloseable {
         }
     }
 
+    static boolean validOwner(String owner) {
+        return owner != null && owner.matches("[A-Za-z0-9_-]{1,64}");
+    }
+
     static boolean validState(String state) {
         return state != null && Set.of("started", "ok", "failed").contains(state);
     }
@@ -62,15 +70,19 @@ final class BuildSession implements AutoCloseable {
     void signal(String state) throws IOException {
         if (!validState(state)) throw new IOException("state must be started, ok or failed");
         String token = UUID.randomUUID().toString();
-        socket.getOutputStream().write(("BUILD " + state + " request=" + token + "\n")
+        socket.getOutputStream().write(("BUILD " + state + " request=" + token + " owner=" + owner + "\n")
                 .getBytes(StandardCharsets.UTF_8));
         socket.getOutputStream().flush();
         long deadline = deadline();
         try {
             while (true) {
                 JsonObject event = read(deadline);
-                if ("INFO".equals(text(event, "level"))
-                        && ("BUILD_ACK " + token + " " + state).equals(text(event, "message"))) return;
+                if (!"INFO".equals(text(event, "level"))) continue;
+                String suffix = token + " " + state + " owner=" + owner;
+                if (("BUILD_ACK " + suffix).equals(text(event, "message"))) return;
+                if (("BUILD_REJECTED " + suffix).equals(text(event, "message"))) {
+                    throw new IOException("Build ownership rejected; another hold is active or this owner has not started");
+                }
             }
         } catch (IOException | RuntimeException e) {
             throw new IOException("BUILD " + state + " was not acknowledged; do not assume build/reload success", e);

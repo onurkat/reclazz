@@ -26,6 +26,7 @@ public final class BuildMain {
                 case "--port" -> "port";
                 case "--port-file" -> "portFile";
                 case "--timeout-ms" -> "timeoutMs";
+                case "--owner" -> "owner";
                 default -> null;
             };
             if (key == null || index == args.length) return usage();
@@ -36,7 +37,12 @@ public final class BuildMain {
     }
 
     static int execute(Map<String, String> opts, List<String> command) {
-        try (BuildSession session = BuildSession.open(opts)) {
+        Map<String, String> owned = new LinkedHashMap<>(opts);
+        owned.putIfAbsent("owner", java.util.UUID.randomUUID().toString());
+        if (!BuildSession.validOwner(owned.get("owner"))) return usage();
+        System.err.println("Reclazz build owner: " + owned.get("owner")
+                + "; retain for recovery with --owner if this build fails or disconnects.");
+        try (BuildSession session = BuildSession.open(owned)) {
             session.signal("started"); // Receipt is mandatory BEFORE the child can write any output.
             Process child = null;
             try {
@@ -60,7 +66,7 @@ public final class BuildMain {
 
     private static int usage() {
         System.err.println("Usage: java -cp reclazz-mcp.jar com.onurkat.reclazz.mcp.BuildMain "
-                + "[--port N | --port-file PATH] [--timeout-ms N] -- COMMAND [ARG...]");
+                + "[--port N | --port-file PATH] [--timeout-ms N] [--owner TOKEN] -- COMMAND [ARG...]");
         return 2;
     }
 }
