@@ -273,5 +273,153 @@
       }
     ],
     "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_doctor": {
+    "type": "object",
+    "properties": {
+      "requestId": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "detail": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "sessionId": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "agentVersion": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "pid": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "javaVersion": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "vmName": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "workingDirectory": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "observed",
+          "unavailable"
+        ]
+      },
+      "clientWorkingDirectory": {
+        "type": "string"
+      },
+      "nextActions": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "reloadConfirmed": {
+        "type": "boolean",
+        "const": false
+      },
+      "watcherState": {
+        "type": "string",
+        "enum": [
+          "starting",
+          "watching",
+          "stopped",
+          "unavailable"
+        ]
+      },
+      "buildHold": {
+        "type": "string",
+        "enum": [
+          "none",
+          "named",
+          "legacy",
+          "unavailable"
+        ]
+      },
+      "watchedDirectories": {
+        "type": "array",
+        "maxItems": 8,
+        "items": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        }
+      },
+      "watchedDirectoryCount": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "unwatchableDirectoryCount": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "watchSampleTruncated": {
+        "type": "boolean"
+      },
+      "buildOwnershipSupported": {
+        "type": "boolean"
+      },
+      "verifySupported": {
+        "type": "boolean"
+      },
+      "scanSupported": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "status",
+      "detail",
+      "clientWorkingDirectory",
+      "nextActions",
+      "reloadConfirmed"
+    ],
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "status": {
+              "const": "observed"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "requestId",
+            "detail",
+            "sessionId",
+            "agentVersion",
+            "pid",
+            "javaVersion",
+            "vmName",
+            "workingDirectory",
+            "status",
+            "clientWorkingDirectory",
+            "nextActions",
+            "reloadConfirmed",
+            "watcherState",
+            "buildHold",
+            "watchedDirectories",
+            "watchedDirectoryCount",
+            "unwatchableDirectoryCount",
+            "watchSampleTruncated",
+            "buildOwnershipSupported",
+            "verifySupported",
+            "scanSupported"
+          ]
+        }
+      }
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
   }
 }

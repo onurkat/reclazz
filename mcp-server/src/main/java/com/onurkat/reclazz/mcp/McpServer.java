@@ -86,6 +86,9 @@ public final class McpServer {
                 "Report whether the Reclazz hot-reload agent is attached to a running app and how it "
                         + "is doing (reloads, failures, latency, watched directories), as JSON.",
                 false));
+        tools.add(tool("reclazz_doctor",
+                "Read correlated JVM/session/watch and BUILD/VERIFY capability evidence. Compare the target before acting. "
+                        + "A bounded directory sample and working directory do not prove output coverage, project root or reload success.", false));
         tools.add(tool("reclazz_scan",
                 "Ask the agent to look at the watched directories now and reload changed classes, "
                         + "instead of waiting for its next poll. Dispatch only, not acceptance or reload completion.",
@@ -141,7 +144,7 @@ public final class McpServer {
         props.add("port", stringProp("Connect directly to this agent status port (optional)."));
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
         props.add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default "
-                + (name.equals("reclazz_build") || name.equals("reclazz_verify") ? "5000." : "2000.")));
+                + (name.equals("reclazz_build") || name.equals("reclazz_verify") || name.equals("reclazz_doctor") ? "5000." : "2000.")));
         JsonArray required = new JsonArray();
         if (needsClassName) {
             JsonObject className = stringProp("Binary Java class name, at most 256 characters.");
@@ -200,6 +203,17 @@ public final class McpServer {
         JsonObject data;
         boolean isError = false;
         switch (name) {
+            case "reclazz_doctor": {
+                try (BuildSession session = BuildSession.open(opts)) {
+                    data = session.doctor();
+                } catch (java.io.IOException | IllegalArgumentException e) {
+                    data = ToolContracts.operation("unavailable", "Doctor evidence unavailable; check the endpoint and matching agent version.");
+                }
+                isError = !"observed".equals(data.get("status").getAsString());
+                data = DoctorResult.finish(data);
+                text = data.toString();
+                break;
+            }
             case "reclazz_verify": {
                 if (!BuildSession.validVerification(opts.get("className"), opts.get("sha256"))) {
                     return error(request, -32602, "reclazz_verify requires className and a lower-case 64-digit sha256");

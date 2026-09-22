@@ -12,7 +12,7 @@ from jsonschema import Draft202012Validator
 
 fixtures = Path('mcp-server/build/tool-contract-fixtures')
 files = sorted(fixtures.glob('*.json'))
-assert len(files) == 23, f'Expected 23 current contract fixtures, found {len(files)}'
+assert len(files) == 25, f'Expected 25 current contract fixtures, found {len(files)}'
 negative = 0
 for file in files:
     fixture = json.loads(file.read_text())

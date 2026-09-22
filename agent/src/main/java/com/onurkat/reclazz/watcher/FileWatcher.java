@@ -210,6 +210,7 @@ public class FileWatcher {
         }
     }
     private volatile boolean active = true;
+    private volatile String watchState = "starting";
     private Consumer<ChangeEvent> changeHandler;
     private Consumer<List<ChangeEvent>> batchHandler;
 
@@ -271,6 +272,7 @@ public class FileWatcher {
 
             registerDirectories();
             reportUnwatchable();
+            watchState = "watching";
             pollLoop();
 
             // The loop ends when active goes false, which is a stop somebody
@@ -291,11 +293,14 @@ public class FileWatcher {
                     "it stopped during this session with " + e.getClass().getSimpleName());
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+        } finally {
+            watchState = "stopped";
         }
     }
 
     public void stopWatching() {
         active = false;
+        watchState = "stopped";
         scanBarriers.forEach(barrier -> barrier.completeExceptionally(new IOException("File watcher stopped")));
         scanBarriers.clear();
         try {
@@ -493,6 +498,20 @@ public class FileWatcher {
     /** How many directories were refused, for tests and diagnostics. */
     public int unwatchableCount() {
         return unwatchable.size();
+    }
+
+    /** Observational sample of live registrations, not configured or inferred output roots. */
+    public record WatchEvidence(String state, int count, int refused, List<String> directories, boolean truncated) { }
+
+    public WatchEvidence doctorEvidence() {
+        java.util.Set<String> paths = new java.util.TreeSet<>();
+        for (var entry : watchKeyMap.entrySet()) {
+            Path directory = entry.getValue().directory();
+            if (entry.getKey().isValid() && Files.isDirectory(directory))
+                paths.add(directory.toAbsolutePath().normalize().toString());
+        }
+        List<String> sample = paths.stream().filter(path -> path.length() <= 256).limit(8).toList();
+        return new WatchEvidence(watchState, paths.size(), unwatchableCount(), sample, sample.size() < paths.size());
     }
 
     private void registerSingle(Path dir, String moduleName, String sourceRoot) throws IOException {

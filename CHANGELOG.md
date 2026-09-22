@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Read-only `reclazz_doctor` and correlated DOCTOR receipts expose target JVM,
+  VERIFY session, live watcher registrations and wired capabilities with bounded
+  evidence and next checks. Unavailable evidence never implies readiness or reload.
 - Named BUILD ownership prevents competing or legacy clients from changing a held
   build, including after failure or disconnect. MCP build calls require an owner;
   the terminal wrapper generates one and supports `--owner` for recovery. Ownership

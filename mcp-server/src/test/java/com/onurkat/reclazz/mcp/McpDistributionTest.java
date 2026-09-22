@@ -72,7 +72,7 @@ class McpDistributionTest {
         Set<String> names = tools.getAsJsonObject("result").getAsJsonArray("tools").asList().stream()
                 .map(tool -> tool.getAsJsonObject().get("name").getAsString()).collect(Collectors.toSet());
         assertEquals(Set.of("reclazz_status", "reclazz_build", "reclazz_verify", "reclazz_scan",
-                "reclazz_pending", "reclazz_diagnose"), names);
+                "reclazz_pending", "reclazz_diagnose", "reclazz_doctor"), names);
         JsonObject response = JsonParser.parseString(lines.get(2)).getAsJsonObject();
         assertEquals(3, response.get("id").getAsInt());
         String text = response.getAsJsonObject("result").getAsJsonArray("content").get(0)
@@ -96,7 +96,7 @@ class McpDistributionTest {
         assertEquals("2025-06-18", init.getAsJsonObject("result").get("protocolVersion").getAsString());
         JsonObject tools = JsonParser.parseString(lines.get(1)).getAsJsonObject();
         assertEquals(2, tools.get("id").getAsInt());
-        assertEquals(6, tools.getAsJsonObject("result").getAsJsonArray("tools").size());
+        assertEquals(7, tools.getAsJsonObject("result").getAsJsonArray("tools").size());
     }
 
     @Test
