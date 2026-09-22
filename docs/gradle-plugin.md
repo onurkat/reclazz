@@ -96,3 +96,53 @@ state. Options: `--port-file`, `--port`, `--hybris-home`, `--timeout-ms`.
 - `reclazzStatus` lives in the plugin, not the agent jar, because the agent's
   tests forbid the shipped agent from opening a client socket; the status
   client that must open one to loopback belongs beside the build.
+
+## Opt-in whole-build safety
+
+A plugin build containing `reclazzSafeBuild` can protect a **separate, finite
+child Gradle invocation** against partial compilation. Ordinary `build`,
+`compileJava`, `bootRun` and `test` are unchanged. Apply the plugin at the root,
+use a locally built standalone MCP jar containing the owned `BuildMain`, and
+configure the root task:
+
+```kotlin
+tasks.named<com.onurkat.reclazz.gradle.ReclazzSafeBuildTask>("reclazzSafeBuild") {
+    mcpJar.set(file("tools/reclazz-mcp-1.3.0.jar"))
+    port.set(54123) // explicit loopback agent endpoint; check its doctor identity first
+    owner.set("builder-alice") // retain for recovery; do not share with concurrent builders
+    timeoutMs.set(5000) // acknowledgement timeout, not a build duration limit
+    buildArguments.set(listOf("--offline", ":service:classes", ":web:classes"))
+    // gradleExecutable defaults to the current Gradle installation.
+    // buildDirectory defaults to this root project.
+}
+```
+
+Invoke **only** `./gradlew reclazzSafeBuild --no-configuration-cache`. Do not add
+other tasks, dependencies or finalizers: the outer task graph is checked before
+any task runs. Continuous mode and outer configuration cache are rejected. The
+child uses the configured argument list, a fresh temporary project cache and
+`--no-daemon` (so it cannot deadlock on the parent's project-cache lock). Specify
+child properties/settings explicitly; outer CLI options are not automatically
+forwarded. The safety task has no up-to-date/cache shortcut, even when every child
+compile task is up-to-date. Nested safe builds are refused.
+
+The standalone wrapper acquires a named BUILD hold and waits for its correlated
+acknowledgement **before launching the child**. It sends `ok` only after the
+whole child exits zero; compilation failure sends `failed` and preserves the
+hold. A missing agent, rejected ownership or missing acknowledgement fails the
+task. The MCP jar is an explicit local file, not a new plugin dependency or a
+network download. A plugin version without this task must be rebuilt locally;
+these instructions do not imply a published release.
+
+After a failed build, fix the sources and repeat the complete build with the
+**same owner**. A different owner cannot release or compile through that hold.
+Keep the owner private to one builder; do not run concurrent builds with the same
+owner. A failed/disconnected run is not permission to send `BUILD ok` manually.
+After recovery, use exact-byte `VERIFY`/`reclazz_verify_batch` receipts and check
+application behavior: successful compilation alone confirms no reload.
+
+Protection covers only outputs written synchronously by the selected child build
+to the selected agent's watched directories. Configuration-time writes by the
+outer build, external writers, asynchronously spawned work, unselected modules
+and other agents are outside that boundary. It is not an atomic reload or rollback.
+Gradle 8.10.2 is the exercised version; other versions need separate acceptance.

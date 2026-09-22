@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Opt-in root Gradle `reclazzSafeBuild` and Maven `safe-build` entrypoints wrap a
+  complete child build in an acknowledged owned BUILD hold using a local MCP jar.
+  Failed reactors retain the hold; real two-module acceptance proves recovery
+  and exact-byte reload evidence separately from compilation success.
 - `reclazz_verify_batch` checks up to 32 unique class/hash pairs on one connection
   with a shared deadline and per-item receipts. Stdio cancellation frees the
   observation socket while ping stays responsive; results never claim atomic reload.

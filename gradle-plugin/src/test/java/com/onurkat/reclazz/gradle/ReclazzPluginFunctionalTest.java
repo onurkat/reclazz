@@ -128,6 +128,63 @@ class ReclazzPluginFunctionalTest {
         assertTrue(run("bootRun").getOutput().contains("APPLICATION_RAN"));
     }
 
+    @Test
+    void safeBuildRequiresExplicitConfiguration() throws Exception {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n");
+        String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+                .withArguments("reclazzSafeBuild", "--stacktrace").buildAndFail().getOutput();
+        assertTrue(out.contains("Configure mcpJar"), out);
+    }
+
+    @Test
+    void mixedSafetyTaskGraphFailsBeforeAnyOutputTask() throws Exception {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n"
+                + "tasks.register('unsafeWrite') { doLast { file('wrote').text = 'bad' } }\n"
+                + "tasks.named('reclazzSafeBuild') { dependsOn 'unsafeWrite' }\n");
+        String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+                .withArguments("reclazzSafeBuild", "--stacktrace").buildAndFail().getOutput();
+        assertTrue(out.contains("Invoke reclazzSafeBuild alone"), out);
+        assertFalse(Files.exists(projectDir.resolve("wrote")));
+    }
+
+    @Test
+    void continuousAndConfigurationCacheCannotBypassOuterGraphGuard() throws Exception {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n");
+        for (String flag : java.util.List.of("--configuration-cache", "--continuous")) {
+            String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+                    .withArguments("reclazzSafeBuild", flag, "--stacktrace").buildAndFail().getOutput();
+            assertTrue(out.contains("Invoke reclazzSafeBuild alone"), out);
+        }
+    }
+
+    @Test
+    void nestedSafeBuildIsRefusedBeforeAnyAgentConnection() throws Exception {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("build.gradle", "plugins { id 'com.onurkat.reclazz' }\n");
+        var environment = new java.util.HashMap<>(System.getenv());
+        environment.put("RECLAZZ_SAFE_BUILD_ACTIVE", "1");
+        String out = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+                .withEnvironment(environment).withArguments("reclazzSafeBuild", "--stacktrace")
+                .buildAndFail().getOutput();
+        assertTrue(out.contains("Nested Reclazz safe build refused"), out);
+    }
+
+    @Test
+    void ordinaryCompilationStillReusesConfigurationCacheWithoutSafetyConfiguration() throws Exception {
+        write("settings.gradle", "rootProject.name = 'sample'");
+        write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n");
+        write("src/main/java/Main.java", "public class Main {}\n");
+        GradleRunner runner = GradleRunner.create().withProjectDir(projectDir.toFile()).withPluginClasspath()
+                .withArguments("compileJava", "--configuration-cache", "--stacktrace");
+        runner.build();
+        String out = runner.build().getOutput();
+        assertTrue(out.contains("Reusing configuration cache."), out);
+        assertTrue(Files.exists(projectDir.resolve("build/classes/java/main/Main.class")));
+    }
+
     private BuildResult run(String task) {
         return GradleRunner.create()
                 .withProjectDir(projectDir.toFile())

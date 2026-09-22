@@ -388,3 +388,30 @@ changes, release a build hold or reclaim its owner. A result already sent may
 race with cancellation; clients should ignore such a late response, as described
 in the [2025-06-18 cancellation specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/utilities/cancellation)
 and its [2024-11-05 counterpart](https://modelcontextprotocol.io/specification/2024-11-05/basic/utilities/cancellation).
+
+### Build-plugin entrypoints
+
+The Gradle plugin's explicit `reclazzSafeBuild` task and Maven plugin's standalone
+`safe-build` goal reuse the local MCP jar's `BuildMain` for one owned connection
+around a complete child build. See [Gradle safety](gradle-plugin.md#opt-in-whole-build-safety)
+and [Maven safety](maven.md#opt-in-whole-reactor-safety). They do not change plain
+compile/build invocations, add automatic `ok` finalizers, or imply a published
+plugin release. Retain the owner for recovery and collect exact-byte VERIFY
+receipts separately after a successful build.
+
+A reproducible acceptance harness lives at `scripts/test-build-plugin-safety.py`.
+Build local agent/MCP/Gradle-plugin jars and package the Maven plugin, then run:
+
+```text
+python3 scripts/test-build-plugin-safety.py --work-dir /tmp/reclazz-safety-proof --gradle /absolute/path/to/gradle
+```
+
+It requires a fresh work directory, Java/Javac 17+, Gradle 8.10.2, Maven 3.9.x and
+an already populated offline Maven cache. `--help` lists explicit artifact and
+tool paths. It does not publish or install to the user's Maven repository; it
+uses a temporary cache overlay. Each tool exercises two real modules and a live
+agent: opt-out, partial failure, competing owner rejection, same-owner recovery,
+exact-byte receipts, up-to-date barriers and offline refusal before output.
+Logs and `evidence.json` stay in the work directory. A missing tool/dependency is
+a failed prerequisite, never a silently skipped success. Mac/Linux local results
+do not prove Windows compatibility.
