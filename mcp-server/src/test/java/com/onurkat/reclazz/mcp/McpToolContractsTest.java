@@ -183,8 +183,10 @@ class McpToolContractsTest {
                 System.getProperty("reclazz.mcp.releaseJar")).redirectError(dir.resolve("stderr").toFile()).start();
         try {
             try(var out=child.getOutputStream()){out.write(input.getBytes(StandardCharsets.UTF_8));}
-            assertTrue(child.waitFor(10,TimeUnit.SECONDS)); assertEquals(0,child.exitValue(),Files.readString(dir.resolve("stderr")));
+            // Drain stdout before waiting: a small OS pipe buffer (Windows ~4KB) deadlocks a
+            // large modern tools/list against a parent that only reads after waitFor.
             List<String> lines=new String(child.getInputStream().readAllBytes(),StandardCharsets.UTF_8).lines().toList();
+            assertTrue(child.waitFor(10,TimeUnit.SECONDS)); assertEquals(0,child.exitValue(),Files.readString(dir.resolve("stderr")));
             assertEquals(3,lines.size());
             assertEquals(version,JsonParser.parseString(lines.get(0)).getAsJsonObject().getAsJsonObject("result").get("protocolVersion").getAsString());
             JsonObject tool=JsonParser.parseString(lines.get(1)).getAsJsonObject().getAsJsonObject("result").getAsJsonArray("tools").get(0).getAsJsonObject();
