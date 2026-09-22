@@ -123,7 +123,7 @@ jobs:
         with:
           name: test-reports-${{ matrix.os }}-jdk${{ matrix.jdk }}
           path: |
-            agent/build/reports/tests/
-            build/reports/tests/
+            **/build/reports/tests/
+            **/build/test-results/
             build/reports/pluginVerifier/
           if-no-files-found: ignore
