@@ -136,7 +136,7 @@ class BuildSafetyTest {
 
     private static JsonObject request(String state, int port) {
         return JsonParser.parseString("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{"
-                + "\"name\":\"reclazz_build\",\"arguments\":{\"port\":\"" + port + "\",\"state\":" + state + "}}}")
+                + "\"name\":\"reclazz_build\",\"arguments\":{\"port\":\"" + port + "\",\"owner\":\"test-owner\",\"state\":" + state + "}}}")
                 .getAsJsonObject();
     }
 
@@ -158,7 +158,8 @@ class BuildSafetyTest {
     static void ack(PrintWriter out, String command) {
         String[] words = command.split(" ");
         out.println("{\"level\":\"INFO\",\"message\":\"BUILD_ACK "
-                + words[2].substring("request=".length()) + " " + words[1] + "\"}");
+                + words[2].substring("request=".length()) + " " + words[1]
+                + (words.length == 4 ? " " + words[3] : "") + "\"}");
     }
     interface Conversation { void run(BufferedReader in, PrintWriter out) throws Exception; }
     static class FakeAgent implements AutoCloseable {

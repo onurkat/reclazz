@@ -89,4 +89,19 @@ class ProtocolContractTest {
         while (m.find()) served.add(m.group(2));
         assertEquals(documented, served, "docs/protocol.md and StatusServer disagree about the commands");
     }
+    @Test
+    void namedBuildReceiptsMatchTheDocumentedContract() throws IOException {
+        String doc = doc();
+        assertTrue(doc.contains("[owner=<token>]"));
+        assertTrue(doc.contains("BUILD_ACK <token> <state> owner=<owner>"));
+        assertTrue(doc.contains("BUILD_REJECTED <token> <state> owner=<owner>"));
+        StatusServer server = new StatusServer(0, null);
+        server.setOwnedBuildListener((owner, state) -> "alice".equals(owner));
+        var replies = new java.util.ArrayList<String>();
+        server.handleCommand("BUILD started request=r1 owner=alice", replies::add);
+        server.handleCommand("BUILD started request=r2 owner=bob", replies::add);
+        assertTrue(replies.get(0).contains("BUILD_ACK r1 started owner=alice"));
+        assertTrue(replies.get(1).contains("BUILD_REJECTED r2 started owner=bob"));
+    }
+
 }

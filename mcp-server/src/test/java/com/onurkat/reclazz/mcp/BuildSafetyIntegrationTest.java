@@ -92,7 +92,7 @@ class BuildSafetyIntegrationTest {
             assertFalse(Files.readString(log).contains("VALUES=4:"));
 
             // A successful compiler may still produce an unsupported reload.
-            try (BuildSession session = BuildSession.open(Map.of("portFile", port.toString()))) {
+            try (BuildSession session = BuildSession.open(Map.of("portFile", port.toString(), "owner", "integration-build"))) {
                 session.signal("started");
                 Files.writeString(source.resolve("A.java"),
                         "public class A extends java.util.ArrayList<String> { public int value() { return 5; } }");
@@ -175,7 +175,7 @@ class BuildSafetyIntegrationTest {
                 + java.io.File.pathSeparator
                 + Path.of(com.google.gson.JsonObject.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         List<String> command = new ArrayList<>(List.of(BuildSafetyTest.java(), "-cp", cp,
-                BuildMain.class.getName(), "--port-file", port.toString(), "--"));
+                BuildMain.class.getName(), "--port-file", port.toString(), "--owner", "integration-build", "--"));
         command.addAll(compile);
         Process wrapper = new ProcessBuilder(command).inheritIO().start();
         try {

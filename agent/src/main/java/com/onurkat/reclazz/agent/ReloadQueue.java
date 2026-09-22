@@ -73,6 +73,7 @@ public final class ReloadQueue {
     private final Object buildLock = new Object();
     private long generation;
     private boolean holding;
+    private String buildOwner;
     private long heldSince;
     private boolean holdWarned;
     private final ByteReader reader;
@@ -205,8 +206,19 @@ public final class ReloadQueue {
      */
     /** Socket-thread state changes must not wait for the reload executor. */
     public void build(String state, Runnable scan) {
+        build(null, state, scan);
+    }
+
+    /** Named ownership survives disconnects and failed scan/capture until admission succeeds. */
+    public boolean build(String owner, String state, Runnable scan) {
+        if (owner != null && !owner.matches("[A-Za-z0-9_-]{1,64}")) return false;
+        if (state == null || !(state.equalsIgnoreCase("started") || state.equalsIgnoreCase("ok")
+                || state.equalsIgnoreCase("failed"))) return false;
         long accepted;
         synchronized (buildLock) {
+            if (holding && !java.util.Objects.equals(buildOwner, owner)) return false;
+            if (!holding && owner != null && !state.equalsIgnoreCase("started")) return false;
+            if (!holding) buildOwner = owner;
             if (state.equalsIgnoreCase("started") || state.equalsIgnoreCase("failed")) {
                 generation++;
                 if (!holding || state.equalsIgnoreCase("started")) {
@@ -216,13 +228,14 @@ public final class ReloadQueue {
                 holding = true;
                 StatusReporter.info("Build " + state.toLowerCase(java.util.Locale.ROOT) + "; holding "
                         + pendingClassFiles.size() + " class files until BUILD ok");
-                return;
+                return true;
             }
-            if (!state.equalsIgnoreCase("ok")) return;
+            if (!state.equalsIgnoreCase("ok")) return false;
             accepted = holding ? generation : -1;
         }
         if (accepted == -1) submit("Scanning build output", scan);
         else submit("Accepting build output", () -> acceptBuild(accepted, scan));
+        return true;
     }
 
     void checkBuildHold() {
@@ -255,6 +268,7 @@ public final class ReloadQueue {
                 return;
             }
             holding = false;
+            buildOwner = null;
         }
         if (!capture.isEmpty()) classBoundary.accept(() -> applyClassBatch(capture));
     }
