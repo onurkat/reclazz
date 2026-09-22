@@ -33,6 +33,10 @@ public final class McpServer {
 
     /** Handle one JSON-RPC request. Returns the response, or null for a notification. */
     public JsonObject handle(JsonObject request) {
+        return handle(request, new RequestCancellation());
+    }
+
+    JsonObject handle(JsonObject request, RequestCancellation cancellation) {
         if (!isString(request.get("jsonrpc")) || !"2.0".equals(request.get("jsonrpc").getAsString())
                 || !isString(request.get("method")) || (request.has("id") && !validId(request.get("id")))) {
             return error(request, -32600, "Invalid Request");
@@ -58,7 +62,7 @@ public final class McpServer {
             case "tools/list":
                 return success(request, toolsList());
             case "tools/call":
-                return toolsCall(request);
+                return toolsCall(request, cancellation);
             default:
                 return error(request, -32601, "Method not found: " + method);
         }
@@ -125,6 +129,23 @@ public final class McpServer {
         verify.getAsJsonObject("inputSchema").getAsJsonObject("properties")
                 .add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default 5000."));
         tools.add(verify);
+        JsonObject batch = tool("reclazz_verify_batch",
+                "Observe 1–32 unique class/hash pairs on one agent connection with one total timeout. "
+                        + "Only allApplied confirms individual applied receipts; never atomic reload or application behavior. "
+                        + "Cancellable via notifications/cancelled in stdio; no automatic retry.", false);
+        JsonObject entries = new JsonObject(); entries.addProperty("type", "array");
+        entries.addProperty("minItems", 1); entries.addProperty("maxItems", BatchVerification.MAX_ITEMS);
+        JsonObject pair = new JsonObject(); pair.addProperty("type", "object"); pair.addProperty("additionalProperties", false);
+        JsonObject pairProps = new JsonObject();
+        JsonObject className = stringProp("Unique binary Java class name"); className.addProperty("maxLength", 256);
+        JsonObject hash = stringProp("Exact compiled bytes SHA-256"); hash.addProperty("pattern", "^[0-9a-f]{64}$"); hash.addProperty("maxLength", 64);
+        pairProps.add("className", className); pairProps.add("sha256", hash); pair.add("properties", pairProps);
+        JsonArray pairRequired = new JsonArray(); pairRequired.add("className"); pairRequired.add("sha256"); pair.add("required", pairRequired);
+        entries.add("items", pair);
+        batch.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("items", entries);
+        batch.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("timeoutMs", stringProp("Total batch budget including connect/handshake/all receipts, 1–60000 ms; default 5000."));
+        batch.getAsJsonObject("inputSchema").getAsJsonArray("required").add("items");
+        tools.add(batch);
         if (STRUCTURED_PROTOCOL.equals(protocolVersion)) {
             for (JsonElement tool : tools) ToolContracts.describe(tool.getAsJsonObject());
         }
@@ -166,7 +187,7 @@ public final class McpServer {
         return p;
     }
 
-    private JsonObject toolsCall(JsonObject request) {
+    private JsonObject toolsCall(JsonObject request, RequestCancellation cancellation) {
         JsonObject params = request.has("params") ? request.getAsJsonObject("params") : new JsonObject();
         if (!isString(params.get("name"))) return error(request, -32602, "name must be a string");
         String name = params.get("name").getAsString();
@@ -203,6 +224,14 @@ public final class McpServer {
         JsonObject data;
         boolean isError = false;
         switch (name) {
+            case "reclazz_verify_batch": {
+                if (!BatchVerification.valid(arguments.get("items")))
+                    return error(request, -32602, "items must contain 1–32 unique className/lower-case sha256 pairs, with no extra fields");
+                data = BatchVerification.run(arguments.getAsJsonArray("items"), opts, cancellation);
+                isError = !data.get("allApplied").getAsBoolean();
+                text = data.toString();
+                break;
+            }
             case "reclazz_doctor": {
                 try (BuildSession session = BuildSession.open(opts)) {
                     data = session.doctor();
@@ -341,11 +370,11 @@ public final class McpServer {
         return response;
     }
 
-    private static boolean isString(JsonElement value) {
+    static boolean isString(JsonElement value) {
         return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isString();
     }
 
-    private static boolean validId(JsonElement value) {
+    static boolean validId(JsonElement value) {
         if (isString(value)) return true;
         if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) return false;
         try {

@@ -89,7 +89,7 @@ printf '%s\n' \
 ```
 
 Expect two JSON response lines: initialization reports `reclazz-mcp` and the
-jar's version; the tools list contains the seven tools below. The notification
+jar's version; the tools list contains the eight tools below. The notification
 has no response. EOF closes the server. If Java cannot open the jar, check the
 absolute path; if it cannot load its classes, use the packaged jar from
 `build/distributions/mcp`, not the plain development jar. A missing attached
@@ -102,6 +102,7 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | `reclazz_doctor` | Read correlated target JVM, session, live watch registration and capability evidence, with next checks |
 | `reclazz_status` | Whether the agent is attached and how it is doing (reloads, failures, latency, watched directories), as JSON |
 | `reclazz_build` | Signal `started`, `ok` or `failed`; waits for the agent to acknowledge the signal, and returns a tool error if unconfirmed |
+| `reclazz_verify_batch` | Read 1–32 unique class/hash pairs on one connection within a total timeout; cancellable through stdio |
 | `reclazz_verify` | Structured exact-byte reload receipt; requires `className` and lower-case `sha256`; only `status:applied` is success |
 | `reclazz_scan` | Ask the agent to look at the watched directories now and reload changed classes, instead of waiting for its next poll |
 | `reclazz_pending` | What still needs a restart in this session |
@@ -168,6 +169,7 @@ these newer fields.
 | `reclazz_build` | `status:acknowledged` or `unavailable`, requested `state` and `owner`, `detail`, `reloadConfirmed:false` |
 | `reclazz_pending` | `status:observed` or `unavailable`, `lines`, `detail`, `complete:false` |
 | `reclazz_diagnose` | Same diagnostic fields plus requested `className` |
+| `reclazz_verify_batch` | `status:applied`, `incomplete` or `unavailable`; ordered `results`, `requestedCount`, `sessionId`, `allApplied`, `atomic:false`, `reloadConfirmed:false` |
 | `reclazz_verify` | Existing correlated receipt fields; `status:applied` alone is success, or the existing `unavailable` failure object |
 
 `sent` confirms a socket write, `acknowledged` confirms the BUILD signal, and
@@ -176,7 +178,7 @@ The diagnostic `complete:false` reflects the lack of a response end marker in
 the broadcast stream. VERIFY preserves its exact-byte checks, and application
 behavior still needs its own test.
 
-Status, doctor, pending, diagnose and verify advertise `readOnlyHint:true` and
+Status, doctor, pending, diagnose, verify and verify-batch advertise `readOnlyHint:true` and
 `openWorldHint:false`. Scan and build advertise `readOnlyHint:false`,
 `destructiveHint:true`, `idempotentHint:false` and `openWorldHint:true`: live
 reload can replace behavior and invoke application callbacks with external
@@ -339,3 +341,50 @@ Follow `nextActions` to inspect startup, output paths or a held build. `buildHol
 reports only the kind of hold, never its owner token, and doctor cannot release it.
 Even a successful `status:observed` reports `reloadConfirmed:false`; follow the
 owned-build, exact-byte VERIFY and application behavior checks for actual proof.
+
+## Bounded batch verification and cancellation
+
+`reclazz_verify_batch` takes `items`, an array of 1–32 objects containing only
+`className` and lower-case `sha256`. Class names must be unique and follow the
+single-VERIFY rules. The complete array is validated before opening a connection.
+Endpoint arguments remain the same. `timeoutMs` is a string from 1 to 60000,
+default `"5000"`, covering connect, handshake and every receipt together.
+
+The tool composes existing VERIFY commands sequentially on one socket; it neither
+builds nor polls automatically. `results` preserves input order. Validated earlier
+receipts are retained when a timeout, disconnect, malformed receipt or changed
+session makes the remaining entries unavailable. It does not reconnect or combine
+proof from different agent sessions. Each socket reply is limited to 16384
+characters, with at most 32 replies. `sessionId` is empty if none was validated.
+
+`status:applied` and `allApplied:true` require every individual receipt to be
+applied; `incomplete` means all receipts arrived but at least one was not applied.
+`unavailable` means one or more receipts could not be validated. Both latter cases
+return `isError:true`. Even all-applied is a sequence of point-in-time observations,
+not a transactional reload or guarantee that earlier receipts remain current.
+`atomic` and `reloadConfirmed` remain false. Test application behavior separately.
+Both supported MCP versions return JSON text; 2025-06-18 also returns the identical
+object as structured content with its output schema.
+
+The stdio server accepts one batch at a time with no queued work. While it is
+active, `ping` and `tools/list` remain responsive; other requests receive JSON-RPC
+error -32000 and can be retried after completion/cancellation. Duplicate active IDs
+are invalid. Initialization therefore cannot change a batch's negotiated output
+version while it runs. Existing non-batch tools retain synchronous behavior.
+
+For a pending batch, send a notification with the original request ID and no `id`:
+
+```json
+{"jsonrpc":"2.0","method":"notifications/cancelled","params":{"requestId":42,"reason":"No longer needed"}}
+```
+
+Cancellation closes the batch socket, including during handshake or reply waits,
+and suppresses its response if cancellation wins the completion race. Numeric and
+string IDs are distinct. Unknown, completed and malformed cancellations are
+ignored. Initialize and non-batch tools are not cancellable. End of stdin also
+cancels the active batch and frees its socket; keep stdin open while awaiting a
+batch result. Cancelling observation does not cancel application reload, undo
+changes, release a build hold or reclaim its owner. A result already sent may
+race with cancellation; clients should ignore such a late response, as described
+in the [2025-06-18 cancellation specification](https://modelcontextprotocol.io/specification/2025-06-18/basic/utilities/cancellation)
+and its [2024-11-05 counterpart](https://modelcontextprotocol.io/specification/2024-11-05/basic/utilities/cancellation).

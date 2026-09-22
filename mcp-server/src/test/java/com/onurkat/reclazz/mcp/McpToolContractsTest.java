@@ -21,7 +21,7 @@ class McpToolContractsTest {
     private static final String MODERN = "2025-06-18";
     private static final String LEGACY = "2024-11-05";
     private static final List<String> TOOLS = List.of("reclazz_status", "reclazz_scan", "reclazz_pending",
-            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor");
+            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch");
     @TempDir Path dir;
 
     private static JsonObject rpc(String method, JsonObject params) {
@@ -45,6 +45,7 @@ class McpToolContractsTest {
     }
     private JsonObject args() {
         JsonObject a = new JsonObject(); a.addProperty("className", "A");
+        a.add("items", BatchVerificationTest.items("A", "B"));
         a.addProperty("sha256", ReloadVerificationTest.HASH); a.addProperty("state", "started"); a.addProperty("owner", "contract-owner");
         a.addProperty("portFile", dir.resolve("missing.port").toString()); a.addProperty("timeoutMs", "500"); return a;
     }
@@ -79,7 +80,7 @@ class McpToolContractsTest {
         assertTrue(tools(modern).get("reclazz_status").has("outputSchema"));
     }
 
-    @Test void sevenToolsAdvertiseTypedOutputsAndConservativeHints() {
+    @Test void eightToolsAdvertiseTypedOutputsAndConservativeHints() {
         Map<String, JsonObject> t = tools(client(MODERN)); assertEquals(new HashSet<>(TOOLS), t.keySet());
         for (String name : TOOLS) {
             JsonObject tool = t.get(name);
@@ -98,7 +99,7 @@ class McpToolContractsTest {
         }
     }
 
-    @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_scan","reclazz_pending","reclazz_diagnose","reclazz_build","reclazz_verify","reclazz_doctor"})
+    @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_scan","reclazz_pending","reclazz_diagnose","reclazz_build","reclazz_verify","reclazz_doctor","reclazz_verify_batch"})
     void offlineResultsAreStructuredAndLegacyRemainsText(String name) throws Exception {
         JsonObject data = checked(client(MODERN), name, args(), !name.equals("reclazz_status"), "offline");
         if (name.equals("reclazz_status")) assertFalse(data.get("attached").getAsBoolean());
@@ -146,6 +147,19 @@ class McpToolContractsTest {
                 JsonObject d = checked(client(MODERN),"reclazz_build",a,!ack,state+"-"+ack);
                 assertEquals(ack ? "acknowledged" : "unavailable", d.get("status").getAsString());
                 assertEquals(state,d.get("state").getAsString()); assertFalse(d.get("reloadConfirmed").getAsBoolean()); agent.verify();
+            }
+        }
+    }
+
+    @Test void batchOutputsValidateForAppliedAndPartialReceipts() throws Exception {
+        for (String status : List.of("applied", "running")) {
+            try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+                BatchVerificationTest.reply(out,in.readLine(),"applied");
+                BatchVerificationTest.reply(out,in.readLine(),status);
+            })) {
+                JsonObject a=args();a.addProperty("port",""+agent.server.getLocalPort());
+                JsonObject d=checked(client(MODERN),"reclazz_verify_batch",a,!status.equals("applied"),status);
+                assertEquals(status.equals("applied"),d.get("allApplied").getAsBoolean());assertFalse(d.get("atomic").getAsBoolean());agent.verify();
             }
         }
     }

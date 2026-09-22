@@ -421,5 +421,179 @@
       }
     ],
     "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_verify_batch": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "applied",
+          "incomplete",
+          "unavailable"
+        ]
+      },
+      "detail": {
+        "type": "string"
+      },
+      "sessionId": {
+        "type": "string"
+      },
+      "requestedCount": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 32
+      },
+      "allApplied": {
+        "type": "boolean"
+      },
+      "atomic": {
+        "type": "boolean",
+        "const": false
+      },
+      "reloadConfirmed": {
+        "type": "boolean",
+        "const": false
+      },
+      "results": {
+        "type": "array",
+        "minItems": 1,
+        "maxItems": 32,
+        "items": {
+          "type": "object",
+          "properties": {
+            "requestId": {
+              "type": "string"
+            },
+            "sessionId": {
+              "type": "string"
+            },
+            "className": {
+              "type": "string"
+            },
+            "expectedSha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "observedSha256": {
+              "type": "string"
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "applied",
+                "failed",
+                "unverified",
+                "running",
+                "mismatch",
+                "not_observed",
+                "unavailable"
+              ]
+            },
+            "source": {
+              "type": "string"
+            },
+            "detail": {
+              "type": "string"
+            },
+            "completedAt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "status",
+            "className",
+            "expectedSha256",
+            "detail"
+          ],
+          "anyOf": [
+            {
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "unavailable"
+                  ]
+                }
+              }
+            },
+            {
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "applied",
+                    "failed",
+                    "unverified",
+                    "running",
+                    "mismatch",
+                    "not_observed"
+                  ]
+                }
+              },
+              "required": [
+                "requestId",
+                "sessionId",
+                "className",
+                "expectedSha256",
+                "observedSha256",
+                "status",
+                "source",
+                "detail",
+                "completedAt"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "required": [
+      "status",
+      "detail",
+      "sessionId",
+      "requestedCount",
+      "allApplied",
+      "atomic",
+      "reloadConfirmed",
+      "results"
+    ],
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "status": {
+              "const": "applied"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "allApplied": {
+              "const": true
+            },
+            "sessionId": {
+              "minLength": 1
+            },
+            "results": {
+              "items": {
+                "properties": {
+                  "status": {
+                    "const": "applied"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "allApplied": {
+              "const": false
+            }
+          }
+        }
+      }
+    ],
+    "$schema": "https://json-schema.org/draft/2020-12/schema"
   }
 }

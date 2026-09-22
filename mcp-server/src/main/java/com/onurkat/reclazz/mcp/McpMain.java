@@ -34,34 +34,39 @@ public final class McpMain {
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8), false);
 
-        while (true) {
-            // Drain an oversized frame without retaining it, then resume at the next newline.
-            StringBuilder line = new StringBuilder();
-            boolean oversized = false;
-            int c;
-            while ((c = in.read()) != -1 && c != '\n') {
-                if (line.length() < MAX_FRAME_CHARS) line.append((char) c);
-                else oversized = true;
+        java.util.function.Consumer<JsonObject> output = response -> {
+            synchronized (out) {
+                out.print(gson.toJson(response)); out.print('\n'); out.flush();
             }
-            if (c == -1 && line.length() == 0) break;
-            if (!oversized && line.toString().isBlank()) continue;
-            JsonObject response;
-            if (oversized) {
-                response = McpServer.error(null, -32600, "Request exceeds 65536 characters");
-            } else {
-                try {
-                    JsonElement request = gson.fromJson(line.toString(), JsonElement.class);
-                    response = request != null && request.isJsonObject()
-                            ? server.handle(request.getAsJsonObject())
-                            : McpServer.error(null, -32600, "Invalid Request");
-                } catch (JsonParseException malformed) {
-                    response = McpServer.error(null, -32700, "Parse error");
+        };
+        try (BatchDispatcher dispatcher = new BatchDispatcher(server, output)) {
+            while (true) {
+                // Drain an oversized frame without retaining it, then resume at the next newline.
+                StringBuilder line = new StringBuilder();
+                boolean oversized = false;
+                int c;
+                while ((c = in.read()) != -1 && c != '\n') {
+                    if (line.length() < MAX_FRAME_CHARS) line.append((char) c);
+                    else oversized = true;
                 }
-            }
-            if (response != null) {
-                out.print(gson.toJson(response));
-                out.print('\n');
-                out.flush();
+                if (c == -1 && line.length() == 0) break;
+                if (!oversized && line.toString().isBlank()) continue;
+                JsonObject response;
+                if (oversized) {
+                    response = McpServer.error(null, -32600, "Request exceeds 65536 characters");
+                } else {
+                    try {
+                        JsonElement request = gson.fromJson(line.toString(), JsonElement.class);
+                        if (request != null && request.isJsonObject()) {
+                            dispatcher.dispatch(request.getAsJsonObject());
+                            continue;
+                        }
+                        response = McpServer.error(null, -32600, "Invalid Request");
+                    } catch (JsonParseException malformed) {
+                        response = McpServer.error(null, -32700, "Parse error");
+                    }
+                }
+                if (response != null) output.accept(response);
             }
         }
     }
