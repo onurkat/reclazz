@@ -55,6 +55,12 @@ versions, OS/architecture, JVM identity, session and actual tool results. Compil
 and application logs remain on failure as well. Do not infer success from a
 directory's presence or from evidence left by a previous run.
 
+The same run also writes `evaluation.json` with seven named scenario outcomes,
+false-completion checks, observed restarts, tool-call counts and elapsed time,
+including failed and unrun scenarios. See [workflow evaluation](agentic-evaluation.md)
+for exact metric definitions and failure-reporting limits. This is a deterministic
+workflow evaluation, not a model benchmark.
+
 ## Real build tools
 
 `scripts/test-build-plugin-safety.py` is the existing separate acceptance harness

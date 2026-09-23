@@ -4,6 +4,9 @@
   "private": true,
   "type": "module",
   "engines": { "node": ">=22" },
-  "scripts": { "test": "node --test acceptance.test.mjs" },
+  "scripts": {
+    "test": "npm run test:evaluation && node --test acceptance.test.mjs",
+    "test:evaluation": "node --test evaluation.test.mjs"
+  },
   "devDependencies": { "@modelcontextprotocol/sdk": "1.30.0" }
 }
