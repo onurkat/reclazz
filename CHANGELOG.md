@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Reproducible agentic workflow evaluation measures seven live-JVM scenarios,
+  recording success, false completion, observed restarts, tool calls and elapsed
+  time. Failure reports retain unrun scenarios; negative recorder tests guard
+  against accepting stale receipts or unchanged live behavior as completion.
 - Independent official MCP TypeScript SDK acceptance exercises all eight tools
   against packaged jars and a persistent JVM, including failed-build holds,
   exact-byte receipts, error schemas and paths with spaces. The consumer test

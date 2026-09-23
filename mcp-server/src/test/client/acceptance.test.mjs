@@ -11,6 +11,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { promisify } from 'node:util';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { Evaluation, reloadProven } from './evaluation.mjs';
 
 const exec = promisify(execFile);
 const root = path.resolve(import.meta.dirname, '../../../..');
@@ -40,6 +41,17 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   await fs.mkdir(evidenceRoot, { recursive: true });
   const dir = await fs.mkdtemp(path.join(evidenceRoot, `${process.platform}-`));
   t.diagnostic(`Evidence: ${dir}`);
+  const evaluation = new Evaluation();
+  const metadata = { platform: process.platform, arch: process.arch, node: process.version,
+    sdk: '1.30.0', version, java, javac };
+  // Register before setup: missing artifacts or compiler failures must retain a non-passing report.
+  t.after(async () => {
+    const report = evaluation.report(metadata);
+    await fs.writeFile(path.join(dir, 'evaluation.json'), JSON.stringify(report, null, 2) + '\n');
+    t.diagnostic(`Evaluation: ${JSON.stringify(report.summary)}`);
+  });
+  const jdk = await exec(java, ['-version']);
+  metadata.jdk = jdk.stderr.trim();
   const install = path.join(dir, 'installed jars with spaces');
   const project = path.join(dir, 'consumer project with spaces');
   const source = path.join(project, 'src');
@@ -49,6 +61,10 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   const mcp = path.join(install, 'mcp.jar');
   await fs.copyFile(path.join(root, `agent/build/libs/agent-${version}.jar`), agent);
   await fs.copyFile(path.join(root, `mcp-server/build/distributions/mcp/reclazz-mcp-${version}.jar`), mcp);
+  metadata.artifacts = {};
+  for (const [name, file] of Object.entries({ agent, mcp })) {
+    metadata.artifacts[name] = createHash('sha256').update(await fs.readFile(file)).digest('hex');
+  }
   const portFile = path.join(project, 'agent.port');
   const service = path.join(source, 'Service.java');
   const appSource = path.join(source, 'App.java');
@@ -113,11 +129,17 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   for (const tool of tools) assert.ok(tool.outputSchema, `${tool.name} must expose outputSchema`);
   const results = [], called = new Set();
   let negativeWitnesses = 0;
-  async function call(name, args = {}, isError = false) {
-    const result = await client.callTool({ name: `reclazz_${name}`,
+  const invoke = (request, ...options) => evaluation.toolCall(request.name,
+    () => client.callTool(request, ...options));
+  async function call(name, args = {}, isError = false, inspect = () => {}) {
+    const result = await invoke({ name: `reclazz_${name}`,
       arguments: { portFile, timeoutMs: '3000', ...args } }, undefined, { timeout: 6000 });
-    assert.equal(result.isError, isError, JSON.stringify(result));
     const data = result.structuredContent;
+    if (['build', 'scan', 'doctor'].includes(name)) {
+      evaluation.completion(`${name} is not reload proof`, data?.reloadConfirmed === true, false, { data });
+    }
+    inspect(data); // Record a false completion before the acceptance assertion can throw.
+    assert.equal(result.isError, isError, JSON.stringify(result));
     assert.ok(data, `Missing structuredContent: ${JSON.stringify(result)}`);
     assert.deepEqual(JSON.parse(result.content[0].text), data);
     // Explicitly validate error outputs too: SDK automatic validation skips isError results.
@@ -144,14 +166,27 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   assert.equal(doctor.reloadConfirmed, false);
   await call('pending');
   await call('diagnose', { className: 'Service' });
-  let identity, counter = 0;
-  async function probe(value) {
+  let identity, counter = 0, baseline;
+  async function probe(value, receipt, sha256) {
     const offset = appOut.length;
     app.stdin.write('read\n');
     // \r? so a Windows CRLF line still matches: JS "." excludes \r, so .*\n alone never spans \r\n.
-    const output = await until(() => appOut.slice(offset), text => /PROBE .*\r?\n/.test(text), 'live application probe');
+    let output;
+    try {
+      output = await until(() => appOut.slice(offset), text => /PROBE .*\r?\n/.test(text), 'live application probe');
+    } catch (error) {
+      if (receipt) evaluation.completion('reload without live observation', receipt.status === 'applied', false);
+      throw error;
+    }
     const fields = output.match(/PROBE (\d+) ([\w-]+) (\d+) (\d+)/);
     assert.ok(fields, output);
+    const observed = { pid: fields[1], nonce: fields[2], counter: Number(fields[3]),
+      value: Number(fields[4]), sessionId: doctor.sessionId };
+    evaluation.observe(observed);
+    if (receipt) evaluation.completion('exact receipt and live behavior', receipt.status === 'applied',
+      reloadProven(receipt, { className: 'Service', sha256, value }, { ...baseline, counter }, observed),
+      { receipt, observed, expected: { className: 'Service', sha256, value }, baseline: { ...baseline, counter } });
+    baseline ??= observed;
     assert.equal(fields[1], String(app.pid));
     identity ??= fields[2];
     assert.equal(fields[2], identity, 'Application restarted');
@@ -174,72 +209,96 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     const deadline = Date.now() + 15000;
     let result;
     do {
-      result = await client.callTool({ name: 'reclazz_verify', arguments: {
+      result = await invoke({ name: 'reclazz_verify', arguments: {
         portFile, timeoutMs: '3000', className: 'Service', sha256: expected
       } }, undefined, { timeout: 6000 });
       if (!result.isError && result.structuredContent?.status === 'applied') break;
       await delay(50);
     } while (Date.now() < deadline);
-    const receipt = await call('verify', { className: 'Service', sha256: expected });
+    const receipt = await call('verify', { className: 'Service', sha256: expected }, false, data => {
+      evaluation.completion('exact receipt', data?.status === 'applied',
+        data?.className === 'Service' && data?.expectedSha256 === expected
+          && data?.observedSha256 === expected && data?.sessionId === doctor.sessionId, { data });
+    });
     assert.equal(receipt.status, 'applied');
     assert.equal(receipt.observedSha256, expected);
     assert.equal(receipt.sessionId, doctor.sessionId);
     return receipt;
   }
   await probe(1);
-  await build('started');
-  await writeService(2);
-  await compile([service], 'successful');
-  await build('ok');
-  const secondHash = await hash(serviceClass);
-  await applied(secondHash);
-  await probe(2);
-  const batch = await call('verify_batch', { items: [
-    { className: 'Service', sha256: secondHash },
-    { className: 'App', sha256: await hash(path.join(classes, 'App.class')) }
-  ] }, true);
-  assert.equal(batch.status, 'incomplete');
-  assert.equal(batch.allApplied, false);
-  assert.equal(batch.atomic, false);
-  assert.deepEqual(batch.results.map(result => result.status), ['applied', 'not_observed']);
-  assert.equal(batch.sessionId, doctor.sessionId);
-
-  await build('started'); // Counterfactual removes this hold before partial compilation.
-  await writeService(3);
-  await compile([service], 'partial-output');
-  const failedHash = await hash(serviceClass);
-  assert.notEqual(failedHash, secondHash);
-  const broken = path.join(source, 'Broken.java');
-  await fs.writeFile(broken, 'class Broken { int value = missingSymbol; }');
-  await compile([broken], 'failed', false);
-  await build('failed');
-  const scan = await call('scan');
-  assert.equal(scan.reloadConfirmed, false);
-  await held(2);
-  await build('ok', 'other-owner', true);
-  const unaccepted = await call('verify', { className: 'Service', sha256: failedHash }, true);
-  assert.notEqual(unaccepted.status, 'applied');
-  assert.equal(unaccepted.observedSha256, secondHash);
-  await build('started');
-  await writeService(4);
-  await fs.unlink(broken);
-  await compile([service, appSource], 'recovery');
-  await build('ok');
-  await applied(await hash(serviceClass));
-  await probe(4);
-  const stale = await call('verify', { className: 'Service', sha256: failedHash }, true);
-  assert.equal(stale.status, 'mismatch');
-  await call('doctor', { portFile: path.join(project, 'missing.port') }, true);
-  await assert.rejects(client.callTool({ name: 'reclazz_build', arguments: { portFile, state: 'invented' } }),
-    error => error.code === -32602);
-  await client.ping();
+  let secondHash, failedHash, broken;
+  await evaluation.scenario('successful-reload', async () => {
+    await build('started');
+    await writeService(2);
+    await compile([service], 'successful');
+    await build('ok');
+    secondHash = await hash(serviceClass);
+    await probe(2, await applied(secondHash), secondHash);
+  });
+  await evaluation.scenario('mixed-batch', async () => {
+    const batch = await call('verify_batch', { items: [
+      { className: 'Service', sha256: secondHash },
+      { className: 'App', sha256: await hash(path.join(classes, 'App.class')) }
+    ] }, true, data => evaluation.completion('mixed batch cannot be complete',
+      data?.allApplied === true || data?.status === 'applied', false, { data }));
+    assert.equal(batch.status, 'incomplete');
+    assert.equal(batch.allApplied, false);
+    assert.equal(batch.atomic, false);
+    assert.deepEqual(batch.results.map(result => result.status), ['applied', 'not_observed']);
+    assert.equal(batch.sessionId, doctor.sessionId);
+    await probe(2);
+  });
+  await evaluation.scenario('failed-build-hold', async () => {
+    await build('started'); // Counterfactual removes this hold before partial compilation.
+    await writeService(3);
+    await compile([service], 'partial-output');
+    failedHash = await hash(serviceClass);
+    assert.notEqual(failedHash, secondHash);
+    broken = path.join(source, 'Broken.java');
+    await fs.writeFile(broken, 'class Broken { int value = missingSymbol; }');
+    await compile([broken], 'failed', false);
+    await build('failed');
+    const scan = await call('scan');
+    assert.equal(scan.reloadConfirmed, false);
+    await held(2);
+    await build('ok', 'other-owner', true);
+    const unaccepted = await call('verify', { className: 'Service', sha256: failedHash }, true,
+      data => evaluation.completion('failed build cannot complete', data?.status === 'applied', false, { data }));
+    assert.notEqual(unaccepted.status, 'applied');
+    assert.equal(unaccepted.observedSha256, secondHash);
+  });
+  await evaluation.scenario('recovery', async () => {
+    await build('started');
+    await writeService(4);
+    await fs.unlink(broken);
+    await compile([service, appSource], 'recovery');
+    await build('ok');
+    const recoveredHash = await hash(serviceClass);
+    await probe(4, await applied(recoveredHash), recoveredHash);
+  });
+  await evaluation.scenario('stale-receipt', async () => {
+    const stale = await call('verify', { className: 'Service', sha256: failedHash }, true,
+      data => evaluation.completion('stale bytes cannot complete', data?.status === 'applied', false, { data }));
+    assert.equal(stale.status, 'mismatch');
+    await probe(4);
+  });
+  await evaluation.scenario('unavailable-target', async () => {
+    await call('doctor', { portFile: path.join(project, 'missing.port') }, true);
+    await probe(4);
+  });
+  await evaluation.scenario('malformed-input', async () => {
+    await assert.rejects(invoke({ name: 'reclazz_build', arguments: { portFile, state: 'invented' } }),
+      error => error.code === -32602);
+    await client.ping();
+    await probe(4);
+  });
   assert.deepEqual([...called].sort(), expectedTools);
   assert.equal(app.exitCode, null);
-  const jdk = await exec(java, ['-version']);
   await fs.writeFile(path.join(dir, 'evidence.json'), JSON.stringify({
     passed: true, platform: process.platform, arch: process.arch, node: process.version,
     sdk: '1.30.0', jdk: jdk.stderr.trim(), version, pid: app.pid, sessionId: doctor.sessionId,
     tools: [...called].sort(), negativeWitnesses, results
   }, null, 2) + '\n');
+  evaluation.finish();
   t.diagnostic(`8 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);
 });
