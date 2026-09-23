@@ -1,0 +1,9 @@
+{
+  "name": "reclazz-client-acceptance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test acceptance.test.mjs" },
+  "devDependencies": { "@modelcontextprotocol/sdk": "1.30.0" }
+}
