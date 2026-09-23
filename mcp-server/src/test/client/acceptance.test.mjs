@@ -148,7 +148,8 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   async function probe(value) {
     const offset = appOut.length;
     app.stdin.write('read\n');
-    const output = await until(() => appOut.slice(offset), text => /PROBE .*\n/.test(text), 'live application probe');
+    // \r? so a Windows CRLF line still matches: JS "." excludes \r, so .*\n alone never spans \r\n.
+    const output = await until(() => appOut.slice(offset), text => /PROBE .*\r?\n/.test(text), 'live application probe');
     const fields = output.match(/PROBE (\d+) ([\w-]+) (\d+) (\d+)/);
     assert.ok(fields, output);
     assert.equal(fields[1], String(app.pid));
