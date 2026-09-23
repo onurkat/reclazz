@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Independent official MCP TypeScript SDK acceptance exercises all eight tools
+  against packaged jars and a persistent JVM, including failed-build holds,
+  exact-byte receipts, error schemas and paths with spaces. The consumer test
+  is wired into Linux/Windows JDK 17 CI; environment evidence is documented in
+  `docs/client-matrix.md`.
 - Opt-in root Gradle `reclazzSafeBuild` and Maven `safe-build` entrypoints wrap a
   complete child build in an acknowledged owned BUILD hold using a local MCP jar.
   Failed reactors retain the hold; real two-module acceptance proves recovery

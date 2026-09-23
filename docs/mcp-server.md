@@ -9,6 +9,9 @@ socket and asks the agent nothing beyond its own state.
 It lives in `:mcp-server`, not the agent jar, because the agent's own tests
 forbid the shipped agent from opening a client socket.
 
+The [client acceptance matrix](client-matrix.md) records independent SDK,
+real build-tool and OS coverage, with runnable tests and explicit untested lanes.
+
 ## Running it
 
 The server requires Java 17 or newer and speaks JSON-RPC over stdio. It is a

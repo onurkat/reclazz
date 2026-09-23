@@ -104,6 +104,33 @@ jobs:
         shell: bash
         run: ./gradlew build buildPlugin -Preclazz.skipRabbitBroker=true
 
+      - name: Set up independent MCP client
+        if: matrix.jdk == '17'
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Install locked test-only MCP SDK
+        if: matrix.jdk == '17'
+        working-directory: mcp-server/src/test/client
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      # Uses JAVA_HOME from setup-java and the jars built above. This exercises
+      # real stdio/process paths on both Windows and Linux, including spaces.
+      - name: Independent MCP SDK and live JVM acceptance
+        if: matrix.jdk == '17'
+        working-directory: mcp-server/src/test/client
+        run: npm test
+
+      - name: Upload independent client evidence
+        if: always() && matrix.jdk == '17'
+        uses: actions/upload-artifact@v7
+        with:
+          name: client-matrix-${{ matrix.os }}-jdk${{ matrix.jdk }}
+          path: mcp-server/build/client-matrix/
+          if-no-files-found: ignore
+
       # Marketplace runs this on submission; failing here instead means we
       # never find out from a rejection email.
       - name: Verify Plugin (JetBrains Plugin Verifier)
