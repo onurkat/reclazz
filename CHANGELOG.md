@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- A reproducible superclass research probe distinguishes direct redefinition
+  refusal from prewired same-loader delegation on named JDKs. The report records
+  original-object and native-type limits; this adds no production reload capability.
 - Reproducible agentic workflow evaluation measures seven live-JVM scenarios,
   recording success, false completion, observed restarts, tool calls and elapsed
   time. Failure reports retain unrun scenarios; negative recorder tests guard

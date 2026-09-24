@@ -156,6 +156,7 @@ than either.
 | [docs/protocol.md](docs/protocol.md) | The status socket, for a client other than the IntelliJ plugin: an IDE extension, a build tool that nudges the agent, a log shipper |
 | [docs/client-matrix.md](docs/client-matrix.md) | The client acceptance matrix: independent MCP SDK, real build-tool and OS coverage, with runnable tests and the lanes that are not yet run |
 | [docs/agentic-evaluation.md](docs/agentic-evaluation.md) | Reproducible workflow scenarios with success, false completion, restart, call and elapsed-time measurements |
+| [docs/superclass-feasibility.md](docs/superclass-feasibility.md) | Versioned superclass research: direct redefinition versus bounded same-loader delegation, with a runnable probe and native type limits |
 | [docs/test-guide.md](docs/test-guide.md) | Trying each capability by hand on a SAP Commerce install |
 | [docs/publishing.md](docs/publishing.md) | Cutting a release: the scripts, the two release-note files, what a version number means |
 | [CHANGELOG.md](CHANGELOG.md) | Every change, with the measurement behind each claim |
