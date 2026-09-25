@@ -235,16 +235,12 @@ public class StructuralAnalyzer {
         public Set<String> getNewAnnotations() { return newAnnotations; }
 
         /**
-         * A change no JVM will apply to a loaded class.
+         * A superclass change unsupported by Reclazz's reload policy.
          *
-         * <p>Only the superclass qualifies, and it was measured rather than
-         * assumed: {@code redefineClasses} rejects a changed superclass on a
-         * stock JDK, on JetBrains Runtime, and on JetBrains Runtime with
-         * {@code -XX:+AllowEnhancedClassRedefinition}, all three with
-         * "attempted to change superclass or interfaces". A changed interface
-         * list is a different case, since that same enhanced redefinition
-         * accepts it, so it is reported through
-         * {@link #isInterfacesChanged()} instead of being refused outright.
+         * <p>This selects superclass refusal/method salvage; it is not a
+         * universal JVM capability claim. Versioned probes are documented in
+         * docs/superclass-feasibility.md. Interface changes are reported through
+         * {@link #isInterfacesChanged()} and follow their separate runtime path.
          */
         public boolean isUnsupported() {
             return superClassChanged;

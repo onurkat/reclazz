@@ -36,11 +36,9 @@ import static org.junit.jupiter.api.Assertions.*;
  * <p>A developer reading that goes looking for the bug in their own code,
  * which is the precise outcome this tool exists to prevent.
  *
- * <p>The superclass is a different question and stays refused: measured on the
- * same three VMs, including JetBrains Runtime with
- * {@code -XX:+AllowEnhancedClassRedefinition}, {@code redefineClasses} rejects
- * a changed superclass every time. A changed interface list that same VM
- * accepts, existing instances included, so it is reported rather than refused.
+ * <p>Superclass changes follow Reclazz's separate refusal/salvage policy.
+ * Versioned observations in docs/superclass-feasibility.md do not establish a
+ * universal restriction on JVM extensions.
  */
 class InterfaceChangeTest {
 
@@ -92,7 +90,7 @@ class InterfaceChangeTest {
     /**
      * The two cases have different answers, so they must not share a verdict.
      * A changed interface list is applied by an enhanced-redefinition VM; a
-     * changed superclass is refused by every VM there is.
+     * changed superclass follows Reclazz's refusal/salvage policy.
      */
     @Test
     void anInterfaceChangeIsNotTreatedAsUnredefinable() throws IOException {
@@ -108,7 +106,7 @@ class InterfaceChangeTest {
         var diff = StructuralAnalyzer.analyze(metadataOf(Plain.class), bytecodeOf(Rebased.class));
 
         assertTrue(diff.isUnsupported(),
-                "no JVM applies a changed superclass to a loaded class");
+                "Reclazz does not apply a changed superclass to a loaded class");
     }
 
     /** The reason has to name the interface, or the developer goes hunting. */

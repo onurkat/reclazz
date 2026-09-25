@@ -204,6 +204,16 @@ the attempt, and the entire batch returned, including deferred redefinition and
 framework refresh, with no WARN/ERROR on the applying thread. A warning in any
 member conservatively prevents success for the other members too.
 
+A superclass-changing save illustrates this distinction: eligible method bodies
+may run while the original superclass remains. Its warning makes the matching
+receipt `unverified`, including when a dependent method stays pinned to its old
+body. A class-level blocker instead produces `failed`. Neither means that the
+requested hierarchy was applied. `PENDING` retains the session's restart concerns;
+a later ordinary save can have an `applied` receipt without clearing earlier
+superclass notes. Check current live behavior as well as the receipt; retained
+notes are not an exact diff of the latest source. See
+[production reload reporting](superclass-feasibility.md#production-reload-reporting).
+
 - `running`: matching bytes are being applied; no completion yet.
 - `failed`: the matching attempt reported failure or the batch threw; detail says why.
 - `unverified`: matching attempt finished without sufficient evidence: absent
