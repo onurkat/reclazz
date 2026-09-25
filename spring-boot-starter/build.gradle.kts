@@ -35,7 +35,7 @@ dependencies {
 
     // slf4j is present in every Spring Boot app at runtime; compile against it
     // without forcing a version on the consumer.
-    compileOnly("org.slf4j:slf4j-api:2.0.16")
+    compileOnly("org.slf4j:slf4j-api:2.0.19")
 
     // The actuator endpoint is optional: compile against it, but do not force it
     // onto an app that does not use the actuator.
