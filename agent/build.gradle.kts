@@ -88,7 +88,7 @@ dependencies {
     testImplementation("org.springframework:spring-test:5.3.39")
     testImplementation("javax.servlet:javax.servlet-api:4.0.1")
     // Real local servlet async lifecycle tests; never shipped in the agent.
-    testImplementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.121") {
+    testImplementation("org.apache.tomcat.embed:tomcat-embed-core:11.0.26") {
         // javax.annotation-api above already supplies these API classes.
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
     }
@@ -211,7 +211,7 @@ dependencies {
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:6.1.14")
-    add(springSixTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:10.1.60") {
+    add(springSixTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:11.0.26") {
         // jakarta.annotation-api below already supplies these classes.
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
     }
