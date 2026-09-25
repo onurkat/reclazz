@@ -101,7 +101,7 @@ dependencies {
     // Boot 2.7 YAML regression fixtures only; not shipped in the agent.
     testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
-    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.2")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.4")
 }
@@ -183,7 +183,7 @@ configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configur
 dependencies {
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
     add(hibernateTests.implementationConfigurationName, "org.hibernate.orm:hibernate-jcache:6.5.3.Final")
-    add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.2.4")
+    add(hibernateTests.implementationConfigurationName, "com.github.ben-manes.caffeine:jcache:3.3.0")
 }
 val hibernateTest by tasks.registering(Test::class) {
     group = "verification"
