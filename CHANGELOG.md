@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Production reload regression coverage holds superclass method salvage to native
+  identity/type boundaries and tests whole-class refusal for new-base method
+  signatures and unsafe constructors. No superclass replacement support is added.
 - A reproducible superclass research probe distinguishes direct redefinition
   refusal from prewired same-loader delegation on named JDKs. The report records
   original-object and native-type limits; this adds no production reload capability.

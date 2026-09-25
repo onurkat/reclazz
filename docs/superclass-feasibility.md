@@ -119,7 +119,40 @@ Repository evidence at baseline `28e7c6f`:
 
 This runner loads only the tiny `ProbeAgent`, not Reclazz. It does not exercise
 Reclazz's actual transformer, salvage path, restart ledger or reload receipts.
-Their representative boundary and reporting tests are separate queued work.
+The production boundary tests below are separate from that experiment; receipt
+and restart-reporting verification remains separate work.
+
+## Production reload boundary regressions
+
+[SuperclassTypeBoundaryReloadTest](../agent/src/test/java/com/onurkat/reclazz/reload/SuperclassTypeBoundaryReloadTest.java)
+uses Reclazz's actual transformer and `StructuralReloader`, with instrumentation
+attached to the test JVM. It compiles original and replacement classes in memory,
+warms the original methods, then observes the held receiver after reload. The
+existing test harness's shared loader isolates fixture classes; it is not a new
+product classloader or evidence of native superclass replacement.
+
+| Requested edit / observation | Contract asserted |
+| --- | --- |
+| Superclass change plus independent method edit | Edited method runs on the original receiver; Class identity, defining loader, old superclass, inherited behavior and existing mutable state remain |
+| Untransformed caller tests the original object against the new base | Native `instanceof` is false and native cast throws `ClassCastException`; a real new-base object succeeds as a positive control |
+| Changed method contains a new-base cast or `instanceof` | That method keeps its old body, including with a valid new-base argument; an independent method gets its new body |
+| Added method takes or returns the new base | Entire reload is refused; warmed methods and existing state remain, and a fresh instance still has old behavior |
+| Constructor body requires a method only on the new base | Entire reload is refused; old initialization still works for fresh instances |
+| New super-constructor signature does not exist on the old base | Entire reload is refused without replacing old initialization or method bodies |
+
+Run the focused production tests from the repository root:
+
+```sh
+./gradlew :agent:unitTest --rerun \
+  --tests '*SuperclassTypeBoundaryReloadTest' \
+  --tests '*SuperclassSalvageReloadTest' \
+  --tests '*HierarchyRevertTest'
+```
+
+These are representative regression cases for current refusal and method salvage.
+They do not establish automatic delegation to the new base, state migration,
+framework compatibility, or results on every runtime. The standalone probe's
+named-JDK observations above remain specific to that probe.
 
 ## Decision and remaining limits
 
