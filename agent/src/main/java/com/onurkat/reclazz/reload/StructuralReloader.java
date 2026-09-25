@@ -132,7 +132,7 @@ public class StructuralReloader {
             byte[] pinnedRedefinePayload = null;
 
             if (diff.isUnsupported()) {
-                // The hierarchy is not going to be applied by any JVM. The rest
+                // Reclazz does not apply this superclass change. The rest
                 // of the file still can be, and refusing the whole save threw
                 // away method bodies edited alongside the extends clause.
                 Class<?> loadedForRevert = findLoadedClass(className);
@@ -142,14 +142,12 @@ public class StructuralReloader {
 
                 if (!reverted.applied()) {
                     RestartLedger.note(className,
-                            "changed its superclass, which no JVM will redefine");
+                            "superclass change not applied; restart required");
                     return ClassReloader.ReloadResult.failure(
                             className + " changed its superclass, and the rest of the class "
                                     + "cannot be applied without it (" + reverted.reason() + "). "
-                                    + "No JVM applies a changed superclass to a loaded class: "
-                                    + "redefineClasses rejects it on a stock JDK and on JetBrains "
-                                    + "Runtime alike, because every object of this class already "
-                                    + "has the old layout and identity. Restart to pick it up.",
+                                    + "Reclazz keeps the loaded superclass. This save was refused; "
+                                    + "restart required to pick it up.",
                             true);
                 }
 
@@ -162,13 +160,11 @@ public class StructuralReloader {
                 diff = StructuralAnalyzer.analyze(oldMetadata, newBytecode);
 
                 if (reverted.entangled().isEmpty()) {
-                    StatusReporter.warn(className + " changed its superclass to " + newSuper
-                            + ". No JVM applies that to a loaded class, so it still extends "
-                            + oldSuper + " until a restart. The method bodies in this save "
-                            + "were applied.");
+                    StatusReporter.warn(className + ": superclass change not applied; restart required. "
+                            + "Still extends " + oldSuper + " instead of " + newSuper
+                            + ". Eligible method bodies will be attempted separately.");
                     RestartLedger.note(className,
-                            "changed its superclass, which no JVM will redefine; "
-                                    + "method bodies were applied");
+                            "superclass change not applied; restart required");
                 } else {
                     // One or more bodies need the new superclass. The rest of
                     // the save still applies; those bodies are pinned to the
@@ -183,30 +179,26 @@ public class StructuralReloader {
                                         + " " + e.getValue())
                                 .collect(java.util.stream.Collectors.joining("; "));
                         RestartLedger.note(className,
-                                "changed its superclass, which no JVM will redefine");
+                                "superclass change not applied; restart required");
                         return ClassReloader.ReloadResult.failure(
                                 className + " changed its superclass, and the rest of the class "
                                         + "cannot be applied without it (" + entangledSummary
                                         + ", and " + prep.refusal() + "). "
-                                        + "No JVM applies a changed superclass to a loaded class: "
-                                        + "redefineClasses rejects it on a stock JDK and on JetBrains "
-                                        + "Runtime alike, because every object of this class already "
-                                        + "has the old layout and identity. Restart to pick it up.",
+                                        + "Reclazz keeps the loaded superclass. This save was refused; "
+                                        + "restart required to pick it up.",
                                 true);
                     }
                     pinnedMethods = reverted.entangled();
                     pinnedRedefinePayload = prep.payload();
 
-                    StatusReporter.warn(className + " changed its superclass to " + newSuper
-                            + ". No JVM applies that to a loaded class, so it still extends "
-                            + oldSuper + " until a restart. The method bodies in this save "
-                            + "were applied, except " + describePinned(pinnedMethods)
+                    StatusReporter.warn(className + ": superclass change not applied; restart required. "
+                            + "Still extends " + oldSuper + " instead of " + newSuper
+                            + ". Eligible method bodies will be attempted separately, except " + describePinned(pinnedMethods)
                             + ", which " + (pinnedMethods.size() == 1 ? "keeps" : "keep")
                             + " the implementation " + (pinnedMethods.size() == 1 ? "it" : "they")
                             + " had.");
                     RestartLedger.note(className,
-                            "changed its superclass, which no JVM will redefine; method bodies "
-                                    + "were applied, except " + pinnedNames(pinnedMethods)
+                            "superclass change not applied; restart required; " + pinnedNames(pinnedMethods)
                                     + ", pinned to the previous implementation");
                 }
             }

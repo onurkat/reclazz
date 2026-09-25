@@ -17,15 +17,11 @@ import com.onurkat.reclazz.transform.TransformExclusions;
 /**
  * The method bodies from a class whose superclass also changed.
  *
- * <p>No JVM applies a changed superclass to a loaded class; that was measured
- * on a stock JDK, on JetBrains Runtime, and on JetBrains Runtime with enhanced
- * class redefinition, and all three refuse it. The refusal they print,
- * "attempted to change superclass or interfaces", is the JVM's one message for
- * both halves and says nothing about the other one: an added interface is a
- * different case, applied by enhanced redefinition and refused only on a stock
- * JDK, which is why it is reported separately rather than through here. So the
- * hierarchy is not the question. The question is what
- * happens to everything else in the file.
+ * <p>Reclazz keeps the loaded superclass and attempts only eligible method
+ * changes. The versioned direct-redefinition and same-loader delegation probes
+ * in docs/superclass-feasibility.md establish bounded observations, not a rule
+ * about every JVM extension. Interface changes follow a separate capability
+ * path; this helper handles the superclass salvage policy.
  *
  * <p>It used to be thrown away. One line changed in the extends clause and the
  * three method bodies edited in the same save were refused along with it, with

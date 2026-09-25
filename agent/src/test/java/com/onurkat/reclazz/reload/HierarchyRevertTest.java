@@ -16,13 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * A changed superclass costs the whole save, and it should only cost the
  * hierarchy.
  *
- * <p>No JVM applies a changed superclass to a loaded class. That was measured
- * on a stock JDK, on JetBrains Runtime, and on JetBrains Runtime with enhanced
- * class redefinition, and all three answer "attempted to change superclass or
- * interfaces". So the hierarchy is settled. What was wrong was the blast
- * radius: one line in the extends clause refused the three method bodies
- * edited beside it, and the developer restarted to get back work that had
- * nothing to do with the hierarchy.
+ * <p>Reclazz retains the loaded superclass. These tests hold the method-salvage
+ * policy, not a universal JVM restriction. Versioned runtime observations live
+ * in docs/superclass-feasibility.md. An independent method edit should not be
+ * lost merely because the same save also changed the extends clause.
  *
  * <p>The salvage rests on where javac puts the reference. An inherited call
  * compiles to an invocation on the class itself, not on the superclass, so it

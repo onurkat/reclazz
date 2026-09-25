@@ -119,8 +119,7 @@ Repository evidence at baseline `28e7c6f`:
 
 This runner loads only the tiny `ProbeAgent`, not Reclazz. It does not exercise
 Reclazz's actual transformer, salvage path, restart ledger or reload receipts.
-The production boundary tests below are separate from that experiment; receipt
-and restart-reporting verification remains separate work.
+The production boundary and reporting tests below are separate from that experiment.
 
 ## Production reload boundary regressions
 
@@ -153,6 +152,35 @@ These are representative regression cases for current refusal and method salvage
 They do not establish automatic delegation to the new base, state migration,
 framework compatibility, or results on every runtime. The standalone probe's
 named-JDK observations above remain specific to that probe.
+
+## Production reload reporting
+
+Reclazz's superclass diagnostics describe its current reload policy, not what
+every JVM extension can do. The warning states that the superclass change was
+not applied and needs a restart. Eligible method-body application is attempted
+separately; a warning emitted before that attempt is not proof that it succeeded.
+Pinned-method warnings name the retained method and reason. Class-level blockers
+refuse the save and leave its method changes unapplied.
+
+[SuperclassReportingVerificationTest](../agent/src/test/java/com/onurkat/reclazz/e2e/SuperclassReportingVerificationTest.java)
+starts one real application with the packaged Reclazz agent. Across ordinary
+updates, superclass salvage, a pinned method, two refused saves and recovery, it
+checks fresh live output on the held receiver against exact-input socket receipts:
+
+- Ordinary warning-free updates produce `applied` receipts.
+- Superclass salvage, including pinned methods, produces `unverified`; the
+  original hierarchy remains even when independent methods change.
+- A new-base signature blocker produces `failed` and leaves previous live bodies.
+- Each newer attempt supersedes the previous hash (`mismatch`); session identity
+  stays constant and terminal receipts carry completion times.
+- `PENDING` retains the unapplied hierarchy concern. It is session history, not
+  a recomputed diff: a later ordinary save can be `applied` while earlier restart
+  notes remain. This test does not claim automatic resolution of those notes.
+
+Run `./gradlew :agent:e2eTest --rerun --tests '*SuperclassReportingVerificationTest'`
+for the scenario (the task also runs its broker-suite dependencies). This extends
+local product regression coverage; it does not expand the standalone probe's
+runtime matrix. No new receipt status, field, command or custom loader is added.
 
 ## Decision and remaining limits
 

@@ -56,6 +56,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Receipt support requires the updated agent; it does not prove reload completion.
 
 ### Fixed
+- Superclass diagnostics now state Reclazz's unapplied hierarchy and restart
+  requirement without universal JVM claims or premature method-application
+  success. Live-agent regression checks partial/refused receipts, retained
+  restart notes, repeated saves and ordinary recovery.
 - MCP scan/pending/diagnose report connection, invalid-handshake and missing
   diagnostic-response failures as tool errors. Malformed agent handshakes no
   longer end stdio; scan success describes dispatch without claiming completion.
