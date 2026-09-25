@@ -102,7 +102,7 @@ dependencies {
     testImplementation("org.yaml:snakeyaml:1.30")
     // Real DTO serialization regressions; never included in the agent jar.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
-    testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
+    testImplementation("org.hibernate.validator:hibernate-validator:9.1.4.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.4")
 }
 
