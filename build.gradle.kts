@@ -47,7 +47,7 @@ dependencies {
     // IDE fixtures need JUnit 3/4 on the classpath and the vintage engine to
     // run under the JUnit Platform the rest of the suite uses.
     testImplementation("junit:junit:4.13.2")
-    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.2")
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:6.1.3")
 }
 
 tasks.test {
