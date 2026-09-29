@@ -1,0 +1,32 @@
+// Release uploads must consume the files already checked by release.sh.
+// This init script is used only for the upload invocation, never for builds.
+def uploads = [':publishPlugin', ':gradle-plugin:publishPlugins'] as Set
+gradle.taskGraph.whenReady { graph ->
+    if (!graph.allTasks.any { uploads.contains(it.path) }) {
+        throw new GradleException('Release upload invocation contains no supported publisher')
+    }
+    graph.allTasks.each { task ->
+        if (uploads.contains(task.path)) {
+            task.doFirst {
+                def publisher = task.path == ':publishPlugin' ? 'marketplace' : 'portal'
+                def files
+                if (publisher == 'marketplace') {
+                    files = [task.archiveFile.get().asFile.absolutePath]
+                } else {
+                    def publication = task.project.publishing.publications.getByName('pluginMaven')
+                    files = publication.artifacts.collect { it.file.absolutePath }
+                    files += task.project.tasks.getByName('generatePomFileForPluginMavenPublication').destination.absolutePath
+                    files += task.project.tasks.getByName('generateMetadataFileForPluginMavenPublication').outputFile.get().asFile.absolutePath
+                }
+                task.project.exec {
+                    workingDir gradle.rootProject.projectDir
+                    commandLine(['python3', 'scripts/release-evidence.py', 'verify-publisher', publisher] + files)
+                }
+            }
+        } else {
+            // Keep the configured publication and its artifact paths, but do
+            // not run compilers, jar writers, metadata writers or signing again.
+            task.enabled = false
+        }
+    }
+}

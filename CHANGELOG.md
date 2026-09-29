@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Release preparation completes tests, packaging and local signing before any
+  publication. A commit/version/SHA-256 gate rejects changed source or artifacts;
+  upload steps reuse checked files, and tag releases run the shared checks too.
 - Production reload regression coverage holds superclass method salvage to native
   identity/type boundaries and tests whole-class refusal for new-base method
   signatures and unsafe constructors. No superclass replacement support is added.
