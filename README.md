@@ -145,7 +145,7 @@ than either.
 
 | Document | What it is for |
 |---|---|
-| [docs/installation.md](docs/installation.md) | Getting the plugin or the standalone agent onto a machine, and checking it works |
+| [docs/installation.md](docs/installation.md) | Start here: choose IntelliJ, Gradle, Maven, standalone or SAP setup; optional MCP and a first reload |
 | [docs/usage.md](docs/usage.md) | The four ways to run it, every agent argument, debugging reloaded code, what to do when a reload goes wrong, Flight Recorder events |
 | [docs/gradle-plugin.md](docs/gradle-plugin.md) | The Gradle plugin that attaches the agent to bootRun and test with no manual -javaagent flag |
 | [docs/mcp-server.md](docs/mcp-server.md) | The MCP server that exposes Reclazz to coding agents as tools (status, scan, pending, diagnose) |
