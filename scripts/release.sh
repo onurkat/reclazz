@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Release X.Y.Z: check what a release needs, then do the steps in order.
+# Release X.Y.Z: prepare and validate everything, then upload checked bytes.
 #
 # The steps were seven commands in docs/publishing.md, two of them with a
 # known way to go wrong (the tag's release was forgotten four times; the
@@ -33,7 +33,12 @@ done
 root="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$root"
 tag="v$version"
+source_commit="$(git rev-parse HEAD)"
+gradle_props="$HOME/.gradle/gradle.properties"
 problems=()
+if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    problems+=("release version must be X.Y.Z")
+fi
 
 # ---- preconditions ------------------------------------------------------
 if [ -n "$(git status --porcelain)" ]; then
@@ -66,6 +71,18 @@ if git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
     problems+=("tag $tag already exists")
 fi
 if [ "$dry_run" = false ]; then
+    for tool in python3 npm mvn gh; do
+        command -v "$tool" >/dev/null 2>&1 || problems+=("$tool is required for the release gate")
+    done
+    if [ "$skip_distribution" = false ]; then
+        for key in signing.keyId gradle.publish.key gradle.publish.secret; do
+            grep -q "^${key}=" "$gradle_props" 2>/dev/null || problems+=("$key missing in ~/.gradle/gradle.properties; or use --skip-distribution")
+        done
+        if [[ "${RECLAZZ_CENTRAL_TOKEN:-}" =~ [[:space:]] ]]; then
+            problems+=("RECLAZZ_CENTRAL_TOKEN must not contain whitespace")
+        fi
+        [ -n "${RECLAZZ_CENTRAL_TOKEN:-}" ] || problems+=("RECLAZZ_CENTRAL_TOKEN is required to stage the prepared Maven bundle; or use --skip-distribution")
+    fi
     if [ -z "${RECLAZZ_SIGNING_PASSWORD:-}" ]; then
         problems+=("RECLAZZ_SIGNING_PASSWORD is not set; the signed zip cannot be built")
     fi
@@ -89,19 +106,42 @@ run() {
     fi
 }
 
-run ./gradlew verifyPlugin
-run ./gradlew signPlugin --no-daemon
-if [ "$skip_publish" = false ]; then
-    run ./gradlew publishPlugin --no-daemon
+# All checks, packaging and signing happen before the first uploader or tag.
+# Keep secrets out of run() output and let the owner's local keys do the signing.
+if [ "$dry_run" = false ]; then
+    mvn_gpg_pass="$(grep '^signing.password=' "$gradle_props" 2>/dev/null | cut -d= -f2- || true)"
+    [ -z "$mvn_gpg_pass" ] || export MAVEN_GPG_PASSPHRASE="$mvn_gpg_pass"
+    unset mvn_gpg_pass
 fi
-run git tag -a "$tag" -m "Reclazz $version"
-run git push origin main --follow-tags
+run bash scripts/release-checks.sh
+run ./gradlew signPlugin verifyPluginSignature --no-daemon
+profile=local
+if [ "$skip_distribution" = false ]; then
+    profile=distribution
+    run ./gradlew :agent:centralBundle :spring-boot-starter:centralBundle --no-daemon
+    # Version 0.5.0 creates the signed bundle, then returns before HTTP upload.
+    run mvn -q -f maven-plugin/pom.xml -Prelease clean deploy -DskipPublishing=true
+    run ./gradlew :gradle-plugin:publishPlugins --validate-only --no-daemon
+fi
+unset MAVEN_GPG_PASSPHRASE
+run python3 scripts/release-evidence.py create "$version" "$source_commit" "$profile"
 
-# The tag's workflow creates the release and attaches the agent jar; the
-# signed zip is added here, under the name every release has used. gh takes
-# the stored name from the path, so the copy is the rename.
-signed="build/distributions/reclazz-$version-signed.zip"
-asset="/tmp/reclazz-$version.zip"
+publish() {
+    run python3 scripts/release-evidence.py verify
+    run "$@"
+}
+# No producer task may change the validated files inside these invocations.
+if [ "$skip_publish" = false ]; then
+    publish ./gradlew -I scripts/release-publish.init.gradle :publishPlugin --no-daemon --no-configuration-cache
+fi
+if [ "$skip_distribution" = false ]; then
+    publish python3 scripts/release-evidence.py stage-maven
+    publish ./gradlew -I scripts/release-publish.init.gradle :gradle-plugin:publishPlugins --no-daemon --no-configuration-cache
+fi
+publish git tag -a "$tag" "$source_commit" -m "Reclazz $version"
+# Push only the checked commit and this tag, not other pending local tags.
+publish git push origin "$source_commit:refs/heads/main" "refs/tags/$tag"
+
 if [ "$dry_run" = true ]; then
     echo "would wait for: gh release view $tag"
 else
@@ -111,69 +151,13 @@ else
     done
     gh release view "$tag" >/dev/null 2>&1 || { echo "the release for $tag did not appear; check the Release workflow" >&2; exit 1; }
 fi
-run cp "$signed" "$asset"
-run gh release upload "$tag" "$asset"
-
-# ---- distribution: Maven Central + Gradle Plugin Portal ------------------
-# The Marketplace is one of four registries a release goes to. The others are
-# Maven Central (the agent, the Spring Boot starter, the Maven plugin) and the
-# Gradle Plugin Portal (the Gradle plugin). Those were published by hand once,
-# which is how the Portal ended up a build behind the source. Folding them in
-# here keeps every registry on one version. Each step is gated on its own
-# credential and prints what is left to do rather than failing the release,
-# because the Central publish ends in a manual click either way.
-gradle_props="$HOME/.gradle/gradle.properties"
-if [ "$skip_distribution" = false ]; then
-    echo
-    echo "== distribution: Maven Central + Gradle Plugin Portal =="
-
-    # Central bundles: signed local Maven layouts, zipped for upload. Building
-    # them needs signing.keyId/signing.password in ~/.gradle/gradle.properties.
-    # publishToMavenLocal puts this version's agent in ~/.m2 as well, because
-    # the Maven plugin below depends on reclazz-agent at this same version and
-    # Central has not served it yet (the bundle is staged, not published), so
-    # its build would otherwise fail to resolve the dependency.
-    if [ "$dry_run" = true ] || grep -q '^signing.keyId=' "$gradle_props" 2>/dev/null; then
-        run ./gradlew :agent:centralBundle :agent:publishToMavenLocal :spring-boot-starter:centralBundle --no-daemon
-        echo "Central bundles built (staged upload, then a manual Publish click):"
-        echo "  agent/build/reclazz-agent-$version-central-bundle.zip"
-        echo "  spring-boot-starter/build/reclazz-spring-boot-starter-$version-central-bundle.zip"
-    else
-        echo "! signing.keyId not in ~/.gradle/gradle.properties; build the Central bundles by hand:"
-        echo "    ./gradlew :agent:centralBundle :agent:publishToMavenLocal :spring-boot-starter:centralBundle"
-    fi
-
-    # The Maven plugin is its own POM; -Prelease signs and stages it to the
-    # Central Portal (autoPublish=false, so it waits for the same manual click).
-    # It resolves reclazz-agent from ~/.m2 (published just above), not from the
-    # not-yet-synced Central. Sign unattended: feed maven-gpg-plugin the same
-    # passphrase the Gradle bundles use (signing.password) through the env var it
-    # reads, so it signs via loopback pinentry (configured in the POM) instead of
-    # prompting. Set on the environment, never through `run`, so it is not echoed.
-    mvn_gpg_pass="$(grep '^signing.password=' "$gradle_props" 2>/dev/null | cut -d= -f2- || true)"
-    [ -n "$mvn_gpg_pass" ] && export MAVEN_GPG_PASSPHRASE="$mvn_gpg_pass"
-    if command -v mvn >/dev/null 2>&1; then
-        run mvn -q -f maven-plugin/pom.xml -Prelease clean deploy
-    else
-        echo "! mvn not found; stage the Maven plugin by hand:"
-        echo "    mvn -f maven-plugin/pom.xml -Prelease clean deploy"
-    fi
-    unset MAVEN_GPG_PASSPHRASE
-
-    # The Gradle plugin publishes outright, given the Portal key in
-    # ~/.gradle/gradle.properties (gradle.publish.key / gradle.publish.secret).
-    if [ "$dry_run" = true ] || grep -q '^gradle.publish.key=' "$gradle_props" 2>/dev/null; then
-        run ./gradlew :gradle-plugin:publishPlugins --no-daemon
-    else
-        echo "! gradle.publish.key not in ~/.gradle/gradle.properties; publish the Gradle plugin by hand:"
-        echo "    ./gradlew :gradle-plugin:publishPlugins"
-    fi
-
-    echo "Then at https://central.sonatype.com: Publish > Upload a bundle for the"
-    echo "agent and starter, and click Publish on all three staged deployments."
-    echo "Verify each registry served $version; see docs/publishing.md."
-fi
+publish gh release upload "$tag" "build/release-gate/assets/reclazz-$version.zip"
 
 echo
-echo "Released $version. Left to do by hand: the site (git worktree add /tmp/reclazz-site gh-pages),"
-echo "the Central Publish click, and hiding the superseded Marketplace version; see docs/publishing.md."
+echo "Release commands finished for $version (source $source_commit)."
+if [ "$skip_distribution" = false ]; then
+    echo "Upload the checked agent/starter Central bundles, then manually Publish all three Central deployments:"
+    echo "  agent/build/reclazz-agent-$version-central-bundle.zip"
+    echo "  spring-boot-starter/build/reclazz-spring-boot-starter-$version-central-bundle.zip"
+fi
+echo "Verify registry availability and complete the site separately; see docs/publishing.md."

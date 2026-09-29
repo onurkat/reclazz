@@ -39,57 +39,69 @@ own.
 ```bash
 export RECLAZZ_SIGNING_PASSWORD='the passphrase you chose'
 export RECLAZZ_PUBLISH_TOKEN='the marketplace token'
+export RECLAZZ_CENTRAL_TOKEN='the Central bearer token'  # unless --skip-distribution
 
 scripts/release.sh X.Y.Z            # or --dry-run first, to see the steps
 ```
 
-That runs the sequence below in order, after refusing when anything it
-needs is missing: a dirty tree, a branch other than main, a
-`gradle.properties` version that is not X.Y.Z, a changelog or plugin.xml
-without an entry for it, a tag that already exists, an unset password or
-token (`--skip-publish` leaves the Marketplace out), or a
-`maven-plugin/pom.xml` whose version does not match. It waits for the tag's
-release to appear and attaches the signed zip under the name every release
-has used.
+The script first checks the clean `main` checkout, matching Gradle/Maven
+versions, both release-note entries and the absence of the tag. Python 3.9+,
+Maven, Node 22+/npm and `gh` must be available. Local signing keys stay local.
+`--skip-publish` omits Marketplace; `--skip-distribution` omits Central/Portal.
+Selected channels require their credentials before any preparation starts;
+missing credentials are errors, not silently skipped channels.
 
-After the Marketplace release it runs the distribution phase: it builds the
-Maven Central bundles for the agent and the starter, stages the Maven plugin,
-and publishes the Gradle plugin to the Portal, each step gated on its own
-credential and skipped with a printed note when that credential is absent
-(`--skip-distribution` leaves the phase out entirely). The Central bundles
-still end in a manual Publish click; see [Maven Central](#maven-central-the-agent-the-starter-and-the-maven-plugin)
-and [the Gradle Plugin Portal](#gradle-plugin-portal-the-gradle-plugin) below.
-The Marketplace steps, for reference and for doing one by hand:
+Preparation runs `scripts/release-checks.sh`: a clean Gradle build with all tests, plugin
+packaging and compatibility verification, the independent MCP SDK/live-JVM
+acceptance, and Maven `clean verify` against the locally built agent. It then
+signs and verifies the IDE ZIP. With distribution selected it also builds the
+signed agent/starter Central bundles, builds the signed Maven bundle using
+`-DskipPublishing=true`, and runs Portal `--validate-only`. **All of these must
+succeed before the first upload or tag push.** Docker must be available for the
+required RabbitMQ tests; the release path does not opt out of them.
 
-```bash
+`build/release-gate/receipt.json` records `schemaVersion: 1`, `sourceCommit`,
+`version`, the selected `profile`, `artifactRoots` and relative artifact paths
+mapped to SHA-256 digests in `artifacts`. It is local gate evidence, not a
+signature or a hosted provenance attestation. Source or artifact changes stop
+subsequent publication. Gradle uploads use `release-publish.init.gradle` to
+verify the actual publication inputs and disable build/signing/metadata tasks;
+they consume the checked files without rebuilding them. The Maven uploader
+stages the exact checked bundle rather than running a second Maven lifecycle.
 
-./gradlew verifyPlugin                # what the Marketplace runs on submission
-./gradlew signPlugin --no-daemon      # produces the signed zip
-./gradlew publishPlugin --no-daemon   # uploads it
+For the selected distribution, export `RECLAZZ_CENTRAL_TOKEN` from your secret
+store: it is the base64 encoding of your existing Central token's
+`username:password` pair. The uploader reads it only from the environment,
+never from command arguments or logs; encrypted Maven settings are not parsed
+by the uploader. The existing Central Maven plugin 0.5.0 still needs its
+`central` server entry in Maven settings even for local bundle preparation.
+It uses the documented [Central Publisher API](https://central.sonatype.org/publish/publish-portal-api/)
+with `publishingType=USER_MANAGED`. HTTP 201 means staged, not published or
+validated. The final Central Publish click remains manual. Agent and starter
+bundles are still uploaded manually using the paths printed by the script;
+run `python3 scripts/release-evidence.py verify` before uploading those files.
 
-git tag -a vX.Y.Z -m 'Reclazz X.Y.Z' && git push origin main --follow-tags
+After the gate, the script uploads Marketplace, stages Maven, uploads Portal,
+and tags the exact checked commit. It pushes only that commit and tag. The tag
+workflow independently runs the shared tests and records/checks its own agent
+and MCP artifacts before creating the GitHub release. CI does not receive the
+IDE signing key. Finally the local script attaches the checked signed ZIP as
+`reclazz-X.Y.Z.zip` from `build/release-gate/assets/`.
 
-# The tag creates the release, with the changelog section as its notes and
-# the agent jar attached. This adds the signed plugin zip to it.
-cp build/distributions/reclazz-X.Y.Z-signed.zip /tmp/reclazz-X.Y.Z.zip
-gh release upload vX.Y.Z /tmp/reclazz-X.Y.Z.zip
-
-git worktree add /tmp/reclazz-site gh-pages    # then edit, commit, push
-```
-
-The copy is the point of that first line. Every release since 1.0.0
-attaches `reclazz-X.Y.Z.zip`, and `gh` takes the filename from the path
-you give it. Its `path#label` syntax sets the label shown beside the
-asset, not the name it is stored under, so uploading the signed zip
-directly publishes it as `reclazz-X.Y.Z-signed.zip` and breaks the run.
+Do not replace this route with individual `publishPlugin`, `publishPlugins` or
+Maven `deploy` commands: those do not provide the cross-channel gate. Do not
+edit a generated receipt to continue a failed release. Resume, draft/channel
+completion tracking and a public release manifest are separate work; this
+script stops on failure and does not roll back earlier uploads or auto-retry.
+The site and final registry/download verification remain separate owner steps.
 
 ## What the tag does on its own
 
 `.github/workflows/release.yml` fires on `vX.Y.Z` and creates the release:
 it checks that the tag and `gradle.properties` agree, takes the notes from
 that version's section of `CHANGELOG.md` (`scripts/changelog-section.sh`,
-which fails when there is no such section), builds the agent jar, tests the
-standalone MCP distribution, and attaches both jars with a `.sha256` beside each:
+which fails when there is no such section), runs the shared build/test gate,
+records/checks its artifact receipt, and attaches both jars with a `.sha256` beside each:
 `reclazz-agent-X.Y.Z.jar` and `reclazz-mcp-X.Y.Z.jar`.
 
 Before releasing, `./gradlew :mcp-server:test :mcp-server:mcpRelease` locally stages
@@ -243,7 +255,7 @@ security add-generic-password -s reclazz-publish -a reclazz -w   # once, the Mar
 
 RECLAZZ_SIGNING_PASSWORD="$(security find-generic-password -s reclazz-signing -a reclazz -w)" \
 RECLAZZ_PUBLISH_TOKEN="$(security find-generic-password -s reclazz-publish -a reclazz -w)" \
-  ./gradlew publishPlugin --no-daemon
+  scripts/release.sh X.Y.Z
 ```
 
 Those commands prompt and need a real terminal. Run one through anything
@@ -362,8 +374,8 @@ version as the plugin:
 The agent and the starter each publish the main jar alongside a sources jar, a
 javadoc jar, a POM and their signatures, through `maven-publish` + `signing` +
 a `centralBundle` zip. `scripts/release.sh` builds both bundles in its
-distribution phase; the section below is what each does and how to do one by
-hand.
+preparation phase; the section below describes the bundle formats. Use the
+release script for publication so the shared gate runs first.
 
 One-time account setup (owner):
 
@@ -401,18 +413,21 @@ Upload each at central.sonatype.com (Publish, then Upload a bundle), or POST it
 to the Publisher API, and click Publish once it validates. The publication is
 staged, not auto-released, so nothing goes public until that click.
 
-The Maven plugin stages itself through its own `release` profile
+The Maven plugin prepares its signed bundle through its own `release` profile
 (`maven-source-plugin`, `maven-javadoc-plugin`, `maven-gpg-plugin`, and
 `central-publishing-maven-plugin` with `autoPublish=false`):
 
 ```
-mvn -f maven-plugin/pom.xml -Prelease clean deploy
+mvn -f maven-plugin/pom.xml -Prelease clean deploy -DskipPublishing=true
 ```
 
-Its signing goes through `gpg` rather than Gradle's own signing, so it prompts
-for the GPG passphrase through pinentry and needs a real terminal; it cannot
-sign unattended the way the Gradle bundles can. It appears in the same staged
-list at central.sonatype.com, waiting for the same Publish click.
+This command builds `maven-plugin/target/central-publishing/central-bundle.zip`
+without staging remotely. Signing uses `gpg`; `release.sh` supplies the local
+`signing.password` through `MAVEN_GPG_PASSPHRASE`, without echoing it. After the
+whole gate passes, the script stages the checked bundle with
+`RECLAZZ_CENTRAL_TOKEN`. The Central Portal still requires validation and the
+owner's Publish click. A response lost during upload is ambiguous: check the
+Portal before retrying, since the script does not implement resume yet.
 
 ## Gradle Plugin Portal: the Gradle plugin
 
@@ -432,11 +447,14 @@ One-time setup (owner), already done for 1.x:
   a DNS TXT record. Later versions of an approved id publish with no further
   approval.
 
-To publish:
+For non-publishing validation, the existing plugin supports:
 
 ```
-./gradlew :gradle-plugin:publishPlugins
+./gradlew :gradle-plugin:publishPlugins --validate-only
 ```
+
+Publish through `scripts/release.sh X.Y.Z`, which first prepares all selected
+channels and then uploads the checked Portal files with producer tasks disabled.
 
 The version comes from `pluginVersion` in `gradle.properties`, the same source
 as the agent, so keeping that one file current keeps the plugin and the agent it
@@ -450,7 +468,7 @@ plugin defaults the agent it resolves to its own version (`ReclazzPlugin` sets
 agent on Central leaves every user of it unable to resolve the agent. The Maven
 plugin has the same coupling: its POM depends on `reclazz-agent` at its own
 version, so its build needs that agent resolvable. `release.sh` handles the
-build-time half by running `:agent:publishToMavenLocal` before `mvn deploy`, so
+build-time half by running `:agent:publishToMavenLocal` before the Maven checks/bundle build, so
 the Maven plugin resolves the agent from `~/.m2` rather than waiting for the
 Central sync; the runtime half is the manual Publish click that puts the agent
 on Central for real users.
