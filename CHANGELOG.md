@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- IntelliJ log export retains all received event levels, including warnings,
+  information, compilation and connection events, in its latest 500-event history.
 - The Gradle plugin automatically watches all main compiled-class output directories,
   with stable ordering and deduplication, while preserving explicit watch overrides.
 - The Maven installation recipe now combines target JVM/version checks, DOCTOR

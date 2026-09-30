@@ -73,15 +73,12 @@ class ReloadLogPanel(private val project: Project) : Disposable {
         val timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"))
         consoleView.print("[$timestamp] $prefix${event.message}\n", contentType)
 
-        // Track reload history
-        if (event.level == "RELOAD" || event.level == "STRUCTURAL_RELOAD"
-                || event.level == "ERROR" || event.level == "OK") {
-            synchronized(reloadHistory) {
-                if (reloadHistory.size >= maxHistorySize) {
-                    reloadHistory.pollFirst()
-                }
-                reloadHistory.addLast(ReloadEntry(timestamp, event.level, event.message))
+        // Retain every displayed event, including context and warnings needed to explain a reload.
+        synchronized(reloadHistory) {
+            if (reloadHistory.size >= maxHistorySize) {
+                reloadHistory.pollFirst()
             }
+            reloadHistory.addLast(ReloadEntry(timestamp, event.level, event.message))
         }
     }
 
@@ -94,6 +91,7 @@ class ReloadLogPanel(private val project: Project) : Disposable {
         sb.appendLine("Reclazz - Log Export")
         sb.appendLine("Project: ${project.name}")
         sb.appendLine("Exported: ${LocalDateTime.now()}")
+        sb.appendLine("Retained events: ${entries.size} (latest $maxHistorySize; oldest first)")
         sb.appendLine("---")
         for (entry in entries) {
             sb.appendLine("[${entry.timestamp}] [${entry.level}] ${entry.message}")

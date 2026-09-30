@@ -2513,6 +2513,15 @@ existing file-watching behavior continues.
   - Each framework step's own sentence, under `verbose=true`
   - Errors and warnings
 
+  **Export Log** saves the latest **500 events received by this panel**, oldest
+  first in arrival order. This includes warnings, information, compilation and
+  connection/disconnection events as well as reloads and errors. Each new event
+  beyond the limit evicts the oldest, regardless of level; the export header
+  states the retained count and limit. Export takes a consistent snapshot while
+  new events arrive. This is in-memory history for the panel's lifetime, not a
+  durable record of the whole session: it does not replay events from before the
+  panel opened, the initial waiting/connection banner, or filtered heartbeats.
+
 - **Notifications:** Balloon notifications for important events (JDK detection, connection status)
 
 ---
