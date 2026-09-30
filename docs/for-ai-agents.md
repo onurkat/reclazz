@@ -52,7 +52,10 @@ transformed at load time. Every argument is in [usage.md](usage.md).
 
 ## Confirm it attached and verify a reload
 
-Do not assume the swap happened; check it. Two machine-readable ways:
+Start with the [complete installation verification recipe](../examples/maven-spring-boot/README.md#verify-the-installation):
+record the intended JVM, inspect DOCTOR, compile a real change, verify its exact
+class-file hash in the same session and check live behavior. The existing tools
+below supply different evidence; an attachment check is not a reload receipt.
 
 - Gradle task, one JSON line:
 
@@ -67,9 +70,11 @@ Do not assume the swap happened; check it. Two machine-readable ways:
   `{"attached":false,"reason":"..."}` when nothing is running. See
   [gradle-plugin.md](gradle-plugin.md#checking-status).
 
-- MCP server, if your client speaks MCP: point it at `reclazz-mcp.jar` and call
-  the `reclazz_status`, `reclazz_verify`, `reclazz_pending` and `reclazz_diagnose`
-  tools during your loop. Setup and the tool table:
+- MCP server, if your client speaks MCP: use the matching packaged
+  `reclazz-mcp-X.Y.Z.jar`. Call `reclazz_doctor` before the change, then
+  `reclazz_verify` for the compiled class/hash; `reclazz_status`,
+  `reclazz_pending` and `reclazz_diagnose` help inspect the running target.
+  Setup and the tool table:
   [mcp-server.md](mcp-server.md).
 
 For failed-build protection, use the [terminal build wrapper or acknowledged
@@ -78,8 +83,8 @@ that support build receipts. Plain compile commands do not provide that barrier.
 
 The basic loop: edit code, recompile (`./gradlew classes` or `mvn
 compile`), let the agent swap it, then hit the endpoint or run the test. If a
-change did not take, `reclazz_diagnose <class>` or the logs say why, and
-`reclazz_pending` lists what genuinely needs a restart (a changed superclass, a
+change did not take, call `reclazz_diagnose` with `className` and the same explicit
+`portFile`, or inspect the logs. `reclazz_pending` lists what genuinely needs a restart (a changed superclass, a
 reordered enum). Restart only for those.
 
 ## Drop-in AGENTS.md recipe

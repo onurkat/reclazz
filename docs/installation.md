@@ -197,10 +197,12 @@ These commands build local files; they do not publish a release.
 2. After the watcher starts, call an endpoint or method and record its response.
 3. Change a simple method's returned text, compile to a watched class output,
    then call it again **without restarting**. Expect the new text and the same JVM.
-4. The [Maven example](../examples/maven-spring-boot/README.md#first-reload) gives a
-   concrete response and JVM-identity check. For matching builds supporting it,
-   [DOCTOR and exact-byte verification](for-ai-agents.md#confirm-it-attached-and-verify-a-reload)
-   provide further target/receipt evidence; still check application behavior.
+4. For complete acceptance with matching agent/MCP builds, follow the
+   [Maven installation verification recipe](../examples/maven-spring-boot/README.md#verify-the-installation)
+   from its baseline step before editing: confirm the intended JVM/version with
+   DOCTOR, hash the compiled class, require a same-session `applied` VERIFY
+   receipt, and check the changed response in the same JVM. A successful
+   connection or compile alone never completes this check.
 
 If only connection succeeds, do not call installation accepted: check the agent
 was present at startup, the compiled output is watched, and the current change

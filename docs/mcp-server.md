@@ -298,6 +298,10 @@ failed and successful recovery; a disconnected MCP call does not release it.
 
 ## Verifying the compiled change
 
+For a concrete first installation, use the [Maven verification recipe](../examples/maven-spring-boot/README.md#verify-the-installation):
+it combines DOCTOR identity, class-file hashing, this receipt and an observable
+response, with next steps for wrong targets, stale sessions and unwatched output.
+
 Build and attach matching current agent/MCP jars; older published agents may not
 support this tool's socket command. After a successful protected compilation,
 compute SHA-256 of each changed `.class` file and call `reclazz_verify` with its
