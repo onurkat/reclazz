@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- The Gradle plugin automatically watches all main compiled-class output directories,
+  with stable ordering and deduplication, while preserving explicit watch overrides.
 - The Maven installation recipe now combines target JVM/version checks, DOCTOR
   watch evidence, same-session exact-byte VERIFY and observed application behavior,
   with next steps for incomplete or mismatched evidence. It reuses existing tools.
