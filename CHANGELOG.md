@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- The Maven installation recipe now combines target JVM/version checks, DOCTOR
+  watch evidence, same-session exact-byte VERIFY and observed application behavior,
+  with next steps for incomplete or mismatched evidence. It reuses existing tools.
 - Installation starts with a launch-method chooser and accurate local/release
   artifact names. A minimal Maven development example preserves JVM arguments
   and provides a first-reload check without requiring IntelliJ or SAP Commerce.
