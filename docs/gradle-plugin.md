@@ -2,13 +2,13 @@
 
 The plugin attaches the Reclazz agent to a project's run and test JVMs, so you
 do not hand-write a `-javaagent` flag. Apply it and `bootRun` and the test
-tasks start with the agent already attached, watching the main output directory.
+tasks start with the agent already attached, watching all main compiled-class output directories.
 
 The plugin id is `com.onurkat.reclazz`.
 
 ## What it does
 
-- Adds `-javaagent:<reclazz-agent.jar>=platform=spring,watchDirs=<main output>`
+- Adds `-javaagent:<reclazz-agent.jar>=platform=spring,watchDirs=<main outputs>`
   to the `bootRun` task when the Spring Boot plugin is applied.
 - Adds the same flag to `Test` tasks, so tests run against reloaded classes.
 - Resolves the agent jar from the coordinate
@@ -56,7 +56,7 @@ reclazz {
     agentJar.set(file("libs/agent.jar"))    // explicit jar; wins over agentVersion
     agentVersion.set("1.3.0")               // coordinate version when no agentJar
     platform.set("spring")                  // defaults to spring under the Boot plugin
-    watchDirs.set(listOf("build/classes/java/main"))  // defaults to the main output
+    watchDirs.set(listOf("build/classes/java/main"))  // overrides automatic main outputs
     arguments.put("debounceMs", "300")      // extra agent args as key=value
     arguments.put("verbose", "true")
     applyToBootRun.set(true)
@@ -64,7 +64,16 @@ reclazz {
 }
 ```
 
-Anything in `arguments` is appended as `key=value` and overrides the computed
+When `watchDirs` is empty, the plugin uses every directory in
+`sourceSets.main.output.classesDirs`, as normalized absolute paths, deduplicated
+and sorted by path, joined with semicolons. Outputs need not exist when the
+arguments are computed; compilation can create them before the application starts.
+Resource directories, test outputs and other projects are not added by this default.
+If there is no main source set or it has no class outputs, the plugin supplies no
+automatic `watchDirs` argument, leaving discovery to the agent.
+
+A nonempty explicit `watchDirs` list replaces the automatic outputs and retains
+its supplied order. Anything in `arguments` is appended as `key=value` and overrides the computed
 `platform` and `watchDirs`, so you can express any agent argument the flag
 accepts. For SAP Commerce, set `platform` and the Hybris arguments explicitly,
 for example `arguments.put("hybrisHome", "/opt/hybris")`.

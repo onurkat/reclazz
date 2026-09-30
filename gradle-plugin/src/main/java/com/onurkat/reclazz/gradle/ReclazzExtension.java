@@ -40,8 +40,9 @@ public abstract class ReclazzExtension {
     public abstract Property<String> getPlatform();
 
     /**
-     * Directories the agent watches for recompiled classes. Defaults to the main source
-     * set output when empty. Multiple entries are joined with a semicolon.
+     * Directories the agent watches for recompiled classes. When empty, defaults to all
+     * main source set class outputs, as distinct normalized absolute paths sorted by path.
+     * An explicit list retains its order. Multiple entries are joined with a semicolon.
      */
     public abstract ListProperty<String> getWatchDirs();
 

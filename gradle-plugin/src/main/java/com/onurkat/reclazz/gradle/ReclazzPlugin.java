@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.gradle.api.Plugin;
 import org.gradle.api.GradleException;
@@ -27,7 +26,7 @@ import org.gradle.api.tasks.testing.Test;
  * Attaches the Reclazz hot-reload agent to a project's run and test JVMs.
  *
  * <p>Applying the plugin is enough for a Spring Boot project: {@code bootRun} and the test
- * tasks start with {@code -javaagent:reclazz-agent.jar=platform=spring,watchDirs=<main output>},
+ * tasks start with {@code -javaagent:reclazz-agent.jar=platform=spring,watchDirs=<main outputs>},
  * so an edit and a build are picked up in place with no restart and no hand-written flag.
  * The {@code reclazz} extension overrides any of it.
  */
@@ -119,9 +118,9 @@ public class ReclazzPlugin implements Plugin<Project> {
         }
         List<String> watchDirs = ext.getWatchDirs().getOrElse(List.of());
         if (watchDirs.isEmpty()) {
-            String main = mainOutput(project);
-            if (main != null) {
-                args.put("watchDirs", main);
+            List<String> main = mainOutputs(project);
+            if (!main.isEmpty()) {
+                args.put("watchDirs", String.join(";", main));
             }
         } else {
             args.put("watchDirs", String.join(";", watchDirs));
@@ -147,16 +146,19 @@ public class ReclazzPlugin implements Plugin<Project> {
         }
     }
 
-    private static String mainOutput(Project project) {
+    private static List<String> mainOutputs(Project project) {
         SourceSetContainer sourceSets = project.getExtensions().findByType(SourceSetContainer.class);
         if (sourceSets == null) {
-            return null;
+            return List.of();
         }
         SourceSet main = sourceSets.findByName(SourceSet.MAIN_SOURCE_SET_NAME);
         if (main == null) {
-            return null;
+            return List.of();
         }
-        Set<File> dirs = main.getOutput().getClassesDirs().getFiles();
-        return dirs.isEmpty() ? null : dirs.iterator().next().getAbsolutePath();
+        return main.getOutput().getClassesDirs().getFiles().stream()
+                .map(dir -> dir.toPath().toAbsolutePath().normalize().toString())
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
     }
 }

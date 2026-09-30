@@ -5,12 +5,14 @@
 package com.onurkat.reclazz.gradle;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.io.TempDir;
@@ -190,6 +192,76 @@ class ReclazzPluginFunctionalTest {
         String out = runner.build().getOutput();
         assertTrue(out.contains("Reusing configuration cache."), out);
         assertTrue(Files.exists(projectDir.resolve("build/classes/java/main/Main.class")));
+    }
+
+    @Test
+    void watchesEveryMainClassesDirectoryInStableOrderWithoutDuplicates() throws Exception {
+        // Deliberately reverse order, repeat an entry and leave both directories nonexistent.
+        configureOutputs("sourceSets.main.output.classesDirs.setFrom(files('z output', 'a output', 'z output'))\n", "");
+        String expected = "watchDirs=" + projectDir.resolve("a output") + ";" + projectDir.resolve("z output");
+        assertGeneratedArguments(expected);
+        assertFalse(Files.exists(projectDir.resolve("a output")));
+    }
+
+    @Test
+    void omitsAutomaticWatchDirsWhenMainOutputsAreEmpty() throws Exception {
+        configureOutputs("sourceSets.main.output.classesDirs.setFrom(files())\n", "");
+        assertGeneratedArguments("");
+    }
+
+    @Test
+    void omitsAutomaticWatchDirsWithoutMainSourceSet() throws Exception {
+        configureOutputs("sourceSets.remove(sourceSets.main)\n", "");
+        assertGeneratedArguments("");
+    }
+
+    @Test
+    void omitsAutomaticWatchDirsWithoutJavaPlugin() throws Exception {
+        configureOutputs("", "");
+        Path build = projectDir.resolve("build.gradle");
+        Files.writeString(build, Files.readString(build).replace("id 'java'; ", ""));
+        assertGeneratedArguments("");
+    }
+
+    @Test
+    void explicitWatchDirsKeepTheirOrderAndOverrideAutomaticOutputs() throws Exception {
+        configureOutputs("sourceSets.main.output.classesDirs.setFrom(files('auto1', 'auto2'))\n",
+                "watchDirs.set(['chosen two', 'chosen one'])");
+        assertGeneratedArguments("watchDirs=chosen two;chosen one");
+    }
+
+    @Test
+    void argumentMapWatchDirsOverridesBothExplicitAndAutomaticOutputs() throws Exception {
+        configureOutputs("sourceSets.main.output.classesDirs.setFrom(files('auto1', 'auto2'))\n",
+                "watchDirs.set(['chosen']); arguments.put('watchDirs', 'map override')");
+        assertGeneratedArguments("watchDirs=map override");
+    }
+
+    private void configureOutputs(String sourceSets, String extension) throws IOException {
+        // TestKit resolves the project directory (for example /var -> /private/var on macOS).
+        projectDir = projectDir.toRealPath();
+        write("settings.gradle", "rootProject.name = 'outputs'");
+        write("agent.jar", "path only");
+        write("build.gradle", "plugins { id 'java'; id 'com.onurkat.reclazz' }\n"
+                + "reclazz { agentJar = file('agent.jar'); " + extension + " }\n"
+                + sourceSets
+                + "tasks.register('bootRun', JavaExec) { mainClass = 'Main'; classpath = files() }\n"
+                + "tasks.register('probeTest', Test)\n"
+                + "tasks.register('printReclazz') { doLast {\n"
+                + "  ['bootRun', 'probeTest'].each { name ->\n"
+                + "    tasks.named(name).get().jvmArgumentProviders.each { p ->\n"
+                + "      p.asArguments().each { println 'FLAG:' + it }\n"
+                + "    }\n"
+                + "  }\n"
+                + "} }\n");
+    }
+
+    private void assertGeneratedArguments(String arguments) {
+        String out = run("printReclazz").getOutput();
+        List<String> flags = out.lines().filter(line -> line.startsWith("FLAG:")).toList();
+        String expected = "FLAG:-javaagent:" + projectDir.resolve("agent.jar")
+                + (arguments.isEmpty() ? "" : "=" + arguments);
+        assertEquals(List.of(expected, expected), flags, out);
     }
 
     private BuildResult run(String task) {
