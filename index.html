@@ -34,46 +34,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
     :root {
-        --bg-dark: #06060a;
-        --bg-elevated: #0d0d14;
-        --bg-card: #111118;
-        --bg-card-hover: #16161f;
-        --bg-subtle: #1a1a24;
-        --primary: #7c3aed;
-        --primary-glow: #a78bfa;
-        --primary-dark: #6d28d9;
-        --primary-light: #c4b5fd;
-        --accent: #06d6a0;
-        --accent-glow: #34d399;
-        --cyan: #22d3ee;
-        --pink: #f472b6;
-        --orange: #fb923c;
-        --success: #10b981;
-        --warning: #fbbf24;
-        --error: #f43f5e;
-        --text: #f8fafc;
-        --text-secondary: #e2e8f0;
-        --text-muted: #94a3b8;
-        --text-dim: #64748b;
-        --border-subtle: rgba(255,255,255,0.04);
-        --border-glass: rgba(255,255,255,0.08);
         --font-primary: 'Poppins', sans-serif;
         --font-secondary: 'Inter', sans-serif;
         --font-mono: 'JetBrains Mono', monospace;
         --header-height: 80px;
     }
 
-    html[data-theme="light"] {
-        --bg-dark: #fafaf9; --bg-elevated: #ffffff; --bg-card: #ffffff;
-        --bg-card-hover: #f5f5f4; --bg-subtle: #fafaf9;
-        --primary: #6d28d9; --primary-glow: #7c3aed;
-        --accent: #059669; --text: #1c1917; --text-secondary: #292524;
-        --text-muted: #57534e; --text-dim: #78716c;
-        --border-subtle: rgba(28,25,23,0.06); --border-glass: rgba(28,25,23,0.1);
-    }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
+    html { font-size: 16px; scroll-behavior: smooth; scroll-padding-top: 96px; }
+    html[data-theme="dark"] { color-scheme: dark; }
+    html[data-theme="light"] { color-scheme: light; }
     body {
         font-family: var(--font-secondary);
         color: var(--text);
@@ -193,21 +164,21 @@
     }
     .theme-toggle {
         background: none; border: 1px solid var(--border-glass);
-        color: var(--text-muted); width: 36px; height: 36px; border-radius: 50%;
+        color: var(--text-muted); width: 44px; height: 44px; border-radius: 50%;
         cursor: pointer; display: flex; align-items: center; justify-content: center;
-        transition: all 0.3s; font-size: 1rem;
+        transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s; font-size: 1rem;
     }
     .theme-toggle:hover { color: var(--text); border-color: var(--primary); }
 
     /* Mobile menu */
     .menu-toggle {
         display: none; background: none; border: 1px solid var(--border-glass);
-        color: var(--text-muted); width: 36px; height: 36px; border-radius: 8px;
+        color: var(--text-muted); width: 44px; height: 44px; border-radius: 8px;
         cursor: pointer; align-items: center; justify-content: center;
-        transition: all 0.3s; font-size: 1.2rem;
+        transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s; font-size: 1.2rem;
     }
     .menu-toggle:hover { color: var(--text); border-color: var(--primary); }
-    @media (max-width: 768px) {
+    @media (max-width: 1200px) {
         .menu-toggle { display: flex; }
         .header-nav {
             position: fixed; top: var(--header-height); left: 0; right: 0;
@@ -218,16 +189,16 @@
             background: var(--bg-dark);
             border-bottom: 1px solid var(--border-glass);
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+            display: none; max-height: 0; overflow: hidden;
         }
         html[data-theme="light"] .header-nav { background: var(--bg-elevated); box-shadow: 0 20px 40px rgba(15,15,30,0.12); }
         /* The old fixed 320px cut the menu off mid-way: the content is taller
            than that, so the Install button survived as a 17px sliver. Bound it
            to the viewport instead and let it scroll if it ever outgrows one. */
-        .header-nav.open { max-height: calc(100vh - var(--header-height)); overflow-y: auto; }
+        .header-nav.open { display: flex; max-height: calc(100dvh - var(--header-height)); overflow-y: auto; }
         /* The bar shrinks on scroll, so the panel has to follow it up. */
         .header.is-scrolled .header-nav { top: 68px; }
-        .header.is-scrolled .header-nav.open { max-height: calc(100vh - 68px); }
+        .header.is-scrolled .header-nav.open { max-height: calc(100dvh - 68px); }
         .header-nav a, .header-nav .btn-github {
             padding: 14px 24px; width: 100%; text-align: left;
             border-bottom: 1px solid var(--border-subtle); border-radius: 0;
@@ -277,7 +248,7 @@
             radial-gradient(ellipse at 70% 80%, rgba(6,214,160,0.04) 0, transparent 50%);
     }
     .hero-inner {
-        max-width: 1200px; margin: 0 auto; padding: 80px 24px;
+        width: 100%; min-width: 0; max-width: 1200px; margin: 0 auto; padding: 80px 24px;
         text-align: center; position: relative; z-index: 1;
     }
     .hero-badge {
@@ -290,7 +261,7 @@
     }
     .hero-badge .dot {
         width: 6px; height: 6px; border-radius: 50%;
-        background: var(--accent); animation: pulse-dot 2s infinite;
+        background: var(--accent); animation: pulse-dot 2s 2;
     }
     @keyframes pulse-dot {
         0%, 100% { opacity: 1; transform: scale(1); }
@@ -316,7 +287,7 @@
         padding: 14px 32px; border-radius: 999px;
         background: var(--primary); color: #fff;
         font-size: 1rem; font-weight: 600; font-family: var(--font-secondary);
-        transition: all 0.3s; border: none; cursor: pointer;
+        transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s; border: none; cursor: pointer;
     }
     .btn-primary:hover { background: var(--primary-dark); color: #fff; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(124,58,237,0.5); }
     .btn-outline {
@@ -325,7 +296,7 @@
         background: transparent; color: var(--text);
         font-size: 1rem; font-weight: 600; font-family: var(--font-secondary);
         border: 1px solid var(--border-glass); cursor: pointer;
-        transition: all 0.3s;
+        transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
     }
     .btn-outline:hover { border-color: var(--primary); color: var(--primary-glow); background: rgba(124,58,237,0.05); }
 
@@ -349,6 +320,7 @@
     .terminal-dot.green { background: #10b981; }
     .terminal-title { color: var(--text-dim); font-size: 0.75rem; margin-left: 8px; font-family: var(--font-mono); }
     .terminal-body {
+        overflow-x: auto;
         padding: 20px; font-family: var(--font-mono); font-size: 0.85rem;
         line-height: 1.8; color: var(--text-muted);
     }
@@ -357,7 +329,7 @@
     .terminal-body .cmd { color: var(--text); }
     .terminal-body .ok { color: var(--success); }
     .terminal-body .info { color: var(--cyan); }
-    .terminal-body .swap { color: #a78bfa; font-weight: 600; }
+    .terminal-body .swap { color: var(--primary-glow); font-weight: 600; }
     .terminal-body .time { color: var(--text-dim); }
     .terminal-body .banner { color: var(--cyan); font-weight: 500; }
 
@@ -385,7 +357,7 @@
     .feature-card {
         padding: 36px 28px; background: var(--bg-card);
         border: 1px solid var(--border-subtle); border-radius: 16px;
-        transition: all 0.4s; position: relative; overflow: hidden;
+        transition: border-color 0.4s, transform 0.4s, box-shadow 0.4s; position: relative; overflow: hidden;
     }
     .feature-card::before {
         content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
@@ -438,7 +410,7 @@
     .jdk-card {
         padding: 32px; background: var(--bg-card);
         border: 1px solid var(--border-subtle); border-radius: 16px;
-        transition: all 0.3s;
+        transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
     }
     .jdk-card:hover { border-color: rgba(124,58,237,0.3); }
     .jdk-card h3 { font-family: var(--font-primary); font-size: 1.2rem; font-weight: 600; margin-bottom: 8px; }
@@ -457,6 +429,10 @@
     .jdk-card.standard li::before { background: var(--cyan); }
     .jdk-card.jbr li::before { background: var(--accent); }
 
+    /* Long JVM flags must wrap inside the card rather than size the grid. */
+    .jdk-card, .feature-card, .install-step { min-width: 0; overflow-wrap: anywhere; }
+    .jdk-card li code { min-width: 0; overflow-wrap: anywhere; }
+
     /* Install steps */
     .install-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
     .install-step {
@@ -474,7 +450,7 @@
     .install-step h3 { font-family: var(--font-primary); font-size: 1.1rem; font-weight: 600; margin-bottom: 10px; }
     .install-step p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
     .install-step code {
-        display: inline-block; margin-top: 12px; padding: 8px 16px;
+        display: inline-block; max-width: 100%; overflow-wrap: anywhere; margin-top: 12px; padding: 8px 16px;
         background: var(--bg-elevated); border: 1px solid var(--border-subtle);
         border-radius: 8px; font-family: var(--font-mono); font-size: 0.8rem;
         color: var(--accent);
@@ -518,6 +494,11 @@
         .section { padding: 80px 16px; }
     }
 
+    @media (max-width: 480px) {
+        .hero-actions a, .cta-actions a { padding: 12px 20px; max-width: 100%; justify-content: center; }
+        .hero h1 { overflow-wrap: anywhere; }
+    }
+
     /* Animations */
     @keyframes fade-up {
         from { opacity: 0; transform: translateY(30px); }
@@ -531,7 +512,7 @@
     .delay-5 { animation-delay: 0.5s; }
 
     /* Scroll-triggered */
-    .reveal { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
     .reveal.visible { opacity: 1; transform: translateY(0); }
 
     /* GitHub star badge */
@@ -541,7 +522,7 @@
         background: transparent; color: var(--text);
         font-size: 1rem; font-weight: 600; font-family: var(--font-secondary);
         border: 1px solid var(--border-glass); cursor: pointer;
-        transition: all 0.3s;
+        transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
     }
     .github-star:hover { border-color: var(--warning); color: var(--warning); background: rgba(251,191,36,0.05); }
     .github-star .star-icon { color: var(--warning); }
@@ -589,21 +570,18 @@
     .faq-question:hover { color: var(--primary-glow); }
     .faq-arrow { color: var(--text-dim); font-size: 0.8rem; transition: transform 0.3s; flex-shrink: 0; }
     .faq-item.open .faq-arrow { transform: rotate(180deg); }
-    .faq-answer {
-        max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
-    }
+    .faq-answer[hidden] { display: none; }
     .faq-answer-inner {
         padding: 0 24px 20px; color: var(--text-muted);
         font-size: 0.95rem; line-height: 1.7;
     }
-    .faq-item.open .faq-answer { max-height: 500px; }
 
     /* Language toggle */
     .lang-toggle {
         background: none; border: 1px solid var(--border-glass);
-        color: var(--text-muted); padding: 4px 12px; border-radius: 999px;
+        color: var(--text-muted); padding: 4px 12px; min-width: 44px; min-height: 44px; border-radius: 999px;
         cursor: pointer; font-size: 0.8rem; font-weight: 600;
-        font-family: var(--font-secondary); transition: all 0.3s;
+        font-family: var(--font-secondary); transition: color 0.3s, background-color 0.3s, border-color 0.3s, transform 0.3s, box-shadow 0.3s;
         text-transform: uppercase; letter-spacing: 0.05em;
     }
     .lang-toggle:hover { color: var(--text); border-color: var(--primary); }
@@ -626,6 +604,13 @@
     .marketplace-notice {
         display: none; margin-top: 12px; font-size: 0.85rem;
         color: var(--text-dim); text-align: center;
+    }
+    /* Keep the page readable without motion, including content below the fold. */
+    @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after { animation: none !important; transition: none !important; }
+        .reveal, .animate { opacity: 1; transform: none; }
+        .header-mark, .btn-primary:hover, .btn-github:hover, .feature-card:hover { transform: none; }
     }
     </style>
     <script type="application/ld+json">
@@ -787,9 +772,10 @@
         "keywords": "hot reload, Spring Boot, SAP Commerce, Hybris, JRebel alternative, HotswapAgent, DCEVM, Java agent, IntelliJ plugin, items.xml, beans.xml"
     }
     </script>
+    <link rel="stylesheet" href="/palette.css">
 </head>
 <body>
-<a href="#features" class="skip-to-content">Skip to content</a>
+<a href="#main-content" class="skip-to-content" data-i18n="nav.skip">Skip to content</a>
 
 <!-- Header -->
 <header class="header">
@@ -798,7 +784,7 @@
              previous /images/logo-white.svg did, and it costs no request.
              Geometry is the shared master in the product repo's branding/
              directory, identical to the plugin icon and the favicon. -->
-        <a href="#top" class="header-logo" aria-label="Reclazz, back to top">
+        <a href="#home" class="header-logo" aria-label="Reclazz, back to top">
             <span class="header-mark" aria-hidden="true">
                 <svg viewBox="0 0 64 64" width="34" height="34">
                     <defs>
@@ -818,8 +804,8 @@
             </span>
             <span class="header-wordmark">Reclazz</span>
         </a>
-        <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">&#9776;</button>
-        <nav class="header-nav" id="headerNav">
+        <button class="menu-toggle" id="menuToggle" aria-label="Open menu" aria-expanded="false" aria-controls="headerNav">&#9776;</button>
+        <nav class="header-nav" id="headerNav" aria-label="Main navigation">
             <a href="#sap" data-i18n="nav.sap" style="white-space:nowrap">SAP Commerce</a>
             <a href="#features" data-i18n="nav.features">Features</a>
             <a href="#comparison" data-i18n="nav.compare">Compare</a>
@@ -830,7 +816,7 @@
             <!-- display:contents on desktop, so these stay direct flex children
                  of the nav there and only group up inside the mobile panel. -->
             <div class="nav-utils">
-                <button class="lang-toggle" id="langToggle">TR</button>
+                <button class="lang-toggle" id="langToggle" aria-label="Türkçeye geç" lang="tr">TR</button>
                 <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9790;</button>
             </div>
             <a href="https://plugins.jetbrains.com/plugin/33498-reclazz" class="btn-github" target="_blank" rel="noopener noreferrer">
@@ -841,6 +827,7 @@
     </div>
 </header>
 
+<main id="main-content" tabindex="-1">
 <!-- Hero -->
 <section class="hero" id="home">
     <div class="hero-inner">
@@ -1272,44 +1259,44 @@
         </div>
         <div class="faq-list">
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q1">Will Reclazz break my running application?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a1">No. Reclazz uses the standard JVM Instrumentation API, the same mechanism used by debuggers and profilers. If a hot-swap fails (e.g., a structural change on standard OpenJDK), the original class remains loaded and your application continues running normally.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-1" data-i18n="faq.q1">Will Reclazz break my running application?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-1" hidden><div class="faq-answer-inner" data-i18n="faq.a1">No. Reclazz uses the standard JVM Instrumentation API, the same mechanism used by debuggers and profilers. If a hot-swap fails (e.g., a structural change on standard OpenJDK), the original class remains loaded and your application continues running normally.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q2">How is Reclazz different from Spring Boot DevTools?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a2">DevTools restarts the entire Spring application context on every change, which takes seconds and loses all application state. Reclazz performs true in-place class redefinition, so your state is preserved, and reloads complete in ~50ms. Reclazz also handles Spring-specific concerns like MVC re-scanning, cache eviction, and scheduler re-registration without a restart.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-2" data-i18n="faq.q2">How is Reclazz different from Spring Boot DevTools?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-2" hidden><div class="faq-answer-inner" data-i18n="faq.a2">DevTools restarts the entire Spring application context on every change, which takes seconds and loses all application state. Reclazz performs true in-place class redefinition, so your state is preserved, and reloads complete in ~50ms. Reclazz also handles Spring-specific concerns like MVC re-scanning, cache eviction, and scheduler re-registration without a restart.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q3">Does Reclazz work with Maven and Gradle?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a3">Yes. Reclazz auto-detects <code style="font-family:var(--font-mono);font-size:0.9em">target/classes</code> (Maven) or <code style="font-family:var(--font-mono);font-size:0.9em">build/classes/java/main</code> (Gradle) from the classpath. Just run <code style="font-family:var(--font-mono);font-size:0.9em">mvn compile</code> or <code style="font-family:var(--font-mono);font-size:0.9em">gradle classes</code> and Reclazz hot-swaps the changes automatically.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-3" data-i18n="faq.q3">Does Reclazz work with Maven and Gradle?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-3" hidden><div class="faq-answer-inner" data-i18n="faq.a3">Yes. Reclazz auto-detects <code style="font-family:var(--font-mono);font-size:0.9em">target/classes</code> (Maven) or <code style="font-family:var(--font-mono);font-size:0.9em">build/classes/java/main</code> (Gradle) from the classpath. Just run <code style="font-family:var(--font-mono);font-size:0.9em">mvn compile</code> or <code style="font-family:var(--font-mono);font-size:0.9em">gradle classes</code> and Reclazz hot-swaps the changes automatically.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q4">What happens when a hot-swap fails?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a4">Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes: superclass or interface changes, which always require a restart.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-4" data-i18n="faq.q4">What happens when a hot-swap fails?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-4" hidden><div class="faq-answer-inner" data-i18n="faq.a4">Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes: superclass or interface changes, which always require a restart.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q5">Does Reclazz send any data to external servers?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a5">No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine. Your code never leaves your environment.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-5" data-i18n="faq.q5">Does Reclazz send any data to external servers?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-5" hidden><div class="faq-answer-inner" data-i18n="faq.a5">No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine. Your code never leaves your environment.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q6">Does Reclazz support SAP Commerce (Hybris)?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a6">Yes, and it is the reason Reclazz exists. Saving a <strong>*-items.xml</strong> or <strong>*-beans.xml</strong> runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC &gt; Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), <strong>*-spring.xml</strong> reload, ImpEx auto-import and extension-aware class watching.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-6" data-i18n="faq.q6">Does Reclazz support SAP Commerce (Hybris)?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-6" hidden><div class="faq-answer-inner" data-i18n="faq.a6">Yes, and it is the reason Reclazz exists. Saving a <strong>*-items.xml</strong> or <strong>*-beans.xml</strong> runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC &gt; Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), <strong>*-spring.xml</strong> reload, ImpEx auto-import and extension-aware class watching.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q7">Do I need JetBrains Runtime?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a7">Not required. Structural changes (adding and removing methods and fields) work on any JDK 17+. JetBrains Runtime or DCEVM additionally makes those new members visible to reflection and to caches built at startup. Reclazz auto-detects which runtime you're using and configures itself accordingly.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-7" data-i18n="faq.q7">Do I need JetBrains Runtime?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-7" hidden><div class="faq-answer-inner" data-i18n="faq.a7">Not required. Structural changes (adding and removing methods and fields) work on any JDK 17+. JetBrains Runtime or DCEVM additionally makes those new members visible to reflection and to caches built at startup. Reclazz auto-detects which runtime you're using and configures itself accordingly.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q8">Is there a free alternative to JRebel for SAP Commerce?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a8">Reclazz is one, and it is open source under Apache 2.0 with no licence server and no per-seat cost. It reloads Java classes, including added methods and instance fields, on any JDK 17 or newer. On SAP Commerce it also covers what a Java-only reload does not: saving a *-items.xml or *-beans.xml regenerates and reloads the model and DTO classes, property changes reach the running server, log levels change without a restart, locales text and backoffice labels refresh, *-spring.xml is applied to the live context, and an endpoint you just wrote answers on the next request. Compared against JRebel's own SAP Commerce manual, which documents reloading compiled classes and configuring rebel.xml, those platform-specific parts are not in it.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-8" data-i18n="faq.q8">Is there a free alternative to JRebel for SAP Commerce?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-8" hidden><div class="faq-answer-inner" data-i18n="faq.a8">Reclazz is one, and it is open source under Apache 2.0 with no licence server and no per-seat cost. It reloads Java classes, including added methods and instance fields, on any JDK 17 or newer. On SAP Commerce it also covers what a Java-only reload does not: saving a *-items.xml or *-beans.xml regenerates and reloads the model and DTO classes, property changes reach the running server, log levels change without a restart, locales text and backoffice labels refresh, *-spring.xml is applied to the live context, and an endpoint you just wrote answers on the next request. Compared against JRebel's own SAP Commerce manual, which documents reloading compiled classes and configuring rebel.xml, those platform-specific parts are not in it.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q9">How do I reload an items.xml change without running ant clean all?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a9">Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-9" data-i18n="faq.q9">How do I reload an items.xml change without running ant clean all?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-9" hidden><div class="faq-answer-inner" data-i18n="faq.a9">Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server.</div></div>
             </div>
             <div class="faq-item">
-                <button class="faq-question" aria-expanded="false" data-i18n="faq.q10">I added a method to a running bean. Will Spring, Jackson or my message broker find it?<span class="faq-arrow">&#9660;</span></button>
-                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a10">On a stock JDK the method lives on a hidden companion class, which is exactly what a reflective scan cannot see, so Reclazz hands each framework the saved metadata through an adapter. A new endpoint, exception handler, binder or model attribute method is served on the next request; a new @Bean, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct or @PreDestroy registers; a new @KafkaListener, @JmsListener or @RabbitListener consumes after the previous consumer has been stopped; a new Jackson getter, setter or field is read and written. Each is a real test against the framework, and a shape without an adapter is named as needing a restart.</div></div>
+                <button class="faq-question" aria-expanded="false" aria-controls="faq-answer-10" data-i18n="faq.q10">I added a method to a running bean. Will Spring, Jackson or my message broker find it?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer" id="faq-answer-10" hidden><div class="faq-answer-inner" data-i18n="faq.a10">On a stock JDK the method lives on a hidden companion class, which is exactly what a reflective scan cannot see, so Reclazz hands each framework the saved metadata through an adapter. A new endpoint, exception handler, binder or model attribute method is served on the next request; a new @Bean, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct or @PreDestroy registers; a new @KafkaListener, @JmsListener or @RabbitListener consumes after the previous consumer has been stopped; a new Jackson getter, setter or field is read and written. Each is a real test against the framework, and a shape without an adapter is named as needing a restart.</div></div>
             </div>
         </div>
     </div>
@@ -1330,12 +1317,14 @@
     </div>
 </section>
 
+</main>
+
 <!-- Footer -->
 <footer class="footer">
     <div class="container">
         <p style="margin-bottom:1.25rem">
             <a href="https://alternativeto.net/software/reclazz/about/?utm_source=badge&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">
-                <img src="https://alternativeto.net/static/badges/badge-wide-dark.svg" alt="Reclazz | AlternativeTo" width="406" height="77" loading="lazy" style="width:406px;height:77px" />
+                <img src="https://alternativeto.net/static/badges/badge-wide-dark.svg" alt="Reclazz | AlternativeTo" width="406" height="77" loading="lazy" style="width:406px;max-width:100%;height:auto" />
             </a>
         </p>
         <p>&copy; 2026 <a href="/">Onur Kat</a> | <a href="/compare/">Compare</a> | <a href="/license/">License (Apache 2.0)</a> | <a href="/privacy/">Privacy</a> | <a href="https://github.com/onurkat/reclazz" target="_blank" rel="noopener noreferrer">GitHub</a></p>
@@ -1353,22 +1342,46 @@ toggle.addEventListener('click', () => {
     html.setAttribute('data-theme', next);
     localStorage.setItem('theme', next);
     toggle.textContent = next === 'dark' ? '\u263E' : '\u2600';
+    updateControlLabels();
 });
 toggle.textContent = html.getAttribute('data-theme') === 'dark' ? '\u263E' : '\u2600';
 
 // Mobile menu toggle
 const menuToggle = document.getElementById('menuToggle');
 const headerNav = document.getElementById('headerNav');
-menuToggle.addEventListener('click', () => {
-    headerNav.classList.toggle('open');
-    menuToggle.textContent = headerNav.classList.contains('open') ? '\u2715' : '\u2630';
-});
+function updateControlLabels() {
+    const tr = html.lang === 'tr';
+    const open = headerNav.classList.contains('open');
+    menuToggle.setAttribute('aria-label', tr ? (open ? 'Menüyü kapat' : 'Menüyü aç') : (open ? 'Close menu' : 'Open menu'));
+    headerNav.setAttribute('aria-label', tr ? 'Ana gezinme' : 'Main navigation');
+    const dark = html.getAttribute('data-theme') === 'dark';
+    toggle.setAttribute('aria-label', tr ? (dark ? 'Açık temaya geç' : 'Koyu temaya geç') : (dark ? 'Switch to light theme' : 'Switch to dark theme'));
+}
+function setMenuOpen(open, returnFocus = false) {
+    headerNav.classList.toggle('open', open);
+    menuToggle.setAttribute('aria-expanded', String(open));
+    menuToggle.textContent = open ? '\u2715' : '\u2630';
+    updateControlLabels();
+    if (returnFocus) menuToggle.focus();
+}
+menuToggle.addEventListener('click', () => setMenuOpen(!headerNav.classList.contains('open')));
 headerNav.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
-        headerNav.classList.remove('open');
-        menuToggle.textContent = '\u2630';
+        if (headerNav.classList.contains('open')) setMenuOpen(false, true);
     });
 });
+document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && headerNav.classList.contains('open')) {
+        event.preventDefault();
+        setMenuOpen(false, true);
+    }
+});
+const mobileMenu = window.matchMedia('(max-width: 1200px)');
+mobileMenu.addEventListener('change', event => {
+    // Do not leave focus inside navigation that becomes hidden on resize.
+    setMenuOpen(false, event.matches && headerNav.contains(document.activeElement));
+});
+updateControlLabels();
 
 // Header: solid backdrop once the hero scrolls away.
 const header = document.querySelector('.header');
@@ -1409,10 +1422,13 @@ document.querySelectorAll('.faq-question').forEach(btn => {
             if (other !== item) {
                 other.classList.remove('open');
                 other.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                other.querySelector('.faq-answer').hidden = true;
             }
         });
         item.classList.toggle('open');
-        btn.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
+        const open = item.classList.contains('open');
+        btn.setAttribute('aria-expanded', String(open));
+        item.querySelector('.faq-answer').hidden = !open;
     });
 });
 
@@ -1441,6 +1457,7 @@ fetch('https://api.github.com/repos/onurkat/reclazz')
 // i18n
 const translations = {
     tr: {
+        'nav.skip': 'İçeriğe geç',
         'nav.features': '\u00D6zellikler',
         'nav.compare': 'Kar\u015F\u0131la\u015Ft\u0131r',
         'nav.jdk': 'JDK Deste\u011Fi',
@@ -1647,6 +1664,9 @@ function setLang(lang) {
     localStorage.setItem('reclazz-lang', lang);
     langToggle.textContent = lang === 'en' ? 'TR' : 'EN';
     document.documentElement.lang = lang;
+    langToggle.setAttribute('aria-label', lang === 'en' ? 'Türkçeye geç' : 'Switch to English');
+    langToggle.lang = lang === 'en' ? 'tr' : 'en';
+    updateControlLabels();
 
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
@@ -1654,11 +1674,17 @@ function setLang(lang) {
             // Preserve arrow spans in FAQ questions
             const arrow = el.querySelector('.faq-arrow');
             el.innerHTML = translations.tr[key];
-            if (arrow) el.appendChild(arrow);
+            if (arrow) {
+                el.querySelectorAll('.faq-arrow').forEach(existing => existing.remove());
+                el.appendChild(arrow);
+            }
         } else if (lang === 'en' && originalTexts[key]) {
             const arrow = el.querySelector('.faq-arrow');
             el.innerHTML = originalTexts[key];
-            if (arrow) el.appendChild(arrow);
+            if (arrow) {
+                el.querySelectorAll('.faq-arrow').forEach(existing => existing.remove());
+                el.appendChild(arrow);
+            }
         }
     });
 }

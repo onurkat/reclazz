@@ -1,0 +1,76 @@
+/* Shared by every page. Brand fills and readable foregrounds are separate. */
+:root {
+    color-scheme: dark;
+    --bg-dark: #06060a;
+    --bg-elevated: #0d0d14;
+    --bg-card: #111118;
+    --bg-card-hover: #16161f;
+    --bg-subtle: #1a1a24;
+    --primary: #7c3aed;
+    --primary-dark: #6d28d9;
+    --primary-glow: #a78bfa;
+    --primary-light: #c4b5fd;
+    --accent: #34d399;
+    --accent-glow: #6ee7b7;
+    --cyan: #22d3ee;
+    --pink: #f472b6;
+    --orange: #fb923c;
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #fb7185;
+    --text: #f8fafc;
+    --text-secondary: #e2e8f0;
+    --text-muted: #a3b1c6;
+    --text-dim: #94a3b8;
+    --border-subtle: rgba(255,255,255,0.08);
+    --border-glass: rgba(255,255,255,0.14);
+    --control-border: #64748b;
+    --heading-start: #c4b5fd;
+    --heading-end: #34d399;
+}
+html[data-theme="light"] {
+    color-scheme: light;
+    --bg-dark: #fafaf9;
+    --bg-elevated: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f5f5f4;
+    --bg-subtle: #f5f5f4;
+    --primary: #6d28d9;
+    --primary-dark: #5b21b6;
+    --primary-glow: #6d28d9;
+    --primary-light: #6d28d9;
+    --accent: #047857;
+    --accent-glow: #065f46;
+    --cyan: #0e7490;
+    --pink: #9d174d;
+    --orange: #9a3412;
+    --success: #047857;
+    --warning: #854d0e;
+    --error: #be123c;
+    --text: #1c1917;
+    --text-secondary: #292524;
+    --text-muted: #57534e;
+    --text-dim: #57534e;
+    --border-subtle: rgba(28,25,23,0.10);
+    --border-glass: rgba(28,25,23,0.18);
+    --control-border: #78716c;
+    --heading-start: #6d28d9;
+    --heading-end: #047857;
+}
+.text-gradient {
+    background: linear-gradient(120deg, var(--heading-start), var(--heading-end));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.header-wordmark, html[data-theme="light"] .header-wordmark {
+    background: linear-gradient(120deg, var(--text) 45%, var(--heading-end));
+    -webkit-background-clip: text; background-clip: text;
+}
+.btn-primary, .header-nav .btn-github, .step-number {
+    background: var(--primary); color: #fff;
+}
+.btn-primary:hover, .header-nav .btn-github:hover { background: var(--primary-dark); color: #fff; }
+.theme-toggle, .menu-toggle, .lang-toggle, .btn-outline, .btn-ghost, .github-star {
+    border-color: var(--control-border);
+}
+.theme-toggle { width: 44px; height: 44px; }
+:focus-visible { outline: 2px solid var(--primary-glow); outline-offset: 3px; }
