@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- IDE injection and Maven `prepare-agent` reuse an identical existing Reclazz
+  JVM argument and reject conflicting jar paths/options or duplicate flags,
+  while preserving other agents and quoted paths in their explicit arguments.
 - IntelliJ log export retains all received event levels, including warnings,
   information, compilation and connection events, in its latest 500-event history.
 - The Gradle plugin automatically watches all main compiled-class output directories,

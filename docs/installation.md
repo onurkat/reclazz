@@ -51,6 +51,16 @@ that bundled name is deliberately unversioned. No separate agent download is
 needed for IDE-managed runs. SAP launches outside the IDE use a staged copy;
 follow the SAP guide rather than persisting a path inside an IDE installation.
 
+For IDE-managed launches, one existing Reclazz VM option is reused only when its
+jar path and options exactly match what the IDE would inject, after quote parsing.
+A different path/version/options or multiple Reclazz flags stop launch with a
+conflict message. Remove the manual Reclazz VM option to use IDE settings, or
+disable Reclazz under **Settings → Tools → Reclazz** to manage attachment yourself.
+Other Java agents are preserved. Recognition covers `reclazz-agent.jar` and
+`reclazz-agent-<version>.jar` (version starts with a digit, classifiers allowed).
+Renamed jars at other paths, environment-provided flags and `@argfiles` are not
+inspected; option order and equivalent filesystem paths are not normalized.
+
 ### Optional command-line plugin installation
 
 JetBrains documents `installPlugins` for its launchers. These examples use the
