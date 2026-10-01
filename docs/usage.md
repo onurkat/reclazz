@@ -2840,9 +2840,25 @@ initializers appear equivalent. Constructor arguments and other local variables,
 outside branches, loops, switches, shared field/array writes, locking and
 separate void/discarded-result calls are unsupported. Any try/catch in the
 constructor also refuses conditional initialization, even if the handler is
-elsewhere. The existing concurrent-first-read behavior is unchanged: computations
-can overlap, and the first stored value wins. This does not add rollback for
-side effects or change how a throwing initializer is retired.
+elsewhere. Concurrent first-read computations can overlap; the first stored
+outcome wins, including failure. Application code runs outside the store's locks;
+there is no rollback of initializer side effects.
+
+A throwing initializer is isolated to that object and field. Reads return the
+type default (`null`, `0`, `false`), and later reads do not retry in the same
+initializer generation. Other objects still compute their own values. Each
+subsequent initializer registration during structural reload creates a new
+generation: a failed object's next read may try the current initializer again.
+Successful values and application writes, including explicit `null`, are preserved.
+Removing the initializer leaves failed/unset objects at the default until a later
+registration supplies one again. There is no configurable retry policy or replay.
+
+A computation still running when its generation is replaced cannot publish its
+old value or failure. That read returns a value already stored by the application
+or another reader, or the type default if none exists; a later read can initialize
+with the current generation. Already-running computations may overlap before a
+failure is recorded, but repeated reads after that failure do not start more work
+in the same generation.
 
 What cannot be lifted keeps the type default (`null`, `0`, `false`) on
 pre-existing objects, and the reload names the field and the reason:
@@ -2851,9 +2867,11 @@ pre-existing objects, and the reload names the field and the reason:
   name.toUpperCase()` in the constructor body), because the object no longer
   has the argument;
 - an initialiser whose control flow leaves the assignment, loops, uses a switch
-  or try/catch, or shares a computation with another field;
-- an initialiser that throws on first read: the field reads the default and
-  the initialiser is not tried again.
+  or try/catch, or shares a computation with another field.
+
+A supported initializer can still throw when it runs on first read. That runtime
+failure follows the per-object behavior above; it is not an extraction refusal
+diagnosed during reload.
 
 On JetBrains Runtime or DCEVM the field is a real field on the redefined
 class, so reflection sees it, and objects from before the reload keep the type

@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Failed added-instance-field initialization is isolated per object and generation.
+  Repeated failed reads do not retry until a later registration; stale computations
+  cannot overwrite newer outcomes, successful values or application writes.
 - IDE injection and Maven `prepare-agent` reuse an identical existing Reclazz
   JVM argument and reject conflicting jar paths/options or duplicate flags,
   while preserving other agents and quoted paths in their explicit arguments.

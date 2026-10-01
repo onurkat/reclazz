@@ -159,7 +159,7 @@ class InstanceInitialiserTest {
      * initialiser is not tried again on every read.
      */
     @Test
-    void anInitialiserThatThrowsIsRetiredAndTheFieldReadsTheDefault() throws Throwable {
+    void anInitialiserThatThrowsLeavesTheObjectAtDefaultWithoutRetiringOtherObjects() throws Throwable {
         MethodHandle throwing = MethodHandles.dropArguments(
                 MethodHandles.throwException(Object.class, IllegalStateException.class)
                         .bindTo(new IllegalStateException("no")),
@@ -168,8 +168,9 @@ class InstanceInitialiserTest {
         Fixture existing = new Fixture("x");
 
         assertEquals(0, FieldStore.getExtField(existing, owner(), "retries", "I"));
-        assertFalse(FieldStore.hasInstanceInitialiser(Fixture.class, "retries", "I"),
-                "a throwing initialiser is taken out rather than run on every read");
+        assertEquals(0, FieldStore.getExtField(existing, owner(), "retries", "I"));
+        assertTrue(FieldStore.hasInstanceInitialiser(Fixture.class, "retries", "I"),
+                "a failed object must not retire the initializer for every other object");
     }
 
     /**
