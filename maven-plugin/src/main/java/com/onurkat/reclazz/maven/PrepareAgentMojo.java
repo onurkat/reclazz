@@ -5,9 +5,11 @@
 package com.onurkat.reclazz.maven;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -71,9 +73,70 @@ public class PrepareAgentMojo extends AbstractMojo {
         String arg = buildAgentArg(agentJar, platform, watchDirs, agentArgs);
 
         String existing = project.getProperties().getProperty(propertyName);
+        String expected = parseArguments(arg)[0];
+        List<String> configured = java.util.Arrays.stream(parseArguments(existing))
+                .filter(value -> isReclazzAgent(value, agentJar)).toList();
+        if (!configured.isEmpty()) {
+            if (configured.size() != 1 || !configured.get(0).equals(expected)) {
+                throw new MojoExecutionException("Conflicting Reclazz -javaagent arguments in property '"
+                        + propertyName + "'. Keep one argument with the same jar path and options as "
+                        + "prepare-agent, or remove the manual Reclazz argument and let the goal supply it.");
+            }
+            getLog().info("Reusing the existing Reclazz agent on property '" + propertyName + "'.");
+            return;
+        }
         String value = (existing == null || existing.isBlank()) ? arg : arg + " " + existing;
         project.getProperties().setProperty(propertyName, value);
         getLog().info("Reclazz agent set on property '" + propertyName + "': " + arg);
+    }
+
+    /**
+     * Inspect explicit argLine text using Surefire's quote/backslash rules.
+     * No shell, environment or property expansion; never reserialize user text.
+     * Surefire's parser is test-only; Maven does not export Plexus's CLI parser
+     * to plugin realms. Tests compare this scanner with Surefire 3.5.4 directly.
+     */
+    String[] parseArguments(String value) throws MojoExecutionException {
+        var tokens = new StringTokenizer(value == null ? "" : value.replaceAll("\\s", " "), "\"' \\", true);
+        var arguments = new ArrayList<String>();
+        var current = new StringBuilder();
+        String quote = null;
+        boolean backslash = false;
+        while (tokens.hasMoreTokens()) {
+            String token = tokens.nextToken();
+            boolean quoteBoundary = quote == null ? token.equals("\"") || token.equals("'") : token.equals(quote);
+            if (quoteBoundary) {
+                if (backslash) {
+                    current.append(token);
+                    backslash = false;
+                } else {
+                    quote = quote == null ? token : null;
+                }
+            } else if (quote == null && token.equals(" ")) {
+                if (current.length() > 0) {
+                    arguments.add(current.toString());
+                    current.setLength(0);
+                }
+            } else {
+                current.append(token);
+                backslash = token.equals("\\");
+            }
+        }
+        if (quote != null) {
+            throw new MojoExecutionException("Cannot inspect JVM arguments for property '" + propertyName
+                    + "': check for unbalanced quotes before running prepare-agent.");
+        }
+        if (current.length() > 0) arguments.add(current.toString());
+        return arguments.toArray(String[]::new);
+    }
+
+    private static boolean isReclazzAgent(String argument, File expectedJar) {
+        if (!argument.startsWith("-javaagent:")) return false;
+        String path = argument.substring("-javaagent:".length()).split("=", 2)[0];
+        String name = path.replace('\\', '/');
+        name = name.substring(name.lastIndexOf('/') + 1);
+        return path.equals(expectedJar.getAbsolutePath())
+                || name.matches("reclazz-agent(?:-[0-9][^/\\\\]*)?\\.jar");
     }
 
     private File findAgentJar() throws MojoExecutionException {

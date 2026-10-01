@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.plugin.agent
 
 import com.intellij.execution.RunConfigurationExtension
+import com.intellij.execution.ExecutionException
 import com.intellij.execution.configurations.JavaParameters
 import com.intellij.execution.configurations.RunConfigurationBase
 import com.intellij.execution.configurations.RunnerSettings
@@ -13,8 +14,11 @@ import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.JdkDetector
 import com.onurkat.reclazz.plugin.settings.ReclazzSettings
+import java.io.File
 
-class AgentInjector : RunConfigurationExtension() {
+class AgentInjector internal constructor(private val locateAgentJar: () -> File?) : RunConfigurationExtension() {
+
+    constructor() : this(AgentJarLocator::findAgentJar)
 
     private val log = Logger.getInstance(AgentInjector::class.java)
 
@@ -47,7 +51,7 @@ class AgentInjector : RunConfigurationExtension() {
         // an antivirus quarantined, an installation copied between machines.
         // Reclazz's whole argument is that it says what did not happen, and
         // this was the one place it did not.
-        val agentJar = AgentJarLocator.findAgentJar()
+        val agentJar = locateAgentJar()
         if (agentJar == null) {
             if (missingJarReported.add(project.locationHash)) {
                 ReloadNotifications.warn(
@@ -67,8 +71,17 @@ class AgentInjector : RunConfigurationExtension() {
         // Build agent args
         val agentArgs = AgentJarLocator.buildAgentArgs(project, settings)
 
-        // Add -javaagent
-        params.vmParametersList.add("-javaagent:${agentJar.absolutePath}=$agentArgs")
+        // JavaParameters already contains launcher-decoded tokens, not a shell command.
+        val expected = "-javaagent:${agentJar.absolutePath}=$agentArgs"
+        val configured = params.vmParametersList.list.filter { isReclazzAgent(it, agentJar) }
+        if (configured.isNotEmpty() && (configured.size != 1 || configured.single() != expected)) {
+            throw ExecutionException(
+                "Conflicting Reclazz -javaagent arguments. Keep one argument with the same bundled jar " +
+                "path and options as the IDE settings, or remove the manual Reclazz VM option. " +
+                "To manage attachment manually, disable Reclazz in Settings > Tools > Reclazz."
+            )
+        }
+        if (configured.isEmpty()) params.vmParametersList.add(expected)
 
         // Add JDK-specific flags
         if (jdkInfo != null) {
@@ -94,10 +107,17 @@ class AgentInjector : RunConfigurationExtension() {
             }
         }
 
-        log.info("Reclazz agent injected: ${agentJar.absolutePath}")
+        log.info("Reclazz agent ${if (configured.isEmpty()) "injected" else "reused"}: ${agentJar.absolutePath}")
         if (jdkInfo != null) {
             log.info("JDK detected: ${jdkInfo.displayName} — ${jdkInfo.capabilityDescription}")
         }
     }
 
+    private fun isReclazzAgent(argument: String, expectedJar: File): Boolean {
+        if (!argument.startsWith("-javaagent:")) return false
+        val path = argument.removePrefix("-javaagent:").substringBefore('=')
+        val name = path.replace('\\', '/').substringAfterLast('/')
+        return path == expectedJar.absolutePath ||
+            Regex("""reclazz-agent(?:-[0-9][^/\\]*)?\.jar""").matches(name)
+    }
 }

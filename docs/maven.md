@@ -197,6 +197,21 @@ profile above instead of relying on initialization inside Boot's forked lifecycl
 Configure the platform and any agent argument through the plugin's
 `<configuration>` (`platform`, `watchDirs`, `agentArgs`).
 
+Repeated `prepare-agent` calls reuse one identical Reclazz argument already in
+the selected property (`argLine` by default, or `propertyName`). Quote syntax is
+decoded for comparison; the existing property text, other agents and JVM options
+are preserved. A different jar path/version/options, multiple Reclazz flags or
+unbalanced quotes fail the goal without overwriting the property. Remove the
+manual Reclazz flag and let the goal supply it, or align its jar path and options
+with the plugin configuration. `reclazz.skip=true` bypasses preparation as before.
+
+Recognition covers the resolved jar path plus `reclazz-agent.jar` and
+`reclazz-agent-<version>.jar` names (version starts with a digit, classifiers
+allowed). It does not inspect renamed jars at other paths, environment variables,
+`@argfiles` or unresolved property references. Option order and equivalent paths
+are not normalized, and separate properties later combined by a launcher are
+outside this check. Keep a single attachment source in those cases.
+
 The plugin coordinate is `com.onurkat.reclazz:reclazz-maven-plugin`; select a
 published version or use the local-build instructions above. Its sources are in
 `maven-plugin/`; this repository builds with Gradle, so the Maven plugin is built
