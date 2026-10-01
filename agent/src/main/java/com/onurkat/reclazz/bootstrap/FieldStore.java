@@ -53,14 +53,34 @@ public final class FieldStore {
      * pins the companion, and the companion must be collectable with the
      * class rather than pinned by a global map for the life of the JVM.
      */
-    private static final ClassValue<ConcurrentHashMap<String, java.lang.invoke.MethodHandle>>
-            initialisersByClass = new ClassValue<>() {
-                @Override
-                protected ConcurrentHashMap<String, java.lang.invoke.MethodHandle> computeValue(
-                        Class<?> type) {
-                    return new ConcurrentHashMap<>();
-                }
-            };
+    private static final ClassValue<InitialiserRegistry> initialisersByClass = new ClassValue<>() {
+        @Override
+        protected InitialiserRegistry computeValue(Class<?> type) {
+            return new InitialiserRegistry();
+        }
+    };
+
+    private static final class InitialiserRegistry {
+        volatile InitialiserSnapshot current = new InitialiserSnapshot(java.util.Map.of());
+    }
+
+    private static final class InitialiserSnapshot {
+        final Object generation = new Object();
+        final java.util.Map<String, java.lang.invoke.MethodHandle> handles;
+
+        InitialiserSnapshot(java.util.Map<String, java.lang.invoke.MethodHandle> handles) {
+            this.handles = java.util.Map.copyOf(handles);
+        }
+    }
+
+    /** A slot marker must not retain an old companion handle, exception or receiver. */
+    private static final class FailedInitialisation {
+        final Object generation;
+
+        FailedInitialisation(Object generation) {
+            this.generation = generation;
+        }
+    }
 
     private static final ClassValue<Object> extFieldCache = new ClassValue<>() {
         @Override
@@ -174,7 +194,7 @@ public final class FieldStore {
                 value = getField(extArray, index);
             }
             if (value == WRITTEN_NULL) return null;
-            if (value != null) return value;
+            if (value != null && !(value instanceof FailedInitialisation)) return value;
             Object initialised = initialise(instance, className, fieldName, desc, index, extField);
             return initialised != null ? initialised : defaultValue(desc);
         } catch (Exception e) {
@@ -191,14 +211,16 @@ public final class FieldStore {
     public static void setInstanceInitialisers(Class<?> owner,
                                                java.util.Map<String, java.lang.invoke.MethodHandle> byKey) {
         if (owner == null) return;
-        ConcurrentHashMap<String, java.lang.invoke.MethodHandle> current = initialisersByClass.get(owner);
-        current.clear();
-        current.putAll(byKey);
+        InitialiserRegistry registry = initialisersByClass.get(owner);
+        InitialiserSnapshot next = new InitialiserSnapshot(byKey);
+        synchronized (registry) {
+            registry.current = next;
+        }
     }
 
     /** Whether an added instance field has an initialiser to run on first read. */
     public static boolean hasInstanceInitialiser(Class<?> owner, String fieldName, String desc) {
-        return owner != null && initialisersByClass.get(owner).containsKey(fieldName + ":" + desc);
+        return owner != null && initialisersByClass.get(owner).current.handles.containsKey(fieldName + ":" + desc);
     }
 
     /**
@@ -210,8 +232,10 @@ public final class FieldStore {
      * deadlock nobody wrote. So two threads reading the same field of the
      * same object for the first time can both compute a value; the store
      * decides, and both threads return the value that landed, so the object
-     * never shows two. An initialiser that throws is taken out for good and
-     * the field reads as the type default, which is what it read before.
+     * never shows two. The first stored outcome wins, including a failure:
+     * that object reads the type default without retrying in this generation.
+     * A newer registration lets failed/unset slots try again on their next read;
+     * successful and application-written values are never replayed.
      *
      * @return the value now in the slot, or null when there is no initialiser
      *         for the field or it could not run
@@ -220,29 +244,50 @@ public final class FieldStore {
                                      String desc, int index, java.lang.reflect.Field extField) {
         Class<?> owner = ownerOf(instance.getClass(), className);
         if (owner == null) return null;
-        ConcurrentHashMap<String, java.lang.invoke.MethodHandle> initialisers =
-                initialisersByClass.get(owner);
-        String key = fieldName + ":" + desc;
-        java.lang.invoke.MethodHandle initialiser = initialisers.get(key);
+        InitialiserRegistry registry = initialisersByClass.get(owner);
+        InitialiserSnapshot snapshot = registry.current;
+        java.lang.invoke.MethodHandle initialiser = snapshot.handles.get(fieldName + ":" + desc);
         if (initialiser == null) return null;
+
+        try {
+            synchronized (instance) {
+                Object present = getField((Object[]) extField.get(instance), index);
+                if (present == WRITTEN_NULL) return null;
+                if (present instanceof FailedInitialisation failed) {
+                    if (failed.generation == snapshot.generation) return null;
+                } else if (present != null) {
+                    return present;
+                }
+            }
+        } catch (Exception e) {
+            return null;
+        }
 
         Object computed;
         try {
+            // Application code runs with neither monitor held.
             computed = initialiser.invoke(instance);
         } catch (Throwable t) {
-            initialisers.remove(key);
-            return null;
+            computed = new FailedInitialisation(snapshot.generation);
         }
         try {
             synchronized (instance) {
                 Object[] extArray = (Object[]) extField.get(instance);
                 Object present = getField(extArray, index);
                 if (present == WRITTEN_NULL) return null;
-                if (present != null) return present;
-                Object[] newArray = setField(extArray, index,
-                        computed == null ? WRITTEN_NULL : computed);
-                extField.set(instance, newArray);
-                return computed;
+                if (present instanceof FailedInitialisation failed) {
+                    if (failed.generation == snapshot.generation) return null;
+                } else if (present != null) {
+                    return present;
+                }
+                // Coordinate only publication with registration. No application
+                // code runs here, and registration never takes an instance lock.
+                synchronized (registry) {
+                    if (registry.current != snapshot) return null;
+                    extField.set(instance, setField(extArray, index,
+                            computed == null ? WRITTEN_NULL : computed));
+                }
+                return computed instanceof FailedInitialisation ? null : computed;
             }
         } catch (Exception e) {
             return null;

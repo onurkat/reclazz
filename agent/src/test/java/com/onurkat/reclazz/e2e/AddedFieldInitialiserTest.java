@@ -37,6 +37,49 @@ class AddedFieldInitialiserTest {
     Path tmp;
 
     @Test
+    void failureIsIsolatedAndNextReloadRepairsOnlyTheFailedObject() throws Exception {
+        String holder = """
+                package app;
+                public class Holder {
+                    private final boolean fail;
+                    private int attempts;
+                    public Holder(boolean fail) { this.fail = fail; }
+                    private String make() {
+                        attempts++;
+                        if (fail) throw new IllegalStateException("fixture failure");
+                        return "healthy";
+                    }
+                    public String describe() { return "before"; }
+                }
+                """;
+        try (WatchedApp app = WatchedApp.in(tmp).with("Holder", holder)
+                .with("App", """
+                        package app;
+                        public class App {
+                            public static void main(String[] args) throws Exception {
+                                Holder bad = new Holder(true), good = new Holder(false);
+                                System.out.println("APP_STARTED");
+                                while (true) {
+                                    System.out.println("SAW=" + bad.describe() + "|" + good.describe());
+                                    Thread.sleep(200);
+                                }
+                            }
+                        }
+                        """).start()) {
+            app.awaitOrFail("SAW=before|before", "original objects did not start");
+            String added = holder.replace("private int attempts;",
+                    "private int attempts; private String added = make();")
+                    .replace("return \"before\";", "return added + \":\" + attempts;");
+            app.rewrite("Holder", added);
+            app.awaitOrFail("SAW=null:1|healthy:1", "one failure disabled initialization for the healthy object");
+            app.rewrite("Holder", added.replace("if (fail) throw new IllegalStateException(\"fixture failure\");", "")
+                    .replace("return \"healthy\";", "return \"recovered\";"));
+            app.awaitOrFail("SAW=recovered:2|healthy:1",
+                    "new generation must recover failure without replaying successful initialization");
+        }
+    }
+
+    @Test
     void anAddedFieldReadsItsInitialiserValueOnAnObjectThatAlreadyExisted() throws Exception {
         try (WatchedApp app = WatchedApp.in(tmp)
                 .with("Holder", """
