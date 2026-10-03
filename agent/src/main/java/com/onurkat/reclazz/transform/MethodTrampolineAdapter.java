@@ -22,7 +22,7 @@ import com.onurkat.reclazz.bootstrap.InjectedNames;
  *
  * 2. Add instance field: Object[] __reclazz$ext (for dynamic field storage)
  * 3. Add static field: MethodHandles.Lookup __reclazz$lookup
- * 4. Inject __reclazz$ext initialization in every <init>
+ * 4. Inject __reclazz$ext initialization in each super-calling <init>
  * 5. Inject __reclazz$lookup initialization in <clinit>
  */
 public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
@@ -379,10 +379,11 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
     }
 
     /**
-     * Injects __reclazz$ext = new Object[INITIAL_EXT_SIZE] after super/this constructor call.
+     * Injects __reclazz$ext = new Object[INITIAL_EXT_SIZE] after the super constructor call.
+     * A this(...) call retains the storage initialized and populated by its target.
      *
      * Tracks NEW instructions to distinguish between:
-     * - super()/this() constructor calls (where we inject __reclazz$ext init)
+     * - super()/this() constructor calls (only super() initializes this class's storage)
      * - new MyClass() / new SuperClass() object creation within constructor args
      */
     private class InitInjector extends MethodVisitor {
@@ -411,7 +412,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
         public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
 
-            // After super/this <init> call, inject __reclazz$ext initialization
+            // Recognize the actual super/this call before deciding whether to initialize storage.
             if (!superInitCalled && opcode == INVOKESPECIAL && "<init>".equals(name)) {
                 if (owner.equals(className) && newClassCount > 0) {
                     // This is for a `new MyClass()` expression, not a this() call
@@ -423,7 +424,7 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
                     // This is the actual super() or this() constructor call
                     superInitCalled = true;
 
-                    if (!MethodTrampolineAdapter.this.isInterface) {
+                    if (owner.equals(superName) && !MethodTrampolineAdapter.this.isInterface) {
                         // this.__reclazz$ext = new Object[INITIAL_EXT_SIZE];
                         mv.visitVarInsn(ALOAD, 0);
                         mv.visitIntInsn(BIPUSH, INITIAL_EXT_SIZE);

@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Added instance fields can use equivalent isolated conditional initializers
+  across multiple constructors and proven `this(...)` delegation chains, without
+  replaying constructors or replacing stored values; uncertain routes are refused.
 - Select MCP startup project/port-file defaults with per-call overrides; explicit projects require same-connection working-directory evidence before commands, with no fallback on invalid targets.
 
 - Pause and resume automatic reload without restarting the app, retaining pending changes independently of BUILD ownership; inspect/control admission through the status socket or `reclazz_reload_control` MCP tool.

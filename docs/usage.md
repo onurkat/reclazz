@@ -2819,7 +2819,7 @@ other fields and call its methods, which the live object has; each object
 computes its own value; a value the application wrote before the first read,
 null included, is kept; and subsequent reads reuse the stored value.
 
-Isolated conditional expressions also work for classes with one constructor.
+Isolated conditional expressions also work across equivalent constructor routes.
 For example, add this field when `enabled` is already part of the object:
 
 ```java
@@ -2834,13 +2834,25 @@ save preserves values already stored; an object that has not read the field yet
 uses the current initializer. The constructor and preceding initializer blocks
 are not replayed.
 
-This conditional path requires one assignment to the field in a class with
-exactly one constructor. Multiple constructors are refused even when their
-initializers appear equivalent. Constructor arguments and other local variables,
-outside branches, loops, switches, shared field/array writes, locking and
-separate void/discarded-result calls are unsupported. Any try/catch in the
-constructor also refuses conditional initialization, even if the handler is
-elsewhere. Concurrent first-read computations can overlap; the first stored
+For this conditional path, every constructor route must reach a constructor
+that calls `super(...)` and assigns the field exactly once after that call.
+The extracted value instructions must match across those constructors, including
+operands and branch targets; debug information and label identities do not matter.
+A `this(...)` chain is supported when it reaches such a constructor and none of
+the delegating constructors writes the field. Missing or different assignments,
+unknown or cyclic delegation, reassignment of `this`, and control flow before
+the `this(...)`/`super(...)` call are refused. This is a bounded bytecode comparison,
+not a proof that differently written expressions are semantically equivalent.
+
+Constructor arguments and other local variables, outside branches, loops,
+switches, shared field/array writes, locking and separate void/discarded-result
+calls remain unsupported. Any try/catch on a constructor route also refuses
+conditional initialization, even if the handler is elsewhere. Historical
+constructor arguments are not reconstructed. Newly created objects keep normal
+Java initialization order: field initializers run before the constructor body,
+so a field set by that body can still have its default value during initialization.
+
+Concurrent first-read computations can overlap; the first stored
 outcome wins, including failure. Application code runs outside the store's locks;
 there is no rollback of initializer side effects.
 

@@ -18,19 +18,36 @@ class ConditionalInstanceInitialiserReloadTest {
 
     @Test
     void existingObjectsUseTheirStateWithoutRerunningConstructors() throws Exception {
+        runScenario(false);
+    }
+
+    @Test
+    void equivalentConstructorRoutesPreserveOldAndNewInstancesAcrossReloads() throws Exception {
+        runScenario(true);
+    }
+
+    private void runScenario(boolean multiple) throws Exception {
+        String main = multiple ? APP.replace("two = new Holder(false), unread = new Holder(false)",
+                "two = new Holder(3L, false), unread = new Holder()")
+                .replace("if (stage == 1) { one.assign", "if (stage == 3) { Holder a = new Holder(true), b = new Holder(9L, false), c = new Holder(); "
+                        + "System.out.println(\"NEW=\" + a.describe() + \"|\" + b.describe() + \"|\" + c.describe() + \":\" + Counts.constructors + \":\" + Counts.delegations + \":\" + a.calls + \",\" + b.calls + \",\" + c.calls + \":\" + a.enabled + \",\" + b.enabled + \",\" + c.enabled); } "
+                        + "if (stage == 1) { one.assign") : APP;
         try (var app = WatchedApp.in(tmp).jvmArgs("-Dtest.dir=" + tmp)
-                .with("App", APP).with("Counts", "package app; public class Counts { public static int constructors; }")
-                .with("Holder", holder(0)).start()) {
+                .with("App", main).with("Counts", "package app; public class Counts { public static int constructors, delegations; }")
+                .with("Holder", holder(0, multiple)).start()) {
             app.awaitOrFail("READY", "application did not start");
             app.awaitOrFail("] Watching ", "watcher did not start");
             probe(app, 0, "initial|initial|unread|initial:4:0,0,0,0:77");
-            reload(app, 1); probe(app, 1, "on1/true|off1/false|unread|null:4:1,1,0,0:77");
-            reload(app, 2); probe(app, 2, "user/true|off1/false|on2/true|null:4:1,1,1,0:77");
-            reload(app, 3); probe(app, 3, "user/true|off1/false|on2/true|null:4:1,1,1,0:77");
+            reload(app, 1, multiple); probe(app, 1, "on1/true|off1/false|unread|null:4:1,1,0,0:77");
+            reload(app, 2, multiple); probe(app, 2, "user/true|off1/false|on2/true|null:4:1,1,1,0:77");
+            reload(app, 3, multiple); probe(app, 3, "user/true|off1/false|on2/true|null:4:1,1,1,0:77");
+            // On new objects Java runs field initializers before constructor-body parameter assignments.
+            if (multiple) app.awaitOrFail("NEW=off3/false|off3/false|off3/false:7:2:1,1,1:true,false,false",
+                    "all new constructor routes run the current initializer exactly once before the constructor body");
         }
     }
-    private void reload(WatchedApp app, int stage) throws Exception {
-        app.rewrite("Holder", holder(stage));
+    private void reload(WatchedApp app, int stage, boolean multiple) throws Exception {
+        app.rewrite("Holder", holder(stage, multiple));
         long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(20);
         while (System.nanoTime() < deadline && reloads(app) < stage) Thread.sleep(25);
         assertEquals(stage, reloads(app), app.tail());
@@ -45,7 +62,7 @@ class ConditionalInstanceInitialiserReloadTest {
         System.out.println("[conditional-instance] " + observed);
         assertEquals("INSTANCE" + stage + "=" + expected, observed, app.tail());
     }
-    private static String holder(int version) {
+    private static String holder(int version, boolean multiple) {
         return """
                 package app;
                 public class Holder {
@@ -54,6 +71,7 @@ class ConditionalInstanceInitialiserReloadTest {
                     public int existing = 17;
                     %s
                     public Holder(boolean enabled) { this.enabled = enabled; Counts.constructors++; }
+                    %s
                     private boolean choose() { calls++; return enabled; }
                     private String left() { return "on%d"; }
                     private String right() { return "off%d"; }
@@ -62,6 +80,7 @@ class ConditionalInstanceInitialiserReloadTest {
                     public String describe() { return %s; }
                 }
                 """.formatted(version == 0 ? "" : "private String mode = choose() ? left() : right(); private String optional = enabled ? null : \"other\";",
+                multiple ? "public Holder(long ignored, boolean enabled) { this.enabled = enabled; Counts.constructors++; } public Holder() { this(1L, false); Counts.delegations++; }" : "",
                 version, version, version == 0 ? "" : "mode = value;",
                 version == 0 ? "\"initial\"" : "mode",
                 version == 0 ? "\"initial\"" : "mode + \"/\" + (optional == null)");

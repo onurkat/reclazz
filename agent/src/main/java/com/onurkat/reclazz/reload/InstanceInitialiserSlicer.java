@@ -6,6 +6,7 @@ package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.bootstrap.InjectedNames;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -29,6 +30,9 @@ import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
 import org.objectweb.asm.tree.analysis.BasicValue;
 import org.objectweb.asm.tree.analysis.Frame;
+import org.objectweb.asm.tree.analysis.SourceInterpreter;
+import org.objectweb.asm.tree.analysis.SourceValue;
+import java.util.Arrays;
 
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -62,7 +66,7 @@ import java.util.Set;
  * initialiser like {@code index = buildIndex(items)} wants. A constructor
  * parameter is the one thing the live object no longer has, and an
  * initialiser that reads one is refused with that reason.
- * Conditional expressions additionally require a single constructor, forward
+ * Conditional expressions additionally require equivalent constructor routes, forward
  * branches confined to one assignment and an independent value after stripping
  * the receiver. The constructor itself is never replayed for the live object.
  */
@@ -127,24 +131,126 @@ public final class InstanceInitialiserSlicer implements Opcodes {
         }
         if (remaining.isEmpty()) return new Plan(initialisers, refused);
 
+        Map<String, ConstructorSlice> constructors = new LinkedHashMap<>();
+        Set<String> conditional = new LinkedHashSet<>();
         for (MethodNode ctor : cls.methods) {
-            if (!"<init>".equals(ctor.name) || remaining.isEmpty()) continue;
-            sliceConstructor(cls, ctor, remaining, initialisers, refused);
+            if (!"<init>".equals(ctor.name)) continue;
+            Plan local = Plan.empty();
+            Map<String, Integer> starts = new HashMap<>();
+            sliceConstructor(cls, ctor, new LinkedHashSet<>(remaining), local.initialisers, local.refused, conditional, starts);
+            constructors.put(ctor.desc, new ConstructorSlice(ctor, local, starts));
+            // Preserve the established first-assignment behavior for nonconditional fields.
+            for (String key : remaining) {
+                if (initialisers.containsKey(key) || refused.containsKey(key)) continue;
+                if (local.initialisers.containsKey(key)) initialisers.put(key, local.initialisers.get(key));
+                else if (local.refused.containsKey(key)) refused.put(key, local.refused.get(key));
+            }
+        }
+        if (!conditional.isEmpty()) {
+            Map<String, ConstructorRoute> routes = new LinkedHashMap<>();
+            constructors.forEach((desc, slice) -> routes.put(desc, route(cls, slice.ctor)));
+            for (String key : conditional) {
+                String problem = equivalentRoutes(cls, key, constructors, routes);
+                if (problem != null) {
+                    initialisers.remove(key);
+                    refused.put(key, problem);
+                }
+            }
         }
         return new Plan(initialisers, refused);
     }
 
-    /**
-     * javac writes the same initialiser code into every constructor that calls
-     * super, so the first constructor that assigns a field decides for it. A
-     * constructor that delegates with {@code this(...)} assigns nothing and is
-     * skipped by the same rule. Conditional values are more conservative: a
-     * class with multiple constructors is refused instead of assuming their
-     * assignments agree.
-     */
+    private record ConstructorSlice(MethodNode ctor, Plan plan, Map<String, Integer> starts) { }
+    private record ConstructorRoute(String delegate, int call, String problem) { }
+
+    /** Identify initialization of this, not a new object constructed in super-call arguments. */
+    private static ConstructorRoute route(ClassNode cls, MethodNode ctor) {
+        try {
+            Frame<SourceValue>[] frames = new Analyzer<>(new SourceInterpreter()).analyze(cls.name, ctor);
+            AbstractInsnNode[] insns = ctor.instructions.toArray();
+            ConstructorRoute found = null;
+            for (int i = 0; i < insns.length; i++) {
+                if (insns[i] instanceof VarInsnNode var && var.getOpcode() == ASTORE && var.var == 0)
+                    return new ConstructorRoute(null, -1, "its constructor overwrites this");
+                if (!(insns[i] instanceof MethodInsnNode call) || call.getOpcode() != INVOKESPECIAL
+                        || !call.name.equals("<init>") || !(call.owner.equals(cls.name) || call.owner.equals(cls.superName))
+                        || frames[i] == null) continue;
+                int receiver = frames[i].getStackSize() - Type.getArgumentTypes(call.desc).length - 1;
+                if (receiver < 0) continue;
+                Set<AbstractInsnNode> origins = frames[i].getStack(receiver).insns;
+                if (origins.size() != 1 || !(origins.iterator().next() instanceof VarInsnNode load)
+                        || load.getOpcode() != ALOAD || load.var != 0) continue;
+                if (found != null) return new ConstructorRoute(null, -1, "its constructor has ambiguous initialization routes");
+                found = new ConstructorRoute(call.owner.equals(cls.name) ? call.desc : null, i, null);
+            }
+            if (found == null) return new ConstructorRoute(null, -1, "its constructor initialization route cannot be proven");
+            for (int i = 0; i < found.call; i++)
+                if (insns[i] instanceof JumpInsnNode || insns[i] instanceof TableSwitchInsnNode
+                        || insns[i] instanceof LookupSwitchInsnNode || insns[i].getOpcode() == ATHROW
+                        || insns[i].getOpcode() == RETURN)
+                    return new ConstructorRoute(null, -1, "its constructor has control flow before this/super initialization");
+            if (!ctor.tryCatchBlocks.isEmpty())
+                return new ConstructorRoute(null, -1, "its conditional initialiser shares a constructor route with try/catch");
+            return found;
+        } catch (Exception failure) {
+            return new ConstructorRoute(null, -1, "its constructor initialization route cannot be analyzed");
+        }
+    }
+
+    /** All routes must reach a super-calling constructor with the same isolated producer. */
+    private static String equivalentRoutes(ClassNode cls, String key, Map<String, ConstructorSlice> constructors,
+                                           Map<String, ConstructorRoute> routes) {
+        byte[] common = null;
+        for (String entry : constructors.keySet()) {
+            Set<String> visited = new HashSet<>();
+            String current = entry;
+            while (true) {
+                if (!visited.add(current)) return "its constructors contain a delegation cycle";
+                ConstructorSlice slice = constructors.get(current);
+                ConstructorRoute route = routes.get(current);
+                if (slice == null || route == null) return "its constructor delegates to an unknown route";
+                if (route.problem != null) return route.problem;
+                int writes = 0;
+                for (AbstractInsnNode insn : slice.ctor.instructions)
+                    if (insn instanceof FieldInsnNode put && put.getOpcode() == PUTFIELD
+                            && put.owner.equals(cls.name) && (put.name + ":" + put.desc).equals(key)) writes++;
+                if (route.delegate != null) {
+                    if (writes != 0) return "a delegating constructor also assigns this field";
+                    current = route.delegate;
+                    continue;
+                }
+                if (writes != 1) return "each constructor route must assign this field exactly once";
+                InsnList value = slice.plan.initialisers.get(key);
+                if (value == null) return slice.plan.refused.getOrDefault(key, "a constructor route has no isolated initialiser");
+                if (slice.starts.get(key) <= route.call) return "its initialiser precedes this/super initialization";
+                byte[] encoded = valueBytes(cls.name, key, value);
+                if (common != null && !Arrays.equals(common, encoded))
+                    return "its constructor routes have different initialiser expressions";
+                common = encoded;
+                break;
+            }
+        }
+        return null;
+    }
+
+    /** Canonical instruction encoding: ignores debug/label identity, preserves operands and branch topology. */
+    private static byte[] valueBytes(String owner, String key, InsnList value) {
+        String desc = key.substring(key.indexOf(':') + 1);
+        MethodNode method = new MethodNode(ACC_PUBLIC | ACC_STATIC, "value", "(L" + owner + ";)" + desc, null, null);
+        Map<LabelNode, LabelNode> labels = new HashMap<>();
+        for (AbstractInsnNode insn : value) if (insn instanceof LabelNode label) labels.put(label, new LabelNode());
+        for (AbstractInsnNode insn : value) method.instructions.add(insn.clone(labels));
+        method.instructions.add(new InsnNode(Type.getType(desc).getOpcode(IRETURN)));
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        writer.visit(V17, ACC_PUBLIC, owner, null, "java/lang/Object", null);
+        method.accept(writer);
+        writer.visitEnd();
+        return writer.toByteArray();
+    }
+
     private static void sliceConstructor(ClassNode cls, MethodNode ctor, Set<String> remaining,
-                                         Map<String, InsnList> initialisers,
-                                         Map<String, String> refused) {
+                                         Map<String, InsnList> initialisers, Map<String, String> refused,
+                                         Set<String> conditional, Map<String, Integer> starts) {
         Frame<BasicValue>[] frames;
         try {
             frames = new Analyzer<>(new BasicInterpreter()).analyze(cls.name, ctor);
@@ -156,9 +262,11 @@ public final class InstanceInitialiserSlicer implements Opcodes {
         for (int i = 0; i < insns.length; i++) {
             if (!(insns[i] instanceof FieldInsnNode put) || put.getOpcode() != PUTFIELD) continue;
             String key = put.name + ":" + put.desc;
-            if (!remaining.contains(key) || !put.owner.equals(cls.name)) continue;
-
+            if (!put.owner.equals(cls.name)) continue;
             int start = StaticInitialiserSlicer.segmentStart(frames, i);
+            if (start >= 0 && hasBranch(insns, start, i)
+                    && (remaining.contains(key) || initialisers.containsKey(key) || refused.containsKey(key))) conditional.add(key);
+            if (!remaining.contains(key)) continue;
             String problem;
             if (start < 0) {
                 problem = "its initialiser is not a self-contained block";
@@ -191,6 +299,7 @@ public final class InstanceInitialiserSlicer implements Opcodes {
                 continue;
             }
             initialisers.put(key, sliced);
+            starts.put(key, start);
         }
     }
 
@@ -207,8 +316,6 @@ public final class InstanceInitialiserSlicer implements Opcodes {
             return "its initialiser does not leave exactly this and its value";
         boolean conditional = hasBranch(insns, start, end);
         if (conditional) {
-            if (cls.methods.stream().filter(m -> m.name.equals("<init>")).count() != 1)
-                return "conditional initialisers require a single constructor";
             FieldInsnNode target = (FieldInsnNode) insns[end];
             int writes = 0;
             for (AbstractInsnNode insn : insns)

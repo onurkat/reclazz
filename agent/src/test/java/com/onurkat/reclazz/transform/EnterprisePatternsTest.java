@@ -110,6 +110,27 @@ class EnterprisePatternsTest extends TransformTestBase {
     }
 
     @Test
+    void delegatingConstructorsPreserveExtensionValues() {
+        Map<String, byte[]> classes = compileAndTransform(new SourceFile("DelegatingStorage", """
+                import com.onurkat.reclazz.bootstrap.FieldStore;
+                public class DelegatingStorage {
+                    public DelegatingStorage() { this("stored"); }
+                    public DelegatingStorage(String value) { this(value, 0); }
+                    public DelegatingStorage(String value, int ignored) {
+                        FieldStore.putExtField(this, value, "DelegatingStorage", "added", "Ljava/lang/String;");
+                    }
+                    private Object read() {
+                        return FieldStore.getExtField(this, "DelegatingStorage", "added", "Ljava/lang/String;");
+                    }
+                    public static String run() {
+                        return new DelegatingStorage().read() + "|" + new DelegatingStorage("other").read();
+                    }
+                }
+                """));
+        assertEquals("stored|other", invokeStatic(defineAndLoad(classes, "DelegatingStorage"), "run"));
+    }
+
+    @Test
     void singletonFactoryWithPrivateConstructor() {
         Map<String, byte[]> classes = compileAndTransform(
                 new SourceFile("T",
