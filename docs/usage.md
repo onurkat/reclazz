@@ -134,6 +134,24 @@ import seen only by the temporary parser does not become a captured live resourc
 Unsupported bean changes still require the reported restart. Use the actual
 loaded file; editing a different source copy with the same name does not update it.
 
+### OCC field-set mappings
+
+For existing SAP Commerce `FieldSetLevelMapping` beans, supported XML property
+edits now refresh the standard `DefaultFieldSetLevelHelper` consumers and their
+manager-backed `fieldSetCache`. BASIC/DEFAULT/FULL selections can add or remove
+existing DTO fields. Descendant contexts that see the changed mapping are included;
+unrelated contexts and other named caches are left alone. Repeated unchanged saves
+do not rebuild the table. Multiple declarations for one DTO are rebuilt from fresh
+copies of their inline `levelMapping` maps, avoiding accumulated merges.
+
+This requires the standard helper and mapping implementation and an existing
+`fieldSetCache` exposed by a Spring `CacheManager`. Custom helpers, custom mappings,
+referenced/inherited/programmatic maps or unavailable cache invalidation report restart guidance.
+Custom cache resolvers, asynchronous cache loading and arbitrary inherited/programmatic
+mapping configuration are outside this acceptance. This does not rebuild Orika
+schemas or add structural DTO fields. An XML property may have changed even when
+consumer refresh reports a restart requirement; follow that diagnostic.
+
 ### XML singleton recreation
 
 For an existing bean in a watched Spring XML resource, edits to constructor arguments,

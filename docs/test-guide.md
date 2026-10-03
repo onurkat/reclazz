@@ -173,6 +173,24 @@ reflective caches work without restart.
   A portable SDK registry check is also available via `scripts/test-sap-sdk.py`;
   it does not replace the live model-save test.
 
+### Isolated OCC field mapping acceptance
+
+With an installed SAP Commerce SDK, run:
+
+```bash
+./gradlew :agent:compileJava
+python3 scripts/test-sap-occ-sdk.py /path/to/hybris
+```
+
+The runner compiles synthetic DTOs against the local SDK, uses real XML reload,
+`DefaultDataMapper` and a Spring cache proxy, and checks BASIC/DEFAULT/FULL field
+additions/removals, repeated saves, parent/child visibility, merged declarations,
+unrelated contexts/caches and custom-helper restart reporting. It never starts SAP,
+contacts a database or writes the SDK. The SDK jars are not distributed.
+Add `--disable-refresh` for a negative control in a temporary compiled copy; this
+must fail on stale mapping output. This is an isolated SDK check, not live OCC HTTP
+acceptance. Use a JDK compatible with the installed SDK.
+
 ## 10. Extension Watching Scope
 
 ### Verify only custom extensions are watched

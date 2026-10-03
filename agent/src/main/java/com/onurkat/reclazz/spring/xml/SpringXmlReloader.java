@@ -173,15 +173,27 @@ public final class SpringXmlReloader {
                 diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(replacement.name(),
                         "bean recreation failed: " + com.onurkat.reclazz.ui.Failures.describe(failure)));
         }
-        for (BeanDefinitionDiff.PropertyChange change : diff.propertyChanges) {
-            try {
-                applyPropertyChange(liveFactory, change);
-                applied++;
-            } catch (Exception e) {
-                diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(
-                        change.beanName + "." + change.propertyName,
-                        "property apply failed: " + SpringReflection.rootCause(e)));
+        java.util.Set<Object> changedMappings = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        boolean mappingMutation = diff.propertyChanges.stream().anyMatch(change ->
+                SapFieldSetRefresher.isMapping(SpringReflection.getExistingSingleton(liveFactory, change.beanName)));
+        if (mappingMutation) com.onurkat.reclazz.bootstrap.CacheDependencyLedger.beginMutation();
+        try {
+            for (BeanDefinitionDiff.PropertyChange change : diff.propertyChanges) {
+                try {
+                    applyPropertyChange(liveFactory, change);
+                    Object singleton = SpringReflection.getExistingSingleton(liveFactory, change.beanName);
+                    if (SapFieldSetRefresher.isMapping(singleton)) changedMappings.add(singleton);
+                    applied++;
+                } catch (Exception e) {
+                    diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(
+                            change.beanName + "." + change.propertyName,
+                            "property apply failed: " + SpringReflection.rootCause(e)));
+                }
             }
+            for (String failure : SapFieldSetRefresher.refresh(appContext, changedMappings))
+                diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange("OCC field mappings", failure));
+        } finally {
+            if (mappingMutation) com.onurkat.reclazz.bootstrap.CacheDependencyLedger.endMutation();
         }
         for (BeanDefinitionDiff.NewBean add : diff.added) {
             try {
