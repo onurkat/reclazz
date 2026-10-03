@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Release tooling keeps GitHub releases in draft until all five required assets
+  are complete, and reports completed commands, explicit channel skips and manual
+  follow-up on success or failure without claiming remote availability.
 - Local/tag release checks and Linux JDK 17 CI exercise the documented minimal
   Maven consumer's first reload, requiring matching class bytes, changed behavior,
   the same JVM and the preserved extra JVM argument before accepting installation.

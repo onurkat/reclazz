@@ -134,6 +134,42 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         return None  # Never forward the publication token to a redirect target.
 
 
+def github_check(root, draft_only=False):
+    evidence = verify(root)
+    tag = 'v' + evidence['version']
+    try:
+        result = subprocess.run(['gh', 'release', 'view', tag, '--json', 'tagName,isDraft,assets'],
+                                cwd=root, capture_output=True, text=True, timeout=30, check=True)
+        release = json.loads(result.stdout)
+    except (subprocess.SubprocessError, OSError, ValueError):
+        raise ValueError('GitHub draft metadata unavailable; inspect the release before retrying') from None
+    if not isinstance(release, dict) or release.get('tagName') != tag or release.get('isDraft') is not True:
+        raise ValueError('GitHub release must be the intended draft; do not upload or publish')
+    if draft_only:
+        return
+    version = evidence['version']
+    signed_name = f'reclazz-{version}.zip'
+    signed_path = (ASSETS / signed_name).as_posix()
+    if evidence['profile'] not in ('local', 'distribution') or signed_path not in evidence['artifacts']:
+        raise ValueError('signed ZIP was not included in this release gate')
+    required = [signed_name]
+    for artifact in ('agent', 'mcp'):
+        name = f'reclazz-{artifact}-{version}.jar'
+        required += [name, name + '.sha256']
+    assets = release.get('assets')
+    if not isinstance(assets, list) or any(not isinstance(a, dict) for a in assets):
+        raise ValueError('invalid GitHub asset metadata')
+    for name in required:
+        matches = [a for a in assets if a.get('name') == name]
+        if (len(matches) != 1 or matches[0].get('state') != 'uploaded'
+                or type(matches[0].get('size')) is not int or matches[0]['size'] <= 0):
+            raise ValueError(f'GitHub draft asset missing, incomplete or duplicated: {name}')
+        if name == signed_name and matches[0]['size'] != (root / signed_path).stat().st_size:
+            raise ValueError('GitHub signed ZIP size differs from the checked artifact')
+    # This is one metadata observation, not download/digest verification or a lock.
+    verify(root)
+
+
 def stage_maven(root, opener=None):
     evidence = verify(root)
     if evidence['profile'] != 'distribution' or MAVEN_BUNDLE not in evidence['artifacts']:
@@ -177,6 +213,8 @@ def main():
     publisher.add_argument('publisher', choices=['marketplace', 'portal'])
     publisher.add_argument('paths', nargs='+')
     commands.add_parser('stage-maven')
+    github = commands.add_parser('github-check')
+    github.add_argument('--draft-only', action='store_true')
     args = parser.parse_args()
     try:
         if args.command == 'create':
@@ -186,6 +224,10 @@ def main():
             verify_publisher(ROOT, args.publisher, args.paths)
         elif args.command == 'verify':
             verify(ROOT)
+        elif args.command == 'github-check':
+            github_check(ROOT, args.draft_only)
+            print('GitHub draft checked' if args.draft_only else
+                  'GitHub draft assets complete in metadata; download availability remains unverified')
         else:
             stage_maven(ROOT)
     except (ValueError, OSError, KeyError, zipfile.BadZipFile, subprocess.CalledProcessError) as error:

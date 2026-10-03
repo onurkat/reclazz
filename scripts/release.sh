@@ -36,6 +36,37 @@ tag="v$version"
 source_commit="$(git rev-parse HEAD)"
 gradle_props="$HOME/.gradle/gradle.properties"
 problems=()
+# Per-invocation outcomes only: never infer public availability from an exit code.
+marketplace='awaiting manual action — upload not completed; inspect before retrying'
+central='awaiting manual action — staging not completed; inspect before retrying'
+portal='awaiting manual action — upload not completed; inspect before retrying'
+github='awaiting manual action — draft completion not confirmed'
+[ "$skip_publish" = false ] || marketplace='skipped — --skip-publish'
+if [ "$skip_distribution" = true ]; then
+    central='skipped — --skip-distribution'
+    portal='skipped — --skip-distribution'
+fi
+gate_recorded=false
+finish() {
+    code=$?
+    trap - EXIT
+    if [ "$dry_run" = true ]; then
+        echo 'Dry run only: no channel was executed or completed.'
+    else
+        echo
+        echo "Channel outcomes for $version (source $source_commit; exit $code):"
+        echo "  Marketplace: $marketplace"
+        echo "  Maven Central: $central"
+        echo "  Gradle Plugin Portal: $portal"
+        echo "  GitHub: $github"
+        echo '  Site: awaiting manual action — update separately'
+        [ "$gate_recorded" = false ] || echo '  Local gate evidence: build/release-gate/receipt.json'
+        echo 'Completed means automated commands returned success, not public availability or review approval.'
+        echo 'Remote availability remains unverified. See docs/publishing.md#manual-recovery.'
+    fi
+    exit "$code"
+}
+trap finish EXIT
 if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     problems+=("release version must be X.Y.Z")
 fi
@@ -125,6 +156,7 @@ if [ "$skip_distribution" = false ]; then
 fi
 unset MAVEN_GPG_PASSPHRASE
 run python3 scripts/release-evidence.py create "$version" "$source_commit" "$profile"
+[ "$dry_run" = true ] || gate_recorded=true
 
 publish() {
     run python3 scripts/release-evidence.py verify
@@ -133,10 +165,13 @@ publish() {
 # No producer task may change the validated files inside these invocations.
 if [ "$skip_publish" = false ]; then
     publish ./gradlew -I scripts/release-publish.init.gradle :publishPlugin --no-daemon --no-configuration-cache
+    marketplace='completed — upload command succeeded; Marketplace review/availability unverified'
 fi
 if [ "$skip_distribution" = false ]; then
     publish python3 scripts/release-evidence.py stage-maven
+    central='awaiting manual action — Maven plugin staged; upload agent/starter bundles and Publish all three in Central'
     publish ./gradlew -I scripts/release-publish.init.gradle :gradle-plugin:publishPlugins --no-daemon --no-configuration-cache
+    portal='completed — upload command succeeded; Portal availability unverified'
 fi
 publish git tag -a "$tag" "$source_commit" -m "Reclazz $version"
 # Push only the checked commit and this tag, not other pending local tags.
@@ -151,10 +186,16 @@ else
     done
     gh release view "$tag" >/dev/null 2>&1 || { echo "the release for $tag did not appear; check the Release workflow" >&2; exit 1; }
 fi
+run python3 scripts/release-evidence.py github-check --draft-only
 publish gh release upload "$tag" "build/release-gate/assets/reclazz-$version.zip"
+run python3 scripts/release-evidence.py github-check
+publish gh release edit "$tag" --draft=false --verify-tag
+github='completed — required asset metadata checked and publish command succeeded; downloads unverified'
 
 echo
-echo "Release commands finished for $version (source $source_commit)."
+if [ "$dry_run" = false ]; then
+    echo "Release commands finished for $version (source $source_commit)."
+fi
 if [ "$skip_distribution" = false ]; then
     echo "Upload the checked agent/starter Central bundles, then manually Publish all three Central deployments:"
     echo "  agent/build/reclazz-agent-$version-central-bundle.zip"

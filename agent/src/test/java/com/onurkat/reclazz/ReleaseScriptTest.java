@@ -93,8 +93,14 @@ class ReleaseScriptTest {
                 "would run: python3 scripts/release-evidence.py verify",
                 "would run: git push origin " + commit + ":refs/heads/main refs/tags/v1.2.3",
                 "would wait for: gh release view v1.2.3",
+                "would run: python3 scripts/release-evidence.py github-check --draft-only",
                 "would run: python3 scripts/release-evidence.py verify",
-                "would run: gh release upload v1.2.3 build/release-gate/assets/reclazz-1.2.3.zip"), steps);
+                "would run: gh release upload v1.2.3 build/release-gate/assets/reclazz-1.2.3.zip",
+                "would run: python3 scripts/release-evidence.py github-check",
+                "would run: python3 scripts/release-evidence.py verify",
+                "would run: gh release edit v1.2.3 --draft=false --verify-tag"), steps);
+        assertTrue(run.out().contains("Dry run only: no channel was executed or completed."));
+        assertFalse(run.out().contains("Release commands finished"));
         assertFalse(Files.exists(repo.resolve("build")), "dry run creates no gate/artifacts");
         assertEquals("", git("tag", "-l").out().trim(), "a dry run tags nothing");
     }
@@ -222,7 +228,14 @@ class ReleaseScriptTest {
         assertTrue(lines.subList(0, firstUpload).stream().anyMatch(l -> l.contains("verifyPluginSignature")), trace());
         assertTrue(lines.subList(0, firstUpload).stream().anyMatch(l -> l.equals("PREP npm test")), trace());
         assertFalse(lines.subList(firstUpload, lines.size()).stream().anyMatch(l -> l.startsWith("PREP")), trace());
-        assertEquals(6, lines.stream().filter(l -> l.startsWith("UPLOAD")).count(), trace());
+        assertEquals(7, lines.stream().filter(l -> l.startsWith("UPLOAD")).count(), trace());
+        assertTrue(result.out().contains("Marketplace: completed"), result.out());
+        assertTrue(result.out().contains("Maven Central: awaiting manual action"), result.out());
+        assertTrue(result.out().contains("Gradle Plugin Portal: completed"), result.out());
+        assertTrue(result.out().contains("GitHub: completed"), result.out());
+        assertTrue(result.out().contains("Remote availability remains unverified"), result.out());
+        assertTrue(trace().lastIndexOf("CHECK gh assets") < trace().indexOf("UPLOAD gh release edit"), trace());
+        assertTrue(trace().lastIndexOf("CHECK gh assets") > trace().indexOf("UPLOAD gh release upload"), trace());
         assertEquals(Files.readString(repo.resolve("build/distributions/reclazz-1.2.3-signed.zip")),
                 Files.readString(repo.resolve("build/uploaded.zip")), "GitHub receives the checked signed ZIP");
         assertEquals("", git("tag", "-l").out().trim(), "publication commands are stubs");
@@ -232,7 +245,7 @@ class ReleaseScriptTest {
     void receiptAndHttpBoundaryTestsRunWithoutPublication() throws Exception {
         Run result = run(List.of("python3", "scripts/test-release-evidence.py"));
         assertEquals(0, result.exit(), result.out() + result.err());
-        assertTrue(result.err().contains("Ran 10 tests"), result.err());
+        assertTrue(result.err().contains("Ran 15 tests"), result.err());
     }
 
     @Test
@@ -251,11 +264,71 @@ class ReleaseScriptTest {
             if (failure.isEmpty()) {
                 assertEquals(0, result.exit(), result.out() + result.err());
                 assertTrue(trace().contains("UPLOAD gh release create"), trace());
+                assertTrue(trace().contains("--draft --verify-tag"), trace());
+                assertFalse(trace().contains("release edit"), trace());
+                assertTrue(result.out().contains("GitHub: awaiting manual action"), result.out());
             } else {
                 assertNotEquals(0, result.exit(), result.out());
                 assertFalse(trace().contains("UPLOAD"), trace());
             }
         }
+    }
+
+    @Test
+    void incompleteDraftAndFailedUploadNeverPublishAndRetainEarlierOutcomes() throws Exception {
+        publicationStubs();
+        for (String fault : List.of("missing-asset", "upload", "edit", "public", "read")) {
+            Files.deleteIfExists(repo.resolve("build/trace"));
+            Files.deleteIfExists(repo.resolve("build/uploaded.zip"));
+            Run result = releaseWith(Map.of("RELEASE_FAIL", fault), "1.2.3");
+            assertNotEquals(0, result.exit(), fault + result.err());
+            assertTrue(result.out().contains("GitHub: awaiting manual action"), result.out());
+            assertFalse(result.out().contains("GitHub: completed"), result.out());
+            assertTrue(result.out().contains("Marketplace: completed"), result.out());
+            assertTrue(result.out().contains("Gradle Plugin Portal: completed"), result.out());
+            assertFalse(trace().contains("UPLOAD gh release edit"), trace());
+        }
+    }
+
+    @Test
+    void intentionalSkipsAreReportedAndStillCompleteGithub() throws Exception {
+        publicationStubs();
+        Run result = releaseWith(Map.of("RECLAZZ_PUBLISH_TOKEN", "", "RECLAZZ_CENTRAL_TOKEN", ""),
+                "1.2.3", "--skip-publish", "--skip-distribution");
+        assertEquals(0, result.exit(), result.err());
+        assertTrue(result.out().contains("Marketplace: skipped"), result.out());
+        assertTrue(result.out().contains("Maven Central: skipped"), result.out());
+        assertTrue(result.out().contains("Gradle Plugin Portal: skipped"), result.out());
+        assertTrue(result.out().contains("GitHub: completed"), result.out());
+        assertFalse(trace().contains("UPLOAD gradle"), trace());
+        assertFalse(trace().contains("UPLOAD maven"), trace());
+    }
+
+    @Test
+    void missingCredentialsAndToolDoNotBecomeSkippedOrCompleted() throws Exception {
+        publicationStubs();
+        for (String credential : List.of("RECLAZZ_CENTRAL_TOKEN", "RECLAZZ_PUBLISH_TOKEN", "RECLAZZ_SIGNING_PASSWORD")) {
+            Run result = releaseWith(Map.of(credential, ""), "1.2.3");
+            assertNotEquals(0, result.exit());
+            assertTrue(result.err().contains(credential), result.err());
+            assertTrue(result.out().contains("GitHub: awaiting manual action"));
+            assertFalse(result.out().contains(": completed"));
+            assertFalse(result.out().contains(": skipped"));
+            assertEquals("", trace());
+        }
+        // Simulate a missing gh at the command-discovery boundary; no actual tool is removed.
+        Files.createDirectories(repo.resolve("build"));
+        Files.writeString(repo.resolve("build/missing-tool.sh"), """
+                command() {
+                    if [[ "$*" == '-v gh' ]]; then return 1; fi
+                    builtin command "$@"
+                }
+                """);
+        Run result = releaseWith(Map.of("BASH_ENV", repo.resolve("build/missing-tool.sh").toString()), "1.2.3");
+        assertNotEquals(0, result.exit());
+        assertTrue(result.err().contains("gh is required"), result.err());
+        assertFalse(result.out().contains(": completed"));
+        assertEquals("", trace());
     }
 
     private String workflowRun(String workflow, String step) {
@@ -349,10 +422,31 @@ class ReleaseScriptTest {
                     if [[ "${RELEASE_DRIFT:-}" == artifact ]]; then
                         echo 'modified' >> build/distributions/reclazz-1.2.3-signed.zip
                     fi
+                    if [[ "$*" == *--json* ]]; then
+                        [[ "${RELEASE_FAIL:-}" != read ]] || exit 31
+                        echo 'CHECK gh assets' >> build/trace
+                        python3 scripts/fixture-github.py
+                    fi
                     exit 0
                 fi
-                cp "${*: -1}" build/uploaded.zip
+                if [[ "$*" == *'release upload'* ]]; then
+                    [[ "${RELEASE_FAIL:-}" != upload ]] || exit 32
+                    cp "${*: -1}" build/uploaded.zip
+                fi
+                if [[ "$*" == *'release edit'* ]]; then
+                    [[ "${RELEASE_FAIL:-}" != edit ]] || exit 33
+                fi
                 echo "UPLOAD gh $*" >> build/trace
+                """);
+        Files.writeString(repo.resolve("scripts/fixture-github.py"), """
+                import json, os
+                from pathlib import Path
+                assets = []
+                for path in Path('build/release-gate/assets').iterdir():
+                    if path.suffix == '.zip' and not Path('build/uploaded.zip').exists(): continue
+                    if os.environ.get('RELEASE_FAIL') == 'missing-asset' and path.name.endswith('mcp-1.2.3.jar'): continue
+                    assets.append(dict(name=path.name, state='uploaded', size=path.stat().st_size))
+                print(json.dumps(dict(tagName='v1.2.3', isDraft=os.environ.get('RELEASE_FAIL') != 'public', assets=assets)))
                 """);
         executable("bin/git", """
                 #!/usr/bin/env bash

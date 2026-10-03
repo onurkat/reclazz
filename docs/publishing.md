@@ -84,20 +84,87 @@ run `python3 scripts/release-evidence.py verify` before uploading those files.
 After the gate, the script uploads Marketplace, stages Maven, uploads Portal,
 and tags the exact checked commit. It pushes only that commit and tag. The tag
 workflow independently runs the shared tests and records/checks its own agent
-and MCP artifacts before creating the GitHub release. CI does not receive the
-IDE signing key. Finally the local script attaches the checked signed ZIP as
-`reclazz-X.Y.Z.zip` from `build/release-gate/assets/`.
+and MCP artifacts before creating a **draft** GitHub release. CI does not receive
+the IDE signing key. The local script checks that the intended release is still
+a draft, attaches the checked signed ZIP as `reclazz-X.Y.Z.zip` from
+`build/release-gate/assets/`, and checks completeness before publishing the draft.
+The five required assets are the agent JAR, MCP JAR, their two `.sha256` sidecars,
+and signed IDE ZIP, all named for this version. Each must appear exactly once
+with `state: uploaded` and a positive size; the ZIP size must match the locally
+checked ZIP. Missing, empty, pending or duplicate assets stop publication.
+
+This uses `gh release view --json tagName,isDraft,assets`, followed by
+`gh release edit ... --draft=false --verify-tag` only after the check. See the
+official [view](https://cli.github.com/manual/gh_release_view) and
+[edit](https://cli.github.com/manual/gh_release_edit) commands. This is a bounded
+metadata check, not a remote download/digest check or a lock against concurrent
+release edits. CI and local JARs are independently built; their digests are not
+assumed identical. Do not edit the release concurrently with the script.
 
 Do not replace this route with individual `publishPlugin`, `publishPlugins` or
 Maven `deploy` commands: those do not provide the cross-channel gate. Do not
-edit a generated receipt to continue a failed release. Resume, draft/channel
-completion tracking and a public release manifest are separate work; this
-script stops on failure and does not roll back earlier uploads or auto-retry.
+edit a generated receipt to continue a failed release. This script stops on
+failure and does not roll back earlier uploads, auto-retry or resume a release.
 The site and final registry/download verification remain separate owner steps.
+
+### Channel outcomes
+
+The local script prints an exit summary, including on preflight or partial
+failure. `completed` means only that this run's automated commands succeeded;
+it does **not** mean public availability or Marketplace review approval.
+`skipped` means an explicit skip flag, never an inferred missing credential.
+`awaiting manual action` means remaining work or an uncertain/uncompleted step
+that needs inspection before retrying. A dry run reports no completed channels.
+
+| Channel | After a successful selected run |
+|---|---|
+| Marketplace | completed: upload command succeeded; review/availability unverified |
+| Maven Central | awaiting manual action: Maven plugin staged; upload agent/starter bundles and Publish all three |
+| Gradle Plugin Portal | completed: upload command succeeded; availability unverified |
+| GitHub | completed: required asset metadata checked and draft publish command succeeded; downloads unverified |
+| Site | awaiting manual action: update separately |
+
+The summary names the version, source commit and existing local receipt. It is
+per-invocation output, not a saved multi-registry state database. A nonzero exit
+remains nonzero even if an earlier channel completed. Missing tools or selected
+channel credentials fail before preparation and do not silently skip a channel.
+
+### Manual recovery
+
+1. Preserve the run output and `build/release-gate/` receipt/assets before cleaning
+   or rebuilding. Inspect the first failure and the affected remote channel; a
+   timeout/error may follow an accepted upload. Do not blindly rerun the entire
+   release script, delete its tag or overwrite existing assets.
+2. For an incomplete GitHub draft, wait for the tag workflow to finish and inspect
+   its logs and asset list. Keep the draft unpublished. Before uploading a missing
+   signed ZIP, return to the exact clean source checkout and verify the existing
+   receipt. Upload only the missing checked file; do not use `--clobber`:
+
+   ```bash
+   python3 scripts/release-evidence.py verify
+   python3 scripts/release-evidence.py github-check --draft-only
+   gh release upload vX.Y.Z build/release-gate/assets/reclazz-X.Y.Z.zip
+   python3 scripts/release-evidence.py github-check
+   python3 scripts/release-evidence.py verify
+   gh release edit vX.Y.Z --draft=false --verify-tag
+   ```
+
+   Substitute the receipt's version. If the ZIP already exists, inspect it and
+   omit the upload. Missing agent/MCP assets need the matching tag workflow's
+   checked outputs; do not substitute unrelated local builds. If the receipt,
+   source, draft identity or required assets fail verification, stop and resolve
+   the mismatch. An already public release needs manual inspection, not this
+   draft completion route.
+3. For Central, inspect existing deployments before any retry, upload only absent
+   checked agent/starter bundles, validate and manually Publish all three. For
+   Marketplace and Portal, inspect the version/review outcome before deciding
+   whether another upload is needed. Then verify public downloads/registry
+   resolution and update the site separately. The script does not prove these
+   final outcomes or automate recovery.
 
 ## What the tag does on its own
 
-`.github/workflows/release.yml` fires on `vX.Y.Z` and creates the release:
+`.github/workflows/release.yml` fires on `vX.Y.Z` and creates a draft release:
 it checks that the tag and `gradle.properties` agree, takes the notes from
 that version's section of `CHANGELOG.md` (`scripts/changelog-section.sh`,
 which fails when there is no such section), runs the shared build/test gate,
@@ -113,11 +180,11 @@ older releases are not retroactively changed. See [MCP installation](mcp-server.
 
 Signing is not in there and cannot be: the private key and its passphrase
 live on your machine and are deliberately not repository secrets. So the
-signed zip is still yours to upload, and that is now `gh release upload`
-against a release that exists rather than `gh release create` against one
-that has to be remembered. Forgetting it leaves a release with the agent
-jar and no plugin zip, which is visible; forgetting the old step left no
-release at all, which is what happened three times.
+signed ZIP still comes from the local maintainer's checked build. The tag-only
+workflow intentionally leaves the draft unpublished and reports the remaining
+manual action. The local script (or the verified recovery steps above) completes
+the five assets and then publishes it. Forgetting the ZIP now leaves a draft
+instead of a publicly incomplete release.
 
 The agent jar is the other reason for it. Somebody using Reclazz without
 IntelliJ had no download: the README told them to clone the repository and

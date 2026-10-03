@@ -7,7 +7,7 @@ name: Release
 # 1.0.23 while people were installing 1.0.26. It was written down twice and
 # forgotten anyway, which is what a step that depends on remembering does.
 #
-# So the tag does it. Pushing vX.Y.Z creates the release, takes the notes from
+# So the tag does it. Pushing vX.Y.Z creates a draft, takes the notes from
 # that version's section of CHANGELOG.md, and attaches the agent and standalone
 # MCP jars with checksums.
 #
@@ -15,7 +15,8 @@ name: Release
 # private key and the passphrase, which live on the maintainer's machine and
 # are deliberately not in this repository or in its secrets. The release this
 # creates says so, and uploading it afterwards is one command against a release
-# that already exists rather than a release that has to be remembered.
+# that already exists. The local release script checks all required assets before
+# publishing it; a tag-only run intentionally leaves the draft unpublished.
 #
 # The agent jar is the other half. Somebody using Reclazz without IntelliJ, on
 # Eclipse or a plain -javaagent line or in a pipeline, had no download at all:
@@ -80,8 +81,8 @@ jobs:
             echo '`reclazz-agent-'"$tag"'.jar` is the agent on its own, for use'
             echo 'without the IntelliJ plugin: add it to a JVM with'
             echo '`-javaagent:reclazz-agent-'"$tag"'.jar=...`. The IntelliJ plugin'
-            echo 'is on the JetBrains Marketplace, and the signed zip is attached'
-            echo 'here by hand after the Marketplace publish.'
+            echo 'has a separately signed ZIP attached before this draft is published.'
+            echo 'Marketplace, Central and Portal availability must be verified separately.'
             echo
             echo '`reclazz-mcp-'"$tag"'.jar` is the standalone stdio MCP server (Java 17+). '
             echo 'Verify its adjacent SHA-256 sidecar, then launch with '
@@ -97,4 +98,6 @@ jobs:
             "build/release-gate/assets/reclazz-mcp-${tag}.jar" \
             "build/release-gate/assets/reclazz-mcp-${tag}.jar.sha256" \
             --title "Reclazz $tag" \
+            --draft --verify-tag \
             --notes-file /tmp/release-notes.md
+          echo 'GitHub: awaiting manual action — draft created; signed ZIP and complete-asset check required before publication.'

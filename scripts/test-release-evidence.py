@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Release gate tests without remote publication. The opt-in Gradle probe may resolve build dependencies."""
 import importlib.util
+import copy
 import io
 import json
 import os
@@ -130,6 +131,85 @@ class GateTest(unittest.TestCase):
         (self.root / 'build/link.jar').symlink_to(target)
         with self.assertRaisesRegex(ValueError, 'symlink'):
             evidence.inventory(self.root, ['build/link.jar'])
+
+    def draft(self):
+        self.capture()
+        names = ['reclazz-1.2.3.zip', 'reclazz-agent-1.2.3.jar', 'reclazz-agent-1.2.3.jar.sha256',
+                 'reclazz-mcp-1.2.3.jar', 'reclazz-mcp-1.2.3.jar.sha256']
+        return dict(tagName='v1.2.3', isDraft=True, assets=[
+            dict(name=name, state='uploaded', size=(self.root / evidence.ASSETS / name).stat().st_size)
+            for name in names])
+
+    def check_draft(self, data, draft_only=False):
+        # Replace only gh metadata reads, not receipt/source verification's git.
+        real_run = subprocess.run
+        calls = []
+        def read(command, **kwargs):
+            if command[0] != 'gh':
+                return real_run(command, **kwargs)
+            calls.append(command)
+            self.assertEqual(['gh', 'release', 'view', 'v1.2.3', '--json', 'tagName,isDraft,assets'], command)
+            self.assertEqual(30, kwargs['timeout'])
+            return subprocess.CompletedProcess(command, 0, json.dumps(data), '')
+        with patch.object(evidence.subprocess, 'run', side_effect=read):
+            evidence.github_check(self.root, draft_only)
+        self.assertEqual(1, len(calls), 'one bounded read; no remote mutation or polling')
+
+    def test_complete_draft_uses_existing_receipt_and_read_only_metadata(self):
+        data = self.draft()
+        self.check_draft(data)
+        self.check_draft({**data, 'assets': []}, draft_only=True)
+        self.write('build/release-gate/assets/reclazz-1.2.3.zip', 'tampered')
+        with self.assertRaisesRegex(ValueError, 'artifact changed'):
+            self.check_draft(data)
+
+    def test_every_required_asset_must_be_unique_nonempty_and_uploaded(self):
+        good = self.draft()
+        for index in range(len(good['assets'])):
+            for defect in ('missing', 'empty', 'pending', 'duplicate', 'boolean-size'):
+                with self.subTest(asset=index, defect=defect):
+                    data = copy.deepcopy(good)
+                    if defect == 'missing': del data['assets'][index]
+                    if defect == 'duplicate': data['assets'].append(data['assets'][index])
+                    if defect == 'empty': data['assets'][index]['size'] = 0
+                    if defect == 'pending': data['assets'][index]['state'] = 'new'
+                    if defect == 'boolean-size': data['assets'][index]['size'] = True
+                    with self.assertRaisesRegex(ValueError, 'missing, incomplete or duplicated'):
+                        self.check_draft(data)
+
+    def test_wrong_release_identity_public_release_and_bad_zip_size_are_refused(self):
+        good = self.draft()
+        for field, value in [('tagName', 'v9.9.9'), ('isDraft', False), ('isDraft', 'true')]:
+            for draft_only in (True, False):
+                with self.subTest(field=field, draft_only=draft_only):
+                    with self.assertRaisesRegex(ValueError, 'intended draft'):
+                        self.check_draft({**good, field: value}, draft_only)
+        good['assets'][0]['size'] += 1
+        with self.assertRaisesRegex(ValueError, 'ZIP size differs'):
+            self.check_draft(good)
+
+    def test_incomplete_ci_receipt_cannot_authorize_publication(self):
+        good = self.draft()
+        self.capture('ci')
+        self.check_draft(good, draft_only=True)
+        with self.assertRaisesRegex(ValueError, 'signed ZIP was not included'):
+            self.check_draft(good)
+
+    def test_invalid_metadata_and_failed_read_are_not_completion(self):
+        good = self.draft()
+        for assets in (None, {}, [None]):
+            with self.assertRaisesRegex(ValueError, 'invalid GitHub asset metadata'):
+                self.check_draft({**good, 'assets': assets})
+        real_run = subprocess.run
+        for fault in ('json', 'timeout', 'exit'):
+            def read(command, **kwargs):
+                if command[0] != 'gh': return real_run(command, **kwargs)
+                if fault == 'timeout': raise subprocess.TimeoutExpired(command, 30)
+                if fault == 'exit': raise subprocess.CalledProcessError(1, command, stderr='secret')
+                return subprocess.CompletedProcess(command, 0, 'not JSON', '')
+            with patch.object(evidence.subprocess, 'run', side_effect=read):
+                with self.assertRaisesRegex(ValueError, '^GitHub draft metadata unavailable; inspect the release before retrying$'):
+                    evidence.github_check(self.root)
 
     @patch.dict(os.environ, {'RECLAZZ_CENTRAL_TOKEN': 'test-token'})
     def test_upload_uses_checked_bundle_and_manual_publication(self):
