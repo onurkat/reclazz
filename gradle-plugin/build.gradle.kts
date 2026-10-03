@@ -31,7 +31,7 @@ gradlePlugin {
             implementationClass = "com.onurkat.reclazz.gradle.ReclazzPlugin"
             displayName = "Reclazz hot-reload Gradle plugin"
             description = "Wires the Reclazz hot-reload agent into bootRun and test, " +
-                "so a Spring Boot or SAP Commerce project reloads in place with no manual -javaagent flag."
+                "and optionally application run, with no manual -javaagent flag."
             tags.set(listOf("hot-reload", "spring-boot", "sap-commerce", "jrebel-alternative", "java-agent"))
         }
     }

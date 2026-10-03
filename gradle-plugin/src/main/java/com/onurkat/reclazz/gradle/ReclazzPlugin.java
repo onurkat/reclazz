@@ -43,6 +43,7 @@ public class ReclazzPlugin implements Plugin<Project> {
         ext.getAgentVersion().convention(project.provider(ReclazzPlugin::pluginVersion));
         ext.getApplyToTest().convention(true);
         ext.getApplyToBootRun().convention(true);
+        ext.getApplyToRun().convention(false);
 
         if (project == project.getRootProject()) {
             var safe = project.getTasks().register("reclazzSafeBuild", ReclazzSafeBuildTask.class, task -> {
@@ -93,6 +94,17 @@ public class ReclazzPlugin implements Plugin<Project> {
                 task.getJvmArgumentProviders().add(newProvider(project, ext, agentJar, argumentString));
             }
         });
+
+        project.getPluginManager().withPlugin("application", applied ->
+                project.getTasks().named("run", JavaExec.class).configure(task -> {
+                    // Keep the file input lazy too: an opted-out run must not resolve an agent.
+                    ConfigurableFileCollection runAgent = project.getObjects().fileCollection();
+                    runAgent.from(project.provider(() -> ext.getApplyToRun().get() ? agentJar : List.of()));
+                    AgentArgumentProvider provider = newProvider(project, ext, runAgent, argumentString);
+                    provider.getEnabled().set(project.provider(() ->
+                            ext.getEnabled().get() && ext.getApplyToRun().get()));
+                    task.getJvmArgumentProviders().add(provider);
+                }));
 
         project.getTasks().register("reclazzStatus", ReclazzStatusTask.class, task -> {
             task.setGroup("reclazz");

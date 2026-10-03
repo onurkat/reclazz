@@ -57,4 +57,7 @@ public abstract class ReclazzExtension {
 
     /** Attach the agent to the {@code bootRun} task when present. Default {@code true}. */
     public abstract Property<Boolean> getApplyToBootRun();
+
+    /** Attach to the standard application plugin's {@code run} task. Default {@code false}. */
+    public abstract Property<Boolean> getApplyToRun();
 }

@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Gradle `application` projects can opt into agent attachment for `run` with
+  `reclazz.applyToRun=true`, retaining JVM arguments and leaving other JavaExec
+  tasks and packaged launch scripts unchanged.
 - Release tooling keeps GitHub releases in draft until all five required assets
   are complete, and reports completed commands, explicit channel skips and manual
   follow-up on success or failure without claiming remote availability.

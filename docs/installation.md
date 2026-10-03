@@ -7,6 +7,7 @@ are optional; Reclazz also runs with Spring Boot and plain Java.
 |---|---|
 | IntelliJ Java run configuration | [Install and enable the IDE plugin](#intellij-idea) |
 | Spring Boot with Gradle `bootRun` | [Gradle setup](#gradle) |
+| Plain Java with Gradle `application` / `run` | [Opt-in application run](gradle-plugin.md#plain-java-application-run-opt-in) |
 | Spring Boot with Maven | [Maven development profile](#maven) |
 | Plain Java, another IDE or a custom launcher | [Standalone agent](#standalone-agent) |
 | SAP Commerce scripts or IntelliJ | [SAP Commerce setup](#sap-commerce) |
@@ -98,10 +99,11 @@ repositories { mavenCentral() }
 
 Start with `./gradlew bootRun` (Windows: `gradlew.bat bootRun`). In another terminal,
 compile edits with `./gradlew classes`. The plugin attaches to `bootRun` and test
-JVMs. **Plain `application.run` is not automatically covered**; use the standalone
-route for now. Automatic watching currently selects the first main class output;
-projects with multiple outputs should explicitly set `watchDirs` in the
-[Gradle options](gradle-plugin.md#options).
+JVMs. Plain `application.run` is opt-in with `reclazz { applyToRun.set(true) }`
+in a plugin build containing the new option; see the
+[application run guide](gradle-plugin.md#plain-java-application-run-opt-in) for its
+availability and scope. Automatic watching includes all main class outputs;
+an explicit `watchDirs` list replaces them in the [Gradle options](gradle-plugin.md#options).
 
 If that plugin version is not available in the Plugin Portal, use a released
 matching version or the standalone route. A local agent can be selected via

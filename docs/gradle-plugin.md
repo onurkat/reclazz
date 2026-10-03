@@ -3,6 +3,7 @@
 The plugin attaches the Reclazz agent to a project's run and test JVMs, so you
 do not hand-write a `-javaagent` flag. Apply it and `bootRun` and the test
 tasks start with the agent already attached, watching all main compiled-class output directories.
+The standard `application` plugin's `run` task is also supported by explicit opt-in.
 
 The plugin id is `com.onurkat.reclazz`.
 
@@ -11,6 +12,8 @@ The plugin id is `com.onurkat.reclazz`.
 - Adds `-javaagent:<reclazz-agent.jar>=platform=spring,watchDirs=<main outputs>`
   to the `bootRun` task when the Spring Boot plugin is applied.
 - Adds the same flag to `Test` tasks, so tests run against reloaded classes.
+- With `applyToRun=true`, attaches to the standard `application` plugin's `run`
+  task. Plain Java applications do not receive a forced Spring platform argument.
 - Resolves the agent jar from the coordinate
   `com.onurkat.reclazz:reclazz-agent:<version>`, or from an explicit path you set.
 
@@ -35,6 +38,32 @@ Then run your app the way you already do:
 
 The plugin resolves `com.onurkat.reclazz:reclazz-agent` at the version you
 applied and attaches it. No `reclazz` block is needed for the common case.
+
+### Plain Java application run (opt-in)
+
+This option is new in the current source tree; use a plugin build containing it.
+The version-only examples elsewhere do not establish that this addition is already
+published. Keep the project's existing `application` setup and main class, then add:
+
+```kotlin
+reclazz {
+    applyToRun.set(true) // default false
+}
+```
+
+Launch with `./gradlew run`; compile edits with `./gradlew classes` in another
+terminal. The same agent resolution, `agentJar`, watched-output and argument
+options below apply. Existing application JVM arguments are retained. Without
+the Spring Boot plugin or an explicit platform override, the plugin leaves
+platform selection to the agent. `enabled=false` or `applyToRun=false` prevents
+attachment and agent resolution for this task.
+
+Only the standard `application` plugin's `run` task is selected. A custom JavaExec
+named `run` without that plugin, other JavaExec tasks, `applicationDefaultJvmArgs`
+and generated Unix/Windows distribution launch scripts are unchanged. Test-task
+and `bootRun` attachment keep their own options. The run integration is exercised
+with Gradle 8.10.2; other versions require separate acceptance. See Gradle's
+[application plugin](https://docs.gradle.org/8.10.2/userguide/application_plugin.html).
 
 ### Offline, or pinned to a local jar
 
@@ -61,6 +90,7 @@ reclazz {
     arguments.put("verbose", "true")
     applyToBootRun.set(true)
     applyToTest.set(true)
+    applyToRun.set(false)                   // opt in for application.run only
 }
 ```
 
