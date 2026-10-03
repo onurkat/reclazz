@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring XML reload recognizes successfully loaded local resources and nested imports
+  with arbitrary XML filenames, targets their owning contexts and checks captured
+  files outside normal watch roots without including unrelated neighbouring XML.
+  Existing bean safety and exclusion rules remain in effect.
+
 - Added instance and static fields can use isolated forward-only switch expressions.
   Unrelated try/catch blocks no longer prevent extraction when their control flow
   cannot cover, enter, skip or repeat the initializer; constructors and handlers

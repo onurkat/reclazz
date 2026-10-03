@@ -43,6 +43,7 @@ public class ChangeEvent {
     public Path getPath() { return path; }
     public Type getType() { return type; }
     public String getModuleName() { return moduleName; }
+    public String getSourceRoot() { return sourceRoot; }
     @Override
     public String toString() {
         return type + " " + path + " [" + moduleName + "/" + sourceRoot + "]";

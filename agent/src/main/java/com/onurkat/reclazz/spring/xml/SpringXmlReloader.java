@@ -6,6 +6,7 @@ package com.onurkat.reclazz.spring.xml;
 
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.platform.SpringXmlResources;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
@@ -58,6 +59,27 @@ public final class SpringXmlReloader {
 
     public SpringXmlReloader(PlatformContext platformContext) {
         this.platformContext = platformContext;
+    }
+
+    /** Entry for filenames recognized by captured resource identity, never by bean names. */
+    public void reloadLoaded(Path xmlPath) {
+        List<Object> owners = SpringXmlResources.owners(xmlPath, gatherCandidateContexts());
+        if (owners.isEmpty()) {
+            StatusReporter.info("Spring XML " + xmlPath.getFileName() + " — no active owner; nothing applied");
+            return;
+        }
+        for (Object context : owners) {
+            Object factory = SpringReflection.getBeanFactory(context);
+            if (factory == null) continue;
+            try {
+                ClassLoader loader = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
+                Object temporary = SpringReflection.newTempBeanFactory(loader);
+                if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader))
+                    applyToSingleContext(xmlPath, temporary, context, factory, "");
+            } catch (ReflectiveOperationException failure) {
+                StatusReporter.warn("Spring XML: application bean classloader unavailable");
+            }
+        }
     }
 
     public void reload(Path xmlPath) {

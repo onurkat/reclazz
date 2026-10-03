@@ -1320,7 +1320,12 @@ public class ReclazzAgent {
             StatusReporter.warn("Spring XML reload not available — agent not fully initialised");
             return;
         }
-        reloader.reload(event.getPath());
+        if (ChangeKind.of(event.getPath().getFileName().toString()) == ChangeKind.UNKNOWN
+                || "spring-xml".equals(event.getSourceRoot())
+                || com.onurkat.reclazz.platform.SpringXmlResources.isLoaded(event.getPath()))
+            reloader.reloadLoaded(event.getPath());
+        else
+            reloader.reload(event.getPath());
     }
 
     /** Called by the watcher at startup; see PropertyFileSnapshots. */

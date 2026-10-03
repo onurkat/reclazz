@@ -372,6 +372,8 @@ public class FileWatcher {
             }
         }
 
+        scanLoadedSpringXml(new LinkedHashMap<>());
+
         String mode = config.isAutoCompile() ? "autoCompile (watching sources)" : "default (watching classes)";
         if (config.isVerbose()) StatusReporter.info("Mode: " + mode);
         StatusReporter.info("Watching " + Plural.of(watchCount, "directory", "directories"));
@@ -692,7 +694,7 @@ public class FileWatcher {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                     String fileName = file.getFileName().toString();
-                    if (!isInterestingFile(fileName)) return FileVisitResult.CONTINUE;
+                    if (!isInterestingFile(file)) return FileVisitResult.CONTINUE;
                     if (config.isExcluded(fileName)) return FileVisitResult.CONTINUE;
                     pendingEvents.put(file, new PendingEvent(
                             now, file, ChangeEvent.Type.CREATED, moduleName, sourceRoot));
@@ -708,7 +710,12 @@ public class FileWatcher {
         Map<Path, PendingEvent> pendingEvents = new LinkedHashMap<>();
         long debounceMs = config.getDebounceMs();
 
+        long nextXmlScan = 0;
         while (active) {
+            if (System.currentTimeMillis() >= nextXmlScan) {
+                scanLoadedSpringXml(pendingEvents);
+                nextXmlScan = System.currentTimeMillis() + 1000;
+            }
             // Idle, this is a poll of an in-memory queue, so a short wait costs
             // nothing and is what lets a requested scan be picked up promptly.
             long idleWait = (jdkPolls && !hotFiles.isEmpty()) ? HOT_SCAN_MS : IDLE_WAIT_MS;
@@ -757,7 +764,7 @@ public class FileWatcher {
                         }
 
                         String fileName = changedFile.getFileName().toString();
-                        if (!isInterestingFile(fileName)) continue;
+                        if (!isInterestingFile(changedFile)) continue;
                         if (config.isExcluded(fileName)) continue;
 
                         ChangeEvent.Type eventType = switch (kind.name()) {
@@ -805,7 +812,8 @@ public class FileWatcher {
                 for (PendingEvent pending : barriers.isEmpty() ? dueNow(pendingEvents.values(), now, debounceMs)
                         : new ArrayList<>(pendingEvents.values())) {
                     pendingEvents.remove(pending.path());
-                    markHot(pending.path(), pending.moduleName(), pending.sourceRoot());
+                    if (!"spring-xml".equals(pending.sourceRoot()))
+                        markHot(pending.path(), pending.moduleName(), pending.sourceRoot());
                     // A build boundary must not lose a second edit inside the
                     // ordinary 100ms event suppression window. Hash dedupe remains.
                     if (!barriers.isEmpty()) lastModifiedMap.remove(pending.path());
@@ -880,7 +888,7 @@ public class FileWatcher {
             try (java.nio.file.DirectoryStream<Path> entries = Files.newDirectoryStream(watched.directory())) {
                 for (Path file : entries) {
                     String fileName = file.getFileName().toString();
-                    if (!isInterestingFile(fileName) || config.isExcluded(fileName)) continue;
+                    if (!isInterestingFile(file) || config.isExcluded(fileName)) continue;
                     if (!Files.isRegularFile(file)) continue;
                     long mtime = lastModifiedMillis(file);
                     if (mtime <= 0) continue;
@@ -900,8 +908,39 @@ public class FileWatcher {
                 // handling picks it up.
             }
         }
+        found += scanLoadedSpringXml(pendingEvents);
         if (found > 0 && config.isVerbose()) {
             StatusReporter.info("Scan on request found " + Plural.of(found, "changed file"));
+        }
+        return found;
+    }
+
+    private final Map<Path, Long> loadedXmlMtimes = new HashMap<>();
+
+    /** Poll only captured XML files outside native watch roots, never their neighbours. */
+    int scanLoadedSpringXml(Map<Path, PendingEvent> pending) {
+        int found = 0;
+        Set<Path> live = com.onurkat.reclazz.platform.SpringXmlResources.loadedFiles();
+        loadedXmlMtimes.keySet().retainAll(live);
+        Set<Path> watched = new HashSet<>();
+        for (WatchedDirectory directory : watchKeyMap.values())
+            watched.add(directory.directory().toAbsolutePath().normalize());
+        Set<String> modules = platformContext.getResourceDirs().keySet();
+        for (Path file : live) {
+            ChangeKind named = ChangeKind.of(file.getFileName().toString());
+            if (named != ChangeKind.UNKNOWN && named != ChangeKind.SPRING_XML) continue;
+            if (watched.contains(file.getParent())) continue;
+            String module = platformContext.resolveModuleName(file);
+            if (!platformContext.shouldWatch(module) || config.isExcluded(file.getFileName().toString())) continue;
+            if (platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS && !modules.contains(module))
+                continue;
+            long modified = modifiedAt(file);
+            Long previous = loadedXmlMtimes.put(file, modified);
+            if (previous == null || previous == modified) continue; // establish baseline
+            ChangeEvent.Type type = modified == 0 ? ChangeEvent.Type.DELETED
+                    : previous == 0 ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
+            pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, module, "spring-xml"));
+            found++;
         }
         return found;
     }
@@ -1199,8 +1238,8 @@ public class FileWatcher {
      * where only four patterns are handled), so an unrelated XML save was
      * hashed, queued and handled as nothing.
      */
-    private boolean isInterestingFile(String fileName) {
-        return ChangeKind.watched(fileName);
+    private boolean isInterestingFile(Path file) {
+        return ChangeKind.of(file) != ChangeKind.UNKNOWN;
     }
 
     record WatchedDirectory(Path directory, String moduleName, String sourceRoot) {}

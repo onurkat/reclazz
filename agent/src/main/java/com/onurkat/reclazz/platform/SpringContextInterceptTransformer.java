@@ -32,6 +32,9 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
                             Class<?> classBeingRedefined,
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) {
+        if ("org/springframework/beans/factory/xml/XmlBeanDefinitionReader".equals(className)) {
+            return instrumentXmlReader(classfileBuffer);
+        }
         if (!TARGET_CLASS.equals(className)) {
             return null;
         }
@@ -46,6 +49,39 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
             return cw.toByteArray();
         } catch (Exception e) {
             StatusReporter.warn("Failed to instrument AbstractApplicationContext: " + Failures.describe(e));
+            return null;
+        }
+    }
+
+    private byte[] instrumentXmlReader(byte[] bytes) {
+        try {
+            ClassReader reader = new ClassReader(bytes);
+            // Straight-line stack-neutral insertion preserves the existing frames.
+            ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
+            reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
+                @Override
+                public MethodVisitor visitMethod(int access, String name, String descriptor,
+                                                 String signature, String[] exceptions) {
+                    MethodVisitor visitor = super.visitMethod(access, name, descriptor, signature, exceptions);
+                    if (!"doLoadBeanDefinitions".equals(name) || !descriptor.equals(
+                            "(Lorg/xml/sax/InputSource;Lorg/springframework/core/io/Resource;)I")) return visitor;
+                    return new MethodVisitor(Opcodes.ASM9, visitor) {
+                        @Override public void visitInsn(int opcode) {
+                            if (opcode == Opcodes.IRETURN) {
+                                super.visitVarInsn(Opcodes.ALOAD, 0);
+                                super.visitVarInsn(Opcodes.ALOAD, 2);
+                                super.visitMethodInsn(Opcodes.INVOKESTATIC,
+                                        "com/onurkat/reclazz/platform/SpringXmlResources", "record",
+                                        "(Ljava/lang/Object;Ljava/lang/Object;)V", false);
+                            }
+                            super.visitInsn(opcode);
+                        }
+                    };
+                }
+            }, 0);
+            return writer.toByteArray();
+        } catch (Exception failure) {
+            StatusReporter.warn("Failed to instrument Spring XML resource capture: " + Failures.describe(failure));
             return null;
         }
     }

@@ -27,7 +27,7 @@ public enum ChangeKind {
     /** Java source, which is only interesting when compiling for the user. */
     JAVA_SOURCE,
 
-    /** {@code *-spring.xml}, including {@code *-web-spring.xml}. */
+    /** Named Spring XML, or a local XML resource observed loading in an active context. */
     SPRING_XML,
 
     /**
@@ -81,10 +81,8 @@ public enum ChangeKind {
      * @param fileName the file name, not the path
      */
     /**
-     * Whether the watcher should report this file at all: exactly the files
-     * some kind claims. The watcher asks this and the agent asks
-     * {@link #of(java.nio.file.Path)}, so the two cannot disagree about a
-     * file, and adding a kind adds it to both.
+     * Name-only predicate for callers without a path. The watcher and agent use
+     * {@link #of(java.nio.file.Path)} to also recognize captured Spring resources.
      */
     public static boolean watched(String fileName) {
         return of(fileName) != UNKNOWN;
@@ -153,7 +151,10 @@ public enum ChangeKind {
             return LOCALIZATION;
         }
 
-        return of(fileName);
+        ChangeKind named = of(fileName);
+        if (named == UNKNOWN && fileName.endsWith(".xml")
+                && com.onurkat.reclazz.platform.SpringXmlResources.isLoaded(path)) return SPRING_XML;
+        return named;
     }
 
     /** {@code <ext>-locales_<iso>.properties}, the platform's own convention. */

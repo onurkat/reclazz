@@ -111,9 +111,32 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### Loaded Spring XML resources
+
+Alongside `*-spring.xml`, Reclazz recognizes local `.xml` resources that Spring's
+XML reader successfully loaded for an active application context after agent
+startup. This includes nested imports and files such as `spring-mvc-config.xml`
+and `web-application-config.xml`, including files with no bean definitions of their
+own. It uses the resolved file path and owning context, not a basename match or
+inspection of arbitrary XML content.
+
+Files under existing watch roots use the normal watcher. Other captured local
+XML files are checked once per second without watching their neighbouring files;
+module and filename exclusions still apply. Closed contexts and temporary parser
+factories do not grant resource ownership. JAR entries, remote resources and XML
+loaded before the agent's reader hook are not covered by this discovery path.
+Reserved logging, code-generation and backoffice filename rules retain priority.
+
+Recognition routes supported bean changes through the existing XML safety checks;
+it does not promise arbitrary MVC/security/filter-chain rebuilding or a context
+refresh. Import-topology changes are not a full live configuration reload: a new
+import seen only by the temporary parser does not become a captured live resource.
+Unsupported bean changes still require the reported restart. Use the actual
+loaded file; editing a different source copy with the same name does not update it.
+
 ### XML singleton recreation
 
-For an existing bean in a watched `*-spring.xml`, edits to constructor arguments,
+For an existing bean in a watched Spring XML resource, edits to constructor arguments,
 a public static or instance factory method, or explicit `init-method` and
 `destroy-method` metadata can recreate the singleton without restarting:
 
@@ -2913,7 +2936,7 @@ The action depends on which part changed. Regeneration and reload do not update 
 | New extensions | Extension list is fixed at startup | `ant all` + restart |
 | Superclass changes | Reclazz keeps the loaded superclass; eligible bodies may reload, dependent methods remain pinned, and class-level blockers refuse the save | Restart for the hierarchy change; [check partial/refused outcomes](superclass-feasibility.md#production-reload-reporting) |
 | New JAR dependencies | Classpath is fixed at JVM startup | Restart |
-| `*-spring.xml` bean definitions | Supported bean-definition changes are diffed and applied | Unsupported changes are reported; follow that diagnostic instead of assuming every XML edit needs a restart |
+| `*-spring.xml` and captured local Spring XML bean definitions | Supported bean-definition changes are diffed and applied | Unsupported changes are reported; follow that diagnostic instead of assuming every XML edit needs a restart |
 
 
 ### SAP reload outcomes and verification
