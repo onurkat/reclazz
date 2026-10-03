@@ -21,7 +21,7 @@ class McpToolContractsTest {
     private static final String MODERN = "2025-06-18";
     private static final String LEGACY = "2024-11-05";
     private static final List<String> TOOLS = List.of("reclazz_status", "reclazz_scan", "reclazz_pending",
-            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch");
+            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch", "reclazz_reload_control");
     @TempDir Path dir;
 
     private static JsonObject rpc(String method, JsonObject params) {
@@ -44,7 +44,7 @@ class McpToolContractsTest {
         return m;
     }
     private JsonObject args() {
-        JsonObject a = new JsonObject(); a.addProperty("className", "A");
+        JsonObject a = new JsonObject(); a.addProperty("action", "status"); a.addProperty("className", "A");
         a.add("items", BatchVerificationTest.items("A", "B"));
         a.addProperty("sha256", ReloadVerificationTest.HASH); a.addProperty("state", "started"); a.addProperty("owner", "contract-owner");
         a.addProperty("portFile", dir.resolve("missing.port").toString()); a.addProperty("timeoutMs", "500"); return a;
@@ -80,7 +80,7 @@ class McpToolContractsTest {
         assertTrue(tools(modern).get("reclazz_status").has("outputSchema"));
     }
 
-    @Test void eightToolsAdvertiseTypedOutputsAndConservativeHints() {
+    @Test void nineToolsAdvertiseTypedOutputsAndConservativeHints() {
         Map<String, JsonObject> t = tools(client(MODERN)); assertEquals(new HashSet<>(TOOLS), t.keySet());
         for (String name : TOOLS) {
             JsonObject tool = t.get(name);
@@ -89,7 +89,7 @@ class McpToolContractsTest {
             assertEquals("object", schema.get("type").getAsString());
             assertFalse(schema.getAsJsonArray("required").isEmpty());
             JsonObject hints = tool.getAsJsonObject("annotations");
-            boolean mutates = name.equals("reclazz_build") || name.equals("reclazz_scan");
+            boolean mutates = name.equals("reclazz_build") || name.equals("reclazz_scan") || name.equals("reclazz_reload_control");
             assertEquals(!mutates, hints.get("readOnlyHint").getAsBoolean(), name);
             assertEquals(mutates, hints.get("openWorldHint").getAsBoolean(), name);
             if (mutates) {
@@ -99,7 +99,7 @@ class McpToolContractsTest {
         }
     }
 
-    @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_scan","reclazz_pending","reclazz_diagnose","reclazz_build","reclazz_verify","reclazz_doctor","reclazz_verify_batch"})
+    @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_scan","reclazz_pending","reclazz_diagnose","reclazz_build","reclazz_verify","reclazz_doctor","reclazz_verify_batch","reclazz_reload_control"})
     void offlineResultsAreStructuredAndLegacyRemainsText(String name) throws Exception {
         JsonObject data = checked(client(MODERN), name, args(), !name.equals("reclazz_status"), "offline");
         if (name.equals("reclazz_status")) assertFalse(data.get("attached").getAsBoolean());
@@ -188,6 +188,25 @@ class McpToolContractsTest {
                 assertEquals(status.equals("broken") ? "unavailable" : status,d.get("status").getAsString());
                 assertEquals(ReloadVerificationTest.HASH,d.get("expectedSha256").getAsString());
                 if (!status.equals("broken")) {assertEquals("session-test",d.get("sessionId").getAsString()); assertEquals("A.class",d.get("source").getAsString());}
+                agent.verify();
+            }
+        }
+    }
+
+    @Test void reloadControlResultsAreCorrelatedAndSchemaChecked() throws Exception {
+        for (String action : List.of("pause", "resume", "status")) {
+            try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+                String command = in.readLine();
+                assertTrue(command.startsWith("RELOAD " + action + " request="));
+                ReloadControlTest.reply(out, command, "paused=" + !action.equals("resume")
+                        + " pendingClasses=2 pendingActions=1 buildHold=named");
+            })) {
+                JsonObject a=args(); a.addProperty("action", action); a.addProperty("port", ""+agent.server.getLocalPort());
+                JsonObject d=checked(client(MODERN), "reclazz_reload_control", a, false, action);
+                assertEquals("acknowledged", d.get("status").getAsString());
+                assertEquals(!action.equals("resume"), d.get("paused").getAsBoolean());
+                assertEquals(2, d.get("pendingClasses").getAsInt());
+                assertEquals("named", d.get("buildHold").getAsString());
                 agent.verify();
             }
         }

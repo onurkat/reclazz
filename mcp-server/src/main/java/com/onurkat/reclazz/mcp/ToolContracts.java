@@ -22,7 +22,7 @@ final class ToolContracts {
     static void describe(JsonObject tool) {
         String name = tool.get("name").getAsString();
         tool.add("outputSchema", SCHEMAS.getAsJsonObject(name).deepCopy());
-        boolean mutates = name.equals("reclazz_scan") || name.equals("reclazz_build");
+        boolean mutates = name.equals("reclazz_scan") || name.equals("reclazz_build") || name.equals("reclazz_reload_control");
         JsonObject hints = new JsonObject();
         hints.addProperty("readOnlyHint", !mutates);
         // Reload can invoke application callbacks, with effects outside this JVM.

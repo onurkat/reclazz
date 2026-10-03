@@ -17,7 +17,7 @@ against the **packaged MCP jar over stdio**. The test installs both jars under
 paths containing spaces and launches a real application JVM with the agent.
 It covers:
 
-- All eight tools and their advertised output schemas, including error results;
+- All nine tools and their advertised output schemas, including error results;
   JSON text must match structured output. Missing required result fields are
   rejected by the SDK's own schema validator.
 - DOCTOR target PID, working directory, session and capabilities. Observation
@@ -27,6 +27,8 @@ It covers:
 - A partial compiler output followed by a real compiler error. Failed output
   stays unapplied even after SCAN, a competing owner is refused, and the same
   owner can recover with a complete successful build.
+- Manual pause holds compiled output through SCAN; correlated status shows pending
+  files and resume leads to exact-byte VERIFY and changed behavior in the same JVM.
 - Mixed applied/unobserved batch results, stale hashes, missing target,
   malformed tool arguments, and continued ping after errors. Neither a BUILD
   acknowledgement nor a scan is treated as reload completion.
@@ -117,3 +119,10 @@ modified for this experiment.
 Inspector GUI, Claude Desktop, Cursor and other interactive clients are not
 certified by these tests. No external account or hosted service is needed for
 the local acceptance flow.
+
+On **2026-10-03**, the pause/resume extension passed locally on macOS aarch64,
+Node22.20.0, official SDK1.30.0 and SAP JDK17.0.16: nine tools, 23 invalid
+output mutations rejected, paused output retained through SCAN, then exact-byte
+verification and changed behavior after resume in the same JVM/instance.
+This additional run does not establish hosted CI or JDK21 acceptance for the
+new control tool.

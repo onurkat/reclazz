@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+
+- Pause and resume automatic reload without restarting the app, retaining pending changes independently of BUILD ownership; inspect/control admission through the status socket or `reclazz_reload_control` MCP tool.
 - Gradle `application` projects can opt into agent attachment for `run` with
   `reclazz.applyToRun=true`, retaining JVM arguments and leaving other JavaExec
   tasks and packaged launch scripts unchanged.

@@ -57,20 +57,58 @@ a client that stops reading rather than blocking a reload on it.
 A client may send one line at a time, at most 512 characters; anything not
 listed here is ignored without an answer, and a line that never ends closes
 the connection. Every answer arrives as ordinary `INFO` lines on the stream,
-to every client, except requested BUILD receipts, DOCTOR observations and VERIFY results, which go only to the requesting connection.
+to every client, except requested BUILD receipts, RELOAD state, DOCTOR observations and VERIFY results, which go only to the requesting connection.
 
 | Command | Answer |
 |---|---|
 | `DIAGNOSE <class>` | why the class did or did not reload last time: the class file the bytes came from, the outcome, what a restart would change |
-| `PENDING` | what still needs a restart in this session |
+| `PENDING` | restart-required changes plus manual-pause state and pending counts |
 | `HEALTH` | how the session is going: reloads, failures, latency, watched directories, a reload that is still running |
 | `BUILD <state> [request=<token>] [owner=<token>]` | hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. States are case-insensitive; `request=` is literal and its token is echoed unchanged. An unknown argument makes the entire command ignored |
 | `VERIFY <token> <class> <sha256>` | read the latest exact-byte reload receipt for one class; requester-only structured result (below) |
 | `DOCTOR <token>` | read bounded JVM, session, watcher and capability evidence; requester-only result (below) |
+| `RELOAD <action> request=<token>` | pause/resume/status automatic reload admission; requester-only correlated state (below) |
 | `SCAN` | look at the watched directories now, instead of on the file watcher's next poll; what changed is reloaded as usual. Send it when a build has just finished |
 
 Nothing a client sends makes the agent load, reload or run anything it
 would not have on its own.
+
+## Pausing automatic reload
+
+Send `RELOAD pause request=my-request` and wait for the requester-only INFO
+message `RELOAD_STATE <token> <action> paused=<true|false> pendingClasses=<count> pendingActions=<count> buildHold=<none|named|legacy>`.
+Actions are exactly `pause`, `resume`, `status` (lower-case). The mandatory
+request token uses 1–64 ASCII letters, digits, underscores or hyphens.
+Invalid commands or an unavailable listener produce no acknowledgement.
+
+Pause is an agent-wide manual switch: any local client can resume it; it is
+not a per-client lock. Disconnect does not resume. Repeated pause/resume is
+safe. `status` only reads state; `PENDING` also reports the pause state and
+pending counts alongside its existing restart-required entries. `HEALTH`
+reports a manual pause. Counts cover observed, not-yet-admitted distinct class
+paths and automatic action keys, not every unobserved disk change. A capture
+already reading bytes may return its entries to these pending maps afterward.
+
+Class files, source compilation and resource actions observed while paused
+are retained/coalesced. `SCAN` still observes files but cannot bypass pause.
+Resume schedules a scan and eligible pending work using current output. Its
+acknowledgement is an admission-state snapshot, **not reload completion**;
+use VERIFY and application checks for completion. A missing acknowledgement
+leaves the outcome uncertain: query status before retrying. Old agents ignore
+this command; clients must not treat timeout as success.
+
+Manual pause is independent of BUILD ownership. Resume cannot unlock active
+or failed builds. A successful owner's BUILD ok still validates/captures output
+and releases that build hold, while a manual pause keeps changes pending;
+unreadable output still retains ownership. A later build start/failure continues
+to block class admission. BUILD holds retain their existing class-file scope.
+
+Work admitted before pause may finish, including captured class batches waiting
+for a request boundary and compilation/framework callbacks already running.
+Pause does not interrupt a batch, roll back changes, prevent an application
+classloader from first loading new disk output, or freeze application requests.
+A pause during class capture postpones the unadmitted batch. No selective
+application, rollback or transactional reload is implied.
 
 ## Holding a build until it succeeds
 

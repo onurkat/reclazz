@@ -595,5 +595,76 @@
       }
     ],
     "$schema": "https://json-schema.org/draft/2020-12/schema"
+  },
+  "reclazz_reload_control": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": [
+          "acknowledged",
+          "unavailable"
+        ]
+      },
+      "detail": {
+        "type": "string"
+      },
+      "reloadConfirmed": {
+        "const": false
+      },
+      "action": {
+        "type": "string",
+        "enum": [
+          "pause",
+          "resume",
+          "status"
+        ]
+      },
+      "paused": {
+        "type": "boolean"
+      },
+      "pendingClasses": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "pendingActions": {
+        "type": "integer",
+        "minimum": 0
+      },
+      "buildHold": {
+        "type": "string",
+        "enum": [
+          "none",
+          "named",
+          "legacy"
+        ]
+      }
+    },
+    "required": [
+      "status",
+      "action",
+      "detail",
+      "reloadConfirmed"
+    ],
+    "additionalProperties": false,
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "status": {
+              "const": "acknowledged"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "paused",
+            "pendingClasses",
+            "pendingActions",
+            "buildHold"
+          ]
+        }
+      }
+    ]
   }
 }

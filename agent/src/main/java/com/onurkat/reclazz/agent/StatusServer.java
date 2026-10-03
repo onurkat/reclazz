@@ -65,6 +65,11 @@ public class StatusServer implements StatusReporter.StatusListener {
     private volatile Runnable scanner;
     private volatile java.util.function.Consumer<String> build;
     private volatile java.util.function.BiPredicate<String, String> ownedBuild;
+    private static final String RELOAD = "RELOAD";
+    private volatile java.util.function.Function<String, String> reloadControl;
+
+    void setReloadControl(java.util.function.Function<String, String> control) { reloadControl = control; }
+
     private static final String BUILD = "BUILD";
     private static final String VERIFY = "VERIFY";
     private static final String DOCTOR = "DOCTOR";
@@ -177,6 +182,17 @@ public class StatusServer implements StatusReporter.StatusListener {
         if (trimmed.length() > MAX_COMMAND_LENGTH) return;
 
         try {
+            if (trimmed.startsWith(RELOAD + " ")) {
+                String[] parts = trimmed.split("\\s+");
+                var control = reloadControl;
+                if (parts.length != 3 || control == null
+                        || !List.of("pause", "resume", "status").contains(parts[1])
+                        || !parts[2].matches("request=[A-Za-z0-9_-]{1,64}")) return;
+                String message = "RELOAD_STATE " + parts[2].substring(8) + " " + parts[1] + " " + control.apply(parts[1]);
+                reply.accept(String.format("{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                        escapeJson(message), Instant.now().toString()));
+                return;
+            }
             if (trimmed.startsWith(DOCTOR + " ")) {
                 String token = trimmed.substring(DOCTOR.length() + 1);
                 if (!token.matches("[A-Za-z0-9_-]{1,64}")) return;
@@ -234,6 +250,8 @@ public class StatusServer implements StatusReporter.StatusListener {
                 return;
             }
             if (trimmed.equalsIgnoreCase(PENDING)) {
+                var control = reloadControl;
+                if (control != null) StatusReporter.info("Automatic reload: " + control.apply("status"));
                 for (String reportLine : RestartLedger.digest()) {
                     StatusReporter.info(reportLine);
                 }

@@ -92,7 +92,7 @@ printf '%s\n' \
 ```
 
 Expect two JSON response lines: initialization reports `reclazz-mcp` and the
-jar's version; the tools list contains the eight tools below. The notification
+jar's version; the tools list contains the nine tools below. The notification
 has no response. EOF closes the server. If Java cannot open the jar, check the
 absolute path; if it cannot load its classes, use the packaged jar from
 `build/distributions/mcp`, not the plain development jar. A missing attached
@@ -108,7 +108,8 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | `reclazz_verify_batch` | Read 1–32 unique class/hash pairs on one connection within a total timeout; cancellable through stdio |
 | `reclazz_verify` | Structured exact-byte reload receipt; requires `className` and lower-case `sha256`; only `status:applied` is success |
 | `reclazz_scan` | Ask the agent to look at the watched directories now and reload changed classes, instead of waiting for its next poll |
-| `reclazz_pending` | What still needs a restart in this session |
+| `reclazz_pending` | Restart-required changes plus manual-pause and pending counts |
+| `reclazz_reload_control` | Pause/resume automatic reload admission or inspect its state; never releases BUILD holds |
 | `reclazz_diagnose` | Why a given class did or did not reload last time (requires `className`) |
 
 Each tool accepts optional `portFile`, `port` and `hybrisHome` arguments to
@@ -167,6 +168,7 @@ these newer fields.
 | Tool | Structured result |
 |---|---|
 | `reclazz_doctor` | `status:observed` with JVM/watch/capability evidence, or `unavailable`; separate `clientWorkingDirectory`, `nextActions`, `reloadConfirmed:false` |
+| `reclazz_reload_control` | `status:acknowledged` with `action`, `paused`, pending counts and `buildHold`, or `unavailable`; `reloadConfirmed:false` |
 | `reclazz_status` | Existing `attached`, optional `agent`, `protocol`, `port`, `health`, `reason` fields |
 | `reclazz_scan` | `status:sent` or `unavailable`, `detail`, `reloadConfirmed:false` |
 | `reclazz_build` | `status:acknowledged` or `unavailable`, requested `state` and `owner`, `detail`, `reloadConfirmed:false` |
@@ -182,7 +184,7 @@ the broadcast stream. VERIFY preserves its exact-byte checks, and application
 behavior still needs its own test.
 
 Status, doctor, pending, diagnose, verify and verify-batch advertise `readOnlyHint:true` and
-`openWorldHint:false`. Scan and build advertise `readOnlyHint:false`,
+`openWorldHint:false`. Scan, build and reload-control advertise `readOnlyHint:false`,
 `destructiveHint:true`, `idempotentHint:false` and `openWorldHint:true`: live
 reload can replace behavior and invoke application callbacks with external
 effects. These conservative hints are metadata, not permission or safety proof.
@@ -422,3 +424,26 @@ exact-byte receipts, up-to-date barriers and offline refusal before output.
 Logs and `evidence.json` stay in the work directory. A missing tool/dependency is
 a failed prerequisite, never a silently skipped success. Mac/Linux local results
 do not prove Windows compatibility.
+
+## Pause and resume automatic reload
+
+`reclazz_reload_control` accepts `action: "pause"`, `"resume"` or `"status"`
+and the same `port`/`portFile` endpoint options as other tools. For example:
+
+```json
+{"name":"reclazz_reload_control","arguments":{"action":"pause","portFile":"/project/.reclazz/agent.port"}}
+```
+
+Wait for `status: "acknowledged"`. The result reports `paused`,
+`pendingClasses`, `pendingActions`, and `buildHold` (`none`, `named`, `legacy`)
+as an admission-state snapshot. `reloadConfirmed` is always false. On
+`unavailable`, the action may have reached the agent; inspect `status` before
+retrying. Unsupported older agents time out instead of appearing successful.
+
+Pause retains observed class/source/resource changes; SCAN does not apply them.
+Resume schedules current output, but never clears an active or failed BUILD
+hold. A successful BUILD does not clear manual pause. Already admitted work
+may finish. The switch is shared by all clients of this agent, survives client
+disconnect, and is not a per-client ownership lock. Repeated pause/resume does
+not discard pending changes. See [the socket contract](protocol.md#pausing-automatic-reload)
+for admission and count boundaries. No IDE control or automatic rollback is added.

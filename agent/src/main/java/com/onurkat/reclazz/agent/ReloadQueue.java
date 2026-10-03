@@ -73,6 +73,10 @@ public final class ReloadQueue {
     private final Object buildLock = new Object();
     private long generation;
     private boolean holding;
+    private boolean paused;
+    private long pauseGeneration;
+    private record AutomaticWork(String description, Runnable work) { }
+    private final LinkedHashMap<String, AutomaticWork> pendingActions = new LinkedHashMap<>();
     private String buildOwner;
     private long heldSince;
     private boolean holdWarned;
@@ -158,6 +162,50 @@ public final class ReloadQueue {
         executor.execute(Supervised.once(what, stall.timed(what, work)));
     }
 
+    /** Automatic work is coalesced by key until admitted; control tasks use submit directly. */
+    public void submitAutomatic(String key, String what, Runnable work) {
+        synchronized (buildLock) { pendingActions.put(key, new AutomaticWork(what, work)); }
+        submit(what, () -> runAutomatic(key));
+    }
+
+    private void runAutomatic(String key) {
+        AutomaticWork action;
+        synchronized (buildLock) {
+            if (paused) return;
+            action = pendingActions.remove(key); // admission; a later pause does not cancel it
+        }
+        if (action != null) action.work().run();
+    }
+
+    record ControlState(boolean paused, int pendingClasses, int pendingActions, String buildHold) {
+        String fields() {
+            return "paused=" + paused + " pendingClasses=" + pendingClasses
+                    + " pendingActions=" + pendingActions + " buildHold=" + buildHold;
+        }
+    }
+
+    ControlState control(String action, Runnable scan) {
+        ControlState result;
+        synchronized (buildLock) {
+            switch (action) {
+                case "pause" -> { if (!paused) pauseGeneration++; paused = true; }
+                case "resume" -> paused = false;
+                case "status" -> { }
+                default -> throw new IllegalArgumentException("Unknown reload action");
+            }
+            result = new ControlState(paused, pendingClassFiles.size(), pendingActions.size(), buildHoldKind());
+        }
+        if (action.equals("resume")) submit("Resuming automatic reload", () -> {
+            // Do not hold buildLock while the watcher calls back into this queue.
+            scan.run();
+            List<String> keys;
+            synchronized (buildLock) { keys = new ArrayList<>(pendingActions.keySet()); }
+            for (String key : keys) submit("Resuming pending change", () -> runAutomatic(key));
+            submitClassBatch(0); // still independently gated by BUILD and manual pause
+        });
+        return result;
+    }
+
     /**
      * A class file that has landed. Held until {@link #submitClassBatch} so
      * the files of one save reach the thread as one task.
@@ -170,7 +218,7 @@ public final class ReloadQueue {
 
     /** Queue the task that reloads whatever class files have been enqueued. */
     public void submitClassBatch(int enqueuedNow) {
-        synchronized (buildLock) { if (holding) return; }
+        synchronized (buildLock) { if (holding || paused) return; }
         submit("Reloading " + Plural.of(enqueuedNow, "class file"), this::reloadClassBatch);
     }
 
@@ -178,6 +226,8 @@ public final class ReloadQueue {
     public String healthLine() {
         synchronized (buildLock) {
             String reload = stall.healthLine();
+            if (paused) reload = "Automatic reload paused; pending class files=" + pendingClassFiles.size()
+                    + ", pending actions=" + pendingActions.size() + (reload == null ? "" : ". " + reload);
             if (!holding) return reload;
             return "Build holding " + pendingClassFiles.size() + " class files since "
                     + java.time.Instant.ofEpochMilli(heldSince) + "; waiting for BUILD ok"
@@ -254,8 +304,10 @@ public final class ReloadQueue {
     }
 
     private void acceptBuild(long accepted, Runnable scan) {
+        long pauseEpoch;
         synchronized (buildLock) {
             if (generation != accepted || !holding) return;
+            pauseEpoch = pauseGeneration;
         }
         // Never hold buildLock while the watcher delivers its scan into this queue.
         scan.run();
@@ -275,6 +327,10 @@ public final class ReloadQueue {
             }
             holding = false;
             buildOwner = null;
+            if (paused || pauseGeneration != pauseEpoch) {
+                restore(batch);
+                return;
+            }
         }
         if (!capture.isEmpty()) classBoundary.accept(() -> applyClassBatch(capture));
     }
@@ -282,9 +338,11 @@ public final class ReloadQueue {
     void reloadClassBatch() {
         List<ChangeEvent> batch;
         long accepted;
+        long pauseEpoch;
         synchronized (buildLock) {
-            if (holding) return;
+            if (holding || paused) return;
             accepted = generation;
+            pauseEpoch = pauseGeneration;
             batch = drainClassFiles();
         }
         if (batch.isEmpty()) return;
@@ -298,7 +356,7 @@ public final class ReloadQueue {
                     break;
                 }
                 synchronized (buildLock) {
-                    if (holding || generation != accepted) break;
+                    if (holding || paused || generation != accepted || pauseGeneration != pauseEpoch) break;
                     List<ChangeEvent> more = drainClassFiles();
                     if (more.isEmpty()) break;
                     batch.addAll(more);
@@ -311,7 +369,7 @@ public final class ReloadQueue {
         batch = new ArrayList<>(latest.values());
         List<ChangeEvent> capture = capture(batch, false);
         synchronized (buildLock) {
-            if (holding || generation != accepted) {
+            if (holding || paused || generation != accepted || pauseGeneration != pauseEpoch) {
                 restore(batch);
                 return;
             }

@@ -54,7 +54,7 @@ class BatchCancellationTest {
                 malformed=cancel("1");malformed.addProperty("id",31);child.send(malformed);
                 assertEquals(-32000,child.read().getAsJsonObject("error").get("code").getAsInt());
                 child.send(rpc("2","ping"));assertEquals(2,child.read().get("id").getAsInt());assertFalse(peer.isDone());
-                child.send(rpc("3","tools/list"));assertEquals(8,child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
+                child.send(rpc("3","tools/list"));assertEquals(9,child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
                 JsonObject other=BatchVerificationTest.request(listener.getLocalPort(),BatchVerificationTest.items("C"));other.addProperty("id",4);
                 child.send(other);assertEquals(-32000,child.read().getAsJsonObject("error").get("code").getAsInt());
                 child.send(cancel("1.0")); // Numeric ID equivalence; string "1" above was distinct.

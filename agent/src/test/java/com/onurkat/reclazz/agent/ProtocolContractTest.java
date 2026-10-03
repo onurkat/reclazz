@@ -109,4 +109,24 @@ class ProtocolContractTest {
             assertTrue(text.contains(part),part);
     }
 
+    @Test void reloadControlRequiresValidCorrelationAndDocumentsItsReceipt() throws IOException {
+        assertTrue(doc().contains("RELOAD <action> request=<token>"));
+        assertTrue(doc().contains("RELOAD_STATE <token> <action>"));
+        var server = new StatusServer(0, null);
+        var replies = new java.util.ArrayList<String>();
+        var calls = new java.util.ArrayList<String>();
+        server.handleCommand("RELOAD pause request=a", replies::add);
+        assertTrue(replies.isEmpty());
+        server.setReloadControl(action -> { calls.add(action); return "paused=true pendingClasses=2 pendingActions=0 buildHold=named"; });
+        for (String invalid : List.of("RELOAD pause", "RELOAD stop request=a", "RELOAD pause request=a extra",
+                "RELOAD pause request=bad!", "RELOAD pause owner=a", "RELOAD resume request="))
+            server.handleCommand(invalid, replies::add);
+        assertTrue(calls.isEmpty());
+        for (String action : List.of("pause", "resume", "status")) {
+            server.handleCommand("RELOAD " + action + " request=a", replies::add);
+            assertTrue(replies.get(replies.size()-1).contains("RELOAD_STATE a " + action + " paused=true"));
+        }
+        assertEquals(List.of("pause", "resume", "status"), calls);
+    }
+
 }

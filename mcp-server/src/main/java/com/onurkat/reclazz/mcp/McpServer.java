@@ -103,6 +103,16 @@ public final class McpServer {
         tools.add(tool("reclazz_diagnose",
                 "Explain why a specific class did or did not reload last time. Requires className.",
                 true));
+        JsonObject control = tool("reclazz_reload_control",
+                "Pause, resume or inspect automatic reload admission. Pending changes are retained; admitted work may finish. "
+                        + "Resume never releases BUILD holds. Acknowledgement is not reload completion. Agent-wide manual switch, not client ownership.", false);
+        JsonObject action = stringProp("pause, resume or status");
+        JsonArray actions = new JsonArray();
+        for (String value : List.of("pause", "resume", "status")) actions.add(value);
+        action.add("enum", actions);
+        control.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("action", action);
+        control.getAsJsonObject("inputSchema").getAsJsonArray("required").add("action");
+        tools.add(control);
         JsonObject build = tool("reclazz_build",
                 "Signal compilation state. Wait for acknowledged started BEFORE compiling. Send ok only "
                         + "after exit zero, failed otherwise. SCAN cannot release a failed build. "
@@ -198,7 +208,7 @@ public final class McpServer {
 
         Map<String, String> opts = new LinkedHashMap<>();
         opts.put("baseDir", System.getProperty("user.dir"));
-        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner")) {
+        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner", "action")) {
             if (!arguments.has(key)) continue;
             if (!isString(arguments.get(key))) return error(request, -32602, key + " must be a string");
             String value = arguments.get(key).getAsString();
@@ -262,6 +272,20 @@ public final class McpServer {
                     data = failure;
                     text = failure.toString();
                 }
+                break;
+            }
+            case "reclazz_reload_control": {
+                String action = opts.get("action");
+                if (!BuildSession.validReloadAction(action))
+                    return error(request, -32602, "reclazz_reload_control requires action: pause, resume or status");
+                try (BuildSession session = BuildSession.open(opts)) {
+                    data = session.reloadControl(action);
+                } catch (java.io.IOException | IllegalArgumentException e) {
+                    data = ToolContracts.operation("unavailable", e.getMessage());
+                    data.addProperty("action", action);
+                    isError = true;
+                }
+                text = data.toString();
                 break;
             }
             case "reclazz_build": {

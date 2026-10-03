@@ -586,6 +586,7 @@ public class ReclazzAgent {
             if (statusServer != null) {
                 statusServer.setOwnedBuildListener((owner, state) -> reloadQueue.build(owner, state, watcher::scanNow));
                 statusServer.setDoctorContext(watcher, reloadQueue::buildHoldKind);
+                statusServer.setReloadControl(action -> reloadQueue.control(action, watcher::scanNow).fields());
             }
 
             // Register the reload pipeline. Java changes are queued BEFORE
@@ -612,7 +613,7 @@ public class ReclazzAgent {
                         classFiles++;
                         continue;
                     }
-                    reloadQueue.submit(
+                    reloadQueue.submitAutomatic(event.getPath().toString(),
                             "Handling " + event.getPath().getFileName(),
                             () -> handleChange(event, compiler, reloader,
                                     springOrchestrator, interceptorReloader, impexImporter, config));
@@ -640,7 +641,7 @@ public class ReclazzAgent {
                             }
                         }
                     }
-                    reloadQueue.submit("Rebuilding constant dependents",
+                    reloadQueue.submitAutomatic("constant-dependents", "Rebuilding constant dependents",
                             () -> handleJavaBatch(compiler, reloader,
                                     springOrchestrator, interceptorReloader));
                 };

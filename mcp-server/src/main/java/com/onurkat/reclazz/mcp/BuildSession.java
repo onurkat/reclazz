@@ -97,6 +97,44 @@ final class BuildSession implements AutoCloseable {
         }
     }
 
+    static boolean validReloadAction(String action) {
+        return action != null && Set.of("pause", "resume", "status").contains(action);
+    }
+
+    JsonObject reloadControl(String action) throws IOException {
+        if (!validReloadAction(action)) throw new IOException("action must be pause, resume or status");
+        String token = UUID.randomUUID().toString();
+        socket.getOutputStream().write(("RELOAD " + action + " request=" + token + "\n").getBytes(StandardCharsets.UTF_8));
+        socket.getOutputStream().flush();
+        String prefix = "RELOAD_STATE " + token + " " + action + " ";
+        long until = deadline();
+        try {
+            while (true) {
+                JsonObject event = read(until);
+                if (!"INFO".equals(text(event, "level"))) continue;
+                String message = text(event, "message");
+                if (!message.startsWith(prefix)) continue;
+                var match = java.util.regex.Pattern.compile(
+                        "paused=(true|false) pendingClasses=([0-9]+) pendingActions=([0-9]+) buildHold=(none|named|legacy)")
+                        .matcher(message.substring(prefix.length()));
+                if (!match.matches()) throw new IOException("Malformed reload control state");
+                boolean paused = Boolean.parseBoolean(match.group(1));
+                if (action.equals("pause") && !paused || action.equals("resume") && paused)
+                    throw new IOException("Reload state contradicts requested action");
+                JsonObject result = ToolContracts.operation("acknowledged",
+                        "Admission state at acknowledgement; already admitted work may finish. Resume never releases BUILD holds. Reload completion is not confirmed.");
+                result.addProperty("action", action);
+                result.addProperty("paused", paused);
+                result.addProperty("pendingClasses", Integer.parseInt(match.group(2)));
+                result.addProperty("pendingActions", Integer.parseInt(match.group(3)));
+                result.addProperty("buildHold", match.group(4));
+                return result;
+            }
+        } catch (IOException | RuntimeException e) {
+            throw new IOException("Reload control not confirmed; state may have changed. Query status before retrying.", e);
+        }
+    }
+
     JsonObject doctor() throws IOException {
         String token = UUID.randomUUID().toString();
         socket.getOutputStream().write(("DOCTOR " + token + "\n").getBytes(StandardCharsets.UTF_8));

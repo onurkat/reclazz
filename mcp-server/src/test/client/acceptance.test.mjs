@@ -21,7 +21,7 @@ const executable = name => path.join(process.env.JAVA_HOME ?? assert.fail('Set J
   'bin', name + (process.platform === 'win32' ? '.exe' : ''));
 const java = executable('java');
 const javac = executable('javac');
-const expectedTools = ['status', 'doctor', 'scan', 'pending', 'diagnose', 'build', 'verify', 'verify_batch']
+const expectedTools = ['status', 'doctor', 'scan', 'pending', 'diagnose', 'build', 'verify', 'verify_batch', 'reload_control']
   .map(name => `reclazz_${name}`).sort();
 
 async function until(operation, accepts, label, millis = 15000) {
@@ -135,7 +135,7 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     const result = await invoke({ name: `reclazz_${name}`,
       arguments: { portFile, timeoutMs: '3000', ...args } }, undefined, { timeout: 6000 });
     const data = result.structuredContent;
-    if (['build', 'scan', 'doctor'].includes(name)) {
+    if (['build', 'scan', 'doctor', 'reload_control'].includes(name)) {
       evaluation.completion(`${name} is not reload proof`, data?.reloadConfirmed === true, false, { data });
     }
     inspect(data); // Record a false completion before the acceptance assertion can throw.
@@ -292,6 +292,21 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     await client.ping();
     await probe(4);
   });
+  const paused = await call('reload_control', { action: 'pause' });
+  assert.equal(paused.status, 'acknowledged');
+  assert.equal(paused.paused, true);
+  await writeService(5);
+  await compile([service], 'paused-output');
+  await call('scan');
+  await held(4);
+  const pending = await call('reload_control', { action: 'status' });
+  assert.equal(pending.paused, true);
+  assert.equal(pending.pendingClasses, 1);
+  const resumed = await call('reload_control', { action: 'resume' });
+  assert.equal(resumed.paused, false);
+  assert.equal(resumed.reloadConfirmed, false);
+  const resumedHash = await hash(serviceClass);
+  await probe(5, await applied(resumedHash), resumedHash);
   assert.deepEqual([...called].sort(), expectedTools);
   assert.equal(app.exitCode, null);
   await fs.writeFile(path.join(dir, 'evidence.json'), JSON.stringify({
@@ -300,5 +315,5 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     tools: [...called].sort(), negativeWitnesses, results
   }, null, 2) + '\n');
   evaluation.finish();
-  t.diagnostic(`8 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);
+  t.diagnostic(`9 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);
 });
