@@ -335,11 +335,35 @@ search box.
 
 `pluginVersion` in `gradle.properties` drives the plugin version, the
 agent jar name, and the zip name. `scripts/bump-version.sh X.Y.Z` makes the
-release commit's three edits together: the version, the changelog's
+release commit's edits together across four files: `gradle.properties`, the
+Maven plugin's project and agent dependency versions in `maven-plugin/pom.xml`, the changelog's
 `[Unreleased]` section dated as `[X.Y.Z]` with a fresh `[Unreleased]` above
 it, and an `<h3>X.Y.Z</h3>` block at the top of `plugin.xml`'s change-notes
 seeded with the changelog's headlines, to be edited into the IDE's own
 words. Review, commit, then `scripts/release.sh X.Y.Z`.
+
+Preparation requires Python 3 (also used by the release gate). It accepts exactly
+one version: three decimal components with no leading zeros, optionally prefixed
+with `v`. Prerelease/build suffixes are not supported. `RECLAZZ_RELEASE_DATE` may
+override today's date with a valid `YYYY-MM-DD`. All four files and their expected
+sections must exist; the Maven versions must match the current `pluginVersion`.
+An empty Unreleased section or an already recorded target version is rejected.
+Bold bullet headlines seed the IDE notes. If there are no bold headlines, plain
+bullets supply their text, including indented continuation lines. Text is
+HTML-escaped. Review these generated notes.
+
+All outputs and original backups are prepared before any source file is replaced.
+A caught replacement error or Ctrl-C restores the original bytes and permissions.
+If restoration itself fails, the command reports incomplete rollback and retains
+`.reclazz-version-bump/`: `0.original` is `gradle.properties`, `1.original` is
+`maven-plugin/pom.xml`, `2.original` is `CHANGELOG.md`, and `3.original` is
+`src/main/resources/META-INF/plugin.xml`. Restore those originals and verify the
+four files before removing that directory and retrying. Another invocation is
+refused while the directory exists; do not remove it while a bump is running.
+Do not edit these files concurrently with preparation. Replacement is atomic per
+file, not across all four files; power loss, SIGKILL and filesystem failure during
+rollback are not covered by automatic recovery. Inspect retained backups after
+such an interruption rather than assuming preparation completed.
 
 What a number means here:
 

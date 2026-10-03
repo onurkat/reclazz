@@ -75,6 +75,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Receipt support requires the updated agent; it does not prove reload completion.
 
 ### Fixed
+- Version preparation validates all release metadata and stages all four outputs
+  before replacing files, restoring originals on caught update failures. Plain
+  changelog bullets also generate IDE change-notes without leaving mixed versions.
 - Superclass diagnostics now state Reclazz's unapplied hierarchy and restart
   requirement without universal JVM claims or premature method-application
   success. Live-agent regression checks partial/refused receipts, retained

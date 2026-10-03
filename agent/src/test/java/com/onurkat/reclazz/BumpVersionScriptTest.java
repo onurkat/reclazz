@@ -38,13 +38,23 @@ class BumpVersionScriptTest {
     void aRepositoryShapedLikeThisOne() throws Exception {
         Path root = AgentSources.root().getParent().getParent().getParent().getParent();
         Files.createDirectories(repo.resolve("scripts"));
-        for (String script : List.of("bump-version.sh", "changelog-section.sh")) {
+        for (String script : List.of("bump-version.sh", "bump-version.py", "changelog-section.sh")) {
             Path copy = repo.resolve("scripts").resolve(script);
             Files.copy(root.resolve("scripts").resolve(script), copy, StandardCopyOption.REPLACE_EXISTING);
             Files.setPosixFilePermissions(copy, Set.of(PosixFilePermission.OWNER_READ,
                     PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE));
         }
         Files.writeString(repo.resolve("gradle.properties"), "pluginVersion=1.1.1\nother=x\n");
+        Files.createDirectories(repo.resolve("maven-plugin"));
+        Files.writeString(repo.resolve("maven-plugin/pom.xml"), """
+                <project xmlns="http://maven.apache.org/POM/4.0.0">
+                    <artifactId>reclazz-maven-plugin</artifactId><version>1.1.1</version>
+                    <dependencies><dependency>
+                        <groupId>com.onurkat.reclazz</groupId>
+                        <artifactId>reclazz-agent</artifactId><version>1.1.1</version>
+                    </dependency></dependencies>
+                </project>
+                """);
         Files.writeString(repo.resolve("CHANGELOG.md"), """
                 # Changelog
 
@@ -80,6 +90,9 @@ class BumpVersionScriptTest {
         assertEquals(0, run.exit(), run.err());
 
         assertEquals("pluginVersion=1.2.0\nother=x\n", Files.readString(repo.resolve("gradle.properties")));
+        String pom = Files.readString(repo.resolve("maven-plugin/pom.xml"));
+        assertTrue(pom.contains("<artifactId>reclazz-maven-plugin</artifactId><version>1.2.0</version>"), pom);
+        assertTrue(pom.contains("<artifactId>reclazz-agent</artifactId><version>1.2.0</version>"), pom);
 
         String changelog = Files.readString(repo.resolve("CHANGELOG.md"));
         assertTrue(changelog.contains("## [Unreleased]\n\n## [1.2.0] - 2026-09-08\n\n### Fixed"),
@@ -108,6 +121,20 @@ class BumpVersionScriptTest {
         Run run = bump("2");
         assertNotEquals(0, run.exit());
         assertEquals("pluginVersion=1.1.1\nother=x\n", Files.readString(repo.resolve("gradle.properties")));
+    }
+
+    @Test
+    void transactionRegressionsRunInsideTheNormalGate() throws Exception {
+        Path root = AgentSources.root().getParent().getParent().getParent().getParent();
+        Path log = repo.resolve("transaction-tests.log");
+        Process p = new ProcessBuilder("python3", root.resolve("scripts/test-bump-version.py").toString(), "-v")
+                .directory(repo.toFile()).redirectErrorStream(true).redirectOutput(log.toFile()).start();
+        try {
+            assertTrue(p.waitFor(60, TimeUnit.SECONDS), "transaction regressions timed out");
+            assertEquals(0, p.exitValue(), Files.readString(log));
+        } finally {
+            if (p.isAlive()) p.destroyForcibly();
+        }
     }
 
     private record Run(int exit, String out, String err) {}
