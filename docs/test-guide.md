@@ -191,6 +191,17 @@ Add `--disable-refresh` for a negative control in a temporary compiled copy; thi
 must fail on stale mapping output. This is an isolated SDK check, not live OCC HTTP
 acceptance. Use a JDK compatible with the installed SDK.
 
+### Isolated SAP list-directive diagnostics
+
+After `./gradlew :agent:compileJava`, run
+`python3 scripts/test-sap-directives-sdk.py /path/to/hybris` with an installed SDK
+containing compiled `platformservices/classes`. The synthetic fixture uses real SDK
+processors and converter output to verify restart diagnostics, unchanged live
+definitions/lists, repeated saves, inherited/subclass/lazy directives, shared targets,
+and unrelated XML property updates. Add `--disable-guard` to remove the guard in a
+temporary compiled copy: the restart assertion must fail. The runner neither starts
+SAP nor writes the SDK; it is not live application acceptance.
+
 ## 10. Extension Watching Scope
 
 ### Verify only custom extensions are watched

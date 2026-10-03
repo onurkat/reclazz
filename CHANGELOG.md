@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Existing SAP populator/list-merge directive XML edits now report restart before
+  mutating their definitions or beans, preserving effective converter lists.
+
 - Existing SAP OCC field-set mapping XML edits refresh standard helper tables and
   manager-backed field selection caches, including dependent child contexts.
   Unsupported consumer configurations report restart guidance.

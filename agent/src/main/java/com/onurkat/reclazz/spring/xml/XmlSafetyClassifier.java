@@ -45,6 +45,7 @@ final class XmlSafetyClassifier {
             if (newBd == null) continue;
 
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
+            if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             if (XmlBeanRecreator.handles(existing, newBd)) {
                 try {
                     var replacement = XmlBeanRecreator.prepare(liveFactory, tempFactory, beanName, existing, newBd, xmlPath);

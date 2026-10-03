@@ -152,6 +152,20 @@ mapping configuration are outside this acceptance. This does not rebuild Orika
 schemas or add structural DTO fields. An XML property may have changed even when
 consumer refresh reports a restart requirement; follow that diagnostic.
 
+### SAP populator and list-merge directives
+
+Edits to existing `ModifyPopulatorList` and `ListMergeDirective` XML definitions
+require restart. Changing a directive's setter does not rebuild its target list;
+replaying its initialization can retain obsolete entries or add duplicates.
+Reclazz rejects these edits before changing the live definition or directive and
+reports that the effective target lists were not refreshed. This includes property,
+ordering and `depends-on` edits, inherited definitions and subclasses. Lazy directives
+are not instantiated by the check, and unchanged definitions do not generate a warning.
+
+Unrelated ordinary XML edits in the same resource can still apply. Newly added
+directives retain the existing bean-addition behavior; this diagnostic does not
+promise automatic list reconstruction or broaden support for new directives.
+
 ### XML singleton recreation
 
 For an existing bean in a watched Spring XML resource, edits to constructor arguments,
