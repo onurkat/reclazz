@@ -114,7 +114,7 @@ class MultiConstructorInitialiserTest implements Opcodes {
         assertEquals(constructors, Routes.constructors); assertEquals(delegations, Routes.delegations);
     }
 
-    @ParameterizedTest @ValueSource(strings={"Different","Missing","Parameter","Overwritten","DifferentShape","MixedWrites","UnrelatedHandler"})
+    @ParameterizedTest @ValueSource(strings={"Different","Missing","Parameter","Overwritten","DifferentShape","MixedWrites"})
     void differentMissingOrParameterDependentInitialisersRemainRefused(String name) throws Exception {
         Class<?> type = Class.forName(getClass().getName()+"$"+name, false, getClass().getClassLoader());
         ClassNode node = node(bytes(type));
@@ -124,6 +124,11 @@ class MultiConstructorInitialiserTest implements Opcodes {
             assertTrue(plan.refused.containsKey("value:Ljava/lang/String;"), name + plan.refused);
             Collections.reverse(node.methods);
         }
+    }
+
+    @Test void unrelatedHandlerAfterDelegationIsAccepted() throws Exception {
+        var plan = InstanceInitialiserSlicer.planFor(bytes(UnrelatedHandler.class), Set.of("value:Ljava/lang/String;"));
+        assertEquals(Set.of("value:Ljava/lang/String;"), plan.initialisers.keySet(), plan.refused.toString());
     }
 
     @Test void constructorOrderAndDebugLayoutDoNotChooseAValue() throws Exception {

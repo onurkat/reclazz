@@ -154,7 +154,7 @@ class ConditionalStaticInitialiserTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Guarded", "SharedWrite", "Local", "Loop", "DoLoop", "OuterCondition",
-            "Catching", "CatchSingle", "Switching", "Multiple", "ArrayWrite", "ObjectWrite"})
+            "Catching", "CatchSingle", "Multiple", "ArrayWrite", "ObjectWrite"})
     void intertwinedInitialisersStayRefused(String fixture) throws Exception {
         Class<?> owner = Class.forName(getClass().getName() + "$" + fixture, false, getClass().getClassLoader());
         String key = fixture.equals("Catching") ? "VALUE:Ljava/lang/Object;" : "VALUE:I";
@@ -162,6 +162,12 @@ class ConditionalStaticInitialiserTest {
         assertFalse(plan.hasCode(), fixture + ": must not emit partial code");
         assertTrue(plan.slicedKeys.isEmpty());
         assertTrue(plan.refused.containsKey(key), fixture + ": " + plan.refused);
+    }
+
+    @Test
+    void isolatedSwitchIsAccepted() throws Exception {
+        var plan = StaticInitialiserSlicer.planFor(bytes(Switching.class), Set.of("VALUE:I"));
+        assertEquals(Set.of("VALUE:I"), plan.slicedKeys, plan.refused.toString());
     }
 
     private static Object value(Class<?> owner, String name, String desc) {

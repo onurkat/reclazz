@@ -227,13 +227,14 @@ public final class StaticInitialiserSlicer implements Opcodes {
             while (start > 0 && insns[start - 1].getOpcode() < 0) start--;
             int earlier = start;
             for (int i = 0; i < start; i++) {
-                if (!(insns[i] instanceof JumpInsnNode jump)) continue;
-                int target = indexOf(insns, jump.label);
-                // Entry at the boundary is fine; entry into an arm/merge is not.
-                if (target > start && target <= end) {
-                    int condition = segmentStart(frames, i);
-                    if (condition < 0) return -1;
-                    earlier = Math.min(earlier, condition);
+                for (LabelNode label : targetsOf(insns[i])) {
+                    int target = indexOf(insns, label);
+                    // Entry at the boundary is fine; entry into an arm/merge is not.
+                    if (target > start && target <= end) {
+                        int condition = segmentStart(frames, i);
+                        if (condition < 0) return -1;
+                        earlier = Math.min(earlier, condition);
+                    }
                 }
             }
             if (earlier == start) return start;
@@ -263,11 +264,11 @@ public final class StaticInitialiserSlicer implements Opcodes {
                     if (jump.getOpcode() == JSR) return "its initialiser branches to a subroutine";
                 }
             } else if (insn instanceof TableSwitchInsnNode table) {
-                if (i >= start && i <= end) return "its initialiser branches through a switch";
+                if (i >= start && i <= end) conditional = true;
                 targets = new ArrayList<>(table.labels);
                 targets.add(table.dflt);
             } else if (insn instanceof LookupSwitchInsnNode lookup) {
-                if (i >= start && i <= end) return "its initialiser branches through a switch";
+                if (i >= start && i <= end) conditional = true;
                 targets = new ArrayList<>(lookup.labels);
                 targets.add(lookup.dflt);
             } else continue;
@@ -284,8 +285,8 @@ public final class StaticInitialiserSlicer implements Opcodes {
                 }
             }
         }
-        if (conditional && !clinit.tryCatchBlocks.isEmpty())
-            return "its conditional initialiser shares a static block with try/catch";
+        String handlerProblem = handlerProblem(insns, start, end, clinit);
+        if (handlerProblem != null) return handlerProblem;
         Set<Integer> localsWrittenHere = new HashSet<>();
 
         for (int j = start; j <= end; j++) {
@@ -336,13 +337,57 @@ public final class StaticInitialiserSlicer implements Opcodes {
             }
         }
 
-        // An exception handler covering the segment means the segment is not
-        // the whole story: something outside it decides what happens on throw.
-        for (TryCatchBlockNode tryCatch : clinit.tryCatchBlocks) {
-            int from = indexOf(insns, tryCatch.start);
-            int to = indexOf(insns, tryCatch.end);
-            if (from <= end && to >= start) {
+        return null;
+    }
+
+    /** Explicit branch destinations, shared by candidate growth and handler-prefix checks. */
+    private static List<LabelNode> targetsOf(AbstractInsnNode insn) {
+        if (insn instanceof JumpInsnNode jump) return List.of(jump.label);
+        if (insn instanceof TableSwitchInsnNode table) {
+            List<LabelNode> targets = new ArrayList<>(table.labels);
+            targets.add(table.dflt);
+            return targets;
+        }
+        if (insn instanceof LookupSwitchInsnNode lookup) {
+            List<LabelNode> targets = new ArrayList<>(lookup.labels);
+            targets.add(lookup.dflt);
+            return targets;
+        }
+        return List.of();
+    }
+
+    /**
+     * No exception edge may cover, enter, skip or repeat the extracted expression.
+     * A preceding handler region must be forward-only and fall through to it;
+     * handlers themselves are never copied or replayed. Protected ends are exclusive.
+     */
+    static String handlerProblem(AbstractInsnNode[] insns, int start, int end, MethodNode method) {
+        int prefix = start;
+        for (TryCatchBlockNode handler : method.tryCatchBlocks) {
+            int from = indexOf(insns, handler.start), to = indexOf(insns, handler.end);
+            int target = indexOf(insns, handler.handler);
+            if (from < 0 || to <= from || target < 0)
+                return "its exception handler boundaries cannot be proven";
+            if (from <= end && to > start)
                 return "its initialiser sits inside a try/catch";
+            if (target >= start && target <= end)
+                return "an exception handler can enter its initialiser";
+            if (to <= start) {
+                if (target >= start) return "an exception handler can skip its initialiser";
+                if (target < to) return "a preceding exception handler can repeat earlier code";
+                prefix = Math.min(prefix, from);
+            } else if (target <= end) {
+                return "an exception handler can repeat its initialiser";
+            }
+        }
+        for (int i = prefix; i < start; i++) {
+            int opcode = insns[i].getOpcode();
+            if (opcode == ATHROW || opcode == RET || opcode == JSR || (opcode >= IRETURN && opcode <= RETURN))
+                return "a preceding handler region can terminate before its initialiser";
+            for (LabelNode label : targetsOf(insns[i])) {
+                int target = indexOf(insns, label);
+                if (target <= i || target > start)
+                    return "a preceding handler region can loop or skip its initialiser";
             }
         }
         return null;

@@ -173,12 +173,18 @@ class ConditionalInstanceInitialiserTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"Parameter", "Guarded", "Outer", "Loop", "Multiple", "Shared",
-            "StaticWrite", "Catching", "Switching", "ForeignReceiver", "Local", "ArrayWrite"})
+            "StaticWrite", "Catching", "ForeignReceiver", "Local", "ArrayWrite"})
     void unsafeConditionalInitialisersAreRefused(String name) throws Exception {
         Class<?> type = Class.forName(getClass().getName() + "$" + name, false, getClass().getClassLoader());
         var plan = InstanceInitialiserSlicer.planFor(bytes(type), Set.of("value:Ljava/lang/String;"));
         assertTrue(plan.isEmpty(), name + ": no partial initializer may be emitted");
         assertTrue(plan.refused.containsKey("value:Ljava/lang/String;"), name + ": " + plan.refused);
+    }
+
+    @Test
+    void isolatedSwitchIsAccepted() throws Exception {
+        var plan = InstanceInitialiserSlicer.planFor(bytes(Switching.class), Set.of("value:Ljava/lang/String;"));
+        assertEquals(Set.of("value:Ljava/lang/String;"), plan.initialisers.keySet(), plan.refused.toString());
     }
 
     @Test

@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Added instance and static fields can use isolated forward-only switch expressions.
+  Unrelated try/catch blocks no longer prevent extraction when their control flow
+  cannot cover, enter, skip or repeat the initializer; constructors and handlers
+  are not replayed, and stored values remain preserved.
+
 - Added instance fields can use equivalent isolated conditional initializers
   across multiple constructors and proven `this(...)` delegation chains, without
   replaying constructors or replacing stored values; uncertain routes are refused.

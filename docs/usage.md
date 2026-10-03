@@ -2797,12 +2797,16 @@ an initialized field's current value, including null or a value the application
 wrote; changing the initializer does not reinitialize that field.
 
 The conditional path accepts forward branches that finish at one field
-assignment. An outside condition that can skip the assignment, loops, switches,
-multiple assignments to the field, shared field/array writes, local variables,
-locking and separate void/discarded-result calls are refused. Conditional
-initializers in a class initializer containing any try/catch are also refused,
-even if that handler is elsewhere. An unsupported initializer leaves the field
-at its type default and the reload names the reason. Calls that compute the
+assignment, including isolated switch expressions compiled to forward-only
+`tableswitch` or `lookupswitch` branches. Only the selected arm runs, including
+the default arm; null and primitive values are supported. An outside condition
+that can skip the assignment, loops, multiple assignments to the field, shared
+field/array writes, local variables, locking and separate void/discarded-result
+calls are refused. An unrelated try/catch elsewhere is allowed when its exception
+edges cannot cover, enter, skip or repeat the initializer. A preceding handler
+region must be forward-only and must not explicitly return or throw before the
+initializer. Catch/finally bodies are never extracted or replayed. An unsupported
+initializer leaves the field at its type default and the reload names the reason. Calls that compute the
 condition or selected value retain their usual application side effects; this
 does not make initialization transactional or add rollback on failure.
 
@@ -2828,8 +2832,10 @@ private String mode = enabled ? "on" : "off";
 
 The condition uses that object's state at the field's first read. Only the
 selected branch runs; nested conditions, short-circuit booleans, object
-construction and primitive/reference values are supported. Existing objects can
-therefore receive different values from the same added initializer. A later
+construction and primitive/reference values are supported. Isolated switch
+expressions compiled to forward-only `tableswitch` or `lookupswitch` branches
+follow the same rules, including default arms and null results. Existing objects
+can therefore receive different values from the same added initializer. A later
 save preserves values already stored; an object that has not read the field yet
 uses the current initializer. The constructor and preceding initializer blocks
 are not replayed.
@@ -2845,11 +2851,15 @@ the `this(...)`/`super(...)` call are refused. This is a bounded bytecode compar
 not a proof that differently written expressions are semantically equivalent.
 
 Constructor arguments and other local variables, outside branches, loops,
-switches, shared field/array writes, locking and separate void/discarded-result
-calls remain unsupported. Any try/catch on a constructor route also refuses
-conditional initialization, even if the handler is elsewhere. Historical
-constructor arguments are not reconstructed. Newly created objects keep normal
-Java initialization order: field initializers run before the constructor body,
+shared field/array writes, locking and separate void/discarded-result calls
+remain unsupported. An unrelated try/catch on a constructor route is allowed
+only when its exception edges cannot cover, enter, skip or repeat the extracted
+initializer or bypass the constructor initialization call. Preceding handler
+regions must be forward-only without explicit early return or throw; handlers
+are never replayed. Switch lowerings that need temporary locals or other
+unsupported instructions are still refused: this is not support for every
+compiler, string switch or pattern switch. Historical constructor arguments
+are not reconstructed. Newly created objects keep normal Java initialization order: field initializers run before the constructor body,
 so a field set by that body can still have its default value during initialization.
 
 Concurrent first-read computations can overlap; the first stored
@@ -2878,8 +2888,9 @@ pre-existing objects, and the reload names the field and the reason:
 - an assignment that reads a constructor argument (`this.upper =
   name.toUpperCase()` in the constructor body), because the object no longer
   has the argument;
-- an initialiser whose control flow leaves the assignment, loops, uses a switch
-  or try/catch, or shares a computation with another field.
+- an initialiser whose control flow leaves the assignment, loops, overlaps an
+  exception handler, has unsafe incoming or bypassing control flow, uses local
+  variables, or shares a computation with another field.
 
 A supported initializer can still throw when it runs on first read. That runtime
 failure follows the per-object behavior above; it is not an extraction refusal

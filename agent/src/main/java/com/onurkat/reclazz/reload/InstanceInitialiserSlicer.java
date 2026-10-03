@@ -24,7 +24,6 @@ import org.objectweb.asm.tree.LookupSwitchInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.TableSwitchInsnNode;
-import org.objectweb.asm.tree.TryCatchBlockNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.objectweb.asm.tree.analysis.Analyzer;
 import org.objectweb.asm.tree.analysis.BasicInterpreter;
@@ -189,8 +188,8 @@ public final class InstanceInitialiserSlicer implements Opcodes {
                         || insns[i] instanceof LookupSwitchInsnNode || insns[i].getOpcode() == ATHROW
                         || insns[i].getOpcode() == RETURN)
                     return new ConstructorRoute(null, -1, "its constructor has control flow before this/super initialization");
-            if (!ctor.tryCatchBlocks.isEmpty())
-                return new ConstructorRoute(null, -1, "its conditional initialiser shares a constructor route with try/catch");
+            String handlerProblem = StaticInitialiserSlicer.handlerProblem(insns, found.call, found.call, ctor);
+            if (handlerProblem != null) return new ConstructorRoute(null, -1, handlerProblem);
             return found;
         } catch (Exception failure) {
             return new ConstructorRoute(null, -1, "its constructor initialization route cannot be analyzed");
@@ -322,7 +321,6 @@ public final class InstanceInitialiserSlicer implements Opcodes {
                 if (insn instanceof FieldInsnNode put && put.getOpcode() == PUTFIELD
                         && put.owner.equals(target.owner) && put.name.equals(target.name) && put.desc.equals(target.desc)) writes++;
             if (writes != 1) return "the constructor assigns this field more than once";
-            if (!ctor.tryCatchBlocks.isEmpty()) return "its conditional initialiser shares a constructor with try/catch";
         }
         for (int i = 0; i < insns.length; i++) {
             List<LabelNode> targets;
@@ -331,11 +329,9 @@ public final class InstanceInitialiserSlicer implements Opcodes {
                     return "its initialiser branches to a subroutine";
                 targets = List.of(jump.label);
             } else if (insns[i] instanceof TableSwitchInsnNode table) {
-                if (i >= start && i <= end) return "its initialiser branches through a switch";
                 targets = new ArrayList<>(table.labels);
                 targets.add(table.dflt);
             } else if (insns[i] instanceof LookupSwitchInsnNode lookup) {
-                if (i >= start && i <= end) return "its initialiser branches through a switch";
                 targets = new ArrayList<>(lookup.labels);
                 targets.add(lookup.dflt);
             } else continue;
@@ -397,14 +393,7 @@ public final class InstanceInitialiserSlicer implements Opcodes {
             }
         }
 
-        for (TryCatchBlockNode tryCatch : ctor.tryCatchBlocks) {
-            int from = StaticInitialiserSlicer.indexOf(insns, tryCatch.start);
-            int to = StaticInitialiserSlicer.indexOf(insns, tryCatch.end);
-            if (from <= end && to >= start) {
-                return "its initialiser sits inside a try/catch";
-            }
-        }
-        return null;
+        return StaticInitialiserSlicer.handlerProblem(insns, start, end, ctor);
     }
 
     private static boolean hasBranch(AbstractInsnNode[] insns, int start, int end) {
