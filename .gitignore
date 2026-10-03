@@ -56,5 +56,7 @@ docs/screenshots/
 # not part of the source.
 docs/release-notes-archive/
 
-# Two-agent working files (see AGENTS.md)
+# Local working files, not part of the source
 .collab/
+/AGENTS.md
+/CLAUDE.md
