@@ -50,8 +50,9 @@ The explicit preparation goal sets `reclazz.agentArgs` and Boot reads it via
 No changes to test-JVM attachment or production dependencies are made by the profile.
 
 The short check above demonstrates behavior. The complete recipe below adds
-identity and exact-byte evidence using existing tools. Neither is a release gate
-or a claim that this example is already run by CI.
+identity and exact-byte evidence using existing tools. The automated acceptance
+at the end of this page exercises this example in the local/tag release gate
+and the Linux JDK 17 CI lane.
 
 ## Verify the installation
 
@@ -183,6 +184,46 @@ repeat the exercise; connecting MCP later does not instrument that JVM.
 [doctor evidence limits](../../docs/mcp-server.md#check-the-target-before-an-agentic-build).
 
 ## Validation boundary
+
+### Automated local-artifact acceptance
+
+From the repository root, build matching local artifacts and check the Maven
+module before running the consumer:
+
+```sh
+./gradlew :agent:publishToMavenLocal
+mvn -B -ntp -f maven-plugin/pom.xml clean verify
+python3 scripts/test-maven-consumer.py
+```
+
+This Linux/macOS harness uses Python 3, Java 17+ and Maven. It copies this example
+into fresh paths with spaces, copies the local Maven dependency cache into an
+isolated repository, and overlays the actual built agent/plugin artifacts. Maven
+may download missing dependencies into that isolated repository. Use `--offline`
+to require a fully populated cache, or `--maven-cache /path/to/repository` to select
+the cache to copy. Existing example sources and the original cache are not edited.
+The example's `reclazz.version` property selects the current build version.
+
+The normal launch uses the documented explicit preparation goal and preserves the
+default watcher startup delay. Public DOCTOR/VERIFY socket receipts (using the
+existing build-safety fixture's correlated query helper) must match the HTTP JVM,
+session, class and changed bytes. Both `pid` and `startedAt` remain unchanged,
+and the extra JVM argument still produces `marker:kept`. This does not repeat the
+separate MCP SDK/client acceptance matrix.
+
+Negative controls reject connection-only evidence, a deliberately wrong expected
+agent version, an HTTP-running app without an agent, and a successful compilation
+to an unwatched output. Wrong-version validation uses the current real agent with
+a mismatched expectation; it does not claim to test an old agent binary.
+All owned application processes are stopped. Logs, artifact digests and results
+are retained under `build/maven-consumer/run-*/evidence/`, including failed runs.
+`--unit` checks the acceptance predicates without launching applications.
+
+Normal CI runs Maven module tests plus this consumer on Linux JDK 17. The shared
+`scripts/release-checks.sh` also runs it before publication can begin. This is
+wiring, not proof of a completed CI run or remote artifact availability.
+
+### Earlier manual validation
 
 The explicit preparation command and first reload were exercised on macOS arm64,
 SapMachine 21.0.10.0.1, Maven 3.9.16 and Boot 3.3.5, using locally built Reclazz

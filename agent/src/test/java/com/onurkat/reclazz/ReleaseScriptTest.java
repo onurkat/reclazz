@@ -155,7 +155,7 @@ class ReleaseScriptTest {
     @Test
     void everyPreparationFailurePreventsAllPublications() throws Exception {
         publicationStubs();
-        for (String stage : List.of("build", "npm", "verify", "signPlugin", "centralBundle", "deploy", "validate-only")) {
+        for (String stage : List.of("build", "npm", "verify", "consumer", "signPlugin", "centralBundle", "deploy", "validate-only")) {
             Files.deleteIfExists(repo.resolve("build/trace"));
             Run result = releaseWith(Map.of("RELEASE_FAIL", stage), "1.2.3");
             assertNotEquals(0, result.exit(), stage + ": " + result.out());
@@ -244,7 +244,7 @@ class ReleaseScriptTest {
         String publish = workflowRun(workflow, "Create the release").replace("/tmp/", "build/notes/");
         Files.createDirectories(repo.resolve("build/notes"));
         Files.writeString(repo.resolve("build/notes/notes.md"), "Release notes\n");
-        for (String failure : List.of("build", "npm", "verify", "")) {
+        for (String failure : List.of("build", "npm", "verify", "consumer", "")) {
             Files.deleteIfExists(repo.resolve("build/trace"));
             Run result = run(List.of("bash", "-e", "-c", check + "\n" + publish),
                     Map.of("RELEASE_FAIL", failure, "GITHUB_REF_NAME", "v1.2.3"));
@@ -366,6 +366,11 @@ class ReleaseScriptTest {
         executable("bin/python3", """
                 #!/usr/bin/env bash
                 set -eu
+                if [[ "$*" == 'scripts/test-maven-consumer.py' ]]; then
+                    echo 'PREP consumer' >> build/trace
+                    [[ "${RELEASE_FAIL:-}" != consumer ]] || exit 29
+                    exit 0
+                fi
                 if [[ "$*" == 'scripts/release-evidence.py stage-maven' ]]; then
                     '%s' scripts/release-evidence.py verify
                     echo 'UPLOAD maven checked bundle' >> build/trace

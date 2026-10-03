@@ -111,6 +111,23 @@ jobs:
           node-version: '22'
           package-manager-cache: false
 
+      - name: Maven plugin and documented consumer acceptance
+        if: matrix.os == 'ubuntu-latest' && matrix.jdk == '17'
+        run: |
+          ./gradlew :agent:publishToMavenLocal
+          mvn -B -ntp -f maven-plugin/pom.xml clean verify
+          python3 scripts/test-maven-consumer.py
+
+      - name: Upload Maven consumer evidence
+        if: always() && matrix.os == 'ubuntu-latest' && matrix.jdk == '17'
+        uses: actions/upload-artifact@v7
+        with:
+          name: maven-consumer-evidence
+          path: |
+            build/maven-consumer/**/evidence/**
+            maven-plugin/target/surefire-reports/**
+          if-no-files-found: ignore
+
       - name: Install locked test-only MCP SDK
         if: matrix.jdk == '17'
         working-directory: mcp-server/src/test/client

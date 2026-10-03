@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [Unreleased]
 
 ### Added
+- Local/tag release checks and Linux JDK 17 CI exercise the documented minimal
+  Maven consumer's first reload, requiring matching class bytes, changed behavior,
+  the same JVM and the preserved extra JVM argument before accepting installation.
 - Failed added-instance-field initialization is isolated per object and generation.
   Repeated failed reads do not retry until a later registration; stale computations
   cannot overwrite newer outcomes, successful values or application writes.

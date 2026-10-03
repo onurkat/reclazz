@@ -333,6 +333,15 @@ search box.
 
 ## Version numbering
 
+The shared local/tag release gate (`scripts/release-checks.sh`) also runs
+`python3 scripts/test-maven-consumer.py` after building and testing the Maven
+plugin. This checks the [documented Maven consumer](../examples/maven-spring-boot/README.md#automated-local-artifact-acceptance)
+against the built artifacts in a fresh project: a matching reload receipt and
+changed response in the same JVM are both required. A failing consumer blocks
+publication. Normal Linux JDK 17 CI runs the same Maven module and consumer checks.
+Evidence remains under `build/maven-consumer/run-*/evidence/`; these local checks
+do not prove that any remote registry already serves the intended release.
+
 `pluginVersion` in `gradle.properties` drives the plugin version, the
 agent jar name, and the zip name. `scripts/bump-version.sh X.Y.Z` makes the
 release commit's edits together across four files: `gradle.properties`, the

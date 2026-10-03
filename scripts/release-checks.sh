@@ -6,3 +6,4 @@ cd "$(dirname "$0")/.."
 npm --prefix mcp-server/src/test/client ci --ignore-scripts --no-audit --no-fund
 npm --prefix mcp-server/src/test/client test
 mvn -q -f maven-plugin/pom.xml clean verify
+python3 scripts/test-maven-consumer.py
