@@ -29,7 +29,19 @@ public final class McpMain {
     private McpMain() { }
 
     public static void main(String[] args) throws IOException {
-        McpServer server = new McpServer();
+        if (args.length == 1 && args[0].equals("--help")) {
+            System.err.println(McpTarget.USAGE);
+            return;
+        }
+        McpServer server;
+        try {
+            server = new McpServer(McpTarget.parse(args, java.nio.file.Path.of(System.getProperty("user.dir"))));
+        } catch (IllegalArgumentException invalid) {
+            System.err.println(invalid.getMessage());
+            System.err.println(McpTarget.USAGE);
+            System.exit(2);
+            return;
+        }
         Gson gson = new GsonBuilder().setStrictness(Strictness.STRICT).serializeNulls().create();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         PrintWriter out = new PrintWriter(new OutputStreamWriter(System.out, StandardCharsets.UTF_8), false);

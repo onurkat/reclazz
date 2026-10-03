@@ -30,6 +30,10 @@ public final class McpServer {
     private static final String STRUCTURED_PROTOCOL = "2025-06-18";
     private String protocolVersion = LEGACY_PROTOCOL;
     private static final String SERVER_NAME = "reclazz-mcp";
+    private final McpTarget target;
+
+    public McpServer() { this(McpTarget.parse(new String[0], Path.of(System.getProperty("user.dir")))); }
+    McpServer(McpTarget target) { this.target = target; }
 
     /** Handle one JSON-RPC request. Returns the response, or null for a notification. */
     public JsonObject handle(JsonObject request) {
@@ -171,6 +175,7 @@ public final class McpServer {
         JsonObject schema = new JsonObject();
         schema.addProperty("type", "object");
         JsonObject props = new JsonObject();
+        props.add("projectDir", stringProp("Explicit project directory; requires matching target working-directory evidence. Relative to startup project/cwd."));
         props.add("portFile", stringProp("Path to the agent port file (optional; auto-located otherwise)."));
         props.add("port", stringProp("Connect directly to this agent status port (optional)."));
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
@@ -207,15 +212,14 @@ public final class McpServer {
         JsonObject arguments = params.has("arguments") ? params.getAsJsonObject("arguments") : new JsonObject();
 
         Map<String, String> opts = new LinkedHashMap<>();
-        opts.put("baseDir", System.getProperty("user.dir"));
-        for (String key : List.of("portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner", "action")) {
+        for (String key : List.of("projectDir", "portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner", "action")) {
             if (!arguments.has(key)) continue;
             if (!isString(arguments.get(key))) return error(request, -32602, key + " must be a string");
             String value = arguments.get(key).getAsString();
             if (value.length() > 4096 || value.codePoints().anyMatch(Character::isISOControl)) {
                 return error(request, -32602, key + " exceeds 4096 characters or contains a control character");
             }
-            if (key.equals("portFile") || key.equals("hybrisHome")) {
+            if (key.equals("projectDir") || key.equals("portFile") || key.equals("hybrisHome")) {
                 try { Path.of(value); }
                 catch (InvalidPathException invalid) { return error(request, -32602, key + " is not a valid path"); }
             }
@@ -229,6 +233,9 @@ public final class McpServer {
                 return error(request, -32602, "timeoutMs must be an integer string between 1 and 60000");
             }
         }
+
+        try { opts = target.options(opts); }
+        catch (IllegalArgumentException invalid) { return error(request, -32602, invalid.getMessage()); }
 
         String text;
         JsonObject data;

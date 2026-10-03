@@ -51,7 +51,7 @@ file corruption; it is not a signature or proof of publisher identity.
 ### Configure a stdio client
 
 For clients using an `mcpServers` JSON configuration, merge this entry into their
-existing configuration. Replace both example paths and `X.Y.Z`; use the absolute
+existing configuration. Replace the example paths and `X.Y.Z`; use the absolute
 path to your Java 17+ executable if the client cannot find `java` on its PATH:
 
 ```json
@@ -59,7 +59,8 @@ path to your Java 17+ executable if the client cannot find `java` on its PATH:
   "mcpServers": {
     "reclazz": {
       "command": "/absolute/path/to/java",
-      "args": ["-jar", "/absolute/path/to/reclazz-mcp-X.Y.Z.jar"]
+      "args": ["-jar", "/absolute/path/to/reclazz-mcp-X.Y.Z.jar",
+               "--project-dir", "/absolute/path/to/project"]
     }
   }
 }
@@ -72,12 +73,55 @@ configuration file locations vary; this entry does not modify them automatically
 Clients with another configuration format need the same executable and arguments.
 Restart/reconnect the MCP client after changing the entry.
 
-The application must separately run with the Reclazz agent attached. Client
-working directories vary: use an **absolute** `portFile` in tool arguments, for
-example `{"portFile":"/absolute/project/.reclazz/agent.port"}`. `port` and
-`hybrisHome` are alternatives. Without an explicit address, discovery looks for
-`.reclazz/agent.port` and `.idea/reclazz/agent.port` relative to the server process
-working directory. They are tool arguments, not MCP server startup flags.
+The application must separately run with the Reclazz agent attached. The
+`--project-dir` option makes startup independent of the client's working
+directory. Discovery checks only that directory's `.reclazz/agent.port` and
+`.idea/reclazz/agent.port`, in that order. For a custom port file, also add
+`"--port-file", "relative/or/absolute/agent.port"` to the argument array.
+The port file may be absent at startup; the application can create it later.
+An absent, unreadable, malformed or unreachable explicit target never causes
+fallback to a different file or project.
+
+### Target selection and overrides
+
+Startup accepts only `--project-dir PATH`, `--port-file PATH`, or `--help`.
+Unknown/duplicate options and missing/blank/invalid values fail before stdio
+starts (exit2, stderr only). The selected project must be an existing directory.
+Help writes usage to stderr and exits0. There is no shared configuration file,
+process search, parent-directory search or machine-global default.
+
+Relative startup project paths resolve from the MCP process's startup directory.
+A relative startup port file resolves from the selected project, or that startup
+directory when no project is selected. Each server keeps its own defaults.
+Per-tool selection works as follows:
+
+- `projectDir` overrides the project for that call; relative values resolve from
+  the startup project/directory. It resets the startup port-file default, so
+  project-only overrides discover the new project's own files.
+- Per-call `port`, then `portFile`, then `hybrisHome` take precedence over the
+  startup port file. Relative `portFile`/`hybrisHome` paths use the effective
+  project directory. An explicit `hybrisHome` uses only its `.reclazz/agent.port`;
+  absence does not fall back to the project/client directory.
+- Overrides affect only that call. Invalid input does not retry against defaults.
+  A call selecting another project's port must also select its `projectDir`
+  when a startup project is configured.
+
+An **explicit project** opts into a launch-directory check: on the same agent
+connection, before the requested command, MCP requires a valid correlated
+DOCTOR result whose canonical absolute `workingDirectory` equals or is below
+that project. Missing/unsupported/malformed evidence, a relative working
+directory or another project's directory fails closed. This also applies to
+status and batch verification. It prevents a stale port pointing to an agent
+launched outside the selected tree from receiving BUILD/SCAN/reload commands.
+
+Working directory is not proof of repository root, watched-output coverage or
+which of two JVMs launched in the same project is intended. Inspect DOCTOR PID,
+session and watch evidence for those distinctions. If the application launches
+outside its project tree, use explicit `--port-file` alone (or per-call `portFile`)
+without project selection; this selects an endpoint but does **not** validate its
+project. No-argument startup retains discovery within the startup working
+directory and has no project check. Old agents without DOCTOR cannot satisfy an
+explicit project check; use matching agent/MCP builds.
 
 ### Smoke check without an attached application
 
@@ -112,7 +156,7 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | `reclazz_reload_control` | Pause/resume automatic reload admission or inspect its state; never releases BUILD holds |
 | `reclazz_diagnose` | Why a given class did or did not reload last time (requires `className`) |
 
-Each tool accepts optional `portFile`, `port` and `hybrisHome` arguments to
+Each tool accepts optional `projectDir`, `portFile`, `port` and `hybrisHome` arguments to
 locate the agent; `reclazz_diagnose` also requires `className`.
 
 ## Tool execution errors

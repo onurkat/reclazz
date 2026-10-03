@@ -131,6 +131,36 @@ class McpDistributionTest {
         assertTrue(run.err.startsWith("Usage: java -cp"), run.err);
     }
 
+    @Test
+    void startupProjectWorksFromUnrelatedClientDirectory() throws Exception {
+        Path project = Files.createDirectory(dir.resolve("selected project"));
+        try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+            String c = in.readLine(); JsonObject d = DoctorTest.evidence(c);
+            d.addProperty("workingDirectory", project.toString()); DoctorTest.send(out,c,d);
+            assertEquals("SCAN", in.readLine());
+        })) {
+            Files.writeString(project.resolve("custom.port"), agent.opts().get("port"));
+            Run r = run(List.of("-jar", installJar().toString(), "--project-dir", "selected project", "--port-file", "custom.port"),
+                    McpTargetTest.request("scan", java.util.Map.of()).toString() + "\n");
+            assertEquals(0, r.exit, r.err); assertEquals("", r.err);
+            JsonObject result = JsonParser.parseString(r.out.trim()).getAsJsonObject().getAsJsonObject("result");
+            assertFalse(result.get("isError").getAsBoolean(), r.out); agent.verify();
+        }
+    }
+
+    @Test
+    void invalidStartupExitsWithOnlyStderrAndHelpDoesNotStartProtocol() throws Exception {
+        Path jar = installJar();
+        for (List<String> flags : List.of(List.of("--unknown"), List.of("--port-file"),
+                List.of("--project-dir", "missing"), List.of("--port-file", "a", "--port-file", "b"))) {
+            var args = new ArrayList<>(List.of("-jar", jar.toString())); args.addAll(flags);
+            Run r = run(args, "");
+            assertEquals(2, r.exit, r.err); assertEquals("", r.out); assertTrue(r.err.contains(McpTarget.USAGE), r.err);
+        }
+        Run help = run(List.of("-jar", jar.toString(), "--help"), "");
+        assertEquals(0, help.exit); assertEquals("", help.out); assertTrue(help.err.contains(McpTarget.USAGE));
+    }
+
     private record Run(int exit, String out, String err) { }
 
     private Run run(List<String> args, String input) throws Exception {

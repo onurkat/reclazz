@@ -59,6 +59,7 @@ final class BuildSession implements AutoCloseable {
                     || !hello.has("version") || hello.get("version").getAsInt() < 1) {
                 throw new IOException("No valid agent handshake");
             }
+            McpTarget.verifyProject(opts, socket, session.in, until == 0 ? session.deadline() : until);
             return session;
         } catch (IOException | RuntimeException e) {
             socket.close();
@@ -211,7 +212,9 @@ final class BuildSession implements AutoCloseable {
 
     private long deadline() { return System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs); }
 
-    private JsonObject read(long deadline) throws IOException {
+    private JsonObject read(long deadline) throws IOException { return read(socket, in, deadline); }
+
+    static JsonObject read(Socket socket, BufferedReader in, long deadline) throws IOException {
         StringBuilder line = new StringBuilder();
         while (line.length() < 16384) {
             long remaining = deadline - System.nanoTime();

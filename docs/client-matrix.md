@@ -17,6 +17,9 @@ against the **packaged MCP jar over stdio**. The test installs both jars under
 paths containing spaces and launches a real application JVM with the agent.
 It covers:
 
+- MCP startup from an unrelated client directory with explicit project and relative
+  port-file defaults; all tools check same-connection target-directory evidence.
+
 - All nine tools and their advertised output schemas, including error results;
   JSON text must match structured output. Missing required result fields are
   rejected by the SDK's own schema validator.
@@ -126,3 +129,9 @@ output mutations rejected, paused output retained through SCAN, then exact-byte
 verification and changed behavior after resume in the same JVM/instance.
 This additional run does not establish hosted CI or JDK21 acceptance for the
 new control tool.
+
+On **2026-10-03**, explicit-project startup also passed the local macOS aarch64
+SDK1.30.0 / Node22.20.0 / SAP JDK17.0.16 acceptance: MCP ran from the jar install
+directory while the app ran from the selected consumer project. All nine tools
+worked with startup defaults; seven evaluation scenarios passed with zero false
+completions or restarts. Hosted and Windows runs for this extension remain unrun.

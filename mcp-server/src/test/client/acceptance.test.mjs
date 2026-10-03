@@ -118,7 +118,7 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   });
   await until(() => appOut, out => out.includes('] Watching '), 'watch registration');
   const client = new Client({ name: 'reclazz-independent-acceptance', version: '1.0.0' }, { capabilities: {} });
-  const transport = new StdioClientTransport({ command: java, args: ['-jar', mcp], cwd: project, stderr: 'pipe' });
+  const transport = new StdioClientTransport({ command: java, args: ['-jar', mcp, '--project-dir', project, '--port-file', 'agent.port'], cwd: install, stderr: 'pipe' });
   transport.stderr.setEncoding('utf8').on('data', data => { mcpErr += data; });
   t.after(() => client.close());
   await client.connect(transport, { timeout: 10000 });
@@ -133,7 +133,7 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     () => client.callTool(request, ...options));
   async function call(name, args = {}, isError = false, inspect = () => {}) {
     const result = await invoke({ name: `reclazz_${name}`,
-      arguments: { portFile, timeoutMs: '3000', ...args } }, undefined, { timeout: 6000 });
+      arguments: { timeoutMs: '3000', ...args } }, undefined, { timeout: 6000 });
     const data = result.structuredContent;
     if (['build', 'scan', 'doctor', 'reload_control'].includes(name)) {
       evaluation.completion(`${name} is not reload proof`, data?.reloadConfirmed === true, false, { data });
@@ -161,6 +161,7 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   assert.equal(doctor.status, 'observed');
   assert.equal(doctor.pid, String(app.pid));
   assert.equal(await fs.realpath(doctor.workingDirectory), await fs.realpath(project));
+  assert.equal(await fs.realpath(doctor.clientWorkingDirectory), await fs.realpath(install));
   assert.equal(doctor.verifySupported, true);
   assert.equal(doctor.buildOwnershipSupported, true);
   assert.equal(doctor.reloadConfirmed, false);

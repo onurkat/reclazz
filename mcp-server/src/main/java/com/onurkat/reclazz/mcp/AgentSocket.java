@@ -96,6 +96,8 @@ final class AgentSocket {
                         result.reason = "Invalid agent handshake";
                         return result;
                     }
+                    try { McpTarget.verifyProject(opts, socket, in, deadline); }
+                    catch (IOException invalid) { result.reason = invalid.getMessage(); return result; }
                     result.connected = true;
                     result.agent = agent;
                     result.protocol = 1;
@@ -160,12 +162,14 @@ final class AgentSocket {
 
     private static Path locatePortFile(Map<String, String> opts) {
         if (opts.containsKey("portFile")) {
-            Path p = Paths.get(opts.get("portFile"));
+            Path p = Paths.get(opts.getOrDefault("baseDir", System.getProperty("user.dir"))).resolve(opts.get("portFile"));
             return Files.isRegularFile(p) ? p : null;
         }
         List<Path> candidates = new ArrayList<>();
         if (opts.containsKey("hybrisHome")) {
-            candidates.add(Paths.get(opts.get("hybrisHome"), ".reclazz", "agent.port"));
+            Path p = Paths.get(opts.getOrDefault("baseDir", System.getProperty("user.dir")))
+                    .resolve(opts.get("hybrisHome")).resolve(".reclazz/agent.port");
+            return Files.isRegularFile(p) ? p : null;
         }
         String base = opts.getOrDefault("baseDir", System.getProperty("user.dir"));
         candidates.add(Paths.get(base, ".reclazz", "agent.port"));

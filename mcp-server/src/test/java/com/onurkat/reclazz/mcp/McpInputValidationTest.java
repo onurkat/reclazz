@@ -84,7 +84,7 @@ class McpInputValidationTest {
             request.getAsJsonObject("params").add("protocolVersion", JsonParser.parseString(value));
             error(server.handle(request), -32602);
             for (String tool : List.of("status", "scan", "pending", "diagnose", "build", "verify")) {
-                for (String key : List.of("port", "portFile", "hybrisHome", "timeoutMs", "className", "sha256", "state")) {
+                for (String key : List.of("projectDir", "port", "portFile", "hybrisHome", "timeoutMs", "className", "sha256", "state")) {
                     request = call("reclazz_" + tool);
                     args(request).addProperty("className", "app.Service");
                     args(request).addProperty("sha256", "a".repeat(64));
@@ -122,7 +122,7 @@ class McpInputValidationTest {
             args(request).addProperty("portFile", dir.resolve("missing").toString());
             error(server.handle(request), -32602);
         }
-        for (String key : List.of("portFile", "hybrisHome")) {
+        for (String key : List.of("projectDir", "portFile", "hybrisHome")) {
             for (String value : List.of("bad\0path", "bad\npath", "a".repeat(4097))) {
                 JsonObject request = call("reclazz_status");
                 args(request).addProperty(key, value);

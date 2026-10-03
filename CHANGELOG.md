@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Select MCP startup project/port-file defaults with per-call overrides; explicit projects require same-connection working-directory evidence before commands, with no fallback on invalid targets.
+
 - Pause and resume automatic reload without restarting the app, retaining pending changes independently of BUILD ownership; inspect/control admission through the status socket or `reclazz_reload_control` MCP tool.
 - Gradle `application` projects can opt into agent attachment for `run` with
   `reclazz.applyToRun=true`, retaining JVM arguments and leaving other JavaExec
