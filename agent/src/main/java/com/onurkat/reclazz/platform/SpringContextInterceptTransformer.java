@@ -35,6 +35,9 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
         if ("org/springframework/beans/factory/xml/XmlBeanDefinitionReader".equals(className)) {
             return instrumentXmlReader(classfileBuffer);
         }
+        if ("org/springframework/beans/factory/parsing/ReaderContext".equals(className)) {
+            return instrumentXmlEvents(classfileBuffer);
+        }
         if (!TARGET_CLASS.equals(className)) {
             return null;
         }
@@ -66,6 +69,14 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
                     if (!"doLoadBeanDefinitions".equals(name) || !descriptor.equals(
                             "(Lorg/xml/sax/InputSource;Lorg/springframework/core/io/Resource;)I")) return visitor;
                     return new MethodVisitor(Opcodes.ASM9, visitor) {
+                        @Override public void visitCode() {
+                            super.visitCode();
+                            super.visitVarInsn(Opcodes.ALOAD, 0);
+                            super.visitVarInsn(Opcodes.ALOAD, 2);
+                            super.visitMethodInsn(Opcodes.INVOKESTATIC,
+                                    "com/onurkat/reclazz/platform/SpringXmlAliases", "begin",
+                                    "(Ljava/lang/Object;Ljava/lang/Object;)V", false);
+                        }
                         @Override public void visitInsn(int opcode) {
                             if (opcode == Opcodes.IRETURN) {
                                 super.visitVarInsn(Opcodes.ALOAD, 0);
@@ -82,6 +93,42 @@ public class SpringContextInterceptTransformer implements ClassFileTransformer {
             return writer.toByteArray();
         } catch (Exception failure) {
             StatusReporter.warn("Failed to instrument Spring XML resource capture: " + Failures.describe(failure));
+            return null;
+        }
+    }
+
+    private byte[] instrumentXmlEvents(byte[] bytes) {
+        try {
+            ClassReader reader = new ClassReader(bytes);
+            ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
+            reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
+                @Override public MethodVisitor visitMethod(int access, String name, String descriptor,
+                                                           String signature, String[] exceptions) {
+                    MethodVisitor visitor = super.visitMethod(access, name, descriptor, signature, exceptions);
+                    boolean alias = name.equals("fireAliasRegistered") && descriptor.equals(
+                            "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Object;)V");
+                    boolean component = name.equals("fireComponentRegistered") && descriptor.equals(
+                            "(Lorg/springframework/beans/factory/parsing/ComponentDefinition;)V");
+                    if (!alias && !component) return visitor;
+                    return new MethodVisitor(Opcodes.ASM9, visitor) {
+                        @Override public void visitInsn(int opcode) {
+                            if (opcode == Opcodes.RETURN) {
+                                super.visitVarInsn(Opcodes.ALOAD, 0);
+                                super.visitVarInsn(Opcodes.ALOAD, 1);
+                                if (alias) super.visitVarInsn(Opcodes.ALOAD, 2);
+                                super.visitMethodInsn(Opcodes.INVOKESTATIC,
+                                        "com/onurkat/reclazz/platform/SpringXmlAliases", alias ? "alias" : "component",
+                                        alias ? "(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/String;)V"
+                                                : "(Ljava/lang/Object;Ljava/lang/Object;)V", false);
+                            }
+                            super.visitInsn(opcode);
+                        }
+                    };
+                }
+            }, 0);
+            return writer.toByteArray();
+        } catch (Exception failure) {
+            StatusReporter.warn("Failed to instrument Spring XML alias capture: " + Failures.describe(failure));
             return null;
         }
     }

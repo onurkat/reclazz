@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring XML alias additions, removals and target changes now report that restart
+  is required when observed for the edited resource. Existing alias lookups remain
+  unchanged; new-bean aliases are explicitly reported as unapplied. Source ownership
+  is captured during successful XML loads, including alias-only resources.
+
 - Spring XML property removals now report the required restart even when other
   properties are edited or added in the same save. Removed values remain unchanged;
   supported property updates still apply.

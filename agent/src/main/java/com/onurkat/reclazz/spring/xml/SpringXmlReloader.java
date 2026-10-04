@@ -74,7 +74,8 @@ public final class SpringXmlReloader {
             try {
                 ClassLoader loader = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
                 Object temporary = SpringReflection.newTempBeanFactory(loader);
-                if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader))
+                Object environment = context.getClass().getMethod("getEnvironment").invoke(context);
+                if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader, environment))
                     applyToSingleContext(xmlPath, temporary, context, factory, "");
             } catch (ReflectiveOperationException failure) {
                 StatusReporter.warn("Spring XML: application bean classloader unavailable");
@@ -83,6 +84,10 @@ public final class SpringXmlReloader {
     }
 
     public void reload(Path xmlPath) {
+        if (!SpringXmlResources.owners(xmlPath, gatherCandidateContexts()).isEmpty()) {
+            reloadLoaded(xmlPath);
+            return;
+        }
         // Gather all candidate application contexts. On Hybris there are
         // usually multiple (platform tenant context, web storefront contexts,
         // backoffice context, etc.) — we have to target the one that owns
@@ -158,6 +163,7 @@ public final class SpringXmlReloader {
                                        Object appContext, Object liveFactory, String ctxLabel) {
         BeanDefinitionDiff diff = new BeanDefinitionDiff();
         XmlSafetyClassifier.classify(liveFactory, tempFactory, xmlPath, diff);
+        XmlAliasDiagnostics.classify(appContext, liveFactory, tempFactory, xmlPath, diff);
 
         if (!diff.hasChanges()) {
             StatusReporter.info("Spring XML " + xmlPath.getFileName() + ctxLabel

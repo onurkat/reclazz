@@ -17,6 +17,7 @@ public final class SpringXmlResources {
 
     /** Called after a successful doLoadBeanDefinitions return, including nested imports. */
     public static void record(Object reader, Object resource) {
+        SpringXmlAliases.complete(reader, resource);
         try {
             Object registry = reader.getClass().getMethod("getRegistry").invoke(reader);
             URL url = (URL) resource.getClass().getMethod("getURL").invoke(resource);

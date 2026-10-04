@@ -60,6 +60,10 @@ final class SpringReflection {
 
     /** Parse {@code xmlFile} into {@code tempFactory}. Returns false on parse error. */
     static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader) {
+        return loadXml(tempFactory, xmlFile, springLoader, null);
+    }
+
+    static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader, Object environment) {
         // Spring finds the handler for a namespace like context: or util: by
         // reading META-INF/spring.handlers from the classpath, through the
         // reader's classloader and, failing that, the thread's. Both default to
@@ -75,6 +79,9 @@ final class SpringReflection {
             Class<?> registryCls = loadClass(CLS_REGISTRY, springLoader);
             Constructor<?> readerCtor = readerCls.getConstructor(registryCls);
             Object reader = readerCtor.newInstance(tempFactory);
+            com.onurkat.reclazz.platform.SpringXmlAliases.observeReader(reader, springLoader);
+            if (environment != null) readerCls.getMethod("setEnvironment",
+                    loadClass("org.springframework.core.env.Environment", springLoader)).invoke(reader, environment);
 
             readerCls.getMethod("setBeanClassLoader", ClassLoader.class)
                     .invoke(reader, springLoader);
@@ -96,10 +103,12 @@ final class SpringReflection {
 
             Class<?> resourceCls = loadClass(CLS_FS_RESOURCE, springLoader);
             Object resource = resourceCls.getConstructor(File.class).newInstance(xmlFile);
+            com.onurkat.reclazz.platform.SpringXmlAliases.begin(reader, resource);
 
             Class<?> resourceIface = loadClass(CLS_RESOURCE, springLoader);
             Method load = readerCls.getMethod("loadBeanDefinitions", resourceIface);
             load.invoke(reader, resource);
+            com.onurkat.reclazz.platform.SpringXmlAliases.complete(reader, resource);
             return true;
         } catch (Throwable t) {
             StatusReporter.warn("Failed to parse " + xmlFile.getName() + ": " + rootCause(t));
