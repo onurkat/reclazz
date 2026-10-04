@@ -230,6 +230,32 @@ synthetic keys. It proves priority selection and registry refresh on Spring 5.3.
 and 6.2.12, not property-file reload, live SAP HTTP acceptance, or custom/programmatic
 mapping discovery.
 
+### Isolated dynamic-attribute and CronJob reload acceptance
+
+Run `python3 scripts/test_sap_flows_proof.py` for the portable acceptance predicate.
+After `./gradlew :agent:shadowJar`, run:
+
+```bash
+python3 scripts/test-sap-flows-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+```
+
+Use the jar version built by your checkout and a JDK compatible with the SDK. The
+runner reads the SDK Spring version instead of upgrading the project's existing
+Spring lanes. Genuine SDK dynamic get/set dispatch and job performable results run
+under the real agent, with v1 → v2 → added-helper v3 → v2 edits. Each step checks
+fresh HTTP behavior on retained and current instances, exact-byte VERIFY receipts,
+stable agent session/JVM, and unchanged unrelated behavior. The negative control
+`--withhold-edit` must fail; a compiled class never published to the watcher must
+not be certified as applied.
+
+Persistence/type resolution is isolated in memory and jobs are invoked directly.
+This does not test CronJobService scheduling, stored models, item-type metadata
+changes, real tenant startup or cluster behavior. Report a live SAP lane separately
+as unrun unless it was actually executed in an authorized test environment.
+Cross-check the existing OCC/list-directive/request-mapping runners above, keeping
+their support boundaries unchanged. No proprietary jars or private source belong
+in the fixture. See [integration acceptance](../integration-test/README.md).
+
 ## 10. Extension Watching Scope
 
 ### Verify only custom extensions are watched
