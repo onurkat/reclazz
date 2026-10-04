@@ -293,6 +293,51 @@ acceptance. It starts no tenant, indexer CronJob or Solr server, and writes no l
 index. Schema changes, index configuration, cluster distribution, commit/query
 visibility and selecting affected documents/indexes remain unverified here.
 
+### Isolated custom-cache characterization
+
+```bash
+./gradlew :agent:shadowJar
+python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+# Desired-contract probe: currently exits nonzero after proving helper code is live.
+python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --require-fresh-helper
+# Negative control: unpublished edited bytes must fail the receipt check.
+python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+```
+
+The optional runner uses installed SDK platform jars and synthetic Spring singleton
+beans with a genuine Guava cache and an AtomicReference/TTL cache. Observed on
+Spring 5.3.43 / Guava 33.1.0-jre and Spring 6.2.12 / Guava 33.4.8-jre:
+
+| Method-body reload | Guava owner | Custom TTL owner | Unrelated caches |
+|---|---|---|---|
+| Registered, autowired bean dependency | Fresh result through recreated owner | Fresh result through recreated owner | Warm entries retained |
+| Cache owner itself | Fresh result when its owner reloads | Fresh result when its owner reloads | Warm entries retained |
+| Plain static helper, not a Spring bean | **Old cached result retained** | **Old cached result retained** | Warm entries retained |
+| Subsequent explicit owner edit | Fresh result | Fresh result | Warm entries retained |
+
+The helper limitation is deliberate characterization, **not a freshness pass**.
+Default success means this entire observed matrix was reproduced; the stricter
+`--require-fresh-helper` mode exposes the unsupported case as a failure. Each reload
+requires an applied receipt with the exact edited class hash in the same JVM/session.
+The helper changes from 1 to 2 and uncached results become 122/222, while warmed
+cached results remain 121/221. Receipt success alone does not establish cache freshness.
+
+Both clocks stay fixed through all reloads, before their 60-second expiry; repeated
+reads and computation counts establish actual cache hits. An explicit 61-second
+clock advance finally proves expiry in both target and unrelated caches. Constructor
+counts, managed consumer references and unrelated singleton identity are checked.
+No cache hooks or application runtime dependencies were added. Existing Spring
+bean refresh covers the tested owner/registered-dependency paths; custom caches
+on plain helper dependencies require separate treatment if immediate freshness is
+needed. No automatic general invalidation is claimed.
+
+This is isolated Spring/Guava acceptance using SDK libraries. It starts no SAP
+tenant and contacts no external service or cluster. Structural edits, external
+references to destroyed beans, static/shared caches, FactoryBeans, scoped/prototype
+owners and concurrent TTL computation are outside this experiment. The simple
+AtomicReference fixture publishes immutable entries under serial test operations;
+it is not a concurrency algorithm recommendation.
+
 ### SAP process definition diagnostics
 
 Changes to local XML referenced by an existing `ProcessDefinitionResource`
