@@ -820,6 +820,13 @@ public class ReclazzAgent {
                     }
                 }
                 case SPRING_XML -> handleSpringXmlChange(event);
+                case SAP_PROCESS_XML -> {
+                    StatusReporter.warn("SAP process definition " + fileName
+                            + " " + event.getType().name() + ": not applied; restart required. "
+                            + "Process definition hot reload is unsupported; no running process was changed or replayed.");
+                    RestartLedger.note(fileName, "SAP process definition resource changed but was not applied; "
+                            + "validate the resource and restart to load it");
+                }
                 case BACKOFFICE_CONFIG -> {
                     StatusReporter.info("Backoffice config changed: "
                             + event.getPath().getFileName() + " [" + event.getModuleName() + "]");

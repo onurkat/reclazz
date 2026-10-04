@@ -30,6 +30,9 @@ public enum ChangeKind {
     /** Named Spring XML, or a local XML resource observed loading in an active context. */
     SPRING_XML,
 
+    /** Path-only: registered SAP process definition XML; diagnostic only, not reloaded. */
+    SAP_PROCESS_XML,
+
     /**
      * {@code *-backoffice-config.xml}, the cockpitng view configuration. The
      * running backoffice merges these once and answers from a cache; the
@@ -152,6 +155,8 @@ public enum ChangeKind {
         }
 
         ChangeKind named = of(fileName);
+        if ((named == UNKNOWN || named == SPRING_XML) && fileName.endsWith(".xml")
+                && com.onurkat.reclazz.platform.SapProcessResources.isRegistered(path)) return SAP_PROCESS_XML;
         if (named == UNKNOWN && fileName.endsWith(".xml")
                 && com.onurkat.reclazz.platform.SpringXmlResources.isLoaded(path)) return SPRING_XML;
         return named;

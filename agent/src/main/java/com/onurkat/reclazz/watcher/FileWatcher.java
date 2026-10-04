@@ -917,10 +917,12 @@ public class FileWatcher {
 
     private final Map<Path, Long> loadedXmlMtimes = new HashMap<>();
 
-    /** Poll only captured XML files outside native watch roots, never their neighbours. */
+    /** Poll only captured Spring/registered process XML outside native roots, never neighbours. */
     int scanLoadedSpringXml(Map<Path, PendingEvent> pending) {
         int found = 0;
         Set<Path> live = com.onurkat.reclazz.platform.SpringXmlResources.loadedFiles();
+        Set<Path> processes = com.onurkat.reclazz.platform.SapProcessResources.registeredFiles();
+        live.addAll(processes);
         loadedXmlMtimes.keySet().retainAll(live);
         Set<Path> watched = new HashSet<>();
         for (WatchedDirectory directory : watchKeyMap.values())
@@ -939,7 +941,8 @@ public class FileWatcher {
             if (previous == null || previous == modified) continue; // establish baseline
             ChangeEvent.Type type = modified == 0 ? ChangeEvent.Type.DELETED
                     : previous == 0 ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
-            pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, module, "spring-xml"));
+            pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type, module,
+                    processes.contains(file) ? "sap-process-xml" : "spring-xml"));
             found++;
         }
         return found;

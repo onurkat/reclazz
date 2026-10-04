@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Changes to registered local SAP process definition XML now warn that they are
+  not applied and require restart, including files outside native watch roots.
+  Detection uses existing singleton registrations in captured active contexts;
+  unrelated XML and uninitialized registrations are not claimed.
+
 - SAP OCC controller reload rebuilds override priorities and bean-discovered request
   mappings together, restoring eligible fallback handlers and rolling back registry
   changes on registration failure. Synthetic added endpoints and existing instance

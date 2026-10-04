@@ -41,6 +41,9 @@ class WatchedKindsAgreeTest {
         List<String> problems = new ArrayList<>();
         for (ChangeKind kind : ChangeKind.values()) {
             if (kind == ChangeKind.UNKNOWN) continue;
+            // No filename can establish process ownership. The exact registered-path
+            // and watcher agreement is exercised by SapProcessResourceRecognitionTest.
+            if (kind == ChangeKind.SAP_PROCESS_XML) continue;
             String sample = SAMPLES.get(kind);
             if (sample == null) {
                 problems.add(kind + " has no sample here; add one, and the watcher watches it");

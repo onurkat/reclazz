@@ -256,6 +256,36 @@ Cross-check the existing OCC/list-directive/request-mapping runners above, keepi
 their support boundaries unchanged. No proprietary jars or private source belong
 in the fixture. See [integration acceptance](../integration-test/README.md).
 
+### SAP process definition diagnostics
+
+Changes to local XML referenced by an existing `ProcessDefinitionResource`
+singleton in a captured active Spring context produce a `WARN`: **not applied;
+restart required**. This is resource-change guidance, not a successful code reload
+or a VERIFY receipt. No process definition is refreshed, and no process is started,
+migrated or replayed. Inspect/validate the changed definition before restarting;
+restart guidance does not certify that edited XML is valid.
+
+Recognition uses the exact registered local path, including arbitrary XML names.
+The watcher polls registered files outside native roots, subject to existing file
+and module exclusions. An unregistered `*-process.xml` is not enough evidence.
+Closed contexts, remote/packed resources, lazy registrations and FactoryBean
+products are not claimed. Existing dedicated kinds such as items/backoffice/logging
+configuration keep their meaning; a registered process with a Spring XML suffix
+receives process diagnostics instead of being parsed as bean XML.
+
+```bash
+./gradlew :agent:unitTest --tests '*SapProcessResourceRecognitionTest' --rerun
+./gradlew :agent:e2eTest --tests '*SapProcessDefinitionDiagnosticTest' --rerun
+python3 scripts/test-sap-process-sdk.py /path/to/hybris
+```
+
+The portable tests use a synthetic API fixture and a real agent/watcher JVM. The
+SDK runner independently checks genuine resource registrations against the
+installed Spring/SDK jars after `:agent:compileJava`. It does not start a tenant,
+parse a business process or exercise a scheduler. These checks are not live SAP
+acceptance. Automatic definition refresh requires a separate design: the SDK
+factory/cache APIs alone do not establish isolation to newly started processes.
+
 ## 10. Extension Watching Scope
 
 ### Verify only custom extensions are watched
