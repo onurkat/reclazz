@@ -152,6 +152,30 @@ mapping configuration are outside this acceptance. This does not rebuild Orika
 schemas or add structural DTO fields. An XML property may have changed even when
 consumer refresh reports a restart requirement; follow that diagnostic.
 
+### OCC request mappings and overrides
+
+For SAP Commerce `CommerceHandlerMapping`, saving a controller rebuilds the
+override-priority table and bean-discovered handler registrations together. Existing
+or JVM-visible methods can change paths or `@RequestMappingOverride` annotations;
+removing or lowering the winning override makes the remaining eligible handler
+available. SDK API-version filtering remains in charge. Request lookups wait under
+the mapping registry's write lock while the complete registry is rebuilt.
+
+On a registration failure, Reclazz attempts to restore the previous mappings and
+priority table and reports a restart requirement. This restores routing registrations,
+not the already redefined controller class or bean state. Missing reflection hooks
+or the registry lock cause refusal before registrations change.
+
+Synthetic endpoints added through companion methods are outside this support. Such
+an attempt leaves the registry unchanged, reports `SAP OCC mappings need a restart`,
+and prevents further rebuilds of that registry until its context is replaced or the
+application restarts. Existing instance registrations, including generated endpoint
+adapters, also cause refusal. Acceptance covers SDK bean discovery; custom handler
+mapping lifecycle overrides and programmatic bean-name registrations are outside it.
+There is no new property-file hot reload: priority values must already be available
+through the application's configuration service. Ordinary Spring MVC retains its
+existing controller rescan and added-endpoint behavior.
+
 ### SAP populator and list-merge directives
 
 Edits to existing `ModifyPopulatorList` and `ListMergeDirective` XML definitions

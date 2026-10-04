@@ -191,7 +191,9 @@ public class SpringReloadOrchestrator {
                 SpringArgumentResolverCaches.flush(
                         platformContext.getAllApplicationContexts());
 
-                boolean mvcReloaded = mvcReloader.reloadMappings(reloadedClass);
+                java.util.Set<String> addedHandlers =
+                        SpringMvcReloader.mappedMethodsAmong(addedMethodSigs, newBytecode);
+                boolean mvcReloaded = mvcReloader.reloadMappings(reloadedClass, addedHandlers);
 
                 // The scan runs on every controller reload and says so only
                 // when the mapping could have moved. A body-only change
@@ -215,8 +217,6 @@ public class SpringReloadOrchestrator {
                     // with it, used to end in "a handler method ... needs a
                     // restart" about handlers that never existed (measured:
                     // every lambda edit in a controller printed it).
-                    java.util.Set<String> addedHandlers =
-                            SpringMvcReloader.mappedMethodsAmong(addedMethodSigs, newBytecode);
                     if (isStructural && !addedHandlers.isEmpty()) {
                         // The scan cannot see a method that lives in the
                         // companion, so it is given a class that can be read.

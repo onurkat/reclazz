@@ -34,17 +34,22 @@ public class SpringMvcReloader {
      * Re-scan and re-register @RequestMapping methods for a controller class.
      */
     public boolean reloadMappings(Class<?> controllerClass) {
+        return reloadMappings(controllerClass, java.util.Set.of());
+    }
+
+    public boolean reloadMappings(Class<?> controllerClass, java.util.Set<String> addedHandlers) {
         boolean reloaded = false;
+        boolean[] sapFailure = {false};
         int contexts = 0;
         // Controllers live in web application contexts — iterate all live
         // contexts and re-scan wherever this controller is registered.
         for (Object appContext : platformContext.getAllApplicationContexts()) {
             contexts++;
-            reloaded |= reloadMappingsIn(appContext, controllerClass);
+            reloaded |= reloadMappingsIn(appContext, controllerClass, addedHandlers, sapFailure);
         }
 
 
-        if (!reloaded) {
+        if (!reloaded && !sapFailure[0]) {
             // Reaching here used to produce no output at all, so a mapping
             // that silently kept its old value looked identical to a reload
             // that had simply not been asked for.
@@ -53,10 +58,11 @@ public class SpringMvcReloader {
                     + " and none of them "
                     + (contexts == 0 ? "were captured" : "held it as a handler"));
         }
-        return reloaded;
+        return reloaded && !sapFailure[0];
     }
 
-    private boolean reloadMappingsIn(Object appContext, Class<?> controllerClass) {
+    private boolean reloadMappingsIn(Object appContext, Class<?> controllerClass,
+                                     java.util.Set<String> addedHandlers, boolean[] sapFailure) {
         try {
             // Find the bean first. Asking for the handler mapping up front and
             // returning early when it is absent meant the one context that
@@ -81,6 +87,13 @@ public class SpringMvcReloader {
                 return false;
             }
 
+            if (SapCommerceMappings.supports(handlerMapping)) {
+                boolean result = addedHandlers.isEmpty()
+                        ? rescan(handlerMapping, beanName, controllerClass)
+                        : SapCommerceMappings.addedHandlers(handlerMapping, controllerClass);
+                sapFailure[0] |= !result;
+                return result;
+            }
             return rescan(handlerMapping, beanName, controllerClass);
         } catch (Exception e) {
             StatusReporter.warn("Spring MVC mapping re-scan failed: " + Failures.describe(e));
@@ -104,6 +117,9 @@ public class SpringMvcReloader {
      * read against, the swap runs as before, with the window.
      */
     boolean rescan(Object handlerMapping, String beanName, Class<?> controllerClass) throws Exception {
+        if (SapCommerceMappings.supports(handlerMapping)) {
+            return SapCommerceMappings.rescan(handlerMapping, controllerClass);
+        }
         // detectHandlerMethods is declared on AbstractHandlerMethodMapping,
         // not on RequestMappingHandlerMapping, and getDeclaredMethod does
         // not look at supertypes. Asking the concrete class for it threw
@@ -319,6 +335,9 @@ public class SpringMvcReloader {
 
             Object handlerMapping = findHandlerMapping(appContext);
             if (handlerMapping == null) return false;
+            if (SapCommerceMappings.supports(handlerMapping)) {
+                return SapCommerceMappings.addedHandlers(handlerMapping, controllerClass);
+            }
 
             // The previous stand-in still holds the paths added before this
             // reload, and this one carries them again. The controller's own

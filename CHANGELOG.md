@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- SAP OCC controller reload rebuilds override priorities and bean-discovered request
+  mappings together, restoring eligible fallback handlers and rolling back registry
+  changes on registration failure. Synthetic added endpoints and existing instance
+  registrations trigger a restart requirement before existing mappings change.
+
 - Existing SAP populator/list-merge directive XML edits now report restart before
   mutating their definitions or beans, preserving effective converter lists.
 

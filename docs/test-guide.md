@@ -202,6 +202,34 @@ and unrelated XML property updates. Add `--disable-guard` to remove the guard in
 temporary compiled copy: the restart assertion must fail. The runner neither starts
 SAP nor writes the SDK; it is not live application acceptance.
 
+### Isolated OCC request mapping acceptance
+
+After `./gradlew :agent:compileJava`, run:
+
+```bash
+python3 scripts/test-sap-mappings-sdk.py /path/to/hybris
+```
+
+The SDK must contain compiled `commercewebservices` web classes, `commerceservices`
+classes and its Spring test/servlet jars. The runner uses the project's cached ASM
+9.10.1 and a JDK compatible with the SDK; no new dependency is installed. Synthetic
+controllers are redefined in a temporary instrumented JVM around the genuine SDK
+`CommerceHandlerMapping`. Real Spring request lookup is compared with fresh SDK
+initialization after mapping removal/move, override addition/removal, lower priority,
+base fallback and API-version changes, including repeated saves and unrelated routes.
+
+It also checks registration-failure rollback, missing-lock/inspection refusal,
+generated-adapter preservation, sticky added-method refusal across saves, independent
+context diagnostics, lookup locking during rebuild and ordinary Spring MVC behavior.
+Add `--disable-refresh` to compile a temporary copy without the SDK rescan hook;
+the removed-winner fallback assertion must fail. SDK jars and sources are not copied
+into the project, and the runner does not start or write a SAP application.
+
+The fixture substitutes only configuration-service priority lookup with numeric
+synthetic keys. It proves priority selection and registry refresh on Spring 5.3.43
+and 6.2.12, not property-file reload, live SAP HTTP acceptance, or custom/programmatic
+mapping discovery.
+
 ## 10. Extension Watching Scope
 
 ### Verify only custom extensions are watched
