@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring XML property removals now report the required restart even when other
+  properties are edited or added in the same save. Removed values remain unchanged;
+  supported property updates still apply.
+
 - Spring XML edits to existing merge-enabled collections now require restart
   before changing the affected bean or its definition, preventing loss of inherited
   list/map entries. Merge-flag changes and nested collections are detected; ordinary

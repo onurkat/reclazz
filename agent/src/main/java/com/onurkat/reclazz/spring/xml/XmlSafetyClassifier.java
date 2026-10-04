@@ -195,22 +195,21 @@ final class XmlSafetyClassifier {
             liveByName.put(SpringReflection.getPropertyName(pv), SpringReflection.getPropertyValue(pv));
         }
 
-        int changed = 0;
+        Set<String> newNames = new HashSet<>();
         for (Object pv : newPvs) {
             String name = SpringReflection.getPropertyName(pv);
+            newNames.add(name);
             Object newRaw = SpringReflection.getPropertyValue(pv);
             Object liveRaw = liveByName.get(name);
             if (!rawEquals(liveRaw, newRaw)) {
                 out.propertyChanges.add(new BeanDefinitionDiff.PropertyChange(
                         beanName, name, newRaw, newBd));
-                changed++;
             }
         }
 
-        if (changed == 0 && newPvs.length < livePvs.length) {
-            // Some property was removed from the XML. Leaving the live
-            // instance's field as-is is *usually* harmless, but we flag
-            // it so the user knows restart would re-apply defaults.
+        if (!newNames.containsAll(liveByName.keySet())) {
+            // Removal requires restart even when other properties were edited
+            // or added. Keep the removed value; do not guess its default.
             out.unsafe.add(new BeanDefinitionDiff.UnsafeChange(
                     beanName, "<property> removed — live instance keeps old value until restart"));
         }
