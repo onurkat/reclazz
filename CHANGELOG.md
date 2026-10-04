@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring XML edits to existing merge-enabled collections now require restart
+  before changing the affected bean or its definition, preventing loss of inherited
+  list/map entries. Merge-flag changes and nested collections are detected; ordinary
+  replacements and unchanged merged properties retain their existing behavior.
+
 - Successful SAP Solr provider/resolver code reloads now explain that Reclazz did
   not reindex stored documents and advise validating indexing before explicitly
   reindexing affected documents. Recognition uses implemented SDK interfaces;

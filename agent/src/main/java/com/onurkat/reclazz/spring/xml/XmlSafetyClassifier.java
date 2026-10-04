@@ -46,6 +46,7 @@ final class XmlSafetyClassifier {
 
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
             if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
+            if (XmlCollectionMergeGuard.classify(beanName, existing, newBd, out)) continue;
             if (XmlBeanRecreator.handles(existing, newBd)) {
                 try {
                     var replacement = XmlBeanRecreator.prepare(liveFactory, tempFactory, beanName, existing, newBd, xmlPath);
@@ -231,8 +232,8 @@ final class XmlSafetyClassifier {
      * Compare raw {@code PropertyValue} payloads. Spring's representations
      * (e.g. {@code TypedStringValue}, {@code RuntimeBeanReference}) don't
      * override {@code equals}, so we fall back to a {@code toString}-based
-     * compare. Lossy, but only produces false-positive "changed" events
-     * which result in a harmless re-apply — never a missed change.
+     * compare. This is not a complete metadata comparison: merge-enabled
+     * collection changes are refused by XmlCollectionMergeGuard before here.
      */
     private static boolean rawEquals(Object a, Object b) {
         if (a == null && b == null) return true;
