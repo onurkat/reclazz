@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Successful SAP Solr provider/resolver code reloads now explain that Reclazz did
+  not reindex stored documents and advise validating indexing before explicitly
+  reindexing affected documents. Recognition uses implemented SDK interfaces;
+  ordinary classes receive no indexing guidance.
+
 - Changes to registered local SAP process definition XML now warn that they are
   not applied and require restart, including files outside native watch roots.
   Detection uses existing singleton registrations in captured active contexts;

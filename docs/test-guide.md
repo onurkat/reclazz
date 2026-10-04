@@ -256,6 +256,43 @@ Cross-check the existing OCC/list-directive/request-mapping runners above, keepi
 their support boundaries unchanged. No proprietary jars or private source belong
 in the fixture. See [integration acceptance](../integration-test/README.md).
 
+### SAP Solr provider/resolver reload guidance
+
+A successful code reload for a class implementing SAP Commerce
+`FieldValueProvider`, `ValueResolver` or `TypeValueResolver` emits a visible INFO advisory:
+Reclazz did not reindex stored documents. Validate a subsequent indexing operation
+and explicitly reindex affected documents if needed. The code receipt/VERIFY
+still describes class bytes only; it is not an indexing receipt. This advice
+neither requests a JVM restart nor triggers an index operation.
+
+Recognition follows implemented interfaces through superclass/interface inheritance.
+It does not infer index names, document IDs or downstream dependencies of ordinary
+helper classes. A class name containing `Solr` or `Provider` is insufficient.
+Failure to resolve the loaded hierarchy produces no indexing claim. Absence of a
+advisory is not evidence that no index can be affected.
+
+```bash
+./gradlew :agent:unitTest --tests '*SapIndexingGuidanceTest' --rerun
+./gradlew :agent:e2eTest --tests '*SapIndexingGuidanceTest' --rerun
+./gradlew :agent:shadowJar
+python3 scripts/test-sap-indexing-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+# Negative control: must exit nonzero because edited class bytes are withheld.
+python3 scripts/test-sap-indexing-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+```
+
+The portable tests use synthetic interface identities and a snapshot. The optional
+SDK acceptance instead compiles synthetic application classes against installed
+SAP interfaces, invokes genuine `FieldValue` / `DefaultSolrInputDocument` paths
+with the real agent, and stores immutable document snapshots locally. It checks
+method-body edits, a newly added helper method, a revert, same-session exact-byte
+receipts, changed newly built documents, unchanged older snapshots until explicit
+reindex, and ordinary-class exclusion. The installed SDK stays outside the repo.
+
+This is isolated document-building acceptance, not live Solr or full SAP indexer
+acceptance. It starts no tenant, indexer CronJob or Solr server, and writes no live
+index. Schema changes, index configuration, cluster distribution, commit/query
+visibility and selecting affected documents/indexes remain unverified here.
+
 ### SAP process definition diagnostics
 
 Changes to local XML referenced by an existing `ProcessDefinitionResource`

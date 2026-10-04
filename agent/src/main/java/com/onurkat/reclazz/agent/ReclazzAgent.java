@@ -16,6 +16,7 @@ import com.onurkat.reclazz.hybris.impex.ImpexAutoImporter;
 import com.onurkat.reclazz.platform.HybrisPlatformContext;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.platform.PlatformDetector;
+import com.onurkat.reclazz.platform.SapIndexingGuidance;
 import com.onurkat.reclazz.platform.SpringContextInterceptTransformer;
 import com.onurkat.reclazz.reload.StructuralReloader;
 import com.onurkat.reclazz.spring.SpringReloadOrchestrator;
@@ -1042,6 +1043,7 @@ public class ReclazzAgent {
             StatusReporter.reload(displayName(className), elapsed, effects);
         }
         ReloadEvents.reloaded(className, structural, elapsed, shape, source);
+        SapIndexingGuidance.afterReload(findLoadedClass(className));
     }
 
     /**
