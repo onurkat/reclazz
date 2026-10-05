@@ -368,6 +368,30 @@ parse a business process or exercise a scheduler. These checks are not live SAP
 acceptance. Automatic definition refresh requires a separate design: the SDK
 factory/cache APIs alone do not establish isolation to newly started processes.
 
+### Isolated SAP event-listener acceptance
+
+```bash
+./gradlew :agent:shadowJar
+python3 scripts/test-sap-events-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+# Negative control: an unpublished edit must fail the receipt/behavior check.
+python3 scripts/test-sap-events-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+```
+
+The runner compiles a synthetic `com.example` subclass of the genuine SDK
+`AbstractEventListener` plus a `AbstractEvent` and registers it with a real Spring
+context under the built agent. Events are published through Spring's multicaster, so
+the SDK's final `onApplicationEvent` cluster and tenant guard runs before `onEvent`;
+local stub `ClusterService`/`TenantService` and a locally scoped event make that guard
+pass honestly. Editing the listener body and a registered dependency, then reverting,
+each requires an applied VERIFY receipt with the exact class hash in one JVM/session,
+and is checked for changed event output, exactly one delivery per publish, preserved
+listener identity and an unaffected unrelated bean.
+
+This confirms the existing hot-swap already covers SAP event-listener reload; no new
+production hook was needed. It is isolated acceptance, not a live run: it starts no
+tenant or cluster, sends no external events, and the `afterPropertiesSet` tenant-scope
+initialization path is **unverified** here because it needs live SAP infrastructure.
+
 ## 10. Extension Watching Scope
 
 ### Verify only custom extensions are watched
