@@ -49,6 +49,18 @@ public class SpringReloadOrchestrator {
     private final SpringControllerAdviceReloader exceptionHandlerReloader;
     private final java.util.List<ReloadSteps.Step> afterTheBeanIsBack;
     private java.util.Map<String, java.util.List<String>> refreshOwnersOnHelper = java.util.Map.of();
+    // Class names that have added a member at any point this session, so they
+    // carry a companion the agent regenerates on every reload. A companion-added
+    // @EventListener or @Transactional/@Cacheable method can later be removed by
+    // an edit the per-reload structural diff cannot see: the member was never in
+    // the class's baseline, so adding or editing it reads as structural but
+    // removing it reads as a body-only change. Once a class is known to carry
+    // added members, the event and operation-source steps below run on every one
+    // of its reloads, so a removed companion listener or transactional method is
+    // still cleaned up. Plain classes that never add a member stay out of this
+    // set, so the common body-only save skips both context-sized steps.
+    private final java.util.Set<String> classesWithAddedMembers =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     /** Opt-in helper-class -> cache-owner-class names to recreate after a helper reload. */
     public void setRefreshOwnersOnHelper(java.util.Map<String, java.util.List<String>> mapping) {
@@ -212,6 +224,7 @@ public class SpringReloadOrchestrator {
                                 java.util.Set<String> addedMethodSigs,
                                 byte[] newBytecode) {
         if (reloadedClass == null) return;
+        if (addedMethods) classesWithAddedMembers.add(className);
 
         if (isSpringBean(reloadedClass)) {
             var lifecycle = lifecycleReloader.prepare(reloadedClass, addedMethodSigs, newBytecode);
@@ -353,9 +366,17 @@ public class SpringReloadOrchestrator {
             // the cached VALUES; this clears the cached ANSWER to "what does
             // the annotation on this method say", which redefinition changes
             // without changing the Method identity the answer is filed under.
-            new ReloadSteps.Step("Transaction and cache metadata",
-                    r -> operationSourceReloader.reloadOperationSources(
-                            r.type(), r.annotationsChanged())),
+            // Only when something beyond the body changed, or the class carries
+            // added members: a body-only edit of a plain class does not touch
+            // annotations, so the cached answer stays correct, and re-reading it
+            // anyway would clear Spring's global annotation caches and every
+            // context's whole transaction/cache attribute cache for nothing. A
+            // class with a companion still runs it, because a removed added
+            // @Transactional/@Cacheable method is invisible to the structural diff.
+            new ReloadSteps.Step("Transaction and cache metadata", r -> {
+                if (r.structural() || r.annotationsChanged() || classesWithAddedMembers.contains(r.className()))
+                    operationSourceReloader.reloadOperationSources(r.type(), r.annotationsChanged());
+            }),
 
             // The same cache, one framework over. Method security resolves
             // @PreAuthorize once per method and keeps the answer under a key
@@ -369,8 +390,18 @@ public class SpringReloadOrchestrator {
 
             new ReloadSteps.Step("Scheduler re-registration",
                     r -> schedulerReloader.reloadScheduledMethods(r.type(), r.addedMethods(), r.bytecode())),
-            new ReloadSteps.Step("Event listener re-registration",
-                    r -> eventReloader.reloadEventListeners(r.type(), r.addedMethods(), r.bytecode())),
+            // Same relevance gate. An existing @EventListener adapter on an
+            // original method holds a Method whose body redefinition updated in
+            // place, so a body-only edit keeps dispatching through it with nothing
+            // to re-register; running anyway means two full listener-registry
+            // scans per context on every save. An added listener lives on the
+            // companion, so the class is in classesWithAddedMembers and still runs
+            // here: its removal is invisible to the structural diff and would
+            // otherwise leave a stale adapter firing.
+            new ReloadSteps.Step("Event listener re-registration", r -> {
+                if (r.structural() || r.annotationsChanged() || classesWithAddedMembers.contains(r.className()))
+                    eventReloader.reloadEventListeners(r.type(), r.addedMethods(), r.bytecode());
+            }),
             new ReloadSteps.Step("AOP proxy refresh",
                     r -> aopReloader.reloadAopProxies(r.type())),
             new ReloadSteps.Step("Async re-processing",
