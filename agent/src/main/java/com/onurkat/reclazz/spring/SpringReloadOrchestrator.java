@@ -48,6 +48,12 @@ public class SpringReloadOrchestrator {
     private final PlatformContext platformContext;
     private final SpringControllerAdviceReloader exceptionHandlerReloader;
     private final java.util.List<ReloadSteps.Step> afterTheBeanIsBack;
+    private java.util.Map<String, java.util.List<String>> refreshOwnersOnHelper = java.util.Map.of();
+
+    /** Opt-in helper-class -> cache-owner-class names to recreate after a helper reload. */
+    public void setRefreshOwnersOnHelper(java.util.Map<String, java.util.List<String>> mapping) {
+        this.refreshOwnersOnHelper = mapping == null ? java.util.Map.of() : mapping;
+    }
 
     public SpringReloadOrchestrator(PlatformContext platformContext) {
         this.platformContext = platformContext;
@@ -113,6 +119,67 @@ public class SpringReloadOrchestrator {
                 // @Bean/programmatic aspects need not carry a Spring stereotype.
                 new ReloadSteps.Step("AOP proxy refresh", r -> aopReloader.reloadAopProxies(r.type()))),
                 new ReloadSteps.Reloaded(className, type, false, false));
+        refreshMappedCacheOwners(className, type);
+    }
+
+    /**
+     * Opt-in: after a helper reloads, recreate the Spring singleton cache owners a
+     * developer mapped to it, so a custom cache the owner holds is rebuilt through the
+     * fresh helper logic. The agent cannot infer which owner a helper feeds, so the
+     * mapping is explicit; each owner is recreated through the same guarded bean-reload
+     * lifecycle, which rejects non-singletons and FactoryBeans, and active-listener
+     * owners are declined here rather than risking a dropped registration.
+     */
+    private void refreshMappedCacheOwners(String helperName, Class<?> helperType) {
+        java.util.List<String> owners = refreshOwnersOnHelper.get(helperName);
+        if (owners == null || owners.isEmpty()) return;
+        ClassLoader loader = helperType.getClassLoader();
+        for (String ownerName : owners) {
+            Class<?> ownerClass;
+            try {
+                // Resolve in the helper's own loader, so the same owner name in a
+                // different context/classloader is never refreshed by accident.
+                ownerClass = Class.forName(ownerName, false, loader);
+            } catch (Throwable notHere) {
+                StatusReporter.warn("Cache owner " + ownerName + " not found in "
+                        + helperName + "'s classloader; not refreshed");
+                continue;
+            }
+            if (isApplicationListener(ownerClass)) {
+                StatusReporter.warn("Cache owner " + ownerName
+                        + " is an event listener; restart to refresh it, not refreshed here");
+                RestartLedger.note(ownerName,
+                        "event-listener cache owner not refreshed after a helper reload; restart to rebuild its cache");
+                continue;
+            }
+            try {
+                var lifecycle = lifecycleReloader.prepare(ownerClass, java.util.Set.of(), null);
+                if (lifecycle == null) {
+                    StatusReporter.warn("Cache owner " + ownerName
+                            + " is not a recreatable singleton; not refreshed");
+                    continue;
+                }
+                if (!lifecycle.install()) {
+                    StatusReporter.warn("Cache owner " + ownerName
+                            + " could not be prepared for refresh; not refreshed");
+                    continue;
+                }
+                beanReloader.refreshBean(ownerName, ownerClass);
+                ReloadEffects.note("cache owner refreshed");
+                StatusReporter.detail("Recreated cache owner " + ownerName
+                        + " after " + helperName + " reloaded");
+            } catch (Throwable failure) {
+                StatusReporter.warn("Cache owner " + ownerName + " refresh failed: "
+                        + com.onurkat.reclazz.ui.Failures.describe(failure) + "; not refreshed");
+            }
+        }
+    }
+
+    private static boolean isApplicationListener(Class<?> type) {
+        for (Class<?> c = type; c != null; c = c.getSuperclass())
+            for (Class<?> i : c.getInterfaces())
+                if (i.getName().equals("org.springframework.context.ApplicationListener")) return true;
+        return false;
     }
 
     public void onClassReloaded(String className, Class<?> reloadedClass, boolean isStructural) {

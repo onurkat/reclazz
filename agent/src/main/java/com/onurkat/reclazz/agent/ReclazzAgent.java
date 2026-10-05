@@ -499,6 +499,7 @@ public class ReclazzAgent {
 
             // Set up Spring reload orchestrator (works for all platforms)
             SpringReloadOrchestrator springOrchestrator = new SpringReloadOrchestrator(platformContext);
+            springOrchestrator.setRefreshOwnersOnHelper(config.getRefreshOwnersOnHelper());
 
             // Set up XML reloader — parses *-spring.xml changes into a
             // throwaway factory, diffs against the live bean factory, and

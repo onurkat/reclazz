@@ -30,7 +30,8 @@ public class AgentConfig {
             "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
-            "platform", "watchDirs", "jpaRefresh", "sessionLog", "reloadBoundary"
+            "platform", "watchDirs", "jpaRefresh", "sessionLog", "reloadBoundary",
+            "refreshOwnersOnHelper"
     );
 
     // Split on comma followed by a known key= pattern
@@ -111,6 +112,23 @@ public class AgentConfig {
     /** Where every status line is appended for the record, or null for no record. */
     private Path sessionLog;
     private boolean requestBoundary;
+
+    /**
+     * Opt-in map from a reloaded helper class to the Spring singleton cache-owner
+     * classes to recreate after that helper reloads, so a custom cache the owner
+     * holds is rebuilt through the fresh helper logic.
+     *
+     * <p>A plain non-bean helper reload applies the new bytecode but cannot, on
+     * its own, refresh an arbitrary Guava or TTL cache a bean already filled: the
+     * agent has no way to know which owner a given helper feeds, and guessing a
+     * cache field or flushing everything would be worse than doing nothing. So the
+     * mapping is explicit and off by default, and each owner is recreated through
+     * the same guarded lifecycle a bean reload uses, which rejects FactoryBeans,
+     * non-singletons and anything that cannot be safely recreated.
+     *
+     * <p>Syntax: {@code helperFqn>owner1;owner2|helper2>owner3}.
+     */
+    private final Map<String, List<String>> refreshOwnersOnHelper = new LinkedHashMap<>();
 
     public static AgentConfig parse(String agentArgs) {
         AgentConfig config = new AgentConfig();
@@ -256,6 +274,22 @@ public class AgentConfig {
             }
         }
 
+        if (params.containsKey("refreshOwnersOnHelper")) {
+            for (String mapping : params.get("refreshOwnersOnHelper").split("\\|")) {
+                String[] sides = mapping.split(">", 2);
+                if (sides.length != 2) continue;
+                String helper = sides[0].trim();
+                if (helper.isEmpty()) continue;
+                List<String> owners = config.refreshOwnersOnHelper
+                        .computeIfAbsent(helper, ignored -> new ArrayList<>());
+                for (String owner : sides[1].split(";")) {
+                    String trimmed = owner.trim();
+                    // Duplicate selections coalesce rather than recreating twice.
+                    if (!trimmed.isEmpty() && !owners.contains(trimmed)) owners.add(trimmed);
+                }
+            }
+        }
+
         config.unknownKeys = unknownKeysIn(params, agentArgs);
         return config;
     }
@@ -359,6 +393,10 @@ public class AgentConfig {
     public List<Path> getWatchDirs() { return Collections.unmodifiableList(watchDirs); }
     public boolean isJpaRefresh() { return jpaRefresh; }
     public boolean isRequestBoundary() { return requestBoundary; }
+    /** Opt-in helper-class -> cache-owner-class names to recreate after a helper reload. */
+    public Map<String, List<String>> getRefreshOwnersOnHelper() {
+        return Collections.unmodifiableMap(refreshOwnersOnHelper);
+    }
 
     public boolean shouldWatchExtension(String extensionName) {
         return watchAllExtensions || watchExtensions.contains(extensionName);

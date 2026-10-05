@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- A new `refreshOwnersOnHelper` agent argument recreates selected Spring singleton
+  cache-owner beans after a mapped helper class reloads, so a custom cache they hold is
+  rebuilt through the fresh helper logic. It is opt-in and off by default; owners are
+  recreated through the normal guarded bean-reload lifecycle, and non-singletons,
+  FactoryBeans and event-listener owners are declined. See the usage guide.
+
 - Spring XML lookup-method additions, removals and target changes on existing
   ordinary beans now require restart. The affected bean and its definition remain
   unchanged, including mixed property edits; independent bean updates still apply.

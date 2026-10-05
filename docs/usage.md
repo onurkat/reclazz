@@ -99,6 +99,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `verifyTransform` | `false` | Run the bytecode verifier over every transformed class and print what it says |
 | `sessionLog` | (none) | Append every status line to this file with an ISO timestamp and level, no colour: the session's record, to read back or attach to a report |
 | `reloadBoundary` | `immediate` | `request` waits for synchronous MVC dispatches and supported Spring 5 `javax` and Spring 6 Jakarta MVC async requests before applying a class reload batch; requires `-javaagent` at JVM startup. See [Reload between requests](#reload-between-requests) |
+| `refreshOwnersOnHelper` | (none) | Opt-in `helperFqn>owner1;owner2\|helper2>owner3`: after a helper class reloads, recreate the named Spring singleton cache-owner beans so a custom cache they hold is rebuilt through the fresh helper logic. Owners are recreated through the normal guarded bean-reload lifecycle; non-singletons, FactoryBeans and event-listener owners are declined. See [Refreshing a custom cache after a helper reload](#refreshing-a-custom-cache-after-a-helper-reload) |
 
 Arguments are never removed or renamed within a major version: a line that
 worked with an older 1.x agent works with a newer one. An argument the agent
@@ -189,6 +190,32 @@ are not instantiated by the check, and unchanged definitions do not generate a w
 Unrelated ordinary XML edits in the same resource can still apply. Newly added
 directives retain the existing bean-addition behavior; this diagnostic does not
 promise automatic list reconstruction or broaden support for new directives.
+
+### Refreshing a custom cache after a helper reload
+
+A reloaded method body takes effect wherever it runs, but a value a bean already
+computed and kept in its own cache, a Guava cache or a plain field, does not
+recompute on its own. When the logic lives in a plain helper class that is not a
+Spring bean, editing the helper updates its code yet leaves that cached value as it
+was, because the agent has no way to know which bean's cache a given helper feeds and
+will not guess a cache field or empty every cache.
+
+`refreshOwnersOnHelper` lets you say so explicitly. Map a helper class to the Spring
+singleton cache-owner beans it feeds:
+
+```
+-javaagent:reclazz-agent.jar=refreshOwnersOnHelper=com.acme.PriceHelper>com.acme.PriceCache;com.acme.QuoteCache
+```
+
+After `com.acme.PriceHelper` reloads, each listed owner is recreated through the same
+guarded lifecycle an ordinary bean reload uses, so its cache is rebuilt and the next
+read runs the fresh helper logic. Separate several mappings with `|`. An owner is
+resolved in the reloaded helper's own classloader, so the same class name in another
+context is never touched. Owners that are not recreatable singletons, FactoryBeans or
+event listeners are declined with a message rather than refreshed, and the feature is
+off until you set the mapping. It recreates the owner; externally held references to
+the old instance and in-flight work are the owner's own concern, the same as any bean
+reload.
 
 ### XML singleton recreation
 

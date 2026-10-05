@@ -43,10 +43,14 @@ def run(args):
         port = root / 'status.port'
         lines, results = deque(maxlen=100), queue.Queue()
         ready, identity = threading.Event(), []
+        agent_args = f'platform=generic,watchDirs={classes},portFile={port},startupDelaySec=1,debounceMs=100'
+        if args.refresh_owners:
+            # Opt in: recreate the Spring singleton cache owners after the plain helper reloads.
+            agent_args += ',refreshOwnersOnHelper=com.example.PlainHelper>com.example.GuavaOwner;com.example.TtlOwner'
         process = subprocess.Popen([
             'java', '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
             '-Dlog4j.configurationFile=' + str(logging),
-            f'-javaagent:{agent}=platform=generic,watchDirs={classes},portFile={port},startupDelaySec=1,debounceMs=100',
+            f'-javaagent:{agent}={agent_args}',
             '-cp', os.pathsep.join([str(classes), classpath]), 'com.example.CacheApp'],
             cwd=root, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
 
@@ -203,7 +207,10 @@ if __name__ == '__main__':
     parser.add_argument('--agent', required=True, type=Path)
     parser.add_argument('--withhold-edit', action='store_true', help='negative control; unchanged code must fail acceptance')
     parser.add_argument('--require-fresh-helper', action='store_true', help='desired-contract probe; fails while helper-only custom caches remain stale')
+    parser.add_argument('--refresh-owners', action='store_true', help='opt in refreshOwnersOnHelper so the mapped owners recreate after the helper reload')
     args = parser.parse_args()
+    if args.refresh_owners and not args.require_fresh_helper:
+        parser.error('--refresh-owners proves freshness; run it with --require-fresh-helper')
     try: run(args)
     except Exception as failure:
         raise SystemExit(str(failure).replace(str(args.hybris_home.resolve()), '<SDK>')) from None
