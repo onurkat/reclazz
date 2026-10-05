@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring XML lookup-method additions, removals and target changes on existing
+  ordinary beans now require restart. The affected bean and its definition remain
+  unchanged, including mixed property edits; independent bean updates still apply.
+
 - Spring XML alias additions, removals and target changes now report that restart
   is required when observed for the edited resource. Existing alias lookups remain
   unchanged; new-bean aliases are explicitly reported as unapplied. Source ownership

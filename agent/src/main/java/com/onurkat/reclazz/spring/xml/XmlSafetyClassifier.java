@@ -57,6 +57,8 @@ final class XmlSafetyClassifier {
                 continue;
             }
 
+            if (XmlLookupMethodGuard.classify(beanName, existing, newBd, out)) continue;
+
             String shapeReason = unsafeShapeReason(newBd);
             if (shapeReason != null) {
                 out.unsafe.add(new BeanDefinitionDiff.UnsafeChange(beanName, shapeReason));
