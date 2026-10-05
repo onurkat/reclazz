@@ -90,6 +90,11 @@ registrations and backoffice labels are restored. A new items.xml attribute stil
 needs its database column, so Reclazz prints a reminder to run
 **HAC > Update Running System** rather than writing the database itself.
 
+Business-process actions (`AbstractProceduralAction`, `AbstractSimpleDecisionAction`)
+are prototype-scoped beans the process engine resolves at each transition, so editing an
+action body takes effect on the next step with no restart: the next resolution is a fresh
+instance of the reloaded class. The same holds for a cronjob performable on its next run.
+
 ## Drop-in AGENTS.md recipe
 
 Paste this into the Hybris project's `AGENTS.md` so the agent that works on it
