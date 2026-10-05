@@ -392,6 +392,31 @@ production hook was needed. It is isolated acceptance, not a live run: it starts
 tenant or cluster, sends no external events, and the `afterPropertiesSet` tenant-scope
 initialization path is **unverified** here because it needs live SAP infrastructure.
 
+### Isolated ConstraintValidator acceptance
+
+```bash
+./gradlew :agent:shadowJar
+python3 scripts/test-sap-validators-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+# Negative control: an unpublished edit must fail the receipt/behavior check.
+python3 scripts/test-sap-validators-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+```
+
+The runner builds a genuine Hibernate Validator (the installed provider, jakarta
+namespace) with a synthetic constraint, a custom `ConstraintValidator` and an injected
+dependency, and validates a bean through the real provider under the built agent.
+Editing the validator's `isValid` body and the injected dependency, then reverting, each
+requires an applied VERIFY receipt with the exact class hash in one JVM/session and is
+checked for the changed violation message, exactly one validation per request, and an
+`initialize` count that stays at one. A stable init count proves the provider keeps a
+single cached validator instance whose method bodies the agent hot-swaps in place, so
+the existing `SpringValidatorReloader` metadata flush is not needed for a body or
+dependency edit. No new production hook was required.
+
+This is isolated acceptance, not a live run. It distinguishes a validator-instance body
+edit (covered) from constraint-metadata changes (handled separately by the metadata
+flush) and from structural annotation edits, which stay **unverified** here along with
+provider lifecycle beyond instance reuse.
+
 ## 10. Extension Watching Scope
 
 ### Verify only custom extensions are watched
