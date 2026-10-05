@@ -26,7 +26,7 @@ public class AgentConfig {
 
     private static final Set<String> KNOWN_KEYS = Set.of(
             "hybrisHome", "watchExtensions", "autoCompile", "autoImpex",
-            "impexAllowRemove",
+            "impexAllowRemove", "autoUpdateRunningSystem",
             "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
@@ -54,6 +54,7 @@ public class AgentConfig {
      * UPDATE are what the edit-and-see-it loop is for.
      */
     private boolean impexAllowRemove = false;
+    private boolean autoUpdateRunningSystem = false;
     private boolean autoCompile = false;
     private long debounceMs = 500;
     private boolean verbose = false;
@@ -170,6 +171,9 @@ public class AgentConfig {
         }
         if (params.containsKey("impexAllowRemove")) {
             config.impexAllowRemove = Boolean.parseBoolean(params.get("impexAllowRemove"));
+        }
+        if (params.containsKey("autoUpdateRunningSystem")) {
+            config.autoUpdateRunningSystem = Boolean.parseBoolean(params.get("autoUpdateRunningSystem"));
         }
 
         if (params.containsKey("autoCompile")) {
@@ -376,6 +380,7 @@ public class AgentConfig {
     public boolean isWatchAllExtensions() { return watchAllExtensions; }
     public boolean isAutoImpex() { return autoImpex; }
     public boolean isImpexAllowRemove() { return impexAllowRemove; }
+    public boolean isAutoUpdateRunningSystem() { return autoUpdateRunningSystem; }
     public boolean isAutoCompile() { return autoCompile; }
     public long getDebounceMs() { return debounceMs; }
     public boolean isVerbose() { return verbose; }

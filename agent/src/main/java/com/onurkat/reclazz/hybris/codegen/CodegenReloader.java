@@ -6,6 +6,8 @@ package com.onurkat.reclazz.hybris.codegen;
 
 import com.onurkat.reclazz.hybris.ExtensionInfo;
 import com.onurkat.reclazz.hybris.HybrisContext;
+import com.onurkat.reclazz.hybris.RunningSystemUpdater;
+import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.watcher.ChangeEvent;
 
@@ -94,6 +96,8 @@ public class CodegenReloader {
     }
 
     private final HybrisContext hybrisContext;
+    private final boolean autoUpdateRunningSystem;
+    private final RunningSystemUpdater runningSystemUpdater;
     private final ScheduledExecutorService executor;
     private final Object lock = new Object();
     private volatile boolean running = false;
@@ -113,7 +117,22 @@ public class CodegenReloader {
     private final Set<Kind> pendingKinds = EnumSet.noneOf(Kind.class);
 
     public CodegenReloader(HybrisContext hybrisContext) {
+        this(hybrisContext, false, null);
+    }
+
+    /**
+     * @param autoUpdateRunningSystem opt-in: after an items.xml change regenerates and
+     *                                reloads the models, run the schema-only running-system
+     *                                update so a new attribute's column exists without a
+     *                                manual HAC click
+     * @param runningSystemUpdater    how that update is applied; may be null when the opt-in
+     *                                is off
+     */
+    public CodegenReloader(HybrisContext hybrisContext, boolean autoUpdateRunningSystem,
+                           RunningSystemUpdater runningSystemUpdater) {
         this.hybrisContext = hybrisContext;
+        this.autoUpdateRunningSystem = autoUpdateRunningSystem;
+        this.runningSystemUpdater = runningSystemUpdater;
         this.executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "Reclazz-CodegenRegen");
             t.setDaemon(true);
@@ -235,29 +254,58 @@ public class CodegenReloader {
                 + "Structural reloader is applying new bytecode now.");
 
         if (hasItems) {
-            // items.xml DOESN'T just mean "new method on a POJO". Model
-            // classes are tied to the Hybris persistence layer: new
-            // attributes map to new DB columns, and the type system
-            // cache must be invalidated. Reclazz can't safely run DDL
-            // against a live database, so the user has to click the
-            // HAC update button themselves before using the new
-            // attributes.
-            StatusReporter.warn("items.xml changed — new attributes require a DB schema update + "
-                    + "type system refresh. Open HAC → Platform → Update Running System "
-                    + "(default URL: https://localhost:9002/hac/platform/update) to apply.");
-            StatusReporter.warn("New attributes on existing model instances will return null "
-                    + "until HAC updatesystem runs and ModelService re-fetches from the DB.");
-            // Enumtype values have the same second half. A static enumtype
-            // regenerates as a Java enum and Reclazz appends the constant to
-            // the running JVM; a dynamic enumtype's class materialises values
-            // through its own valueOf cache. Either way the platform persists
-            // the value as a reference to its EnumerationValue item, and that
-            // row is also created by Update Running System.
-            StatusReporter.warn("The same applies to new enumtype values: the JVM side reloads, "
-                    + "but the platform can persist a value only after Update Running System "
-                    + "(or an ImpEx) has created its EnumerationValue item.");
+            handleNewPersistence(autoUpdateRunningSystem, runningSystemUpdater);
         }
     }
+
+    /**
+     * What an items.xml change still needs after the model bytecode reloads. A new
+     * attribute maps to a new DB column and the type system must refresh, which is the
+     * HAC "Update Running System" action, a live operation rather than a restart.
+     *
+     * <p>Off by default the developer is told to run it in HAC. With the opt-in the
+     * schema-only update is run in place; if it completes the new attribute is live, and
+     * if it does not the manual guidance and a restart-ledger note stand instead. This
+     * covers new enumtype values too: their EnumerationValue rows are created by the same
+     * update.
+     *
+     * @return what was done, for the tests and callers to assert on
+     */
+    SchemaOutcome handleNewPersistence(boolean autoUpdate, RunningSystemUpdater updater) {
+        boolean attempted = autoUpdate && updater != null;
+        if (attempted && updater.updateSchema()) {
+            StatusReporter.success("items.xml changed — ran Update Running System (schema only); "
+                    + "the new attributes and enum values are live. No restart, no HAC click.");
+            return SchemaOutcome.APPLIED;
+        }
+        // items.xml DOESN'T just mean "new method on a POJO". Model classes are tied to
+        // the Hybris persistence layer: new attributes map to new DB columns, and the
+        // type system cache must be invalidated. Without the opt-in (or when the update
+        // did not complete) the developer runs it in HAC before using the new attributes.
+        StatusReporter.warn("items.xml changed — new attributes require a DB schema update + "
+                + "type system refresh. Open HAC → Platform → Update Running System "
+                + "(default URL: https://localhost:9002/hac/platform/update) to apply.");
+        StatusReporter.warn("New attributes on existing model instances will return null "
+                + "until HAC updatesystem runs and ModelService re-fetches from the DB.");
+        // Enumtype values have the same second half. A static enumtype regenerates as a
+        // Java enum and Reclazz appends the constant to the running JVM; a dynamic
+        // enumtype's class materialises values through its own valueOf cache. Either way
+        // the platform persists the value as a reference to its EnumerationValue item, and
+        // that row is also created by Update Running System.
+        StatusReporter.warn("The same applies to new enumtype values: the JVM side reloads, "
+                + "but the platform can persist a value only after Update Running System "
+                + "(or an ImpEx) has created its EnumerationValue item.");
+        if (attempted) {
+            RestartLedger.note("items.xml schema",
+                    "automatic Update Running System did not complete; run it in HAC "
+                            + "so the new attribute's column and type system exist");
+            return SchemaOutcome.FAILED;
+        }
+        return SchemaOutcome.WARNED;
+    }
+
+    /** What {@link #handleNewPersistence} did about the schema side of an items.xml change. */
+    enum SchemaOutcome { WARNED, APPLIED, FAILED }
 
     /**
      * How the platform's ant is started on this operating system: the files

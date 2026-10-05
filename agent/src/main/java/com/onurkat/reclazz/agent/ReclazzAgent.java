@@ -523,8 +523,20 @@ public class ReclazzAgent {
                 // reminder is emitted because DB schema changes can't
                 // be applied safely from here.
                 if (platformContext instanceof HybrisPlatformContext) {
+                    // The schema update is applied through the platform's own HAC facade,
+                    // resolved lazily in the platform classloader (the application context's
+                    // loader, which also defines the hac extension's bin classes) because
+                    // the context does not exist yet at agent startup.
+                    com.onurkat.reclazz.platform.PlatformContext pc = platformContext;
+                    java.util.function.Supplier<ClassLoader> platformLoader = () -> {
+                        Object appCtx = pc.getApplicationContext();
+                        return appCtx != null ? appCtx.getClass().getClassLoader()
+                                : pc.getClass().getClassLoader();
+                    };
                     codegenReloader = new CodegenReloader(
-                            ((HybrisPlatformContext) platformContext).getHybrisContext());
+                            ((HybrisPlatformContext) platformContext).getHybrisContext(),
+                            config.isAutoUpdateRunningSystem(),
+                            new com.onurkat.reclazz.hybris.HacRunningSystemUpdater(platformLoader));
                 }
             } else {
                 interceptorReloader = null;

@@ -87,8 +87,11 @@ Hybris-specific saves also reload without a restart: `*-items.xml` and
 changed properties and log levels reach the running server, `.impex` files import
 on save with `autoImpex=true` (a REMOVE header is refused), and interceptor
 registrations and backoffice labels are restored. A new items.xml attribute still
-needs its database column, so Reclazz prints a reminder to run
-**HAC > Update Running System** rather than writing the database itself.
+needs its database column: by default Reclazz prints a reminder to run
+**HAC > Update Running System**, and with `autoUpdateRunningSystem=true` it runs that
+schema-only update itself (add columns, no data, never drop) so the attribute is live
+without the manual click. That option runs DDL on the live database, so it is opt-in and
+for development only.
 
 Business-process actions (`AbstractProceduralAction`, `AbstractSimpleDecisionAction`)
 are prototype-scoped beans the process engine resolves at each transition, so editing an

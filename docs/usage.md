@@ -91,6 +91,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know |
 | `excludeClasses` | (none) | Semicolon-separated class name patterns the transform leaves alone; the way out when instrumenting one class is the problem |
 | `impexAllowRemove` | `false` | Let auto-imported ImpEx files run `REMOVE` lines |
+| `autoUpdateRunningSystem` | `false` | After an items.xml change regenerates the models, run the schema-only Update Running System (add columns, no data, never drop) so a new attribute is live without a manual HAC click. Runs DDL on the live database, so opt-in and dev-only |
 | `jpaRefresh` | `false` | Opt-in mapping rebuild. Existing fields require enhanced redefinition; new entities also work on stock JDKs, including supported Hibernate `validate` with a prepared schema. See [scope](#new-jpa-entities-with-a-prepared-schema) |
 | `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
 | `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |

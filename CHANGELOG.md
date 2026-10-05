@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- A new `autoUpdateRunningSystem` agent argument runs the SAP Commerce running-system
+  schema update in place after an items.xml change regenerates and reloads the models, so
+  a new persistent attribute's column exists without a manual HAC click or a restart. It
+  drives the platform's own HAC update facade reflectively with every data step off
+  (schema only, non-destructive: add columns and tables, never drop, no essential or
+  project data, no localization). It is opt-in and off by default because it runs DDL on
+  the live database, and if it cannot complete the manual HAC guidance stands.
+
 - A new `refreshOwnersOnHelper` agent argument recreates selected Spring singleton
   cache-owner beans after a mapped helper class reloads, so a custom cache they hold is
   rebuilt through the fresh helper logic. It is opt-in and off by default; owners are

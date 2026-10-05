@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Focused unit tests for the pieces of {@link CodegenReloader} that don't
@@ -167,6 +168,42 @@ class CodegenReloaderTest {
         ExtensionInfo second = reloader.findOwningExtension(beansFile);
         assertSame(first, second,
                 "lookup is a pure function of the extensions map — same object both calls");
+    }
+
+    // ─── handleNewPersistence (items.xml schema side) ──────────────────────────
+
+    @Test
+    void handleNewPersistence_autoUpdateOff_warnsOnly() {
+        assertEquals(CodegenReloader.SchemaOutcome.WARNED,
+                reloader.handleNewPersistence(false, () -> {
+                    throw new AssertionError("the updater must not run when the opt-in is off");
+                }));
+    }
+
+    @Test
+    void handleNewPersistence_noUpdater_warnsOnly() {
+        assertEquals(CodegenReloader.SchemaOutcome.WARNED,
+                reloader.handleNewPersistence(true, null));
+    }
+
+    @Test
+    void handleNewPersistence_appliedWhenTheUpdateCompletes() {
+        assertEquals(CodegenReloader.SchemaOutcome.APPLIED,
+                reloader.handleNewPersistence(true, () -> true));
+    }
+
+    @Test
+    void handleNewPersistence_failedUpdateFallsBackToTheManualGuidance() {
+        com.onurkat.reclazz.ui.RestartLedger.clear();
+        try {
+            assertEquals(CodegenReloader.SchemaOutcome.FAILED,
+                    reloader.handleNewPersistence(true, () -> false));
+            assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream()
+                            .anyMatch(s -> s.contains("Update Running System")),
+                    "a failed auto-update must leave a restart-ledger note to run it in HAC");
+        } finally {
+            com.onurkat.reclazz.ui.RestartLedger.clear();
+        }
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
