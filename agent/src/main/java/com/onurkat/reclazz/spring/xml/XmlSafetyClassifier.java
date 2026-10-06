@@ -50,6 +50,8 @@ final class XmlSafetyClassifier {
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
             String shapeReason = unsafeShapeReason(newBd);
             if (shapeReason != null && unchangedUnsupported(liveFactory, tempFactory, beanName, existing, newBd)) continue;
+            if (shapeReason == null && !XmlBeanRecreator.handles(existing, newBd)
+                    && XmlFactoryBeanPropertyGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             if (XmlCollectionMergeGuard.classify(beanName, existing, newBd, out)) continue;
             if (XmlBeanRecreator.handles(existing, newBd)) {

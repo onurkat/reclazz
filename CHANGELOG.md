@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Existing ordinary XML `FactoryBean` definition changes now require restart
+  before factory properties or metadata are updated. Cached products and their
+  consumers remain intact; lazy and nonsingleton-product factories use the same
+  conservative refusal. Proven unchanged definitions remain quiet.
+
 - Unchanged standard Spring XML definitions with unsupported shapes, including
   abstract templates and prototypes, no longer emit restart findings on each save.
   Real changes, additions, removals and unverifiable/custom construction retain

@@ -257,6 +257,17 @@ reload.
 
 ### XML singleton recreation
 
+Existing ordinary XML `FactoryBean` definition changes require restart before
+factory properties or definition metadata are updated. A setter on the factory
+does not refresh Spring's cached product or references already held by consumers.
+The refusal also covers unwarmed/lazy factories and nonsingleton products: Reclazz
+does not infer that those products have no consumers. It does not query or create
+the product to make this decision. Proven unchanged standard definitions remain
+quiet, new definitions retain native creation, and independent ordinary bean
+updates can still apply. Product eviction, factory close and consumer rewiring are
+outside this support; constructor/factory/lifecycle and prototype guards retain
+their existing restrictions.
+
 For an existing bean in a watched Spring XML resource, edits to constructor arguments,
 a public static or instance factory method, or explicit `init-method` and
 `destroy-method` metadata can recreate the singleton without restarting:
