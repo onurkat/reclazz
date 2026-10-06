@@ -766,6 +766,31 @@ loads. An unavailable/incompatible resolver hook is reported. Other Spring
 versions, JDK 17 runtime, attach to an already loaded MVC stack, and a servlet
 container deployment were not exercised. No dependencies were added.
 
+### Registered MVC interceptors: measured reload limitation
+
+Method-body saves on registered MVC interceptors and their helpers can reach the
+existing request chain, but that does not prove the chain holds the recreated
+Spring beans. In real-agent synthetic tests on Spring 5.3.39 and 6.1.14, a parent
+`@Component` helper was recreated with its new constructor-owned value while the
+dispatched interceptor still used the original value. Direct bean-lookup
+registration and native `MappedInterceptor` registration both showed this gap.
+Restart the application when an interceptor needs that recreated dependency
+state; a successful class reload or bean-refresh message is insufficient evidence.
+
+When a `WebMvcConfigurer` directly autowires the interceptor, native dependency
+destruction can also recreate the context's handler mapping while the existing
+`DispatcherServlet` retains the mapping it captured at startup. Reclazz does not
+currently reconcile this servlet/context split or rebuild interceptor registrations.
+
+The measured scope used stock JDK 21, parent/web contexts, normal and child-loader
+application classes, and three repeated interceptor/helper saves. Ordered
+`preHandle`, `postHandle` and `afterCompletion` calls, exactly-once delivery,
+unrelated interceptor identity and mapped include/exclude behavior were preserved
+in these fixtures. Source-only edits did not change requests until compiled class
+bytes were published. This is a known limitation, not full interceptor lifecycle
+support; servlet filter chains, security policies, proxied interceptors, concurrent
+requests and a deployed servlet container were not validated by this investigation.
+
 ### Binding and model methods added after startup
 
 A supported plain controller or controller advice can gain entirely new
