@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Spring XML property comparison now detects named inner-bean configuration edits
+  and local/parent reference changes while preserving unchanged anonymous inner
+  beans. Simple inner edits retain native resolution; resource/lifecycle or
+  unsupported inner replacements require restart before mutating their owner.
+  Merge diagnostics use the same declared-value semantics.
+
 - Existing ordinary Spring XML beans now report restart for changes to
   depends-on, primary, autowire or autowire-candidate before applying their
   properties. The affected bean and definition stay unchanged; independent

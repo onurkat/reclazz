@@ -81,7 +81,7 @@ final class XmlSafetyClassifier {
                 continue;
             }
 
-            collectPropertyChanges(beanName, liveBd, newBd, out);
+            collectPropertyChanges(liveFactory, beanName, liveBd, newBd, out);
         }
 
         detectRemovals(liveFactory, xmlPath, newNameSet, out);
@@ -190,7 +190,7 @@ final class XmlSafetyClassifier {
         return null;
     }
 
-    private static void collectPropertyChanges(String beanName, Object liveBd, Object newBd,
+    private static void collectPropertyChanges(Object liveFactory, String beanName, Object liveBd, Object newBd,
                                                 BeanDefinitionDiff out) {
         Object[] newPvs = SpringReflection.getPropertyValueArray(SpringReflection.getPropertyValues(newBd));
         Object[] livePvs = SpringReflection.getPropertyValueArray(SpringReflection.getPropertyValues(liveBd));
@@ -201,16 +201,28 @@ final class XmlSafetyClassifier {
         }
 
         Set<String> newNames = new HashSet<>();
-        for (Object pv : newPvs) {
-            String name = SpringReflection.getPropertyName(pv);
-            newNames.add(name);
-            Object newRaw = SpringReflection.getPropertyValue(pv);
-            Object liveRaw = liveByName.get(name);
-            if (!rawEquals(liveRaw, newRaw)) {
-                out.propertyChanges.add(new BeanDefinitionDiff.PropertyChange(
-                        beanName, name, newRaw, newBd));
+        java.util.List<BeanDefinitionDiff.PropertyChange> pending = new java.util.ArrayList<>();
+        try {
+            ClassLoader applicationLoader = (ClassLoader) liveFactory.getClass().getMethod("getBeanClassLoader").invoke(liveFactory);
+            XmlRawValueComparator comparator = new XmlRawValueComparator(newBd.getClass().getClassLoader());
+            for (Object pv : newPvs) {
+                String name = SpringReflection.getPropertyName(pv);
+                newNames.add(name);
+                Object newRaw = SpringReflection.getPropertyValue(pv);
+                Object liveRaw = liveByName.get(name);
+                if (!comparator.same(liveRaw, newRaw, applicationLoader))
+                    pending.add(new BeanDefinitionDiff.PropertyChange(beanName, name, newRaw, newBd));
             }
+            // Removing a resource-owning composition must not partially mutate its owner.
+            for (var entry : liveByName.entrySet()) if (!newNames.contains(entry.getKey()))
+                comparator.same(entry.getValue(), null, applicationLoader);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError failure) {
+            out.unsafe.add(new BeanDefinitionDiff.UnsafeChange(beanName,
+                    "cannot safely compare/apply raw property values; restart required, bean and definition were not updated: "
+                            + SpringReflection.rootCause(failure)));
+            return;
         }
+        out.propertyChanges.addAll(pending);
 
         if (!newNames.containsAll(liveByName.keySet())) {
             // Removal requires restart even when other properties were edited
@@ -232,16 +244,4 @@ final class XmlSafetyClassifier {
         return a == null ? b == null : a.equals(b);
     }
 
-    /**
-     * Compare raw {@code PropertyValue} payloads. Spring's representations
-     * (e.g. {@code TypedStringValue}, {@code RuntimeBeanReference}) don't
-     * override {@code equals}, so we fall back to a {@code toString}-based
-     * compare. This is not a complete metadata comparison: merge-enabled
-     * collection changes are refused by XmlCollectionMergeGuard before here.
-     */
-    private static boolean rawEquals(Object a, Object b) {
-        if (a == null && b == null) return true;
-        if (a == null || b == null) return false;
-        return String.valueOf(a).equals(String.valueOf(b));
-    }
 }

@@ -19,13 +19,15 @@ final class XmlCollectionMergeGuard {
             Class<?> mergeable = Class.forName("org.springframework.beans.Mergeable", false,
                     candidate.getClass().getClassLoader());
             Method enabled = mergeable.getMethod("isMergeEnabled");
+            XmlRawValueComparator comparator = new XmlRawValueComparator(candidate.getClass().getClassLoader());
             Map<String, Object> oldValues = properties(previous), newValues = properties(candidate);
             Set<String> names = new LinkedHashSet<>(oldValues.keySet());
             names.addAll(newValues.keySet());
             for (String property : names) {
                 Value oldValue = snapshot(oldValues.get(property), mergeable, enabled, 0);
                 Value newValue = snapshot(newValues.get(property), mergeable, enabled, 0);
-                if ((oldValue.containsMerge || newValue.containsMerge) && !oldValue.equals(newValue)) {
+                if ((oldValue.containsMerge || newValue.containsMerge)
+                        && !comparator.semantic(oldValues.get(property)).equals(comparator.semantic(newValues.get(property)))) {
                     diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(name,
                             "merged collection property '" + property
                                     + "' changed; restart required, bean and definition were not updated"));
@@ -71,9 +73,9 @@ final class XmlCollectionMergeGuard {
             }
             content = values;
         } else {
-            // Preserve the existing scalar comparison convention; collection metadata
-            // is separate because ManagedList/Map.toString() omits the merge flag.
-            content = String.valueOf(raw);
+            // Use declared inner/ref/typed semantics too; generated inner names
+            // must not turn an unchanged merged composition into a restart finding.
+            content = new XmlRawValueComparator(mergeable.getClassLoader()).semantic(raw);
         }
         return new Value(raw == null ? "null" : raw.getClass().getName(), content, merge, containsMerge);
     }

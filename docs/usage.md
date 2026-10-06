@@ -153,6 +153,17 @@ property edits. This diagnostic does not rebuild initialization order or reinjec
 existing consumers; new beans retain Spring's native metadata handling and the
 existing guidance for consumers created before their addition.
 
+Ordinary XML property values are compared by their declared configuration,
+including inner bean properties/constructor values and local versus parent bean
+references. An unchanged inner bean keeps its live identity; generated inner
+names, source locations and resolved type caches do not trigger reconstruction.
+Changed simple inner beans still use Spring's native value resolution. Changes
+that would reconstruct resource, lifecycle, factory or otherwise unsupported inner
+compositions require restart before any property of that owner is updated;
+independent supported beans can still update. Comparison has bounded depth and
+size and refuses unknown raw values. This does not destroy or rewire arbitrary
+nested live objects, and user constructor/setter side effects are not rolled back.
+
 ### OCC field-set mappings
 
 For existing SAP Commerce `FieldSetLevelMapping` beans, supported XML property
