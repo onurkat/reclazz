@@ -1,25 +1,16 @@
 name: Build
 
 on:
+  # The three-platform matrix (Windows included) is the expensive part, and it
+  # was running on every push to main and every pull request, including the many
+  # prose-only commits. To keep Actions spend down it no longer runs
+  # automatically: it runs on demand, and when a release tag is pushed, which is
+  # when the full cross-platform check is actually wanted. The local gate
+  # (./gradlew :agent:test) is the check for ordinary commits.
+  workflow_dispatch:
   push:
-    branches: [main]
-    # A change to prose builds nothing. Release notes, the changelog and the
-    # docs are the most frequent commits here, and each one ran the whole
-    # matrix, Windows included, to test code it did not touch.
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'branding/**'
-      - 'LICENSE'
-      - 'NOTICE'
-  pull_request:
-    branches: [main]
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - 'branding/**'
-      - 'LICENSE'
-      - 'NOTICE'
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 # Cancel superseded runs of the same branch/PR
 concurrency:
