@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Failed Spring XML property updates on already-instantiated ordinary beans now
+  preserve the previous bean-definition value. Supported sibling updates still
+  apply; application setter side effects are not rolled back. Lazy edits invalidate
+  only the affected merged definition, retaining deferred creation and validation.
+
 - A new `autoUpdateRunningSystem` agent argument runs the SAP Commerce running-system
   schema update in place after an items.xml change regenerates and reloads the models, so
   a new persistent attribute's column exists without a manual HAC click or a restart. It

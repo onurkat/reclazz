@@ -14,6 +14,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import com.onurkat.reclazz.ui.RestartLedger;
+import com.onurkat.reclazz.util.Reflect;
 
 /**
  * Reloads {@code *-spring.xml} changes into a running Spring context without
@@ -50,8 +51,9 @@ import com.onurkat.reclazz.ui.RestartLedger;
  *
  * <h2>Failure isolation</h2>
  * Parse errors leave the live context untouched. Apply errors are caught
- * per bean and reclassified as unsafe so the user sees the specific failure
- * without risking a half-applied context.
+ * per property and reported as unsafe; other supported changes can still apply.
+ * Failed updates to instantiated beans retain their previous raw definition
+ * value. Application setter side effects are not rolled back.
  */
 public final class SpringXmlReloader {
 
@@ -241,16 +243,17 @@ public final class SpringXmlReloader {
 
     private void applyPropertyChange(Object liveFactory, BeanDefinitionDiff.PropertyChange change)
             throws Exception {
-        // Always mirror the change into the live BD first — this way any
-        // future getBean() call (e.g. a lazy bean that hasn't been touched
-        // yet, or Spring scope refresh) produces an instance with the new
-        // value, even if we don't have a singleton to mutate right now.
-        mirrorPropertyToLiveBeanDefinition(liveFactory, change);
-
         Object singleton = SpringReflection.getExistingSingleton(liveFactory, change.beanName);
         if (singleton == null) {
-            // Bean not instantiated yet — nothing live to mutate. The BD
-            // update above is enough.
+            Method invalidate = Reflect.findMethod(liveFactory.getClass(),
+                    "clearMergedBeanDefinition", String.class);
+            if (invalidate == null) {
+                throw new IllegalStateException("lazy merged-definition cache invalidation unavailable");
+            }
+            // Keep native lazy creation: commit the requested metadata without
+            // instantiating the bean or eagerly validating its dependencies.
+            mirrorPropertyToLiveBeanDefinition(liveFactory, change);
+            invalidate.invoke(liveFactory, change.beanName);
             return;
         }
 
@@ -265,6 +268,9 @@ public final class SpringXmlReloader {
         }
 
         setter.invoke(singleton, coerce(resolved, setter.getParameterTypes()[0]));
+        // Resolution, conversion or a throwing setter must not commit a value
+        // that failed to apply. A setter's own side effects remain its responsibility.
+        mirrorPropertyToLiveBeanDefinition(liveFactory, change);
         StatusReporter.success("Spring property updated: "
                 + change.beanName + "." + change.propertyName);
     }

@@ -136,6 +136,15 @@ import seen only by the temporary parser does not become a captured live resourc
 Unsupported bean changes still require the reported restart. Use the actual
 loaded file; editing a different source copy with the same name does not update it.
 
+For an already-instantiated ordinary bean, a failed property resolution, conversion
+or setter call keeps the previous raw property in its bean definition and reports
+the failure. Other supported properties and beans can still update. A setter may
+change application state before throwing; those side effects are not rolled back.
+Uninstantiated lazy beans retain native deferred validation: their requested
+metadata is updated without creating them, and invalid values can fail when Spring
+later creates the bean. Only that bean's cached merged definition is invalidated
+so native creation reads the requested metadata; other beans' caches stay intact.
+
 ### OCC field-set mappings
 
 For existing SAP Commerce `FieldSetLevelMapping` beans, supported XML property
