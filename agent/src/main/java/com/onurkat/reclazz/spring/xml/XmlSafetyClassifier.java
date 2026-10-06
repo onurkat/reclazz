@@ -24,6 +24,8 @@ import java.util.Set;
  *   <li>Bean not present in live factory → <b>NEW</b> (safe to add if shape OK)</li>
  *   <li>Bean exists, but {@code class}, {@code parent}, {@code scope}, or
  *       constructor-args differ → <b>unsafe</b> (would need destroy+recreate)</li>
+ *   <li>Existing ordinary {@code depends-on}, {@code primary}, {@code autowire},
+ *       or {@code autowire-candidate} changes → <b>unsafe</b> before property mutation</li>
  *   <li>Otherwise, per-property diff of {@code <property>} values — emit
  *       one {@link BeanDefinitionDiff.PropertyChange} per changed property</li>
  * </ul>
@@ -57,6 +59,7 @@ final class XmlSafetyClassifier {
                 continue;
             }
 
+            if (XmlDefinitionMetadataGuard.classify(beanName, existing, newBd, out)) continue;
             if (XmlLookupMethodGuard.classify(beanName, existing, newBd, out)) continue;
 
             String shapeReason = unsafeShapeReason(newBd);

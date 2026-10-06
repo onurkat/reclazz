@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Existing ordinary Spring XML beans now report restart for changes to
+  depends-on, primary, autowire or autowire-candidate before applying their
+  properties. The affected bean and definition stay unchanged; independent
+  supported bean updates and unchanged-metadata property edits remain available.
+
 - Failed Spring XML property updates on already-instantiated ordinary beans now
   preserve the previous bean-definition value. Supported sibling updates still
   apply; application setter side effects are not rolled back. Lazy edits invalidate
