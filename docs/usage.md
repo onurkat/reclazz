@@ -164,6 +164,15 @@ independent supported beans can still update. Comparison has bounded depth and
 size and refuses unknown raw values. This does not destroy or rewire arbitrary
 nested live objects, and user constructor/setter side effects are not rolled back.
 
+Existing unsupported XML definitions do not report restart merely because the
+file was saved again: a standard definition proven unchanged is left alone,
+including abstract templates and prototype beans. Real edits, new or removed
+unsupported definitions still require the existing restart or recreation checks.
+This proof includes declared values, property order and alias sets and refuses custom definition
+subclasses, instance suppliers or unverifiable nested metadata; their prior
+conservative diagnostics remain. It does not make unsupported shapes reloadable
+or reconstruct XML that arbitrary post-processors have rewritten.
+
 ### OCC field-set mappings
 
 For existing SAP Commerce `FieldSetLevelMapping` beans, supported XML property

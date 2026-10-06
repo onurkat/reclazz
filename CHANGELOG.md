@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Unchanged standard Spring XML definitions with unsupported shapes, including
+  abstract templates and prototypes, no longer emit restart findings on each save.
+  Real changes, additions, removals and unverifiable/custom construction retain
+  the existing safety checks; independent supported edits still apply.
+
 - Spring XML property comparison now detects named inner-bean configuration edits
   and local/parent reference changes while preserving unchanged anonymous inner
   beans. Simple inner edits retain native resolution; resource/lifecycle or

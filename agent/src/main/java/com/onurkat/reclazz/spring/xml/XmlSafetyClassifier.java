@@ -20,7 +20,8 @@ import java.util.Set;
  *   <li>{@code abstract="true"}, non-singleton scope, {@code factory-bean},
  *       {@code init-method}, {@code destroy-method}, {@code InitializingBean},
  *       {@code DisposableBean}, {@code BeanPostProcessor} →
- *       <b>always unsafe</b></li>
+ *       <b>unsafe for new or changed declarations</b>; a proven unchanged
+ *       standard definition is a no-op</li>
  *   <li>Bean not present in live factory → <b>NEW</b> (safe to add if shape OK)</li>
  *   <li>Bean exists, but {@code class}, {@code parent}, {@code scope}, or
  *       constructor-args differ → <b>unsafe</b> (would need destroy+recreate)</li>
@@ -47,6 +48,8 @@ final class XmlSafetyClassifier {
             if (newBd == null) continue;
 
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
+            String shapeReason = unsafeShapeReason(newBd);
+            if (shapeReason != null && unchangedUnsupported(liveFactory, tempFactory, beanName, existing, newBd)) continue;
             if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             if (XmlCollectionMergeGuard.classify(beanName, existing, newBd, out)) continue;
             if (XmlBeanRecreator.handles(existing, newBd)) {
@@ -62,7 +65,6 @@ final class XmlSafetyClassifier {
             if (XmlDefinitionMetadataGuard.classify(beanName, existing, newBd, out)) continue;
             if (XmlLookupMethodGuard.classify(beanName, existing, newBd, out)) continue;
 
-            String shapeReason = unsafeShapeReason(newBd);
             if (shapeReason != null) {
                 out.unsafe.add(new BeanDefinitionDiff.UnsafeChange(beanName, shapeReason));
                 continue;
@@ -85,6 +87,31 @@ final class XmlSafetyClassifier {
         }
 
         detectRemovals(liveFactory, xmlPath, newNameSet, out);
+    }
+
+    /** Only proven standard declaration equality suppresses an existing shape warning. */
+    private static boolean unchangedUnsupported(Object liveFactory, Object parsedFactory, String name,
+                                                 Object previous, Object candidate) {
+        if (previous == null) return false;
+        Set<String> standard = Set.of("org.springframework.beans.factory.support.GenericBeanDefinition",
+                "org.springframework.beans.factory.support.RootBeanDefinition",
+                "org.springframework.beans.factory.support.ChildBeanDefinition");
+        if (!standard.contains(previous.getClass().getName()) || !standard.contains(candidate.getClass().getName())) return false;
+        try {
+            // Native definition equality is not a proof of custom construction callback equality.
+            if (previous.getClass().getMethod("getInstanceSupplier").invoke(previous) != null
+                    || candidate.getClass().getMethod("getInstanceSupplier").invoke(candidate) != null) return false;
+            Set<String> liveAliases = new HashSet<>(java.util.Arrays.asList((String[]) liveFactory.getClass()
+                    .getMethod("getAliases", String.class).invoke(liveFactory, name)));
+            Set<String> parsedAliases = new HashSet<>(java.util.Arrays.asList((String[]) parsedFactory.getClass()
+                    .getMethod("getAliases", String.class).invoke(parsedFactory, name)));
+            if (!liveAliases.equals(parsedAliases)) return false;
+            XmlRawValueComparator comparator = new XmlRawValueComparator(candidate.getClass().getClassLoader());
+            return comparator.verifiedStandardDefinition(previous).equals(comparator.verifiedStandardDefinition(candidate));
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError unavailable) {
+            // Keep the prior diagnostic/recreation path when equality cannot be verified.
+            return false;
+        }
     }
 
     /**

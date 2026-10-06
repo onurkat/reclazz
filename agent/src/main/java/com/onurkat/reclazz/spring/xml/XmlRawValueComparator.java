@@ -32,17 +32,26 @@ final class XmlRawValueComparator {
         return false;
     }
     Object semantic(Object raw) throws ReflectiveOperationException { return inspect(raw).value; }
+    Object verifiedStandardDefinition(Object raw) throws ReflectiveOperationException { return inspect(raw, true).value; }
 
-    private Snapshot inspect(Object raw) throws ReflectiveOperationException {
+    private Snapshot inspect(Object raw) throws ReflectiveOperationException { return inspect(raw, false); }
+    private Snapshot inspect(Object raw, boolean standardOnly) throws ReflectiveOperationException {
         nodes = 0;
         List<Object> innerDefinitions = new ArrayList<>();
-        return new Snapshot(value(raw, 0, innerDefinitions), innerDefinitions);
+        return new Snapshot(value(raw, 0, innerDefinitions, standardOnly), innerDefinitions);
     }
-    private Value value(Object raw, int depth, List<Object> inners) throws ReflectiveOperationException {
+    private Value value(Object raw, int depth, List<Object> inners, boolean standardOnly) throws ReflectiveOperationException {
         if (depth > 32 || ++nodes > 4096) throw new IllegalArgumentException("raw value depth/size exceeds verification bound");
         if (raw == null) return new Value("null", null, null);
-        if (holderType.isInstance(raw)) return value(call(raw, "getBeanDefinition"), depth + 1, inners);
+        if (holderType.isInstance(raw)) return value(call(raw, "getBeanDefinition"), depth + 1, inners, standardOnly);
         if (definitionType.isInstance(raw)) {
+            if (standardOnly) {
+                require(Set.of("org.springframework.beans.factory.support.GenericBeanDefinition",
+                        "org.springframework.beans.factory.support.RootBeanDefinition",
+                        "org.springframework.beans.factory.support.ChildBeanDefinition").contains(raw.getClass().getName()),
+                        "unverified definition subclass");
+                require(call(raw, "getInstanceSupplier") == null, "unverified instance supplier");
+            }
             inners.add(raw);
             Object header = call(raw, "cloneBeanDefinition");
             set(header, "setBeanClassName", String.class, call(raw, "getBeanClassName"));
@@ -55,16 +64,17 @@ final class XmlRawValueComparator {
             Map<String,Object> properties = new LinkedHashMap<>();
             for (Object pv : (Object[]) call(call(raw, "getPropertyValues"), "getPropertyValues")) {
                 properties.put((String) call(pv, "getName"), Arrays.asList(call(pv, "isOptional"),
-                        value(call(pv, "getValue"), depth + 1, inners)));
+                        value(call(pv, "getValue"), depth + 1, inners, standardOnly)));
             }
             Object arguments = call(raw, "getConstructorArgumentValues");
             Map<Object,Object> indexed = new LinkedHashMap<>();
             for (var entry : ((Map<?,?>) call(arguments, "getIndexedArgumentValues")).entrySet())
-                indexed.put(entry.getKey(), argument(entry.getValue(), depth + 1, inners));
+                indexed.put(entry.getKey(), argument(entry.getValue(), depth + 1, inners, standardOnly));
             List<Object> generic = new ArrayList<>();
             for (Object holder : (List<?>) call(arguments, "getGenericArgumentValues"))
-                generic.add(argument(holder, depth + 1, inners));
-            return new Value("inner", Arrays.asList(header, properties, indexed, generic), null);
+                generic.add(argument(holder, depth + 1, inners, standardOnly));
+            Object propertySnapshot = standardOnly ? new ArrayList<>(properties.entrySet()) : properties;
+            return new Value("inner", Arrays.asList(header, propertySnapshot, indexed, generic), null);
         }
         String name = raw.getClass().getName();
         if (name.equals("org.springframework.beans.factory.config.TypedStringValue"))
@@ -85,12 +95,12 @@ final class XmlRawValueComparator {
         }
         if (raw instanceof Map<?,?> map) {
             List<Object> entries = new ArrayList<>();
-            for (var entry : map.entrySet()) entries.add(Arrays.asList(value(entry.getKey(), depth + 1, inners), value(entry.getValue(), depth + 1, inners)));
+            for (var entry : map.entrySet()) entries.add(Arrays.asList(value(entry.getKey(), depth + 1, inners, standardOnly), value(entry.getValue(), depth + 1, inners, standardOnly)));
             return new Value(name, entries, metadata);
         }
         if (raw instanceof Collection<?> collection) {
             List<Object> entries = new ArrayList<>();
-            for (Object item : collection) entries.add(value(item, depth + 1, inners));
+            for (Object item : collection) entries.add(value(item, depth + 1, inners, standardOnly));
             return new Value(name, entries, metadata);
         }
         if (raw instanceof String || raw instanceof Boolean || raw instanceof Character
@@ -99,8 +109,8 @@ final class XmlRawValueComparator {
             return new Value(name, raw, null);
         throw new IllegalArgumentException("unsupported raw value type: " + name);
     }
-    private Object argument(Object holder, int depth, List<Object> inners) throws ReflectiveOperationException {
-        return Arrays.asList(call(holder, "getName"), call(holder, "getType"), value(call(holder, "getValue"), depth, inners));
+    private Object argument(Object holder, int depth, List<Object> inners, boolean standardOnly) throws ReflectiveOperationException {
+        return Arrays.asList(call(holder, "getName"), call(holder, "getType"), value(call(holder, "getValue"), depth, inners, standardOnly));
     }
 
     private void requireSimpleInner(Object definition, ClassLoader loader) throws ReflectiveOperationException {
