@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Changes to the effective `lazy-init` flag on existing ordinary Spring XML
+  beans now require restart before their properties or definitions are updated.
+  Native-equivalent defaults remain quiet, and current creation state is preserved.
+
 - Instantiated ordinary Spring XML properties now use native physical setter
   descriptors and bounded generic-aware conversion for scalar and typed
   collection values. Failed conversions retain previous definition values;

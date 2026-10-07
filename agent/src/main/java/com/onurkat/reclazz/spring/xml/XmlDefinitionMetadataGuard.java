@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/** Ordinary property edits cannot reconstruct dependency ordering or selection policy. */
+/** Ordinary property edits cannot reconstruct initialization state, ordering or selection policy. */
 final class XmlDefinitionMetadataGuard {
     private XmlDefinitionMetadataGuard() { }
 
@@ -21,6 +21,7 @@ final class XmlDefinitionMetadataGuard {
             if (before.primary != after.primary) changed.add("primary");
             if (before.autowire != after.autowire) changed.add("autowire");
             if (before.candidate != after.candidate) changed.add("autowire-candidate");
+            if (before.lazy != after.lazy) changed.add("lazy-init");
             if (changed.isEmpty()) return false;
             diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(name,
                     "definition metadata changed (" + String.join(", ", changed)
@@ -33,7 +34,7 @@ final class XmlDefinitionMetadataGuard {
         return true;
     }
 
-    private record Metadata(List<String> dependsOn, boolean primary, int autowire, boolean candidate) { }
+    private record Metadata(List<String> dependsOn, boolean primary, int autowire, boolean candidate, boolean lazy) { }
 
     private static Metadata metadata(Object definition) throws ReflectiveOperationException {
         String[] dependencies = (String[]) definition.getClass().getMethod("getDependsOn").invoke(definition);
@@ -43,6 +44,8 @@ final class XmlDefinitionMetadataGuard {
         return new Metadata(dependsOn,
                 (Boolean) definition.getClass().getMethod("isPrimary").invoke(definition),
                 (Integer) definition.getClass().getMethod("getAutowireMode").invoke(definition),
-                (Boolean) definition.getClass().getMethod("isAutowireCandidate").invoke(definition));
+                (Boolean) definition.getClass().getMethod("isAutowireCandidate").invoke(definition),
+                // Spring's parsed flag accounts for default-lazy-init and explicit defaults.
+                (Boolean) definition.getClass().getMethod("isLazyInit").invoke(definition));
     }
 }

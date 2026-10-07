@@ -145,8 +145,11 @@ metadata is updated without creating them, and invalid values can fail when Spri
 later creates the bean. Only that bean's cached merged definition is invalidated
 so native creation reads the requested metadata; other beans' caches stay intact.
 
-For existing ordinary XML beans, changes to `depends-on`, `primary`, `autowire`
-or `autowire-candidate` require restart. The affected bean's properties and
+For existing ordinary XML beans, changes to `depends-on`, `primary`, `autowire`,
+`autowire-candidate` or the effective `lazy-init` flag require restart. Spring's
+parsed flag determines equivalence, including `default-lazy-init` and explicit
+defaults. Changing the flag does not create a cold bean or undo an already
+created instance. The affected bean's properties and
 raw definition stay unchanged, including for a lazy bean; supported changes to
 independent beans can still apply. Unchanged declarations continue to allow
 property edits. This diagnostic does not rebuild initialization order or reinject
