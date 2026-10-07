@@ -257,6 +257,19 @@ reload.
 
 ### XML singleton recreation
 
+Ordinary XML beans implementing Spring `InitializingBean`, `DisposableBean`,
+`BeanPostProcessor` or `BeanFactoryPostProcessor` require restart when their
+declarations change. Safety checks keep Spring's already-resolved merged class,
+or resolve its name through the live factory's application loader, and also
+inspect an existing singleton's type,
+so application classes invisible to the watcher and lifecycle interfaces hidden
+by a JDK proxy are not treated as ordinary mutable beans. Inherited lazy classes
+are resolved without initialization or bean creation; unavailable type metadata
+requires restart. The affected bean and definition remain unchanged, proven
+unchanged standard declarations stay quiet, and supported sibling edits can
+still apply. This does not replay lifecycle callbacks or extend the existing
+constructor/factory/explicit-lifecycle recreation rules below.
+
 Existing ordinary XML `FactoryBean` definition changes require restart before
 factory properties or definition metadata are updated. A setter on the factory
 does not refresh Spring's cached product or references already held by consumers.

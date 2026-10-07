@@ -50,8 +50,10 @@ final class XmlSafetyClassifier {
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
             String shapeReason = unsafeShapeReason(newBd);
             if (shapeReason != null && unchangedUnsupported(liveFactory, tempFactory, beanName, existing, newBd)) continue;
-            if (shapeReason == null && !XmlBeanRecreator.handles(existing, newBd)
-                    && XmlFactoryBeanPropertyGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
+            if (shapeReason == null && !XmlBeanRecreator.handles(existing, newBd)) {
+                if (XmlLifecyclePropertyGuard.classify(liveFactory, tempFactory, beanName, existing, newBd, out)) continue;
+                if (XmlFactoryBeanPropertyGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
+            }
             if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             if (XmlCollectionMergeGuard.classify(beanName, existing, newBd, out)) continue;
             if (XmlBeanRecreator.handles(existing, newBd)) {
@@ -92,7 +94,7 @@ final class XmlSafetyClassifier {
     }
 
     /** Only proven standard declaration equality suppresses an existing shape warning. */
-    private static boolean unchangedUnsupported(Object liveFactory, Object parsedFactory, String name,
+    static boolean unchangedUnsupported(Object liveFactory, Object parsedFactory, String name,
                                                  Object previous, Object candidate) {
         if (previous == null) return false;
         Set<String> standard = Set.of("org.springframework.beans.factory.support.GenericBeanDefinition",
@@ -179,13 +181,6 @@ final class XmlSafetyClassifier {
         }
         if (SpringReflection.hasConstructorArgs(bd)) {
             return "has constructor-arg (not reloadable — restart to apply)";
-        }
-        String className = SpringReflection.getBeanClassName(bd);
-        if (SpringReflection.isPostProcessor(className)) {
-            return "BeanPostProcessor / BeanFactoryPostProcessor (affects other beans)";
-        }
-        if (SpringReflection.isInitializingOrDisposable(className)) {
-            return "implements InitializingBean / DisposableBean";
         }
         return null;
     }

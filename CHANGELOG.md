@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Ordinary Spring XML lifecycle and postprocessor checks now use the live
+  factory's application loader and merged declared type as well as an existing
+  singleton's type. Changed `InitializingBean`, `DisposableBean`,
+  `BeanPostProcessor` and `BeanFactoryPostProcessor` definitions require restart
+  before property mutation, including child-loader and inherited lazy types.
+  Proven unchanged standard declarations remain quiet; preflight does not
+  initialize classes, create beans or replay callbacks.
+
 - Existing ordinary XML `FactoryBean` definition changes now require restart
   before factory properties or metadata are updated. Cached products and their
   consumers remain intact; lazy and nonsingleton-product factories use the same
