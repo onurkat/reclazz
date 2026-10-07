@@ -257,17 +257,12 @@ public final class SpringXmlReloader {
             return;
         }
 
+        XmlNativePropertyBinding.Binding binding = XmlNativePropertyBinding.prepare(
+                liveFactory, singleton, change.propertyName, change.newRawValue);
         Object resolved = SpringReflection.resolveValue(
                 liveFactory, change.beanName, change.newBeanDefinition,
                 change.propertyName, change.newRawValue);
-
-        Method setter = findSetter(singleton.getClass(), change.propertyName);
-        if (setter == null) {
-            throw new RuntimeException("no setter for property '" + change.propertyName
-                    + "' on " + singleton.getClass().getName());
-        }
-
-        setter.invoke(singleton, coerce(resolved, setter.getParameterTypes()[0]));
+        binding.setter().invoke(singleton, binding.convert(resolved));
         // Resolution, conversion or a throwing setter must not commit a value
         // that failed to apply. A setter's own side effects remain its responsibility.
         mirrorPropertyToLiveBeanDefinition(liveFactory, change);
@@ -362,25 +357,7 @@ public final class SpringXmlReloader {
         return result;
     }
 
-    private static Method findSetter(Class<?> cls, String propertyName) {
-        if (propertyName == null || propertyName.isEmpty()) return null;
-        String setterName = "set"
-                + Character.toUpperCase(propertyName.charAt(0))
-                + propertyName.substring(1);
-        Class<?> current = cls;
-        while (current != null && current != Object.class) {
-            for (Method m : current.getDeclaredMethods()) {
-                if (m.getName().equals(setterName) && m.getParameterCount() == 1) {
-                    m.setAccessible(true);
-                    return m;
-                }
-            }
-            current = current.getSuperclass();
-        }
-        return null;
-    }
-
-    private static Object coerce(Object value, Class<?> target) {
+    static Object coerce(Object value, Class<?> target) {
         if (value == null) return null;
         if (target.isInstance(value)) return value;
         String s = value.toString();

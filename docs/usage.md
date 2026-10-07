@@ -257,6 +257,38 @@ reload.
 
 ### XML singleton recreation
 
+For instantiated ordinary beans, simple physical XML properties use Spring's
+write-method descriptor and generic method metadata. Admitted scalar conversions
+include strings, primitives/wrappers, `Class`, enum, decimal/integer numbers and
+`URI`; typed list/set/map compositions of admitted scalars use the live factory's
+standard `SimpleTypeConverter`. Generic inheritance uses the resolved target
+type, and setter selection does not execute a getter body. Registered editors
+and conversion services participate on admitted targets; their own side effects,
+like setter/resolver side effects, are not rolled back. A failed conversion or
+setter leaves the previous raw definition value intact, while independent
+supported properties can still apply.
+
+Whole bean references compatible with the resolved runtime target retain their
+identity, including custom collection beans, without newly iterating/converting
+them. Compatible custom elements, existing arrays and raw/wildcard collection
+elements retain direct assignment; resolved generic element types are checked.
+New custom-object/array conversions, conversions of unresolved generic elements
+and lazy custom collection carriers are outside this support. New native
+conversion is limited to bounded literal compositions with standard JDK
+collection carriers. The new conversion route refuses unknown custom
+`TypeConverter` implementations. Resource/stream/path/URL target
+properties and unsupported explicit XML type conversions are refused before
+value resolution; explicit arrays of admitted scalar types retain their prior
+native resolution. This does not prevent application code in a supported
+resolver, editor, converter or setter from producing its own side effects.
+
+Non-public unambiguous physical setters and proxies retain only the earlier
+primitive/string/compatible-value assignment boundary, with declared generic
+type validation; no proxy targets are unwrapped. Nested/indexed paths and
+logical companion-only setters are not newly supported. Uninstantiated lazy
+beans retain native deferred creation/validation, and the lifecycle, FactoryBean,
+merge and explicit singleton recreation guards below still apply.
+
 Ordinary XML beans implementing Spring `InitializingBean`, `DisposableBean`,
 `BeanPostProcessor` or `BeanFactoryPostProcessor` require restart when their
 declarations change. Safety checks keep Spring's already-resolved merged class,

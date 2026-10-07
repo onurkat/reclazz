@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Instantiated ordinary Spring XML properties now use native physical setter
+  descriptors and bounded generic-aware conversion for scalar and typed
+  collection values. Failed conversions retain previous definition values;
+  resource targets and unsupported explicit/custom conversions require restart.
+  Getter bodies are not used to select setters, and compatible bean references
+  retain identity. Private/proxy setters keep their limited legacy assignment.
+
 - Ordinary Spring XML lifecycle and postprocessor checks now use the live
   factory's application loader and merged declared type as well as an existing
   singleton's type. Changed `InitializingBean`, `DisposableBean`,
