@@ -74,7 +74,7 @@ dependencies {
     testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
     testImplementation("org.springframework:spring-messaging:5.3.39")
     // Real Rabbit listener regressions only; production remains reflection-only.
-    testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
+    testImplementation("org.springframework.amqp:spring-rabbit:4.1.1")
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
     testImplementation("com.h2database:h2:2.5.250")
