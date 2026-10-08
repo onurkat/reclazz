@@ -3024,7 +3024,7 @@ doesn't allow). This has one consequence worth knowing:
 **Works after a structural reload (any JDK 17+):**
 - Hot-compiled Java code that calls a new method directly — the
   invocation is rewritten through the companion via `invokedynamic`
-- Hot-compiled Java code within the reloaded owning class that reads/writes a new field; [cross-class access has a measured limit](#cross-class-access-to-added-instance-fields)
+- Hot-compiled Java code within the owner or another reloaded watched class that reads/writes a new instance field; see the [cross-class scope](#cross-class-access-to-added-instance-fields)
 - Jackson JSON input/output through the [added property adapter](#jackson-properties-added-after-startup)
 - Hybris Jalo-layer property access (`jaloItem.setProperty(...)`)
 - Flexible search with new attribute columns (after HAC
@@ -3044,15 +3044,19 @@ loop on hand-written Java, companion-class mode is transparent.
 
 ### Cross-class access to added instance fields
 
-The portable core evidence includes a case where an already loaded `Holder`
-gains `public int added = 42`, and a separately reloaded `Caller` starts reading
-`holder.added` directly. That caller throws `NoSuchFieldError` on the measured
-stock-JDK companion path, while `Holder.value()` reading its own new field
-returns 42 on the same existing object. Reloading the caller to use that owner
-accessor also returns 42 without restarting. Keep direct cross-class added-field
-access outside the supported scope; use an owner accessor or restart. This
-observation does not establish enhanced-JVM behavior or all inheritance/access
-shapes. See the [versioned core evidence](feature-evidence.md).
+A separately reloaded watched caller can directly read and write instance fields
+added to a watched owning class on the recorded SapMachine 17/21 macOS arm64
+lanes. Caller and owner-side accesses share the same field store: existing
+objects receive isolated first-read initializers, writes (including null values)
+survive later owner/caller saves, and separate objects retain separate values.
+The portable acceptance observes int, long, double and String fields, original
+fields and an unwatched JDK-field control. A null receiver throws
+`NullPointerException`, as an ordinary instance-field access does.
+
+This repairs the earlier `NoSuchFieldError` case for direct access through the
+watched declaring type. These fixtures keep field types stable and do not certify field-type changes or
+every inherited-field, classloader, enhanced-JVM or value shape. Added fields still do not become native
+members visible on the original class. See the [versioned core evidence](feature-evidence.md).
 
 ### Setting Up JBR
 

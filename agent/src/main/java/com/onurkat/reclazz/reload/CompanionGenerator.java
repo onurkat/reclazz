@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.transform.CallSiteAdapter;
+import com.onurkat.reclazz.transform.FieldAccessAdapter;
 import com.onurkat.reclazz.transform.TransformContext;
 import com.onurkat.reclazz.transform.TransformExclusions;
 import org.objectweb.asm.*;
@@ -94,6 +95,15 @@ public class CompanionGenerator implements Opcodes {
                                             StructuralAnalyzer.StructuralDiff diff,
                                             int version, Set<String> staticsToInitialise,
                                             Set<String> skipMethods) {
+        return generate(originalClassName, newBytecode, diff, version,
+                staticsToInitialise, skipMethods, null);
+    }
+
+    /** The live watch context enables the same external instance-field dispatch as at load time. */
+    public static CompanionResult generate(String originalClassName, byte[] newBytecode,
+                                            StructuralAnalyzer.StructuralDiff diff,
+                                            int version, Set<String> staticsToInitialise,
+                                            Set<String> skipMethods, TransformContext context) {
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 
@@ -126,7 +136,7 @@ public class CompanionGenerator implements Opcodes {
         // Visit original class to extract method bodies
         CompanionMethodExtractor extractor = new CompanionMethodExtractor(
                 writer, originalClassName, companionName, addedFieldKeys, methodHandleKeys,
-                diff, skipMethods);
+                diff, skipMethods, context);
         reader.accept(extractor, ClassReader.EXPAND_FRAMES);
 
         // The initial value of an added static field. The slice is written
@@ -138,7 +148,8 @@ public class CompanionGenerator implements Opcodes {
         if (staticPlan.hasCode()) {
             MethodVisitor mv = writer.visitMethod(ACC_PUBLIC | ACC_STATIC,
                     StaticInitialiserSlicer.INIT_METHOD, "()V", null, null);
-            MethodVisitor adapter = new CompanionMethodAdapter(mv, originalClassName,
+            MethodVisitor adapter = new CompanionMethodAdapter(
+                    externalInstanceFields(mv, originalClassName, context), originalClassName,
                     companionName, addedFieldKeys, true);
             adapter.visitCode();
             staticPlan.initialiserCode.accept(adapter);
@@ -159,7 +170,8 @@ public class CompanionGenerator implements Opcodes {
             MethodVisitor mv = writer.visitMethod(ACC_PUBLIC | ACC_STATIC,
                     InstanceInitialiserSlicer.methodName(fieldName),
                     "(L" + originalClassName + ";)Ljava/lang/Object;", null, null);
-            MethodVisitor adapter = new CompanionMethodAdapter(mv, originalClassName,
+            MethodVisitor adapter = new CompanionMethodAdapter(
+                    externalInstanceFields(mv, originalClassName, context), originalClassName,
                     companionName, addedFieldKeys, true);
             adapter.visitCode();
             entry.getValue().accept(adapter);
@@ -175,6 +187,24 @@ public class CompanionGenerator implements Opcodes {
                 staticPlan, instancePlan);
     }
 
+    private static MethodVisitor externalInstanceFields(MethodVisitor visitor, String originalClass,
+                                                        TransformContext context) {
+        if (context == null) return visitor;
+        FieldAccessAdapter fields = new FieldAccessAdapter(visitor, context, originalClass);
+        return new MethodVisitor(ASM9, visitor) {
+            @Override public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+                if (!owner.equals(originalClass) && (opcode == GETFIELD || opcode == PUTFIELD)) {
+                    // Own added fields already use FieldStore in CompanionMethodAdapter.
+                    // External watched fields need the load-time bootstrap too; a raw
+                    // instruction cannot resolve a member absent from the loaded schema.
+                    fields.visitFieldInsn(opcode, owner, name, descriptor);
+                } else {
+                    super.visitFieldInsn(opcode, owner, name, descriptor);
+                }
+            }
+        };
+    }
+
     /**
      * Extracts methods from the new class version and writes them as companion methods.
      */
@@ -186,10 +216,12 @@ public class CompanionGenerator implements Opcodes {
         private final Map<String, String> methodHandleKeys;
         private final StructuralAnalyzer.StructuralDiff diff;
         private final Set<String> skipMethods;
+        private final TransformContext context;
 
         CompanionMethodExtractor(ClassWriter writer, String originalClass, String companionName,
                                   Set<String> addedFields, Map<String, String> methodHandleKeys,
-                                  StructuralAnalyzer.StructuralDiff diff, Set<String> skipMethods) {
+                                  StructuralAnalyzer.StructuralDiff diff, Set<String> skipMethods,
+                                  TransformContext context) {
             super(ASM9);
             this.writer = writer;
             this.originalClass = originalClass;
@@ -198,6 +230,7 @@ public class CompanionGenerator implements Opcodes {
             this.methodHandleKeys = methodHandleKeys;
             this.diff = diff;
             this.skipMethods = skipMethods;
+            this.context = context;
         }
 
         @Override
@@ -281,7 +314,8 @@ public class CompanionGenerator implements Opcodes {
                     companionDescriptor, null, exceptions);
 
             // Return a method visitor that rewrites the method body
-            MethodVisitor body = new CompanionMethodAdapter(mv, originalClass, companionName,
+            MethodVisitor body = new CompanionMethodAdapter(
+                    externalInstanceFields(mv, originalClass, context), originalClass, companionName,
                     addedFields, diff.getAddedMethods(), isStatic);
 
             // A synchronized method loses its monitor on the way here: the

@@ -17,7 +17,7 @@ class CoreMemberReloadTest {
     @TempDir Path dir;
 
     @Test
-    void directAddedFieldCallerFailsWhileOwnerAccessorWorks() throws Exception {
+    void directAddedFieldCallerSharesOwnerValuesAcrossSaves() throws Exception {
         try (var app = WatchedApp.in(dir)
                 .with("Holder", "package app; public class Holder { public int value() { return 17; } }")
                 .with("Caller", "package app; public class Caller { public static String call(Holder h) { return Integer.toString(h.value()); } }")
@@ -43,10 +43,14 @@ class CoreMemberReloadTest {
             String id = app.latest("ID=").substring(3);
             app.rewriteAll(Map.of("Holder", "package app; public class Holder { public int added = 42; public int value() { return added; } }",
                     "Caller", "package app; public class Caller { public static String call(Holder h) { return Integer.toString(h.added); } }"));
-            app.awaitOrFail("LIVE=access=NoSuchFieldError:own=42 id=" + id,
-                    "characterize the direct added-field gap without mistaking a missed reload for it");
+            app.awaitOrFail("LIVE=access=42:own=42 id=" + id,
+                    "direct access must share the owning class first-read value");
+            app.rewrite("Caller", "package app; public class Caller { public static String call(Holder h) { h.added = 91; return Integer.toString(h.added); } }");
+            app.awaitOrFail("LIVE=access=91:own=91 id=" + id, "external writes must reach the same owner store");
+            app.rewrite("Holder", "package app; public class Holder { public int added = 73; public int value() { return added; } }");
+            app.awaitOrFail("LIVE=access=91:own=91 id=" + id, "a later owner save must preserve the written value");
             app.rewrite("Caller", "package app; public class Caller { public static String call(Holder h) { return Integer.toString(h.value()); } }");
-            app.awaitOrFail("LIVE=access=42:own=42 id=" + id, "owner accessor must provide a same-process workaround");
+            app.awaitOrFail("LIVE=access=91:own=91 id=" + id, "owner accessor must agree after direct read/write");
             assertEquals(1, app.output().stream().filter(s -> s.startsWith("ID=")).count());
         }
     }

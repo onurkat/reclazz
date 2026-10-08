@@ -8,10 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Core field documentation names the observed cross-class direct-access limit
-  instead of promising every reloaded caller can read an added instance field.
-  Owner-side accessors remain a measured workaround. The current IntelliJ
-  description states Reclazz's superclass policy rather than a universal JVM rule.
+- Separately reloaded watched callers directly read/write added instance fields
+  through the same store as the owning class, preserving first-read values,
+  explicit null writes and later saved-body values. Null instance receivers
+  raise NullPointerException instead of returning a default or dropping a write.
+
+
+- Core JVM documentation states measured field and serialization scope. The
+  current IntelliJ description states Reclazz's superclass policy rather than a
+  universal JVM rule.
 
 - Spring Data refresh now recognizes the actual repository hierarchy, refreshes
   each warm singleton product once, and re-points ordinary singleton consumers

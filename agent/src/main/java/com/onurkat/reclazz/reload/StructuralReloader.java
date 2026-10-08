@@ -1027,7 +1027,7 @@ public class StructuralReloader {
                     EnumConstantChange.check(loadedClass, newBytecode);
             CompanionGenerator.CompanionResult companion = CompanionGenerator.generate(
                     internalName, newBytecode, diff, version, staticsNeedingValue,
-                    pinnedMethods.keySet());
+                    pinnedMethods.keySet(), context);
 
             // Get Lookup from the target class's __reclazz$lookup field
             Class<?> targetClass = findLoadedClass(className);

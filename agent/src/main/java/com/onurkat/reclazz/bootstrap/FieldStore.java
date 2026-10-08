@@ -175,6 +175,7 @@ public final class FieldStore {
      */
     public static Object getExtField(Object instance, String className,
                                       String fieldName, String desc) {
+        java.util.Objects.requireNonNull(instance);
         int index = getIndex(className, fieldName, desc);
         if (index < 0) {
             // Field not registered yet: the reload registers it after the
@@ -451,6 +452,7 @@ public final class FieldStore {
      */
     public static void putExtField(Object instance, Object boxedValue,
                                     String className, String fieldName, String desc) {
+        java.util.Objects.requireNonNull(instance);
         int index = registerField(className, fieldName, desc);
         try {
             java.lang.reflect.Field extField = resolveExtField(instance.getClass());
