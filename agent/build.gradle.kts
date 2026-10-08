@@ -50,7 +50,7 @@ dependencies {
     implementation("org.ow2.asm:asm-tree:9.10.1")
     implementation("org.ow2.asm:asm-util:9.10.1")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testImplementation("net.bytebuddy:byte-buddy:1.18.14") {
         exclude(group = "org.slf4j")
     }
@@ -206,7 +206,7 @@ val springSixTests = sourceSets.create("springSixTest") {
     runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
 }
 dependencies {
-    add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
+    add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:6.1.3")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
