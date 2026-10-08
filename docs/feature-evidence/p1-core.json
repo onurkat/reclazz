@@ -1,0 +1,2913 @@
+{
+  "format_version": 1,
+  "package": "P1",
+  "base_commit": "ab3020568dc404bdc0b87d61a45f5bb9d409b4ec",
+  "required_lanes": [
+    "sapmachine-17-macos-arm64",
+    "sapmachine-21-macos-arm64"
+  ],
+  "lanes": {
+    "sapmachine-17-macos-arm64": {
+      "status": "PASSED",
+      "utc": "2026-10-08T16:34:35.220520+00:00",
+      "command": "JAVA_HOME='/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home' ./gradlew :agent:unitTest --rerun --console=plain; JAVA_HOME='/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home' ./gradlew :agent:e2eTest --rerun --tests '*Core*Test' --tests '*SuperCallAfterChildReloadTest' --tests '*SelfInvocationAfterParentReloadTest' --tests '*AddedFieldInitialiserTest' --tests '*ConditionalInstanceInitialiserReloadTest' --tests '*ConditionalStaticInitialiserReloadTest' --tests '*SuperclassReportingVerificationTest' --tests '*SynchronizedSurvivesReloadTest' --console=plain",
+      "exit_code": 0,
+      "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+      "base_commit": "ab3020568dc404bdc0b87d61a45f5bb9d409b4ec",
+      "artifact_sha256": "422e49ffdb701f1edafd10ccbe4746125e62599941b29313a871948bb9748833",
+      "raw_evidence": ".collab/research/2026-10-08-feature-evidence-core/build/lane17",
+      "counts": {
+        "unitTest": {
+          "tests": 2009,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 9
+        },
+        "jmsUnitTest": {
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "hibernateTest": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "e2eTest": {
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "jmsE2eTest": {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "rabbitTest": {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "cases": [
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#copyingOnWriteKeepsTheOtherAddedFields",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "copyingOnWriteKeepsTheOtherAddedFields()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#writingAnAddedFieldOnACloneLeavesTheOriginalAlone",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "writingAnAddedFieldOnACloneLeavesTheOriginalAlone()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#writingOnTheOriginalAfterCloningLeavesTheCloneAlone",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "writingOnTheOriginalAfterCloningLeavesTheCloneAlone()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#aFieldSetFromAConstructorArgumentIsStillNamed",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aFieldSetFromAConstructorArgumentIsStillNamed()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#anAddedFieldReadsItsInitialiserValueOnAnObjectThatAlreadyExisted",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anAddedFieldReadsItsInitialiserValueOnAnObjectThatAlreadyExisted()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#failureIsIsolatedAndNextReloadRepairsOnlyTheFailedObject",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "failureIsIsolatedAndNextReloadRepairsOnlyTheFailedObject()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#equivalentConstructorRoutesPreserveOldAndNewInstancesAcrossReloads",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "equivalentConstructorRoutesPreserveOldAndNewInstancesAcrossReloads()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "existingObjectsUseTheirStateWithoutRerunningConstructors()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#switchAndUnrelatedHandlersAcrossConstructorRoutes",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "switchAndUnrelatedHandlersAcrossConstructorRoutes()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#switchAndUnrelatedHandlersDoNotReplayStaticBlocks",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "switchAndUnrelatedHandlersDoNotReplayStaticBlocks()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreInterfaceRefusalTest#stockVmKeepsInterfaceIdentityWhileEditedBodiesAndLaterSavesRun",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "stockVmKeepsInterfaceIdentityWhileEditedBodiesAndLaterSavesRun()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreLambdaReloadTest#introducedLambdasUseCurrentCapturesAndExposeSerializationLimit",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "introducedLambdasUseCurrentCapturesAndExposeSerializationLimit()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#directAddedFieldCallerFailsWhileOwnerAccessorWorks",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "directAddedFieldCallerFailsWhileOwnerAccessorWorks()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SelfInvocationAfterParentReloadTest#aReloadedParentStillReachesTheChildsOverrideFromItsOwnBody",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aReloadedParentStillReachesTheChildsOverrideFromItsOwnBody()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SuperCallAfterChildReloadTest#anEditedOverrideStillCallsTheParentItExtends",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anEditedOverrideStillCallsTheParentItExtends()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SuperclassReportingVerificationTest#receiptsAndPendingNeverClaimChangedHierarchyAcrossRepeatedSaves",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "receiptsAndPendingNeverClaimChangedHierarchyAcrossRepeatedSaves()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#aBodyThatThrowsStillReleasesTheMonitor",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aBodyThatThrowsStillReleasesTheMonitor()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#aStaticSynchronizedMethodStillLocksItsClass",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aStaticSynchronizedMethodStillLocksItsClass()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#twoThreadsStillExcludeEachOtherAfterAStructuralReload",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "twoThreadsStillExcludeEachOtherAfterAStructuralReload()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#aConditionalValueRunsOnlyItsSelectedBranch",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "[1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "[2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#intertwinedInitialisersStayRefused",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "[1] Guarded",
+              "status": "PASSED"
+            },
+            {
+              "name": "[2] SharedWrite",
+              "status": "PASSED"
+            },
+            {
+              "name": "[3] Local",
+              "status": "PASSED"
+            },
+            {
+              "name": "[4] Loop",
+              "status": "PASSED"
+            },
+            {
+              "name": "[5] DoLoop",
+              "status": "PASSED"
+            },
+            {
+              "name": "[6] OuterCondition",
+              "status": "PASSED"
+            },
+            {
+              "name": "[7] Catching",
+              "status": "PASSED"
+            },
+            {
+              "name": "[8] CatchSingle",
+              "status": "PASSED"
+            },
+            {
+              "name": "[9] Multiple",
+              "status": "PASSED"
+            },
+            {
+              "name": "[10] ArrayWrite",
+              "status": "PASSED"
+            },
+            {
+              "name": "[11] ObjectWrite",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#isolatedSwitchIsAccepted",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "isolatedSwitchIsAccepted()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#aSharedComputationIsRefused",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aSharedComputationIsRefused()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#constantsComeFromTheFieldItself",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "constantsComeFromTheFieldItself()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#narrowConstantsComeBackAsTheirOwnType",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "narrowConstantsComeBackAsTheirOwnType()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.InjectedFieldNotSerializedTest#anObjectWithAnUnserializableAddedFieldStillSerializes",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anObjectWithAnUnserializableAddedFieldStillSerializes()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.InjectedFieldNotSerializedTest#theStorageForAddedFieldsIsTransient",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "theStorageForAddedFieldsIsTransient()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#exceptionTypesPreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "exceptionTypesPreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#genericParameterTypesPreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "genericParameterTypesPreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#genericReturnTypePreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "genericReturnTypePreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#getDeclaredAnnotations",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "getDeclaredAnnotations()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#repeatableAnnotations",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "repeatableAnnotations()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#varargsFlagPreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "varargsFlagPreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#aDeclaredUidIsNotOverwritten",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aDeclaredUidIsNotOverwritten()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#anObjectWrittenWithoutTheAgentIsReadWithIt",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anObjectWrittenWithoutTheAgentIsReadWithIt()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#theAgentDoesNotChangeWhatAClassSerializesAs",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "theAgentDoesNotChangeWhatAClassSerializesAs()",
+              "status": "PASSED"
+            }
+          ]
+        }
+      ],
+      "unrun_other_scope": "The JDK17 e2e selection covers the named P1 classes only."
+    },
+    "sapmachine-21-macos-arm64": {
+      "status": "PASSED",
+      "utc": "2026-10-08T16:39:00.235233+00:00",
+      "command": "JAVA_HOME='/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home' ./gradlew :agent:unitTest --rerun --console=plain; JAVA_HOME='/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home' ./gradlew :agent:e2eTest --rerun --tests '*Core*Test' --tests '*SuperCallAfterChildReloadTest' --tests '*SelfInvocationAfterParentReloadTest' --tests '*AddedFieldInitialiserTest' --tests '*ConditionalInstanceInitialiserReloadTest' --tests '*ConditionalStaticInitialiserReloadTest' --tests '*SuperclassReportingVerificationTest' --tests '*SynchronizedSurvivesReloadTest' --console=plain",
+      "exit_code": 0,
+      "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+      "base_commit": "ab3020568dc404bdc0b87d61a45f5bb9d409b4ec",
+      "artifact_sha256": "fd2e29bf0f0cc5729db5f5c4089ae80857020a07a9816b3e84b5c9d8a1eb4f07",
+      "raw_evidence": ".collab/research/2026-10-08-feature-evidence-core/build/lane21-replay",
+      "counts": {
+        "unitTest": {
+          "tests": 2009,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 5
+        },
+        "jmsUnitTest": {
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "hibernateTest": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "e2eTest": {
+          "tests": 19,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "jmsE2eTest": {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "rabbitTest": {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "cases": [
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#copyingOnWriteKeepsTheOtherAddedFields",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "copyingOnWriteKeepsTheOtherAddedFields()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#writingAnAddedFieldOnACloneLeavesTheOriginalAlone",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "writingAnAddedFieldOnACloneLeavesTheOriginalAlone()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#writingOnTheOriginalAfterCloningLeavesTheCloneAlone",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "writingOnTheOriginalAfterCloningLeavesTheCloneAlone()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#aFieldSetFromAConstructorArgumentIsStillNamed",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aFieldSetFromAConstructorArgumentIsStillNamed()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#anAddedFieldReadsItsInitialiserValueOnAnObjectThatAlreadyExisted",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anAddedFieldReadsItsInitialiserValueOnAnObjectThatAlreadyExisted()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#failureIsIsolatedAndNextReloadRepairsOnlyTheFailedObject",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "failureIsIsolatedAndNextReloadRepairsOnlyTheFailedObject()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#equivalentConstructorRoutesPreserveOldAndNewInstancesAcrossReloads",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "equivalentConstructorRoutesPreserveOldAndNewInstancesAcrossReloads()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "existingObjectsUseTheirStateWithoutRerunningConstructors()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#switchAndUnrelatedHandlersAcrossConstructorRoutes",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "switchAndUnrelatedHandlersAcrossConstructorRoutes()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#switchAndUnrelatedHandlersDoNotReplayStaticBlocks",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "switchAndUnrelatedHandlersDoNotReplayStaticBlocks()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreInterfaceRefusalTest#stockVmKeepsInterfaceIdentityWhileEditedBodiesAndLaterSavesRun",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "stockVmKeepsInterfaceIdentityWhileEditedBodiesAndLaterSavesRun()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreLambdaReloadTest#introducedLambdasUseCurrentCapturesAndExposeSerializationLimit",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "introducedLambdasUseCurrentCapturesAndExposeSerializationLimit()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#directAddedFieldCallerFailsWhileOwnerAccessorWorks",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "directAddedFieldCallerFailsWhileOwnerAccessorWorks()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SelfInvocationAfterParentReloadTest#aReloadedParentStillReachesTheChildsOverrideFromItsOwnBody",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aReloadedParentStillReachesTheChildsOverrideFromItsOwnBody()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SuperCallAfterChildReloadTest#anEditedOverrideStillCallsTheParentItExtends",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anEditedOverrideStillCallsTheParentItExtends()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SuperclassReportingVerificationTest#receiptsAndPendingNeverClaimChangedHierarchyAcrossRepeatedSaves",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "receiptsAndPendingNeverClaimChangedHierarchyAcrossRepeatedSaves()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#aBodyThatThrowsStillReleasesTheMonitor",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aBodyThatThrowsStillReleasesTheMonitor()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#aStaticSynchronizedMethodStillLocksItsClass",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aStaticSynchronizedMethodStillLocksItsClass()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#twoThreadsStillExcludeEachOtherAfterAStructuralReload",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "twoThreadsStillExcludeEachOtherAfterAStructuralReload()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#aConditionalValueRunsOnlyItsSelectedBranch",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "[1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "[2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#intertwinedInitialisersStayRefused",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "[1] Guarded",
+              "status": "PASSED"
+            },
+            {
+              "name": "[2] SharedWrite",
+              "status": "PASSED"
+            },
+            {
+              "name": "[3] Local",
+              "status": "PASSED"
+            },
+            {
+              "name": "[4] Loop",
+              "status": "PASSED"
+            },
+            {
+              "name": "[5] DoLoop",
+              "status": "PASSED"
+            },
+            {
+              "name": "[6] OuterCondition",
+              "status": "PASSED"
+            },
+            {
+              "name": "[7] Catching",
+              "status": "PASSED"
+            },
+            {
+              "name": "[8] CatchSingle",
+              "status": "PASSED"
+            },
+            {
+              "name": "[9] Multiple",
+              "status": "PASSED"
+            },
+            {
+              "name": "[10] ArrayWrite",
+              "status": "PASSED"
+            },
+            {
+              "name": "[11] ObjectWrite",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#isolatedSwitchIsAccepted",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "isolatedSwitchIsAccepted()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#aSharedComputationIsRefused",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aSharedComputationIsRefused()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#constantsComeFromTheFieldItself",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "constantsComeFromTheFieldItself()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#narrowConstantsComeBackAsTheirOwnType",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "narrowConstantsComeBackAsTheirOwnType()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.InjectedFieldNotSerializedTest#anObjectWithAnUnserializableAddedFieldStillSerializes",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anObjectWithAnUnserializableAddedFieldStillSerializes()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.InjectedFieldNotSerializedTest#theStorageForAddedFieldsIsTransient",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "theStorageForAddedFieldsIsTransient()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#exceptionTypesPreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "exceptionTypesPreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#genericParameterTypesPreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "genericParameterTypesPreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#genericReturnTypePreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "genericReturnTypePreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#getDeclaredAnnotations",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "getDeclaredAnnotations()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#repeatableAnnotations",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "repeatableAnnotations()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#varargsFlagPreserved",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "varargsFlagPreserved()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#aDeclaredUidIsNotOverwritten",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "aDeclaredUidIsNotOverwritten()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#anObjectWrittenWithoutTheAgentIsReadWithIt",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "anObjectWrittenWithoutTheAgentIsReadWithIt()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#theAgentDoesNotChangeWhatAClassSerializesAs",
+          "status": "PASSED",
+          "invocations": [
+            {
+              "name": "theAgentDoesNotChangeWhatAClassSerializesAs()",
+              "status": "PASSED"
+            }
+          ]
+        }
+      ],
+      "unrun_other_scope": "Spring6/JPA isolated suite and other package gates not rerun for this test/docs-only package.",
+      "provenance_note": "The first JDK21 full E2E gate passed192 cases, but its jar was overwritten by the JDK17 build before the collector completed. This additional named P1 replay binds the recorded jar digest to the observing watcher run; no original full-gate artifact digest is invented."
+    }
+  },
+  "claims": [
+    {
+      "id": "P1-BODY-SUPER",
+      "statement": "Edited overrides continue dispatching super calls to the current original parent.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SuperCallAfterChildReloadTest#anEditedOverrideStillCallsTheParentItExtends",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SuperCallAfterChildReloadTest.java",
+          "source_sha256": "d374b708c46fde54a36b3b9f39607c22302afbab69b19a5d661d63c99e1b92e4",
+          "assertions": "Held Derived answers d1/b1, d2/b1, d2/b2, d3/b2; all printed values have two halves.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 76,
+          "quote": "| Method body changes |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 13,
+          "quote": "### P1-BODY-SUPER",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held Derived answers d1/b1, d2/b1, d2/b2, d3/b2; all printed values have two halves.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-BODY-VIRTUAL",
+      "statement": "A reloaded parent still reaches the existing child override without restart.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SelfInvocationAfterParentReloadTest#aReloadedParentStillReachesTheChildsOverrideFromItsOwnBody",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SelfInvocationAfterParentReloadTest.java",
+          "source_sha256": "d3e76be64a93119809074e0bc14aa0d5c1385513e8d1363ba84452b659716750",
+          "assertions": "Held Derived answers b1:dh then b2:dh; startup PID/nonce unchanged and emitted once.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 76,
+          "quote": "| Method body changes |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 37,
+          "quote": "### P1-BODY-VIRTUAL",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held Derived answers b1:dh then b2:dh; startup PID/nonce unchanged and emitted once.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-OLD",
+      "statement": "Isolated added instance initializers give existing objects their own first-read values.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#anAddedFieldReadsItsInitialiserValueOnAnObjectThatAlreadyExisted",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFieldInitialiserTest.java",
+          "source_sha256": "3bf2b59ac976bf635dfd31d8cdfbc70aaafae29ec563c219a6d7675eba74252c",
+          "assertions": "New list sizes1 then2, integer retries3 and computed label HOLDER!; first-read explanation and no initializer warning.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 61,
+          "quote": "### P1-FIELD-OLD",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "New list sizes1 then2, integer retries3 and computed label HOLDER!; first-read explanation and no initializer warning.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-PARAM-REFUSAL",
+      "statement": "Historical constructor arguments are not reconstructed for an added field.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#aFieldSetFromAConstructorArgumentIsStillNamed",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFieldInitialiserTest.java",
+          "source_sha256": "3bf2b59ac976bf635dfd31d8cdfbc70aaafae29ec563c219a6d7675eba74252c",
+          "assertions": "Held name x survives; added upper stays null and warning names upper/constructor parameter.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 85,
+          "quote": "### P1-FIELD-PARAM-REFUSAL",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held name x survives; added upper stays null and warning names upper/constructor parameter.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "EXPECTED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-FAILURE",
+      "statement": "An initializer failure is isolated and may retry after a later initializer generation.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#failureIsIsolatedAndNextReloadRepairsOnlyTheFailedObject",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFieldInitialiserTest.java",
+          "source_sha256": "3bf2b59ac976bf635dfd31d8cdfbc70aaafae29ec563c219a6d7675eba74252c",
+          "assertions": "null:1|healthy:1 becomes recovered:2|healthy:1; successful neighbor is not reinitialized.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 109,
+          "quote": "### P1-FIELD-FAILURE",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "null:1|healthy:1 becomes recovered:2|healthy:1; successful neighbor is not reinitialized.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-CONDITIONAL",
+      "statement": "An isolated conditional uses each existing receiver state.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalInstanceInitialiserReloadTest.java",
+          "source_sha256": "59ce89d56530f429e4a175d4807eb1b9c3b39f51299057705d7625e3b2df7538",
+          "assertions": "Four held objects produce on1/true, off1/false and explicit-null outcomes with per-object branch counts.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 133,
+          "quote": "### P1-FIELD-CONDITIONAL",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Four held objects produce on1/true, off1/false and explicit-null outcomes with per-object branch counts.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-NEW-ROUTES",
+      "statement": "Equivalent and delegated constructors preserve old/new initialization order.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#equivalentConstructorRoutesPreserveOldAndNewInstancesAcrossReloads",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalInstanceInitialiserReloadTest.java",
+          "source_sha256": "59ce89d56530f429e4a175d4807eb1b9c3b39f51299057705d7625e3b2df7538",
+          "assertions": "Old constructor count4 stays fixed; new three constructor routes give off3/false with total7 constructors/2 delegations and one initializer call each.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 157,
+          "quote": "### P1-FIELD-NEW-ROUTES",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Old constructor count4 stays fixed; new three constructor routes give off3/false with total7 constructors/2 delegations and one initializer call each.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-UNREAD-LATER",
+      "statement": "A previously unread added field uses the current initializer generation.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalInstanceInitialiserReloadTest.java",
+          "source_sha256": "59ce89d56530f429e4a175d4807eb1b9c3b39f51299057705d7625e3b2df7538",
+          "assertions": "Unread object uses on2/true after the second save, while earlier values remain unchanged.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 181,
+          "quote": "### P1-FIELD-UNREAD-LATER",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Unread object uses on2/true after the second save, while earlier values remain unchanged.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-NULL-KEEP",
+      "statement": "Application values, including an explicit null write before read, survive later saves.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalInstanceInitialiserReloadTest.java",
+          "source_sha256": "59ce89d56530f429e4a175d4807eb1b9c3b39f51299057705d7625e3b2df7538",
+          "assertions": "user/true and explicit null survive repeated saves; existing application field77 remains77.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 205,
+          "quote": "### P1-FIELD-NULL-KEEP",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "user/true and explicit null survive repeated saves; existing application field77 remains77.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-SIDE-EFFECT-BOUNDS",
+      "statement": "Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#switchAndUnrelatedHandlersAcrossConstructorRoutes",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalInstanceInitialiserReloadTest.java",
+          "source_sha256": "59ce89d56530f429e4a175d4807eb1b9c3b39f51299057705d7625e3b2df7538",
+          "assertions": "Constructor count4 across edits, unrelated block count8 in each of four stages; selected arm counts and new constructor ordering verified.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 78,
+          "quote": "| Add instance fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3101,
+          "quote": "### New Field Values on Objects That Already Existed",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 229,
+          "quote": "### P1-FIELD-SIDE-EFFECT-BOUNDS",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Constructor count4 across edits, unrelated block count8 in each of four stages; selected arm counts and new constructor ordering verified.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-STATIC-CONDITIONAL",
+      "statement": "Only selected isolated conditional static initializer arms run.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalStaticInitialiserReloadTest.java",
+          "source_sha256": "934a09d32787353cbc17d738756c7740671f3bf9af677bb388fc2425e339bbad",
+          "assertions": "Selected condition/left/right counters progress 1:1:0 then2:1:1 across three saves.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 79,
+          "quote": "| Add static fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3068,
+          "quote": "### Added Static Field Values",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 253,
+          "quote": "### P1-STATIC-CONDITIONAL",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Selected condition/left/right counters progress 1:1:0 then2:1:1 across three saves.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-STATIC-NULL-KEEP",
+      "statement": "An initialized null and an application-written static value remain stored.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalStaticInitialiserReloadTest.java",
+          "source_sha256": "934a09d32787353cbc17d738756c7740671f3bf9af677bb388fc2425e339bbad",
+          "assertions": "NULLABLE remains null and CHOICE=user survives later saves.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 79,
+          "quote": "| Add static fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3068,
+          "quote": "### Added Static Field Values",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 277,
+          "quote": "### P1-STATIC-NULL-KEEP",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "NULLABLE remains null and CHOICE=user survives later saves.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-STATIC-LATER-KEEP",
+      "statement": "A newly added later static field uses the current condition without resetting older fields.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalStaticInitialiserReloadTest.java",
+          "source_sha256": "934a09d32787353cbc17d738756c7740671f3bf9af677bb388fc2425e339bbad",
+          "assertions": "LATER=right after the flag changes; existing77 remains77 and earlier CHOICE=user.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 79,
+          "quote": "| Add static fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3068,
+          "quote": "### Added Static Field Values",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 301,
+          "quote": "### P1-STATIC-LATER-KEEP",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "LATER=right after the flag changes; existing77 remains77 and earlier CHOICE=user.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-STATIC-BLOCK-NO-REPLAY",
+      "statement": "Unrelated static blocks are not replayed for isolated static initializers.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalStaticInitialiserReloadTest.java",
+          "source_sha256": "934a09d32787353cbc17d738756c7740671f3bf9af677bb388fc2425e339bbad",
+          "assertions": "Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.",
+          "kind": "watcher"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#switchAndUnrelatedHandlersDoNotReplayStaticBlocks",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ConditionalStaticInitialiserReloadTest.java",
+          "source_sha256": "934a09d32787353cbc17d738756c7740671f3bf9af677bb388fc2425e339bbad",
+          "assertions": "Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 79,
+          "quote": "| Add static fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3068,
+          "quote": "### Added Static Field Values",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 325,
+          "quote": "### P1-STATIC-BLOCK-NO-REPLAY",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.; Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-METHOD-ADD",
+      "statement": "An updated caller can invoke an added method on the existing receiver.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreMemberReloadTest.java",
+          "source_sha256": "46edf4992c470b3419dc972925c278d2791e56684ebc277354f0e000068e663a",
+          "assertions": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 77,
+          "quote": "| Add / remove methods |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "src/main/resources/META-INF/plugin.xml",
+          "line": 68,
+          "quote": "A member you delete stops being visible to reflection",
+          "sha256": "e6d5047924258f537b4ef3c87471b562d7584f71f5f471dda4fe990ed4672f1c"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 349,
+          "quote": "### P1-METHOD-ADD",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-METHOD-REMOVE-HELD",
+      "statement": "Held Method and unchanged callers keep the last implementation when an original method is removed.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreMemberReloadTest.java",
+          "source_sha256": "46edf4992c470b3419dc972925c278d2791e56684ebc277354f0e000068e663a",
+          "assertions": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 77,
+          "quote": "| Add / remove methods |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "src/main/resources/META-INF/plugin.xml",
+          "line": 68,
+          "quote": "A member you delete stops being visible to reflection",
+          "sha256": "e6d5047924258f537b4ef3c87471b562d7584f71f5f471dda4fe990ed4672f1c"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 373,
+          "quote": "### P1-METHOD-REMOVE-HELD",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-REMOVED-REFLECTION",
+      "statement": "Original members removed by reload disappear from native reflection scans.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreMemberReloadTest.java",
+          "source_sha256": "46edf4992c470b3419dc972925c278d2791e56684ebc277354f0e000068e663a",
+          "assertions": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 77,
+          "quote": "| Add / remove methods |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "src/main/resources/META-INF/plugin.xml",
+          "line": 68,
+          "quote": "A member you delete stops being visible to reflection",
+          "sha256": "e6d5047924258f537b4ef3c87471b562d7584f71f5f471dda4fe990ed4672f1c"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 397,
+          "quote": "### P1-REMOVED-REFLECTION",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-MEMBER-RESTORE",
+      "statement": "Restoring an original removed member makes it visible and callable again.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreMemberReloadTest.java",
+          "source_sha256": "46edf4992c470b3419dc972925c278d2791e56684ebc277354f0e000068e663a",
+          "assertions": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 77,
+          "quote": "| Add / remove methods |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "src/main/resources/META-INF/plugin.xml",
+          "line": 68,
+          "quote": "A member you delete stops being visible to reflection",
+          "sha256": "e6d5047924258f537b4ef3c87471b562d7584f71f5f471dda4fe990ed4672f1c"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 421,
+          "quote": "### P1-MEMBER-RESTORE",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-REMOVE",
+      "statement": "A removed original field is hidden while a held Field and unchanged caller retain its value.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreMemberReloadTest.java",
+          "source_sha256": "46edf4992c470b3419dc972925c278d2791e56684ebc277354f0e000068e663a",
+          "assertions": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 77,
+          "quote": "| Add / remove methods |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "src/main/resources/META-INF/plugin.xml",
+          "line": 68,
+          "quote": "A member you delete stops being visible to reflection",
+          "sha256": "e6d5047924258f537b4ef3c87471b562d7584f71f5f471dda4fe990ed4672f1c"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 445,
+          "quote": "### P1-FIELD-REMOVE",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-CROSS-CLASS",
+      "statement": "Direct cross-class access to an added instance field is not a working companion-mode capability in the recorded case.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#directAddedFieldCallerFailsWhileOwnerAccessorWorks",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreMemberReloadTest.java",
+          "source_sha256": "46edf4992c470b3419dc972925c278d2791e56684ebc277354f0e000068e663a",
+          "assertions": "External direct field read throws NoSuchFieldError while owner reads42; accessor caller recovers to42 in the same process.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "docs/usage.md",
+          "line": 3045,
+          "quote": "### Cross-class access to added instance fields",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "README.md",
+          "line": 693,
+          "quote": "| Add new fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 469,
+          "quote": "### P1-FIELD-CROSS-CLASS",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "External direct field read throws NoSuchFieldError while owner reads42; accessor caller recovers to42 in the same process.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "FAILED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Characterization test passes by observing a failed capability. No production repair in P1; owner accessor or restart is the measured workaround.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-LAMBDA-RELOAD",
+      "statement": "Lambdas introduced in reloaded bodies execute with current captured values.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreLambdaReloadTest#introducedLambdasUseCurrentCapturesAndExposeSerializationLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreLambdaReloadTest.java",
+          "source_sha256": "146b52b5207049deec3153ec7eea712f3ae8517cb0e12cc83efc0c8ddb2101ec",
+          "assertions": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 118,
+          "quote": "| A lambda added to an edited method body |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 493,
+          "quote": "### P1-LAMBDA-RELOAD",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-LAMBDA-SERIALIZATION-LIMIT",
+      "statement": "A serializable lambda introduced after reload cannot be serialized in the measured companion path.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreLambdaReloadTest#introducedLambdasUseCurrentCapturesAndExposeSerializationLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreLambdaReloadTest.java",
+          "source_sha256": "146b52b5207049deec3153ec7eea712f3ae8517cb0e12cc83efc0c8ddb2101ec",
+          "assertions": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 118,
+          "quote": "| A lambda added to an edited method body |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 517,
+          "quote": "### P1-LAMBDA-SERIALIZATION-LIMIT",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Three sequential body edits return current local/this captures, a-b stream value and added private helper; existing state user and PID/nonce retained; ObjectOutputStream fails with NotSerializableException.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "EXPECTED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-ENUM-APPEND-VALUES",
+      "statement": "Appending an enum tail updates native values/valueOf without changing surviving ordinals.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+          "source_sha256": "e7210496576d48d4544229afbe664e56bba0d8ae23eae5bc2ffbd943557970a9",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 81,
+          "quote": "| Add enum values (on the end) |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 541,
+          "quote": "### P1-ENUM-APPEND-VALUES",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-ENUM-APPEND-SWITCH",
+      "statement": "An already-initialized old enum switch takes its default for an appended constant.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+          "source_sha256": "e7210496576d48d4544229afbe664e56bba0d8ae23eae5bc2ffbd943557970a9",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 81,
+          "quote": "| Add enum values (on the end) |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 565,
+          "quote": "### P1-ENUM-APPEND-SWITCH",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-ENUM-OLD-COLLECTIONS",
+      "statement": "Pre-existing EnumMap/EnumSet can use the appended constant.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+          "source_sha256": "e7210496576d48d4544229afbe664e56bba0d8ae23eae5bc2ffbd943557970a9",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 81,
+          "quote": "| Add enum values (on the end) |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 589,
+          "quote": "### P1-ENUM-OLD-COLLECTIONS",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-ENUM-TAIL",
+      "statement": "Removing an enum tail removes values/valueOf while preserving surviving ordinals.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+          "source_sha256": "e7210496576d48d4544229afbe664e56bba0d8ae23eae5bc2ffbd943557970a9",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 82,
+          "quote": "| Remove the LAST enum value |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 613,
+          "quote": "### P1-ENUM-TAIL",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-ENUM-REORDER-REFUSAL",
+      "statement": "A reorder does not change live native ordinals and is restart-reported.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+          "source_sha256": "e7210496576d48d4544229afbe664e56bba0d8ae23eae5bc2ffbd943557970a9",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 83,
+          "quote": "| Insert or reorder enum values |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 637,
+          "quote": "### P1-ENUM-REORDER-REFUSAL",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "EXPECTED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-ENUM-OLD-ARRAY-LIMIT",
+      "statement": "Application-owned old values() arrays are not automatically grown.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreEnumReloadTest#appendTailAndReorderKeepOldCollectionsAndExposeOldArrayLimit",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreEnumReloadTest.java",
+          "source_sha256": "e7210496576d48d4544229afbe664e56bba0d8ae23eae5bc2ffbd943557970a9",
+          "assertions": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 81,
+          "quote": "| Add enum values (on the end) |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 661,
+          "quote": "### P1-ENUM-OLD-ARRAY-LIMIT",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original values RED/BLUE become RED/BLUE/GREEN; valueOf ordinal2; pre-existing map/set accept GREEN and preserve BLUE; old switch default other; old array still length2 throws on ordinal2; repeated edit does not duplicate; tail removal hides GREEN; reappend works; reorder preserves original ordinals and warns; same PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "EXPECTED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-INTERFACE-STOCK-REFUSAL",
+      "statement": "Stock-JVM interface identity stays unchanged while eligible edited bodies/later saves run.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.CoreInterfaceRefusalTest#stockVmKeepsInterfaceIdentityWhileEditedBodiesAndLaterSavesRun",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/CoreInterfaceRefusalTest.java",
+          "source_sha256": "c3a8116ff706394c7a8246aaf29811ef922864d0cff84f32417286264648b7bd",
+          "assertions": "Old Holder remains instanceof Tag=false, interfaces=[], same Class/state29; body v1->v2->v3, named interface refusal, unchanged PID/nonce.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 84,
+          "quote": "| Add / remove an interface |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 685,
+          "quote": "### P1-INTERFACE-STOCK-REFUSAL",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Old Holder remains instanceof Tag=false, interfaces=[], same Class/state29; body v1->v2->v3, named interface refusal, unchanged PID/nonce.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "EXPECTED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-INTERFACE-ENHANCED",
+      "statement": "Advertised enhanced-JVM added/removed interfaces require their own native acceptance.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "No observing acceptance method mapped or executed for this variant. The named SapMachine lanes establish no behavior for this record; the missing environment and limitation below govern it.",
+      "tests": [],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 84,
+          "quote": "| Add / remove an interface |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 709,
+          "quote": "### P1-INTERFACE-ENHANCED",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "No observing test executed for this current advertised promise.",
+      "control": "No executed observing control for this record.",
+      "verdict": "UNVERIFIED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "No validated enhanced-redefinition JBR/DCEVM runtime or object/type acceptance run; IDE JBR presence is not proof.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Obtain the named runtime or a separately scoped observing test before claiming support."
+    },
+    {
+      "id": "P1-SUPERCLASS-REFUSAL-SALVAGE",
+      "statement": "Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SuperclassReportingVerificationTest#receiptsAndPendingNeverClaimChangedHierarchyAcrossRepeatedSaves",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SuperclassReportingVerificationTest.java",
+          "source_sha256": "d4ab735ebcb6339dff5a189a79f710751bbbad0929d57d1e756f0e3e2e6b55f0",
+          "assertions": "Seven versions: same original Class/loader/self/state19/superclassA; safe body edits apply, dependent c pinned, typed B saves refuse, recovery works with same status-session ID.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 85,
+          "quote": "| Change superclass |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "src/main/resources/META-INF/plugin.xml",
+          "line": 68,
+          "quote": "Reclazz keeps a loaded class's existing superclass",
+          "sha256": "e6d5047924258f537b4ef3c87471b562d7584f71f5f471dda4fe990ed4672f1c"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 733,
+          "quote": "### P1-SUPERCLASS-REFUSAL-SALVAGE",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Seven versions: same original Class/loader/self/state19/superclassA; safe body edits apply, dependent c pinned, typed B saves refuse, recovery works with same status-session ID.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-CONCURRENCY",
+      "statement": "Sequential initialization evidence does not certify concurrent initializer side effects or atomic multi-class reload.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "No observing acceptance method mapped or executed for this variant. The named SapMachine lanes establish no behavior for this record; the missing environment and limitation below govern it.",
+      "tests": [],
+      "shipped_surfaces": [
+        {
+          "path": "docs/usage.md",
+          "line": 3153,
+          "quote": "Concurrent first-read computations can overlap",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 757,
+          "quote": "### P1-CONCURRENCY",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "No observing test executed for this current advertised promise.",
+      "control": "No executed observing control for this record.",
+      "verdict": "UNVERIFIED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Owner deferred item33. Do not reopen implementation or concurrency tests; treat the published overlapping-computation text as unverified, not an exactly-once guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Remain deferred under owner item33 decision; no implementation or new concurrency acceptance without explicit approval."
+    },
+    {
+      "id": "P1-STATIC-CONSTANTS",
+      "statement": "Compile-time constants and narrow primitive constant conversions have component evidence.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#constantsComeFromTheFieldItself",
+          "path": "agent/src/test/java/com/onurkat/reclazz/reload/StaticInitialiserTest.java",
+          "source_sha256": "2772ff934b6530c00cbed4ef865fc03fcd8890e65b5d1ab37d1660bc7c199bf8",
+          "assertions": "Constant plan reads MAX50 and NAMEreclazz with no refusal.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#narrowConstantsComeBackAsTheirOwnType",
+          "path": "agent/src/test/java/com/onurkat/reclazz/reload/StaticInitialiserTest.java",
+          "source_sha256": "2772ff934b6530c00cbed4ef865fc03fcd8890e65b5d1ab37d1660bc7c199bf8",
+          "assertions": "Boolean/char/byte/short/int constant values keep native wrapper types.",
+          "kind": "component"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 79,
+          "quote": "| Add static fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3068,
+          "quote": "### Added Static Field Values",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 781,
+          "quote": "### P1-STATIC-CONSTANTS",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Constant plan reads MAX50 and NAMEreclazz with no refusal.; Boolean/char/byte/short/int constant values keep native wrapper types.",
+      "control": "Read component assertions against fixture before/after values or refusal keys; no watcher/PID control is claimed for these methods.",
+      "verdict": "PARTIAL",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-STATIC-ENTANGLED",
+      "statement": "Intertwined/guarded static initializer shapes are refused by the component slicer.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.reload.StaticInitialiserTest#aSharedComputationIsRefused",
+          "path": "agent/src/test/java/com/onurkat/reclazz/reload/StaticInitialiserTest.java",
+          "source_sha256": "2772ff934b6530c00cbed4ef865fc03fcd8890e65b5d1ab37d1660bc7c199bf8",
+          "assertions": "No emitted slice; computed-earlier reason recorded.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#intertwinedInitialisersStayRefused",
+          "path": "agent/src/test/java/com/onurkat/reclazz/reload/ConditionalStaticInitialiserTest.java",
+          "source_sha256": "9bdc50272e2cb01280d637b2c4ca9f8375650fd224d271272df90f618719027a",
+          "assertions": "Eleven named guarded/shared/local/loop/handler/object/array-write shapes emit no partial code and retain refusal keys.",
+          "kind": "component"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 80,
+          "quote": "| Added static field whose initialiser is entangled",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 805,
+          "quote": "### P1-STATIC-ENTANGLED",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "No emitted slice; computed-earlier reason recorded.; Eleven named guarded/shared/local/loop/handler/object/array-write shapes emit no partial code and retain refusal keys.",
+      "control": "Read component assertions against fixture before/after values or refusal keys; no watcher/PID control is claimed for these methods.",
+      "verdict": "PARTIAL",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-STATIC-LOWERINGS",
+      "statement": "Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#aConditionalValueRunsOnlyItsSelectedBranch",
+          "path": "agent/src/test/java/com/onurkat/reclazz/reload/ConditionalStaticInitialiserTest.java",
+          "source_sha256": "9bdc50272e2cb01280d637b2c4ca9f8375650fd224d271272df90f618719027a",
+          "assertions": "Two flag arms verify object identity, nested int, long, double, null, object constructor, short-circuit boolean and source order; existing99 and old blocks unchanged.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#isolatedSwitchIsAccepted",
+          "path": "agent/src/test/java/com/onurkat/reclazz/reload/ConditionalStaticInitialiserTest.java",
+          "source_sha256": "9bdc50272e2cb01280d637b2c4ca9f8375650fd224d271272df90f618719027a",
+          "assertions": "Isolated switch plan accepts VALUE:I.",
+          "kind": "component"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 79,
+          "quote": "| Add static fields |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/usage.md",
+          "line": 3068,
+          "quote": "### Added Static Field Values",
+          "sha256": "16457c70ac56308ccfd5b6d10cf1ba2a250e3d7f25699937abac00794aa75393"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 829,
+          "quote": "### P1-STATIC-LOWERINGS",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Two flag arms verify object identity, nested int, long, double, null, object constructor, short-circuit boolean and source order; existing99 and old blocks unchanged.; Isolated switch plan accepts VALUE:I.",
+      "control": "Read component assertions against fixture before/after values or refusal keys; no watcher/PID control is claimed for these methods.",
+      "verdict": "PARTIAL",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-LOAD-METADATA",
+      "statement": "Load-time transformation retains selected reflection metadata in component fixtures.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#getDeclaredAnnotations",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/ReflectionDepthTest.java",
+          "source_sha256": "c028898dd62d15f50a23e9d4d09be3f10f17d4d6e00ee908480be0741c8784f5",
+          "assertions": "Original method has one runtime annotation.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#repeatableAnnotations",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/ReflectionDepthTest.java",
+          "source_sha256": "c028898dd62d15f50a23e9d4d09be3f10f17d4d6e00ee908480be0741c8784f5",
+          "assertions": "Three repeated annotations remain.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#genericReturnTypePreserved",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/ReflectionDepthTest.java",
+          "source_sha256": "c028898dd62d15f50a23e9d4d09be3f10f17d4d6e00ee908480be0741c8784f5",
+          "assertions": "Native ParameterizedType remains List<String>.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#genericParameterTypesPreserved",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/ReflectionDepthTest.java",
+          "source_sha256": "c028898dd62d15f50a23e9d4d09be3f10f17d4d6e00ee908480be0741c8784f5",
+          "assertions": "Native argument remains Map<String,Integer>.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#exceptionTypesPreserved",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/ReflectionDepthTest.java",
+          "source_sha256": "c028898dd62d15f50a23e9d4d09be3f10f17d4d6e00ee908480be0741c8784f5",
+          "assertions": "IOException/SQLException declared exceptions remain.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionDepthTest#varargsFlagPreserved",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/ReflectionDepthTest.java",
+          "source_sha256": "c028898dd62d15f50a23e9d4d09be3f10f17d4d6e00ee908480be0741c8784f5",
+          "assertions": "Varargs bit remains set.",
+          "kind": "component"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 745,
+          "quote": "**Nothing about reflection.**",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 853,
+          "quote": "### P1-LOAD-METADATA",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Original method has one runtime annotation.; Three repeated annotations remain.; Native ParameterizedType remains List<String>.; Native argument remains Map<String,Integer>.; IOException/SQLException declared exceptions remain.; Varargs bit remains set.",
+      "control": "Read component assertions against fixture before/after values or refusal keys; no watcher/PID control is claimed for these methods.",
+      "verdict": "PARTIAL",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-LOAD-SERIAL-UID",
+      "statement": "Original serialVersionUID and selected no-agent-to-transformed deserialization have component evidence.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#theAgentDoesNotChangeWhatAClassSerializesAs",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/SerialVersionUidPreservedTest.java",
+          "source_sha256": "b72583fb5aee12a3fde770552ca77ee62619c62acb9c224a99a6e5ce227561ff",
+          "assertions": "Native computed UIDs match before/after transform.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#anObjectWrittenWithoutTheAgentIsReadWithIt",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/SerialVersionUidPreservedTest.java",
+          "source_sha256": "b72583fb5aee12a3fde770552ca77ee62619c62acb9c224a99a6e5ce227561ff",
+          "assertions": "Object written as plain Ser reads as transformed Ser with name n and count3.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#aDeclaredUidIsNotOverwritten",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/SerialVersionUidPreservedTest.java",
+          "source_sha256": "b72583fb5aee12a3fde770552ca77ee62619c62acb9c224a99a6e5ce227561ff",
+          "assertions": "Explicit UID4242 retained.",
+          "kind": "component"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 767,
+          "quote": "**`serialVersionUID` is pinned.**",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "src/main/resources/META-INF/plugin.xml",
+          "line": 84,
+          "quote": "<b>serialVersionUID is unchanged.</b>",
+          "sha256": "e6d5047924258f537b4ef3c87471b562d7584f71f5f471dda4fe990ed4672f1c"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 877,
+          "quote": "### P1-LOAD-SERIAL-UID",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Native computed UIDs match before/after transform.; Object written as plain Ser reads as transformed Ser with name n and count3.; Explicit UID4242 retained.",
+      "control": "Read component assertions against fixture before/after values or refusal keys; no watcher/PID control is claimed for these methods.",
+      "verdict": "PARTIAL",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-CLONE",
+      "statement": "Added-field store writes on a clone and original remain isolated in component fixtures.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#writingAnAddedFieldOnACloneLeavesTheOriginalAlone",
+          "path": "agent/src/test/java/com/onurkat/reclazz/bootstrap/AddedFieldsAfterCloneTest.java",
+          "source_sha256": "ecc8211d20d8ba1ff4f7a9d29a4e8ddfd240251b1c2721051420c505e8cdb9bc",
+          "assertions": "Clone second/original first values stay independent.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#writingOnTheOriginalAfterCloningLeavesTheCloneAlone",
+          "path": "agent/src/test/java/com/onurkat/reclazz/bootstrap/AddedFieldsAfterCloneTest.java",
+          "source_sha256": "ecc8211d20d8ba1ff4f7a9d29a4e8ddfd240251b1c2721051420c505e8cdb9bc",
+          "assertions": "Original changed/clone first values stay independent.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.AddedFieldsAfterCloneTest#copyingOnWriteKeepsTheOtherAddedFields",
+          "path": "agent/src/test/java/com/onurkat/reclazz/bootstrap/AddedFieldsAfterCloneTest.java",
+          "source_sha256": "ecc8211d20d8ba1ff4f7a9d29a4e8ddfd240251b1c2721051420c505e8cdb9bc",
+          "assertions": "Three named stored values round-trip.",
+          "kind": "component"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 773,
+          "quote": "**Fields added by a reload are runtime-only.**",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 901,
+          "quote": "### P1-FIELD-CLONE",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Clone second/original first values stay independent.; Original changed/clone first values stay independent.; Three named stored values round-trip.",
+      "control": "Read component assertions against fixture before/after values or refusal keys; no watcher/PID control is claimed for these methods.",
+      "verdict": "PARTIAL",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-FIELD-SERIALIZATION",
+      "statement": "Transient added-field storage has component evidence; post-reload initializer/deserialization interaction needs watched acceptance.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.transform.InjectedFieldNotSerializedTest#theStorageForAddedFieldsIsTransient",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/InjectedFieldNotSerializedTest.java",
+          "source_sha256": "7d952134a2661af2005bca6ad5fa12690996bfea02142eea06b7a4224810c813",
+          "assertions": "Injected __reclazz$ext carries the transient modifier.",
+          "kind": "component"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.InjectedFieldNotSerializedTest#anObjectWithAnUnserializableAddedFieldStillSerializes",
+          "path": "agent/src/test/java/com/onurkat/reclazz/transform/InjectedFieldNotSerializedTest.java",
+          "source_sha256": "7d952134a2661af2005bca6ad5fa12690996bfea02142eea06b7a4224810c813",
+          "assertions": "Unserializable stored Object does not block serialization; original name n survives and transient storage is null after deserialization.",
+          "kind": "component"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 773,
+          "quote": "**Fields added by a reload are runtime-only.**",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 925,
+          "quote": "### P1-FIELD-SERIALIZATION",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Injected __reclazz$ext carries the transient modifier.; Unserializable stored Object does not block serialization; original name n survives and transient storage is null after deserialization.",
+      "control": "Read component assertions against fixture before/after values or refusal keys; no watcher/PID control is claimed for these methods.",
+      "verdict": "PARTIAL",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "No observed post-reload initializer/deserialization acceptance mapped. Store-null inspection does not prove a supported first-read initializer returns the type default.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-LOAD-STACK",
+      "statement": "Published stack-frame and logging-method-name observations need their own source/line acceptance.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "No observing acceptance method mapped or executed for this variant. The named SapMachine lanes establish no behavior for this record; the missing environment and limitation below govern it.",
+      "tests": [],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 751,
+          "quote": "**Stack traces gain a frame.**",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 949,
+          "quote": "### P1-LOAD-STACK",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "No observing test executed for this current advertised promise.",
+      "control": "No executed observing control for this record.",
+      "verdict": "UNVERIFIED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Only the listed fixture shapes and named runtime lanes; no universal program guarantee.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Obtain the named runtime or a separately scoped observing test before claiming support."
+    },
+    {
+      "id": "P1-SYNCHRONIZED",
+      "statement": "Listed instance/static synchronized and exceptional-exit fixtures retain their monitor policy after structural reload.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#twoThreadsStillExcludeEachOtherAfterAStructuralReload",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SynchronizedSurvivesReloadTest.java",
+          "source_sha256": "f6f78170d94574a2742e5d2f4d3e95972158079121f8352779eb750d157b8ffe",
+          "assertions": "Two 300ms calls exclude before/after edit, elapsed >=540ms.",
+          "kind": "watcher"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#aBodyThatThrowsStillReleasesTheMonitor",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SynchronizedSurvivesReloadTest.java",
+          "source_sha256": "f6f78170d94574a2742e5d2f4d3e95972158079121f8352779eb750d157b8ffe",
+          "assertions": "Different thread can reenter after exceptional exit: monitor FREE before/after.",
+          "kind": "watcher"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SynchronizedSurvivesReloadTest#aStaticSynchronizedMethodStillLocksItsClass",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SynchronizedSurvivesReloadTest.java",
+          "source_sha256": "f6f78170d94574a2742e5d2f4d3e95972158079121f8352779eb750d157b8ffe",
+          "assertions": "Two static calls remain >=540ms after structural edit.",
+          "kind": "watcher"
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 820,
+          "quote": "**`synchronized` survives.**",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 973,
+          "quote": "### P1-SYNCHRONIZED",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "Two 300ms calls exclude before/after edit, elapsed >=540ms.; Different thread can reenter after exceptional exit: monitor FREE before/after.; Two static calls remain >=540ms after structural edit.",
+      "control": "Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.",
+      "verdict": "PROVEN_WITH_SCOPE",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Specific two-thread fixtures and threshold; not a performance benchmark or universal concurrency proof.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Independent Claude audit of these records and their raw runs."
+    },
+    {
+      "id": "P1-JDK-PROVIDERS",
+      "statement": "The published any-JDK17+/provider matrix is broader than the two executed stock runtime cells.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "No observing acceptance method mapped or executed for this variant. The named SapMachine lanes establish no behavior for this record; the missing environment and limitation below govern it.",
+      "tests": [],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 658,
+          "quote": "Structural reload (add/remove methods and instance fields) works on every vendor below.",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 997,
+          "quote": "### P1-JDK-PROVIDERS",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "No observing test executed for this current advertised promise.",
+      "control": "No executed observing control for this record.",
+      "verdict": "UNVERIFIED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "Oracle/OpenJDK/Corretto/Temurin/Zulu/Liberica/GraalVM and enhanced JBR/DCEVM builds are unrun. Two SapMachine releases cannot certify every listed vendor or future release.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Obtain the named runtime or a separately scoped observing test before claiming support."
+    },
+    {
+      "id": "P1-JDK26-ENUM",
+      "statement": "Advertised JDK26 enum/Unsafe fallback requires an actual JDK26 native run.",
+      "opt_in": "Default companion reload after explicit agent attachment and class compilation.",
+      "bounds": "No observing acceptance method mapped or executed for this variant. The named SapMachine lanes establish no behavior for this record; the missing environment and limitation below govern it.",
+      "tests": [],
+      "shipped_surfaces": [
+        {
+          "path": "README.md",
+          "line": 81,
+          "quote": "| Add enum values (on the end) |",
+          "sha256": "6a61432754fd293a9ea62fc74c2fc1d3fae1aa42fefeeaa1603e06c8f1a46295"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 1021,
+          "quote": "### P1-JDK26-ENUM",
+          "sha256": "59d320eb1719888a07eeb1d1ab07f268c9094c8c77dca53ad5d7bb1f1ed7f5bc"
+        }
+      ],
+      "observable": "No observing test executed for this current advertised promise.",
+      "control": "No executed observing control for this record.",
+      "verdict": "UNVERIFIED",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "reviewer": "Astra mapped/read assertions; Claude independent evidence audit pending.",
+      "limitation": "JDK26 is not installed/validated for this package; no inference from JDK17/21 or source/API names.",
+      "missing_environment": "Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.",
+      "next_action": "Obtain the named runtime or a separately scoped observing test before claiming support."
+    }
+  ],
+  "coverage_limit": "Finite reviewed core checkpoint, not automatic semantic proof of all prose or completion of P2..P8.",
+  "deferred": [
+    "field-initializer-concurrency item33"
+  ],
+  "raw_evidence_policy": "Local raw reports are not shipped. Per-method results, hashes and reproduction tasks are included; archived independent audit is separate."
+}

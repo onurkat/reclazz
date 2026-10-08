@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Core field documentation names the observed cross-class direct-access limit
+  instead of promising every reloaded caller can read an added instance field.
+  Owner-side accessors remain a measured workaround. The current IntelliJ
+  description states Reclazz's superclass policy rather than a universal JVM rule.
+
 - Spring Data refresh now recognizes the actual repository hierarchy, refreshes
   each warm singleton product once, and re-points ordinary singleton consumers
   by product identity. Ordinary `@Repository` DAOs are no longer recreated twice.
@@ -23,6 +28,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   behavior as an unconditional negative.
 
 ### Added
+
+- Versioned core JVM evidence records distinguish watched behavior, component
+  observations, named limitations and unrun runtimes. New portable acceptance
+  covers member reflection/removal/restore, lambdas, live enum collections and
+  stock-JDK interface refusal without restarting the fixture.
 
 - Changes to the effective `lazy-init` flag on existing ordinary Spring XML
   beans now require restart before their properties or definitions are updated.

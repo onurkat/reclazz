@@ -75,7 +75,7 @@ Spring Boot DevTools restarts the application context after a code change. Recla
 | Application state | Retained for in-place body edits; recreated beans lose mutable instance state | Lost on restart | Preserved |
 | Method body changes | **Yes** | Yes (restart) | Yes |
 | Add / remove methods | **Yes (any JDK 17+)** | Yes (restart) | Yes |
-| Add instance fields | **Yes**, and on a stock JDK an object that already existed reads the initialiser's value on the field's first read: `cache = new ArrayList<>()` added to a live Spring singleton is a list, not a null. The initialiser is lifted out of the constructor on its own, including isolated conditional expressions in single-constructor classes; one that needs a constructor argument is named instead. [Scope](docs/usage.md#new-field-values-on-objects-that-already-existed). On JBR/DCEVM the field is real and objects from before the reload keep the type default | Yes (restart) | No: "will not be initialized in existing instances" ([FAQ](https://www.jrebel.com/jrebel/learn/faq)) |
+| Add instance fields | **Yes**, and on a stock JDK an object that already existed reads the initialiser's value on the field's first read: `cache = new ArrayList<>()` added to a live Spring singleton is a list, not a null. The initialiser is lifted out of the constructor on its own, including isolated conditional expressions in single-constructor classes; one that needs a constructor argument is named instead. [Scope](docs/usage.md#new-field-values-on-objects-that-already-existed). Direct access from another reloaded class is outside the [tested support](docs/usage.md#cross-class-access-to-added-instance-fields); use an owner accessor or restart. On JBR/DCEVM the field is real and objects from before the reload keep the type default | Yes (restart) | No: "will not be initialized in existing instances" ([FAQ](https://www.jrebel.com/jrebel/learn/faq)) |
 | Add static fields | **Yes** — constants and isolated initialisers, including ternary and short-circuit expressions. Only the selected branch runs; later saves preserve the field’s current value. [Scope](docs/usage.md#added-static-field-values) | Yes (restart) | Yes, but the initialiser is not re-run |
 | Added static field whose initialiser is entangled with the rest of `<clinit>` | Reads as null/0, and names the field and the reason | Yes (restart) | Reads as null/0 |
 | Add enum values (on the end) | **Yes on JDK 17-25**: `values()`, `valueOf`, switches and the EnumMap/EnumSet built before the reload all see it. What nothing can find: an array your own code sized with `values().length` before the reload still has the old length, and indexing it by the new constant's ordinal throws. JDK 26 refuses the `sun.misc.Unsafe` access this needs, so Reclazz falls back to the JDK's own `jdk.internal.misc.Unsafe`, which JEP 471 does not cover, by opening that package with the agent's own `redefineModule`; `--sun-misc-unsafe-memory-access=allow` keeps the first door open and silences the warning | Yes (restart) | Yes |
@@ -156,6 +156,7 @@ than either.
 | [docs/protocol.md](docs/protocol.md) | The status socket, for a client other than the IntelliJ plugin: an IDE extension, a build tool that nudges the agent, a log shipper |
 | [docs/client-matrix.md](docs/client-matrix.md) | The client acceptance matrix: independent MCP SDK, real build-tool and OS coverage, with runnable tests and the lanes that are not yet run |
 | [docs/agentic-evaluation.md](docs/agentic-evaluation.md) | Reproducible workflow scenarios with success, false completion, restart, call and elapsed-time measurements |
+| [docs/feature-evidence.md](docs/feature-evidence.md) | Versioned core JVM claim evidence, observed limits and explicitly unverified runtime cells |
 | [docs/superclass-feasibility.md](docs/superclass-feasibility.md) | Versioned superclass research: direct redefinition versus bounded same-loader delegation, with a runnable probe and native type limits |
 | [docs/test-guide.md](docs/test-guide.md) | Trying each capability by hand on a SAP Commerce install |
 | [docs/publishing.md](docs/publishing.md) | Cutting a release: the scripts, the two release-note files, what a version number means |
@@ -689,7 +690,7 @@ compile with an older `--release` while you develop, or update Reclazz.
 |---|---|---|
 | Method body changes | Yes | None |
 | Add new methods | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Adapters carry the saved metadata to Spring MVC (endpoints, `@ExceptionHandler`, `@InitBinder`, `@ModelAttribute`), `@Bean` factories, `@Scheduled`, `@EventListener` and `@TransactionalEventListener`, `@PostConstruct`/`@PreDestroy`, `@Transactional`/`@Cacheable` service methods, Jackson getters and setters, and `@KafkaListener`/`@JmsListener`/`@RabbitListener` without a restart; a scan without an adapter is named |
-| Add new fields | **Yes** | Reachable from hot-compiled callers; not from reflection on the original class. Once a class carries members added since startup, the JVM refuses the redefinition that installs the new constructor, so a field added after that reads its default even on new objects; Reclazz names the fields and the reason rather than leaving you to find the value. A field added to a Jackson DTO is read and written by JSON through the same adapter as added getters |
+| Add new fields | **Yes within the documented scope** | Reads/writes within the reloaded owning class work; [direct access from another reloaded class can fail](docs/usage.md#cross-class-access-to-added-instance-fields), so use an owner accessor or restart. Added members are not visible on the original class. Constructor refresh and initializer refusal follow the [initialization scope](docs/usage.md#new-field-values-on-objects-that-already-existed); a failed constructor refresh is named. Jackson DTO adapters have their own framework scope |
 | Remove methods/fields | **Yes** | Hidden from reflection so scans stop seeing them; existing callers keep the previous implementation until they are hot-recompiled |
 | Change annotations | **Yes** | None |
 | Spring bean logic | Yes | None |
@@ -764,16 +765,19 @@ reads it off the moved body, so it prints the internal name. The logger name,
 the line number and the class name are all unaffected.
 
 **`serialVersionUID` is pinned.** Injecting members would change the number the
-JVM computes for a class that does not declare one, which would make anything
-serialized before the agent unreadable after it. Reclazz computes the number
-your class would have had and writes it in, so serialized data and mixed
-clusters keep working.
+JVM computes for a class that does not declare one. Reclazz computes the number
+your class would have had and writes it in. The [core evidence](docs/feature-evidence.md#p1-load-serial-uid)
+records UID equality and a plain-class serialization round trip; it does not
+certify arbitrary serialized object graphs or mixed-cluster deployments.
 
 **Fields added by a reload are runtime-only.** A field that appears in a reload
-lives beside the object rather than in it. It is not serialized, and a `clone()`
-gets its own copy rather than sharing the original's. After deserialization it
-reads its type default, which is what an object built before that reload reads
-too.
+lives beside the object rather than in it. The injected store is transient;
+its stored added-field values are not serialized. Clone writes use copy-on-write
+store isolation, with the usual shallow-copy semantics for referenced values.
+Deserialization starts without that store. The interaction with first-read
+initializers needs application-specific verification; do not assume every
+deserialized or pre-existing object reads the type default. See the
+[component evidence and remaining limits](docs/feature-evidence.md#p1-field-serialization).
 
 **A call into a watched class costs about 1.4 nanoseconds more.** Measured with
 and without the agent on the same code: a method that only increments a field

@@ -3024,7 +3024,7 @@ doesn't allow). This has one consequence worth knowing:
 **Works after a structural reload (any JDK 17+):**
 - Hot-compiled Java code that calls a new method directly — the
   invocation is rewritten through the companion via `invokedynamic`
-- Hot-compiled Java code that reads/writes a new field
+- Hot-compiled Java code within the reloaded owning class that reads/writes a new field; [cross-class access has a measured limit](#cross-class-access-to-added-instance-fields)
 - Jackson JSON input/output through the [added property adapter](#jackson-properties-added-after-startup)
 - Hybris Jalo-layer property access (`jaloItem.setProperty(...)`)
 - Flexible search with new attribute columns (after HAC
@@ -3041,6 +3041,18 @@ If your workflow relies heavily on reflective access to
 newly-added members (e.g. scripted type-system exploration), use
 JBR or DCEVM for full visibility. For the typical edit-compile-run
 loop on hand-written Java, companion-class mode is transparent.
+
+### Cross-class access to added instance fields
+
+The portable core evidence includes a case where an already loaded `Holder`
+gains `public int added = 42`, and a separately reloaded `Caller` starts reading
+`holder.added` directly. That caller throws `NoSuchFieldError` on the measured
+stock-JDK companion path, while `Holder.value()` reading its own new field
+returns 42 on the same existing object. Reloading the caller to use that owner
+accessor also returns 42 without restarting. Keep direct cross-class added-field
+access outside the supported scope; use an owner accessor or restart. This
+observation does not establish enhanced-JVM behavior or all inheritance/access
+shapes. See the [versioned core evidence](feature-evidence.md).
 
 ### Setting Up JBR
 

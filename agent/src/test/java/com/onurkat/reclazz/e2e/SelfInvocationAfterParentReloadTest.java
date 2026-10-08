@@ -32,12 +32,17 @@ class SelfInvocationAfterParentReloadTest {
 
             app.awaitOrFail("APP_STARTED", "the app did not start under the agent");
             app.awaitOrFail("VALUE=b1:dh", "the first version never served with the override");
+            String identity = app.output().stream().filter(s -> s.startsWith("ID=")).findFirst().orElseThrow();
 
             app.rewrite("Base", base("b2"));
             app.awaitOrFail("VALUE=b2:", "the reload of the parent never reached the app");
             Thread.sleep(700);
             assertEquals("VALUE=b2:dh", app.latest("VALUE="),
                     () -> "the reloaded parent body no longer reaches the child's override:\n" + app.tail());
+            assertEquals(1, app.output().stream().filter(s -> s.startsWith("ID=")).count());
+            assertEquals(identity, app.output().stream().filter(s -> s.startsWith("ID=")).findFirst().orElseThrow(),
+                    "PID and startup nonce must stay unchanged");
+            assertEquals(identity.substring(3), app.latest("LIVE_ID=").substring(8));
         }
     }
 
@@ -66,10 +71,13 @@ class SelfInvocationAfterParentReloadTest {
                 public class App {
                     public static void main(String[] args) throws Exception {
                         Base d = new Derived();
+                        String identity = ProcessHandle.current().pid() + ":" + java.util.UUID.randomUUID();
+                        System.out.println("ID=" + identity);
                         System.out.println("APP_STARTED");
                         while (true) {
                             Thread.sleep(200);
                             System.out.println("VALUE=" + d.describe());
+                            System.out.println("LIVE_ID=" + identity);
                         }
                     }
                 }
