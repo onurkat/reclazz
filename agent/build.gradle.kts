@@ -103,7 +103,7 @@ dependencies {
     // Real DTO serialization regressions; never included in the agent jar.
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
-    testImplementation("org.glassfish:jakarta.el:3.0.4")
+    testImplementation("org.glassfish:jakarta.el:4.0.2")
 }
 
 // The broker's Jackson/SLF4J versions belong to JMS tests only. Extending the
