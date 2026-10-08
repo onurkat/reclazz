@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Spring Data refresh now recognizes the actual repository hierarchy, refreshes
+  each warm singleton product once, and re-points ordinary singleton consumers
+  by product identity. Ordinary `@Repository` DAOs are no longer recreated twice.
+  Lazy/cold products are not created for capture; failed recreation is not
+  reported as repository success.
+  Shape-preserving repository interface edits now reach that refresh from the
+  real watcher; temporary missing-type results during recreation are invalidated.
+- Added Backoffice socket actions now produce a restart finding instead of
+  silently relying on an unverified widget registry API. Existing action bodies
+  and separate label/config paths retain their reload behavior.
+- README and the IntelliJ description distinguish retained JVM/object state from
+  recreated bean state, and no longer present unverified specialized competitor
+  behavior as an unconditional negative.
+
 ### Added
 
 - Changes to the effective `lazy-init` flag on existing ordinary Spring XML

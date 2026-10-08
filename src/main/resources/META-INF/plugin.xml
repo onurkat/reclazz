@@ -6,9 +6,10 @@
     <description><![CDATA[
         <h2>Hot-Reload for SAP Commerce and Spring, Free and Open Source</h2>
         <p>
-            Edit your Java code, build, and the running JVM picks up the change in about
-            50ms. No server restart, and the application state you spent five minutes
-            setting up survives. Write a new Spring MVC endpoint and it answers on the
+            Edit your Java code, build, and the running JVM can apply supported changes without a server restart.
+            In-place body edits retain existing object state; recreated Spring beans
+            lose mutable instance state. Reload duration and save-to-live latency are different
+            measurements and depend on the application and runtime. Write a new Spring MVC endpoint and it answers on the
             next request, which is the moment a reload is worth the most.
         </p>
         <p>
@@ -23,8 +24,8 @@
             all rather than being wiped by it.
         </p>
         <p>
-            It works just as well on any Spring Boot application, and on plain Java through
-            a watch directory.
+            Spring Boot integration follows the documented framework and reload scopes.
+            Plain Java applications can use a watch directory for supported class changes.
         </p>
 
         <h3>SAP Commerce</h3>

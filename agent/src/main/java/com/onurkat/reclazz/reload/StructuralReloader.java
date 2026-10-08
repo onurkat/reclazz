@@ -978,7 +978,16 @@ public class StructuralReloader {
 
             var definition = new java.lang.instrument.ClassDefinition(existingClass, newBytecode);
             instrumentation.redefineClasses(definition);
-            return ClassReloader.ReloadResult.success(false, false);
+            // Repository interfaces deliberately have no companion metadata.
+            // A successful shape-preserving JVM redefinition must still reach
+            // the Data step, or a changed @Query remains cached in its proxy.
+            boolean repository = com.onurkat.reclazz.spring.SpringDataReloader.isRepository(existingClass);
+            var result = ClassReloader.ReloadResult.success(repository, false);
+            if (repository) {
+                result.setAnnotationsChanged(true);
+                result.setNewBytecode(newBytecode);
+            }
+            return result;
         } catch (Exception e) {
             return ClassReloader.ReloadResult.failure("Standard reload failed: " + e.getMessage(), false);
         }
@@ -1503,20 +1512,11 @@ public class StructuralReloader {
             // Spring reload orchestration is now handled by ReclazzAgent.handleClassFileChange()
             // via SpringReloadOrchestrator.onClassReloaded()
 
-            // Backoffice widget reload (Hybris only)
-            if (isHybris && isStructural && isBackofficeWidget(targetClass)) {
-                try {
-                    Class<?> bwrClass = Class.forName(
-                            "com.onurkat.reclazz.hybris.backoffice.BackofficeWidgetReloader");
-                    boolean widgetReloaded = (boolean) bwrClass.getMethod("reloadWidget", Class.class)
-                            .invoke(null, targetClass);
-                    if (widgetReloaded) {
-                        StatusReporter.success("Backoffice widget reloaded for " + className);
-                    }
-                } catch (Exception e) {
-                    StatusReporter.warn("Backoffice widget reload failed for " + className
-                            + " (" + e + ") — the widget may need a page refresh");
-                }
+            // Existing action bodies reload normally. Only new SocketEvent
+            // registrations need a separate restart finding, read from the save.
+            if (isHybris && isStructural && com.onurkat.reclazz.hybris.backoffice.BackofficeWidgetReloader
+                    .hasAddedSocketEvent(newBytecode, diff.getAddedMethods())) {
+                com.onurkat.reclazz.hybris.backoffice.BackofficeWidgetReloader.reloadWidget(targetClass);
             }
 
             ClassReloader.ReloadResult result = ClassReloader.ReloadResult.structuralSuccess(
@@ -1742,24 +1742,6 @@ public class StructuralReloader {
         try {
             for (Class<?> iface : clazz.getInterfaces()) {
                 if (iface.getName().contains("de.hybris.platform.servicelayer.interceptor")) return true;
-            }
-        } catch (Exception ignored) {}
-        return false;
-    }
-
-    private boolean isBackofficeWidget(Class<?> clazz) {
-        try {
-            // Check annotations for @SocketEvent
-            for (var method : clazz.getDeclaredMethods()) {
-                for (var annotation : method.getAnnotations()) {
-                    if (annotation.annotationType().getName().contains("SocketEvent")) return true;
-                }
-            }
-            // Check superclass chain for DefaultWidgetController
-            Class<?> current = clazz;
-            while (current != null && current != Object.class) {
-                if (current.getName().contains("DefaultWidgetController")) return true;
-                current = current.getSuperclass();
             }
         } catch (Exception ignored) {}
         return false;

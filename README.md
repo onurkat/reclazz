@@ -13,7 +13,7 @@
 
 Website: [reclazz.com](https://reclazz.com)
 
-Reclazz is a Java agent that watches your compiled class files and hot-swaps them into the running JVM instantly. Works with any Spring Boot application out of the box, with extended support for SAP Commerce (Hybris).
+Reclazz is a Java agent that watches compiled class files and reloads supported changes into the running JVM. Spring and SAP Commerce (Hybris) integration follows the [documented framework and reload scopes](docs/usage.md).
 
 ## Quick Start (Spring Boot)
 
@@ -64,7 +64,7 @@ Maven wiring, an MCP server with `reclazz_status` / `reclazz_scan` / `reclazz_pe
 
 ## Why Reclazz?
 
-Spring Boot DevTools restarts the entire application context on every change. JRebel costs $550+/year. Reclazz is **free, open-source**, and performs true in-place class redefinition, so your application state is preserved.
+Spring Boot DevTools restarts the application context after a code change. Reclazz is **free, open-source**, and can redefine classes in the existing JVM. In-place body edits retain existing object state; Spring bean recreation replaces objects and resets their mutable instance state. See [state and reload scope](docs/usage.md#state-during-a-reload).
 
 ### Comparison
 
@@ -72,7 +72,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 |---|---|---|---|
 | Price | **Free & open source** | Free | Commercial |
 | Reload type | **In-place hot-swap** | Full context restart | In-place hot-swap |
-| Application state | **Preserved** | Lost on restart | Preserved |
+| Application state | Retained for in-place body edits; recreated beans lose mutable instance state | Lost on restart | Preserved |
 | Method body changes | **Yes** | Yes (restart) | Yes |
 | Add / remove methods | **Yes (any JDK 17+)** | Yes (restart) | Yes |
 | Add instance fields | **Yes**, and on a stock JDK an object that already existed reads the initialiser's value on the field's first read: `cache = new ArrayList<>()` added to a live Spring singleton is a list, not a null. The initialiser is lifted out of the constructor on its own, including isolated conditional expressions in single-constructor classes; one that needs a constructor argument is named instead. [Scope](docs/usage.md#new-field-values-on-objects-that-already-existed). On JBR/DCEVM the field is real and objects from before the reload keep the type default | Yes (restart) | No: "will not be initialized in existing instances" ([FAQ](https://www.jrebel.com/jrebel/learn/faq)) |
@@ -104,7 +104,7 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | `@EventListener` refresh | **Yes**, including a method added after startup: direct annotation, one reference event parameter, `void` or a single event object return, on a supported singleton (including standard transaction/cache proxies). Supported public callbacks also accept direct transaction/cache annotations; void ordinary listeners can use direct `@Async` with the application's executor and error handler. Spring publishes a returned event; null produces none. Preserves filtering, conditions and `@Order`; later saves replace or remove its registration. [Scope and example](docs/usage.md#event-listener-methods-added-after-startup) | Yes (restart) | Yes |
 | `@TransactionalEventListener` added after startup | **Yes**, for direct `void` listeners on supported unproxied singletons. Spring handles all four phases, fallback, conditions and order. Reload/removal retires queued callbacks from the previous added registration. [Scope](docs/usage.md#transactional-event-listeners-added-after-startup) | Yes (restart) | Not verified here |
 | AOP proxy refresh | **Yes** | Yes (restart) | Yes |
-| Spring Data repo refresh | **Yes** | Yes (restart) | Yes |
+| Spring Data repo refresh | Warm singleton repository products are recreated and ordinary singleton holders are re-pointed within the [tested scope](docs/usage.md#spring-data-repository-refresh) | Yes (restart) | Yes |
 | `@Async` re-processing | **Yes**, including direct public service methods added after startup with `void`, `Future<T>` or `CompletableFuture<T>` results, native executor/error handling and supported transaction/cache advice. [Scope](docs/usage.md#async-service-methods-added-after-startup) | Yes (restart) | Yes |
 | JPA entity class reload | **Yes** | Yes (restart) | Yes |
 | JPA mapping picks up a new field | **Yes, opt-in** (`jpaRefresh=true`): on JBR/DCEVM with `ddl-auto` at update/create/create-drop, Reclazz rebuilds the persistence unit (65ms measured on the demo app), the schema action creates the column, and repositories injected before the rebuild keep working. Open persistence contexts from before the rebuild are closed. In every other configuration Reclazz names the field, says it is neither saved nor loaded, and reads your `ddl-auto` to tell you whether a restart is enough or the column has to exist first | Yes (restart) | Yes, the mapping is refreshed; the database column is still yours to add |
@@ -121,9 +121,9 @@ Spring Boot DevTools restarts the entire application context on every change. JR
 | Changed compile-time constant (`static final`) | **Named, and the dependents found**: javac inlines the value and leaves no reference behind, so the changed class cannot reach them, but the sources that read it can be found and are listed by name. With `autoCompile` they are rebuilt and hot-swapped, so the new value is live without a restart. A constants-only holder is covered too, though the JVM never loads it | Yes (restart) | Same limitation, undocumented |
 | Message bundle (`messages.properties`) | **Yes** — the message source's cache is dropped, the JDK `ResourceBundle` cache with it, so the next lookup reads the file | Yes (restart) | Yes |
 | Template reload (Thymeleaf, Freemarker) | **Yes** | Yes | Yes |
-| SAP Commerce: `*-items.xml` regeneration | **Yes** | No | No |
-| SAP Commerce: ImpEx auto-import | **Yes** | No | No |
-| SAP Commerce: interceptor reload | **Yes**, the mapping is re-registered in the platform registry and verified by a real model save | No | No |
+| SAP Commerce: `*-items.xml` regeneration | **Yes**, within the documented opt-in scope | Not verified here | Not verified here |
+| SAP Commerce: ImpEx auto-import | **Yes**, opt-in | Not verified here | Not verified here |
+| SAP Commerce: interceptor reload | **Yes**, the mapping is re-registered in the platform registry and verified by a real model save | Not verified here | Not verified here |
 | IDE support | Any IDE or none; the IntelliJ plugin adds auto-attach and a status UI | any | IntelliJ, Eclipse, VS Code, NetBeans |
 | Remote / container sync | Syncing changed `.class` files into a watched directory is enough; Compose Watch and rsync recipes under [Remote and containers](#remote-and-containers). CCv2 is unreachable for every tool | No | Yes |
 | Modified JVM required | **No** | No | No |
@@ -175,7 +175,7 @@ than either.
 - **Added service operations**: New transaction/cache methods on supported singleton services run through real Spring interceptors, including old CGLIB references and first operations on plain beans. [Scope](docs/usage.md#operations-on-added-service-methods).
 - **AOP Proxy Refresh**: Re-parses `@Aspect` pointcuts and updates supported existing singleton proxy chains in place
 - **Async Re-processing**: Re-processes `@Async` beans
-- **Spring Data Refresh**: Destroys and recreates `Repository` beans
+- **Spring Data Refresh**: Recreates warm singleton products of actual Spring Data repository types and repairs ordinary singleton holders. An ordinary Spring `@Repository` DAO stays on generic bean refresh. [Scope](docs/usage.md#spring-data-repository-refresh).
 - **One line per save that says what it touched**: `Reloaded OrderService
   (12ms): bean orderService re-created, mappings re-scanned, caches evicted`,
   and `; 1 thing now waits on a restart, ask PENDING` when the save added

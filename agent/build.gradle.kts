@@ -221,6 +221,9 @@ dependencies {
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
     add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.5.250")
+    // Native repository refresh regressions only; never shipped with the agent.
+    add(springSixTests.implementationConfigurationName, "org.springframework.data:spring-data-jpa:3.3.4")
+    add(springSixTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.14")
     add(springSixTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
     add(springSixTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
 }

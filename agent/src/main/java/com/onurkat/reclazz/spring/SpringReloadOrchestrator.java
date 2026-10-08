@@ -247,7 +247,9 @@ public class SpringReloadOrchestrator {
             if (!jmsReloader.beforeBeanRefresh(reloadedClass, newBytecode, kafkaReloader)) return;
             if (!kafkaReloader.beforeBeanRefresh(reloadedClass, newBytecode)) return;
             if (!lifecycle.install()) return;
-            beanReloader.refreshBean(className, reloadedClass);
+            // Repository products have one refresh owner, including when their
+            // interface also carries the ordinary Spring @Repository stereotype.
+            if (!SpringDataReloader.isRepository(reloadedClass)) beanReloader.refreshBean(className, reloadedClass);
 
             // 2. MVC re-scan. Structural changes need it because the set of
             // handler methods moved; annotation changes need it because the

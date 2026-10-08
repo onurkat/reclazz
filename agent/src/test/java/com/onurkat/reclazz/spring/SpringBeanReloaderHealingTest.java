@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class SpringBeanReloaderHealingTest {
 
     public static class Service {
+        int value;
         public String version() { return "v1"; }
     }
 
@@ -86,6 +87,18 @@ class SpringBeanReloaderHealingTest {
         assertNotSame(original, refreshed, "bean must be destroyed and recreated");
         assertSame(refreshed, manual.service,
                 "the SAME holder instance must be re-pointed at the refreshed bean");
+    }
+
+    @Test
+    void beanRefreshRecreatesStateWhileUnrelatedSingletonKeepsItsState() {
+        Service before = context.getBean(Service.class); before.value = 41;
+        Unrelated unrelated = context.getBean(Unrelated.class); unrelated.count = 29;
+        reloader.refreshBean(Service.class.getName(), Service.class);
+        assertNotSame(before, context.getBean(Service.class));
+        assertEquals(0, context.getBean(Service.class).value);
+        assertEquals(41, before.value);
+        assertSame(unrelated, context.getBean(Unrelated.class));
+        assertEquals(29, unrelated.count);
     }
 
     @Test

@@ -2890,6 +2890,54 @@ removing the `-javaagent` line runs the application with no agent at all. None
 of these loses application state that a restart would have kept; a restart is
 the last step, and `PENDING` says when it is the only one.
 
+### State during a reload
+
+Keeping the JVM alive does not mean every bean keeps its state. In-place
+method-body redefinition retains the fields of existing objects. Spring bean
+refresh instead destroys and recreates a singleton; its mutable instance state
+resets and normal creation/destruction callbacks may run. Reclazz does not copy
+or restore that state. Unrelated singleton objects are not globally recreated.
+Recovery by saving old code does not restore resources or state lost during
+bean destruction, and a failed recreation is not a transaction with rollback.
+
+### Spring Data repository refresh
+
+The Data refresh step recognizes assignability to Spring Data's actual
+`Repository` marker, including deep base-interface hierarchies. A Spring
+`@Repository` stereotype alone is an ordinary DAO, not proof of Spring Data.
+Repositories have a single recreation owner even when they carry that stereotype.
+
+Warm singleton repository products are recreated once per matching local bean
+name/context; already-live ordinary singleton fields holding the old product
+are re-pointed by identity. This is not an arbitrary object-graph, collection,
+static/final-field or externally-held-reference rewrite. Spring-recorded
+dependents use the container's normal recreation behavior. Missing products or
+failed recreation do not produce a repository-success effect. Failures do not
+undo earlier destruction or independently successful sibling refreshes.
+
+Lazy factories are not initialized for type discovery. An existing factory's
+cached product is read without creating it. A factory whose product is still
+cold can be invalidated without creating a product; the next normal lookup uses
+the updated factory definition. Non-singleton products are outside this refresh.
+
+Native query edits and repeated saves are tested with Spring Data JPA 3.3.4,
+Spring 6.1.14, Hibernate 6.5.3 and H2. The watcher acceptance uses existing
+repository interfaces with and without Spring's `@Repository`, in normal and
+child application loaders. Successful shape-preserving JVM redefinition reaches
+repository refresh even though an interface has no companion metadata. New
+interface methods and interface default/static
+method hot reload are outside this acceptance. These tests do not establish
+all Spring Data modules, versions, proxy shapes or custom factory behavior.
+
+### Backoffice socket actions
+
+Existing widget action bodies use ordinary class reload. Adding a method with
+the native `com.hybris.cockpitng.annotations.SocketEvent` annotation does not
+register that action in already-running widgets. Reclazz records a widget-specific
+restart finding in `PENDING`; it does not claim that a definition-cache refresh
+registered the action. A body edit or an unrelated added helper creates no such
+registration finding. Backoffice label/config cache support remains separate.
+
 ## Debugging Reloaded Code
 
 Breakpoints keep working in code Reclazz has reloaded. On a stock JDK an
