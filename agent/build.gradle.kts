@@ -215,6 +215,10 @@ dependencies {
         // jakarta.annotation-api below already supplies these classes.
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
     }
+    // Real Jakarta constraint reload acceptance; test-only, never shipped.
+    add(springSixTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.22.3")
+    add(springSixTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:8.0.2.Final")
+    add(springSixTests.implementationConfigurationName, "org.glassfish.expressly:expressly:5.0.0")
     // Native modern method authorization; isolated from Spring 5 and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-config:6.3.4")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.

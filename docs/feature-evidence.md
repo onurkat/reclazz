@@ -64,7 +64,7 @@ A reloaded parent still reaches the existing child override without restart.
 
 Isolated added instance initializers give existing objects their own first-read values.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -88,7 +88,7 @@ Isolated added instance initializers give existing objects their own first-read 
 
 Historical constructor arguments are not reconstructed for an added field.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -112,7 +112,7 @@ Historical constructor arguments are not reconstructed for an added field.
 
 An initializer failure is isolated and may retry after a later initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -136,7 +136,7 @@ An initializer failure is isolated and may retry after a later initializer gener
 
 An isolated conditional uses each existing receiver state.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -160,7 +160,7 @@ An isolated conditional uses each existing receiver state.
 
 Equivalent and delegated constructors preserve old/new initialization order.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -184,7 +184,7 @@ Equivalent and delegated constructors preserve old/new initialization order.
 
 A previously unread added field uses the current initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -208,7 +208,7 @@ A previously unread added field uses the current initializer generation.
 
 Application values, including an explicit null write before read, survive later saves.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -232,7 +232,7 @@ Application values, including an explicit null write before read, survive later 
 
 Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -256,7 +256,7 @@ Isolated switch arms and unrelated initializer handlers do not replay old constr
 
 Only selected isolated conditional static initializer arms run.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -280,7 +280,7 @@ Only selected isolated conditional static initializer arms run.
 
 An initialized null and an application-written static value remain stored.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -304,7 +304,7 @@ An initialized null and an application-written static value remain stored.
 
 A newly added later static field uses the current condition without resetting older fields.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -328,7 +328,7 @@ A newly added later static field uses the current condition without resetting ol
 
 Unrelated static blocks are not replayed for isolated static initializers.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3045` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); `README.md:693` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `CHANGELOG.md:11` (SHA-256 `ae46406da33118bd080ebcf674d9d2ece229d8f97301fd0315f30b594d6ca010`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3045` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); `README.md:693` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `CHANGELOG.md:11` (SHA-256 `61151b11aadd5f2e9b0c4b047f326a4da03028e24585cdb0e84b436f270b2453`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -760,7 +760,7 @@ Reclazz preserves original hierarchy, applies eligible bodies, pins dependent me
 
 Sequential initialization evidence does not certify concurrent initializer side effects or atomic multi-class reload.
 
-**Shipped surfaces:** `docs/usage.md:3157` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3157` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -784,7 +784,7 @@ Sequential initialization evidence does not certify concurrent initializer side 
 
 Compile-time constants and narrow primitive constant conversions have component evidence.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -832,7 +832,7 @@ Intertwined/guarded static initializer shapes are refused by the component slice
 
 Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -2367,3 +2367,151 @@ Spring 6 added factory conditions match native startup and saved metadata.
 **Limitation / missing environment:** No general Spring 6 registration/factory watcher or Boot 3 proof inferred. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
 
 **Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+## P3a — Adversarial HTTP validation and overlapping requests
+
+This nine-cell hardening slice does not complete P3 MVC/data/callback evidence. Native servlet/provider observations and disabled-hook controls replace inference from cache-shape unit tests. [Machine receipts](feature-evidence/p3a-web-hardening.json) record the exact scope, sources, runtime/artifact hashes and failures.
+
+### P3A-VALIDATION-ADD
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+An existing DTO field gaining NotBlank/Size rejects invalid HTTP input.
+
+**Tests:** `com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`; `com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`
+
+**Default/opt-in:** Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.
+
+**Controls / limits:** Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-VALIDATION-CHANGE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A changed Size minimum is enforced after warmed native metadata.
+
+**Tests:** `com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`; `com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`
+
+**Default/opt-in:** Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.
+
+**Controls / limits:** Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-VALIDATION-REMOVE-RESTORE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Removing and restoring constraints changes acceptance without restarting.
+
+**Tests:** `com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`; `com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`
+
+**Default/opt-in:** Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.
+
+**Controls / limits:** Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-VALIDATION-HELD
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A validator reference and DTO instance captured before edits use current constraints.
+
+**Tests:** `com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`; `com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`
+
+**Default/opt-in:** Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.
+
+**Controls / limits:** Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-VALIDATION-SIDE-EFFECTS
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Rejected validation/malformed JSON never executes the controller body.
+
+**Tests:** `com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`; `com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`
+
+**Default/opt-in:** Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.
+
+**Controls / limits:** Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-VALIDATION-CONTROL
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Unedited DTO constraints and context identity remain correct across saves.
+
+**Tests:** `com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`; `com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects`
+
+**Default/opt-in:** Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.
+
+**Controls / limits:** Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-REQUEST-COMPLETE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Completing one request cannot release a second held worker’s code.
+
+**Tests:** `com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode`; `com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode`
+
+**Default/opt-in:** Startup javaagent with reloadBoundary=request.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Two held native Callable workers, one optionally wrapped in WebAsyncTask with a 500ms timeout; two sequential compiled saves.
+
+**Controls / limits:** Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-REQUEST-TIMEOUT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A timeout503 and another completed request cannot release an interrupt-ignoring worker’s code.
+
+**Tests:** `com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode`; `com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode`
+
+**Default/opt-in:** Startup javaagent with reloadBoundary=request.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Two held native Callable workers, one optionally wrapped in WebAsyncTask with a 500ms timeout; two sequential compiled saves.
+
+**Controls / limits:** Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+### P3A-REQUEST-LATEST
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Overlapping requests drain on old consistent code; two queued saves eventually serve latest consistent code.
+
+**Tests:** `com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode`; `com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode`; `com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode`; `com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode`
+
+**Default/opt-in:** Startup javaagent with reloadBoundary=request.
+
+**Bounds:** Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Two held native Callable workers, one optionally wrapped in WebAsyncTask with a 500ms timeout; two sequential compiled saves.
+
+**Controls / limits:** Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
+
+**Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.

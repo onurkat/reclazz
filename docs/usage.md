@@ -3231,3 +3231,23 @@ Missing registry/mapping or a failed update is not reported as re-registration.
 The registry contract is checked against the owner's SAP 2211-jdk21.8 SDK;
 model-save behavior additionally needs the live test extension described in
 [the integration tests](../integration-test/README.md).
+
+### Native HTTP validation and overlapping-request evidence
+
+The [P3a evidence slice](feature-evidence/p3a-web-hardening.json) uses actual
+Tomcat/DispatcherServlet requests with native Hibernate Validator. Its constraint
+cases warm MVC and an already-held validator before adding, changing, removing
+and restoring annotations on fields that already exist in the loaded DTO. Invalid
+validation and malformed JSON are checked before controller side effects; an
+unedited DTO and context identity are controls. This is not a claim about newly
+added constrained fields, custom providers or every validation group/message policy.
+
+With `reloadBoundary=request`, the native servlet cases hold two Callable workers
+across two saves. Finishing one request does not release the other worker's old
+code. A 503 timeout also does not release an interrupt-ignoring worker, including
+when the other request has completed. Once all owners finish, the latest saved
+version is observed with the same context identity. These controlled schedules do
+not establish throughput, arbitrary asynchronous work or every possible race.
+
+Measured versions, source/artifact hashes and actual commands are in the record;
+other P3 MVC/data/callback families and unlisted environments remain separate.

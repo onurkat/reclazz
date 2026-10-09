@@ -34,6 +34,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Native servlet acceptance warms bean-validation metadata before six constraint
+  edits and checks HTTP rejection before controller side effects. Overlapping
+  asynchronous requests and timeout workers retain old code until all owners
+  finish, then reach the latest save; Spring5/6 and normal/child loaders are tested.
+
 - Ordinary Spring feature evidence separates live watcher observations from
   component-only checks and unrun version/shape cells. New acceptance observes
   singleton recreation, held caller repair and added field injection annotations.
