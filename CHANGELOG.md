@@ -34,6 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Add versioned P3b MVC evidence with native endpoint HTTP tests and explicit Spring 6 added-handler and registered-interceptor limitations; retain component-only and unrun variants separately.
+
 - Native servlet acceptance warms bean-validation metadata before six constraint
   edits and checks HTTP rejection before controller side effects. Overlapping
   asynchronous requests and timeout workers retain old code until all owners

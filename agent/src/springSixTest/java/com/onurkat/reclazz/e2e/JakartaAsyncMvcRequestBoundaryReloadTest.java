@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class JakartaAsyncMvcRequestBoundaryReloadTest {
     @TempDir Path tmp;
-    @ParameterizedTest @CsvSource({"callable,false","callable,true","deferred,false","deferred,true"})
+    @ParameterizedTest(name = "heldAsyncResponseKeepsItsCodeUntilNativeCompletion [{index}] {arguments}") @CsvSource({"callable,false","callable,true","deferred,false","deferred,true"})
     void heldAsyncResponseKeepsItsCodeUntilNativeCompletion(String kind,boolean child) throws Exception {
         run(kind,child,true);
     }

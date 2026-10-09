@@ -16,7 +16,7 @@ The [machine record](feature-evidence/p1-core.json) includes actual execution co
 
 Edited overrides continue dispatching super calls to the current original parent.
 
-**Shipped surfaces:** `README.md:76` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:76` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -40,7 +40,7 @@ Edited overrides continue dispatching super calls to the current original parent
 
 A reloaded parent still reaches the existing child override without restart.
 
-**Shipped surfaces:** `README.md:76` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:76` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -64,7 +64,7 @@ A reloaded parent still reaches the existing child override without restart.
 
 Isolated added instance initializers give existing objects their own first-read values.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -88,7 +88,7 @@ Isolated added instance initializers give existing objects their own first-read 
 
 Historical constructor arguments are not reconstructed for an added field.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -112,7 +112,7 @@ Historical constructor arguments are not reconstructed for an added field.
 
 An initializer failure is isolated and may retry after a later initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -136,7 +136,7 @@ An initializer failure is isolated and may retry after a later initializer gener
 
 An isolated conditional uses each existing receiver state.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -160,7 +160,7 @@ An isolated conditional uses each existing receiver state.
 
 Equivalent and delegated constructors preserve old/new initialization order.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -184,7 +184,7 @@ Equivalent and delegated constructors preserve old/new initialization order.
 
 A previously unread added field uses the current initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -208,7 +208,7 @@ A previously unread added field uses the current initializer generation.
 
 Application values, including an explicit null write before read, survive later saves.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -232,7 +232,7 @@ Application values, including an explicit null write before read, survive later 
 
 Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3105` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3124` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -256,7 +256,7 @@ Isolated switch arms and unrelated initializer handlers do not replay old constr
 
 Only selected isolated conditional static initializer arms run.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3091` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -280,7 +280,7 @@ Only selected isolated conditional static initializer arms run.
 
 An initialized null and an application-written static value remain stored.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3091` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -304,7 +304,7 @@ An initialized null and an application-written static value remain stored.
 
 A newly added later static field uses the current condition without resetting older fields.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3091` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -328,7 +328,7 @@ A newly added later static field uses the current condition without resetting ol
 
 Unrelated static blocks are not replayed for isolated static initializers.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3091` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -352,7 +352,7 @@ Unrelated static blocks are not replayed for isolated static initializers.
 
 An updated caller can invoke an added method on the existing receiver.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -376,7 +376,7 @@ An updated caller can invoke an added method on the existing receiver.
 
 Held Method and unchanged callers keep the last implementation when an original method is removed.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -400,7 +400,7 @@ Held Method and unchanged callers keep the last implementation when an original 
 
 Original members removed by reload disappear from native reflection scans.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -424,7 +424,7 @@ Original members removed by reload disappear from native reflection scans.
 
 Restoring an original removed member makes it visible and callable again.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -448,7 +448,7 @@ Restoring an original removed member makes it visible and callable again.
 
 A removed original field is hidden while a held Field and unchanged caller retain its value.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3045` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); `README.md:693` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `CHANGELOG.md:11` (SHA-256 `61151b11aadd5f2e9b0c4b047f326a4da03028e24585cdb0e84b436f270b2453`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3064` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); `README.md:693` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `CHANGELOG.md:11` (SHA-256 `a45409e74227f8bed020950d7306327b0558792356d8181fe37df5c77719319c`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -496,7 +496,7 @@ Direct watched cross-class instance-field reads and writes share the owning obje
 
 Lambdas introduced in reloaded bodies execute with current captured values.
 
-**Shipped surfaces:** `README.md:118` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:118` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -520,7 +520,7 @@ Lambdas introduced in reloaded bodies execute with current captured values.
 
 A serializable lambda introduced after reload cannot be serialized in the measured companion path.
 
-**Shipped surfaces:** `README.md:118` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:118` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -544,7 +544,7 @@ A serializable lambda introduced after reload cannot be serialized in the measur
 
 Appending an enum tail updates native values/valueOf without changing surviving ordinals.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -568,7 +568,7 @@ Appending an enum tail updates native values/valueOf without changing surviving 
 
 An already-initialized old enum switch takes its default for an appended constant.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -592,7 +592,7 @@ An already-initialized old enum switch takes its default for an appended constan
 
 Pre-existing EnumMap/EnumSet can use the appended constant.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -616,7 +616,7 @@ Pre-existing EnumMap/EnumSet can use the appended constant.
 
 Removing an enum tail removes values/valueOf while preserving surviving ordinals.
 
-**Shipped surfaces:** `README.md:82` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:82` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -640,7 +640,7 @@ Removing an enum tail removes values/valueOf while preserving surviving ordinals
 
 A reorder does not change live native ordinals and is restart-reported.
 
-**Shipped surfaces:** `README.md:83` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:83` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -664,7 +664,7 @@ A reorder does not change live native ordinals and is restart-reported.
 
 Application-owned old values() arrays are not automatically grown.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -688,7 +688,7 @@ Application-owned old values() arrays are not automatically grown.
 
 Stock-JVM interface identity stays unchanged while eligible edited bodies/later saves run.
 
-**Shipped surfaces:** `README.md:84` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:84` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -712,7 +712,7 @@ Stock-JVM interface identity stays unchanged while eligible edited bodies/later 
 
 Advertised enhanced-JVM added/removed interfaces require their own native acceptance.
 
-**Shipped surfaces:** `README.md:84` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:84` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -736,7 +736,7 @@ Advertised enhanced-JVM added/removed interfaces require their own native accept
 
 Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.
 
-**Shipped surfaces:** `README.md:85` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:85` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -760,7 +760,7 @@ Reclazz preserves original hierarchy, applies eligible bodies, pins dependent me
 
 Sequential initialization evidence does not certify concurrent initializer side effects or atomic multi-class reload.
 
-**Shipped surfaces:** `docs/usage.md:3157` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3176` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -784,7 +784,7 @@ Sequential initialization evidence does not certify concurrent initializer side 
 
 Compile-time constants and narrow primitive constant conversions have component evidence.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3091` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -808,7 +808,7 @@ Compile-time constants and narrow primitive constant conversions have component 
 
 Intertwined/guarded static initializer shapes are refused by the component slicer.
 
-**Shipped surfaces:** `README.md:80` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:80` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -832,7 +832,7 @@ Intertwined/guarded static initializer shapes are refused by the component slice
 
 Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `docs/usage.md:3072` (SHA-256 `e35c49f3a0b898c220eca2ea5f2d118a88fb3bd0ce65fa2236f9dab435f86928`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `docs/usage.md:3091` (SHA-256 `20b3a9a145669205bd2885064566603f38f719f3a3789977598a6a5432744c27`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -856,7 +856,7 @@ Nested conditionals, wide/decimal/object/null/source-order/short-circuit values 
 
 Load-time transformation retains selected reflection metadata in component fixtures.
 
-**Shipped surfaces:** `README.md:745` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:745` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -880,7 +880,7 @@ Load-time transformation retains selected reflection metadata in component fixtu
 
 Original serialVersionUID and selected no-agent-to-transformed deserialization have component evidence.
 
-**Shipped surfaces:** `README.md:767` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:767` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -904,7 +904,7 @@ Original serialVersionUID and selected no-agent-to-transformed deserialization h
 
 Added-field store writes on a clone and original remain isolated in component fixtures.
 
-**Shipped surfaces:** `README.md:773` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:773` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -928,7 +928,7 @@ Added-field store writes on a clone and original remain isolated in component fi
 
 Transient added-field storage has component evidence; post-reload initializer/deserialization interaction needs watched acceptance.
 
-**Shipped surfaces:** `README.md:773` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:773` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -952,7 +952,7 @@ Transient added-field storage has component evidence; post-reload initializer/de
 
 Published stack-frame and logging-method-name observations need their own source/line acceptance.
 
-**Shipped surfaces:** `README.md:751` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:751` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -976,7 +976,7 @@ Published stack-frame and logging-method-name observations need their own source
 
 Listed instance/static synchronized and exceptional-exit fixtures retain their monitor policy after structural reload.
 
-**Shipped surfaces:** `README.md:820` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:820` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1000,7 +1000,7 @@ Listed instance/static synchronized and exceptional-exit fixtures retain their m
 
 The published any-JDK17+/provider matrix is broader than the two executed stock runtime cells.
 
-**Shipped surfaces:** `README.md:658` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:658` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1024,7 +1024,7 @@ The published any-JDK17+/provider matrix is broader than the two executed stock 
 
 Advertised JDK26 enum/Unsafe fallback requires an actual JDK26 native run.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `0b397b585537801242d93515f9abbe769369ffafb9168f088f6bc91323314e84`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -2515,3 +2515,567 @@ Overlapping requests drain on old consistent code; two queued saves eventually s
 **Controls / limits:** Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion. Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers. Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.
 
 **Reviewer / next action:** Astra built/read actual observing assertions; independent Claude audit pending. Independent audit/full gate and local-only commit after actual matrix and negative witnesses.
+
+## P3b — Remaining MVC request/response evidence
+
+This package classifies the measured MVC slice and explicitly records missing variants. It does not complete P3c callbacks/data or every repository promise. Native Tomcat HTTP, HTTP-to-MockMvc bridges, direct ObjectMapper HTTP and component-only observations are distinct. Passing limitation characterizations do not mean feature success. Scratch negative witnesses run on SapMachine21 only. Whole-hook negative witnesses stop at the first failing assertion; they are not separate mutations for every later assertion or every component-only row. [Machine evidence](feature-evidence/p3b-mvc-web.json) contains the exact methods, invocation receipts, runtime/artifact/source hashes and controls. The interceptor gap remains a restart limitation; Spring6.1.14 added exception handlers are refused.
+
+### P3B-ENDPOINT-GET
+
+**Verdict:** PROVEN_WITH_SCOPE. An added GET endpoint follows add/edit/remove/restore/unannotate across five saves.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60; normal/child loaders; native DispatcherServlet; class-level prefix and explicit argument names. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart` (watcher)
+
+**Controls / remaining limits:** Pre-edit404; existing route and native context nonce; wrong verb405. Disabled endpoint adapter must make whole observer RED. Only the named observers and versions. In-flight metadata publication is not atomic; other OS/JVMs and unlisted deployments are unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ENDPOINT-POST
+
+**Verdict:** PROVEN_WITH_SCOPE. An added POST endpoint follows add/edit/remove/restore/unannotate across five saves.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60; normal/child loaders; native DispatcherServlet; class-level prefix and explicit argument names. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart` (watcher)
+
+**Controls / remaining limits:** Pre-edit404; existing route and native context nonce; wrong verb405. Disabled endpoint adapter must make whole observer RED. Only the named observers and versions. In-flight metadata publication is not atomic; other OS/JVMs and unlisted deployments are unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-LOCAL
+
+**Verdict:** PROVEN_WITH_SCOPE. Added local exception handler changes HTTP status/body, then edit/remove/restore/unannotate changes selection.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39; normal/child loaders; loopback HttpServer -> MockMvc/DispatcherServlet (not native Tomcat). Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves` (watcher); `com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves` (watcher)
+
+**Controls / remaining limits:** Warm fallback; other controller still400, existing local still409. Disable exception transformer: whole observer RED. Spring6.1.14 refuses the hook (separate FAILED cell). Spring5 native servlet deployment unverified. Exact metadata-class identity, proxies and extra advice outside scope. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-ADVICE
+
+**Verdict:** PROVEN_WITH_SCOPE. Added controller-advice exception handler changes HTTP status/body, then edit/remove/restore/unannotate changes selection.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39; normal/child loaders; loopback HttpServer -> MockMvc/DispatcherServlet (not native Tomcat). Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves` (watcher); `com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves` (watcher)
+
+**Controls / remaining limits:** Warm fallback; other controller still400, existing local still409. Disable exception transformer: whole observer RED. Spring6.1.14 refuses the hook (separate FAILED cell). Spring5 native servlet deployment unverified. Exact metadata-class identity, proxies and extra advice outside scope. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-MODERN
+
+**Verdict:** FAILED. Spring6.1.14 refuses the added-handler hook; newly added handler cannot replace the existing fallback.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring6.1.14; normal/child loaders; loopback HTTP -> MockMvc/DispatcherServlet. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerLimitationTest#localAddedHandlerIsRefusedAndExistingFallbackRemains` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerLimitationTest#adviceAddedHandlerIsRefusedAndSelectorsRemain` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerLimitationTest#localRefusalPersistsAcrossChildLoaderSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerLimitationTest#adviceRefusalPersistsAcrossChildLoaderSaves` (watcher)
+
+**Controls / remaining limits:** Exact resolver diagnostic1/2/1; unchanged native fallback effects. Scratch desired422 response must RED; GREEN characterization is not feature success. A version-specific support gap, not a repair. Supported Spring5 rows remain separate. Native Tomcat exception-handler deployment not measured. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-BINDER-LOCAL
+
+**Verdict:** PROVEN_WITH_SCOPE. Added named InitBinder on local receiver changes HTTP binding/model across five saves.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child loaders; loopback HttpServer -> MockMvc/DispatcherServlet (not deployed servlet container). Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints` (watcher); `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher)
+
+**Controls / remaining limits:** Warm global binder3; existing/new routes; unrelated parameter not multiplied; untouched other controller. Disable binding transformer -> whole observer RED. Plain Object receivers; explicit annotation names, private restoration. Void/generic model and refusal variants are separate component-only cells. Native servlet-container binding/model deployment unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-BINDER-ADVICE
+
+**Verdict:** PROVEN_WITH_SCOPE. Added named InitBinder on advice receiver changes HTTP binding/model across five saves.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child loaders; loopback HttpServer -> MockMvc/DispatcherServlet (not deployed servlet container). Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors` (watcher); `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher)
+
+**Controls / remaining limits:** Warm global binder3; existing/new routes; unrelated parameter not multiplied; untouched other controller. Disable binding transformer -> whole observer RED. Plain Object receivers; explicit annotation names, private restoration. Void/generic model and refusal variants are separate component-only cells. Native servlet-container binding/model deployment unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-MODEL-LOCAL
+
+**Verdict:** PROVEN_WITH_SCOPE. Added ModelAttribute initializer on local receiver changes HTTP binding/model across five saves.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child loaders; loopback HttpServer -> MockMvc/DispatcherServlet (not deployed servlet container). Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints` (watcher); `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher)
+
+**Controls / remaining limits:** Warm global binder3; existing/new routes; unrelated parameter not multiplied; untouched other controller. Disable binding transformer -> whole observer RED. Plain Object receivers; explicit annotation names, private restoration. Void/generic model and refusal variants are separate component-only cells. Native servlet-container binding/model deployment unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-MODEL-ADVICE
+
+**Verdict:** PROVEN_WITH_SCOPE. Added ModelAttribute initializer on advice receiver changes HTTP binding/model across five saves.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child loaders; loopback HttpServer -> MockMvc/DispatcherServlet (not deployed servlet container). Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors` (watcher); `com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves` (watcher)
+
+**Controls / remaining limits:** Warm global binder3; existing/new routes; unrelated parameter not multiplied; untouched other controller. Disable binding transformer -> whole observer RED. Plain Object receivers; explicit annotation names, private restoration. Void/generic model and refusal variants are separate component-only cells. Native servlet-container binding/model deployment unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-IN
+
+**Verdict:** PROVEN_WITH_SCOPE. Added setters/fields populate both new and held mutable DTOs from HTTP JSON.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Jackson2.22.3, Spring5.3.39/Spring6.1.14 GenericApplicationContext; direct ObjectMapper via loopback HttpServer, not MVC conversion; property fixture normal/child; getter fixture normal loader. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher)
+
+**Controls / remaining limits:** Warmed mappers and old DTO, existing value, original reflection; disabled Jackson accessor transformer must make central observers RED. Historical2.13.5 receipts are distinct. Jackson3/Afterburner, creator/builder additions, unmanaged caches and retained readers/writers are outside these watcher observations. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-OUT
+
+**Verdict:** PROVEN_WITH_SCOPE. Added getters/fields appear in fresh mapper output with current saved metadata.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Jackson2.22.3, Spring5.3.39/Spring6.1.14 GenericApplicationContext; direct ObjectMapper via loopback HttpServer, not MVC conversion; property fixture normal/child; getter fixture normal loader. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher)
+
+**Controls / remaining limits:** Warmed mappers and old DTO, existing value, original reflection; disabled Jackson accessor transformer must make central observers RED. Historical2.13.5 receipts are distinct. Jackson3/Afterburner, creator/builder additions, unmanaged caches and retained readers/writers are outside these watcher observations. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-NAMING
+
+**Verdict:** PROVEN_WITH_SCOPE. Fresh mapper discovery honors saved names and aliases across rename/removal/restoration.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Jackson2.22.3, Spring5.3.39/Spring6.1.14 GenericApplicationContext; direct ObjectMapper via loopback HttpServer, not MVC conversion; property fixture normal/child; getter fixture normal loader. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher)
+
+**Controls / remaining limits:** Warmed mappers and old DTO, existing value, original reflection; disabled Jackson accessor transformer must make central observers RED. Historical2.13.5 receipts are distinct. Jackson3/Afterburner, creator/builder additions, unmanaged caches and retained readers/writers are outside these watcher observations. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-INCLUSION
+
+**Verdict:** PROVEN_WITH_SCOPE. HTTP output retains measured ignore, null and empty inclusion policies.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Jackson2.22.3, Spring5.3.39/Spring6.1.14 GenericApplicationContext; direct ObjectMapper via loopback HttpServer, not MVC conversion; property fixture normal/child; getter fixture normal loader. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher)
+
+**Controls / remaining limits:** Warmed mappers and old DTO, existing value, original reflection; disabled Jackson accessor transformer must make central observers RED. Historical2.13.5 receipts are distinct. Jackson3/Afterburner, creator/builder additions, unmanaged caches and retained readers/writers are outside these watcher observations. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-CUSTOM
+
+**Verdict:** PROVEN_WITH_SCOPE. Custom property/DTO serializers and deserializers remain in control in the HTTP fixtures.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Jackson2.22.3, Spring5.3.39/Spring6.1.14 GenericApplicationContext; direct ObjectMapper via loopback HttpServer, not MVC conversion; property fixture normal/child; getter fixture normal loader. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher); `com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves` (watcher)
+
+**Controls / remaining limits:** Warmed mappers and old DTO, existing value, original reflection; disabled Jackson accessor transformer must make central observers RED. Historical2.13.5 receipts are distinct. Jackson3/Afterburner, creator/builder additions, unmanaged caches and retained readers/writers are outside these watcher observations. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ASYNC-CALLABLE
+
+**Verdict:** PROVEN_WITH_SCOPE. A held Callable response retains old code through its native completion.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60; Callable/Deferred CSV normal/child; timeout/immediate normal only. reloadBoundary=request except explicit default immediate-mode control; startup javaagent.
+
+**Observers:** `com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion` (watcher); `com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion` (watcher)
+
+**Controls / remaining limits:** Actual worker and HTTP response; fast1:1 while pending then2:2 after exit; precompleted DeferredResult remains instant. Disable request boundary -> held observer RED; immediate control remains GREEN. Controlled one-worker schedules, not arbitrary tasks, throughput or overlapping claims; P3a contains separate overlap evidence. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ASYNC-DEFERRED
+
+**Verdict:** PROVEN_WITH_SCOPE. A held DeferredResult response retains the request boundary until native completion.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60; Callable/Deferred CSV normal/child; timeout/immediate normal only. reloadBoundary=request except explicit default immediate-mode control; startup javaagent.
+
+**Observers:** `com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion` (watcher); `com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion` (watcher)
+
+**Controls / remaining limits:** Actual worker and HTTP response; fast1:1 while pending then2:2 after exit; precompleted DeferredResult remains instant. Disable request boundary -> held observer RED; immediate control remains GREEN. Controlled one-worker schedules, not arbitrary tasks, throughput or overlapping claims; P3a contains separate overlap evidence. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ASYNC-TIMEOUT
+
+**Verdict:** PROVEN_WITH_SCOPE. A timed-out WebAsyncTask503 does not release an interrupt-ignoring Callable worker before exit.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60; Callable/Deferred CSV normal/child; timeout/immediate normal only. reloadBoundary=request except explicit default immediate-mode control; startup javaagent.
+
+**Observers:** `com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode` (watcher); `com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode` (watcher)
+
+**Controls / remaining limits:** Actual worker and HTTP response; fast1:1 while pending then2:2 after exit; precompleted DeferredResult remains instant. Disable request boundary -> held observer RED; immediate control remains GREEN. Controlled one-worker schedules, not arbitrary tasks, throughput or overlapping claims; P3a contains separate overlap evidence. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ASYNC-IMMEDIATE
+
+**Verdict:** EXPECTED. The default immediate mode may change the second method call of a held worker.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60; Callable/Deferred CSV normal/child; timeout/immediate normal only. reloadBoundary=request except explicit default immediate-mode control; startup javaagent.
+
+**Observers:** `com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending` (watcher); `com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending` (watcher)
+
+**Controls / remaining limits:** Actual worker and HTTP response; fast1:1 while pending then2:2 after exit; precompleted DeferredResult remains instant. Disable request boundary -> held observer RED; immediate control remains GREEN. Controlled one-worker schedules, not arbitrary tasks, throughput or overlapping claims; P3a contains separate overlap evidence. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-INTERCEPTOR-LIMIT
+
+**Verdict:** EXPECTED. Registered interceptor keeps old constructor-owned dependency state despite native parent bean recreation.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child, parent/web contexts, lookup/mapped/injected registration; file-triggered MockMvc requests, no TCP or deployed servlet container. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated` (watcher); `com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated` (watcher)
+
+**Controls / remaining limits:** Current parentHn:Dn differs from dispatchedHn:D1; injected registration recreates context mapping while servlet retains original. Scratch desiredDn and reconciled mapping must RED. Known restart limitation. These GREEN characterization tests prove the gap, not interceptor lifecycle repair. Filters/security/proxies/concurrent requests/container deployment unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-MODEL-VOID
+
+**Verdict:** PARTIAL. Void model initializer writes into Spring Model.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#voidModelMethodWritesIntoSpringsActualModel` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-MODEL-GENERIC
+
+**Verdict:** PARTIAL. Concrete generic model return metadata and value are retained.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#concreteGenericReturnMetadataAndModelValueArePreserved` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-CAUSE
+
+**Verdict:** PARTIAL. Native exception resolver selects the cause argument.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#causeMatchingUsesSpringsResolverAndExposesTheActualCauseArgument` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-INFER
+
+**Verdict:** PARTIAL. Inferred exception type, request argument and method response status affect native resolution.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#realSpringInfersTheExceptionResolvesRequestAndUsesStatusAndBodyAnnotations` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-ENTITY
+
+**Verdict:** PARTIAL. Concrete generic ResponseEntity preserves status, headers and body.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#concreteGenericResponseEntityKeepsStatusHeadersAndBody` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-CLASS-STATUS
+
+**Verdict:** PARTIAL. Class response status reaches native return-value handling.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classResponseStatusIsAvailableToTheActualReturnValuePipeline` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-GETTER-MIXIN
+
+**Verdict:** PARTIAL. Jackson applies getter mix-in metadata.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedGettersTest#mixInsAreAppliedByJacksonToTheAddedMethod` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-FIELD-MIXIN
+
+**Verdict:** PARTIAL. Jackson field mix-in metadata participates in fresh discovery after removal/restoration.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldMixinNamingAndRenameRemovalRestorationUseFreshDiscovery` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-GETTER-ACCESS
+
+**Verdict:** PARTIAL. Private getter respects each mapper access policy.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedGettersTest#privateGetterRespectsDisabledAccessOverride` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-WRITE-ACCESS
+
+**Verdict:** PARTIAL. Private setter/field respects each mapper access policy.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#privateSettersAndFieldsRespectEachMappersAccessPolicy` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-READ-ONLY
+
+**Verdict:** PARTIAL. Read-only property is not populated by JSON input.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldsUseTheRealStorageAndPreserveJsonAccessPolicies` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-WRITE-ONLY
+
+**Verdict:** PARTIAL. Write-only property is omitted from JSON output.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldsUseTheRealStorageAndPreserveJsonAccessPolicies` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-GENERIC-IN
+
+**Verdict:** PARTIAL. Concrete generic collection input retains converted element types.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#setterMetadataUsesAliasNullPolicyAndGenericConversion` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-ERRORS
+
+**Verdict:** PARTIAL. Invalid conversion and thrown setter retain native mapping errors/root cause.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#invalidConversionAndSetterExceptionKeepJacksonErrors` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-GETTER-ERROR
+
+**Verdict:** PARTIAL. Throwing getter retains native mapping error/root cause.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedGettersTest#getterFailuresKeepJacksonMappingPathAndRootCause` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-HELD-WRITER
+
+**Verdict:** PARTIAL. Retained writer follows retargeted bodies while fresh discovery follows new shape.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedGettersTest#retainedWriterUsesNewBodiesWhileNewDiscoveryUsesNewMetadata` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-BINDER-PROXY-REFUSAL
+
+**Verdict:** EXPECTED. Proxy callback receiver is refused before body invocation.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#proxyReceiverIsRefusedBeforeAnyCallbackBodyRuns` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-PROXY-REFUSAL
+
+**Verdict:** EXPECTED. Proxy exception receiver is refused before body invocation.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#proxyReceiverIsNotUnwrappedAndNoBodyRunsWithoutItsAdvice` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-MODEL-MAPPED-EXCLUSION
+
+**Verdict:** EXPECTED. Request-mapped model methods are excluded from initializer discovery.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#requestMappedModelAttributesAreNotInvokedAsModelInitializers` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-BINDER-RETURN-REFUSAL
+
+**Verdict:** EXPECTED. A non-void binder is refused before invocation.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-MODEL-ASYNC-REFUSAL
+
+**Verdict:** EXPECTED. Declared asynchronous model return is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-CALLBACK-ADVICE-REFUSAL
+
+**Verdict:** EXPECTED. Extra advice annotation on an added callback is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#extraAdviceAndStaticCallbacksCannotBypassTheirSemantics` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-CALLBACK-STATIC-REFUSAL
+
+**Verdict:** EXPECTED. Static added callback is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#extraAdviceAndStaticCallbacksCannotBypassTheirSemantics` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-CALLBACK-GENERIC-REFUSAL
+
+**Verdict:** EXPECTED. Class/method type-variable callback metadata is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-CALLBACK-INTERFACE-REFUSAL
+
+**Verdict:** EXPECTED. Callback receiver with interface metadata is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-CALLBACK-SESSION-REFUSAL
+
+**Verdict:** EXPECTED. SessionAttributes callback receiver is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-AMBIGUITY
+
+**Verdict:** EXPECTED. Ambiguous added exception mapping is rejected and clears the old adapter.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#ambiguousMappingIsRejectedBySpringAndClearsTheOldAdapter` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-ASYNC-REFUSAL
+
+**Verdict:** EXPECTED. Asynchronous added exception handler is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#asynchronousAndExtraAdviceMetadataAreExplicitlyRefused` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-ADVICE-REFUSAL
+
+**Verdict:** EXPECTED. Extra advice on added exception handler is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#asynchronousAndExtraAdviceMetadataAreExplicitlyRefused` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-GENERIC-REFUSAL
+
+**Verdict:** EXPECTED. Type-variable exception handler metadata is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classTypeVariablesAndMethodTypeVariablesAreRefused` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-STATIC-REFUSAL
+
+**Verdict:** EXPECTED. Static added exception handler metadata is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#staticAndInterfaceMetadataAreRefusedBeforePublishing` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-EXCEPTION-INTERFACE-REFUSAL
+
+**Verdict:** EXPECTED. Interface-bearing exception receiver metadata is refused.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.AddedExceptionHandlersTest#staticAndInterfaceMetadataAreRefusedBeforePublishing` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-JACKSON-FINAL-REFUSAL
+
+**Verdict:** EXPECTED. Final added fields cannot be written even with access override.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. Ordinary component worker: Spring5.3.39/Jackson2.22.3 as applicable; direct metadata publication/bridge, no file watcher or application JVM. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** `com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#finalAddedFieldsNeverBypassTheReflectionWriteRestriction` (component)
+
+**Controls / remaining limits:** Native Spring/Jackson effect and exact component assertion, not log/status inference. component_only. The component assertion does not prove watcher publication, framework6 or native deployment for this variant. No per-variant disabled-hook witness is claimed. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ENDPOINT-PUT
+
+**Verdict:** UNVERIFIED. An entirely new PUT-annotated endpoint needs separate watcher HTTP acceptance.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. No dedicated invocation in this P3b run. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** No executed acceptance observer; variant remains UNVERIFIED.
+
+**Controls / remaining limits:** No acceptance result; implementation recognition alone is not behavior evidence. UNVERIFIED variant. GET/POST acceptance must not be used to certify this annotation. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ENDPOINT-PATCH
+
+**Verdict:** UNVERIFIED. An entirely new PATCH-annotated endpoint needs separate watcher HTTP acceptance.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. No dedicated invocation in this P3b run. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** No executed acceptance observer; variant remains UNVERIFIED.
+
+**Controls / remaining limits:** No acceptance result; implementation recognition alone is not behavior evidence. UNVERIFIED variant. GET/POST acceptance must not be used to certify this annotation. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ENDPOINT-DELETE
+
+**Verdict:** UNVERIFIED. An entirely new DELETE-annotated endpoint needs separate watcher HTTP acceptance.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. No dedicated invocation in this P3b run. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** No executed acceptance observer; variant remains UNVERIFIED.
+
+**Controls / remaining limits:** No acceptance result; implementation recognition alone is not behavior evidence. UNVERIFIED variant. GET/POST acceptance must not be used to certify this annotation. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+
+### P3B-ENDPOINT-REQUEST-MAPPING
+
+**Verdict:** UNVERIFIED. An entirely new REQUEST-MAPPING-annotated endpoint needs separate watcher HTTP acceptance.
+
+**Bounds / opt-in:** SapMachine17/21, macOS arm64. No dedicated invocation in this P3b run. Startup -javaagent before the framework loads; publish compiled watched classes.
+
+**Observers:** No executed acceptance observer; variant remains UNVERIFIED.
+
+**Controls / remaining limits:** No acceptance result; implementation recognition alone is not behavior evidence. UNVERIFIED variant. GET/POST acceptance must not be used to certify this annotation. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.

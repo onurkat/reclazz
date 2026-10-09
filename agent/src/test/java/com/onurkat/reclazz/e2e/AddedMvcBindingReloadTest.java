@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AddedMvcBindingReloadTest {
     @TempDir Path tmp;
+    protected String servletNamespace() { return "javax"; }
     @Test void localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints() throws Exception { exercise(false); }
     @Test void adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors() throws Exception { exercise(true); }
 
@@ -25,8 +26,11 @@ class AddedMvcBindingReloadTest {
     private void exercise(boolean advice) throws Exception { exercise(advice, false); }
 
     private void exercise(boolean advice, boolean childLoader) throws Exception {
-        String servlet = Path.of(javax.servlet.Servlet.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
-        var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet);
+        String servlet = Path.of(Class.forName(servletNamespace() + ".servlet.Servlet").getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
+        var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet + File.pathSeparator
+                + java.util.Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+                    .filter(entry -> Path.of(entry).getFileName().toString().startsWith("micrometer-"))
+                    .collect(java.util.stream.Collectors.joining(File.pathSeparator)));
         if (childLoader) builder.childClassLoader();
         try (var app = builder
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")

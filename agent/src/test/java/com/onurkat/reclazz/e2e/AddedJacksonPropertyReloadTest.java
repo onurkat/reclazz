@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class AddedJacksonPropertyReloadTest {
     @TempDir Path tmp;
 
-    @ParameterizedTest @ValueSource(booleans = {false, true})
+    @ParameterizedTest(name = "addedSettersReadJsonAcrossSaves [{index}] {arguments}") @ValueSource(booleans = {false, true})
     void addedSettersReadJsonAcrossSaves(boolean childLoader) throws Exception { exercise(false, childLoader); }
 
-    @ParameterizedTest @ValueSource(booleans = {false, true})
+    @ParameterizedTest(name = "addedFieldsReadAndWriteJsonAcrossSaves [{index}] {arguments}") @ValueSource(booleans = {false, true})
     void addedFieldsReadAndWriteJsonAcrossSaves(boolean childLoader) throws Exception { exercise(true, childLoader); }
 
     private void exercise(boolean fields, boolean childLoader) throws Exception {

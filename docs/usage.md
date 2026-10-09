@@ -817,13 +817,20 @@ method. Ordinary bean recreation and lifecycle callbacks remain in effect;
 this feature does not preserve destroyed bean resources or make metadata
 publication atomic with concurrent requests.
 
-Verified on stock JDK 21 and Spring Framework 5.3.39. Real-agent tests send
-loopback HTTP requests through Spring MVC's MockMvc/DispatcherServlet pipeline
-and check existing/new endpoints across five saves; focused tests exercise the
-actual exception resolver. This requires startup with `-javaagent`, before MVC
-loads. An unavailable/incompatible resolver hook is reported. Other Spring
-versions, JDK 17 runtime, attach to an already loaded MVC stack, and a servlet
-container deployment were not exercised. No dependencies were added.
+Current [P3b evidence](feature-evidence.md#p3b-exception-local) runs on stock
+SapMachine JDK 17 and 21 with Spring Framework 5.3.39. Real-agent tests send
+loopback HTTP through MockMvc/DispatcherServlet, checking local/advice handlers,
+existing/new endpoints, selectors and local priority across five saves and normal/
+child loaders. This is an HTTP bridge, not a deployed servlet-container test.
+Start with `-javaagent` before MVC loads; late attach is unverified.
+
+Spring Framework **6.1.14 does not install this added-handler hook**: the resolver
+bytecode has sites `1/2/1`, while the transformer requires `2/2/1`. Current
+[characterization](feature-evidence.md#p3b-exception-modern) observes the unavailable-
+hook diagnostic and unchanged existing fallback responses across five saves on
+both JDKs and loaders. A passing characterization proves this limitation, not
+added-handler support. Other Spring versions and native servlet-container
+exception-handler deployment remain unverified. No production dependency is added.
 
 ### Registered MVC interceptors: measured reload limitation
 
@@ -841,7 +848,8 @@ destruction can also recreate the context's handler mapping while the existing
 `DispatcherServlet` retains the mapping it captured at startup. Reclazz does not
 currently reconcile this servlet/context split or rebuild interceptor registrations.
 
-The measured scope used stock JDK 21, parent/web contexts, normal and child-loader
+The current [P3b characterization](feature-evidence.md#p3b-interceptor-limit) uses
+stock SapMachine JDK 17 and 21, parent/web contexts, normal and child-loader
 application classes, and three repeated interceptor/helper saves. Ordered
 `preHandle`, `postHandle` and `afterCompletion` calls, exactly-once delivery,
 unrelated interceptor identity and mapped include/exclude behavior were preserved
@@ -906,12 +914,16 @@ recreation/lifecycle effects remain; this does not guarantee atomic metadata
 publication with concurrent requests. Added methods remain absent from ordinary
 application reflection.
 
-Verified with Spring Framework 5.3.39 on stock JDK 21, using real-agent loopback
-HTTP requests into MockMvc/DispatcherServlet and focused tests of the actual
-Spring adapter. Start with `-javaagent` before MVC loads. The transformer checks
-its expected bytecode sites and reports an unavailable/incompatible hook.
-Other Spring versions, JDK 17 runtime, late attach and a servlet-container
-deployment were not exercised. No dependencies were added.
+Current [P3b evidence](feature-evidence.md#p3b-binder-local) exercises Spring
+Framework 5.3.39 and 6.1.14 on stock SapMachine JDK 17 and 21. Real-agent
+loopback HTTP bridges into MockMvc/DispatcherServlet observe local/advice binders
+and model callbacks on old/new endpoints across five saves and normal/child
+loaders. These bridges do not certify a deployed servlet container. Void/generic
+model-return variants and refusal shapes have separately labelled component-only
+observations; they are not watcher acceptance for those variants.
+Start with `-javaagent` before MVC loads. Late attach, other Spring versions and
+native servlet-container deployment remain unverified. No production dependency
+is added.
 
 ### Kafka listeners added after startup
 
@@ -1615,14 +1627,20 @@ obtain a fresh reader after reload. In-flight conversion is not paused or rolled
 back. Application setter side effects are not a transaction: an error in a later
 property does not undo earlier writes to an object being updated.
 
-Verified on stock JDK 21 with Jackson 2.13.5 and Spring 5.3.39: real loopback HTTP,
+Historical acceptance used stock JDK 21 with Jackson 2.13.5 and Spring 5.3.39: real loopback HTTP,
 old/new DTO objects, three mapper policies, nested/generic values, private getters,
 null/empty inclusion, custom serializers and four successive edits. Input/field
 regressions additionally cover four saves with real HTTP JSON, ordinary and child
 application classloaders, alias/name changes, removal/restoration, private setters
 and fields, generic conversion, null skipping, custom deserializers and original
-reflection staying unchanged. Jackson 3,
-other Jackson 2 versions and accessor-generating extensions such as Afterburner
+reflection staying unchanged. Current [P3b acceptance](feature-evidence.md#p3b-jackson-in)
+uses Jackson 2.22.3 with Spring 5.3.39 and 6.1.14 on stock SapMachine JDK 17/21.
+It sends loopback HTTP directly to Spring-managed ObjectMappers; it does not
+prove every MVC message-converter configuration. Getter-output policies run on
+normal loaders; setter/field input-output runs on normal and child loaders.
+Mix-ins, mapper access restrictions, final-write refusal and retained-writer
+behavior have separately labelled component-only observations. Jackson 3,
+other unlisted Jackson 2 versions and accessor-generating extensions such as Afterburner
 are not verified; this support targets Jackson's normal reflective accessor path.
 
 ### Scheduled methods added after startup
@@ -2581,8 +2599,9 @@ uncompleted request or worker can therefore defer a reload indefinitely; new
 traffic is admitted again after the one-second drain deadline.
 
 Verified with Spring 5.3.39 / Tomcat 9.0.121 and Spring 6.1.14 / Tomcat 10.1.60
-on stock JDK 21, using real HTTP requests on ordinary and child application
-classloaders. Both graphs exercise Callable/DeferredResult requests, a timed-out
+on stock SapMachine JDK 17 and 21 in [current P3b evidence](feature-evidence.md#p3b-async-callable),
+using real HTTP requests on ordinary and child application classloaders. Both
+graphs exercise Callable/DeferredResult requests, a timed-out
 WebAsyncTask whose worker ignores cancellation, and the unchanged immediate-mode
 control. Focused native lifecycle tests cover immediate results, failure before
 async startup, executor rejection, cancellation before execution, interceptor errors,
