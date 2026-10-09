@@ -283,6 +283,8 @@ tasks.test {
 // tests, each of which starts a JVM. The other 850 tests take under twenty.
 // `unitTest` is the inner loop; `test` still runs everything and is the gate.
 val unitTest by tasks.registering(Test::class) {
+    // Evidence checks inspect isolated compiled test methods without loading Spring 6.
+    dependsOn(tasks.named("springSixTestClasses"))
     dependsOn(jmsUnitTest)
     dependsOn(hibernateTest)
     group = "verification"

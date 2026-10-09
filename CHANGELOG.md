@@ -34,6 +34,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Ordinary Spring feature evidence separates live watcher observations from
+  component-only checks and unrun version/shape cells. New acceptance observes
+  singleton recreation, held caller repair and added field injection annotations.
+  The registry checks inherited isolated Spring 6 observers without loading
+  Spring 6 into the ordinary Spring 5 test worker.
+
 - Versioned core JVM evidence records distinguish watched behavior, component
   observations, named limitations and unrun runtimes. New portable acceptance
   covers member reflection/removal/restore, lambdas, live enum collections and

@@ -352,7 +352,7 @@ Unrelated static blocks are not replayed for isolated static initializers.
 
 An updated caller can invoke an added method on the existing receiver.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `fd2cae03def4ceed4b5cb2292e1135d52152bab45a00fb8cabd6cbebf37e0a38`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -376,7 +376,7 @@ An updated caller can invoke an added method on the existing receiver.
 
 Held Method and unchanged callers keep the last implementation when an original method is removed.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `fd2cae03def4ceed4b5cb2292e1135d52152bab45a00fb8cabd6cbebf37e0a38`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -400,7 +400,7 @@ Held Method and unchanged callers keep the last implementation when an original 
 
 Original members removed by reload disappear from native reflection scans.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `fd2cae03def4ceed4b5cb2292e1135d52152bab45a00fb8cabd6cbebf37e0a38`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -424,7 +424,7 @@ Original members removed by reload disappear from native reflection scans.
 
 Restoring an original removed member makes it visible and callable again.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `fd2cae03def4ceed4b5cb2292e1135d52152bab45a00fb8cabd6cbebf37e0a38`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -448,7 +448,7 @@ Restoring an original removed member makes it visible and callable again.
 
 A removed original field is hidden while a held Field and unchanged caller retain its value.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `fd2cae03def4ceed4b5cb2292e1135d52152bab45a00fb8cabd6cbebf37e0a38`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3045` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); `README.md:693` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `CHANGELOG.md:11` (SHA-256 `de73eb40fba7eb7d3b3c4310dafb830bd8e088d5acedfedb3e2f1dd1cbdb4eac`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3045` (SHA-256 `a1aa85b1016a7d36938eab683db908c7efdbe4fe543d96909e455d2a7207398d`); `README.md:693` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `CHANGELOG.md:11` (SHA-256 `ae46406da33118bd080ebcf674d9d2ece229d8f97301fd0315f30b594d6ca010`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -736,7 +736,7 @@ Advertised enhanced-JVM added/removed interfaces require their own native accept
 
 Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.
 
-**Shipped surfaces:** `README.md:85` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `fd2cae03def4ceed4b5cb2292e1135d52152bab45a00fb8cabd6cbebf37e0a38`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:85` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -880,7 +880,7 @@ Load-time transformation retains selected reflection metadata in component fixtu
 
 Original serialVersionUID and selected no-agent-to-transformed deserialization have component evidence.
 
-**Shipped surfaces:** `README.md:767` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `fd2cae03def4ceed4b5cb2292e1135d52152bab45a00fb8cabd6cbebf37e0a38`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:767` (SHA-256 `d3c8588069a889db42a9a9ac2794f9a83cd5df56a86b6dabd775204265552ac6`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1041,3 +1041,1329 @@ Advertised JDK26 enum/Unsafe fallback requires an actual JDK26 native run.
 **Limitation / missing environment:** JDK26 is not installed/validated for this package; no inference from JDK17/21 or source/API names. Other OS/providers/JDK releases, enhanced JBR/DCEVM and unlisted object/loader shapes; no acceptance assumed.
 
 **Reviewer / next action:** Astra mapped/read assertions; Claude independent evidence audit pending. Obtain the named runtime or a separately scoped observing test before claiming support.
+
+## P2 — Ordinary Spring
+
+This package maps current registration, recreation, injection, factory, lifecycle, transaction, cache, AOP and method-security promises to actual observing methods. It does not certify all Spring versions or shapes. P3–P8 and deferred/excluded work retain their separate owner decisions.
+
+[Machine registry](feature-evidence/p2-ordinary-spring.json) and [cell manifest](feature-evidence/p2-cells.txt) contain source/surface hashes, method receipts, runtime/agent hashes, counts and raw local evidence. `P2RegistryCompletenessTest` rejects omissions, drift, false promotions and nonexistent methods, including inherited Spring 6 observers without loading Spring 6 into Spring 5. `:agent:unitTest` compiles that isolated test source set first.
+
+### P2-BEAN-REGISTER-NEW
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A new direct component becomes a live bean without restarting.
+
+**Shipped surfaces:** `README.md:112`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NewComponentConditionsReloadTest#newComponentsAreFilteredBeforeInitializationOnTheApplicationLoader` (watcher): Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-COMPONENT-PROFILE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A new component is admitted only by the active profile.
+
+**Shipped surfaces:** `README.md:112`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NewComponentConditionsReloadTest#newComponentsAreFilteredBeforeInitializationOnTheApplicationLoader` (watcher): Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-COMPONENT-CONDITIONAL
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+New component conditions use the live application context before class initialization.
+
+**Shipped surfaces:** `README.md:112`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NewComponentConditionsReloadTest#newComponentsAreFilteredBeforeInitializationOnTheApplicationLoader` (watcher): Live context contains two admitted beans and no three rejected beans; created=2 initialized=2 conditions=3, normal/child loader and class/source saves.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-COMPONENT-LAZY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+New lazy singleton waits for first lookup.
+
+**Shipped surfaces:** `docs/usage.md:380`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NewComponentScopeReloadTest#newLazyAndPrototypeComponentsKeepTheirNativeLifetime` (watcher): BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-COMPONENT-PROTOTYPE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+New prototype lookup creates a fresh instance; native prototype cleanup belongs to caller.
+
+**Shipped surfaces:** `docs/usage.md:383`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NewComponentScopeReloadTest#newLazyAndPrototypeComponentsKeepTheirNativeLifetime` (watcher): BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-COMPOSED-STEREOTYPE
+
+**Verdict:** PARTIAL.
+
+A custom component stereotype and AliasFor bean name register through native naming.
+
+**Shipped surfaces:** `docs/usage.md:376`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringNewBeanRegistrarTest#customStereotypeWithAliasForNameRegistersAsABean` (component): Real Spring context gets ledger instance after direct registrar call.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Component-only: no watcher acceptance for this custom stereotype/name cell. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-NEW-CONSTRUCTOR-INJECTION
+
+**Verdict:** UNVERIFIED.
+
+New components support native constructor injection.
+
+**Shipped surfaces:** `README.md:112`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** No observing method assigned; not promoted from a located filename.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** UNVERIFIED: no observing acceptance assigned on the required lanes.
+
+**Limitation / missing environment:** New registration observers above do not assert constructor injection; no P2 observing method assigned. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests.
+
+### P2-BEAN-REFRESH
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+An edited plain singleton is recreated and loses mutable instance state.
+
+**Shipped surfaces:** `README.md:86`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.OrdinarySpringReloadEvidenceTest#editedSingletonRecreatesStateAndReachesHeldCallers` (watcher): AFTER body=2 state=0; old!=new, same held manual holder points to new bean, current autowired holder points to it; unrelated count=29 and identity retained, old state=41.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-HELD-CALLER
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A live manually wired singleton holder is repointed to the recreated bean.
+
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:47`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.OrdinarySpringReloadEvidenceTest#editedSingletonRecreatesStateAndReachesHeldCallers` (watcher): AFTER body=2 state=0; old!=new, same held manual holder points to new bean, current autowired holder points to it; unrelated count=29 and identity retained, old state=41.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Plain singleton field holder currently in the container; not arbitrary local variables or external object graphs. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-INJECTION-AUTOWIRED
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Autowired added to an existing warmed field is satisfied after refresh.
+
+**Shipped surfaces:** `README.md:88`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.OrdinarySpringReloadEvidenceTest#addedFieldInjectionAnnotationsReachRecreatedSingleton` (watcher): Existing warmed fields are null:0:null before adding annotations; live recreated bean becomes injected:42:injected, with holder/identity/state controls.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-INJECTION-VALUE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Value added to an existing warmed field resolves the live property.
+
+**Shipped surfaces:** `README.md:88`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.OrdinarySpringReloadEvidenceTest#addedFieldInjectionAnnotationsReachRecreatedSingleton` (watcher): Existing warmed fields are null:0:null before adding annotations; live recreated bean becomes injected:42:injected, with holder/identity/state controls.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-INJECTION-RESOURCE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Resource added to an existing warmed field resolves the named bean.
+
+**Shipped surfaces:** `README.md:88`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.OrdinarySpringReloadEvidenceTest#addedFieldInjectionAnnotationsReachRecreatedSingleton` (watcher): Existing warmed fields are null:0:null before adding annotations; live recreated bean becomes injected:42:injected, with holder/identity/state controls.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** javax.annotation 1.3.2 / Spring 5.3.39. Jakarta Resource / Spring 6 is not asserted here. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-LITE-CONFIG
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+New private instance Bean factory on lite Configuration registers, replaces, removes and recovers.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanMethodReloadTest#addedFactoryRegistersUpdatesRemovesAndRecovers` (watcher): Products missing→2→3→4→missing→6→missing→factory failure missing→9; singleton identity and original singleton stay intact, CLOSED=5.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-ARGS
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Saved factory reference parameters use native qualifier selection.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanArgumentsReloadTest#parametersAndQualifierEditsReachTheCompanionAndRecoverFromMissingBeans` (watcher): Blue/red qualified dependencies and saved body versions update; missing dependency/removed annotation remove the product; correction recovers, dependency identities preserved, CLOSED=5.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-RICH-ARGS
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added factory list/map/Optional arguments preserve measured native resolution.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanRichArgumentsReloadTest#richArgumentsFollowSavesAndKeepProviderLazy` (watcher): Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** List, Map<String,T>, Optional in this watcher; arrays/Set/Collection generic element filtering are separate unverified cells. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-PROVIDER
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+An added factory provider stays lazy and resolves the current target after retirement.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanRichArgumentsReloadTest#richArgumentsFollowSavesAndKeepProviderLazy` (watcher): Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-PRIMITIVE-VALUE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added factories convert measured int, long and double Value arguments.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanRichArgumentsReloadTest#richArgumentsFollowSavesAndKeepProviderLazy` (watcher): Ordered list [red,blue], map names [blue,red], Optional absent→present, primitive int/long/double values; provider target is not created eagerly and PROVIDER=1:2:true after target retirement; invalid conversion/removal/recovery, CLOSED=4.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Other five primitive conversions/reference nulls not observed by this watcher. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-ARRAY-SET-ARGS
+
+**Verdict:** PARTIAL.
+
+Factory Set/Collection/reference-array arguments use native resolution.
+
+**Shipped surfaces:** `docs/usage.md:512`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.AddedBeanRichArgumentsTest#containersMatchNativeFactoryOrderingAndEmptyFallbacks` (component): Direct adapter reload compares List/Set/Collection/Map/reference-array products to native startup for populated and empty candidates.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Real Spring component resolution only; no file-watcher receipt for Set/Collection/reference-array variants. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-ALL-PRIMITIVES
+
+**Verdict:** PARTIAL.
+
+All eight primitive Value conversions and reference nulls work.
+
+**Shipped surfaces:** `docs/usage.md:519`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.AddedBeanRichArgumentsTest#everyPrimitiveAndAnExplicitNullReachTheFactoryBody` (component): Direct adapter reload invokes factory once with true, byte7, charZ, short8, int9, long10, float1.25, double2.5 and an explicit null.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** All conversions observed by real Spring component test; watcher acceptance separately covers int/long/double only. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-VALUE-PROPERTY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Checked scalar property edits recreate an already added unproxied factory product.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): Scalar factory values produce CAPTURED=5000:20:old, then checked property edits yield 8000:25:new and recover; invalid/unsafe expressions retain accepted product and sideEffect count zero; CLOSED=5.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Bounded checked scalar expressions; unsafe/invalid edits retain accepted product. Broader property graph coverage belongs to P5. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-ALIASES
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Factory names/aliases follow edits, removal and recovery without duplicate singleton products.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanAliasesReloadTest#aliasesFollowAddedFactoriesAcrossEditsFailureRecoveryAndRemoval` (watcher): Renames main/legacy/current resolve one identical product, stale aliases disappear, consumer points to it; factory failure/removal/restoration leave only owned names, CLOSED=5.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-QUALIFIER
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Saved factory qualifiers and parameter qualifiers select matching native candidates.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanSelectionReloadTest#addedFactoryMetadataChangesSelectionAndRecoversAfterRemovalOrAmbiguity` (watcher): Selection first/second→second/first; no primary, missing qualifier and two primaries fail only affected consumers; corrected metadata recovers, no fast alias, CLOSED=9.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-PRIMARY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Saved Primary metadata updates default selection and reports ambiguity.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanSelectionReloadTest#addedFactoryMetadataChangesSelectionAndRecoversAfterRemovalOrAmbiguity` (watcher): Selection first/second→second/first; no primary, missing qualifier and two primaries fail only affected consumers; corrected metadata recovers, no fast alias, CLOSED=9.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-CONDITIONAL
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Saved method Conditional admits/rejects against the live context and retires old products.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration` (watcher): Disabled/admitted/throwing/removed/restored factories change presence and exact made/closed counts; saved MethodMetadata and live bean factory/registry/environment/loader/resource checked; final lazy made count 2 before lookup, CLOSED=3 CONDITIONS=6.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-BOOT-PROPERTY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Direct Boot ConditionalOnProperty uses the measured native decision on added factories.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Boot 2.7.18 / Spring 5.3.39 on stock SapMachine17/21 macOS arm64, normal/child loaders and lite/full Configuration.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts` (watcher): Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** No Boot 3 dependency or watcher in this package; do not infer Boot 3 from Spring 6 security. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-BOOT-BEAN
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Direct Boot ConditionalOnBean uses the measured native decision on added factories.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Boot 2.7.18 / Spring 5.3.39 on stock SapMachine17/21 macOS arm64, normal/child loaders and lite/full Configuration.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts` (watcher): Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** No Boot 3 dependency or watcher in this package; do not infer Boot 3 from Spring 6 security. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-BOOT-MISSING-BEAN
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Direct Boot ConditionalOnMissingBean uses the measured native decision on added factories.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Boot 2.7.18 / Spring 5.3.39 on stock SapMachine17/21 macOS arm64, normal/child loaders and lite/full Configuration.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts` (watcher): Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** No Boot 3 dependency or watcher in this package; do not infer Boot 3 from Spring 6 security. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-PROFILE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Saved direct factory Profile expressions re-evaluate admitted products.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanConditionalReloadTest#lazyPrototypeAndProfileMetadataOnAddedFactoriesFollowSavesAndScopeLifecycle` (watcher): Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-SCOPE-PROTOTYPE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added prototype factory creates distinct lookup products.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanConditionalReloadTest#lazyPrototypeAndProfileMetadataOnAddedFactoriesFollowSavesAndScopeLifecycle` (watcher): Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-LAZY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added lazy factory waits for first lookup and keeps singleton identity.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedBeanConditionalReloadTest#lazyPrototypeAndProfileMetadataOnAddedFactoriesFollowSavesAndScopeLifecycle` (watcher): Added lazy/prototype factory creation deferred; profile annotations swap admitted names on saves; singleton reused after lookup, prototype distinct, CLOSED held=1 proto=0.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-FULL-CONFIG
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Full enhanced Configuration inter-bean calls preserve container singleton identity across saves.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFullConfigurationReloadTest#factoriesKeepSingletonIdentityAcrossCallsCyclesEditsAndRemoval` (watcher): Held configuration and saved method reference resolve one container singleton across saves; cycle is refused, removal clears owned names/aliases, restoration gets current version; static calls remain distinct Java calls.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-FULL-CONFIG-ARGS
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Full factory calls preserve supported explicit/prototype arguments and held method references.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFullConfigurationArgumentsReloadTest#argumentsAndHeldReferencesFollowFiveSaves` (watcher): Five saves prove injected/full inter-bean identity, explicit prototype arguments and held method reference semantics; plain new Config retains Java arguments, removal/restoration observed.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-BEAN-STATIC
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Static companion factories register/replace/retire products with native lifecycle.
+
+**Shipped surfaces:** `docs/usage.md:570`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedStaticBeanReloadTest#staticCompanionFactoriesFollowEditsFailureRecoveryAndRemoval` (watcher): Static companion product body/alias/qualifier updates, factory failure/removal/restoration; mixed static/instance consumers use same dependency, original identity preserved, CLOSED=4.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-FULL-CONFIG-STATIC-JAVA
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Static factories retain plain Java call semantics outside container lookup.
+
+**Shipped surfaces:** `README.md:87`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFullConfigurationReloadTest#factoriesKeepSingletonIdentityAcrossCallsCyclesEditsAndRemoval` (watcher): Held configuration and saved method reference resolve one container singleton across saves; cycle is refused, removal clears owned names/aliases, restoration gets current version; static calls remain distinct Java calls.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-LIFECYCLE-INIT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Entirely new PostConstruct initializes after injection and before InitializingBean.
+
+**Shipped surfaces:** `README.md:89`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Plain singleton components: Spring 5.3.39 + javax.annotation 1.3.2 and Spring 6.1.14 + jakarta.annotation 2.1.1, SapMachine17/21 macOS arm64.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedLifecycleMethodReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves` (watcher): Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.; `com.onurkat.reclazz.e2e.JakartaLifecycleReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves` (watcher): Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only plain singleton component ownership/order shown by listed tests; proxied/unsupported callback shapes keep documented restrictions. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-LIFECYCLE-DESTROY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Entirely new PreDestroy remains owed per instance through metadata edits/removal and context close.
+
+**Shipped surfaces:** `README.md:89`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Plain singleton components: Spring 5.3.39 + javax.annotation 1.3.2 and Spring 6.1.14 + jakarta.annotation 2.1.1, SapMachine17/21 macOS arm64.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedLifecycleMethodReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves` (watcher): Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.; `com.onurkat.reclazz.e2e.JakartaLifecycleReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves` (watcher): Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only plain singleton component ownership/order shown by listed tests; proxied/unsupported callback shapes keep documented restrictions. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-LIFECYCLE-NATIVE-LIFECYCLE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+InitializingBean and DisposableBean retain native callback ordering during recreation.
+
+**Shipped surfaces:** `README.md:89`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Plain singleton components: Spring 5.3.39 + javax.annotation 1.3.2 and Spring 6.1.14 + jakarta.annotation 2.1.1, SapMachine17/21 macOS arm64.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedLifecycleMethodReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves` (watcher): Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.; `com.onurkat.reclazz.e2e.JakartaLifecycleReloadTest#addedCallbacksFollowInstanceLifetimeAcrossSaves` (watcher): Exact ordered event list on six saves, ordinary factory recreation and context close; injection before added init, then InitializingBean; each instance retains its owed added destroy, then DisposableBean; open=0 at close.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only plain singleton component ownership/order shown by listed tests; proxied/unsupported callback shapes keep documented restrictions. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-ADDED-OPERATIONS-PLAIN
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+First transaction/cache operations added to a plain singleton use real native interceptors.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#firstOperationsOnPlainSingletonUseRealTransactionsAndCaches` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-ADDED-OPERATIONS-HELD
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added operations invoked through an old CGLIB reference use real interceptors and retain target identity.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#addedOperationsUseRealTransactionsAndCachesThroughOldCglibReference` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-TX-ROLLBACK
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A checked exception from an added transactional method rolls back the real database write.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#addedOperationsUseRealTransactionsAndCachesThroughOldCglibReference` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.; `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#firstOperationsOnPlainSingletonUseRealTransactionsAndCaches` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-CACHE-HIT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added Cacheable executes once for a repeated key.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#addedOperationsUseRealTransactionsAndCachesThroughOldCglibReference` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.; `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#firstOperationsOnPlainSingletonUseRealTransactionsAndCaches` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-CACHE-PUT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added CachePut updates the native cache entry.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#addedOperationsUseRealTransactionsAndCachesThroughOldCglibReference` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.; `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#firstOperationsOnPlainSingletonUseRealTransactionsAndCaches` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-CACHE-EVICT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added CacheEvict removes the native entry so next lookup executes again.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#addedOperationsUseRealTransactionsAndCachesThroughOldCglibReference` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.; `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#firstOperationsOnPlainSingletonUseRealTransactionsAndCaches` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-OPERATIONS-SELF-INVOKE
+
+**Verdict:** EXPECTED.
+
+Native self invocation stays outside transaction interception.
+
+**Shipped surfaces:** `docs/usage.md:1946`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#addedOperationsUseRealTransactionsAndCachesThroughOldCglibReference` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.; `com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#firstOperationsOnPlainSingletonUseRealTransactionsAndCaches` (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-COMPOSED-TRANSACTION
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Supported composed transaction aliases follow saves through held proxy and affect DB rollback/readOnly.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComposedTransactionOperationReloadTest#composedTransactionsFollowSavesThroughHeldProxy` (watcher): Held proxy follows meta-transaction readOnly aliases; checked-exception DB counts distinguish rollback from annotation removal; same target retained, removal/restoration observed on normal/child loaders.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-COMPOSED-CACHE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Supported composed cache aliases/conditions follow saves through held proxy and affect real cache entries.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComposedCacheOperationReloadTest#composedCacheFollowsSavesThroughHeldProxy` (watcher): Held native proxy returns identical cached repeats; changed region/key aliases use actual cache entries, condition false/annotation removal execute twice, native control remains cached; removal/restoration and identity checked.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-AOP-REFRESH
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB singleton proxies.
+
+**Shipped surfaces:** `README.md:99`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AspectPointcutReloadTest#factoryAspectSavesUpdateAlreadyInjectedJdkAndCglibProxies` (watcher): Already injected JDK and CGLIB references change advised methods across four saves; advisor count 2→1→2, target counter/identity and exception unchanged.; `com.onurkat.reclazz.e2e.AspectPointcutReloadTest#componentAspectSavesUpdateAlreadyInjectedJdkAndCglibProxies` (watcher): Already injected JDK and CGLIB references change advised methods across four saves; advisor count 2→1→2, target counter/identity and exception unchanged.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Mutable singleton proxies only; target counter/identity retained. Frozen/dynamic/raw proxy shapes are not certified by these watcher methods. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-SECURITY-PRE-POST
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Added/saved PreAuthorize and PostAuthorize enforce real authentication/authorization through a held native proxy.
+
+**Shipped surfaces:** `README.md:98`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Spring5.3.39/Security5.7.11 classic and Spring6.1.14/Security6.3.4 EnableMethodSecurity, stock SapMachine17/21 macOS arm64, normal/child loaders.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore` (watcher): Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.; `com.onurkat.reclazz.e2e.AddedModernMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore` (watcher): Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-COMPOSED-SECURITY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Fixed composed policy markers enforce saved native pre/post authorization through the held proxy.
+
+**Shipped surfaces:** `README.md:98`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Same named Spring5/Security5 and Spring6/Security6 lanes as P2-SECURITY-PRE-POST; nested fixed markers, not runtime marker-definition edits.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComposedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore` (watcher): Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.; `com.onurkat.reclazz.e2e.ModernComposedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore` (watcher): Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Only listed assertions; no inference to unlisted annotation, proxy, context or dependency shapes. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-SECURITY-METADATA
+
+**Verdict:** PARTIAL.
+
+Resolved method-security cache entries are refilled from fresh Method objects.
+
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSecurityMethodMetadataTest#anAskableRegistryIsRefilledFromFreshMethods` (component): Synthetic native-shaped registry stale guarded entry becomes fresh:guarded after direct cache refresh.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Synthetic cache-shape component test; real pre/post effect is measured separately, Secured/roles variants not implied. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-SECURITY-SECURED
+
+**Verdict:** UNVERIFIED.
+
+Edited Secured policy is enforced on real calls.
+
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** No observing method assigned; not promoted from a located filename.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** UNVERIFIED: no observing acceptance assigned on the required lanes.
+
+**Limitation / missing environment:** Real pre/post watcher does not execute Secured/JSR250 role changes; no observing P2 receipt assigned. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests.
+
+### P2-SECURITY-FILTER-CHAIN
+
+**Verdict:** UNVERIFIED.
+
+Edited web security configuration rebuilds a live filter chain and changes route authorization.
+
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:52`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** No observing method assigned; not promoted from a located filename.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** UNVERIFIED: no observing acceptance assigned on the required lanes.
+
+**Limitation / missing environment:** P2 native method-security fixture has no servlet filter-chain request. No live HTTP filter-chain proof assigned in this package. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests.
+
+### P2-CACHE-RELOAD-EVICTION
+
+**Verdict:** PARTIAL.
+
+Reloading an annotated class evicts existing native caches.
+
+**Shipped surfaces:** `README.md:102`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringCacheReloaderTest#annotatedUnknownClassKeepsExistingFallback` (component): Direct cache reloader empties prices/descriptions after warming both.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Direct reloader invocation only; added CacheEvict operation is a separate watcher cell. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-SPRING6-ORDINARY-MATRIX
+
+**Verdict:** UNVERIFIED.
+
+Ordinary registration/factories/injection/AOP watcher behavior is established on Spring 6 too.
+
+**Shipped surfaces:** `src/main/resources/META-INF/plugin.xml:27`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** No observing method assigned; not promoted from a located filename.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** UNVERIFIED: no observing acceptance assigned on the required lanes.
+
+**Limitation / missing environment:** Spring6 watcher receipts here cover Jakarta lifecycle and native/composed pre-post security. They do not certify ordinary registration/factory/injection/AOP watchers or Boot3. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests.
+
+### P2-EXISTING-TX-METADATA
+
+**Verdict:** PARTIAL.
+
+Edited original-method Transactional metadata is re-read.
+
+**Shipped surfaces:** `README.md:113`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringOperationSourceReloaderTest#theTransactionSourcesMapIsFoundByItsName` (component): Direct source refresh clears a synthetic warmed attributeCache map.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Synthetic cache-finder observation only; not a live original-method readOnly/rollback save. Added hidden methods are separately measured. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-EXISTING-CACHE-METADATA
+
+**Verdict:** PARTIAL.
+
+Edited original-method Cacheable metadata is re-read.
+
+**Shipped surfaces:** `README.md:113`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringOperationSourceReloaderTest#theCacheSourcesRenamedMapIsFoundToo` (component): Direct source refresh clears a synthetic warmed operationCache map.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Synthetic cache-finder observation only; not a live original-method cache-condition save. Added hidden methods are separately measured. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-TX-CLASS-DEFAULTS
+
+**Verdict:** PARTIAL.
+
+Added operations honor class-level transaction defaults.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringAddedOperationsTest#classLevelTransactionMetadataAppliesToTheAddedMethod` (component): Direct bridge publication uses class transaction metadata; H2 commit returns 1:true and checked exception leaves one row.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Real transaction bridge/component observation, not a saved class-default watcher acceptance. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-CACHE-CLASS-DEFAULTS
+
+**Verdict:** PARTIAL.
+
+Added operations honor CacheConfig defaults and saved parameter names.
+
+**Shipped surfaces:** `README.md:97`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringAddedOperationsTest#cacheConfigAndSavedParameterNamesAreAvailableToSpring` (component): Direct bridge publication returns named:1 twice under CacheConfig and saved parameter key.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Real cache bridge/component observation, not a saved class-default watcher acceptance. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-SECURITY-FILTER-CHAIN-SWAP
+
+**Verdict:** PARTIAL.
+
+Security chain replacement preserves the rebuilt chain identity.
+
+**Shipped surfaces:** `README.md:114`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSecurityReloaderSwapTest#aStaleChainIsReplacedByTheRebuiltBean` (component): Direct duck-typed proxy swap replaces the stale fake chain with the rebuilt fake chain identity.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** Synthetic chain/proxy shapes only; no live servlet request/401 observation. P2-SECURITY-FILTER-CHAIN remains unverified. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+
+### P2-SPRING6-BEAN-CONDITION-METADATA
+
+**Verdict:** PARTIAL.
+
+Spring 6 added factory conditions match native startup and saved metadata.
+
+**Shipped surfaces:** `docs/usage.md:405`; this block. Digests in JSON.
+
+**Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
+
+**Bounds:** Isolated Spring 6.1.14 on stock SapMachine17/21 macOS arm64. Direct adapter invocation, not watcher.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSixAddedBeanConditionsTest#directConditionsMatchNativeStartupAndReceiveRealMethodMetadata` (component): Direct reload compares off/on admission and alias presence to native startup; condition called once in registration phase.
+
+**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+
+**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+
+**Limitation / missing environment:** No general Spring 6 registration/factory watcher or Boot 3 proof inferred. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+
+**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
