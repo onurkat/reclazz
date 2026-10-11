@@ -818,19 +818,24 @@ this feature does not preserve destroyed bean resources or make metadata
 publication atomic with concurrent requests.
 
 Current [P3b evidence](feature-evidence.md#p3b-exception-local) runs on stock
-SapMachine JDK 17 and 21 with Spring Framework 5.3.39. Real-agent tests send
+SapMachine JDK 17 and 21 with Spring Framework 5.3.39 and 6.1.14. Real-agent tests send
 loopback HTTP through MockMvc/DispatcherServlet, checking local/advice handlers,
 existing/new endpoints, selectors and local priority across five saves and normal/
 child loaders. This is an HTTP bridge, not a deployed servlet-container test.
 Start with `-javaagent` before MVC loads; late attach is unverified.
 
-Spring Framework **6.1.14 does not install this added-handler hook**: the resolver
-bytecode has sites `1/2/1`, while the transformer requires `2/2/1`. Current
-[characterization](feature-evidence.md#p3b-exception-modern) observes the unavailable-
-hook diagnostic and unchanged existing fallback responses across five saves on
-both JDKs and loaders. A passing characterization proves this limitation, not
-added-handler support. Other Spring versions and native servlet-container
-exception-handler deployment remain unverified. No production dependency is added.
+Spring Framework **6.1.14 uses a constructor-reference Function** for the local
+exception resolver. Reclazz adapts its input to the saved metadata while retaining
+Spring's factory, cache and handler selection. The exact measured factory shape is
+checked; an unknown resolver shape refuses the hook instead of partially installing it.
+The [Spring6 repair evidence](feature-evidence.md#p3b-exception-modern) uses the same
+four local/advice and normal/child-loader HTTP observers as Spring5. The original
+P3b failure is retained as historical evidence. Other Spring versions and native
+servlet-container exception-handler deployment remain unverified. The modern watcher
+observations cover synchronous ResponseEntity<String> status/body selection; the
+separate component-only cause/request-argument and response-annotation cells remain
+limited to their recorded Spring5 observations. No production
+dependency is added.
 
 ### Registered MVC interceptors: measured reload limitation
 

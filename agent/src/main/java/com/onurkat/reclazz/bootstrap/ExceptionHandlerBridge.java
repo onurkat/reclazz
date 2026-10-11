@@ -6,6 +6,7 @@ package com.onurkat.reclazz.bootstrap;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.reflect.Method;
+import java.util.function.Function;
 
 /** Metadata/receiver substitution confined to Spring MVC's exception resolver. */
 public final class ExceptionHandlerBridge {
@@ -46,6 +47,10 @@ public final class ExceptionHandlerBridge {
     public static Class<?> metadataClass(Class<?> owner) {
         Schema schema = owners.get(owner).schema;
         return schema == null ? owner : schema.type();
+    }
+    /** Keep Spring's constructor Function, substituting only its metadata input. */
+    public static <T> Function<Class<?>, T> resolverFactory(Function<Class<?>, T> factory) {
+        return owner -> factory.apply(metadataClass(owner));
     }
     public static Object receiver(Object bean, Method method) throws Throwable {
         Endpoint endpoint = bean == null ? null : endpoints.get(bean.getClass()).endpoint;

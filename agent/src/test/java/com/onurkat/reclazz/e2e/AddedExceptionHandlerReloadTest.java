@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AddedExceptionHandlerReloadTest {
     @TempDir Path tmp;
+    protected String servletNamespace() { return "javax"; }
     @Test void addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves() throws Exception { exercise(false); }
     @Test void addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves() throws Exception { exercise(true); }
 
@@ -25,8 +26,11 @@ class AddedExceptionHandlerReloadTest {
     private void exercise(boolean advice) throws Exception { exercise(advice, false); }
 
     private void exercise(boolean advice, boolean childLoader) throws Exception {
-        String servlet = Path.of(javax.servlet.Servlet.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
-        var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet);
+        String servlet = Path.of(Class.forName(servletNamespace() + ".servlet.Servlet").getProtectionDomain().getCodeSource().getLocation().toURI()).toString();
+        var builder = WatchedApp.in(tmp).classpath(WatchedApp.springClasspath() + File.pathSeparator + servlet + File.pathSeparator
+                + java.util.Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
+                    .filter(entry -> Path.of(entry).getFileName().toString().startsWith("micrometer-"))
+                    .collect(java.util.stream.Collectors.joining(File.pathSeparator)));
         if (childLoader) builder.childClassLoader();
         try (var app = builder
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
@@ -59,6 +63,7 @@ class AddedExceptionHandlerReloadTest {
                 check(client, port, "/local", 409, "local-priority");
             }
             assertFalse(app.output().stream().anyMatch(s -> s.contains("@ExceptionHandler is found by scanning")), app.tail());
+            assertFalse(app.output().stream().anyMatch(s -> s.contains("Added exception-handler hook unavailable")), app.tail());
             System.out.println("[added-exceptions] " + (advice ? "advice" : "local")
                     + " add/edit/remove/restore/unannotate=passed selectors/local-priority=preserved");
         }

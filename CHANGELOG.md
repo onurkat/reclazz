@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Added exception handlers work with the measured Spring 6.1.14 constructor-Function
+  resolver path on stock JDK17/21, including local/controller-advice selection,
+  existing/new endpoints and repeated saves. Unknown factory shapes still refuse
+  the hook; Spring5.3.39 retains its direct-constructor path.
+
 - Separately reloaded watched callers directly read/write added instance fields
   through the same store as the owning class, preserving first-read values,
   explicit null writes and later saved-body values. Null instance receivers
