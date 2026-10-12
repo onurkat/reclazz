@@ -91,7 +91,10 @@ public final class WatchedApp implements AutoCloseable {
         List<String> entries = new ArrayList<>();
         for (String entry : System.getProperty("java.class.path").split(File.pathSeparator)) {
             String name = Path.of(entry).getFileName().toString();
-            if (name.startsWith("spring-") || name.contains("jcl") || name.contains("commons-logging")) {
+            // Spring 6 scheduling uses its resolved Micrometer observation/commons jars.
+            // Keep the child app on the actual worker graph, without agent/test classes.
+            if (name.startsWith("spring-") || name.startsWith("micrometer-")
+                    || name.contains("jcl") || name.contains("commons-logging")) {
                 entries.add(entry);
             }
         }
