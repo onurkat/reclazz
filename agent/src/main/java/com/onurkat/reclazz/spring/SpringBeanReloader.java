@@ -58,11 +58,16 @@ public class SpringBeanReloader {
             java.util.LinkedHashSet<String> refreshedNames = new java.util.LinkedHashSet<>();
             java.util.IdentityHashMap<Object, Object> replacements = new java.util.IdentityHashMap<>();
             int totalRefreshed = 0;
+            SpringMvcSingletons mvcBefore = batchDepth > 0 ? batchMvcBefore : null;
             for (Object appContext : contexts) {
                 String[] beanNames = (reloadedClass != null)
                         ? findBeanNamesByType(appContext, reloadedClass)
                         : findBeanNamesByClass(appContext, className);
                 for (String beanName : beanNames) {
+                    if (mvcBefore == null) {
+                        mvcBefore = SpringMvcSingletons.capture(contexts);
+                        if (batchDepth > 0) batchMvcBefore = mvcBefore;
+                    }
                     Object[] pair = destroyAndRefreshBean(appContext, beanName);
                     if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
                         replacements.put(pair[0], pair[1]);
@@ -87,6 +92,7 @@ public class SpringBeanReloader {
                 return;
             }
             applyDependentsAndHealing(contexts, refreshedNames, replacements);
+            if (mvcBefore != null) mvcBefore.publishCurrent();
 
         } catch (Exception e) {
             StatusReporter.error("Failed to refresh Spring bean for " + className + ": " + Failures.describe(e));
@@ -122,6 +128,7 @@ public class SpringBeanReloader {
     // it is one sweep for the whole reload.
 
     private int batchDepth;
+    private SpringMvcSingletons batchMvcBefore;
     private final java.util.LinkedHashSet<String> batchRefreshedNames = new java.util.LinkedHashSet<>();
     private final java.util.IdentityHashMap<Object, Object> batchReplacements = new java.util.IdentityHashMap<>();
 
@@ -134,16 +141,21 @@ public class SpringBeanReloader {
     public void endBatch() {
         if (batchDepth == 0) return;
         if (--batchDepth > 0) return;
-        if (batchRefreshedNames.isEmpty() && batchReplacements.isEmpty()) return;
+        if (batchRefreshedNames.isEmpty() && batchReplacements.isEmpty()) {
+            batchMvcBefore = null;
+            return;
+        }
         try {
             applyDependentsAndHealing(platformContext.getAllApplicationContexts(),
                     new java.util.LinkedHashSet<>(batchRefreshedNames),
                     new java.util.IdentityHashMap<>(batchReplacements));
+            if (batchMvcBefore != null) batchMvcBefore.publishCurrent();
         } catch (Exception e) {
             StatusReporter.error("Deferred Spring refresh failed: " + Failures.describe(e));
         } finally {
             batchRefreshedNames.clear();
             batchReplacements.clear();
+            batchMvcBefore = null;
         }
     }
 

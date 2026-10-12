@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.e2e;
 
-/** Same documented limitation on the isolated Jakarta graph. */
-class JakartaMvcInterceptorLimitationReloadTest extends MvcInterceptorLimitationReloadTest {
+/** Same desired native MVC lifecycle behavior on the isolated Jakarta graph. */
+class JakartaMvcInterceptorDependencyReloadTest extends MvcInterceptorDependencyReloadTest {
     @Override protected String servletNamespace() { return "jakarta"; }
 }

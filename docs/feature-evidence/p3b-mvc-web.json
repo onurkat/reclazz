@@ -10,24 +10,24 @@
     "sapmachine-17-macos-arm64": {
       "status": "PASSED",
       "exit_code": 0,
-      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain :agent:springSixTest --rerun :agent:hibernateTest --rerun :agent:rabbitTest --rerun :agent:jmsTest --rerun",
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain -x :agent:springSixTest -x :agent:rabbitTest -x :agent:jmsTest -x :agent:hibernateTest; JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
       "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
-      "utc": "2026-10-10T07:12:04.819491+00:00",
-      "base_commit": "326d1c4",
-      "artifact_sha256": "9b235aa0d7068bc88e35ae5ac79933f0b984c3584847be755b07b11f95fbd55e",
-      "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory",
+      "utc": "2026-10-11T16:42:39.774258+00:00",
+      "base_commit": "dd90638",
+      "artifact_sha256": "9661bcc1f1f06af2e2d01ca4a5444fc82e497dbe9fe9aed65237ec988ffe6871",
+      "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor",
       "counts": {
-        "full-gate-17": {
-          "tests": 2252,
+        "ordinary-full-17": {
+          "tests": 2281,
           "failures": 0,
           "errors": 0,
           "skipped": 9
         },
-        "unit-inner-17": {
-          "tests": 2041,
+        "modern-full-17": {
+          "tests": 235,
           "failures": 0,
           "errors": 0,
-          "skipped": 9
+          "skipped": 0
         }
       },
       "cases": [
@@ -35,7 +35,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "status": "PASSED",
           "source_sha256": "ef6337e201080681bc57a9c5c140210a458ee3103888819b90f3f760cb165be3",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest.xml",
           "invocations": [
             {
               "name": "getAndPostEndpointsFollowFiveSavesWithoutRestart [1] false",
@@ -51,7 +51,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "status": "PASSED",
           "source_sha256": "e038c84f8ea13508ae3deb95ee34718198d01f68edfd523d86a945bd9996a05f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest.xml",
           "invocations": [
             {
               "name": "getAndPostEndpointsFollowFiveSavesWithoutRestart [1] false",
@@ -67,7 +67,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves()",
@@ -79,7 +79,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -91,7 +91,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves()",
@@ -103,7 +103,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -115,7 +115,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves()",
@@ -127,7 +127,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves()",
@@ -139,7 +139,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -151,7 +151,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -163,7 +163,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints()",
@@ -175,7 +175,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -187,7 +187,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints()",
@@ -199,7 +199,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -211,7 +211,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors()",
@@ -223,7 +223,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -235,7 +235,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors()",
@@ -247,7 +247,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -259,7 +259,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "b2a69cdd4c629575f31de92418d8062c42e5562bfce8221d57dd95d2087ad52a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedSettersReadJsonAcrossSaves [1] false",
@@ -275,7 +275,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "b2a69cdd4c629575f31de92418d8062c42e5562bfce8221d57dd95d2087ad52a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedFieldsReadAndWriteJsonAcrossSaves [1] false",
@@ -291,7 +291,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedSettersReadJsonAcrossSaves [1] false",
@@ -307,7 +307,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedFieldsReadAndWriteJsonAcrossSaves [1] false",
@@ -323,7 +323,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "status": "PASSED",
           "source_sha256": "1bfdd15328a1ffc2417768a466e2e50cd64adcd373627e7274d73609853a9680",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest.xml",
           "invocations": [
             {
               "name": "addedGettersReachHttpWithMapperPoliciesAcrossSaves()",
@@ -335,7 +335,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "status": "PASSED",
           "source_sha256": "08544cd80fb0bbae01df7246081f019accb3d679b234e6f803a491c2f07fa741",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest.xml",
           "invocations": [
             {
               "name": "addedGettersReachHttpWithMapperPoliciesAcrossSaves()",
@@ -347,7 +347,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "status": "PASSED",
           "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "heldAsyncResponseKeepsItsCodeUntilNativeCompletion [1] callable, false",
@@ -371,7 +371,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "status": "PASSED",
           "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "heldAsyncResponseKeepsItsCodeUntilNativeCompletion [1] callable, false",
@@ -395,7 +395,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode",
           "status": "PASSED",
           "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "timedOutCallableThatIgnoresCancellationStillOwnsItsCode()",
@@ -407,7 +407,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode",
           "status": "PASSED",
           "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "timedOutCallableThatIgnoresCancellationStillOwnsItsCode()",
@@ -419,7 +419,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending",
           "status": "PASSED",
           "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "immediateModeStillReloadsWhileTheResponseIsPending()",
@@ -431,7 +431,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending",
           "status": "PASSED",
           "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "immediateModeStillReloadsWhileTheResponseIsPending()",
@@ -440,65 +440,65 @@
           ]
         },
         {
-          "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+          "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
           "status": "PASSED",
-          "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest.xml",
+          "source_sha256": "72216429aa1ef517f65cc1cdbdd28eee2f631a66dd465ba7c47a9cbf063d3827",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest.xml",
           "invocations": [
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [1] false, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [2] true, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [3] false, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [4] true, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [5] false, injected",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [6] true, injected",
               "status": "PASSED"
             }
           ]
         },
         {
-          "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+          "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
           "status": "PASSED",
-          "source_sha256": "25f0ab980d5d2ef1ec5ba5a41641cfa08374ed7d733a99e466754821d89fa2b2",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest.xml",
+          "source_sha256": "bb88c39c29d13beee2f349c7e926e887cd38c2ca2e83718f5e35576304909808",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-full-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest.xml",
           "invocations": [
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [1] false, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [2] true, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [3] false, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [4] true, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [5] false, injected",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [6] true, injected",
               "status": "PASSED"
             }
           ]
@@ -507,7 +507,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#voidModelMethodWritesIntoSpringsActualModel",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "voidModelMethodWritesIntoSpringsActualModel()",
@@ -519,7 +519,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#concreteGenericReturnMetadataAndModelValueArePreserved",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "concreteGenericReturnMetadataAndModelValueArePreserved()",
@@ -531,7 +531,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#causeMatchingUsesSpringsResolverAndExposesTheActualCauseArgument",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "causeMatchingUsesSpringsResolverAndExposesTheActualCauseArgument()",
@@ -543,7 +543,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#realSpringInfersTheExceptionResolvesRequestAndUsesStatusAndBodyAnnotations",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "realSpringInfersTheExceptionResolvesRequestAndUsesStatusAndBodyAnnotations()",
@@ -555,7 +555,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#concreteGenericResponseEntityKeepsStatusHeadersAndBody",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "concreteGenericResponseEntityKeepsStatusHeadersAndBody()",
@@ -567,7 +567,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classResponseStatusIsAvailableToTheActualReturnValuePipeline",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "classResponseStatusIsAvailableToTheActualReturnValuePipeline()",
@@ -579,7 +579,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#mixInsAreAppliedByJacksonToTheAddedMethod",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "mixInsAreAppliedByJacksonToTheAddedMethod()",
@@ -591,7 +591,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldMixinNamingAndRenameRemovalRestorationUseFreshDiscovery",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "fieldMixinNamingAndRenameRemovalRestorationUseFreshDiscovery()",
@@ -603,7 +603,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#privateGetterRespectsDisabledAccessOverride",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "privateGetterRespectsDisabledAccessOverride()",
@@ -615,7 +615,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#privateSettersAndFieldsRespectEachMappersAccessPolicy",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "privateSettersAndFieldsRespectEachMappersAccessPolicy()",
@@ -627,7 +627,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldsUseTheRealStorageAndPreserveJsonAccessPolicies",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "fieldsUseTheRealStorageAndPreserveJsonAccessPolicies()",
@@ -639,7 +639,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#setterMetadataUsesAliasNullPolicyAndGenericConversion",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "setterMetadataUsesAliasNullPolicyAndGenericConversion()",
@@ -651,7 +651,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#invalidConversionAndSetterExceptionKeepJacksonErrors",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "invalidConversionAndSetterExceptionKeepJacksonErrors()",
@@ -663,7 +663,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#getterFailuresKeepJacksonMappingPathAndRootCause",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "getterFailuresKeepJacksonMappingPathAndRootCause()",
@@ -675,7 +675,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#retainedWriterUsesNewBodiesWhileNewDiscoveryUsesNewMetadata",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "retainedWriterUsesNewBodiesWhileNewDiscoveryUsesNewMetadata()",
@@ -687,7 +687,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#proxyReceiverIsRefusedBeforeAnyCallbackBodyRuns",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "proxyReceiverIsRefusedBeforeAnyCallbackBodyRuns()",
@@ -699,7 +699,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#proxyReceiverIsNotUnwrappedAndNoBodyRunsWithoutItsAdvice",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "proxyReceiverIsNotUnwrappedAndNoBodyRunsWithoutItsAdvice()",
@@ -711,7 +711,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#requestMappedModelAttributesAreNotInvokedAsModelInitializers",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "requestMappedModelAttributesAreNotInvokedAsModelInitializers()",
@@ -723,7 +723,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation()",
@@ -735,7 +735,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#extraAdviceAndStaticCallbacksCannotBypassTheirSemantics",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "extraAdviceAndStaticCallbacksCannotBypassTheirSemantics()",
@@ -747,7 +747,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "typeVariablesInterfacesAndSessionMetadataAreRefused()",
@@ -759,7 +759,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#ambiguousMappingIsRejectedBySpringAndClearsTheOldAdapter",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "ambiguousMappingIsRejectedBySpringAndClearsTheOldAdapter()",
@@ -771,7 +771,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#asynchronousAndExtraAdviceMetadataAreExplicitlyRefused",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "asynchronousAndExtraAdviceMetadataAreExplicitlyRefused()",
@@ -783,7 +783,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classTypeVariablesAndMethodTypeVariablesAreRefused",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "classTypeVariablesAndMethodTypeVariablesAreRefused()",
@@ -795,7 +795,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#staticAndInterfaceMetadataAreRefusedBeforePublishing",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "staticAndInterfaceMetadataAreRefusedBeforePublishing()",
@@ -807,7 +807,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#finalAddedFieldsNeverBypassTheReflectionWriteRestriction",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-17/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "finalAddedFieldsNeverBypassTheReflectionWriteRestriction()",
@@ -822,37 +822,19 @@
       "exit_code": 0,
       "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain -x :agent:springSixTest -x :agent:rabbitTest -x :agent:jmsTest -x :agent:hibernateTest; JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
       "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
-      "utc": "2026-10-10T06:11:20.792681+00:00",
-      "base_commit": "326d1c4",
-      "artifact_sha256": "dcb6f94877426b9dcdeb136258d822e24a9eb3b0c269ac0835938f5e49cedbd6",
-      "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory",
+      "utc": "2026-10-11T16:08:57.237385+00:00",
+      "base_commit": "dd90638",
+      "artifact_sha256": "60423ebeeceea5618a01518beea6fa11f047dab7d2a10d7d14d9bf13b8a20bd8",
+      "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor",
       "counts": {
-        "modern-full-21": {
-          "tests": 211,
-          "failures": 0,
-          "errors": 0,
-          "skipped": 0
-        },
-        "rabbit-retagged-21": {
-          "tests": 8,
-          "failures": 0,
-          "errors": 0,
-          "skipped": 0
-        },
-        "ordinary-all-21": {
-          "tests": 2252,
+        "ordinary-full-21": {
+          "tests": 2281,
           "failures": 0,
           "errors": 0,
           "skipped": 5
         },
-        "unit-inner-21": {
-          "tests": 2041,
-          "failures": 0,
-          "errors": 0,
-          "skipped": 5
-        },
-        "focused-green-21": {
-          "tests": 25,
+        "modern-final-21": {
+          "tests": 235,
           "failures": 0,
           "errors": 0,
           "skipped": 0
@@ -863,7 +845,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "status": "PASSED",
           "source_sha256": "ef6337e201080681bc57a9c5c140210a458ee3103888819b90f3f760cb165be3",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedEndpointHttpReloadTest.xml",
           "invocations": [
             {
               "name": "getAndPostEndpointsFollowFiveSavesWithoutRestart [1] false",
@@ -879,7 +861,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest#getAndPostEndpointsFollowFiveSavesWithoutRestart",
           "status": "PASSED",
           "source_sha256": "e038c84f8ea13508ae3deb95ee34718198d01f68edfd523d86a945bd9996a05f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedEndpointHttpReloadTest.xml",
           "invocations": [
             {
               "name": "getAndPostEndpointsFollowFiveSavesWithoutRestart [1] false",
@@ -895,7 +877,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves()",
@@ -907,7 +889,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -919,7 +901,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves()",
@@ -931,7 +913,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "e9dff55f9cd59fe59e94a62be30b5c3e1b9b9a4e76c6e45a1102aa59aef3aa33",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -943,7 +925,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedLocalHandlerCompetesWithExistingHandlersAndFollowsSaves()",
@@ -955,7 +937,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "addedAdviceHandlerKeepsSelectorsLocalPriorityAndFollowsSaves()",
@@ -967,7 +949,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "localHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -979,7 +961,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest#adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "0225831405a2d81e026c4554c0e19e4ed0c42eb16259bf1f7568eb45829c4e41",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedExceptionHandlerReloadTest.xml",
           "invocations": [
             {
               "name": "adviceHandlersOnAddedEndpointsWorkAcrossChildLoaderSaves()",
@@ -991,7 +973,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints()",
@@ -1003,7 +985,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -1015,7 +997,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsFollowFiveSavesOnOldAndNewEndpoints()",
@@ -1027,7 +1009,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#localBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "localBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -1039,7 +1021,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors()",
@@ -1051,7 +1033,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "9de830ca893a3e8fdbb73db7db65b99b9b7424fe962c24d1e615e53f695bacec",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -1063,7 +1045,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsFollowFiveSavesAndRespectSelectors()",
@@ -1075,7 +1057,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest#adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves",
           "status": "PASSED",
           "source_sha256": "f34d595ede98e0b3305ba17a9cde12349ab13549a6a6e76276a1c07b25d22147",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedMvcBindingReloadTest.xml",
           "invocations": [
             {
               "name": "adviceBindingAndModelMethodsWorkAcrossChildLoaderSaves()",
@@ -1087,7 +1069,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "b2a69cdd4c629575f31de92418d8062c42e5562bfce8221d57dd95d2087ad52a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedSettersReadJsonAcrossSaves [1] false",
@@ -1103,7 +1085,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "b2a69cdd4c629575f31de92418d8062c42e5562bfce8221d57dd95d2087ad52a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedFieldsReadAndWriteJsonAcrossSaves [1] false",
@@ -1119,7 +1101,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedSettersReadJsonAcrossSaves [1] false",
@@ -1135,7 +1117,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves",
           "status": "PASSED",
           "source_sha256": "669eb3ef7411a7e33802f25ce592f0030dcb8526be51e5045a77c9970bbab649",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest.xml",
           "invocations": [
             {
               "name": "addedFieldsReadAndWriteJsonAcrossSaves [1] false",
@@ -1151,7 +1133,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "status": "PASSED",
           "source_sha256": "1bfdd15328a1ffc2417768a466e2e50cd64adcd373627e7274d73609853a9680",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest.xml",
           "invocations": [
             {
               "name": "addedGettersReachHttpWithMapperPoliciesAcrossSaves()",
@@ -1163,7 +1145,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves",
           "status": "PASSED",
           "source_sha256": "08544cd80fb0bbae01df7246081f019accb3d679b234e6f803a491c2f07fa741",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest.xml",
           "invocations": [
             {
               "name": "addedGettersReachHttpWithMapperPoliciesAcrossSaves()",
@@ -1175,7 +1157,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "status": "PASSED",
           "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "heldAsyncResponseKeepsItsCodeUntilNativeCompletion [1] callable, false",
@@ -1199,7 +1181,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#heldAsyncResponseKeepsItsCodeUntilNativeCompletion",
           "status": "PASSED",
           "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "heldAsyncResponseKeepsItsCodeUntilNativeCompletion [1] callable, false",
@@ -1223,7 +1205,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode",
           "status": "PASSED",
           "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "timedOutCallableThatIgnoresCancellationStillOwnsItsCode()",
@@ -1235,7 +1217,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#timedOutCallableThatIgnoresCancellationStillOwnsItsCode",
           "status": "PASSED",
           "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "timedOutCallableThatIgnoresCancellationStillOwnsItsCode()",
@@ -1247,7 +1229,7 @@
           "symbol": "com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending",
           "status": "PASSED",
           "source_sha256": "a23a83c48a816b6a5d5e048a45d7492195cff0c0c2c3475e2377c98ccdd929a7",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.AsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "immediateModeStillReloadsWhileTheResponseIsPending()",
@@ -1259,7 +1241,7 @@
           "symbol": "com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest#immediateModeStillReloadsWhileTheResponseIsPending",
           "status": "PASSED",
           "source_sha256": "7645b98c700492e67422850041782db1ff46730ab52d1a05077836ff78d0e33f",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaAsyncMvcRequestBoundaryReloadTest.xml",
           "invocations": [
             {
               "name": "immediateModeStillReloadsWhileTheResponseIsPending()",
@@ -1268,65 +1250,65 @@
           ]
         },
         {
-          "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+          "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
           "status": "PASSED",
-          "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest.xml",
+          "source_sha256": "72216429aa1ef517f65cc1cdbdd28eee2f631a66dd465ba7c47a9cbf063d3827",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest.xml",
           "invocations": [
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [1] false, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [2] true, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [3] false, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [4] true, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [5] false, injected",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [6] true, injected",
               "status": "PASSED"
             }
           ]
         },
         {
-          "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+          "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
           "status": "PASSED",
-          "source_sha256": "25f0ab980d5d2ef1ec5ba5a41641cfa08374ed7d733a99e466754821d89fa2b2",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest.xml",
+          "source_sha256": "bb88c39c29d13beee2f349c7e926e887cd38c2ca2e83718f5e35576304909808",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/modern-final-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest.xml",
           "invocations": [
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [1] false, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [2] true, lookup",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [3] false, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [4] true, mapped",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [5] false, injected",
               "status": "PASSED"
             },
             {
-              "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+              "name": "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [6] true, injected",
               "status": "PASSED"
             }
           ]
@@ -1335,7 +1317,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#voidModelMethodWritesIntoSpringsActualModel",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "voidModelMethodWritesIntoSpringsActualModel()",
@@ -1347,7 +1329,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#concreteGenericReturnMetadataAndModelValueArePreserved",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "concreteGenericReturnMetadataAndModelValueArePreserved()",
@@ -1359,7 +1341,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#causeMatchingUsesSpringsResolverAndExposesTheActualCauseArgument",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "causeMatchingUsesSpringsResolverAndExposesTheActualCauseArgument()",
@@ -1371,7 +1353,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#realSpringInfersTheExceptionResolvesRequestAndUsesStatusAndBodyAnnotations",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "realSpringInfersTheExceptionResolvesRequestAndUsesStatusAndBodyAnnotations()",
@@ -1383,7 +1365,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#concreteGenericResponseEntityKeepsStatusHeadersAndBody",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "concreteGenericResponseEntityKeepsStatusHeadersAndBody()",
@@ -1395,7 +1377,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classResponseStatusIsAvailableToTheActualReturnValuePipeline",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "classResponseStatusIsAvailableToTheActualReturnValuePipeline()",
@@ -1407,7 +1389,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#mixInsAreAppliedByJacksonToTheAddedMethod",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "mixInsAreAppliedByJacksonToTheAddedMethod()",
@@ -1419,7 +1401,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldMixinNamingAndRenameRemovalRestorationUseFreshDiscovery",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "fieldMixinNamingAndRenameRemovalRestorationUseFreshDiscovery()",
@@ -1431,7 +1413,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#privateGetterRespectsDisabledAccessOverride",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "privateGetterRespectsDisabledAccessOverride()",
@@ -1443,7 +1425,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#privateSettersAndFieldsRespectEachMappersAccessPolicy",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "privateSettersAndFieldsRespectEachMappersAccessPolicy()",
@@ -1455,7 +1437,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#fieldsUseTheRealStorageAndPreserveJsonAccessPolicies",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "fieldsUseTheRealStorageAndPreserveJsonAccessPolicies()",
@@ -1467,7 +1449,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#setterMetadataUsesAliasNullPolicyAndGenericConversion",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "setterMetadataUsesAliasNullPolicyAndGenericConversion()",
@@ -1479,7 +1461,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#invalidConversionAndSetterExceptionKeepJacksonErrors",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "invalidConversionAndSetterExceptionKeepJacksonErrors()",
@@ -1491,7 +1473,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#getterFailuresKeepJacksonMappingPathAndRootCause",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "getterFailuresKeepJacksonMappingPathAndRootCause()",
@@ -1503,7 +1485,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedGettersTest#retainedWriterUsesNewBodiesWhileNewDiscoveryUsesNewMetadata",
           "status": "PASSED",
           "source_sha256": "521f8573eb0bca35537fbaac179ca36467b31d26035a19ccd403c5a470b1592d",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedGettersTest.xml",
           "invocations": [
             {
               "name": "retainedWriterUsesNewBodiesWhileNewDiscoveryUsesNewMetadata()",
@@ -1515,7 +1497,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#proxyReceiverIsRefusedBeforeAnyCallbackBodyRuns",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "proxyReceiverIsRefusedBeforeAnyCallbackBodyRuns()",
@@ -1527,7 +1509,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#proxyReceiverIsNotUnwrappedAndNoBodyRunsWithoutItsAdvice",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "proxyReceiverIsNotUnwrappedAndNoBodyRunsWithoutItsAdvice()",
@@ -1539,7 +1521,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#requestMappedModelAttributesAreNotInvokedAsModelInitializers",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "requestMappedModelAttributesAreNotInvokedAsModelInitializers()",
@@ -1551,7 +1533,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "invalidBinderReturnAndAsyncModelAreRefusedBeforeInvocation()",
@@ -1563,7 +1545,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#extraAdviceAndStaticCallbacksCannotBypassTheirSemantics",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "extraAdviceAndStaticCallbacksCannotBypassTheirSemantics()",
@@ -1575,7 +1557,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest#typeVariablesInterfacesAndSessionMetadataAreRefused",
           "status": "PASSED",
           "source_sha256": "1fc0e9f288d2e534a0ece6cc92013af041d20b2a3979774d9397bdf66855f253",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedMvcBindingMethodsTest.xml",
           "invocations": [
             {
               "name": "typeVariablesInterfacesAndSessionMetadataAreRefused()",
@@ -1587,7 +1569,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#ambiguousMappingIsRejectedBySpringAndClearsTheOldAdapter",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "ambiguousMappingIsRejectedBySpringAndClearsTheOldAdapter()",
@@ -1599,7 +1581,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#asynchronousAndExtraAdviceMetadataAreExplicitlyRefused",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "asynchronousAndExtraAdviceMetadataAreExplicitlyRefused()",
@@ -1611,7 +1593,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#classTypeVariablesAndMethodTypeVariablesAreRefused",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "classTypeVariablesAndMethodTypeVariablesAreRefused()",
@@ -1623,7 +1605,7 @@
           "symbol": "com.onurkat.reclazz.reload.AddedExceptionHandlersTest#staticAndInterfaceMetadataAreRefusedBeforePublishing",
           "status": "PASSED",
           "source_sha256": "de945307679503d987afd6dbedcf3cce773d3a409d56d7aaff779208e70b808a",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.AddedExceptionHandlersTest.xml",
           "invocations": [
             {
               "name": "staticAndInterfaceMetadataAreRefusedBeforePublishing()",
@@ -1635,7 +1617,7 @@
           "symbol": "com.onurkat.reclazz.reload.JacksonAddedPropertiesTest#finalAddedFieldsNeverBypassTheReflectionWriteRestriction",
           "status": "PASSED",
           "source_sha256": "e23119bd4aa60b6b2cbd2d5c306b7276415eeaf8d9d77881ebd3f97b2d5c5ec5",
-          "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
+          "raw_evidence": ".collab/research/2026-10-11-mvc-interceptor/ordinary-full-21/test/TEST-com.onurkat.reclazz.reload.JacksonAddedPropertiesTest.xml",
           "invocations": [
             {
               "name": "finalAddedFieldsNeverBypassTheReflectionWriteRestriction()",
@@ -1674,14 +1656,14 @@
       "shipped_surfaces": [
         {
           "path": "README.md",
-          "line": 172,
-          "sha256": "243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa",
+          "line": 173,
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
           "quote": "**MVC Re-scan**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2523,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ENDPOINT-GET"
         }
       ],
@@ -1726,14 +1708,14 @@
       "shipped_surfaces": [
         {
           "path": "README.md",
-          "line": 172,
-          "sha256": "243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa",
+          "line": 173,
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
           "quote": "**MVC Re-scan**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2533,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ENDPOINT-POST"
         }
       ],
@@ -1774,13 +1756,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2543,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-LOCAL"
         }
       ],
@@ -1821,13 +1803,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2553,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-ADVICE"
         }
       ],
@@ -1902,13 +1884,13 @@
         {
           "path": "README.md",
           "line": 92,
-          "sha256": "243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa",
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
           "quote": "Entirely new `@ExceptionHandler` method"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2563,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-MODERN"
         }
       ],
@@ -1972,14 +1954,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 868,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 874,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2575,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-BINDER-LOCAL"
         }
       ],
@@ -2043,14 +2025,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 868,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 874,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2585,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-BINDER-ADVICE"
         }
       ],
@@ -2114,14 +2096,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 868,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 874,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2595,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-MODEL-LOCAL"
         }
       ],
@@ -2185,14 +2167,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 868,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 874,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "A supported plain controller or controller advice can gain entirely new"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2605,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-MODEL-ADVICE"
         }
       ],
@@ -2256,14 +2238,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1604,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1610,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2615,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-IN"
         }
       ],
@@ -2346,14 +2328,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1604,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1610,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2625,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-OUT"
         }
       ],
@@ -2436,14 +2418,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1604,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1610,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2635,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-NAMING"
         }
       ],
@@ -2488,14 +2470,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1604,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1610,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2645,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-INCLUSION"
         }
       ],
@@ -2578,14 +2560,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1604,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1610,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Jackson still decides which properties to read and write."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2655,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-CUSTOM"
         }
       ],
@@ -2625,14 +2607,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2594,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 2600,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2665,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ASYNC-CALLABLE"
         }
       ],
@@ -2672,14 +2654,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2594,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 2600,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2675,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ASYNC-DEFERRED"
         }
       ],
@@ -2719,14 +2701,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2594,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 2600,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2685,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ASYNC-TIMEOUT"
         }
       ],
@@ -2766,14 +2748,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2594,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 2600,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "MVC, `Callable`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2695,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ASYNC-IMMEDIATE"
         }
       ],
@@ -2793,25 +2775,25 @@
     },
     {
       "id": "P3B-INTERCEPTOR-LIMIT",
-      "statement": "Registered interceptor keeps old constructor-owned dependency state despite native parent bean recreation.",
+      "statement": "Named plain MVC interceptor/mapping singleton selection follows the current native bean identities after class reload.",
       "tests": [
         {
-          "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
-          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorLimitationReloadTest.java",
-          "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805",
+          "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorDependencyReloadTest.java",
+          "source_sha256": "72216429aa1ef517f65cc1cdbdd28eee2f631a66dd465ba7c47a9cbf063d3827",
           "kind": "watcher",
-          "assertions": "Three body/helper saves; request trace retains D1 while current parent uses D2/D3/D4; source-only no-op, ordered exactly-once calls, stable unrelated identities, mapped include/exclude, servlet-held mapping identity."
+          "assertions": "Repeated watched body/helper saves: exact current interceptor identity and constructorD2/D3/D4; native path include/exclude, callback order, unrelated identities, source-only no-op and servlet mapping public view equals context mapping."
         },
         {
-          "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
-          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaMvcInterceptorLimitationReloadTest.java",
-          "source_sha256": "25f0ab980d5d2ef1ec5ba5a41641cfa08374ed7d733a99e466754821d89fa2b2",
+          "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaMvcInterceptorDependencyReloadTest.java",
+          "source_sha256": "bb88c39c29d13beee2f349c7e926e887cd38c2ca2e83718f5e35576304909808",
           "kind": "watcher",
-          "assertions": "Three body/helper saves; request trace retains D1 while current parent uses D2/D3/D4; source-only no-op, ordered exactly-once calls, stable unrelated identities, mapped include/exclude, servlet-held mapping identity.",
+          "assertions": "Repeated watched body/helper saves: exact current interceptor identity and constructorD2/D3/D4; native path include/exclude, callback order, unrelated identities, source-only no-op and servlet mapping public view equals context mapping.",
           "declaration": {
-            "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
-            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorLimitationReloadTest.java",
-            "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805"
+            "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorDependencyReloadTest.java",
+            "source_sha256": "72216429aa1ef517f65cc1cdbdd28eee2f631a66dd465ba7c47a9cbf063d3827"
           }
         }
       ],
@@ -2819,29 +2801,35 @@
         {
           "path": "docs/usage.md",
           "line": 842,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Method-body saves on registered MVC interceptors"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2705,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-INTERCEPTOR-LIMIT"
+        },
+        {
+          "path": "README.md",
+          "line": 94,
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
+          "quote": "Registered MVC interceptor dependency state"
         }
       ],
       "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
       "bounds": "SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child, parent/web contexts, lookup/mapped/injected registration; file-triggered MockMvc requests, no TCP or deployed servlet container.",
-      "observable": "Registered interceptor keeps old constructor-owned dependency state despite native parent bean recreation.",
-      "control": "Current parentHn:Dn differs from dispatchedHn:D1; injected registration recreates context mapping while servlet retains original. Scratch desiredDn and reconciled mapping must RED.",
+      "observable": "Requests use current interceptor identity and dependency constructor seed; servlet public mapping view uses the current context mapping.",
+      "control": "Warm/source-only controls pass; current-production desired observer RED in all6 cases at changed interceptor identity (injected cases also stale servlet mapping). Current watcher must prove all later assertions too.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
         "sapmachine-21-macos-arm64"
       ],
-      "verdict": "EXPECTED",
+      "verdict": "PROVEN_WITH_SCOPE",
       "reviewer": "Astra read and executed observing assertions; independent Claude audit pending.",
-      "limitation": "Known restart limitation. These GREEN characterization tests prove the gap, not interceptor lifecycle repair. Filters/security/proxies/concurrent requests/container deployment unverified.",
+      "limitation": "Unique instance ownership by a named plain local singleton definition only. Shared receivers across definitions/contexts unverified. Proxies, prototypes, FactoryBean products, unowned registrations, custom strategy/chain overrides, native servlet-container deployment, late attach and atomic in-flight publication outside scope.",
       "missing_environment": "Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.",
-      "next_action": "Independent audit and local-only commit; P3c callbacks/data is separate. Missing watcher/variant coverage remains explicit."
+      "next_action": "Complete actual gates, independent Claude audit and local commit; P3c follows separately."
     },
     {
       "id": "P3B-MODEL-VOID",
@@ -2858,14 +2846,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 888,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 894,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "return values and void methods"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2715,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2717,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-MODEL-VOID"
         }
       ],
@@ -2898,14 +2886,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 888,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 894,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "return values and void methods"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2725,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2727,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-MODEL-GENERIC"
         }
       ],
@@ -2939,13 +2927,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2735,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2737,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-CAUSE"
         }
       ],
@@ -2979,13 +2967,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2745,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2747,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-INFER"
         }
       ],
@@ -3019,13 +3007,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2755,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2757,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-ENTITY"
         }
       ],
@@ -3059,13 +3047,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2765,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2767,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-CLASS-STATUS"
         }
       ],
@@ -3098,14 +3086,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1607,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1613,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "field/method mix-ins"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2775,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2777,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-GETTER-MIXIN"
         }
       ],
@@ -3138,14 +3126,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1607,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1613,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "field/method mix-ins"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2785,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2787,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-FIELD-MIXIN"
         }
       ],
@@ -3178,14 +3166,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1609,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1615,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "one mapper granting access"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2795,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2797,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-GETTER-ACCESS"
         }
       ],
@@ -3218,14 +3206,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1609,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1615,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "one mapper granting access"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2805,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2807,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-WRITE-ACCESS"
         }
       ],
@@ -3258,14 +3246,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1606,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1612,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "read/write-only"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2815,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2817,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-READ-ONLY"
         }
       ],
@@ -3298,14 +3286,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1606,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1612,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "read/write-only"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2825,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2827,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-WRITE-ONLY"
         }
       ],
@@ -3338,14 +3326,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1608,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1614,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Concrete generic collections"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2835,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2837,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-GENERIC-IN"
         }
       ],
@@ -3378,14 +3366,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1612,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1618,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "mapping-error path"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2845,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2847,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-ERRORS"
         }
       ],
@@ -3418,14 +3406,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1612,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1618,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "mapping-error path"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2855,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2857,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-GETTER-ERROR"
         }
       ],
@@ -3458,14 +3446,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1628,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1634,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "ObjectWriter retained"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2865,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2867,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-HELD-WRITER"
         }
       ],
@@ -3498,14 +3486,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 908,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 914,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Proxy/subclass receivers are refused"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2875,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2877,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-BINDER-PROXY-REFUSAL"
         }
       ],
@@ -3539,13 +3527,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2885,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2887,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-PROXY-REFUSAL"
         }
       ],
@@ -3578,14 +3566,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 889,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 895,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Model-annotated request mappings are excluded"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2895,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2897,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-MODEL-MAPPED-EXCLUSION"
         }
       ],
@@ -3618,14 +3606,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 907,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 913,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "non-void binders"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2905,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2907,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-BINDER-RETURN-REFUSAL"
         }
       ],
@@ -3658,14 +3646,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 907,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 913,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "declared async/reactive/streaming model returns"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2915,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2917,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-MODEL-ASYNC-REFUSAL"
         }
       ],
@@ -3698,14 +3686,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 905,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 911,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Extra callback advice"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2925,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2927,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-CALLBACK-ADVICE-REFUSAL"
         }
       ],
@@ -3738,14 +3726,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 906,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 912,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "static/abstract/native/bridge/synthetic callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2935,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2937,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-CALLBACK-STATIC-REFUSAL"
         }
       ],
@@ -3778,14 +3766,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 907,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 913,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "signatures, non-void binders"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2945,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2947,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-CALLBACK-GENERIC-REFUSAL"
         }
       ],
@@ -3818,14 +3806,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 902,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 908,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "interfaces or type variables."
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2955,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2957,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-CALLBACK-INTERFACE-REFUSAL"
         }
       ],
@@ -3858,14 +3846,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 909,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 915,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "`@SessionAttributes`, composed metadata"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2965,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2967,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-CALLBACK-SESSION-REFUSAL"
         }
       ],
@@ -3899,13 +3887,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2975,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2977,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-AMBIGUITY"
         }
       ],
@@ -3939,13 +3927,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2985,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2987,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-ASYNC-REFUSAL"
         }
       ],
@@ -3979,13 +3967,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 2995,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 2997,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-ADVICE-REFUSAL"
         }
       ],
@@ -4019,13 +4007,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3005,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3007,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-GENERIC-REFUSAL"
         }
       ],
@@ -4059,13 +4047,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3015,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3017,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-STATIC-REFUSAL"
         }
       ],
@@ -4099,13 +4087,13 @@
         {
           "path": "docs/usage.md",
           "line": 812,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Spring sees a hidden metadata class"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3025,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3027,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-EXCEPTION-INTERFACE-REFUSAL"
         }
       ],
@@ -4138,14 +4126,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 1620,
-          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "line": 1626,
+          "sha256": "f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70",
           "quote": "Final added fields can be read"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3035,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3037,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-JACKSON-FINAL-REFUSAL"
         }
       ],
@@ -4170,14 +4158,14 @@
       "shipped_surfaces": [
         {
           "path": "README.md",
-          "line": 172,
-          "sha256": "243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa",
+          "line": 173,
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
           "quote": "**MVC Re-scan**"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3045,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3047,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ENDPOINT-PUT"
         }
       ],
@@ -4199,14 +4187,14 @@
       "shipped_surfaces": [
         {
           "path": "README.md",
-          "line": 172,
-          "sha256": "243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa",
+          "line": 173,
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
           "quote": "**MVC Re-scan**"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3055,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3057,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ENDPOINT-PATCH"
         }
       ],
@@ -4228,14 +4216,14 @@
       "shipped_surfaces": [
         {
           "path": "README.md",
-          "line": 172,
-          "sha256": "243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa",
+          "line": 173,
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
           "quote": "**MVC Re-scan**"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3065,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3067,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ENDPOINT-DELETE"
         }
       ],
@@ -4257,14 +4245,14 @@
       "shipped_surfaces": [
         {
           "path": "README.md",
-          "line": 172,
-          "sha256": "243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa",
+          "line": 173,
+          "sha256": "fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68",
           "quote": "**MVC Re-scan**"
         },
         {
           "path": "docs/feature-evidence.md",
-          "line": 3075,
-          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "line": 3077,
+          "sha256": "c724e38ee09c6a700c70ad29a3aae9b65a55dbf565594437b7db013410984e38",
           "quote": "### P3B-ENDPOINT-REQUEST-MAPPING"
         }
       ],
@@ -5622,5 +5610,623 @@
         "artifact_sha256": "bfdb14cb0665186269fba74221ebc6182705de064993cdf9149ca4c8408ee9f9"
       }
     }
+  },
+  "history_before_mvc_singleton_repair": {
+    "base_commit": "dd90638",
+    "claim": {
+      "id": "P3B-INTERCEPTOR-LIMIT",
+      "statement": "Registered interceptor keeps old constructor-owned dependency state despite native parent bean recreation.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorLimitationReloadTest.java",
+          "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805",
+          "kind": "watcher",
+          "assertions": "Three body/helper saves; request trace retains D1 while current parent uses D2/D3/D4; source-only no-op, ordered exactly-once calls, stable unrelated identities, mapped include/exclude, servlet-held mapping identity."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaMvcInterceptorLimitationReloadTest.java",
+          "source_sha256": "25f0ab980d5d2ef1ec5ba5a41641cfa08374ed7d733a99e466754821d89fa2b2",
+          "kind": "watcher",
+          "assertions": "Three body/helper saves; request trace retains D1 while current parent uses D2/D3/D4; source-only no-op, ordered exactly-once calls, stable unrelated identities, mapped include/exclude, servlet-held mapping identity.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/MvcInterceptorLimitationReloadTest.java",
+            "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805"
+          }
+        }
+      ],
+      "shipped_surfaces": [
+        {
+          "path": "docs/usage.md",
+          "line": 842,
+          "sha256": "3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741",
+          "quote": "Method-body saves on registered MVC interceptors"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2705,
+          "sha256": "27e76d91e849a31b25f433eb888eefb4e72c4f90e900c178370796bb4f482e64",
+          "quote": "### P3B-INTERCEPTOR-LIMIT"
+        }
+      ],
+      "opt_in": "Startup -javaagent before the framework loads; publish compiled watched classes.",
+      "bounds": "SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child, parent/web contexts, lookup/mapped/injected registration; file-triggered MockMvc requests, no TCP or deployed servlet container.",
+      "observable": "Registered interceptor keeps old constructor-owned dependency state despite native parent bean recreation.",
+      "control": "Current parentHn:Dn differs from dispatchedHn:D1; injected registration recreates context mapping while servlet retains original. Scratch desiredDn and reconciled mapping must RED.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "EXPECTED",
+      "reviewer": "Astra read and executed observing assertions; independent Claude audit pending.",
+      "limitation": "Known restart limitation. These GREEN characterization tests prove the gap, not interceptor lifecycle repair. Filters/security/proxies/concurrent requests/container deployment unverified.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.",
+      "next_action": "Independent audit and local-only commit; P3c callbacks/data is separate. Missing watcher/variant coverage remains explicit."
+    },
+    "lanes": {
+      "sapmachine-17-macos-arm64": {
+        "status": "PASSED",
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain :agent:springSixTest --rerun :agent:hibernateTest --rerun :agent:rabbitTest --rerun :agent:jmsTest --rerun",
+        "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+        "utc": "2026-10-10T07:12:04.819491+00:00",
+        "base_commit": "326d1c4",
+        "artifact_sha256": "9b235aa0d7068bc88e35ae5ac79933f0b984c3584847be755b07b11f95fbd55e",
+        "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory",
+        "counts": {
+          "full-gate-17": {
+            "tests": 2252,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 9
+          },
+          "unit-inner-17": {
+            "tests": 2041,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 9
+          }
+        },
+        "cases": [
+          {
+            "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+            "status": "PASSED",
+            "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805",
+            "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/test/TEST-com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest.xml",
+            "invocations": [
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+                "status": "PASSED"
+              }
+            ]
+          },
+          {
+            "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+            "status": "PASSED",
+            "source_sha256": "25f0ab980d5d2ef1ec5ba5a41641cfa08374ed7d733a99e466754821d89fa2b2",
+            "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/full-gate-17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest.xml",
+            "invocations": [
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+                "status": "PASSED"
+              }
+            ]
+          }
+        ],
+        "note": "Original composite commands/counts retained; only interceptor observer cases are archived here."
+      },
+      "sapmachine-21-macos-arm64": {
+        "status": "PASSED",
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain -x :agent:springSixTest -x :agent:rabbitTest -x :agent:jmsTest -x :agent:hibernateTest; JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "utc": "2026-10-10T06:11:20.792681+00:00",
+        "base_commit": "326d1c4",
+        "artifact_sha256": "dcb6f94877426b9dcdeb136258d822e24a9eb3b0c269ac0835938f5e49cedbd6",
+        "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory",
+        "counts": {
+          "modern-full-21": {
+            "tests": 211,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "rabbit-retagged-21": {
+            "tests": 8,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "ordinary-all-21": {
+            "tests": 2252,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 5
+          },
+          "unit-inner-21": {
+            "tests": 2041,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 5
+          },
+          "focused-green-21": {
+            "tests": 25,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "cases": [
+          {
+            "symbol": "com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+            "status": "PASSED",
+            "source_sha256": "5a705983aa71d04914d461d2fd415f2c52b184f8255455881567517ac8e22805",
+            "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/ordinary-all-21/test/TEST-com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest.xml",
+            "invocations": [
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+                "status": "PASSED"
+              }
+            ]
+          },
+          {
+            "symbol": "com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated",
+            "status": "PASSED",
+            "source_sha256": "25f0ab980d5d2ef1ec5ba5a41641cfa08374ed7d733a99e466754821d89fa2b2",
+            "raw_evidence": ".collab/research/2026-10-10-spring6-exception-factory/modern-full-21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest.xml",
+            "invocations": [
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [1] false, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [2] true, lookup",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [3] false, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [4] true, mapped",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [5] false, injected",
+                "status": "PASSED"
+              },
+              {
+                "name": "requestsKeepOldConstructorStateWhileParentIsRecreated [6] true, injected",
+                "status": "PASSED"
+              }
+            ]
+          }
+        ],
+        "note": "Original composite commands/counts retained; only interceptor observer cases are archived here."
+      }
+    }
+  },
+  "mvc_singleton_repair": {
+    "status": "finalized; desired RED/current GREEN on17/21; independent audit pending",
+    "base_commit": "dd90638",
+    "desired_red_receipt": ".collab/research/2026-10-11-mvc-interceptor/desired-red-native-21/receipt.json",
+    "initial_invalid_control_receipt": ".collab/research/2026-10-11-mvc-interceptor/desired-red-21/receipt.json",
+    "production_files": [
+      "agent/src/main/java/com/onurkat/reclazz/bootstrap/MvcSingletonBridge.java",
+      "agent/src/main/java/com/onurkat/reclazz/transform/MvcSingletonTransformer.java",
+      "agent/src/main/java/com/onurkat/reclazz/spring/SpringMvcSingletons.java",
+      "agent/src/main/java/com/onurkat/reclazz/spring/SpringBeanReloader.java",
+      "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java"
+    ],
+    "successful_runs": [
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain -x :agent:springSixTest -x :agent:rabbitTest -x :agent:jmsTest -x :agent:hibernateTest",
+        "utc": "2026-10-11T17:02:36.609876+00:00",
+        "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 2281,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 9
+        },
+        "task_counts": {
+          "test": {
+            "tests": 2281,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 9
+          }
+        },
+        "artifact_sha256": "9661bcc1f1f06af2e2d01ca4a5444fc82e497dbe9fe9aed65237ec988ffe6871"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain -x :agent:springSixTest -x :agent:rabbitTest -x :agent:jmsTest -x :agent:hibernateTest",
+        "utc": "2026-10-11T16:34:18.539346+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 2281,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 5
+        },
+        "task_counts": {
+          "test": {
+            "tests": 2281,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 5
+          }
+        },
+        "artifact_sha256": "60423ebeeceea5618a01518beea6fa11f047dab7d2a10d7d14d9bf13b8a20bd8"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*MvcInterceptorDependencyReloadTest' --tests '*MvcSingletonTransformerTest' --tests '*MvcSingletonBridgeTest' -x :agent:springSixTest -x :agent:rabbitTest -x :agent:jmsTest -x :agent:hibernateTest",
+        "utc": "2026-10-11T15:36:04.709564+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 25,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "test": {
+            "tests": 25,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "a1324c1107e9a18c2b3b18a3065c8531d01b94be09e2b8f32e12f7743e105f9f"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "utc": "2026-10-11T16:08:57.237385+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 235,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "springSixTest": {
+            "tests": 235,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "60423ebeeceea5618a01518beea6fa11f047dab7d2a10d7d14d9bf13b8a20bd8"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*JakartaMvcInterceptorDependencyReloadTest' --tests '*JakartaMvcSingletonTransformerTest' --tests '*JakartaSpringMvcSingletonsTest'",
+        "utc": "2026-10-11T15:44:57.395558+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 30,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "springSixTest": {
+            "tests": 30,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "a1324c1107e9a18c2b3b18a3065c8531d01b94be09e2b8f32e12f7743e105f9f"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:unitTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain :agent:hibernateTest --rerun :agent:jmsUnitTest --rerun",
+        "utc": "2026-10-11T15:51:02.563324+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 2070,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 5
+        },
+        "task_counts": {
+          "unitTest": {
+            "tests": 2070,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 5
+          },
+          "jmsUnitTest": {
+            "tests": 22,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "hibernateTest": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "3fc0c01f86b58b0a818a04ea36a095f52a68eb8eb5f3e87a2434fee2bee8e6cc"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "utc": "2026-10-11T16:42:39.774258+00:00",
+        "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 235,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "springSixTest": {
+            "tests": 235,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "9661bcc1f1f06af2e2d01ca4a5444fc82e497dbe9fe9aed65237ec988ffe6871"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "utc": "2026-10-11T15:59:06.248389+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 235,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "springSixTest": {
+            "tests": 235,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "3fc0c01f86b58b0a818a04ea36a095f52a68eb8eb5f3e87a2434fee2bee8e6cc"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:unitTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain :agent:hibernateTest --rerun :agent:jmsUnitTest --rerun",
+        "utc": "2026-10-11T16:01:50.057884+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 2070,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 5
+        },
+        "task_counts": {
+          "unitTest": {
+            "tests": 2070,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 5
+          },
+          "jmsUnitTest": {
+            "tests": 22,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "hibernateTest": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "60423ebeeceea5618a01518beea6fa11f047dab7d2a10d7d14d9bf13b8a20bd8"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:jmsTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain :agent:hibernateTest --rerun :agent:rabbitTest --rerun",
+        "utc": "2026-10-11T16:13:45.956184+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "jmsTest": {
+            "tests": 27,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "rabbitTest": {
+            "tests": 8,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "hibernateTest": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "60423ebeeceea5618a01518beea6fa11f047dab7d2a10d7d14d9bf13b8a20bd8"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:jmsTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain :agent:hibernateTest --rerun :agent:rabbitTest --rerun",
+        "utc": "2026-10-11T16:44:54.513069+00:00",
+        "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 27,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "jmsTest": {
+            "tests": 27,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "rabbitTest": {
+            "tests": 8,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "hibernateTest": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "9661bcc1f1f06af2e2d01ca4a5444fc82e497dbe9fe9aed65237ec988ffe6871"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*SpringMvcSingletonsTest' -x :agent:springSixTest -x :agent:rabbitTest -x :agent:jmsTest -x :agent:hibernateTest",
+        "utc": "2026-10-11T15:40:20.657291+00:00",
+        "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "task_counts": {
+          "test": {
+            "tests": 7,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "a1324c1107e9a18c2b3b18a3065c8531d01b94be09e2b8f32e12f7743e105f9f"
+      },
+      {
+        "exit_code": 0,
+        "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:unitTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain :agent:hibernateTest --rerun :agent:jmsUnitTest --rerun",
+        "utc": "2026-10-11T16:36:28.103553+00:00",
+        "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+        "base_commit": "dd90638",
+        "counts": {
+          "tests": 2070,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 9
+        },
+        "task_counts": {
+          "unitTest": {
+            "tests": 2070,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 9
+          },
+          "jmsUnitTest": {
+            "tests": 22,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "hibernateTest": {
+            "tests": 3,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          }
+        },
+        "artifact_sha256": "9661bcc1f1f06af2e2d01ca4a5444fc82e497dbe9fe9aed65237ec988ffe6871"
+      }
+    ]
   }
 }

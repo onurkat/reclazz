@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Registered plain MVC singleton interceptors use current recreated bean identities
+  and dependency state after class reload on measured Spring5.3.39/6.1.14 and JDK17/21.
+  Supported DispatcherServlet lookups follow recreated mappings while native order
+  and path matching remain intact; unsupported routing is retained in the restart ledger.
+
 - Added exception handlers work with the measured Spring 6.1.14 constructor-Function
   resolver path on stock JDK17/21, including local/controller-advice selection,
   existing/new endpoints and repeated saves. Unknown factory shapes still refuse

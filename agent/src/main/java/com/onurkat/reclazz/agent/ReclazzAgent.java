@@ -401,6 +401,7 @@ public class ReclazzAgent {
                 instrumentation.addTransformer(new JacksonAccessorTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.ExceptionHandlerTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.MvcBindingTransformer(), true);
+                if (bootstrapInstalled) instrumentation.addTransformer(new com.onurkat.reclazz.transform.MvcSingletonTransformer(), false);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.RabbitConsumerTransformer(), true);
                 ReflectionInterceptTransformer reflectionTransformer = new ReflectionInterceptTransformer();
                 instrumentation.addTransformer(reflectionTransformer, true);

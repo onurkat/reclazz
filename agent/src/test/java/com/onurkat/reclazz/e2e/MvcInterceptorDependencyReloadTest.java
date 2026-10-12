@@ -15,15 +15,15 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Characterizes stale constructor state; passing does not mean interceptor lifecycle support. */
-class MvcInterceptorLimitationReloadTest {
+/** Desired native MVC singleton identities and dependency constructor state across watched saves. */
+class MvcInterceptorDependencyReloadTest {
     @TempDir Path tmp;
 
     protected String servletNamespace() { return "javax"; }
     private String registration;
 
-    @ParameterizedTest(name = "requestsKeepOldConstructorStateWhileParentIsRecreated [{index}] {arguments}") @CsvSource({"false,lookup", "true,lookup", "false,mapped", "true,mapped", "false,injected", "true,injected"})
-    void requestsKeepOldConstructorStateWhileParentIsRecreated(boolean child, String registration) throws Exception {
+    @ParameterizedTest(name = "requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation [{index}] {arguments}") @CsvSource({"false,lookup", "true,lookup", "false,mapped", "true,mapped", "false,injected", "true,injected"})
+    void requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation(boolean child, String registration) throws Exception {
         this.registration = registration;
         String servlet = Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
                 .filter(p -> { String n = Path.of(p).getFileName().toString();
@@ -79,12 +79,12 @@ class MvcInterceptorLimitationReloadTest {
         String value = app.latest("PROBE" + n + "=");
         System.out.println("[mvc-interceptor] " + value);
         assertEquals("PROBE" + n + "=200:ok:A" + body + "/H" + dependency + ":D"
-                + 1
+                + dependency
                 + ",B,C,Bpost,Apost,Bdone,Adone:true:true:"
                 + (!registration.equals("injected") || n < 3)
                 + ":true:parent=H" + dependency + ":D" + dependency + ":excluded=200:ok:"
-                + (registration.equals("mapped") ? "" : "A" + body + "/H" + dependency + ":D" + 1 + ",")
-                + "B,C,Bpost" + (registration.equals("mapped") ? "" : ",Apost") + ",Bdone" + (registration.equals("mapped") ? "" : ",Adone") + ":servletOriginal=true",
+                + (registration.equals("mapped") ? "" : "A" + body + "/H" + dependency + ":D" + dependency + ",")
+                + "B,C,Bpost" + (registration.equals("mapped") ? "" : ",Apost") + ",Bdone" + (registration.equals("mapped") ? "" : ",Adone") + ":servletCurrent=true:interceptorCurrent=true",
                 value.substring(value.indexOf("PROBE")), app.tail());
     }
     private static String helper(int generation) {
@@ -188,7 +188,8 @@ class MvcInterceptorLimitationReloadTest {
                                 + ":parent=" + parent.getBean(Helper.class).value()
                                 + ":excluded=" + excluded.getResponse().getStatus() + ":" + excluded.getResponse().getContentAsString()
                                 + ":" + excluded.getRequest().getAttribute("trace")
-                                + ":servletOriginal=" + mvc.getDispatcherServlet().getHandlerMappings().stream().anyMatch(m -> m == mapping));
+                                + ":servletCurrent=" + mvc.getDispatcherServlet().getHandlerMappings().stream().anyMatch(m -> m == web.getBean("requestMappingHandlerMapping"))
+                                + ":interceptorCurrent=" + java.util.Arrays.stream(result.getInterceptors()).anyMatch(interceptor -> interceptor == web.getBean(Primary.class)));
                         }
                     }
                 }

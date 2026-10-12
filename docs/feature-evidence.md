@@ -16,7 +16,7 @@ The [machine record](feature-evidence/p1-core.json) includes actual execution co
 
 Edited overrides continue dispatching super calls to the current original parent.
 
-**Shipped surfaces:** `README.md:76` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:76` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -40,7 +40,7 @@ Edited overrides continue dispatching super calls to the current original parent
 
 A reloaded parent still reaches the existing child override without restart.
 
-**Shipped surfaces:** `README.md:76` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:76` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -64,7 +64,7 @@ A reloaded parent still reaches the existing child override without restart.
 
 Isolated added instance initializers give existing objects their own first-read values.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -88,7 +88,7 @@ Isolated added instance initializers give existing objects their own first-read 
 
 Historical constructor arguments are not reconstructed for an added field.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -112,7 +112,7 @@ Historical constructor arguments are not reconstructed for an added field.
 
 An initializer failure is isolated and may retry after a later initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -136,7 +136,7 @@ An initializer failure is isolated and may retry after a later initializer gener
 
 An isolated conditional uses each existing receiver state.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -160,7 +160,7 @@ An isolated conditional uses each existing receiver state.
 
 Equivalent and delegated constructors preserve old/new initialization order.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -184,7 +184,7 @@ Equivalent and delegated constructors preserve old/new initialization order.
 
 A previously unread added field uses the current initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -208,7 +208,7 @@ A previously unread added field uses the current initializer generation.
 
 Application values, including an explicit null write before read, survive later saves.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -232,7 +232,7 @@ Application values, including an explicit null write before read, survive later 
 
 Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3129` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -256,7 +256,7 @@ Isolated switch arms and unrelated initializer handlers do not replay old constr
 
 Only selected isolated conditional static initializer arms run.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3096` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -280,7 +280,7 @@ Only selected isolated conditional static initializer arms run.
 
 An initialized null and an application-written static value remain stored.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3096` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -304,7 +304,7 @@ An initialized null and an application-written static value remain stored.
 
 A newly added later static field uses the current condition without resetting older fields.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3096` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -328,7 +328,7 @@ A newly added later static field uses the current condition without resetting ol
 
 Unrelated static blocks are not replayed for isolated static initializers.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3096` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -352,7 +352,7 @@ Unrelated static blocks are not replayed for isolated static initializers.
 
 An updated caller can invoke an added method on the existing receiver.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -376,7 +376,7 @@ An updated caller can invoke an added method on the existing receiver.
 
 Held Method and unchanged callers keep the last implementation when an original method is removed.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -400,7 +400,7 @@ Held Method and unchanged callers keep the last implementation when an original 
 
 Original members removed by reload disappear from native reflection scans.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -424,7 +424,7 @@ Original members removed by reload disappear from native reflection scans.
 
 Restoring an original removed member makes it visible and callable again.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -448,7 +448,7 @@ Restoring an original removed member makes it visible and callable again.
 
 A removed original field is hidden while a held Field and unchanged caller retain its value.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3069` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); `README.md:693` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `CHANGELOG.md:16` (SHA-256 `b931ef28878106eda6bc3b3398268dc3733e3eca05dce48840bf379916128f5c`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3075` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); `README.md:694` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `CHANGELOG.md:21` (SHA-256 `fbbc408f85e6f820deef6c6b25b091e3db49e00c429190bf656a311cfb5451c6`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -496,7 +496,7 @@ Direct watched cross-class instance-field reads and writes share the owning obje
 
 Lambdas introduced in reloaded bodies execute with current captured values.
 
-**Shipped surfaces:** `README.md:118` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:119` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -520,7 +520,7 @@ Lambdas introduced in reloaded bodies execute with current captured values.
 
 A serializable lambda introduced after reload cannot be serialized in the measured companion path.
 
-**Shipped surfaces:** `README.md:118` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:119` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -544,7 +544,7 @@ A serializable lambda introduced after reload cannot be serialized in the measur
 
 Appending an enum tail updates native values/valueOf without changing surviving ordinals.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -568,7 +568,7 @@ Appending an enum tail updates native values/valueOf without changing surviving 
 
 An already-initialized old enum switch takes its default for an appended constant.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -592,7 +592,7 @@ An already-initialized old enum switch takes its default for an appended constan
 
 Pre-existing EnumMap/EnumSet can use the appended constant.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -616,7 +616,7 @@ Pre-existing EnumMap/EnumSet can use the appended constant.
 
 Removing an enum tail removes values/valueOf while preserving surviving ordinals.
 
-**Shipped surfaces:** `README.md:82` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:82` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -640,7 +640,7 @@ Removing an enum tail removes values/valueOf while preserving surviving ordinals
 
 A reorder does not change live native ordinals and is restart-reported.
 
-**Shipped surfaces:** `README.md:83` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:83` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -664,7 +664,7 @@ A reorder does not change live native ordinals and is restart-reported.
 
 Application-owned old values() arrays are not automatically grown.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -688,7 +688,7 @@ Application-owned old values() arrays are not automatically grown.
 
 Stock-JVM interface identity stays unchanged while eligible edited bodies/later saves run.
 
-**Shipped surfaces:** `README.md:84` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:84` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -712,7 +712,7 @@ Stock-JVM interface identity stays unchanged while eligible edited bodies/later 
 
 Advertised enhanced-JVM added/removed interfaces require their own native acceptance.
 
-**Shipped surfaces:** `README.md:84` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:84` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -736,7 +736,7 @@ Advertised enhanced-JVM added/removed interfaces require their own native accept
 
 Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.
 
-**Shipped surfaces:** `README.md:85` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:85` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -760,7 +760,7 @@ Reclazz preserves original hierarchy, applies eligible bodies, pins dependent me
 
 Sequential initialization evidence does not certify concurrent initializer side effects or atomic multi-class reload.
 
-**Shipped surfaces:** `docs/usage.md:3181` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3187` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -784,7 +784,7 @@ Sequential initialization evidence does not certify concurrent initializer side 
 
 Compile-time constants and narrow primitive constant conversions have component evidence.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3096` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -808,7 +808,7 @@ Compile-time constants and narrow primitive constant conversions have component 
 
 Intertwined/guarded static initializer shapes are refused by the component slicer.
 
-**Shipped surfaces:** `README.md:80` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:80` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -832,7 +832,7 @@ Intertwined/guarded static initializer shapes are refused by the component slice
 
 Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `docs/usage.md:3096` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -856,7 +856,7 @@ Nested conditionals, wide/decimal/object/null/source-order/short-circuit values 
 
 Load-time transformation retains selected reflection metadata in component fixtures.
 
-**Shipped surfaces:** `README.md:745` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:746` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -880,7 +880,7 @@ Load-time transformation retains selected reflection metadata in component fixtu
 
 Original serialVersionUID and selected no-agent-to-transformed deserialization have component evidence.
 
-**Shipped surfaces:** `README.md:767` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:768` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -904,7 +904,7 @@ Original serialVersionUID and selected no-agent-to-transformed deserialization h
 
 Added-field store writes on a clone and original remain isolated in component fixtures.
 
-**Shipped surfaces:** `README.md:773` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:774` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -928,7 +928,7 @@ Added-field store writes on a clone and original remain isolated in component fi
 
 Transient added-field storage has component evidence; post-reload initializer/deserialization interaction needs watched acceptance.
 
-**Shipped surfaces:** `README.md:773` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:774` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -952,7 +952,7 @@ Transient added-field storage has component evidence; post-reload initializer/de
 
 Published stack-frame and logging-method-name observations need their own source/line acceptance.
 
-**Shipped surfaces:** `README.md:751` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:752` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -976,7 +976,7 @@ Published stack-frame and logging-method-name observations need their own source
 
 Listed instance/static synchronized and exceptional-exit fixtures retain their monitor policy after structural reload.
 
-**Shipped surfaces:** `README.md:820` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:821` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1000,7 +1000,7 @@ Listed instance/static synchronized and exceptional-exit fixtures retain their m
 
 The published any-JDK17+/provider matrix is broader than the two executed stock runtime cells.
 
-**Shipped surfaces:** `README.md:658` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:659` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1024,7 +1024,7 @@ The published any-JDK17+/provider matrix is broader than the two executed stock 
 
 Advertised JDK26 enum/Unsafe fallback requires an actual JDK26 native run.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1054,7 +1054,7 @@ This package maps current registration, recreation, injection, factory, lifecycl
 
 A new direct component becomes a live bean without restarting.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1076,7 +1076,7 @@ A new direct component becomes a live bean without restarting.
 
 A new component is admitted only by the active profile.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1098,7 +1098,7 @@ A new component is admitted only by the active profile.
 
 New component conditions use the live application context before class initialization.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1120,7 +1120,7 @@ New component conditions use the live application context before class initializ
 
 New lazy singleton waits for first lookup.
 
-**Shipped surfaces:** `docs/usage.md:380` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:380` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1142,7 +1142,7 @@ New lazy singleton waits for first lookup.
 
 New prototype lookup creates a fresh instance; native prototype cleanup belongs to caller.
 
-**Shipped surfaces:** `docs/usage.md:383` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:383` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1164,7 +1164,7 @@ New prototype lookup creates a fresh instance; native prototype cleanup belongs 
 
 A custom component stereotype and AliasFor bean name register through native naming.
 
-**Shipped surfaces:** `docs/usage.md:376` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:376` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1186,7 +1186,7 @@ A custom component stereotype and AliasFor bean name register through native nam
 
 New components support native constructor injection.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1208,7 +1208,7 @@ New components support native constructor injection.
 
 An edited plain singleton is recreated and loses mutable instance state.
 
-**Shipped surfaces:** `README.md:86` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:86` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1252,7 +1252,7 @@ A live manually wired singleton holder is repointed to the recreated bean.
 
 Autowired added to an existing warmed field is satisfied after refresh.
 
-**Shipped surfaces:** `README.md:88` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:88` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1274,7 +1274,7 @@ Autowired added to an existing warmed field is satisfied after refresh.
 
 Value added to an existing warmed field resolves the live property.
 
-**Shipped surfaces:** `README.md:88` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:88` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1296,7 +1296,7 @@ Value added to an existing warmed field resolves the live property.
 
 Resource added to an existing warmed field resolves the named bean.
 
-**Shipped surfaces:** `README.md:88` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:88` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1318,7 +1318,7 @@ Resource added to an existing warmed field resolves the named bean.
 
 New private instance Bean factory on lite Configuration registers, replaces, removes and recovers.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1340,7 +1340,7 @@ New private instance Bean factory on lite Configuration registers, replaces, rem
 
 Saved factory reference parameters use native qualifier selection.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1362,7 +1362,7 @@ Saved factory reference parameters use native qualifier selection.
 
 Added factory list/map/Optional arguments preserve measured native resolution.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1384,7 +1384,7 @@ Added factory list/map/Optional arguments preserve measured native resolution.
 
 An added factory provider stays lazy and resolves the current target after retirement.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1406,7 +1406,7 @@ An added factory provider stays lazy and resolves the current target after retir
 
 Added factories convert measured int, long and double Value arguments.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1428,7 +1428,7 @@ Added factories convert measured int, long and double Value arguments.
 
 Factory Set/Collection/reference-array arguments use native resolution.
 
-**Shipped surfaces:** `docs/usage.md:512` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:512` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1450,7 +1450,7 @@ Factory Set/Collection/reference-array arguments use native resolution.
 
 All eight primitive Value conversions and reference nulls work.
 
-**Shipped surfaces:** `docs/usage.md:519` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:519` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1472,7 +1472,7 @@ All eight primitive Value conversions and reference nulls work.
 
 Checked scalar property edits recreate an already added unproxied factory product.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1494,7 +1494,7 @@ Checked scalar property edits recreate an already added unproxied factory produc
 
 Factory names/aliases follow edits, removal and recovery without duplicate singleton products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1516,7 +1516,7 @@ Factory names/aliases follow edits, removal and recovery without duplicate singl
 
 Saved factory qualifiers and parameter qualifiers select matching native candidates.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1538,7 +1538,7 @@ Saved factory qualifiers and parameter qualifiers select matching native candida
 
 Saved Primary metadata updates default selection and reports ambiguity.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1560,7 +1560,7 @@ Saved Primary metadata updates default selection and reports ambiguity.
 
 Saved method Conditional admits/rejects against the live context and retires old products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1582,7 +1582,7 @@ Saved method Conditional admits/rejects against the live context and retires old
 
 Direct Boot ConditionalOnProperty uses the measured native decision on added factories.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1604,7 +1604,7 @@ Direct Boot ConditionalOnProperty uses the measured native decision on added fac
 
 Direct Boot ConditionalOnBean uses the measured native decision on added factories.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1626,7 +1626,7 @@ Direct Boot ConditionalOnBean uses the measured native decision on added factori
 
 Direct Boot ConditionalOnMissingBean uses the measured native decision on added factories.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1648,7 +1648,7 @@ Direct Boot ConditionalOnMissingBean uses the measured native decision on added 
 
 Saved direct factory Profile expressions re-evaluate admitted products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1670,7 +1670,7 @@ Saved direct factory Profile expressions re-evaluate admitted products.
 
 Added prototype factory creates distinct lookup products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1692,7 +1692,7 @@ Added prototype factory creates distinct lookup products.
 
 Added lazy factory waits for first lookup and keeps singleton identity.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1714,7 +1714,7 @@ Added lazy factory waits for first lookup and keeps singleton identity.
 
 Full enhanced Configuration inter-bean calls preserve container singleton identity across saves.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1736,7 +1736,7 @@ Full enhanced Configuration inter-bean calls preserve container singleton identi
 
 Full factory calls preserve supported explicit/prototype arguments and held method references.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1758,7 +1758,7 @@ Full factory calls preserve supported explicit/prototype arguments and held meth
 
 Static companion factories register/replace/retire products with native lifecycle.
 
-**Shipped surfaces:** `docs/usage.md:570` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:570` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1780,7 +1780,7 @@ Static companion factories register/replace/retire products with native lifecycl
 
 Static factories retain plain Java call semantics outside container lookup.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1802,7 +1802,7 @@ Static factories retain plain Java call semantics outside container lookup.
 
 Entirely new PostConstruct initializes after injection and before InitializingBean.
 
-**Shipped surfaces:** `README.md:89` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:89` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1824,7 +1824,7 @@ Entirely new PostConstruct initializes after injection and before InitializingBe
 
 Entirely new PreDestroy remains owed per instance through metadata edits/removal and context close.
 
-**Shipped surfaces:** `README.md:89` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:89` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1846,7 +1846,7 @@ Entirely new PreDestroy remains owed per instance through metadata edits/removal
 
 InitializingBean and DisposableBean retain native callback ordering during recreation.
 
-**Shipped surfaces:** `README.md:89` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:89` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1868,7 +1868,7 @@ InitializingBean and DisposableBean retain native callback ordering during recre
 
 First transaction/cache operations added to a plain singleton use real native interceptors.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1890,7 +1890,7 @@ First transaction/cache operations added to a plain singleton use real native in
 
 Added operations invoked through an old CGLIB reference use real interceptors and retain target identity.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1912,7 +1912,7 @@ Added operations invoked through an old CGLIB reference use real interceptors an
 
 A checked exception from an added transactional method rolls back the real database write.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1934,7 +1934,7 @@ A checked exception from an added transactional method rolls back the real datab
 
 Added Cacheable executes once for a repeated key.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1956,7 +1956,7 @@ Added Cacheable executes once for a repeated key.
 
 Added CachePut updates the native cache entry.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1978,7 +1978,7 @@ Added CachePut updates the native cache entry.
 
 Added CacheEvict removes the native entry so next lookup executes again.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2000,7 +2000,7 @@ Added CacheEvict removes the native entry so next lookup executes again.
 
 Native self invocation stays outside transaction interception.
 
-**Shipped surfaces:** `docs/usage.md:1969` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:1975` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2022,7 +2022,7 @@ Native self invocation stays outside transaction interception.
 
 Supported composed transaction aliases follow saves through held proxy and affect DB rollback/readOnly.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2044,7 +2044,7 @@ Supported composed transaction aliases follow saves through held proxy and affec
 
 Supported composed cache aliases/conditions follow saves through held proxy and affect real cache entries.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2066,7 +2066,7 @@ Supported composed cache aliases/conditions follow saves through held proxy and 
 
 Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB singleton proxies.
 
-**Shipped surfaces:** `README.md:99` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:100` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2088,7 +2088,7 @@ Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB sing
 
 Added/saved PreAuthorize and PostAuthorize enforce real authentication/authorization through a held native proxy.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:99` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2110,7 +2110,7 @@ Added/saved PreAuthorize and PostAuthorize enforce real authentication/authoriza
 
 Fixed composed policy markers enforce saved native pre/post authorization through the held proxy.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:99` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2198,7 +2198,7 @@ Edited web security configuration rebuilds a live filter chain and changes route
 
 Reloading an annotated class evicts existing native caches.
 
-**Shipped surfaces:** `README.md:102` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:103` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2242,7 +2242,7 @@ Ordinary registration/factories/injection/AOP watcher behavior is established on
 
 Edited original-method Transactional metadata is re-read.
 
-**Shipped surfaces:** `README.md:113` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:114` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2264,7 +2264,7 @@ Edited original-method Transactional metadata is re-read.
 
 Edited original-method Cacheable metadata is re-read.
 
-**Shipped surfaces:** `README.md:113` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:114` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2286,7 +2286,7 @@ Edited original-method Cacheable metadata is re-read.
 
 Added operations honor class-level transaction defaults.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2308,7 +2308,7 @@ Added operations honor class-level transaction defaults.
 
 Added operations honor CacheConfig defaults and saved parameter names.
 
-**Shipped surfaces:** `README.md:97` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2330,7 +2330,7 @@ Added operations honor CacheConfig defaults and saved parameter names.
 
 Security chain replacement preserves the rebuilt chain identity.
 
-**Shipped surfaces:** `README.md:114` (SHA-256 `243e72e1c5785eba0a69390e0d3ae106a75609d64220621180b318575a20e6fa`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:115` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2352,7 +2352,7 @@ Security chain replacement preserves the rebuilt chain identity.
 
 Spring 6 added factory conditions match native startup and saved metadata.
 
-**Shipped surfaces:** `docs/usage.md:405` (SHA-256 `3f5c57e2d48e9c4c300515a017777ee534703024d1a0c14ae0fdbd7520528741`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:405` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2518,7 +2518,7 @@ Overlapping requests drain on old consistent code; two queued saves eventually s
 
 ## P3b — Remaining MVC request/response evidence
 
-This package classifies the measured MVC slice and explicitly records missing variants. It does not complete P3c callbacks/data or every repository promise. Native Tomcat HTTP, HTTP-to-MockMvc bridges, direct ObjectMapper HTTP and component-only observations are distinct. Passing limitation characterizations do not mean feature success. Scratch negative witnesses run on SapMachine21 only. Whole-hook negative witnesses stop at the first failing assertion; they are not separate mutations for every later assertion or every component-only row. [Machine evidence](feature-evidence/p3b-mvc-web.json) contains the exact methods, invocation receipts, runtime/artifact/source hashes and controls. The interceptor gap remains a restart limitation. Spring6.1.14 added exception handlers have separate constructor-Function repair evidence below; the original FAILED observation remains historical.
+This package classifies the measured MVC slice and explicitly records missing variants. It does not complete P3c callbacks/data or every repository promise. Native Tomcat HTTP, HTTP-to-MockMvc bridges, direct ObjectMapper HTTP and component-only observations are distinct. Passing limitation characterizations do not mean feature success. Scratch negative witnesses run on SapMachine21 only. Whole-hook negative witnesses stop at the first failing assertion; they are not separate mutations for every later assertion or every component-only row. [Machine evidence](feature-evidence/p3b-mvc-web.json) contains the exact methods, invocation receipts, runtime/artifact/source hashes and controls. The registered interceptor gap has separate bounded singleton-routing repair evidence below; the original limitation remains historical. Spring6.1.14 added exception handlers have separate constructor-Function repair evidence below; the original FAILED observation remains historical.
 
 ### P3B-ENDPOINT-GET
 
@@ -2704,13 +2704,15 @@ This package classifies the measured MVC slice and explicitly records missing va
 
 ### P3B-INTERCEPTOR-LIMIT
 
-**Verdict:** EXPECTED. Registered interceptor keeps old constructor-owned dependency state despite native parent bean recreation.
+**Verdict:** PROVEN_WITH_SCOPE. Named plain MVC singleton selection follows current native bean identities and dependency constructor state after watched class saves. The historical cell ID is retained.
 
-**Bounds / opt-in:** SapMachine17/21, macOS arm64. Spring5.3.39/Spring6.1.14; normal/child, parent/web contexts, lookup/mapped/injected registration; file-triggered MockMvc requests, no TCP or deployed servlet container. Startup -javaagent before the framework loads; publish compiled watched classes.
+**Bounds / opt-in:** SapMachine17/21, macOS arm64, Spring5.3.39/6.1.14. Normal/child loaders, parent/web contexts, lookup/mapped/injected registrations; file-triggered MockMvc requests. Startup javaagent before MVC loads, compiled watched saves.
 
-**Observers:** `com.onurkat.reclazz.e2e.MvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated` (watcher); `com.onurkat.reclazz.e2e.JakartaMvcInterceptorLimitationReloadTest#requestsKeepOldConstructorStateWhileParentIsRecreated` (watcher)
+**Observers:** `com.onurkat.reclazz.e2e.MvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation`; `com.onurkat.reclazz.e2e.JakartaMvcInterceptorDependencyReloadTest#requestsUseCurrentInterceptorsAndMappingsAfterParentRecreation` (watcher; six invocations each).
 
-**Controls / remaining limits:** Current parentHn:Dn differs from dispatchedHn:D1; injected registration recreates context mapping while servlet retains original. Scratch desiredDn and reconciled mapping must RED. Known restart limitation. These GREEN characterization tests prove the gap, not interceptor lifecycle repair. Filters/security/proxies/concurrent requests/container deployment unverified. Other OS/providers, enhanced JVMs, late attach and unlisted framework versions are unverified.
+**Controls / remaining limits:** Initial/source-only controls pass. Before production repair all6 desired ordinary cases RED at changed interceptor identity; injected cases also show stale servlet mapping. After repair repeated saves use constructorD2/D3/D4, current dispatched interceptor and servlet mapping view, exact native callback order, stable unrelated beans and mapped include/exclude behavior. Named local plain singletons only; no prototype/scoped/FactoryBean/proxy/unowned object-graph repair, filters/security policies, late attach, native servlet deployment or atomic concurrent publication. Independent audit pending.
+
+**Historical limitation:** At dd90638 the passing characterization recorded stale dependencyD1 and the servlet/context split. Original claim, source hashes and observing lane receipts remain in `history_before_mvc_singleton_repair`; current desired behavior supersedes that verdict without editing history. Weak identity, native schema/refusal and real lifecycle/ownership tests are supporting components, not additional watcher claims.
 
 ### P3B-MODEL-VOID
 

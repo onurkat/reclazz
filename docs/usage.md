@@ -837,31 +837,37 @@ separate component-only cause/request-argument and response-annotation cells rem
 limited to their recorded Spring5 observations. No production
 dependency is added.
 
-### Registered MVC interceptors: measured reload limitation
+### Registered MVC interceptors: current singleton routing
 
-Method-body saves on registered MVC interceptors and their helpers can reach the
-existing request chain, but that does not prove the chain holds the recreated
-Spring beans. In real-agent synthetic tests on Spring 5.3.39 and 6.1.14, a parent
-`@Component` helper was recreated with its new constructor-owned value while the
-dispatched interceptor still used the original value. Direct bean-lookup
-registration and native `MappedInterceptor` registration both showed this gap.
-Restart the application when an interceptor needs that recreated dependency
-state; a successful class reload or bean-refresh message is insufficient evidence.
+Method-body saves on registered MVC interceptors still use Spring's native request
+chain. For named plain singleton beans with local definitions, completed class
+reloads also route that chain to the current recreated interceptor and its current
+dependencies. If native dependency destruction recreates a handler mapping,
+the supported DispatcherServlet request lookup and public mapping view select
+the current mapping. Existing native registrations retain their order and
+MappedInterceptor include/exclude matching; registrations are not rebuilt.
 
-When a `WebMvcConfigurer` directly autowires the interceptor, native dependency
-destruction can also recreate the context's handler mapping while the existing
-`DispatcherServlet` retains the mapping it captured at startup. Reclazz does not
-currently reconcile this servlet/context split or rebuild interceptor registrations.
+The [current P3b repair evidence](feature-evidence.md#p3b-interceptor-limit) measures
+Spring5.3.39 and6.1.14 on stock SapMachine17/21, parent/web contexts and normal/child
+application loaders. Six watcher cases per Spring graph cover lookup, mapped and
+injected registration, repeated interceptor/helper saves, current dispatched bean
+identity and constructor-owned dependency values, ordered pre/post/completion
+callbacks, unrelated identities and source-only no-op controls. Requests use
+MockMvc/DispatcherServlet; native servlet-container deployment is unverified.
+The old stale-dependency/mapping observation remains historical evidence.
 
-The current [P3b characterization](feature-evidence.md#p3b-interceptor-limit) uses
-stock SapMachine JDK 17 and 21, parent/web contexts, normal and child-loader
-application classes, and three repeated interceptor/helper saves. Ordered
-`preHandle`, `postHandle` and `afterCompletion` calls, exactly-once delivery,
-unrelated interceptor identity and mapped include/exclude behavior were preserved
-in these fixtures. Source-only edits did not change requests until compiled class
-bytes were published. This is a known limitation, not full interceptor lifecycle
-support; servlet filter chains, security policies, proxied interceptors, concurrent
-requests and a deployed servlet container were not validated by this investigation.
+Only independently owned instances are certified; receivers shared between
+definitions or contexts remain unverified. Start with -javaagent before MVC loads
+and publish compiled class files. The
+adapter accepts only its measured native bytecode sites; unsupported routing
+records a restart concern. Prototype/scoped beans, FactoryBean products, proxies,
+unowned programmatic receivers, custom strategy/chain overrides, servlet filters/security policies, late attach
+and unlisted versions/OS are outside this claim. A class batch publishes its final
+identities after native bean recreation/cascade/healing. This does not make bean
+destruction atomic with concurrent/in-flight requests; the existing opt-in
+request-boundary policy remains separate. Changes to registration declarations, order,
+path-filter configuration or chain structure are not certified by this repair. No
+dependency or new agent option is added.
 
 ### Binding and model methods added after startup
 
