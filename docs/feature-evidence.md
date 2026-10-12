@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3075` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); `README.md:694` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `CHANGELOG.md:21` (SHA-256 `fbbc408f85e6f820deef6c6b25b091e3db49e00c429190bf656a311cfb5451c6`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3075` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); `README.md:694` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `CHANGELOG.md:26` (SHA-256 `eb722c76aa6076ad3e20741da1bcab0c610aedda48ac3653d51042e035130a96`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -3086,9 +3086,9 @@ This package classifies the measured MVC slice and explicitly records missing va
 
 ## P3c — Callbacks and data
 
-This evidence-only package separates timer/event/worker/transaction/database observations from component contracts and missing combined scenarios. No agent production change or dependency is introduced. Each verdict is bounded by its actual method results on both named JDK lanes; raw failures and fixture corrections are retained separately. Spring Data native framework query tests below use JPQL, not nativeQuery=true SQL.
+The original evidence package is committed at2ea1744. A separately owner-approved native Spring6 event-factory repair now has desired RED/GREEN proof on both JDK lanes; independent audit is pending. The two historical FAILURE cell IDs are retained with current bounded delivery verdicts, and immutable prior claims/lanes remain in history_before_spring6_event_factory_repair. Original observed_defects and negative witnesses describe the historical P3c tree; they are not current failures. Unrelated limits and verdicts remain unchanged. Registered scheduled Runnable controls do not certify timers; Spring Data @Query tests use JPQL, not nativeQuery=true SQL.
 
-Machine record: [p3c-callbacks-data.json](feature-evidence/p3c-callbacks-data.json); manifest: [p3c-cells.txt](feature-evidence/p3c-cells.txt). Independent Claude audit is pending.
+Machine record: [p3c-callbacks-data.json](feature-evidence/p3c-callbacks-data.json); manifest: [p3c-cells.txt](feature-evidence/p3c-cells.txt).
 
 ### P3C-SCHEDULED-TIMER
 
@@ -3108,11 +3108,11 @@ An added direct @Scheduled timer fires, follows repeated edits, stops on annotat
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SCHEDULED-CURRENT
 
@@ -3132,11 +3132,11 @@ Scheduled callbacks resolve the current singleton after external replacement and
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SCHEDULED-PROXY
 
@@ -3156,11 +3156,11 @@ A newly added timer on a standard cache CGLIB proxy updates its target and retai
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SCHEDULES-REPEATABLE
 
@@ -3180,11 +3180,11 @@ Repeatable @Schedules metadata produces two native registrations with saved time
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SCHEDULED-ROLLBACK-PREPARATION
 
@@ -3204,11 +3204,11 @@ Failed partial scheduler registration cancels partial work and a later valid sav
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SCHEDULED-REFUSAL
 
@@ -3228,11 +3228,11 @@ Unsupported return/argument/static/mixed callback declarations are refused durin
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SCHEDULED-PROTOTYPE
 
@@ -3252,11 +3252,11 @@ A prototype is not instantiated to schedule an added method; refusal is named.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-DELIVERY
 
@@ -3276,11 +3276,11 @@ An added listener receives only matching publications, follows body/condition ed
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-CURRENT
 
@@ -3300,11 +3300,11 @@ An added event listener resolves its replacement singleton without duplicating e
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-PROXY
 
@@ -3324,11 +3324,11 @@ An added event listener on a standard cache proxy reaches the target while exist
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-RESULT
 
@@ -3348,11 +3348,11 @@ A single returned event is republished once with its identity, updated body and 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-ORDER-NAMES
 
@@ -3372,11 +3372,11 @@ Named SpEL conditions, bean references and @Order are retained in component deli
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-DEBUG-NAMES
 
@@ -3396,11 +3396,11 @@ Debug local-variable parameter names support a named event condition when Method
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-PROTOTYPE-PROXY-REFUSAL
 
@@ -3420,11 +3420,11 @@ Prototype and unsupported custom advisor proxies retire the prior added registra
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-CUSTOM-FACTORY-REFUSAL
 
@@ -3444,11 +3444,11 @@ Custom event listener factories are refused instead of bypassed.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-RESULT-REFUSAL
 
@@ -3468,11 +3468,11 @@ Unsupported declared result shapes are refused before invocation or publication.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-ACTUAL-RESULT-REFUSAL
 
@@ -3492,11 +3492,11 @@ Unsupported actual values behind Object fail before publication and a supported 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-BEFORE-COMMIT
 
@@ -3508,19 +3508,19 @@ Added transactional delivery honors BEFORE-COMMIT with real JDBC commit/rollback
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim. JDBC/H2.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: before callback appears only after transaction boundary and only on commit; row counts1/4; no callback runs early inside transaction.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: before callback appears only after transaction boundary and only on commit; row counts1/4; no callback runs early inside transaction. `com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: before callback appears only after transaction boundary and only on commit; row counts1/4; no callback runs early inside transaction.
 
 **Observable:** Added transactional delivery honors BEFORE-COMMIT with real JDBC commit/rollback effects.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-AFTER-COMMIT
 
@@ -3532,19 +3532,19 @@ Added transactional delivery honors AFTER-COMMIT with real JDBC commit/rollback 
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim. JDBC/H2.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: after callback appears on commit and not rollback; row counts1/4; no callback runs early inside transaction.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: after callback appears on commit and not rollback; row counts1/4; no callback runs early inside transaction. `com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: after callback appears on commit and not rollback; row counts1/4; no callback runs early inside transaction.
 
 **Observable:** Added transactional delivery honors AFTER-COMMIT with real JDBC commit/rollback effects.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-AFTER-ROLLBACK
 
@@ -3556,19 +3556,19 @@ Added transactional delivery honors AFTER-ROLLBACK with real JDBC commit/rollbac
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim. JDBC/H2.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: rollback callback appears only on rollback; row counts1/4; no callback runs early inside transaction.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: rollback callback appears only on rollback; row counts1/4; no callback runs early inside transaction. `com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: rollback callback appears only on rollback; row counts1/4; no callback runs early inside transaction.
 
 **Observable:** Added transactional delivery honors AFTER-ROLLBACK with real JDBC commit/rollback effects.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-AFTER-COMPLETION
 
@@ -3580,19 +3580,19 @@ Added transactional delivery honors AFTER-COMPLETION with real JDBC commit/rollb
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim. JDBC/H2.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: complete callback appears once on each commit and rollback; row counts1/4; no callback runs early inside transaction.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: complete callback appears once on each commit and rollback; row counts1/4; no callback runs early inside transaction. `com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): MATRIX1/4 exact ordered tape: complete callback appears once on each commit and rollback; row counts1/4; no callback runs early inside transaction.
 
 **Observable:** Added transactional delivery honors AFTER-COMPLETION with real JDBC commit/rollback effects.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-RETIRE
 
@@ -3604,19 +3604,19 @@ Replacement/removal retires old queued transaction callbacks; new events use cur
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim. Real open transaction spanning class save.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored. `com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored.
 
 **Observable:** Replacement/removal retires old queued transaction callbacks; new events use current declarations and restoration recovers.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-FALLBACK
 
@@ -3628,19 +3628,19 @@ Fallback enabled transaction listeners deliver outside a transaction while saved
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): First tape entry fallback1/4:outside; other phases absent outside; ok condition gates transactional delivery.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): First tape entry fallback1/4:outside; other phases absent outside; ok condition gates transactional delivery. `com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): First tape entry fallback1/4:outside; other phases absent outside; ok condition gates transactional delivery.
 
 **Observable:** Fallback enabled transaction listeners deliver outside a transaction while saved conditions remain active.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-BEFORE-FAILURE
 
@@ -3660,11 +3660,11 @@ A before-commit listener exception rolls back actual JDBC writes.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-AFTER-FAILURE
 
@@ -3684,11 +3684,11 @@ An after-commit listener failure cannot undo committed rows or suppress completi
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-CONTEXT-REFUSAL
 
@@ -3708,11 +3708,11 @@ Missing/custom transactional factories refuse delivery and name the missing infr
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-TXEVENT-PHASE-EDIT
 
@@ -3732,11 +3732,11 @@ Editing an added listener from AFTER_COMMIT to BEFORE_COMMIT while a transaction
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-COMPLETABLE
 
@@ -3756,11 +3756,11 @@ An added CompletableFuture service method submits on saved executors and retaine
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-CANCEL-ROLLBACK
 
@@ -3780,11 +3780,11 @@ Checked worker failure rolls back writes and cancelling before execution prevent
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-REMOVE
 
@@ -3804,11 +3804,11 @@ Async annotation removal restores synchronous calls; method removal refuses held
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-VOID
 
@@ -3828,11 +3828,11 @@ Standalone void async calls use configured default executor and native uncaught 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-FUTURE
 
@@ -3852,11 +3852,11 @@ Future and CompletableFuture result/error behavior is compared with native Sprin
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-GENERICS
 
@@ -3876,11 +3876,11 @@ Concrete nested generic metadata is retained for native consumers.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-REFUSAL
 
@@ -3900,11 +3900,11 @@ Unsupported declared async return types and unresolved generics refuse before su
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-EXCEPTIONAL-FUTURE
 
@@ -3924,11 +3924,11 @@ Returning an exceptional Future does not retroactively roll back the worker tran
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SERVICE-CACHE
 
@@ -3948,11 +3948,11 @@ Spring 5 async cache stores the body-returned inner Future while callers receive
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-EVENT
 
@@ -3964,19 +3964,19 @@ Added async event delivery honors executor changes, conditions, captured admitte
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval` (watcher): R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; reflected=false.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval` (watcher): R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; reflected=false. `com.onurkat.reclazz.e2e.JakartaAddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval` (watcher): R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; reflected=false.
 
 **Observable:** Added async event delivery honors executor changes, conditions, captured admitted work, worker rollback and removal.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-SCHEDULED
 
@@ -3996,11 +3996,11 @@ Invoking the native registered scheduled Runnable submits to current async execu
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-DEFAULT-EXECUTOR
 
@@ -4020,11 +4020,11 @@ Configured/default and saved qualified executors match native Spring async proxy
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-NAMED-DEFAULT
 
@@ -4044,11 +4044,11 @@ Native named taskExecutor is selected without an explicit AsyncConfigurer.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-INFRASTRUCTURE-REFUSAL
 
@@ -4068,11 +4068,11 @@ Missing, duplicate, custom and reordered async infrastructure refuse before body
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-ADVISOR-REFUSAL
 
@@ -4092,11 +4092,11 @@ Custom annotation, foreign and duplicated async advisors cannot be silently bypa
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-CALLBACK-TRANSACTIONS
 
@@ -4108,19 +4108,19 @@ Added public callbacks use native transactions with real commit/checked rollback
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves` (watcher): R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves` (watcher): R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly. `com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves` (watcher): R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.
 
 **Observable:** Added public callbacks use native transactions with real commit/checked rollback across advice removal and restoration.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-CALLBACK-CACHE
 
@@ -4132,19 +4132,19 @@ Successful callback eviction, failed eviction retention and cached returned-even
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** SapMachine17/21, macOS arm64. Spring 5.3.39; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves` (watcher): R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves` (watcher): R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry. `com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves` (watcher): R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry.
 
 **Observable:** Successful callback eviction, failed eviction retention and cached returned-event publication retain native cache semantics.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Spring6.1.14 with native transaction management is observed FAILED in the separate P3C-SPRING6-NATIVE-* cells; do not promote this successful Spring5 observation to Spring6. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-CALLBACK-INSPECT-REFUSAL
 
@@ -4164,11 +4164,11 @@ Advised private/final/generic and unsupported owner shapes are refused at callba
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-CALLBACK-COMPOSED
 
@@ -4192,7 +4192,7 @@ Composed transaction/cache/security operation annotations on added callbacks beh
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Current callback docs explicitly exclude composed operation and method-security annotations; no mapped supported-runtime watcher.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-NEW-ENTITY
 
@@ -4212,11 +4212,11 @@ A new entity on a prepared schema becomes available to an already-injected JPA c
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-PENDING-METADATA
 
@@ -4236,11 +4236,11 @@ A failed new-entity validation retry refuses changed field/column metadata until
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-VALIDATION-FAILURE
 
@@ -4260,11 +4260,11 @@ Missing table/column or wrong type retains the old factory/data; prepared retry 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-PREPARED-SCHEMA
 
@@ -4284,11 +4284,11 @@ Successful validate rebuild retires old native factory and already-injected clie
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-SCHEMA-OVERRIDES
 
@@ -4308,11 +4308,11 @@ Conflicting schema/custom-provider overrides cannot turn a supported prepared-sc
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-OPTIN-AMBIGUITY
 
@@ -4332,11 +4332,11 @@ Missing opt-in or ambiguous persistence units retain existing factory identities
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-CLOSE-REPORT
 
@@ -4356,11 +4356,11 @@ An old-factory close failure after successful swap is reported as installed with
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-QUERY-WATCHER
 
@@ -4380,11 +4380,11 @@ A JPQL @Query edit reaches an existing HTTP holder and current repository withou
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-QUERY-COMPONENT
 
@@ -4404,11 +4404,11 @@ Native Spring Data JPQL query caches are refreshed through wired holders and tra
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP
 
@@ -4432,7 +4432,7 @@ An already-injected Spring Data repository remains usable after a native EntityM
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Existing new-entity watcher observes EntityManager clients; repository watcher edits JPQL without swapping EMF. Combined observer is absent.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-FIELD-DETECTION
 
@@ -4452,11 +4452,11 @@ Persistent field additions/removals are detected before redefinition without mis
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-UPDATE-ADVICE
 
@@ -4476,11 +4476,11 @@ For ddl-auto update the restart advice does not falsely demand manual column cre
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-VALIDATE-ADVICE
 
@@ -4500,11 +4500,11 @@ For ddl-auto validate the advice requires the column before restarting.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-FIELD-REFRESH-GATE
 
@@ -4524,11 +4524,11 @@ Existing-field refresh on a stock VM declines silently and only schema-creating 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-DDL-GATE
 
@@ -4548,11 +4548,11 @@ Existing-field refresh ddl policy accepts update/create/create-drop and refuses 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-ENHANCED-FIELD
 
@@ -4576,7 +4576,7 @@ Existing entity persistent-field edits reach rebuilt mappings and database on en
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. No enhanced JBR/DCEVM lane or live existing-field DB watcher in this package.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-SPRING5
 
@@ -4600,7 +4600,7 @@ The prepared-schema/new-entity path works on Spring5/Boot2 JPA.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. No isolated Spring5 ORM/Hibernate JPA acceptance environment mapped; source-level declarations are not runtime proof.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-HIBERNATE-L2-ENTITY
 
@@ -4620,11 +4620,11 @@ Explicit DAO invalidation evicts real cached entity data so a later load sees an
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-HIBERNATE-L2-QUERY
 
@@ -4644,11 +4644,11 @@ Explicit DAO invalidation evicts query cache so a later cacheable query sees an 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-HIBERNATE-L2-ALIASES
 
@@ -4668,11 +4668,11 @@ Aliases and repeated contexts evict a single native Hibernate factory once.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-HIBERNATE-L2-DISABLED
 
@@ -4692,11 +4692,11 @@ Disabled Hibernate L2 is not reported as an eviction.
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-HIBERNATE-L2-WATCHER
 
@@ -4720,55 +4720,55 @@ A watched DAO class edit triggers real native L2/query eviction.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Mapped HibernateL2CacheTest invokes invalidator directly; real DAO watcher is not observed.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SPRING6-NATIVE-EVENT-FAILURE
 
-**Verdict:** FAILED.
+**Verdict:** PROVEN_WITH_SCOPE.
 
-Added ordinary event callbacks fail when Spring6 native transaction management supplies its restricted transactional factory.
+Added ordinary and async event callbacks work in the measured Spring6 native transaction-enabled context; the historical cell ID is retained.
 
 **Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
 
-**Default/opt-in:** Native @EnableTransactionManagement supplies its normal restricted factory. Component characterization invokes the reload method; strict desired watcher failures are separately recorded on JDK21.
+**Default/opt-in:** Native @EnableTransactionManagement, plus EnableAsync or EnableCaching where the observing fixture uses it; startup javaagent and compiled watched saves. No new agent option.
 
-**Bounds:** SapMachine17/21, macOS arm64; Spring6.1.14 with @EnableTransactionManagement; native restricted factory, existing plain singleton. Passing component characterization plus independently stored strict desired watcher RED evidence.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring6.1.14 @EnableTransactionManagement, normal/child application loaders, startup javaagent and compiled saves.
 
-**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSixTransactionalFactoryLimitationTest#nativeTransactionFactoryIsRefusedAndAddedCallbacksStaySilent` (component): Native @EnableTransactionManagement exposes RestrictedTransactionalEventListenerFactory; both ordinary/transactional inspect plans are refused; ledger names custom factory; outside and real JDBC transaction publications produce zero calls. This passing characterization proves failure, not delivery.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.JakartaAddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval` (watcher): R1..5 exact queue/captured/rerouted/original/refused/rollback/handler/removed checks; reflected=false. `com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves` (watcher): R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.
 
-**Observable:** Added ordinary event callbacks fail when Spring6 native transaction management supplies its restricted transactional factory.
+**Observable:** Exact worker queues/rollback/cache/returned-event counts for ordinary async/operation callbacks across compiled saves.
 
-**Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
+**Control:** Desired watcher cases fail before repair (6/6 on21) and pass after repair on17/21. Native component controls separately verify custom/mixed/duplicate/order refusal and no old listener survival.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
-**Limitation / missing environment:** Failure is at native-factory acceptance before added listener registration; other downstream callback behaviors are not inferred. This measured native-factory defect prevents event/transaction and event-operation verification on Spring6; unlisted configurations remain unverified.
+**Limitation / missing environment:** Exact native factory recognition only. Custom subclasses, duplicate transactional family, wrong factory order and extra advice on phase callbacks remain refused. No broader callback subset or framework-version promise. Unlisted Spring versions/OS, late attach and atomic concurrent publication remain unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SPRING6-NATIVE-TXEVENT-FAILURE
 
-**Verdict:** FAILED.
+**Verdict:** PROVEN_WITH_SCOPE.
 
-Added transaction-phase callbacks fail on Spring6 native transaction management because its restricted transactional factory is refused.
+Added transaction-phase callbacks work with Spring6 native RestrictedTransactionalEventListenerFactory across commit, rollback, queued replacement, removal and restoration; the historical cell ID is retained.
 
 **Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
 
-**Default/opt-in:** Native @EnableTransactionManagement supplies its normal restricted factory. Component characterization invokes the reload method; strict desired watcher failures are separately recorded on JDK21.
+**Default/opt-in:** Native @EnableTransactionManagement, plus EnableAsync or EnableCaching where the observing fixture uses it; startup javaagent and compiled watched saves. No new agent option.
 
-**Bounds:** SapMachine17/21, macOS arm64; Spring6.1.14 with @EnableTransactionManagement; native restricted factory, existing plain singleton. Passing component characterization plus independently stored strict desired watcher RED evidence.
+**Bounds:** SapMachine17/21, macOS arm64; native Spring6.1.14 @EnableTransactionManagement, normal/child application loaders, startup javaagent and compiled saves.
 
-**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSixTransactionalFactoryLimitationTest#nativeTransactionFactoryIsRefusedAndAddedCallbacksStaySilent` (component): Native @EnableTransactionManagement exposes RestrictedTransactionalEventListenerFactory; both ordinary/transactional inspect plans are refused; ledger names custom factory; outside and real JDBC transaction publications produce zero calls. This passing characterization proves failure, not delivery.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.JakartaAddedTransactionalEventListenerReloadTest#transactionPhasesAndQueuedEventsSurviveEditsRemovalAndRestoration` (watcher): QUEUED2 before reload; HELD2 contains only ok-new generation2; HELD3 empty after removal; MATRIX4 restored.
 
-**Observable:** Added transaction-phase callbacks fail on Spring6 native transaction management because its restricted transactional factory is refused.
+**Observable:** Exact commit/rollback phase tape, SQL row counts and queued retirement/removal/restoration across compiled saves.
 
-**Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
+**Control:** Desired watcher cases fail before repair (6/6 on21) and pass after repair on17/21. Native component controls separately verify custom/mixed/duplicate/order refusal and no old listener survival.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
-**Limitation / missing environment:** Failure is at native-factory acceptance before added listener registration; other downstream callback behaviors are not inferred. This measured native-factory defect prevents event/transaction and event-operation verification on Spring6; unlisted configurations remain unverified.
+**Limitation / missing environment:** Exact native factory recognition only. Custom subclasses, duplicate transactional family, wrong factory order and extra advice on phase callbacks remain refused. No broader callback subset or framework-version promise. Unlisted Spring versions/OS, late attach and atomic concurrent publication remain unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-SCHEDULED-REREGISTER
 
@@ -4788,11 +4788,11 @@ An existing reflected scheduled timer follows saved intervals/current singleton 
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-EVENT-EXISTING-COMPONENT
 
@@ -4812,11 +4812,11 @@ Reflected existing event adapters refresh only the affected class without multip
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-ASYNC-EXISTING-COMPONENT
 
@@ -4836,11 +4836,11 @@ Repeated native async reprocessing retains exactly one configured advisor and on
 
 **Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
 
-**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+**Execution:** Exact lane commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment and unlisted framework versions are unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
 
 ### P3C-JPA-SQL-NATIVE-QUERY
 
@@ -4864,4 +4864,4 @@ An edited SQL @Query(nativeQuery=true) reaches existing wired repositories after
 
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Mapped query fixtures use JPQL and never set nativeQuery=true; their framework-native query caches do not prove SQL-native semantics.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; native Spring6 factory failures need a separate authorized repair.
+**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.

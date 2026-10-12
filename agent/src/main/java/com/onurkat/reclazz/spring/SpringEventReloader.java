@@ -134,9 +134,15 @@ public class SpringEventReloader {
         // copied EventListener annotation happens to satisfy supportsMethod.
         String normal = "org.springframework.context.event.DefaultEventListenerFactory";
         String transactional = "org.springframework.transaction.event.TransactionalEventListenerFactory";
+        String restricted = "org.springframework.transaction.annotation.RestrictedTransactionalEventListenerFactory";
         List<String> names = new ArrayList<>();
         for (Object candidate : list) {
             String name = candidate.getClass().getName();
+            // Spring 6.1's native factory only adds transaction-advice validation.
+            // inspect already refuses extra advice on phase delegates. Accept
+            // this exact class, never custom subclasses, as the same family so
+            // mixed plain/restricted registrations cannot evade duplicate checks.
+            if (name.equals(restricted)) name = transactional;
             if (!name.equals(normal) && !name.equals(transactional))
                 throw new IllegalStateException("custom event listener factories require a restart for added methods");
             if (names.contains(name)) throw new IllegalStateException("duplicate event listener factories are unsupported");

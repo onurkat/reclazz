@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Added event listeners recognize Spring 6.1.14's native restricted transaction
+  factory, including async and transaction-phase callbacks in transaction-enabled
+  contexts. Custom factory subclasses, duplicate transaction factories, invalid
+  ordering and extra advice on added phase callbacks remain unsupported.
+
 - Registered plain MVC singleton interceptors use current recreated bean identities
   and dependency state after class reload on measured Spring5.3.39/6.1.14 and JDK17/21.
   Supported DispatcherServlet lookups follow recreated mappings while native order
