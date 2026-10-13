@@ -292,6 +292,9 @@ tasks.test {
 val unitTest by tasks.registering(Test::class) {
     // Evidence checks inspect isolated compiled test methods without loading Spring 6.
     dependsOn(tasks.named("springSixTestClasses"))
+    // P4 provenance checks inspect broker test bytecode without starting a broker.
+    dependsOn(tasks.named("jmsTestClasses"))
+    dependsOn(tasks.named("rabbitTestClasses"))
     dependsOn(jmsUnitTest)
     dependsOn(hibernateTest)
     group = "verification"

@@ -222,17 +222,17 @@ than either.
   component, including topics and groups selected by Spring expressions on the bean.
   Real broker tests cover repeated edits, topic/group changes, removal,
   restoration and shutdown of replaced consumers.
-  [Scope](docs/usage.md#kafka-listeners-added-after-startup).
+  [Scope](docs/usage.md#kafka-listeners-added-after-startup). [Evidence](docs/feature-evidence.md#p4--messaging).
 - **New JMS consumers**: add a supported `@JmsListener` to a running component.
   Synchronous replies support direct `@SendTo` and the caller's `JMSReplyTo`.
   Real broker tests cover reply conversion/correlation, queue edits,
   removal/restoration, consumer shutdown and local transaction rollback/redelivery.
-  [Scope](docs/usage.md#jms-listeners-added-after-startup).
+  [Scope](docs/usage.md#jms-listeners-added-after-startup). [Evidence](docs/feature-evidence.md#p4--messaging).
 - **New RabbitMQ consumers**: add a supported `@RabbitListener` to a running
   component, including queues selected by Spring expressions from application beans.
   Real broker tests cover queue changes, removal/restoration and
   local transaction rollback/redelivery.
-  [Scope](docs/usage.md#rabbit-listeners-added-after-startup).
+  [Scope](docs/usage.md#rabbit-listeners-added-after-startup). [Evidence](docs/feature-evidence.md#p4--messaging).
 - **New `@Bean` factories**: add an instance or static `@Bean` method to a
   running `@Configuration` class and its product is registered. Lite, default
   configuration and static factories take reference beans, typed collections

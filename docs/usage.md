@@ -968,6 +968,9 @@ is added.
 
 ### Kafka listeners added after startup
 
+Current broker observations, component-only contracts and unverified variants are
+listed separately in [P4 messaging evidence](feature-evidence.md#p4--messaging).
+
 With Spring Kafka already configured, compile a new listener method on a
 running plain singleton `@Component` / `@Service` / `@Repository`:
 
@@ -1044,20 +1047,23 @@ delivery guarantee; application acknowledgments, retries and offset policy
 continue to determine redelivery.
 
 Verified with Spring Kafka 2.9.13, Spring Framework 5.3.39 and a real embedded
-Kafka 3.2.3 broker on stock JDK 21. Real-agent tests cover both the first listener
+Kafka 3.2.3 broker on stock JDK 17 and 21 on macOS arm64. Real-agent tests cover both the first listener
 on an already used bean and addition beside an existing listener, unique test
 message delivery across six saves, topic changes, retired consumer state,
 unrelated container identity and context close. Expression tests on normal and
 child classloaders cover self-referencing topics/groups, expression failure,
 multiple-topic recovery, group replay and removal. Native startup comparison
 also covers named beans and property/expression arrays. Start with `-javaagent` before
-application classes load. Other broker/framework versions, JDK 17 runtime,
+application classes load. Other broker/framework versions,
 external clusters, transactions and rebalance/failure delivery guarantees were
 not exercised. Kafka libraries and the embedded broker are test dependencies
 only. Beans mixing Rabbit, JMS or Kafka listeners require a restart before
 any of their consumers are retired.
 
 ### JMS listeners added after startup
+
+Current broker observations, component-only contracts and unverified variants are
+listed separately in [P4 messaging evidence](feature-evidence.md#p4--messaging).
 
 With Spring JMS already configured, add a listener to a running plain singleton
 `@Component`, `@Service` or `@Repository` and compile:
@@ -1149,7 +1155,7 @@ global exactly-once delivery. Broker and application acknowledgment/redelivery
 policies still apply.
 
 Verified with Spring JMS 5.3.39 (`javax.jms`), a real embedded ActiveMQ Classic
-5.19.11 broker, and stock JDK 21 using startup `-javaagent`. Tests cover the first
+5.19.11 broker, and stock JDK 17 and 21 on macOS arm64 using startup `-javaagent`. Tests cover the first
 listener on an already used bean, addition beside an original listener, six
 saves, payload/header/message conversion, local transaction rollback/redelivery,
 selector filtering, consumer retirement, and context close. A deliberately
@@ -1158,7 +1164,7 @@ internal test wait. Request/reply tests cover native Spring controls, text/bytes
 map/native and Spring messages, correlation, `JMSReplyTo` priority, null results,
 rollback followed by a reply on redelivery, and invalid `@SendTo` recovery.
 Actual-agent reply tests cover normal/child class loaders, repeated saves,
-private restoration and reply queue changes. Other JMS providers, Spring versions, JDK 17 runtime,
+private restoration and reply queue changes. Other JMS providers and Spring versions,
 Jakarta Messaging 3, late attach, XA and durable topics were not exercised.
 
 Spring JMS and ActiveMQ are isolated test dependencies. Existing tests retain
@@ -1168,6 +1174,9 @@ reports under `jmsUnitTest`, `jmsE2eTest` and `jmsTest`. Run just JMS with
 `./gradlew :agent:jmsTest --rerun`. No JMS/broker classes enter the production JAR.
 
 ### Rabbit listeners added after startup
+
+Current broker observations, component-only contracts and unverified variants are
+listed separately in [P4 messaging evidence](feature-evidence.md#p4--messaging).
 
 With Spring Rabbit already configured, add a method to a running plain singleton
 `@Component`, `@Service` or `@Repository`, then compile:
@@ -1250,7 +1259,7 @@ Custom conversion depending on the callback’s exact declaring-class identity i
 outside the verified scope because added callbacks use a hidden delegate.
 
 Verified locally with Spring Rabbit 2.4.17, Spring Framework 5.3.39, RabbitMQ
-4.3.5 and stock JDK 21. Real-agent tests cover six saves both on an already used
+4.3.5 and stock JDK 17 and 21 on macOS arm64. Real-agent tests cover six saves both on an already used
 bean with no listeners and beside both explicitly named and ID-less original
 listeners, including payload/header
 conversion, rollback/redelivery and context close. Queue-expression tests on
@@ -1259,7 +1268,7 @@ recovery to multiple queues and removal, with real message delivery. Native
 annotation comparison also covers `Queue` values, mixed lists and property/expression
 composition. A blocked real original
 callback checks force-close, timeout, repeat, interruption and retry. Other
-framework/broker versions, late attach and JDK 17 runtime were not verified
+framework/broker versions and late attach were not verified
 locally. Linux CI is configured for JDK 17/21; those runs are separate evidence.
 
 Spring Rabbit is a test dependency; no AMQP/framework/broker classes ship in the

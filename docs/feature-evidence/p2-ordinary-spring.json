@@ -1431,13 +1431,13 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1051,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-REGISTER-NEW"
         }
       ],
@@ -1471,13 +1471,13 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1073,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-COMPONENT-PROFILE"
         }
       ],
@@ -1511,13 +1511,13 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1095,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-COMPONENT-CONDITIONAL"
         }
       ],
@@ -1551,13 +1551,13 @@
         {
           "path": "docs/usage.md",
           "line": 410,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "Registration itself creates neither."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1117,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-COMPONENT-LAZY"
         }
       ],
@@ -1591,13 +1591,13 @@
         {
           "path": "docs/usage.md",
           "line": 413,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "prototype cleanup remains the caller"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1139,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-COMPONENT-PROTOTYPE"
         }
       ],
@@ -1631,13 +1631,13 @@
         {
           "path": "docs/usage.md",
           "line": 406,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "A new class with a direct or composed"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1161,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-COMPOSED-STEREOTYPE"
         }
       ],
@@ -1671,13 +1671,13 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "its constructor autowired"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1183,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-NEW-CONSTRUCTOR-INJECTION"
         }
       ],
@@ -1700,13 +1700,13 @@
         {
           "path": "README.md",
           "line": 86,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Spring bean refresh"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1205,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-REFRESH"
         }
       ],
@@ -1746,7 +1746,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1227,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-HELD-CALLER"
         }
       ],
@@ -1780,13 +1780,13 @@
         {
           "path": "README.md",
           "line": 88,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Autowired` added to an existing field"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1249,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-INJECTION-AUTOWIRED"
         }
       ],
@@ -1820,13 +1820,13 @@
         {
           "path": "README.md",
           "line": 88,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Autowired` added to an existing field"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1271,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-INJECTION-VALUE"
         }
       ],
@@ -1860,13 +1860,13 @@
         {
           "path": "README.md",
           "line": 88,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Autowired` added to an existing field"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1293,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-INJECTION-RESOURCE"
         }
       ],
@@ -1900,13 +1900,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1315,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-LITE-CONFIG"
         }
       ],
@@ -1940,13 +1940,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1337,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-ARGS"
         }
       ],
@@ -1980,13 +1980,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1359,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-RICH-ARGS"
         }
       ],
@@ -2020,13 +2020,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1381,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-PROVIDER"
         }
       ],
@@ -2060,13 +2060,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1403,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-PRIMITIVE-VALUE"
         }
       ],
@@ -2100,13 +2100,13 @@
         {
           "path": "docs/usage.md",
           "line": 542,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "One-dimensional reference arrays"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1425,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-ARRAY-SET-ARGS"
         }
       ],
@@ -2140,13 +2140,13 @@
         {
           "path": "docs/usage.md",
           "line": 549,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "including all eight primitive types"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1447,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-ALL-PRIMITIVES"
         }
       ],
@@ -2180,13 +2180,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Scalar `@Value` inputs"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1469,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-VALUE-PROPERTY"
         }
       ],
@@ -2220,13 +2220,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Multiple names register one singleton"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1491,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-ALIASES"
         }
       ],
@@ -2260,13 +2260,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Direct `@Primary`/`@Qualifier`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1513,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-QUALIFIER"
         }
       ],
@@ -2300,13 +2300,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Direct `@Primary`/`@Qualifier`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1535,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-PRIMARY"
         }
       ],
@@ -2340,13 +2340,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Direct method-level `@Conditional`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1557,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-CONDITIONAL"
         }
       ],
@@ -2380,13 +2380,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1579,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-BOOT-PROPERTY"
         }
       ],
@@ -2420,13 +2420,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1601,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-BOOT-BEAN"
         }
       ],
@@ -2460,13 +2460,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1623,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-BOOT-MISSING-BEAN"
         }
       ],
@@ -2500,13 +2500,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "and `@Profile` registers"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1645,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-PROFILE"
         }
       ],
@@ -2540,13 +2540,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "`@Scope(\"prototype\")` gives"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1667,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-SCOPE-PROTOTYPE"
         }
       ],
@@ -2580,13 +2580,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Direct `@Lazy` creates"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1689,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-LAZY"
         }
       ],
@@ -2620,13 +2620,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Default `@Configuration` also supports"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1711,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-FULL-CONFIG"
         }
       ],
@@ -2660,13 +2660,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "preserve supported explicit-argument/prototype semantics"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1733,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-FULL-CONFIG-ARGS"
         }
       ],
@@ -2700,13 +2700,13 @@
         {
           "path": "docs/usage.md",
           "line": 600,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "Static and instance factories share"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1755,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-BEAN-STATIC"
         }
       ],
@@ -2740,13 +2740,13 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Static factories retain plain Java call semantics"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1777,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-FULL-CONFIG-STATIC-JAVA"
         }
       ],
@@ -2780,13 +2780,13 @@
         {
           "path": "README.md",
           "line": 89,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1799,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-LIFECYCLE-INIT"
         }
       ],
@@ -2827,13 +2827,13 @@
         {
           "path": "README.md",
           "line": 89,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1821,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-LIFECYCLE-DESTROY"
         }
       ],
@@ -2874,13 +2874,13 @@
         {
           "path": "README.md",
           "line": 89,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1843,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-LIFECYCLE-NATIVE-LIFECYCLE"
         }
       ],
@@ -2921,13 +2921,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "New service methods with `@Transactional`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1865,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-ADDED-OPERATIONS-PLAIN"
         }
       ],
@@ -2961,13 +2961,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "New service methods with `@Transactional`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1887,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-ADDED-OPERATIONS-HELD"
         }
       ],
@@ -3001,13 +3001,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1909,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-TX-ROLLBACK"
         }
       ],
@@ -3048,13 +3048,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1931,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-CACHE-HIT"
         }
       ],
@@ -3095,13 +3095,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1953,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-CACHE-PUT"
         }
       ],
@@ -3142,13 +3142,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1975,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-CACHE-EVICT"
         }
       ],
@@ -3188,14 +3188,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2005,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "line": 2014,
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "normal Spring self-invocation semantics"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1997,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-OPERATIONS-SELF-INVOKE"
         }
       ],
@@ -3236,13 +3236,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Supported [composed transaction]"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2019,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-COMPOSED-TRANSACTION"
         }
       ],
@@ -3276,13 +3276,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "[composed cache annotations]"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2041,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-COMPOSED-CACHE"
         }
       ],
@@ -3316,13 +3316,13 @@
         {
           "path": "README.md",
           "line": 100,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Edited `@Aspect` pointcut"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2063,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-AOP-REFRESH"
         }
       ],
@@ -3363,13 +3363,13 @@
         {
           "path": "README.md",
           "line": 99,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "New service methods with `@PreAuthorize`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2085,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-SECURITY-PRE-POST"
         }
       ],
@@ -3415,13 +3415,13 @@
         {
           "path": "README.md",
           "line": 99,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "fixed composed markers"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2107,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-COMPOSED-SECURITY"
         }
       ],
@@ -3478,7 +3478,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2129,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-SECURITY-METADATA"
         }
       ],
@@ -3518,7 +3518,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2151,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-SECURITY-SECURED"
         }
       ],
@@ -3547,7 +3547,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2173,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-SECURITY-FILTER-CHAIN"
         }
       ],
@@ -3570,13 +3570,13 @@
         {
           "path": "README.md",
           "line": 103,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Cache eviction"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2195,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-CACHE-RELOAD-EVICTION"
         }
       ],
@@ -3616,7 +3616,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2217,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-SPRING6-ORDINARY-MATRIX"
         }
       ],
@@ -3639,13 +3639,13 @@
         {
           "path": "README.md",
           "line": 114,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2239,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-EXISTING-TX-METADATA"
         }
       ],
@@ -3679,13 +3679,13 @@
         {
           "path": "README.md",
           "line": 114,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2261,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-EXISTING-CACHE-METADATA"
         }
       ],
@@ -3719,13 +3719,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "preserve aliases and class defaults"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2283,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-TX-CLASS-DEFAULTS"
         }
       ],
@@ -3759,13 +3759,13 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "preserve aliases and class defaults"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2305,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-CACHE-CLASS-DEFAULTS"
         }
       ],
@@ -3799,13 +3799,13 @@
         {
           "path": "README.md",
           "line": 115,
-          "sha256": "231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981",
+          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
           "quote": "the filter chain is rebuilt and swapped into the live proxy"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2327,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-SECURITY-FILTER-CHAIN-SWAP"
         }
       ],
@@ -3839,13 +3839,13 @@
         {
           "path": "docs/usage.md",
           "line": 435,
-          "sha256": "dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295",
+          "sha256": "c5e751a27cd99ea3d77de089e872bbc0a68281ba10df6cdd0eeff6d06cda49e9",
           "quote": "The condition contract is tested on Spring 5.3.39 and 6.1.14."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2349,
-          "sha256": "0ab515ae652f29855962e0983a1cf15dfb33434a9480b557e32aec6d62f26a56",
+          "sha256": "cb99158c9b58dfdb8099207495d8da86dced7fbf0d531ad04e0c6d13cca6fb44",
           "quote": "### P2-SPRING6-BEAN-CONDITION-METADATA"
         }
       ],

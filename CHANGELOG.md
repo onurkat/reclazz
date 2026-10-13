@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Documentation
 
+- Record Kafka/JMS/Rabbit messaging evidence from fresh JDK 17/21 broker runs;
+  distinguish watched delivery, component contracts and unverified variants.
+  This evidence package changes no agent runtime behavior.
+
 - Record current properties/XML/message/template evidence with separate watcher,
   component and unsupported-resource scopes; narrow record-holder, native Boot 3
   and packaged-template claims to their available evidence. No agent runtime
