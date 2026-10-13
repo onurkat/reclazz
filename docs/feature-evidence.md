@@ -16,7 +16,7 @@ The [machine record](feature-evidence/p1-core.json) includes actual execution co
 
 Edited overrides continue dispatching super calls to the current original parent.
 
-**Shipped surfaces:** `README.md:76` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:76` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -40,7 +40,7 @@ Edited overrides continue dispatching super calls to the current original parent
 
 A reloaded parent still reaches the existing child override without restart.
 
-**Shipped surfaces:** `README.md:76` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:76` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -64,7 +64,7 @@ A reloaded parent still reaches the existing child override without restart.
 
 Isolated added instance initializers give existing objects their own first-read values.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -88,7 +88,7 @@ Isolated added instance initializers give existing objects their own first-read 
 
 Historical constructor arguments are not reconstructed for an added field.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -112,7 +112,7 @@ Historical constructor arguments are not reconstructed for an added field.
 
 An initializer failure is isolated and may retry after a later initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -136,7 +136,7 @@ An initializer failure is isolated and may retry after a later initializer gener
 
 An isolated conditional uses each existing receiver state.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -160,7 +160,7 @@ An isolated conditional uses each existing receiver state.
 
 Equivalent and delegated constructors preserve old/new initialization order.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -184,7 +184,7 @@ Equivalent and delegated constructors preserve old/new initialization order.
 
 A previously unread added field uses the current initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -208,7 +208,7 @@ A previously unread added field uses the current initializer generation.
 
 Application values, including an explicit null write before read, survive later saves.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -232,7 +232,7 @@ Application values, including an explicit null write before read, survive later 
 
 Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3135` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3174` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -256,7 +256,7 @@ Isolated switch arms and unrelated initializer handlers do not replay old constr
 
 Only selected isolated conditional static initializer arms run.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3141` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -280,7 +280,7 @@ Only selected isolated conditional static initializer arms run.
 
 An initialized null and an application-written static value remain stored.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3141` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -304,7 +304,7 @@ An initialized null and an application-written static value remain stored.
 
 A newly added later static field uses the current condition without resetting older fields.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3141` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -328,7 +328,7 @@ A newly added later static field uses the current condition without resetting ol
 
 Unrelated static blocks are not replayed for isolated static initializers.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3141` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -352,7 +352,7 @@ Unrelated static blocks are not replayed for isolated static initializers.
 
 An updated caller can invoke an added method on the existing receiver.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -376,7 +376,7 @@ An updated caller can invoke an added method on the existing receiver.
 
 Held Method and unchanged callers keep the last implementation when an original method is removed.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -400,7 +400,7 @@ Held Method and unchanged callers keep the last implementation when an original 
 
 Original members removed by reload disappear from native reflection scans.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -424,7 +424,7 @@ Original members removed by reload disappear from native reflection scans.
 
 Restoring an original removed member makes it visible and callable again.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -448,7 +448,7 @@ Restoring an original removed member makes it visible and callable again.
 
 A removed original field is hidden while a held Field and unchanged caller retain its value.
 
-**Shipped surfaces:** `README.md:77` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:77` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3075` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); `README.md:694` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `CHANGELOG.md:26` (SHA-256 `eb722c76aa6076ad3e20741da1bcab0c610aedda48ac3653d51042e035130a96`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3114` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); `README.md:694` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `CHANGELOG.md:33` (SHA-256 `1af6857843fe3aa7c56137f916c1ab736861d81e450ba447445580fa67a134b2`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -496,7 +496,7 @@ Direct watched cross-class instance-field reads and writes share the owning obje
 
 Lambdas introduced in reloaded bodies execute with current captured values.
 
-**Shipped surfaces:** `README.md:119` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:119` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -520,7 +520,7 @@ Lambdas introduced in reloaded bodies execute with current captured values.
 
 A serializable lambda introduced after reload cannot be serialized in the measured companion path.
 
-**Shipped surfaces:** `README.md:119` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:119` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -544,7 +544,7 @@ A serializable lambda introduced after reload cannot be serialized in the measur
 
 Appending an enum tail updates native values/valueOf without changing surviving ordinals.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -568,7 +568,7 @@ Appending an enum tail updates native values/valueOf without changing surviving 
 
 An already-initialized old enum switch takes its default for an appended constant.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -592,7 +592,7 @@ An already-initialized old enum switch takes its default for an appended constan
 
 Pre-existing EnumMap/EnumSet can use the appended constant.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -616,7 +616,7 @@ Pre-existing EnumMap/EnumSet can use the appended constant.
 
 Removing an enum tail removes values/valueOf while preserving surviving ordinals.
 
-**Shipped surfaces:** `README.md:82` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:82` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -640,7 +640,7 @@ Removing an enum tail removes values/valueOf while preserving surviving ordinals
 
 A reorder does not change live native ordinals and is restart-reported.
 
-**Shipped surfaces:** `README.md:83` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:83` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -664,7 +664,7 @@ A reorder does not change live native ordinals and is restart-reported.
 
 Application-owned old values() arrays are not automatically grown.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -688,7 +688,7 @@ Application-owned old values() arrays are not automatically grown.
 
 Stock-JVM interface identity stays unchanged while eligible edited bodies/later saves run.
 
-**Shipped surfaces:** `README.md:84` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:84` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -712,7 +712,7 @@ Stock-JVM interface identity stays unchanged while eligible edited bodies/later 
 
 Advertised enhanced-JVM added/removed interfaces require their own native acceptance.
 
-**Shipped surfaces:** `README.md:84` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:84` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -736,7 +736,7 @@ Advertised enhanced-JVM added/removed interfaces require their own native accept
 
 Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.
 
-**Shipped surfaces:** `README.md:85` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:85` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `src/main/resources/META-INF/plugin.xml:68` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -760,7 +760,7 @@ Reclazz preserves original hierarchy, applies eligible bodies, pins dependent me
 
 Sequential initialization evidence does not certify concurrent initializer side effects or atomic multi-class reload.
 
-**Shipped surfaces:** `docs/usage.md:3187` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3226` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -784,7 +784,7 @@ Sequential initialization evidence does not certify concurrent initializer side 
 
 Compile-time constants and narrow primitive constant conversions have component evidence.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3141` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -808,7 +808,7 @@ Compile-time constants and narrow primitive constant conversions have component 
 
 Intertwined/guarded static initializer shapes are refused by the component slicer.
 
-**Shipped surfaces:** `README.md:80` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:80` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -832,7 +832,7 @@ Intertwined/guarded static initializer shapes are refused by the component slice
 
 Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `docs/usage.md:3102` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `docs/usage.md:3141` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -856,7 +856,7 @@ Nested conditionals, wide/decimal/object/null/source-order/short-circuit values 
 
 Load-time transformation retains selected reflection metadata in component fixtures.
 
-**Shipped surfaces:** `README.md:746` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:746` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -880,7 +880,7 @@ Load-time transformation retains selected reflection metadata in component fixtu
 
 Original serialVersionUID and selected no-agent-to-transformed deserialization have component evidence.
 
-**Shipped surfaces:** `README.md:768` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:768` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); `src/main/resources/META-INF/plugin.xml:84` (SHA-256 `2c2fd1b22dfa98debd2f53271c8fa3c43d72febf9479e14b84c7249df440acbe`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -904,7 +904,7 @@ Original serialVersionUID and selected no-agent-to-transformed deserialization h
 
 Added-field store writes on a clone and original remain isolated in component fixtures.
 
-**Shipped surfaces:** `README.md:774` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:774` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -928,7 +928,7 @@ Added-field store writes on a clone and original remain isolated in component fi
 
 Transient added-field storage has component evidence; post-reload initializer/deserialization interaction needs watched acceptance.
 
-**Shipped surfaces:** `README.md:774` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:774` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -952,7 +952,7 @@ Transient added-field storage has component evidence; post-reload initializer/de
 
 Published stack-frame and logging-method-name observations need their own source/line acceptance.
 
-**Shipped surfaces:** `README.md:752` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:752` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -976,7 +976,7 @@ Published stack-frame and logging-method-name observations need their own source
 
 Listed instance/static synchronized and exceptional-exit fixtures retain their monitor policy after structural reload.
 
-**Shipped surfaces:** `README.md:821` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:821` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1000,7 +1000,7 @@ Listed instance/static synchronized and exceptional-exit fixtures retain their m
 
 The published any-JDK17+/provider matrix is broader than the two executed stock runtime cells.
 
-**Shipped surfaces:** `README.md:659` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:659` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1024,7 +1024,7 @@ The published any-JDK17+/provider matrix is broader than the two executed stock 
 
 Advertised JDK26 enum/Unsafe fallback requires an actual JDK26 native run.
 
-**Shipped surfaces:** `README.md:81` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:81` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1054,7 +1054,7 @@ This package maps current registration, recreation, injection, factory, lifecycl
 
 A new direct component becomes a live bean without restarting.
 
-**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1076,7 +1076,7 @@ A new direct component becomes a live bean without restarting.
 
 A new component is admitted only by the active profile.
 
-**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1098,7 +1098,7 @@ A new component is admitted only by the active profile.
 
 New component conditions use the live application context before class initialization.
 
-**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1120,7 +1120,7 @@ New component conditions use the live application context before class initializ
 
 New lazy singleton waits for first lookup.
 
-**Shipped surfaces:** `docs/usage.md:380` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:410` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1142,7 +1142,7 @@ New lazy singleton waits for first lookup.
 
 New prototype lookup creates a fresh instance; native prototype cleanup belongs to caller.
 
-**Shipped surfaces:** `docs/usage.md:383` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:413` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1164,7 +1164,7 @@ New prototype lookup creates a fresh instance; native prototype cleanup belongs 
 
 A custom component stereotype and AliasFor bean name register through native naming.
 
-**Shipped surfaces:** `docs/usage.md:376` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:406` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1186,7 +1186,7 @@ A custom component stereotype and AliasFor bean name register through native nam
 
 New components support native constructor injection.
 
-**Shipped surfaces:** `README.md:113` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:113` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1208,7 +1208,7 @@ New components support native constructor injection.
 
 An edited plain singleton is recreated and loses mutable instance state.
 
-**Shipped surfaces:** `README.md:86` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:86` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1252,7 +1252,7 @@ A live manually wired singleton holder is repointed to the recreated bean.
 
 Autowired added to an existing warmed field is satisfied after refresh.
 
-**Shipped surfaces:** `README.md:88` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:88` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1274,7 +1274,7 @@ Autowired added to an existing warmed field is satisfied after refresh.
 
 Value added to an existing warmed field resolves the live property.
 
-**Shipped surfaces:** `README.md:88` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:88` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1296,7 +1296,7 @@ Value added to an existing warmed field resolves the live property.
 
 Resource added to an existing warmed field resolves the named bean.
 
-**Shipped surfaces:** `README.md:88` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:88` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1318,7 +1318,7 @@ Resource added to an existing warmed field resolves the named bean.
 
 New private instance Bean factory on lite Configuration registers, replaces, removes and recovers.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1340,7 +1340,7 @@ New private instance Bean factory on lite Configuration registers, replaces, rem
 
 Saved factory reference parameters use native qualifier selection.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1362,7 +1362,7 @@ Saved factory reference parameters use native qualifier selection.
 
 Added factory list/map/Optional arguments preserve measured native resolution.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1384,7 +1384,7 @@ Added factory list/map/Optional arguments preserve measured native resolution.
 
 An added factory provider stays lazy and resolves the current target after retirement.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1406,7 +1406,7 @@ An added factory provider stays lazy and resolves the current target after retir
 
 Added factories convert measured int, long and double Value arguments.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1428,7 +1428,7 @@ Added factories convert measured int, long and double Value arguments.
 
 Factory Set/Collection/reference-array arguments use native resolution.
 
-**Shipped surfaces:** `docs/usage.md:512` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:542` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1450,7 +1450,7 @@ Factory Set/Collection/reference-array arguments use native resolution.
 
 All eight primitive Value conversions and reference nulls work.
 
-**Shipped surfaces:** `docs/usage.md:519` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:549` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1472,7 +1472,7 @@ All eight primitive Value conversions and reference nulls work.
 
 Checked scalar property edits recreate an already added unproxied factory product.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1494,7 +1494,7 @@ Checked scalar property edits recreate an already added unproxied factory produc
 
 Factory names/aliases follow edits, removal and recovery without duplicate singleton products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1516,7 +1516,7 @@ Factory names/aliases follow edits, removal and recovery without duplicate singl
 
 Saved factory qualifiers and parameter qualifiers select matching native candidates.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1538,7 +1538,7 @@ Saved factory qualifiers and parameter qualifiers select matching native candida
 
 Saved Primary metadata updates default selection and reports ambiguity.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1560,7 +1560,7 @@ Saved Primary metadata updates default selection and reports ambiguity.
 
 Saved method Conditional admits/rejects against the live context and retires old products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1582,7 +1582,7 @@ Saved method Conditional admits/rejects against the live context and retires old
 
 Direct Boot ConditionalOnProperty uses the measured native decision on added factories.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1604,7 +1604,7 @@ Direct Boot ConditionalOnProperty uses the measured native decision on added fac
 
 Direct Boot ConditionalOnBean uses the measured native decision on added factories.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1626,7 +1626,7 @@ Direct Boot ConditionalOnBean uses the measured native decision on added factori
 
 Direct Boot ConditionalOnMissingBean uses the measured native decision on added factories.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1648,7 +1648,7 @@ Direct Boot ConditionalOnMissingBean uses the measured native decision on added 
 
 Saved direct factory Profile expressions re-evaluate admitted products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1670,7 +1670,7 @@ Saved direct factory Profile expressions re-evaluate admitted products.
 
 Added prototype factory creates distinct lookup products.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1692,7 +1692,7 @@ Added prototype factory creates distinct lookup products.
 
 Added lazy factory waits for first lookup and keeps singleton identity.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1714,7 +1714,7 @@ Added lazy factory waits for first lookup and keeps singleton identity.
 
 Full enhanced Configuration inter-bean calls preserve container singleton identity across saves.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1736,7 +1736,7 @@ Full enhanced Configuration inter-bean calls preserve container singleton identi
 
 Full factory calls preserve supported explicit/prototype arguments and held method references.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1758,7 +1758,7 @@ Full factory calls preserve supported explicit/prototype arguments and held meth
 
 Static companion factories register/replace/retire products with native lifecycle.
 
-**Shipped surfaces:** `docs/usage.md:570` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:600` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1780,7 +1780,7 @@ Static companion factories register/replace/retire products with native lifecycl
 
 Static factories retain plain Java call semantics outside container lookup.
 
-**Shipped surfaces:** `README.md:87` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:87` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1802,7 +1802,7 @@ Static factories retain plain Java call semantics outside container lookup.
 
 Entirely new PostConstruct initializes after injection and before InitializingBean.
 
-**Shipped surfaces:** `README.md:89` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:89` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1824,7 +1824,7 @@ Entirely new PostConstruct initializes after injection and before InitializingBe
 
 Entirely new PreDestroy remains owed per instance through metadata edits/removal and context close.
 
-**Shipped surfaces:** `README.md:89` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:89` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1846,7 +1846,7 @@ Entirely new PreDestroy remains owed per instance through metadata edits/removal
 
 InitializingBean and DisposableBean retain native callback ordering during recreation.
 
-**Shipped surfaces:** `README.md:89` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:89` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1868,7 +1868,7 @@ InitializingBean and DisposableBean retain native callback ordering during recre
 
 First transaction/cache operations added to a plain singleton use real native interceptors.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1890,7 +1890,7 @@ First transaction/cache operations added to a plain singleton use real native in
 
 Added operations invoked through an old CGLIB reference use real interceptors and retain target identity.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1912,7 +1912,7 @@ Added operations invoked through an old CGLIB reference use real interceptors an
 
 A checked exception from an added transactional method rolls back the real database write.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1934,7 +1934,7 @@ A checked exception from an added transactional method rolls back the real datab
 
 Added Cacheable executes once for a repeated key.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1956,7 +1956,7 @@ Added Cacheable executes once for a repeated key.
 
 Added CachePut updates the native cache entry.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1978,7 +1978,7 @@ Added CachePut updates the native cache entry.
 
 Added CacheEvict removes the native entry so next lookup executes again.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2000,7 +2000,7 @@ Added CacheEvict removes the native entry so next lookup executes again.
 
 Native self invocation stays outside transaction interception.
 
-**Shipped surfaces:** `docs/usage.md:1975` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:2005` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2022,7 +2022,7 @@ Native self invocation stays outside transaction interception.
 
 Supported composed transaction aliases follow saves through held proxy and affect DB rollback/readOnly.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2044,7 +2044,7 @@ Supported composed transaction aliases follow saves through held proxy and affec
 
 Supported composed cache aliases/conditions follow saves through held proxy and affect real cache entries.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2066,7 +2066,7 @@ Supported composed cache aliases/conditions follow saves through held proxy and 
 
 Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB singleton proxies.
 
-**Shipped surfaces:** `README.md:100` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:100` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2088,7 +2088,7 @@ Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB sing
 
 Added/saved PreAuthorize and PostAuthorize enforce real authentication/authorization through a held native proxy.
 
-**Shipped surfaces:** `README.md:99` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:99` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2110,7 +2110,7 @@ Added/saved PreAuthorize and PostAuthorize enforce real authentication/authoriza
 
 Fixed composed policy markers enforce saved native pre/post authorization through the held proxy.
 
-**Shipped surfaces:** `README.md:99` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:99` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2198,7 +2198,7 @@ Edited web security configuration rebuilds a live filter chain and changes route
 
 Reloading an annotated class evicts existing native caches.
 
-**Shipped surfaces:** `README.md:103` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:103` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2242,7 +2242,7 @@ Ordinary registration/factories/injection/AOP watcher behavior is established on
 
 Edited original-method Transactional metadata is re-read.
 
-**Shipped surfaces:** `README.md:114` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:114` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2264,7 +2264,7 @@ Edited original-method Transactional metadata is re-read.
 
 Edited original-method Cacheable metadata is re-read.
 
-**Shipped surfaces:** `README.md:114` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:114` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2286,7 +2286,7 @@ Edited original-method Cacheable metadata is re-read.
 
 Added operations honor class-level transaction defaults.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2308,7 +2308,7 @@ Added operations honor class-level transaction defaults.
 
 Added operations honor CacheConfig defaults and saved parameter names.
 
-**Shipped surfaces:** `README.md:98` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:98` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2330,7 +2330,7 @@ Added operations honor CacheConfig defaults and saved parameter names.
 
 Security chain replacement preserves the rebuilt chain identity.
 
-**Shipped surfaces:** `README.md:115` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:115` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2352,7 +2352,7 @@ Security chain replacement preserves the rebuilt chain identity.
 
 Spring 6 added factory conditions match native startup and saved metadata.
 
-**Shipped surfaces:** `docs/usage.md:405` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:435` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -3096,7 +3096,7 @@ Machine record: [p3c-callbacks-data.json](feature-evidence/p3c-callbacks-data.js
 
 An added direct @Scheduled timer fires, follows repeated edits, stops on annotation/method removal and resumes on restoration.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3120,7 +3120,7 @@ An added direct @Scheduled timer fires, follows repeated edits, stops on annotat
 
 Scheduled callbacks resolve the current singleton after external replacement and cancel on context close.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3144,7 +3144,7 @@ Scheduled callbacks resolve the current singleton after external replacement and
 
 A newly added timer on a standard cache CGLIB proxy updates its target and retains existing cache advice.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3168,7 +3168,7 @@ A newly added timer on a standard cache CGLIB proxy updates its target and retai
 
 Repeatable @Schedules metadata produces two native registrations with saved time units.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3192,7 +3192,7 @@ Repeatable @Schedules metadata produces two native registrations with saved time
 
 Failed partial scheduler registration cancels partial work and a later valid save registers exactly once.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3216,7 +3216,7 @@ Failed partial scheduler registration cancels partial work and a later valid sav
 
 Unsupported return/argument/static/mixed callback declarations are refused during inspection.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3240,7 +3240,7 @@ Unsupported return/argument/static/mixed callback declarations are refused durin
 
 A prototype is not instantiated to schedule an added method; refusal is named.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3264,7 +3264,7 @@ A prototype is not instantiated to schedule an added method; refusal is named.
 
 An added listener receives only matching publications, follows body/condition edits and stops/restores without duplicate deliveries.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3288,7 +3288,7 @@ An added listener receives only matching publications, follows body/condition ed
 
 An added event listener resolves its replacement singleton without duplicating existing listeners.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3312,7 +3312,7 @@ An added event listener resolves its replacement singleton without duplicating e
 
 An added event listener on a standard cache proxy reaches the target while existing cache advice remains effective.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3336,7 +3336,7 @@ An added event listener on a standard cache proxy reaches the target while exist
 
 A single returned event is republished once with its identity, updated body and null/condition/error/removal behavior.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3360,7 +3360,7 @@ A single returned event is republished once with its identity, updated body and 
 
 Named SpEL conditions, bean references and @Order are retained in component delivery.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3384,7 +3384,7 @@ Named SpEL conditions, bean references and @Order are retained in component deli
 
 Debug local-variable parameter names support a named event condition when MethodParameters is absent.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3408,7 +3408,7 @@ Debug local-variable parameter names support a named event condition when Method
 
 Prototype and unsupported custom advisor proxies retire the prior added registration and report refusal.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3432,7 +3432,7 @@ Prototype and unsupported custom advisor proxies retire the prior added registra
 
 Custom event listener factories are refused instead of bypassed.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3456,7 +3456,7 @@ Custom event listener factories are refused instead of bypassed.
 
 Unsupported declared result shapes are refused before invocation or publication.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3480,7 +3480,7 @@ Unsupported declared result shapes are refused before invocation or publication.
 
 Unsupported actual values behind Object fail before publication and a supported value subsequently recovers.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3504,7 +3504,7 @@ Unsupported actual values behind Object fail before publication and a supported 
 
 Added transactional delivery honors BEFORE-COMMIT with real JDBC commit/rollback effects.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3528,7 +3528,7 @@ Added transactional delivery honors BEFORE-COMMIT with real JDBC commit/rollback
 
 Added transactional delivery honors AFTER-COMMIT with real JDBC commit/rollback effects.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3552,7 +3552,7 @@ Added transactional delivery honors AFTER-COMMIT with real JDBC commit/rollback 
 
 Added transactional delivery honors AFTER-ROLLBACK with real JDBC commit/rollback effects.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3576,7 +3576,7 @@ Added transactional delivery honors AFTER-ROLLBACK with real JDBC commit/rollbac
 
 Added transactional delivery honors AFTER-COMPLETION with real JDBC commit/rollback effects.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3600,7 +3600,7 @@ Added transactional delivery honors AFTER-COMPLETION with real JDBC commit/rollb
 
 Replacement/removal retires old queued transaction callbacks; new events use current declarations and restoration recovers.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3624,7 +3624,7 @@ Replacement/removal retires old queued transaction callbacks; new events use cur
 
 Fallback enabled transaction listeners deliver outside a transaction while saved conditions remain active.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3648,7 +3648,7 @@ Fallback enabled transaction listeners deliver outside a transaction while saved
 
 A before-commit listener exception rolls back actual JDBC writes.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3672,7 +3672,7 @@ A before-commit listener exception rolls back actual JDBC writes.
 
 An after-commit listener failure cannot undo committed rows or suppress completion listeners.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3696,7 +3696,7 @@ An after-commit listener failure cannot undo committed rows or suppress completi
 
 Missing/custom transactional factories refuse delivery and name the missing infrastructure.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3720,7 +3720,7 @@ Missing/custom transactional factories refuse delivery and name the missing infr
 
 Editing an added listener from AFTER_COMMIT to BEFORE_COMMIT while a transaction is open retires its old queued event.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3744,7 +3744,7 @@ Editing an added listener from AFTER_COMMIT to BEFORE_COMMIT while a transaction
 
 An added CompletableFuture service method submits on saved executors and retained old/current receivers see refreshed behavior.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3768,7 +3768,7 @@ An added CompletableFuture service method submits on saved executors and retaine
 
 Checked worker failure rolls back writes and cancelling before execution prevents body execution.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3792,7 +3792,7 @@ Checked worker failure rolls back writes and cancelling before execution prevent
 
 Async annotation removal restores synchronous calls; method removal refuses held call sites; restoration and self-call semantics persist.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3816,7 +3816,7 @@ Async annotation removal restores synchronous calls; method removal refuses held
 
 Standalone void async calls use configured default executor and native uncaught handler.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3840,7 +3840,7 @@ Standalone void async calls use configured default executor and native uncaught 
 
 Future and CompletableFuture result/error behavior is compared with native Spring async proxy behavior.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3864,7 +3864,7 @@ Future and CompletableFuture result/error behavior is compared with native Sprin
 
 Concrete nested generic metadata is retained for native consumers.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3888,7 +3888,7 @@ Concrete nested generic metadata is retained for native consumers.
 
 Unsupported declared async return types and unresolved generics refuse before submission.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3912,7 +3912,7 @@ Unsupported declared async return types and unresolved generics refuse before su
 
 Returning an exceptional Future does not retroactively roll back the worker transaction.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3936,7 +3936,7 @@ Returning an exceptional Future does not retroactively roll back the worker tran
 
 Spring 5 async cache stores the body-returned inner Future while callers receive distinct outer Futures.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3960,7 +3960,7 @@ Spring 5 async cache stores the body-returned inner Future while callers receive
 
 Added async event delivery honors executor changes, conditions, captured admitted work, worker rollback and removal.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -3984,7 +3984,7 @@ Added async event delivery honors executor changes, conditions, captured admitte
 
 Invoking the native registered scheduled Runnable submits to current async executors while already admitted work keeps its body/target.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4008,7 +4008,7 @@ Invoking the native registered scheduled Runnable submits to current async execu
 
 Configured/default and saved qualified executors match native Spring async proxy submission.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4032,7 +4032,7 @@ Configured/default and saved qualified executors match native Spring async proxy
 
 Native named taskExecutor is selected without an explicit AsyncConfigurer.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4056,7 +4056,7 @@ Native named taskExecutor is selected without an explicit AsyncConfigurer.
 
 Missing, duplicate, custom and reordered async infrastructure refuse before body execution.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4080,7 +4080,7 @@ Missing, duplicate, custom and reordered async infrastructure refuse before body
 
 Custom annotation, foreign and duplicated async advisors cannot be silently bypassed.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4104,7 +4104,7 @@ Custom annotation, foreign and duplicated async advisors cannot be silently bypa
 
 Added public callbacks use native transactions with real commit/checked rollback across advice removal and restoration.
 
-**Shipped surfaces:** `docs/usage.md:1798` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:1828` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4128,7 +4128,7 @@ Added public callbacks use native transactions with real commit/checked rollback
 
 Successful callback eviction, failed eviction retention and cached returned-event publication retain native cache semantics.
 
-**Shipped surfaces:** `docs/usage.md:1798` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:1828` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4152,7 +4152,7 @@ Successful callback eviction, failed eviction retention and cached returned-even
 
 Advised private/final/generic and unsupported owner shapes are refused at callback inspection.
 
-**Shipped surfaces:** `docs/usage.md:1798` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:1828` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4176,7 +4176,7 @@ Advised private/final/generic and unsupported owner shapes are refused at callba
 
 Composed transaction/cache/security operation annotations on added callbacks behave at runtime.
 
-**Shipped surfaces:** `docs/usage.md:1798` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:1828` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Outside advertised supported callback-operation subset; no expansion authorized.
 
@@ -4200,7 +4200,7 @@ Composed transaction/cache/security operation annotations on added callbacks beh
 
 A new entity on a prepared schema becomes available to an already-injected JPA client and round-trips real H2 rows.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** jpaRefresh=true; sole standard Spring ORM/Hibernate unit with prepared validate schema; autoCompile varied explicitly.
 
@@ -4224,7 +4224,7 @@ A new entity on a prepared schema becomes available to an already-injected JPA c
 
 A failed new-entity validation retry refuses changed field/column metadata until the original mapping is restored.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** jpaRefresh=true; supported validate mode and original pending mapping.
 
@@ -4248,7 +4248,7 @@ A failed new-entity validation retry refuses changed field/column metadata until
 
 Missing table/column or wrong type retains the old factory/data; prepared retry installs mapping and clears only its own reason.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4272,7 +4272,7 @@ Missing table/column or wrong type retains the old factory/data; prepared retry 
 
 Successful validate rebuild retires old native factory and already-injected clients see persisted new/existing entities.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4296,7 +4296,7 @@ Successful validate rebuild retires old native factory and already-injected clie
 
 Conflicting schema/custom-provider overrides cannot turn a supported prepared-schema validation into DDL or skip validation.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4320,7 +4320,7 @@ Conflicting schema/custom-provider overrides cannot turn a supported prepared-sc
 
 Missing opt-in or ambiguous persistence units retain existing factory identities.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4344,7 +4344,7 @@ Missing opt-in or ambiguous persistence units retain existing factory identities
 
 An old-factory close failure after successful swap is reported as installed with retirement failure.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4368,7 +4368,7 @@ An old-factory close failure after successful swap is reported as installed with
 
 A JPQL @Query edit reaches an existing HTTP holder and current repository without restarting the app.
 
-**Shipped surfaces:** `docs/usage.md:2953` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:2992` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4392,7 +4392,7 @@ A JPQL @Query edit reaches an existing HTTP holder and current repository withou
 
 Native Spring Data JPQL query caches are refreshed through wired holders and tracked dependents.
 
-**Shipped surfaces:** `docs/usage.md:2953` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:2992` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4416,7 +4416,7 @@ Native Spring Data JPQL query caches are refreshed through wired holders and tra
 
 An already-injected Spring Data repository remains usable after a native EntityManagerFactory swap.
 
-**Shipped surfaces:** `docs/usage.md:2953` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:2992` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4440,7 +4440,7 @@ An already-injected Spring Data repository remains usable after a native EntityM
 
 Persistent field additions/removals are detected before redefinition without mistaking injected/unmapped fields for schema edits.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4464,7 +4464,7 @@ Persistent field additions/removals are detected before redefinition without mis
 
 For ddl-auto update the restart advice does not falsely demand manual column creation.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4488,7 +4488,7 @@ For ddl-auto update the restart advice does not falsely demand manual column cre
 
 For ddl-auto validate the advice requires the column before restarting.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4512,7 +4512,7 @@ For ddl-auto validate the advice requires the column before restarting.
 
 Existing-field refresh on a stock VM declines silently and only schema-creating settings qualify for the enhanced path.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4536,7 +4536,7 @@ Existing-field refresh on a stock VM declines silently and only schema-creating 
 
 Existing-field refresh ddl policy accepts update/create/create-drop and refuses validate/none/unknown/unreadable.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4560,7 +4560,7 @@ Existing-field refresh ddl policy accepts update/create/create-drop and refuses 
 
 Existing entity persistent-field edits reach rebuilt mappings and database on enhanced redefinition VMs.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** jpaRefresh=true plus enhanced structural redefinition and supported schema-creating setting.
 
@@ -4584,7 +4584,7 @@ Existing entity persistent-field edits reach rebuilt mappings and database on en
 
 The prepared-schema/new-entity path works on Spring5/Boot2 JPA.
 
-**Shipped surfaces:** `README.md:112` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:112` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4728,7 +4728,7 @@ A watched DAO class edit triggers real native L2/query eviction.
 
 Added ordinary and async event callbacks work in the measured Spring6 native transaction-enabled context; the historical cell ID is retained.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Native @EnableTransactionManagement, plus EnableAsync or EnableCaching where the observing fixture uses it; startup javaagent and compiled watched saves. No new agent option.
 
@@ -4752,7 +4752,7 @@ Added ordinary and async event callbacks work in the measured Spring6 native tra
 
 Added transaction-phase callbacks work with Spring6 native RestrictedTransactionalEventListenerFactory across commit, rollback, queued replacement, removal and restoration; the historical cell ID is retained.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Native @EnableTransactionManagement, plus EnableAsync or EnableCaching where the observing fixture uses it; startup javaagent and compiled watched saves. No new agent option.
 
@@ -4776,7 +4776,7 @@ Added transaction-phase callbacks work with Spring6 native RestrictedTransaction
 
 An existing reflected scheduled timer follows saved intervals/current singleton and cancels every retired instance across repeated saves.
 
-**Shipped surfaces:** `README.md:175` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:175` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4800,7 +4800,7 @@ An existing reflected scheduled timer follows saved intervals/current singleton 
 
 Reflected existing event adapters refresh only the affected class without multiplying unrelated/manual listeners.
 
-**Shipped surfaces:** `README.md:176` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:176` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4824,7 +4824,7 @@ Reflected existing event adapters refresh only the affected class without multip
 
 Repeated native async reprocessing retains exactly one configured advisor and one delivery per invocation.
 
-**Shipped surfaces:** `README.md:179` (SHA-256 `fd1bddf07e8e499acb11820835bf4ede05b8b9f3a6772f98b3fc5432e2a10f68`).
+**Shipped surfaces:** `README.md:179` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4848,7 +4848,7 @@ Repeated native async reprocessing retains exactly one configured advisor and on
 
 An edited SQL @Query(nativeQuery=true) reaches existing wired repositories after watcher reload.
 
-**Shipped surfaces:** `docs/usage.md:2953` (SHA-256 `f04bc9ef2191c5dac5258a57bf40cfdc3f5db28a14421c9066a0f0cc0b126b70`).
+**Shipped surfaces:** `docs/usage.md:2992` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4865,3 +4865,3009 @@ An edited SQL @Query(nativeQuery=true) reaches existing wired repositories after
 **Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Mapped query fixtures use JPQL and never set nativeQuery=true; their framework-native query caches do not prove SQL-native semantics.
 
 **Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
+
+## P5 — Properties, XML, messages and templates
+
+This evidence package separates actual fields, bound values, singleton identities, native message lookups and cached template renders from component-only contracts and missing environments. Unsupported XML guards prove refusal, not live metadata/product refresh. Native engine dependencies are test-only; agent production sources are unchanged.
+
+Machine record: [p5-resources.json](feature-evidence/p5-resources.json); manifest: [p5-cells.txt](feature-evidence/p5-cells.txt). Independent Claude audit is pending.
+
+### P5-VALUE-FIELD
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Supported computed scalar fields change with the accepted property candidate while singleton identity stays the same.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueFieldReloadTest#computedFieldsUpdateRejectInvalidSavesAndRecoverWithoutRestart` (watcher): PROBE1=8000:25:new:8:4:new:0:same; PROBE3 recovered=10000:20:recovered; context/field values both checked. `com.onurkat.reclazz.e2e.ModernComputedValueFieldReloadTest#computedFieldsUpdateRejectInvalidSavesAndRecoverWithoutRestart` (watcher): PROBE1=8000:25:new:8:4:new:0:same; PROBE3 recovered=10000:20:recovered; context/field values both checked.
+
+**Observable:** Supported computed scalar fields change with the accepted property candidate while singleton identity stays the same.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-FIELD-REJECT
+
+**Verdict:** EXPECTED.
+
+Division-by-zero candidate keeps field values and Environment at the last accepted values.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueFieldReloadTest#computedFieldsUpdateRejectInvalidSavesAndRecoverWithoutRestart` (watcher): PROBE2 identical to PROBE1 after rejected divisor0 save. `com.onurkat.reclazz.e2e.ModernComputedValueFieldReloadTest#computedFieldsUpdateRejectInvalidSavesAndRecoverWithoutRestart` (watcher): PROBE2 identical to PROBE1 after rejected divisor0 save.
+
+**Observable:** Division-by-zero candidate keeps field values and Environment at the last accepted values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-FIELD-UNSAFE
+
+**Verdict:** EXPECTED.
+
+Unsupported method-call expression does not run its body or change live field/configuration values.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueFieldReloadTest#computedFieldsUpdateRejectInvalidSavesAndRecoverWithoutRestart` (watcher): Uncheckable plus PROBE4 kept recovered values and sideEffect calls0. `com.onurkat.reclazz.e2e.ModernComputedValueFieldReloadTest#computedFieldsUpdateRejectInvalidSavesAndRecoverWithoutRestart` (watcher): Uncheckable plus PROBE4 kept recovered values and sideEffect calls0.
+
+**Observable:** Unsupported method-call expression does not run its body or change live field/configuration values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-CONSTRUCTOR
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Accepted computed constructor values recreate the singleton and heal an already-held registered singleton reference.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueConstructorReloadTest#computedConstructorUpdatesRejectsAndRecoversWithoutRestart` (watcher): PROBE1 constructions2, healed; recovery constructions3, healed. `com.onurkat.reclazz.e2e.ModernComputedValueConstructorReloadTest#computedConstructorUpdatesRejectsAndRecoversWithoutRestart` (watcher): PROBE1 constructions2, healed; recovery constructions3, healed.
+
+**Observable:** Accepted computed constructor values recreate the singleton and heal an already-held registered singleton reference.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-CONSTRUCTOR-REJECT
+
+**Verdict:** EXPECTED.
+
+Rejected computed constructor candidate does not construct a replacement or alter the holder/configuration.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueConstructorReloadTest#computedConstructorUpdatesRejectsAndRecoversWithoutRestart` (watcher): PROBE2 same as1; constructions2, calls0, healed. `com.onurkat.reclazz.e2e.ModernComputedValueConstructorReloadTest#computedConstructorUpdatesRejectsAndRecoversWithoutRestart` (watcher): PROBE2 same as1; constructions2, calls0, healed.
+
+**Observable:** Rejected computed constructor candidate does not construct a replacement or alter the holder/configuration.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-CONSTRUCTOR-UNSAFE
+
+**Verdict:** EXPECTED.
+
+Unsupported computed constructor expression is held before its side-effect or replacement constructor runs.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueConstructorReloadTest#computedConstructorUpdatesRejectsAndRecoversWithoutRestart` (watcher): PROBE4 equals recovered, constructions3, calls0. `com.onurkat.reclazz.e2e.ModernComputedValueConstructorReloadTest#computedConstructorUpdatesRejectsAndRecoversWithoutRestart` (watcher): PROBE4 equals recovered, constructions3, calls0.
+
+**Observable:** Unsupported computed constructor expression is held before its side-effect or replacement constructor runs.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-TEXT-TEMPLATE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A scalar mixed text/SpEL @Value template follows supported property saves.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueTemplateReloadTest#templateValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): host:9 -> host:11 -> host:21; [1/2] -> [3/4] -> [5/6]; plain label new/recovered. `com.onurkat.reclazz.e2e.ModernComputedValueTemplateReloadTest#templateValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): host:9 -> host:11 -> host:21; [1/2] -> [3/4] -> [5/6]; plain label new/recovered.
+
+**Observable:** A scalar mixed text/SpEL @Value template follows supported property saves.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-TEXT-UNSAFE
+
+**Verdict:** EXPECTED.
+
+Unsupported expression inside a scalar @Value text template holds all fields and can recover.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueTemplateReloadTest#templateValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): Uncheckable segment keeps host:11/[3/4]/new, correction changes all. `com.onurkat.reclazz.e2e.ModernComputedValueTemplateReloadTest#templateValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): Uncheckable segment keeps host:11/[3/4]/new, correction changes all.
+
+**Observable:** Unsupported expression inside a scalar @Value text template holds all fields and can recover.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-COLLECTION
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Supported inline SpEL List/Map/Set/primitive-array fields update their actual elements.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueCollectionReloadTest#inlineCollectionValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): Exact List[7,8], Map{x=7,y=8}, Set[7,8], int[][7,8], recovery10/11. `com.onurkat.reclazz.e2e.ModernComputedValueCollectionReloadTest#inlineCollectionValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): Exact List[7,8], Map{x=7,y=8}, Set[7,8], int[][7,8], recovery10/11.
+
+**Observable:** Supported inline SpEL List/Map/Set/primitive-array fields update their actual elements.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-COLLECTION-REJECT
+
+**Verdict:** EXPECTED.
+
+Invalid collection element conversion holds every participating field and correction recovers.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ComputedValueCollectionReloadTest#inlineCollectionValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): oops keeps all accepted7/8 and labelnew, correction10/11. `com.onurkat.reclazz.e2e.ModernComputedValueCollectionReloadTest#inlineCollectionValuesFollowPropertyChangesAndHoldOnUncheckable` (watcher): oops keeps all accepted7/8 and labelnew, correction10/11.
+
+**Observable:** Invalid collection element conversion holds every participating field and correction recovers.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-INDIRECT-CHAIN
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A changed source behind chained placeholders updates computed fields and recreates the constructor consumer/holder.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.IndirectValueDependencyReloadTest#indirectValuesUpdateRejectAndRecoverThroughWatchedSaves` (watcher): PROBE1=8000:8000:25:new:8:4:new:0:2:healed; recovery10000 and constructions3. `com.onurkat.reclazz.e2e.ModernIndirectValueDependencyReloadTest#indirectValuesUpdateRejectAndRecoverThroughWatchedSaves` (watcher): PROBE1=8000:8000:25:new:8:4:new:0:2:healed; recovery10000 and constructions3.
+
+**Observable:** A changed source behind chained placeholders updates computed fields and recreates the constructor consumer/holder.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-INDIRECT-INVALID
+
+**Verdict:** EXPECTED.
+
+Invalid indirect expression holds the prior values and correction retries all pending keys.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.IndirectValueDependencyReloadTest#indirectValuesUpdateRejectAndRecoverThroughWatchedSaves` (watcher): Rejected divisor0 yields PROBE2 equal1; PROBE3 recovered. `com.onurkat.reclazz.e2e.ModernIndirectValueDependencyReloadTest#indirectValuesUpdateRejectAndRecoverThroughWatchedSaves` (watcher): Rejected divisor0 yields PROBE2 equal1; PROBE3 recovered.
+
+**Observable:** Invalid indirect expression holds the prior values and correction retries all pending keys.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-INDIRECT-CYCLE
+
+**Verdict:** EXPECTED.
+
+An introduced placeholder cycle is held without changing accepted live values.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.IndirectValueDependencyReloadTest#indirectValuesUpdateRejectAndRecoverThroughWatchedSaves` (watcher): PROBE4 equals recovered; cyclic save Uncheckable. `com.onurkat.reclazz.e2e.ModernIndirectValueDependencyReloadTest#indirectValuesUpdateRejectAndRecoverThroughWatchedSaves` (watcher): PROBE4 equals recovered; cyclic save Uncheckable.
+
+**Observable:** An introduced placeholder cycle is held without changing accepted live values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-FACTORY-ARGUMENT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Native @Bean scalar @Value arguments recreate a product and heal an existing holder.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.FactoryValueArgumentReloadTest#factoryArgumentsReloadInOrdinaryLoader` (watcher): Both loader methods PROBE1 constructions2/healed and3 constructions3/healed. `com.onurkat.reclazz.e2e.FactoryValueArgumentReloadTest#factoryArgumentsReloadInChildLoader` (watcher): Both loader methods PROBE1 constructions2/healed and3 constructions3/healed. `com.onurkat.reclazz.e2e.ModernFactoryValueArgumentReloadTest#factoryArgumentsReloadInOrdinaryLoader` (watcher): Both loader methods PROBE1 constructions2/healed and3 constructions3/healed. `com.onurkat.reclazz.e2e.ModernFactoryValueArgumentReloadTest#factoryArgumentsReloadInChildLoader` (watcher): Both loader methods PROBE1 constructions2/healed and3 constructions3/healed.
+
+**Observable:** Native @Bean scalar @Value arguments recreate a product and heal an existing holder.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-FACTORY-REJECT
+
+**Verdict:** EXPECTED.
+
+Invalid native factory argument candidate retains all live values without extra construction.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.FactoryValueArgumentReloadTest#factoryArgumentsReloadInOrdinaryLoader` (watcher): PROBE2 equals1 including constructions2 and calls0. `com.onurkat.reclazz.e2e.FactoryValueArgumentReloadTest#factoryArgumentsReloadInChildLoader` (watcher): PROBE2 equals1 including constructions2 and calls0. `com.onurkat.reclazz.e2e.ModernFactoryValueArgumentReloadTest#factoryArgumentsReloadInOrdinaryLoader` (watcher): PROBE2 equals1 including constructions2 and calls0. `com.onurkat.reclazz.e2e.ModernFactoryValueArgumentReloadTest#factoryArgumentsReloadInChildLoader` (watcher): PROBE2 equals1 including constructions2 and calls0.
+
+**Observable:** Invalid native factory argument candidate retains all live values without extra construction.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-FACTORY-UNSAFE
+
+**Verdict:** EXPECTED.
+
+Unsafe factory argument expression is held without application-code execution.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.FactoryValueArgumentReloadTest#factoryArgumentsReloadInOrdinaryLoader` (watcher): PROBE4 equals recovered and sideEffect calls0. `com.onurkat.reclazz.e2e.FactoryValueArgumentReloadTest#factoryArgumentsReloadInChildLoader` (watcher): PROBE4 equals recovered and sideEffect calls0. `com.onurkat.reclazz.e2e.ModernFactoryValueArgumentReloadTest#factoryArgumentsReloadInOrdinaryLoader` (watcher): PROBE4 equals recovered and sideEffect calls0. `com.onurkat.reclazz.e2e.ModernFactoryValueArgumentReloadTest#factoryArgumentsReloadInChildLoader` (watcher): PROBE4 equals recovered and sideEffect calls0.
+
+**Observable:** Unsafe factory argument expression is held without application-code execution.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-ADDED-FACTORY-ARGUMENT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A factory added after startup recreates its product when a scalar @Value dependency changes.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): Four normal/child and full/lite configuration combinations; PROBE1 current product+holder+alias=true, physical added factory absent. `com.onurkat.reclazz.e2e.ModernAddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): Four normal/child and full/lite configuration combinations; PROBE1 current product+holder+alias=true, physical added factory absent.
+
+**Observable:** A factory added after startup recreates its product when a scalar @Value dependency changes.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-ADDED-FACTORY-LIFECYCLE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Repeated property recreation retires old added-factory products and closes the current one once.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): Built2/3/5 and closed1/2/4; CLOSED5 at context close. `com.onurkat.reclazz.e2e.ModernAddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): Built2/3/5 and closed1/2/4; CLOSED5 at context close.
+
+**Observable:** Repeated property recreation retires old added-factory products and closes the current one once.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-ADDED-FACTORY-DEPENDENCY-EDIT
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Editing the saved added factory installs its new @Value dependency for subsequent property saves.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): RECAPTURED6000 followed by cfg.next9 yields PROBE5 millis9000, healed holder/alias. `com.onurkat.reclazz.e2e.ModernAddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): RECAPTURED6000 followed by cfg.next9 yields PROBE5 millis9000, healed holder/alias.
+
+**Observable:** Editing the saved added factory installs its new @Value dependency for subsequent property saves.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-ADDED-FACTORY-REJECT
+
+**Verdict:** EXPECTED.
+
+Invalid or unsafe values for an added factory hold configuration, existing product and lifecycle counters.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.AddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): PROBE2=1; PROBE4=3 with calls0 and unchanged build/destroy counters. `com.onurkat.reclazz.e2e.ModernAddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits` (watcher): PROBE2=1; PROBE4=3 with calls0 and unchanged build/destroy counters.
+
+**Observable:** Invalid or unsafe values for an added factory hold configuration, existing product and lifecycle counters.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TRANSACTION-PROXY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Property recreation preserves native transactions for constructor/factory products and heals held proxies.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context. Security5.7.11/6.3.4; H2 2.5.250; native JDBC transactions, no reactive manager.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.TransactionProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): PROBE1=8000:8000:4:26000:4:2:healed; recovery10000 both. `com.onurkat.reclazz.e2e.SecurityProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): PROBE1=8000:8000:4:26000:4:2:healed; recovery10000 both. `com.onurkat.reclazz.e2e.ModernSecurityProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): PROBE1=8000:8000:4:26000:4:2:healed; recovery10000 both.
+
+**Observable:** Property recreation preserves native transactions for constructor/factory products and heals held proxies.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TRANSACTION-ROLLBACK
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Recreated property consumers keep real JDBC rollback rather than retaining failed writes.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context. Security5.7.11/6.3.4; H2 2.5.250; native JDBC transactions, no reactive manager.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.TransactionProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): Each probe performs successful and failing writes; SQL count4/6/8 and sum26000/42000/62000 exclude failed rows. `com.onurkat.reclazz.e2e.SecurityProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): Each probe performs successful and failing writes; SQL count4/6/8 and sum26000/42000/62000 exclude failed rows. `com.onurkat.reclazz.e2e.ModernSecurityProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): Each probe performs successful and failing writes; SQL count4/6/8 and sum26000/42000/62000 exclude failed rows.
+
+**Observable:** Recreated property consumers keep real JDBC rollback rather than retaining failed writes.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-SECURITY-PROXY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Property recreation retains unauthenticated/unauthorized refusal and authorized calls on supported native security+transaction proxies.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context. Security5.7.11/6.3.4; H2 2.5.250; native JDBC transactions, no reactive manager.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SecurityProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): Security fixture clears authentication, requires READ/WRITE and asserts credential/access denial before actual SQL; holders healed after replacement. `com.onurkat.reclazz.e2e.ModernSecurityProxyValueReloadTest#watchedSettingsRecreateBothTransactionProductsAndRetainRollback` (watcher): Security fixture clears authentication, requires READ/WRITE and asserts credential/access denial before actual SQL; holders healed after replacement.
+
+**Observable:** Property recreation retains unauthenticated/unauthorized refusal and authorized calls on supported native security+transaction proxies.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-CANDIDATE-REJECT
+
+**Verdict:** EXPECTED.
+
+Invalid Boot2 configuration-properties conversion holds Environment, bound properties and direct fields together.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39 physical properties startup-agent fixture.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.PropertyChangeIsAllOrNothingTest#rejectedSaveKeepsAllValuesAndFixRetriesBothKeys` (watcher): All six values old10 after invalidtimeoutabc, then all new20 after fix.
+
+**Observable:** Invalid Boot2 configuration-properties conversion holds Environment, bound properties and direct fields together.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-CANDIDATE-RECOVERY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Fixing a rejected Boot2 properties save applies both pending keys to existing consumers.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39 physical properties startup-agent fixture.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.PropertyChangeIsAllOrNothingTest#rejectedSaveKeepsAllValuesAndFixRetriesBothKeys` (watcher): All six values new20 after correcting pendingtimeout/address.
+
+**Observable:** Fixing a rejected Boot2 properties save applies both pending keys to existing consumers.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-KEY-REMOVAL
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Removing loaded properties keys reveals startup/default values on existing beans.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#removedPropertiesRevealDefaultsAndRestoreAcrossSaves` (watcher): HTTP10:old:[a]:10:old:10:true ->5:fallback:[default]:5:fallback:5:true.
+
+**Observable:** Removing loaded properties keys reveals startup/default values on existing beans.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-FILE-DELETE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Deleting and restoring a previously loaded properties file updates existing HTTP consumers.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#removedPropertiesRevealDefaultsAndRestoreAcrossSaves` (watcher): Delete ->default5; restoration ->40:again:[q], last true proves same Settings singleton.
+
+**Observable:** Deleting and restoring a previously loaded properties file updates existing HTTP consumers.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-YAML-LIST
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Loaded nested YAML keys and indexed lists reach existing HTTP consumers.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#yamlNestedValuesListsRemovalAndSyntaxRecoveryReachExistingBeans` (watcher): HTTP10/old/[a] ->defaults ->30/restored/[z] ->40/again/[q].
+
+**Observable:** Loaded nested YAML keys and indexed lists reach existing HTTP consumers.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-YAML-DELETE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Deletion/restoration of an identified YAML file reveals defaults then restores its values.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#yamlNestedValuesListsRemovalAndSyntaxRecoveryReachExistingBeans` (watcher): Delete ->5/fallback/[default]; recreate ->40/again/[q]; Settings identitytrue.
+
+**Observable:** Deletion/restoration of an identified YAML file reveals defaults then restores its values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-YAML-REJECT
+
+**Verdict:** EXPECTED.
+
+Malformed YAML and invalid bound values retain last accepted configuration and correction recovers.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#yamlNestedValuesListsRemovalAndSyntaxRecoveryReachExistingBeans` (watcher): Invalid timeout and svc:[broken leave default HTTP body; fixed values then30/restored/[z].
+
+**Observable:** Malformed YAML and invalid bound values retain last accepted configuration and correction recovers.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-PRECEDENCE
+
+**Verdict:** PARTIAL.
+
+Owned file replacement preserves higher/lower property-source precedence and does not stack empty sources.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#fileReplacementPreservesPrecedenceAndEmptyFileOwnership` (component): CommandLine99 masks20/empty; after remove ->30; empty ->lower7; exactly one fixture source.
+
+**Observable:** Owned file replacement preserves higher/lower property-source precedence and does not stack empty sources.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-PROFILES
+
+**Verdict:** EXPECTED.
+
+Active YAML documents keep their source order; activation topology edits are held.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#activeProfileDocumentsKeepTheirOrderAndTopologyChangesAreHeld` (component): dev21 accepted despite inactive invalid; changedselector UNCHECKABLE retains21; fix23.
+
+**Observable:** Active YAML documents keep their source order; activation topology edits are held.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-MULTI-CONTEXT
+
+**Verdict:** PARTIAL.
+
+A conversion rejection in one owning context holds all contexts; valid retry reaches each active profile.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#rejectionInOneContextHoldsAllContextsAndFixRetries` (component): Profiles other/dev retain10/20 onbad; correction12/22.
+
+**Observable:** A conversion rejection in one owning context holds all contexts; valid retry reaches each active profile.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-CAPTURED-CANDIDATE
+
+**Verdict:** PARTIAL.
+
+A boundary applies captured file bytes and a nonrunning boundary does not accept them.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#boundaryUsesOneReadAndANonRunningBoundaryDoesNotAccept` (component): NOT_RUN keeps10; laterwrite30 while captured20 queued applies20 then30 onnext.
+
+**Observable:** A boundary applies captured file bytes and a nonrunning boundary does not accept them.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-PARTIAL-RETRY
+
+**Verdict:** PARTIAL.
+
+A live setter failure is PARTIAL and an identical save remains pending for retry.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#partialSetterFailureRemainsPendingOnAnIdenticalSave` (component): Settings10 but Environment20 afterthrow; identicalretry20, samebean.
+
+**Observable:** A live setter failure is PARTIAL and an identical save remains pending for retry.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-UNOWNED
+
+**Verdict:** EXPECTED.
+
+An inactive/unowned file is refused before becoming an override.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#inactiveOrUnownedFilesNeverBecomeAnOverride` (component): UNCHECKABLE retains10 for application-prod.properties.
+
+**Observable:** An inactive/unowned file is refused before becoming an override.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-OWNERSHIP-REPLACED
+
+**Verdict:** EXPECTED.
+
+External property-source replacement is preserved rather than overwritten by file reload.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#externalSourceReplacementIsNotOverwritten` (component): External88 retained, reload UNCHECKABLE.
+
+**Observable:** External property-source replacement is preserved rather than overwritten by file reload.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-YAML-IMPORT-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Malformed YAML or new config imports do not change live file sources.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#malformedYamlAndImportsDoNotChangeLiveSources` (component): Each UNCHeCKABLE retains10; fixed30 applies.
+
+**Observable:** Malformed YAML or new config imports do not change live file sources.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-READONLY-REMOVAL
+
+**Verdict:** EXPECTED.
+
+Read-only collection removal is held rather than reporting stale values as applied.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#readOnlyCollectionRemovalIsHeldInsteadOfReportingStaleStateAsApplied` (component): UNCHECKABLE, items[a], Environment itema.
+
+**Observable:** Read-only collection removal is held rather than reporting stale values as applied.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-MIXED-ORIGINS
+
+**Verdict:** EXPECTED.
+
+A source containing mixed resource origins cannot own a reloaded file.
+
+**Shipped surfaces:** `docs/usage.md:2144` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringPropertyFilesTest#aSourceWithMixedResourceOriginsCannotOwnAFile` (component): UNCHECKABLE,10 and separate other=value retained.
+
+**Observable:** A source containing mixed resource origins cannot own a reloaded file.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-VALIDATION
+
+**Verdict:** EXPECTED.
+
+Boot validation fallback rejects constraint violations without a validator bean.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#fallbackValidationRejectsWithoutAValidatorBean` (component): No Validator beans; timeout0 leaves Environment10, bean10, Value10.
+
+**Observable:** Boot validation fallback rejects constraint violations without a validator bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-RECORD
+
+**Verdict:** PARTIAL.
+
+A self-validating constructor-bound Boot2 record rejects invalid candidates and binds a valid replacement.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#selfValidatingRecordUsesTheNewInstance` (component): Record0/200 REJECTED stays10;50 APPLIED andrecord50; holder/watcher not observed.
+
+**Observable:** A self-validating constructor-bound Boot2 record rejects invalid candidates and binds a valid replacement.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-TRACKING
+
+**Verdict:** EXPECTED.
+
+Rejected precheck does not write Boot bound-property tracking or live values.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#rejectedCheckDoesNotWriteBootTrackingOrAnyLiveValue` (component): Tracking map equalsbefore; invalidrecord0 holds bothbeans/field10/addressold.
+
+**Observable:** Rejected precheck does not write Boot bound-property tracking or live values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-NATIVE-HOOKS
+
+**Verdict:** PARTIAL.
+
+Named configuration validator and bind-handler advisor participate in candidate validation.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#namedValidatorAndAdvisorAreHonoured` (component): Customlimit50 REJECTED, advisorcallcount grows, bean10.
+
+**Observable:** Named configuration validator and bind-handler advisor participate in candidate validation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-PLACEHOLDERS
+
+**Verdict:** PARTIAL.
+
+Candidate placeholder keys are resolved against the candidate even with a live placeholder configurer.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#placeholdersUseCandidateKeysEvenWithALiveConfigurer` (component): bad svc.limit rejects; candidate/api applied to Bootbean and Valuefield.
+
+**Observable:** Candidate placeholder keys are resolved against the candidate even with a live placeholder configurer.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-IGNORE-FLAGS
+
+**Verdict:** PARTIAL.
+
+Boot strict/lenient binding ignore flags retain native semantics.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#bootIgnoreFlagsArePreserved` (component): Stricttypo REJECTED; lenientabc APPLIED withbean10.
+
+**Observable:** Boot strict/lenient binding ignore flags retain native semantics.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-SCRATCH-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Unsupported scratch constructor or inaccessible native binder prevents candidate application.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#unsupportedScratchConstructorHoldsTheChange` (component): UNCHECKABLE, Env10, unsupportedbean10.
+
+**Observable:** Unsupported scratch constructor or inaccessible native binder prevents candidate application.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-BINDER-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Missing internal Boot binder holds the candidate rather than guessing its behavior.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#missingInternalBinderHoldsTheChange` (component): Classloader hides ConfigurationPropertiesBinder, UNCHECKABLE andEnv10.
+
+**Observable:** Missing internal Boot binder holds the candidate rather than guessing its behavior.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT-APPLY-PARTIAL
+
+**Verdict:** PARTIAL.
+
+Failure only on live application is PARTIAL and is not accepted as an applied candidate.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.PropertyChangeCheckTest#postCheckFailureIsPartialAndNeverAccepted` (component): Partial, acceptedfalse, namedfinding, Environment20; no all-or-nothing live rollback.
+
+**Observable:** Failure only on live application is PARTIAL and is not accepted as an applied candidate.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-CONSTRUCTOR-PARTIAL
+
+**Verdict:** PARTIAL.
+
+A live constructor failure is reported PARTIAL and does not advance accepted state.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.ComputedValueConstructorsTest#liveConstructorFailureIsPartialAndNotAccepted` (component): Constructorcalledtwice, Environment8, acceptedfalse, PARTIAL.
+
+**Observable:** A live constructor failure is reported PARTIAL and does not advance accepted state.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-CONSTRUCTOR-NOCHECK-SIDE-EFFECT
+
+**Verdict:** PARTIAL.
+
+Prechecking and unrelated property saves do not construct or replace the computed constructor consumer.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.ComputedValueConstructorsTest#checkDoesNotConstructAndUnrelatedSaveDoesNotReplace` (component): CheckAPPLIED withmade1; unrelatedsave rebuiltempty, sameoriginal.
+
+**Observable:** Prechecking and unrelated property saves do not construct or replace the computed constructor consumer.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-FACTORY-PARTIAL
+
+**Verdict:** PARTIAL.
+
+A live native factory failure can retire the prior product and is explicitly PARTIAL, not a claim that the old bean survived.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.FactoryValueArgumentsTest#liveFailureIsPartialDoesNotAcceptAndDoesNotClaimOldBeanSurvived` (component): PARTIAL, acceptedfalse, destroyed1, no singletonproduct, Environment8.
+
+**Observable:** A live native factory failure can retire the prior product and is explicitly PARTIAL, not a claim that the old bean survived.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-FACTORY-DEFERRED
+
+**Verdict:** PARTIAL.
+
+Prechecking and application do not instantiate cold lazy/prototype native factories.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.FactoryValueArgumentsTest#lazyAndPrototypeAreNotInstantiatedByCheckOrApplication` (component): APPLIED, built0, rebuiltempty; later creation reads8.
+
+**Observable:** Prechecking and application do not instantiate cold lazy/prototype native factories.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-FACTORY-COLLECTION-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Nonscalar native factory argument is held before recreation.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.FactoryValueArgumentsTest#genericCollectionArgumentIsHeldBeforeNativeRecreation` (component): UNCHECKABLE, primitive/scalar reason, sameproduct.
+
+**Observable:** Nonscalar native factory argument is held before recreation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-FACTORY-OWNER-REFUSAL
+
+**Verdict:** EXPECTED.
+
+A FactoryBean owner is not confused with its cached product during @Value recreation.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.FactoryValueArgumentsTest#factoryBeanOwnershipIsNotConfusedWithItsProduct` (component): UNCHECKABLE/FactoryBean reason, samefactory andproduct.
+
+**Observable:** A FactoryBean owner is not confused with its cached product during @Value recreation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-VALUE-FACTORY-RESOLVER-REFUSAL
+
+**Verdict:** EXPECTED.
+
+A custom expression resolver is refused before candidate precheck can invoke it.
+
+**Shipped surfaces:** `README.md:117` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.FactoryValueArgumentsTest#customResolverCannotExecuteDuringDirectPlaceholderPrecheck` (component): UNCHECKABLE, resolvercalls0, sameoriginal.
+
+**Observable:** A custom expression resolver is refused before candidate precheck can invoke it.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-INDIRECT-CONTEXT-ISOLATION
+
+**Verdict:** PARTIAL.
+
+Indirect dependencies stay context-specific, while a failing relevant context holds a shared candidate.
+
+**Shipped surfaces:** `README.md:116` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.IndirectValueDependenciesTest#contextsKeepSeparateDependenciesAndAllHoldOnOneFailure` (component): Source8 updatesoneconsumer only; otherliteral7 sameidentity; badsource holds labelold inboth.
+
+**Observable:** Indirect dependencies stay context-specific, while a failing relevant context holds a shared candidate.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-IMPORT-OWNER
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Loaded local XML imports outside configured roots update their owner without altering an unrelated context.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext` (watcher): PROBE1 after:2:root-before:other; rootedit ->root-after; isolatedotherunchanged. `com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext` (watcher): PROBE1 after:2:root-before:other; rootedit ->root-after; isolatedotherunchanged.
+
+**Observable:** Loaded local XML imports outside configured roots update their owner without altering an unrelated context.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-IMPORT-NOOP
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+An identical imported XML save does not call its setter again.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext` (watcher): PROBE2 still after:2, not extra setter invocation. `com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext` (watcher): PROBE2 still after:2, not extra setter invocation.
+
+**Observable:** An identical imported XML save does not call its setter again.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-PROTOTYPE-REFUSAL
+
+**Verdict:** EXPECTED.
+
+A scope change to prototype is refused while preserving prior live values.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext` (watcher): scope=prototype warning; PROBE4 still after:2/root-after/other. `com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext` (watcher): scope=prototype warning; PROBE4 still after:2/root-after/other.
+
+**Observable:** A scope change to prototype is refused while preserving prior live values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-WATCHER
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Repeated XML saves use native scalar/generic conversion and an overloaded String setter.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata` (watcher): Class,enum,char,BigDecimal,URI,typed lists/maps andwriterSTRING; repeatednext/before exactprobes. `com.onurkat.reclazz.e2e.ModernSpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata` (watcher): Class,enum,char,BigDecimal,URI,typed lists/maps andwriterSTRING; repeatednext/before exactprobes.
+
+**Observable:** Repeated XML saves use native scalar/generic conversion and an overloaded String setter.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-INVALID
+
+**Verdict:** EXPECTED.
+
+Invalid XML conversion retains the failed property value/raw metadata while a supported sibling still changes.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata` (watcher): Fourth INVALIDmode probe remainsbefore:A:1.0:urn:old:OLD:STRING andmetadataOLD; other4 applies. `com.onurkat.reclazz.e2e.ModernSpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata` (watcher): Fourth INVALIDmode probe remainsbefore:A:1.0:urn:old:OLD:STRING andmetadataOLD; other4 applies.
+
+**Observable:** Invalid XML conversion retains the failed property value/raw metadata while a supported sibling still changes.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-PROPERTY-INTEGRITY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Missing references/invalid primitives keep failed raw definitions and valid correction can be natively recreated.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlPropertyFailureReloadTest#failedEditsPreserveRawValuesAndAllowCorrection` (watcher): PROBE1..3 old1/a;4 new2/b;5 keptvaliddefinition; RECREATED=true:new:2. `com.onurkat.reclazz.e2e.ModernSpringXmlPropertyFailureReloadTest#failedEditsPreserveRawValuesAndAllowCorrection` (watcher): PROBE1..3 old1/a;4 new2/b;5 keptvaliddefinition; RECREATED=true:new:2.
+
+**Observable:** Missing references/invalid primitives keep failed raw definitions and valid correction can be natively recreated.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-METADATA-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Existing depends-on/primary/autowire/candidate edits are named and refused before owner property mutation.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe` (watcher): Three warnings, raw/mergedidentitytrue, beforelabel while siblingsother2..4; metadatarevert permitscorrected. `com.onurkat.reclazz.e2e.ModernSpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe` (watcher): Three warnings, raw/mergedidentitytrue, beforelabel while siblingsother2..4; metadatarevert permitscorrected.
+
+**Observable:** Existing depends-on/primary/autowire/candidate edits are named and refused before owner property mutation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-LAZY-FLAG-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Changed effective lazy-init metadata retains old creation state and values.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent` (watcher): Warm/coldflags edits produceexactwarnings2; coldcount1 until nativecreation ->2. `com.onurkat.reclazz.e2e.ModernSpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent` (watcher): Warm/coldflags edits produceexactwarnings2; coldcount1 until nativecreation ->2.
+
+**Observable:** Changed effective lazy-init metadata retains old creation state and values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-LAZY-EQUIVALENCE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Equivalent explicit/default lazy flags permit subsequent supported properties without eager creation.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent` (watcher): Six saves exactidentityflags/count1 and correctedlabels; CREATED=true:corrected:2 onlyatend. `com.onurkat.reclazz.e2e.ModernSpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent` (watcher): Six saves exactidentityflags/count1 and correctedlabels; CREATED=true:corrected:2 onlyatend.
+
+**Observable:** Equivalent explicit/default lazy flags permit subsequent supported properties without eager creation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-INNER-VALUES
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Changed plain inner bean values use native value resolution and preserve the outer singleton.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher` (watcher): PROBE2 true:true:new:after:after:1:1:0; changedplain stage new while resourcekept. `com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher` (watcher): PROBE2 true:true:new:after:after:1:1:0; changedplain stage new while resourcekept.
+
+**Observable:** Changed plain inner bean values use native value resolution and preserve the outer singleton.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-INNER-NOOP
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Unchanged inner declarations do not reconstruct their cached live object.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher` (watcher): PROBE1 and3 same resource construction/init counters1/1, closeonlyoriginal. `com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher` (watcher): PROBE1 and3 same resource construction/init counters1/1, closeonlyoriginal.
+
+**Observable:** Unchanged inner declarations do not reconstruct their cached live object.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-INNER-RESOURCE-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Inner resource/lifecycle edits are refused before updating that owner; independent beans still apply.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher` (watcher): PROBE4/5 resourceafter kept, siblingother4/5; warnings2, CLOSED1:1:1. `com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher` (watcher): PROBE4/5 resourceafter kept, siblingother4/5; warnings2, CLOSED1:1:1.
+
+**Observable:** Inner resource/lifecycle edits are refused before updating that owner; independent beans still apply.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-UNSUPPORTED-NOOP
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Proven unchanged abstract/prototype/resource XML definitions stay quiet during no-op/sibling saves.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn` (watcher): First3 saves no warnings, identitytrue, labelsbefore, made1/init0/count3, siblingschange. `com.onurkat.reclazz.e2e.ModernSpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn` (watcher): First3 saves no warnings, identitytrue, labelsbefore, made1/init0/count3, siblingschange.
+
+**Observable:** Proven unchanged abstract/prototype/resource XML definitions stay quiet during no-op/sibling saves.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-UNSUPPORTED-EDIT-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Real edits to unsupported XML shapes retain original values and name restart.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn` (watcher): Saves4/5 restartheaders1/2 and3require; labelsbefore, closeoriginalonce. `com.onurkat.reclazz.e2e.ModernSpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn` (watcher): Saves4/5 restartheaders1/2 and3require; labelsbefore, closeoriginalonce.
+
+**Observable:** Real edits to unsupported XML shapes retain original values and name restart.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-ALIAS-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Alias retarget/removal/addition is refused, keeping already-resolved alias lookups.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup` (watcher): chosen staysa; newaliasabsent; newbean c present; original listener count1 unchanged. `com.onurkat.reclazz.e2e.ModernSpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup` (watcher): chosen staysa; newaliasabsent; newbean c present; original listener count1 unchanged.
+
+**Observable:** Alias retarget/removal/addition is refused, keeping already-resolved alias lookups.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-INLINE-ALIAS-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Inline alias removal is captured without replacing the application reader listener.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#inlineAliasEventsAreCapturedWithoutReplacingApplicationListener` (watcher): Removedchosen warning, actual lookup stilla andlistenercount0. `com.onurkat.reclazz.e2e.ModernSpringXmlAliasReloadTest#inlineAliasEventsAreCapturedWithoutReplacingApplicationListener` (watcher): Removedchosen warning, actual lookup stilla andlistenercount0.
+
+**Observable:** Inline alias removal is captured without replacing the application reader listener.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-LOOKUP-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Lookup-method edits preserve the native factory and require restart; restoring the original lookup allows simple properties.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlLookupMethodReloadTest#lookupChangesPreserveFactoryAndReportRestart` (watcher): Three warnings, identitiestrue, beforelabel despite targetb/removal; revertedmetadata final/final. `com.onurkat.reclazz.e2e.ModernSpringXmlLookupMethodReloadTest#lookupChangesPreserveFactoryAndReportRestart` (watcher): Three warnings, identitiestrue, beforelabel despite targetb/removal; revertedmetadata final/final.
+
+**Observable:** Lookup-method edits preserve the native factory and require restart; restoring the original lookup allows simple properties.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-LOADER-LIFECYCLE-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Lifecycle/infrastructure definitions are retained in ordinary/child loaders without side-effect creation.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlLoaderLifecycleReloadTest#lifecycleEditsRefuseInNormalAndChildLoadersWhileSiblingsReload` (watcher): Eachsave5refusals; original raw/mergedidentitytrue, counter0; siblingsother2/3; COLD=before:before. `com.onurkat.reclazz.e2e.ModernSpringXmlLoaderLifecycleReloadTest#lifecycleEditsRefuseInNormalAndChildLoadersWhileSiblingsReload` (watcher): Eachsave5refusals; original raw/mergedidentitytrue, counter0; siblingsother2/3; COLD=before:before.
+
+**Observable:** Lifecycle/infrastructure definitions are retained in ordinary/child loaders without side-effect creation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-FACTORYBEAN-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Existing XML FactoryBean definitions are not mutated to pretend their products refreshed.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringXmlFactoryBeanProductReloadTest#factoryEditsWarnBeforeStateChangesAndNoOpStaysQuiet` (watcher): Warm/cold/nonsingleton products before and samecachedidentities;3refusals peredit; coldnativecreationbefore. `com.onurkat.reclazz.e2e.ModernSpringXmlFactoryBeanProductReloadTest#factoryEditsWarnBeforeStateChangesAndNoOpStaysQuiet` (watcher): Warm/cold/nonsingleton products before and samecachedidentities;3refusals peredit; coldnativecreationbefore.
+
+**Observable:** Existing XML FactoryBean definitions are not mutated to pretend their products refreshed.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-SINGLETON-RECREATE
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Constructor and explicit static/instance factory XML edits recreate supported products and heal held consumers.
+
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.XmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer` (watcher): XML1=2:2:2:6:3 thenXML2=3:13:13:36:6; constructor/static/instance values and lifecycle counts. `com.onurkat.reclazz.e2e.ModernXmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer` (watcher): XML1=2:2:2:6:3 thenXML2=3:13:13:36:6; constructor/static/instance values and lifecycle counts.
+
+**Observable:** Constructor and explicit static/instance factory XML edits recreate supported products and heal held consumers.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-SINGLETON-NOOP
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+An identical rich XML save does not recreate products or repeat lifecycle effects.
+
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.XmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer` (watcher): XML3 equals2 includinginit36/destroy6; CLOSED36 nativecurrentcallbacks. `com.onurkat.reclazz.e2e.ModernXmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer` (watcher): XML3 equals2 includinginit36/destroy6; CLOSED36 nativecurrentcallbacks.
+
+**Observable:** An identical rich XML save does not recreate products or repeat lifecycle effects.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-TYPE
+
+**Verdict:** PARTIAL.
+
+XML type conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized type snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML type conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-MODE
+
+**Verdict:** PARTIAL.
+
+XML mode conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized mode snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML mode conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-CODE
+
+**Verdict:** PARTIAL.
+
+XML code conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized code snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML code conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-AMOUNT
+
+**Verdict:** PARTIAL.
+
+XML amount conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized amount snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML amount conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-LOCATION
+
+**Verdict:** PARTIAL.
+
+XML location conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized location snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML location conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-TYPES
+
+**Verdict:** PARTIAL.
+
+XML types conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized types snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML types conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-MODES
+
+**Verdict:** PARTIAL.
+
+XML modes conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized modes snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML modes conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-MAPPINGS
+
+**Verdict:** PARTIAL.
+
+XML mappings conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized mappings snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML mappings conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-SELECTION
+
+**Verdict:** PARTIAL.
+
+XML selection conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized selection snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML selection conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-INTEGERSELECTION
+
+**Verdict:** PARTIAL.
+
+XML integerSelection conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized integerSelection snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML integerSelection conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-BIGINTEGER
+
+**Verdict:** PARTIAL.
+
+XML bigInteger conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized bigInteger snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML bigInteger conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-MODESET
+
+**Verdict:** PARTIAL.
+
+XML modeSet conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized modeSet snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML modeSet conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-NATIVE-ENUMKEYS
+
+**Verdict:** PARTIAL.
+
+XML enumKeys conversion matches a freshly initialized native Spring bean.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties` (component): Parameterized enumKeys snapshot equals native fresh; live singleton/raw definition same; siblingafter.
+
+**Observable:** XML enumKeys conversion matches a freshly initialized native Spring bean.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-INHERITED-GENERIC
+
+**Verdict:** PARTIAL.
+
+Inherited generic collection type resolves against its actual containing class.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#inheritedGenericParameterUsesActualContainingClass` (component): Derived Mode.NEXT actual element.
+
+**Observable:** Inherited generic collection type resolves against its actual containing class.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-INHERITED-SCALAR
+
+**Verdict:** PARTIAL.
+
+Inherited scalar type variable uses its resolved target rather than Object erasure.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#inheritedScalarTypeVariableUsesResolvedTargetRatherThanObjectErasure` (component): Actual item identity Mode.NEXT matches nativefresh.
+
+**Observable:** Inherited scalar type variable uses its resolved target rather than Object erasure.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-CUSTOM-CONVERTERS
+
+**Verdict:** PARTIAL.
+
+Admitted registered editor/conversion service participates in native XML binding.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#admittedCustomEditorAndConversionServiceMatchNativeFactoryBehavior` (component): RegisteredcharBEGIN ->B; customURI ->urn:custom:NEXT.
+
+**Observable:** Admitted registered editor/conversion service participates in native XML binding.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-UNKNOWN-CONVERTER-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Unknown type converter is refused before the new route invokes it.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#unknownTypeConverterIsNotInvokedByTheNewBindingRoute` (component): Number1 remains, unknownconvertercalls0, restartwarning.
+
+**Observable:** Unknown type converter is refused before the new route invokes it.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-RESOURCE-CONVERSION-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Resource target/explicit resource value is refused before editor value resolution.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#resourceTargetAndExplicitResourceValueRefuseBeforeValueResolution` (component): Stream/value null, StreamEditorcalls0.
+
+**Observable:** Resource target/explicit resource value is refused before editor value resolution.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-MISSING-SETTER-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Absent or ambiguous physical setters do not acquire fake committed XML values.
+
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#absentAndAmbiguousPhysicalSettersRequireRestart` (component): Virtual/hiddenrawvaluesnull, virtualfieldnull; warning.
+
+**Observable:** Absent or ambiguous physical setters do not acquire fake committed XML values.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-RECREATE-INIT-FAILURE
+
+**Verdict:** PARTIAL.
+
+A failing new init callback restores the prior XML definition and permits a later correction.
+
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#initFailureReportsSideEffectsAndRestoresThePreviousDefinition` (component): Holdervalue1/nativeidentity retained, initdefinition restored, namedinitrefused; next3.
+
+**Observable:** A failing new init callback restores the prior XML definition and permits a later correction.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-RECREATE-RESTORE-FAILURE
+
+**Verdict:** PARTIAL.
+
+Failed restoration is reported explicitly without claiming success or a retained live singleton.
+
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#failedRestorationIsExplicitAndDoesNotReportSuccess` (component): Nosingletontarget, restorationfailed ledger.
+
+**Observable:** Failed restoration is reported explicitly without claiming success or a retained live singleton.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-RECREATE-FINAL-HOLDER
+
+**Verdict:** EXPECTED.
+
+A final direct holder prevents destruction before rich XML recreation.
+
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#finalDirectHolderFieldIsRefusedBeforeDestruction` (component): Sameoldtarget, destroyed0, finalholderreason.
+
+**Observable:** A final direct holder prevents destruction before rich XML recreation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-RECREATE-CONTAINER-HOLDER
+
+**Verdict:** EXPECTED.
+
+A collection holder prevents destruction before rich XML recreation.
+
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#containerHolderIsRefusedBeforeDestruction` (component): Sameoldtarget, destroyed0, collectionholderreason.
+
+**Observable:** A collection holder prevents destruction before rich XML recreation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-RECREATE-CONTEXTS
+
+**Verdict:** PARTIAL.
+
+Each owning context resolves the same placeholder using its own live factory.
+
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#contextsResolveTheSamePlaceholderIndependently` (component): Contextoneproduct2/contexttwoproduct3.
+
+**Observable:** Each owning context resolves the same placeholder using its own live factory.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-PARTIAL-SETTER
+
+**Verdict:** PARTIAL.
+
+A setter that mutates then throws leaves its application effect but preserves raw XML metadata; correction can recover.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlPropertyFailureIntegrityTest#mutatingThrowingSetterPreservesMetadataOnly` (component): Live labelpartial, rawsameold, failure; nextcorrected nofailure.
+
+**Observable:** A setter that mutates then throws leaves its application effect but preserves raw XML metadata; correction can recover.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-LAZY-DEFERRED-VALIDATION
+
+**Verdict:** PARTIAL.
+
+Invalid values on an uncreated lazy XML bean remain deferred until native creation.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlPropertyFailureIntegrityTest#lazyInvalidValueRetainsDeferredValidation` (component): Colduncreated, rawinvalid, noreloadfailure; nativegetBean throws BeansException.
+
+**Observable:** Invalid values on an uncreated lazy XML bean remain deferred until native creation.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-REMOVAL-REFUSAL
+
+**Verdict:** EXPECTED.
+
+Removing an XML property retains the old value/raw definition and requires restart while a sibling edit applies.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlPropertyRemovalDiagnosticsTest#removalWithEditWarnsAndKeepsRemovedValue` (component): Retainedold notdefault, rawsameretained, editedafter, namedrestart.
+
+**Observable:** Removing an XML property retains the old value/raw definition and requires restart while a sibling edit applies.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-FACTORYBEAN-PREFLIGHT
+
+**Verdict:** EXPECTED.
+
+Native FactoryBean refusal does not query/create the product or call factory setters during classification.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlFactoryBeanProductDiagnosticsTest#warmedAndUnwarmedProductsRefuseBeforeMutatingFactory` (component): Four warm/cold+singleton/nonsingleton cases: countersunchanged before explicitgetBean, raw/mergedidentity preserved.
+
+**Observable:** Native FactoryBean refusal does not query/create the product or call factory setters during classification.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-XML-METADATA-CONTEXTS
+
+**Verdict:** EXPECTED.
+
+Changed XML definition metadata protects both owning contexts while unrelated same-named context remains untouched.
+
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.xml.XmlDefinitionMetadataDiagnosticsTest#bothOwningContextsAreGuardedAndUnrelatedContextIsUntouched` (component): Bothsettingsbefore/sameidentity, bothsiblingsafter, isolatedsame/isolated; primaryfalse.
+
+**Observable:** Changed XML definition metadata protects both owning contexts while unrelated same-named context remains untouched.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-MESSAGE-NATIVE-WATCHER
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Native ResourceBundleMessageSource and ReloadableResourceBundleMessageSource return changed formatted locale text after repeated watched saves.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context. UTF-8 physical messages_tr.properties, Turkish locale, fallbackmessages.properties; cachingforever.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NativeMessageSourceReloadTest#cachedNativeMessagesFollowRepeatedWatchedLocaleSaves` (watcher): Four source-kind/application-loader cases; Before Ada ->Yeni Ada ->İyi günler Ada ->Again Ada with stablefallback. `com.onurkat.reclazz.e2e.ModernNativeMessageSourceReloadTest#cachedNativeMessagesFollowRepeatedWatchedLocaleSaves` (watcher): Four source-kind/application-loader cases; Before Ada ->Yeni Ada ->İyi günler Ada ->Again Ada with stablefallback.
+
+**Observable:** Native ResourceBundleMessageSource and ReloadableResourceBundleMessageSource return changed formatted locale text after repeated watched saves.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-MESSAGE-NATIVE-CACHE-CONTROL
+
+**Verdict:** PARTIAL.
+
+A native message source stays stale after a file edit alone and reads the new text after the actual reset path.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context. UTF-8 physical messages_tr.properties, Turkish locale, fallbackmessages.properties; cachingforever.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NativeMessageSourceReloadTest#nativeCacheKeepsOldLookupUntilExplicitReset` (component): Both nativesource kinds: warmBefore, editYeni stillBefore, explicit productionclear returns true thenYeni. `com.onurkat.reclazz.e2e.ModernNativeMessageSourceReloadTest#nativeCacheKeepsOldLookupUntilExplicitReset` (component): Both nativesource kinds: warmBefore, editYeni stillBefore, explicit productionclear returns true thenYeni.
+
+**Observable:** A native message source stays stale after a file edit alone and reads the new text after the actual reset path.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-MESSAGE-ANCESTOR-HOOK
+
+**Verdict:** PARTIAL.
+
+When reset methods coexist, the ancestor-reset method is preferred.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringMessageSourceReloaderTest#theAncestorResetIsPreferredWhenBothExist` (component): Mockshape recordsincluding-ancestors; does not read a real parent source.
+
+**Observable:** When reset methods coexist, the ancestor-reset method is preferred.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-MESSAGE-UNKNOWN-REFUSAL
+
+**Verdict:** EXPECTED.
+
+An unrecognized message source is not counted as successfully reset.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringMessageSourceReloaderTest#aSourceWithNoResetIsNotCountedAsDone` (component): Mocksourceclearfalse.
+
+**Observable:** An unrecognized message source is not counted as successfully reset.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-MESSAGE-THROWING-REFUSAL
+
+**Verdict:** EXPECTED.
+
+A reset that throws is not counted as done.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringMessageSourceReloaderTest#aResetThatThrowsIsNotCountedEither` (component): Throwingmockclearfalse.
+
+**Observable:** A reset that throws is not counted as done.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BUNDLE-PARENT-CACHE
+
+**Verdict:** PARTIAL.
+
+Explicit JDK bundle invalidation clears an ancestor loader cache.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.
+
+**Tests/assertions:** `com.onurkat.reclazz.util.BundleCacheTest#aLoaderFurtherUpTheChainIsClearedToo` (component): Native URLloaderparentwarmold; childclear ->newtext.
+
+**Observable:** Explicit JDK bundle invalidation clears an ancestor loader cache.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TEMPLATE-NATIVE-RENDER
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+Native FreeMarker and Thymeleaf enabled caches serve new rendered text after repeated watched physical-file saves.
+
+**Shipped surfaces:** `README.md:124` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. FreeMarker2.3.34/Thymeleaf3.1.3.RELEASE core engines, native jars on parent; physical file resolver, Thymeleaf HTML standard dialect; child application does not imply child-isolated engine.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NativeTemplateReloadTest#cachedNativeRenderFollowsWatchedSavesAndRecoversFromMalformedTemplate` (watcher): Four engine/application-loader cases; Before Ada ->Yeni Ada ->Again Ada; native cache is enabled throughout.
+
+**Observable:** Native FreeMarker and Thymeleaf enabled caches serve new rendered text after repeated watched physical-file saves.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TEMPLATE-MALFORMED-RECOVERY
+
+**Verdict:** PROVEN_WITH_SCOPE.
+
+A malformed template produces a native render error; correcting its physical file restores rendered output.
+
+**Shipped surfaces:** `README.md:124` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. FreeMarker2.3.34/Thymeleaf3.1.3.RELEASE core engines, native jars on parent; physical file resolver, Thymeleaf HTML standard dialect; child application does not imply child-isolated engine.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NativeTemplateReloadTest#cachedNativeRenderFollowsWatchedSavesAndRecoversFromMalformedTemplate` (watcher): PROBE3 ERROR, correctedPROBE4 Recovered Ada; no promise of last-valid template rollback.
+
+**Observable:** A malformed template produces a native render error; correcting its physical file restores rendered output.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TEMPLATE-NATIVE-CACHE-CONTROL
+
+**Verdict:** PARTIAL.
+
+Native enabled template caches stay stale after a file edit alone and reread after explicit cache clear.
+
+**Shipped surfaces:** `README.md:124` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. FreeMarker2.3.34/Thymeleaf3.1.3.RELEASE core engines, native jars on parent; physical file resolver, Thymeleaf HTML standard dialect; child application does not imply child-isolated engine.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.NativeTemplateReloadTest#nativeCacheKeepsOldRenderUntilExplicitClear` (component): Both engines Before ->editYeni stillBefore ->clear ->Yeni; no developer-mode cache bypass.
+
+**Observable:** Native enabled template caches stay stale after a file edit alone and reread after explicit cache clear.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TEMPLATE-NO-ENGINE
+
+**Verdict:** EXPECTED.
+
+A template reload with no registered engine reports zero work.
+
+**Shipped surfaces:** `README.md:124` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Agent component, no native renderer.
+
+**Tests/assertions:** `com.onurkat.reclazz.reload.TemplateReloadTest#anApplicationWithNoTemplateEngineHearsNothing` (component): Registrycleared, reload(view.html)=0.
+
+**Observable:** A template reload with no registered engine reports zero work.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TEMPLATE-UNKNOWN-ENGINE
+
+**Verdict:** EXPECTED.
+
+An unrecognized registered object is not mistaken for a native template engine.
+
+**Shipped surfaces:** `README.md:124` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. Agent component, no native renderer.
+
+**Tests/assertions:** `com.onurkat.reclazz.reload.TemplateReloadTest#anUnrecognisedObjectIsNotMistakenForAnEngine` (component): RegisterString, reloadreturns0.
+
+**Observable:** An unrecognized registered object is not mistaken for a native template engine.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** Both named lanes observed; exact commands/counts/runtime/source/artifact hashes and raw paths in the machine record.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Other JVM vendors, operating systems, late attachment, unlisted framework versions and packaged/remote resources are unverified.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-BOOT3-PROPERTIES
+
+**Verdict:** UNVERIFIED.
+
+The complete properties/YAML/binding package works on native Boot3.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. No current observing method in this bounded package.
+
+**Tests/assertions:** No observing test mapped; UNVERIFIED.
+
+**Observable:** The complete properties/YAML/binding package works on native Boot3.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** No current-session lane promotion.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. No native Boot3 dependency graph/current watcher or validation/record acceptance in this package; isolated Spring6 does not supply Boot3.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-PACKAGED-RESOURCES
+
+**Verdict:** UNVERIFIED.
+
+Edits to templates/messages/config inside a packaged JAR/WAR are live.
+
+**Shipped surfaces:** `README.md:124` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. No current observing method in this bounded package.
+
+**Tests/assertions:** No observing test mapped; UNVERIFIED.
+
+**Observable:** Edits to templates/messages/config inside a packaged JAR/WAR are live.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** No current-session lane promotion.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Tests edit physical files, not packaged archive entries; no current archive mutation/loader acceptance.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-MESSAGE-ANCESTOR-NATIVE
+
+**Verdict:** UNVERIFIED.
+
+A watched ancestor message bundle updates child-context native lookups.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. No current observing method in this bounded package.
+
+**Tests/assertions:** No observing test mapped; UNVERIFIED.
+
+**Observable:** A watched ancestor message bundle updates child-context native lookups.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** No current-session lane promotion.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Only mock ancestor-method preference and single nativecontext observers; real parent/child source watcher absent.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-MESSAGE-CUSTOM-BASENAME
+
+**Verdict:** UNVERIFIED.
+
+Arbitrary custom message basenames are automatically classified as localization changes.
+
+**Shipped surfaces:** `README.md:123` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. No current observing method in this bounded package.
+
+**Tests/assertions:** No observing test mapped; UNVERIFIED.
+
+**Observable:** Arbitrary custom message basenames are automatically classified as localization changes.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** No current-session lane promotion.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Classifier deliberately recognizes default messages/validation names; no custom-basename discovery watcher. Not advertised support.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-TEMPLATE-WEB-INTEGRATION
+
+**Verdict:** UNVERIFIED.
+
+Native Spring MVC/servlet template view resolvers and every HTML dialect render changed files.
+
+**Shipped surfaces:** `README.md:124` (SHA-256 `231e7c9e2ad55069d372aff499caf26fac15ff721ebd58127a01d8370778e981`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. No current observing method in this bounded package.
+
+**Tests/assertions:** No observing test mapped; UNVERIFIED.
+
+**Observable:** Native Spring MVC/servlet template view resolvers and every HTML dialect render changed files.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** No current-session lane promotion.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Current observer covers core native engine file resolution; no servlet MVC view resolver/dialect acceptance.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-SOURCE-OUTPUT-COPY
+
+**Verdict:** UNVERIFIED.
+
+Editing source resources automatically copies every resource to the runtime location.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. No current observing method in this bounded package.
+
+**Tests/assertions:** No observing test mapped; UNVERIFIED.
+
+**Observable:** Editing source resources automatically copies every resource to the runtime location.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** No current-session lane promotion.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. Current resource observers directly edit the actual watched/runtime file; no source-resource build-copy acceptance.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.
+
+### P5-SAP-CONFIGURATION
+
+**Verdict:** UNVERIFIED.
+
+P5 native Spring resource proofs certify SAP tenant behavior.
+
+**Shipped surfaces:** `docs/usage.md:2088` (SHA-256 `dad59ff6ee0519f019e3ca1c047e658beccdd3b1a417b3b3bbcb2c1b9b961295`).
+
+**Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
+
+**Bounds:** SapMachine17/21, macOS arm64. No current observing method in this bounded package.
+
+**Tests/assertions:** No observing test mapped; UNVERIFIED.
+
+**Observable:** P5 native Spring resource proofs certify SAP tenant behavior.
+
+**Control:** Exact assertions described at each named method; family-level scratch RED witnesses are separate and do not certify each sub-assertion independently.
+
+**Execution:** No current-session lane promotion.
+
+**Limitation / missing environment:** Only the stated observable and fixture shape; no blanket atomic rollback, arbitrary resource/provider or universal framework compatibility claim. No live licensed SAPtenant/resource/engine acceptance; synthetic standalone Spring context is a different environment.
+
+**Reviewer / next action:** Astra read observing assertions; independent Claude audit pending. Independent Claude audit/full gate and local-only commit. Missing environments/combined observers remain explicitly unverified; no inferred new capability.

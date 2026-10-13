@@ -113,6 +113,36 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
+### Message bundles and cached templates
+
+Reclazz invalidates the cached text when a recognized physical resource is saved
+in a watched directory. Current P5 observes actual formatted message lookups with
+`ResourceBundleMessageSource` and `ReloadableResourceBundleMessageSource` on
+Spring 5.3.39 and isolated Spring 6.1.14. The tests warm permanent caches, edit
+`messages_tr.properties`, then read new UTF-8 text through the existing context
+and retain fallback keys from `messages.properties`. Both ordinary and child
+application loaders are exercised. Arbitrary custom message basenames are not
+automatically discovered by the filename classifier. Mock ancestor-reset method
+preference is component evidence; a real parent/child source watcher is unverified.
+
+Current P5 also observes FreeMarker 2.3.34 file-template rendering and Thymeleaf
+3.1.3.RELEASE HTML rendering with `FileTemplateResolver` and the standard dialect.
+Caches remain enabled; native controls show a file edit alone still serves the
+old result until explicit invalidation. Repeated watched saves change the rendered
+output. A malformed template produces a native rendering error; fixing the file
+recovers. This does not promise retention of the last valid template on errors.
+The child-loader case places the application in a child loader; engine jars stay
+in the parent. Child-isolated engines and arbitrary custom resolvers/dialects,
+Spring MVC view-resolver integration and packaged JAR/WAR resource edits have no
+current acceptance proof. The tests edit the actual runtime file; automatic
+source-resource copying is not established by these observations.
+
+These observations use stock SapMachine JDK 17/21 on macOS arm64 and startup
+agent attachment. They do not certify other versions, operating systems, late
+attachment or native SAP tenant behavior. Engine libraries are test-only and are
+not packaged with the production agent. See the [P5 registry](feature-evidence.md#p5--properties-xml-messages-and-templates)
+for separate watcher, component, refusal and unverified claims.
+
 ### Loaded Spring XML resources
 
 Alongside `*-spring.xml`, Reclazz recognizes local `.xml` resources that Spring's
@@ -2072,9 +2102,10 @@ sources and targets. Boot's validation fallback, a named
 advisors, conversion services, property editors and the annotation's ignore
 flags apply. In particular, `ignoreInvalidFields=true` still permits values
 Boot chooses to ignore. The check does not write Boot's live bound-property
-records. The integration suite uses Boot 2.7.18. A separate probe against
-Boot 3.3.4 also verified Jakarta validation, record binding, live tracking
-isolation and successful application.
+records. The current P5 suite uses Boot 2.7.18. Earlier notes described a Boot 3.3.4
+probe, but P5 has no fresh native Boot 3 graph and does not certify that probe
+against the current tree. Record replacement has component evidence; a watched
+constructor-bound record with held consumers is not currently observed.
 
 No new option is needed. With `reloadBoundary=request`, successful changes
 wait for the existing request boundary before application. A save made during
@@ -2146,7 +2177,8 @@ not fall back to a global override for an unowned file. SAP configuration remova
 is outside this feature. Removing a logging level without a lower configured
 level still needs a logger reset/restart.
 
-Verified with Spring Boot 2.7.18, Spring 5.3.39, SnakeYAML 1.30 and stock JDK 21:
+Verified in current P5 with Spring Boot 2.7.18, Spring 5.3.39, SnakeYAML 1.30
+and stock SapMachine JDK 17/21 on macOS arm64:
 real startup-agent HTTP checks for properties and YAML, old bean holders,
 lists/defaults, invalid conversion/syntax recovery, deletion and restoration;
 unit regressions cover precedence, active/inactive documents, multiple contexts,
@@ -2206,9 +2238,11 @@ candidate Environment. As with ordinary property rebinding, custom converters
 may have side effects, and a failure during live application is reported as
 partial rather than rolled back. Background readers are not paused.
 
-Verified with Spring 5.3.39 / Boot 2.7.18 on JDK 21, including a real agent JVM
-watching property saves. Spring 6, JDK 17 and live SAP runtime tests have not
-been run for this feature.
+Current P5 observes real watched property saves on standalone Spring 5.3.39
+and isolated Spring 6.1.14 with stock SapMachine JDK 17/21 on macOS arm64.
+The Spring 5 dependency graph also contains Boot 2.7.18; these computed-value
+watchers use plain Spring configuration. Live SAP runtime compatibility is
+unverified.
 
 ### Computed @Value constructor parameters
 
@@ -2262,9 +2296,10 @@ The file remains pending. Background readers are not paused. Existing placeholde
 resolver ordering still applies; [indirect dependencies](#indirect-value-dependencies)
 are followed within the scope below.
 
-Verified on Spring 5.3.39 / Boot 2.7.18 test dependencies and JDK 21, including a
-real agent JVM watching saves, rejection, recovery and holder replacement.
-Spring 6, JDK 17 and live SAP runtime tests have not been run for this feature.
+Current P5 watches saves, rejection, recovery and holder replacement on
+standalone Spring 5.3.39 and isolated Spring 6.1.14 with stock SapMachine
+JDK 17/21 on macOS arm64. These are directly constructed Spring singletons,
+not Boot 3 configuration-properties or live SAP tenant acceptance.
 
 ### @Value factory method parameters
 
@@ -2315,9 +2350,10 @@ checking. A factory or initialization failure during live application reports
 **Partial**, leaves the candidate pending and may leave changed environment values
 and an already destroyed old bean. There is no rollback or background-reader pause.
 
-Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies on JDK 21, including
-watched property saves in ordinary and child-classloader agent JVMs. This does not
-establish Spring 6, JDK 17 or live SAP compatibility for factory-argument refresh.
+Current P5 watches native factory-argument saves on Spring 5.3.39 and isolated
+Spring 6.1.14, stock SapMachine JDK 17/21, macOS arm64, in ordinary and child
+application loaders. Boot 3 and live SAP factory-property compatibility remain
+unverified.
 
 ### Added factory values on property changes
 
@@ -2358,10 +2394,10 @@ current values. Property refresh does not re-evaluate registration conditions or
 activate a missing conditional bean. It does not perform general callback or
 listener-container retirement.
 
-Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies, including watched
-property saves after adding a method to lite/default configurations on normal and
-child classloaders. Spring 6 and live SAP factory-property compatibility have not
-been verified for this added-factory path.
+Current P5 watches property saves after adding a factory method to lite/default
+configurations on Spring 5.3.39 and isolated Spring 6.1.14, stock SapMachine
+JDK 17/21, macOS arm64, in ordinary and child application loaders. Live SAP
+factory-property compatibility remains unverified.
 
 <a id="transaction-proxies-and-property-recreation"></a>
 
@@ -2404,16 +2440,18 @@ Existing direct-placeholder constructor and field-discovery behavior is
 unchanged; in particular, legacy field discovery can consult custom target sources
 before creation eligibility is checked.
 
-Verified with real H2 commit/rollback, repeated saves, held invalid values, native
-lifecycle and holder replacement on JDK 21. Security controls cover missing
-authentication, denied pre-authorization and post-authorization after the body.
-The configurations are Spring 5.3.39 / Security 5.7.11 with
-`@EnableGlobalMethodSecurity(prePostEnabled=true)` and Spring 6.1.14 / Security 6.3.4
-with `@EnableMethodSecurity`, each with JDK/CGLIB, constructor/factory and optional
-transaction variants. The Spring 5 graph includes Boot 2.7.18; the isolated Spring 6
-graph uses plain Spring configuration. File-watcher tests exercise both generations
-with ordinary and child-classloader agent JVMs. JDK 17 and live SAP compatibility
-have not been established for this path.
+Current P5 observes real H2 commit/rollback, repeated saves, held invalid values,
+lifecycle and holder replacement on stock SapMachine JDK 17/21, macOS arm64.
+The watcher configurations use Spring 5.3.39 / Security 5.7.11 with
+`@EnableGlobalMethodSecurity(prePostEnabled=true)` and isolated Spring 6.1.14 /
+Security 6.3.4 with `@EnableMethodSecurity`, in ordinary and child application
+loaders. These watcher fixtures use native JDK interface proxies for constructor
+and factory products. They demonstrate missing authentication, denied
+pre-authorization and authorized calls, and carry a `@PostAuthorize` rule; they
+are not acceptance for every denied post-authorization or CGLIB product variant.
+Broader component/proxy coverage remains separate from this watcher proof.
+The Spring 5 graph also contains Boot 2.7.18; the isolated Spring 6 graph uses
+plain Spring configuration. Live SAP compatibility remains unverified.
 
 ### Indirect @Value dependencies
 
@@ -2467,9 +2505,10 @@ sources changed independently of Reclazz are not frozen across the request bound
 Successful constructor recreation retains its existing state-reset and reference
 limits; failures during live application remain partial without rollback.
 
-Verified with Spring 5.3.39 / Boot 2.7.18 test dependencies on JDK 21, including
-watched saves, rejection and recovery in a real agent JVM. Spring 6, JDK 17 and a
-live SAP runtime have not been run for this feature.
+Current P5 watches indirect-value saves, rejection and recovery on standalone
+Spring 5.3.39 and isolated Spring 6.1.14 with stock SapMachine JDK 17/21 on
+macOS arm64. Boot 3 binding, indirect Boot configuration-properties and live SAP
+runtime compatibility remain unverified.
 
 ### Cache dependencies after reload
 

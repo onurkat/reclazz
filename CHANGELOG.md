@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Documentation
+
+- Record current properties/XML/message/template evidence with separate watcher,
+  component and unsupported-resource scopes; narrow record-holder, native Boot 3
+  and packaged-template claims to their available evidence. No agent runtime
+  behavior changes in this evidence package.
+
 ### Fixed
 
 - Added event listeners recognize Spring 6.1.14's native restricted transaction

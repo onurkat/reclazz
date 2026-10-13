@@ -104,6 +104,9 @@ dependencies {
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
     testImplementation("org.hibernate.validator:hibernate-validator:6.2.5.Final")
     testImplementation("org.glassfish:jakarta.el:3.0.4")
+    // Native cached-template evidence only; never packaged with the agent.
+    testImplementation("org.freemarker:freemarker:2.3.34")
+    testImplementation("org.thymeleaf:thymeleaf:3.1.3.RELEASE")
 }
 
 // The broker's Jackson/SLF4J versions belong to JMS tests only. Extending the
