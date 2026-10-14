@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3133` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); `README.md:694` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `CHANGELOG.md:52` (SHA-256 `6945523fb414248713ed2d24dfe06645dcbacbca2d555512bfb0e9b147f36a26`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3133` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); `README.md:694` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `CHANGELOG.md:56` (SHA-256 `022cc3d6c2fe9a7f7ffea346bee0167697efeaec0ee9237192b382da835be5dd`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -2128,7 +2128,7 @@ Fixed composed policy markers enforce saved native pre/post authorization throug
 
 ### P2-SECURITY-METADATA
 
-**Verdict:** PARTIAL.
+**Verdict:** PROVEN_WITH_SCOPE.
 
 Resolved method-security cache entries are refilled from fresh Method objects.
 
@@ -2136,21 +2136,21 @@ Resolved method-security cache entries are refilled from fresh Method objects.
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
-**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Original Secured methods on a held startup native CGLIB factory-product proxy; stereotype control uses the same factory registration.
 
-**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSecurityMethodMetadataTest#anAskableRegistryIsRefilledFromFreshMethods` (component): Synthetic native-shaped registry stale guarded entry becomes fresh:guarded after direct cache refresh.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher); `com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher); `com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher); `com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher). Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.
 
-**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+**Control:** Fresh agentless baseline per save, marker controls and unchanged control calls; helper hook-disabled restores stale authority, metadata-flag-disabled restores removed rule on held proxy.
 
-**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+**Execution:** PASSED on both named main JDK17/21 lanes with Security5.7.11/6.3.4; exact commands, two-invocation receipts and source/artifact digests in JSON. Full gate and independent audit recorded separately.
 
-**Limitation / missing environment:** Synthetic cache-shape component test; real pre/post effect is measured separately, Secured/roles variants not implied. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+**Limitation / missing environment:** Named original Secured methods/proxies and sequential saves only; no implicit JSR250 RolesAllowed/DenyAll/PermitAll, added-policy adapter, arbitrary context/proxy graph or concurrent save support. Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.
 
-**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+**Reviewer / next action:** Astra main source/test evidence mapped; Claude independent audit pending. Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit.
 
 ### P2-SECURITY-SECURED
 
-**Verdict:** UNVERIFIED.
+**Verdict:** PROVEN_WITH_SCOPE.
 
 Edited Secured policy is enforced on real calls.
 
@@ -2158,21 +2158,21 @@ Edited Secured policy is enforced on real calls.
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
-**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Original Secured methods on a held startup native CGLIB factory-product proxy; stereotype control uses the same factory registration.
 
-**Tests/assertions:** No observing method assigned; not promoted from a located filename.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher); `com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher); `com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher); `com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves` (watcher). Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.
 
-**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+**Control:** Fresh agentless baseline per save, marker controls and unchanged control calls; helper hook-disabled restores stale authority, metadata-flag-disabled restores removed rule on held proxy.
 
-**Execution:** UNVERIFIED: no observing acceptance assigned on the required lanes.
+**Execution:** PASSED on both named main JDK17/21 lanes with Security5.7.11/6.3.4; exact commands, two-invocation receipts and source/artifact digests in JSON. Full gate and independent audit recorded separately.
 
-**Limitation / missing environment:** Real pre/post watcher does not execute Secured/JSR250 role changes; no observing P2 receipt assigned. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+**Limitation / missing environment:** Named original Secured methods/proxies and sequential saves only; no implicit JSR250 RolesAllowed/DenyAll/PermitAll, added-policy adapter, arbitrary context/proxy graph or concurrent save support. Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.
 
-**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests.
+**Reviewer / next action:** Astra main source/test evidence mapped; Claude independent audit pending. Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit.
 
 ### P2-SECURITY-FILTER-CHAIN
 
-**Verdict:** UNVERIFIED.
+**Verdict:** PROVEN_WITH_SCOPE.
 
 Edited web security configuration rebuilds a live filter chain and changes route authorization.
 
@@ -2180,17 +2180,17 @@ Edited web security configuration rebuilds a live filter chain and changes route
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
-**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Embedded Tomcat9.0.121/10.1.60 servlet with native FilterChainProxy reached through a servlet-cached DelegatingFilterProxy; ordered overlapping chains in one local servlet fixture.
 
-**Tests/assertions:** No observing method assigned; not promoted from a located filename.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves` (watcher); `com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves` (watcher). Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained.
 
-**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+**Control:** Fresh agentless servlet baseline for every save; denied requests leave body counts unchanged. Research HTTP-hook-disabled control returns stale403 for saved permit on both framework graphs.
 
-**Execution:** UNVERIFIED: no observing acceptance assigned on the required lanes.
+**Execution:** PASSED on both named main JDK17/21 lanes with Security5.7.11/6.3.4; exact commands, two-invocation receipts and source/artifact digests in JSON. Full gate and independent audit recorded separately.
 
-**Limitation / missing environment:** P2 native method-security fixture has no servlet filter-chain request. No live HTTP filter-chain proof assigned in this package. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+**Limitation / missing environment:** No native chain-count mismatch, failed rebuild, live Order edit, concurrent/inflight publication, other containers or tenant isolation. Existing HTTP rebuild receives watcher proof; no HTTP runtime repair. The static application nonce is not an independent Spring context-identity observation. Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.
 
-**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests.
+**Reviewer / next action:** Astra main source/test evidence mapped; Claude independent audit pending. Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit.
 
 ### P2-CACHE-RELOAD-EVICTION
 
@@ -2334,17 +2334,17 @@ Security chain replacement preserves the rebuilt chain identity.
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
-**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Embedded Tomcat9.0.121/10.1.60 servlet with native FilterChainProxy reached through a servlet-cached DelegatingFilterProxy; ordered overlapping chains in one local servlet fixture.
 
-**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSecurityReloaderSwapTest#aStaleChainIsReplacedByTheRebuiltBean` (component): Direct duck-typed proxy swap replaces the stale fake chain with the rebuilt fake chain identity.
+**Tests/assertions:** `com.onurkat.reclazz.spring.SpringSecurityReloaderSwapTest#aStaleChainIsReplacedByTheRebuiltBean` (component); `com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves` (watcher); `com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves` (watcher). Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained.
 
-**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+**Control:** Fresh agentless servlet baseline for every save; denied requests leave body counts unchanged. Research HTTP-hook-disabled control returns stale403 for saved permit on both framework graphs.
 
-**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+**Execution:** PASSED on both named main JDK17/21 lanes with Security5.7.11/6.3.4; exact commands, two-invocation receipts and source/artifact digests in JSON. Full gate and independent audit recorded separately.
 
-**Limitation / missing environment:** Synthetic chain/proxy shapes only; no live servlet request/401 observation. P2-SECURITY-FILTER-CHAIN remains unverified. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+**Limitation / missing environment:** No native chain-count mismatch, failed rebuild, live Order edit, concurrent/inflight publication, other containers or tenant isolation. Actual rebuilt-chain object identity inside the native delegate is not asserted; existing identity test uses component shapes, so this record stays PARTIAL. The static application nonce is not an independent Spring context-identity observation. Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.
 
-**Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
+**Reviewer / next action:** Astra main source/test evidence mapped; Claude independent audit pending. Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit.
 
 ### P2-SPRING6-BEAN-CONDITION-METADATA
 

@@ -795,6 +795,120 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "7113bbc89dd474c2dc9f2cba3e880ab9d3ee2568a9f12a4c5f35ea2550d9fc2b",
+          "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-17/test/TEST-com.onurkat.reclazz.e2e.SecuredMetadataReloadTest.xml",
+          "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "2ddabbab89d0be9f2a50c1468b31df6bab62659195e117680fa17bda1f9455fb",
+          "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-17/test/TEST-com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest.xml",
+          "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "status": "PASSED",
+          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-17/test/TEST-com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest.xml",
+          "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "c679cd4d78accb888c290c2f5480ab54e5aa4dfab503c4537d65a935f1d3b130",
+          "receipt": ".collab/research/2026-10-14-rf03-build/modern-main-17/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest.xml",
+          "framework": "Spring6.1.14 / Security6.3.4 / Tomcat10.1.60 (HTTP)",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "7761eb2a65140d1f58b43ff3f97444606855841f573b500578b73fee8f6e5fa7",
+          "receipt": ".collab/research/2026-10-14-rf03-build/modern-main-17/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest.xml",
+          "framework": "Spring6.1.14 / Security6.3.4 / Tomcat10.1.60 (HTTP)",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "status": "PASSED",
+          "source_sha256": "2788350302a0cb32b8cf18b241246bf81cf46c1311dbaefff2149ec9f6cfda79",
+          "receipt": ".collab/research/2026-10-14-rf03-build/modern-main-17/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest.xml",
+          "framework": "Spring6.1.14 / Security6.3.4 / Tomcat10.1.60 (HTTP)",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -879,6 +993,52 @@
             }
           },
           "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-17"
+        }
+      ],
+      "rf03_followup_runs": [
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*SecuredMetadataReloadTest' --tests '*HttpSecurityPolicyReloadTest' --tests '*HelperSecurityMetadataGateTest' --tests '*HelperOperationMetadataGateTest' --tests '*SpringSecurityReloaderSwapTest' --tests '*SpringSecurityMethodMetadataTest' --tests '*AddedMethodSecurityReloadTest' --tests '*ComposedMethodSecurityReloadTest' --tests '*SecurityProxyValueReloadTest' --tests '*HelperOwnerCacheRefreshTest' --tests '*RefreshOwnersOnHelperConfigTest' --tests '*ReloadStepRelevanceGateTest' -x :agent:springSixTest -x :agent:hibernateTest -x :agent:rabbitTest -x :agent:jmsTest",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T13:03:01.993313+00:00",
+          "base_commit": "71a6dee",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "counts": {
+            "tests": 62,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "test": {
+              "tests": 62,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf03-build/targeted-main-17"
+        },
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*SecuredMetadataReloadTest' --tests '*HttpSecurityPolicyReloadTest' --tests '*AddedModernMethodSecurityReloadTest' --tests '*ModernComposedMethodSecurityReloadTest' --tests '*ModernSecurityProxyValueReloadTest'",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T13:04:20.808003+00:00",
+          "base_commit": "71a6dee",
+          "artifact_sha256": "c3eec3b79ad3455a1717334288d5437815af4b7039b6a084baa004d02829ae56",
+          "counts": {
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "springSixTest": {
+              "tests": 16,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf03-build/modern-main-17"
         }
       ]
     },
@@ -1664,6 +1824,120 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "7113bbc89dd474c2dc9f2cba3e880ab9d3ee2568a9f12a4c5f35ea2550d9fc2b",
+          "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-21/test/TEST-com.onurkat.reclazz.e2e.SecuredMetadataReloadTest.xml",
+          "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
+          "artifact_sha256": "a6fa85e6530de954572157f73c3b9746355def56b0c53c930b75a3ebffe40ad7",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "2ddabbab89d0be9f2a50c1468b31df6bab62659195e117680fa17bda1f9455fb",
+          "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-21/test/TEST-com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest.xml",
+          "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
+          "artifact_sha256": "a6fa85e6530de954572157f73c3b9746355def56b0c53c930b75a3ebffe40ad7",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "status": "PASSED",
+          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "receipt": ".collab/research/2026-10-14-rf03-build/targeted-main-21/test/TEST-com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest.xml",
+          "framework": "Spring5.3.39 / Security5.7.11 / Tomcat9.0.121 (HTTP)",
+          "artifact_sha256": "a6fa85e6530de954572157f73c3b9746355def56b0c53c930b75a3ebffe40ad7",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "c679cd4d78accb888c290c2f5480ab54e5aa4dfab503c4537d65a935f1d3b130",
+          "receipt": ".collab/research/2026-10-14-rf03-build/modern-main-21/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest.xml",
+          "framework": "Spring6.1.14 / Security6.3.4 / Tomcat10.1.60 (HTTP)",
+          "artifact_sha256": "581d263a97c963e5ae2c9c00d71abe232f2bd62fcf6b0a62d1820916c6aafcf7",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "status": "PASSED",
+          "source_sha256": "7761eb2a65140d1f58b43ff3f97444606855841f573b500578b73fee8f6e5fa7",
+          "receipt": ".collab/research/2026-10-14-rf03-build/modern-main-21/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest.xml",
+          "framework": "Spring6.1.14 / Security6.3.4 / Tomcat10.1.60 (HTTP)",
+          "artifact_sha256": "581d263a97c963e5ae2c9c00d71abe232f2bd62fcf6b0a62d1820916c6aafcf7",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "heldOriginalSecuredPolicyMatchesNativeAfterFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "status": "PASSED",
+          "source_sha256": "2788350302a0cb32b8cf18b241246bf81cf46c1311dbaefff2149ec9f6cfda79",
+          "receipt": ".collab/research/2026-10-14-rf03-build/modern-main-21/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest.xml",
+          "framework": "Spring6.1.14 / Security6.3.4 / Tomcat10.1.60 (HTTP)",
+          "artifact_sha256": "581d263a97c963e5ae2c9c00d71abe232f2bd62fcf6b0a62d1820916c6aafcf7",
+          "base_commit": "71a6dee",
+          "invocations": [
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "realOrderedServletRulesAndIgnoredRouteFollowFourSaves(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -1740,6 +2014,52 @@
           },
           "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-21"
         }
+      ],
+      "rf03_followup_runs": [
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:test --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*SecuredMetadataReloadTest' --tests '*HttpSecurityPolicyReloadTest' --tests '*HelperSecurityMetadataGateTest' --tests '*HelperOperationMetadataGateTest' --tests '*SpringSecurityReloaderSwapTest' -x :agent:springSixTest -x :agent:hibernateTest -x :agent:rabbitTest -x :agent:jmsTest",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T13:06:35.852650+00:00",
+          "base_commit": "71a6dee",
+          "artifact_sha256": "a6fa85e6530de954572157f73c3b9746355def56b0c53c930b75a3ebffe40ad7",
+          "counts": {
+            "tests": 29,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "test": {
+              "tests": 29,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf03-build/targeted-main-21"
+        },
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*SecuredMetadataReloadTest' --tests '*HttpSecurityPolicyReloadTest' --tests '*AddedModernMethodSecurityReloadTest' --tests '*ModernComposedMethodSecurityReloadTest' --tests '*ModernSecurityProxyValueReloadTest'",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T13:01:28.817398+00:00",
+          "base_commit": "71a6dee",
+          "artifact_sha256": "581d263a97c963e5ae2c9c00d71abe232f2bd62fcf6b0a62d1820916c6aafcf7",
+          "counts": {
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "springSixTest": {
+              "tests": 16,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf03-build/modern-main-21"
+        }
       ]
     }
   },
@@ -1757,7 +2077,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1051,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-REGISTER-NEW"
         }
       ],
@@ -1797,7 +2117,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1073,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-COMPONENT-PROFILE"
         }
       ],
@@ -1837,7 +2157,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1095,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-COMPONENT-CONDITIONAL"
         }
       ],
@@ -1877,7 +2197,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1117,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-COMPONENT-LAZY"
         }
       ],
@@ -1917,7 +2237,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1139,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-COMPONENT-PROTOTYPE"
         }
       ],
@@ -1957,7 +2277,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1161,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-COMPOSED-STEREOTYPE"
         }
       ],
@@ -1997,7 +2317,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1183,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-NEW-CONSTRUCTOR-INJECTION"
         }
       ],
@@ -2026,7 +2346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1205,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-REFRESH"
         }
       ],
@@ -2066,7 +2386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1227,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-HELD-CALLER"
         }
       ],
@@ -2106,7 +2426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1249,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-INJECTION-AUTOWIRED"
         }
       ],
@@ -2146,7 +2466,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1271,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-INJECTION-VALUE"
         }
       ],
@@ -2186,7 +2506,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1293,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-INJECTION-RESOURCE"
         }
       ],
@@ -2226,7 +2546,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1315,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-LITE-CONFIG"
         }
       ],
@@ -2266,7 +2586,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1337,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-ARGS"
         }
       ],
@@ -2306,7 +2626,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1359,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-RICH-ARGS"
         }
       ],
@@ -2346,7 +2666,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1381,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-PROVIDER"
         }
       ],
@@ -2386,7 +2706,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1403,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-PRIMITIVE-VALUE"
         }
       ],
@@ -2426,7 +2746,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1425,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-ARRAY-SET-ARGS"
         }
       ],
@@ -2466,7 +2786,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1447,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-ALL-PRIMITIVES"
         }
       ],
@@ -2506,7 +2826,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1469,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-VALUE-PROPERTY"
         }
       ],
@@ -2546,7 +2866,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1491,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-ALIASES"
         }
       ],
@@ -2586,7 +2906,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1513,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-QUALIFIER"
         }
       ],
@@ -2626,7 +2946,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1535,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-PRIMARY"
         }
       ],
@@ -2666,7 +2986,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1557,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-CONDITIONAL"
         }
       ],
@@ -2706,7 +3026,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1579,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-BOOT-PROPERTY"
         }
       ],
@@ -2746,7 +3066,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1601,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-BOOT-BEAN"
         }
       ],
@@ -2786,7 +3106,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1623,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-BOOT-MISSING-BEAN"
         }
       ],
@@ -2826,7 +3146,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1645,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-PROFILE"
         }
       ],
@@ -2866,7 +3186,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1667,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-SCOPE-PROTOTYPE"
         }
       ],
@@ -2906,7 +3226,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1689,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-LAZY"
         }
       ],
@@ -2946,7 +3266,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1711,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-FULL-CONFIG"
         }
       ],
@@ -2986,7 +3306,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1733,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-FULL-CONFIG-ARGS"
         }
       ],
@@ -3026,7 +3346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1755,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-BEAN-STATIC"
         }
       ],
@@ -3066,7 +3386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1777,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-FULL-CONFIG-STATIC-JAVA"
         }
       ],
@@ -3106,7 +3426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1799,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-LIFECYCLE-INIT"
         }
       ],
@@ -3153,7 +3473,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1821,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-LIFECYCLE-DESTROY"
         }
       ],
@@ -3200,7 +3520,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1843,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-LIFECYCLE-NATIVE-LIFECYCLE"
         }
       ],
@@ -3247,7 +3567,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1865,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-ADDED-OPERATIONS-PLAIN"
         }
       ],
@@ -3287,7 +3607,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1887,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-ADDED-OPERATIONS-HELD"
         }
       ],
@@ -3327,7 +3647,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1909,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-TX-ROLLBACK"
         }
       ],
@@ -3374,7 +3694,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1931,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-CACHE-HIT"
         }
       ],
@@ -3421,7 +3741,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1953,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-CACHE-PUT"
         }
       ],
@@ -3468,7 +3788,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1975,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-CACHE-EVICT"
         }
       ],
@@ -3515,7 +3835,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1997,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-OPERATIONS-SELF-INVOKE"
         }
       ],
@@ -3562,7 +3882,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2019,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-COMPOSED-TRANSACTION"
         }
       ],
@@ -3602,7 +3922,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2041,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-COMPOSED-CACHE"
         }
       ],
@@ -3642,7 +3962,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2063,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-AOP-REFRESH"
         }
       ],
@@ -3689,7 +4009,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2085,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-SECURITY-PRE-POST"
         }
       ],
@@ -3741,7 +4061,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2107,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-COMPOSED-SECURITY"
         }
       ],
@@ -3798,32 +4118,63 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2129,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-SECURITY-METADATA"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
-      "bounds": "Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.",
+      "bounds": "Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Original Secured methods on a held startup native CGLIB factory-product proxy; stereotype control uses the same factory registration.",
       "tests": [
         {
-          "symbol": "com.onurkat.reclazz.spring.SpringSecurityMethodMetadataTest#anAskableRegistryIsRefilledFromFreshMethods",
-          "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringSecurityMethodMetadataTest.java",
-          "source_sha256": "066ffbcbfcccb3192299c1425cc0346aecf2456a5109001bd91a83a87c7ac838",
-          "kind": "component",
-          "assertions": "Synthetic native-shaped registry stale guarded entry becomes fresh:guarded after direct cache refresh."
+          "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
+          "source_sha256": "7113bbc89dd474c2dc9f2cba3e880ab9d3ee2568a9f12a4c5f35ea2550d9fc2b",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Unchanged secured control remains valid while the edited method policy changes."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
+          "source_sha256": "2ddabbab89d0be9f2a50c1468b31df6bab62659195e117680fa17bda1f9455fb",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Removal leaves no security annotation on the class; fresh native stage3 may have no proxy, while the watched application retains its startup proxy."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernSecuredMetadataReloadTest.java",
+          "source_sha256": "c679cd4d78accb888c290c2f5480ab54e5aa4dfab503c4537d65a935f1d3b130",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Unchanged secured control remains valid while the edited method policy changes.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
+            "source_sha256": "7113bbc89dd474c2dc9f2cba3e880ab9d3ee2568a9f12a4c5f35ea2550d9fc2b"
+          }
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernLastSecuredMetadataReloadTest.java",
+          "source_sha256": "7761eb2a65140d1f58b43ff3f97444606855841f573b500578b73fee8f6e5fa7",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Removal leaves no security annotation on the class; fresh native stage3 may have no proxy, while the watched application retains its startup proxy.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
+            "source_sha256": "2ddabbab89d0be9f2a50c1468b31df6bab62659195e117680fa17bda1f9455fb"
+          }
         }
       ],
-      "observable": "Synthetic native-shaped registry stale guarded entry becomes fresh:guarded after direct cache refresh.",
-      "control": "Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.",
+      "observable": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.",
+      "control": "Fresh agentless baseline per save, marker controls and unchanged control calls; helper hook-disabled restores stale authority, metadata-flag-disabled restores removed rule on held proxy.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
         "sapmachine-21-macos-arm64"
       ],
-      "verdict": "PARTIAL",
-      "reviewer": "Astra read/mapped assertions; Claude independent audit pending.",
-      "limitation": "Synthetic cache-shape component test; real pre/post effect is measured separately, Secured/roles variants not implied.",
-      "missing_environment": "Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.",
-      "next_action": "Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit."
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra main source/test evidence mapped; Claude independent audit pending.",
+      "limitation": "Named original Secured methods/proxies and sequential saves only; no implicit JSR250 RolesAllowed/DenyAll/PermitAll, added-policy adapter, arbitrary context/proxy graph or concurrent save support.",
+      "missing_environment": "Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.",
+      "next_action": "Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit."
     },
     {
       "id": "P2-SECURITY-SECURED",
@@ -3838,21 +4189,63 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2151,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-SECURITY-SECURED"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
-      "bounds": "Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.",
-      "tests": [],
-      "observable": "No executed acceptance is assigned to this cell.",
-      "control": "Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.",
-      "execution_lanes": [],
-      "verdict": "UNVERIFIED",
-      "reviewer": "Astra read/mapped assertions; Claude independent audit pending.",
-      "limitation": "Real pre/post watcher does not execute Secured/JSR250 role changes; no observing P2 receipt assigned.",
-      "missing_environment": "Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.",
-      "next_action": "A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests."
+      "bounds": "Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Original Secured methods on a held startup native CGLIB factory-product proxy; stereotype control uses the same factory registration.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
+          "source_sha256": "7113bbc89dd474c2dc9f2cba3e880ab9d3ee2568a9f12a4c5f35ea2550d9fc2b",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Unchanged secured control remains valid while the edited method policy changes."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
+          "source_sha256": "2ddabbab89d0be9f2a50c1468b31df6bab62659195e117680fa17bda1f9455fb",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Removal leaves no security annotation on the class; fresh native stage3 may have no proxy, while the watched application retains its startup proxy."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernSecuredMetadataReloadTest.java",
+          "source_sha256": "c679cd4d78accb888c290c2f5480ab54e5aa4dfab503c4537d65a935f1d3b130",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Unchanged secured control remains valid while the edited method policy changes.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/SecuredMetadataReloadTest.java",
+            "source_sha256": "7113bbc89dd474c2dc9f2cba3e880ab9d3ee2568a9f12a4c5f35ea2550d9fc2b"
+          }
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernLastSecuredMetadataReloadTest.java",
+          "source_sha256": "7761eb2a65140d1f58b43ff3f97444606855841f573b500578b73fee8f6e5fa7",
+          "kind": "watcher",
+          "assertions": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies. Fresh agentless native JVM per saved version, normal/child loader. Removal leaves no security annotation on the class; fresh native stage3 may have no proxy, while the watched application retains its startup proxy.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/LastSecuredMetadataReloadTest.java",
+            "source_sha256": "2ddabbab89d0be9f2a50c1468b31df6bab62659195e117680fa17bda1f9455fb"
+          }
+        }
+      ],
+      "observable": "Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.",
+      "control": "Fresh agentless baseline per save, marker controls and unchanged control calls; helper hook-disabled restores stale authority, metadata-flag-disabled restores removed rule on held proxy.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra main source/test evidence mapped; Claude independent audit pending.",
+      "limitation": "Named original Secured methods/proxies and sequential saves only; no implicit JSR250 RolesAllowed/DenyAll/PermitAll, added-policy adapter, arbitrary context/proxy graph or concurrent save support.",
+      "missing_environment": "Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.",
+      "next_action": "Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit."
     },
     {
       "id": "P2-SECURITY-FILTER-CHAIN",
@@ -3867,21 +4260,44 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2173,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-SECURITY-FILTER-CHAIN"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
-      "bounds": "Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.",
-      "tests": [],
-      "observable": "No executed acceptance is assigned to this cell.",
-      "control": "Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.",
-      "execution_lanes": [],
-      "verdict": "UNVERIFIED",
-      "reviewer": "Astra read/mapped assertions; Claude independent audit pending.",
-      "limitation": "P2 native method-security fixture has no servlet filter-chain request. No live HTTP filter-chain proof assigned in this package.",
-      "missing_environment": "Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.",
-      "next_action": "A separate bounded acceptance run is needed for this cell before promotion; do not infer it from adjacent green tests."
+      "bounds": "Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Embedded Tomcat9.0.121/10.1.60 servlet with native FilterChainProxy reached through a servlet-cached DelegatingFilterProxy; ordered overlapping chains in one local servlet fixture.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
+          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "kind": "watcher",
+          "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernHttpSecurityPolicyReloadTest.java",
+          "source_sha256": "2788350302a0cb32b8cf18b241246bf81cf46c1311dbaefff2149ec9f6cfda79",
+          "kind": "watcher",
+          "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
+            "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c"
+          }
+        }
+      ],
+      "observable": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained.",
+      "control": "Fresh agentless servlet baseline for every save; denied requests leave body counts unchanged. Research HTTP-hook-disabled control returns stale403 for saved permit on both framework graphs.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra main source/test evidence mapped; Claude independent audit pending.",
+      "limitation": "No native chain-count mismatch, failed rebuild, live Order edit, concurrent/inflight publication, other containers or tenant isolation. Existing HTTP rebuild receives watcher proof; no HTTP runtime repair. The static application nonce is not an independent Spring context-identity observation.",
+      "missing_environment": "Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.",
+      "next_action": "Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit."
     },
     {
       "id": "P2-CACHE-RELOAD-EVICTION",
@@ -3896,7 +4312,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2195,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-CACHE-RELOAD-EVICTION"
         }
       ],
@@ -3948,7 +4364,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2217,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-SPRING6-ORDINARY-MATRIX"
         }
       ],
@@ -3977,7 +4393,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2239,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-EXISTING-TX-METADATA"
         }
       ],
@@ -4029,7 +4445,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2261,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-EXISTING-CACHE-METADATA"
         }
       ],
@@ -4081,7 +4497,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2283,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-TX-CLASS-DEFAULTS"
         }
       ],
@@ -4121,7 +4537,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2305,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-CACHE-CLASS-DEFAULTS"
         }
       ],
@@ -4161,12 +4577,12 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2327,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-SECURITY-FILTER-CHAIN-SWAP"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
-      "bounds": "Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.",
+      "bounds": "Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Embedded Tomcat9.0.121/10.1.60 servlet with native FilterChainProxy reached through a servlet-cached DelegatingFilterProxy; ordered overlapping chains in one local servlet fixture.",
       "tests": [
         {
           "symbol": "com.onurkat.reclazz.spring.SpringSecurityReloaderSwapTest#aStaleChainIsReplacedByTheRebuiltBean",
@@ -4174,19 +4590,38 @@
           "source_sha256": "344a7cd451906f438a1c166906d960f3e42f33ee5fb1dfadf065bf6e72a4a79e",
           "kind": "component",
           "assertions": "Direct duck-typed proxy swap replaces the stale fake chain with the rebuilt fake chain identity."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
+          "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c",
+          "kind": "watcher",
+          "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernHttpSecurityPolicyReloadTest.java",
+          "source_sha256": "2788350302a0cb32b8cf18b241246bf81cf46c1311dbaefff2149ec9f6cfda79",
+          "kind": "watcher",
+          "assertions": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained. Fresh agentless servlet JVM for every saved version; rejected requests execute zero servlet bodies.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/HttpSecurityPolicyReloadTest.java",
+            "source_sha256": "d4e7e4b57ef08b5e3996e0345b448db5ea9de7fd19e3cf8abcd178001422bf1c"
+          }
         }
       ],
-      "observable": "Direct duck-typed proxy swap replaces the stale fake chain with the rebuilt fake chain identity.",
-      "control": "Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.",
+      "observable": "Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained.",
+      "control": "Fresh agentless servlet baseline for every save; denied requests leave body counts unchanged. Research HTTP-hook-disabled control returns stale403 for saved permit on both framework graphs.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
         "sapmachine-21-macos-arm64"
       ],
       "verdict": "PARTIAL",
-      "reviewer": "Astra read/mapped assertions; Claude independent audit pending.",
-      "limitation": "Synthetic chain/proxy shapes only; no live servlet request/401 observation. P2-SECURITY-FILTER-CHAIN remains unverified.",
-      "missing_environment": "Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.",
-      "next_action": "Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit."
+      "reviewer": "Astra main source/test evidence mapped; Claude independent audit pending.",
+      "limitation": "No native chain-count mismatch, failed rebuild, live Order edit, concurrent/inflight publication, other containers or tenant isolation. Actual rebuilt-chain object identity inside the native delegate is not asserted; existing identity test uses component shapes, so this record stays PARTIAL. The static application nonce is not an independent Spring context-identity observation.",
+      "missing_environment": "Other OS/JDK providers, framework versions, reactive/remote providers and unlisted registrations; no universal security guarantee.",
+      "next_action": "Independent Claude audit of final diff, raw main receipts, flag-gated negative witnesses and full gate before local commit."
     },
     {
       "id": "P2-SPRING6-BEAN-CONDITION-METADATA",
@@ -4201,7 +4636,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2349,
-          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
+          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
           "quote": "### P2-SPRING6-BEAN-CONDITION-METADATA"
         }
       ],
@@ -4343,6 +4778,24 @@
       "disabled_hook": "Only helper operationSourceReloader.reloadOperationSources call; rich flags and class path retained.",
       "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/scratch-hook-disabled-21",
       "restoration": ".collab/research/2026-10-14-rf01-rf02-fix/scratch-restoration.json"
+    },
+    {
+      "name": "rf03-helper-hook-disabled",
+      "expected_status": "RED",
+      "exit_code": 1,
+      "invocations": 2,
+      "disabled_hook": "Only helper security metadata call",
+      "raw_evidence": ".collab/research/2026-10-14-rf03-build/helper-hook-disabled-21",
+      "restoration": ".collab/research/2026-10-14-rf03-build/scratch-restoration.json"
+    },
+    {
+      "name": "rf03-removal-flag-disabled",
+      "expected_status": "RED",
+      "exit_code": 1,
+      "invocations": 4,
+      "disabled_hook": "Only metadataChanged exemption in annotation-presence guard; overload/dispatch retained",
+      "raw_evidence": ".collab/research/2026-10-14-rf03-build/removal-flag-disabled-21",
+      "restoration": ".collab/research/2026-10-14-rf03-build/scratch-restoration.json"
     }
   ],
   "registry_verification": {

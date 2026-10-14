@@ -146,6 +146,12 @@ public class SpringReloadOrchestrator {
                             || classesWithAddedMembers.contains(r.className())) {
                         operationSourceReloader.reloadOperationSources(r.type(), r.annotationsChanged());
                     }
+                }),
+                new ReloadSteps.Step("Method security metadata", r -> {
+                    if (r.structural() || r.annotationsChanged()
+                            || classesWithAddedMembers.contains(r.className())) {
+                        securityReloader.refreshMethodSecurity(r.type(), r.annotationsChanged());
+                    }
                 })),
                 new ReloadSteps.Reloaded(className, type, isStructural, annotationsChanged, addedMethodSigs, newBytecode));
         refreshMappedCacheOwners(className, type);
@@ -405,7 +411,7 @@ public class SpringReloadOrchestrator {
             // annotation on a service method, which never reaches the
             // filter-chain rebuild below because such a class is not one.
             new ReloadSteps.Step("Method security metadata",
-                    r -> securityReloader.refreshMethodSecurity(r.type())),
+                    r -> securityReloader.refreshMethodSecurity(r.type(), r.annotationsChanged())),
 
             new ReloadSteps.Step("Scheduler re-registration",
                     r -> schedulerReloader.reloadScheduledMethods(r.type(), r.addedMethods(), r.bytecode())),

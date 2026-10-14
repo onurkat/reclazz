@@ -24,6 +24,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Spring method-security policy edits refresh plain factory products as well as
+  stereotype classes. Removing the last security annotation also refreshes the
+  rules held by an existing proxy; body-only helpers keep their metadata gate.
+
 - Plain Spring factory products refresh existing transaction and cache annotation
   metadata after relevant class saves, without entering bean recreation. Body-only
   helpers retain the metadata relevance gate; held-proxy rollback/cache behavior

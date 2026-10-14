@@ -624,21 +624,23 @@ public class SpringSecurityReloader {
      * @return how many caches held an answer and were cleared
      */
     public int refreshMethodSecurity(Class<?> reloadedClass) {
+        return refreshMethodSecurity(reloadedClass, false);
+    }
+
+    /** Re-read a saved policy, including removal of the last security annotation. */
+    public int refreshMethodSecurity(Class<?> reloadedClass, boolean metadataChanged) {
         if (reloadedClass == null) return 0;
 
         // The gate is first, not last, and it is what keeps this free. Every
         // reload passes through here, and on a server with dozens of
         // application contexts a bean lookup per context per interceptor type
         // is real work to do on the reload thread for a class that has nothing
-        // to do with security. A class that does not carry the annotations is
-        // not one whose rules just changed.
-        //
-        // A save that REMOVES the last annotation is the case this gate does
-        // not cover, and it does not need to: measured on Boot 3.3, removing
-        // a @PreAuthorize opens the method on the next request anyway, because
-        // the bean refresh builds a new proxy and its pointcut is evaluated
-        // against Method objects taken fresh from the reloaded class.
-        if (!carriesMethodSecurity(reloadedClass)) return 0;
+        // to do with security. A metadata edit still has to proceed when the
+        // last annotation was removed: a caller may retain its startup proxy,
+        // whose cached rule is not replaced by recreating the context's bean.
+        // The dispatcher's annotation-change flag distinguishes that save
+        // from an unrelated body-only edit with no security annotations.
+        if (!metadataChanged && !carriesMethodSecurity(reloadedClass)) return 0;
 
         int cleared = 0;
         boolean found = false;
