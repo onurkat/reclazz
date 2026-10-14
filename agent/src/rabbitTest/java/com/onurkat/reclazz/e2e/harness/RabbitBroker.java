@@ -11,8 +11,15 @@ import java.util.concurrent.TimeUnit;
 
 /** Owns exactly one temporary Docker broker; missing Docker/image is a failure. */
 public final class RabbitBroker implements AutoCloseable {
-    // Official rabbitmq:4.3.5-alpine multi-platform manifest, verified at setup.
-    public static final String IMAGE = "rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd";
+    // Official rabbitmq:4.3.5-alpine multi-platform manifest. The pinned digest is
+    // the provenance source of truth: the build pulls and verifies it, then tags it
+    // locally as IMAGE before the gate. The test references the stable local tag,
+    // never the digest, because under Docker's containerd image store a reference by
+    // multi-platform INDEX digest (repo@sha256:<index>) intermittently fails
+    // `docker image inspect`/`run --pull=never` even when the content is present,
+    // while a local tag resolves reliably. See project_rabbit_digest_flake.
+    public static final String IMAGE_DIGEST = "rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd";
+    public static final String IMAGE = "reclazz-rabbit-pinned:4.3.5-alpine";
     private final String name = "reclazz-rabbit-test-" + UUID.randomUUID();
     private final String password = UUID.randomUUID().toString();
     private CachingConnectionFactory connectionFactory;
@@ -24,8 +31,9 @@ public final class RabbitBroker implements AutoCloseable {
         var broker = new RabbitBroker();
         try {
             command(15, "docker", "version", "--format", "{{.Server.Version}}");
-            // Never invoke a credential helper/download in a test. CI and local
-            // setup pull the documented image before entering the test gate.
+            // Never invoke a credential helper/download in a test. The build's
+            // rabbitTest setup pulls IMAGE_DIGEST and tags it as IMAGE before the
+            // gate; here we only inspect and run the stable local tag, offline.
             command(30, "docker", "image", "inspect", IMAGE);
             Runtime.getRuntime().addShutdownHook(broker.cleanup);
             broker.created = true; // also clean a run which created then timed out
@@ -77,7 +85,7 @@ public final class RabbitBroker implements AutoCloseable {
                 throw new IllegalStateException("Rabbit test Docker command timed out: " + args[1]);
             }
             String text = Files.readString(output);
-            if (process.exitValue() != 0) throw new IllegalStateException("Rabbit test requires Docker and image " + IMAGE + "; " + args[1] + " failed: " + text);
+            if (process.exitValue() != 0) throw new IllegalStateException("Rabbit test requires Docker and the local image " + IMAGE + " (tagged from " + IMAGE_DIGEST + " by the rabbitTest setup); " + args[1] + " failed: " + text);
             return text;
         } finally {
             if (process != null && process.isAlive()) process.destroyForcibly();
