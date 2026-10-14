@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Documentation
 
+- Add real broker/file-watcher evidence for plain Service/Repository messaging
+  receivers and Kafka factory/concurrency/startup/group options on JDK17/21.
+  All seven follow-up records have scoped delivery/reload observations;
+  broader variants remain explicitly unverified.
+
 - Record Kafka/JMS/Rabbit messaging evidence from fresh JDK 17/21 broker runs;
   distinguish watched delivery, component contracts and unverified variants.
   This evidence package changes no agent runtime behavior.
@@ -18,6 +23,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   behavior changes in this evidence package.
 
 ### Fixed
+
+- Added Kafka callbacks accept exact `groupId=""` and preserve native listener-ID
+  or factory-group selection. Real broker delivery, repeated body/topic saves,
+  removal and shutdown are observed against normal Spring Kafka2.9.13 controls
+  on JDK17/21; required listener literals remain guarded.
 
 - Added event listeners recognize Spring 6.1.14's native restricted transaction
   factory, including async and transaction-phase callbacks in transaction-enabled

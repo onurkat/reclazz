@@ -322,6 +322,24 @@ class SpringKafkaReloaderTest {
         node = read(annotated("first", "id")); node.signature = "<T:Ljava/lang/Object;>Ljava/lang/Object;";
         assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty());
     }
+    @Test void emptyGroupDoesNotRelaxRequiredListenerLiterals() throws Exception {
+        var empty = read(expressionBytes("first", "id", "topic", ""));
+        var accepted = AddedKafkaListenerAdapter.inspect(write(empty), ADDED);
+        assertTrue(accepted.refused().isEmpty());
+        assertEquals(1, accepted.methods().size());
+        for (String option : List.of("id", "topics", "containerFactory")) {
+            var node = read(write(empty)); var annotation = method(node, "first").visibleAnnotations.get(0);
+            Object value = option.equals("topics") ? new ArrayList<>(List.of("")) : "";
+            int index = annotation.values.indexOf(option);
+            if (index < 0) annotation.values.addAll(List.of(option, value));
+            else annotation.values.set(index + 1, value);
+            assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty(), option);
+        }
+        var node = read(write(empty)); var annotation = method(node, "first").visibleAnnotations.get(0);
+        annotation.values.set(annotation.values.indexOf("groupId") + 1, 42);
+        assertFalse(AddedKafkaListenerAdapter.inspect(write(node), ADDED).refused().isEmpty(), "group remains String-only");
+    }
+
     public static class Other { public void first(String value) { } }
     private static void register(Scope scope, String id, Object bean, String method) throws Exception {
         var endpoint = new MethodKafkaListenerEndpoint<Integer,String>(); endpoint.setId(id); endpoint.setGroupId(id);

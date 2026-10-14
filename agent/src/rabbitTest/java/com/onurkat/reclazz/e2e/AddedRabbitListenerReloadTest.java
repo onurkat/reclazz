@@ -30,7 +30,11 @@ class AddedRabbitListenerReloadTest {
     @Test void addingBesideAnIdlessExistingListenerPreservesItsConsumerAcrossSaves() throws Exception { exercise(true, true); }
 
     private void exercise(boolean existing) throws Exception { exercise(existing, false); }
-    private void exercise(boolean existing, boolean idless) throws Exception {
+    @Test void serviceReceiverFollowsBrokerDeliveryAndRepeatedReloads() throws Exception { exercise(true, false, "Service"); }
+    @Test void repositoryReceiverFollowsBrokerDeliveryAndRepeatedReloads() throws Exception { exercise(true, false, "Repository"); }
+
+    private void exercise(boolean existing, boolean idless) throws Exception { exercise(existing, idless, "Component"); }
+    private void exercise(boolean existing, boolean idless, String stereotype) throws Exception {
         String root = "reclazz-" + UUID.randomUUID();
         String first = root + "-first", second = root + "-second", base = root + "-base", other = root + "-other";
         var producer = new RabbitTemplate(broker.connectionFactory());
@@ -39,7 +43,7 @@ class AddedRabbitListenerReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(rabbitClasspath())
                 .jvmArgs("-Dtest.rabbit.port=" + broker.port(), "-Dtest.rabbit.password=" + broker.password(), "-Dtest.rabbit.originalQueue=" + base, "-Dtest.rabbit.idless=" + idless)
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
-                .with("Listener", listener(existing, idless, 0, first, base)).with("Other", other(other)).with("App", APP).start()) {
+                .with("Listener", listener(existing, idless, 0, first, base, stereotype)).with("Other", other(other)).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "Rabbit app did not start");
             app.awaitOrFail("Last-known-good bytecode cache:", "watcher did not finish initialization");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
@@ -52,7 +56,7 @@ class AddedRabbitListenerReloadTest {
                 http(port, "/snapshot");
                 String topic = stage >= 3 ? second : first;
                 long before = reloads(app);
-                app.rewrite("Listener", listener(existing, idless, stage, topic, base));
+                app.rewrite("Listener", listener(existing, idless, stage, topic, base, stereotype));
                 long until = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
                 while (reloads(app) == before && System.nanoTime() < until) Thread.sleep(25);
                 assertEquals(before + 1, reloads(app), app.tail());
@@ -112,7 +116,7 @@ class AddedRabbitListenerReloadTest {
                             || n.startsWith("amqp-client-") || n.startsWith("slf4j-api-") || n.startsWith("spring-retry-"));
                 }).toList());
     }
-    private static String listener(boolean existing, boolean idless, int stage, String topic, String base) {
+    private static String listener(boolean existing, boolean idless, int stage, String topic, String base, String stereotype) {
         String added = stage == 0 || stage == 4 ? "" : """
                 %s
                 %s void added(@org.springframework.messaging.handler.annotation.Payload String value,
@@ -126,13 +130,13 @@ class AddedRabbitListenerReloadTest {
                         stage == 5 ? "private" : "public", stage);
         return """
                 package app;
-                @org.springframework.stereotype.Component public class Listener {
+                @org.springframework.stereotype.%s public class Listener {
                     private final String prefix = new String("owner");
                     public String use() { return "used"; }
                     %s
                     %s
                 }
-                """.formatted(existing ? """
+                """.formatted(stereotype, existing ? """
                     @org.springframework.amqp.rabbit.annotation.RabbitListener(%s queues="%s")
                     public void original(String value) { System.out.println("BASE:" + value); }
                     """.formatted(idless ? "" : "id=\"existing\",", base) : "", added);

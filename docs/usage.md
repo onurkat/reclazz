@@ -1005,7 +1005,17 @@ application's native processor. Topic expressions may return a String, String
 array or iterable of strings; `groupId` expressions must resolve to a String
 (native null/default behavior is retained). Optional literal
 `containerFactory`, `idIsGroup`, `autoStartup` and positive integer
-`concurrency` are accepted. Other explicitly supplied `@KafkaListener` options
+`concurrency` are accepted. Measured Kafka2.9.13 late registration follows the
+native registry policy: `autoStartup=false` can still start when
+`alwaysStartAfterRefresh=true` (the native default); setting that registry policy
+to false preserves the annotation's start flag. Omitted `groupId` and `#{null}`
+fall back to the literal listener ID when `idIsGroup=true`, otherwise to the
+configured consumer-factory group. An explicit nonempty group overrides that
+choice. Exact `groupId=""` now follows the same native fallback after watched
+addition and body/topic edits, with both `idIsGroup` values measured against
+ordinary native listeners. Whitespace-only group literals remain unsupported;
+this proof applies to the named Kafka2.9.13/Spring5.3.39 and JDK17/21 fixture.
+Other explicitly supplied `@KafkaListener` options
 are refused. The class directly extends `Object`, has no interfaces/type
 variables and carries only the component stereotypes above or `@Deprecated`.
 Callback annotations are direct `@KafkaListener` and optional `@Deprecated`;

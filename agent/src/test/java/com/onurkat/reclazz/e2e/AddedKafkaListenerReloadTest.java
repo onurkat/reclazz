@@ -31,7 +31,11 @@ class AddedKafkaListenerReloadTest {
     @Test void firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore() throws Exception { exercise(false); }
     @Test void addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone() throws Exception { exercise(true); }
 
-    private void exercise(boolean existing) throws Exception {
+    @Test void serviceReceiverFollowsBrokerDeliveryAndRepeatedReloads() throws Exception { exercise(true, "Service"); }
+    @Test void repositoryReceiverFollowsBrokerDeliveryAndRepeatedReloads() throws Exception { exercise(true, "Repository"); }
+
+    private void exercise(boolean existing) throws Exception { exercise(existing, "Component"); }
+    private void exercise(boolean existing, String stereotype) throws Exception {
         String root = "reclazz-" + UUID.randomUUID();
         String first = root + "-first", second = root + "-second", base = root + "-base", other = root + "-other";
         broker.addTopics(first, second, base, other);
@@ -40,7 +44,7 @@ class AddedKafkaListenerReloadTest {
         try (var app = WatchedApp.in(tmp).classpath(kafkaClasspath())
                 .jvmArgs("-Dtest.brokers=" + broker.getBrokersAsString())
                 .agentArgs("startupDelaySec=1,debounceMs=100,verbose=true")
-                .with("Listener", listener(existing, 0, first, base)).with("Other", other(other)).with("App", APP).start()) {
+                .with("Listener", listener(existing, 0, first, base, stereotype)).with("Other", other(other)).with("App", APP).start()) {
             app.awaitOrFail("PORT=", "Kafka app did not start");
             app.awaitOrFail("] Watching ", "watcher did not start");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
@@ -53,7 +57,7 @@ class AddedKafkaListenerReloadTest {
                 http(port, "/snapshot");
                 String topic = stage >= 3 ? second : first;
                 long before = reloads(app);
-                app.rewrite("Listener", listener(existing, stage, topic, base));
+                app.rewrite("Listener", listener(existing, stage, topic, base, stereotype));
                 long until = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
                 while (reloads(app) == before && System.nanoTime() < until) Thread.sleep(25);
                 assertEquals(before + 1, reloads(app), app.tail());
@@ -109,7 +113,7 @@ class AddedKafkaListenerReloadTest {
                             || n.startsWith("snappy-java-") || n.startsWith("zstd-jni-"));
                 }).toList());
     }
-    private static String listener(boolean existing, int stage, String topic, String base) {
+    private static String listener(boolean existing, int stage, String topic, String base, String stereotype) {
         String added = stage == 0 || stage == 4 ? "" : """
                 %s
                 %s void added(@org.springframework.messaging.handler.annotation.Payload String value,
@@ -120,13 +124,13 @@ class AddedKafkaListenerReloadTest {
                         stage == 5 ? "private" : "public", stage);
         return """
                 package app;
-                @org.springframework.stereotype.Component public class Listener {
+                @org.springframework.stereotype.%s public class Listener {
                     private final String prefix = new String("owner");
                     public String use() { return "used"; }
                     %s
                     %s
                 }
-                """.formatted(existing ? """
+                """.formatted(stereotype, existing ? """
                     @org.springframework.kafka.annotation.KafkaListener(id="existing", topics="%s", groupId="%s-group")
                     public void original(String value) { System.out.println("BASE:" + value); }
                     """.formatted(base, base) : "", added);

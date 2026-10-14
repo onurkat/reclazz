@@ -71,7 +71,10 @@ public final class AddedKafkaListenerAdapter {
                 for (Object topic : list) destination(topic, "topic");
                 // groupId may be a placeholder or expression; containerFactory is
                 // resolved by Reclazz itself, so it stays a literal.
-                if (options.containsKey("groupId")) destination(options.get("groupId"), "groupId");
+                // An explicit empty group has the native omitted-group fallback.
+                // Keep the annotation unchanged; only groupId permits this empty literal.
+                if (options.containsKey("groupId") && !"".equals(options.get("groupId")))
+                    destination(options.get("groupId"), "groupId");
                 if (options.containsKey("containerFactory")) literal(options.get("containerFactory"), "containerFactory");
                 if (options.containsKey("autoStartup") && !Set.of("true", "false").contains(options.get("autoStartup")))
                     throw new IllegalArgumentException("autoStartup must be literal true or false");
