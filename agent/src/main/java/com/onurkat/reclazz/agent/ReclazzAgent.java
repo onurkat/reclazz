@@ -970,7 +970,12 @@ public class ReclazzAgent {
                             reloadResult.getAddedMethodSigs(),
                             reloadResult.getNewBytecode());
                 } else {
-                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className));
+                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className),
+                            reloadResult.isStructuralReload(),
+                            reloadResult.isAnnotationsChanged(),
+                            reloadResult.isMethodsAdded(),
+                            reloadResult.getAddedMethodSigs(),
+                            reloadResult.getNewBytecode());
                 }
 
                 // Hybris-specific: interceptor reload
@@ -1259,7 +1264,12 @@ public class ReclazzAgent {
                             reloadResult.getAddedMethodSigs(),
                             reloadResult.getNewBytecode());
                 } else {
-                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className));
+                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className),
+                            reloadResult.isStructuralReload(),
+                            reloadResult.isAnnotationsChanged(),
+                            reloadResult.isMethodsAdded(),
+                            reloadResult.getAddedMethodSigs(),
+                            reloadResult.getNewBytecode());
                 }
 
                 if (interceptorRefresh != null && interceptorRefresh.complete()) {

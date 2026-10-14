@@ -24,6 +24,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Plain Spring factory products refresh existing transaction and cache annotation
+  metadata after relevant class saves, without entering bean recreation. Body-only
+  helpers retain the metadata relevance gate; held-proxy rollback/cache behavior
+  and cold-product guards are covered by dedicated reload tests.
+
 - Added Kafka callbacks accept exact `groupId=""` and preserve native listener-ID
   or factory-group selection. Real broker delivery, repeated body/topic saves,
   removal and shutdown are observed against normal Spring Kafka2.9.13 controls

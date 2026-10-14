@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3133` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); `README.md:694` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `CHANGELOG.md:47` (SHA-256 `b0a59cdaf68f164120ace380cd5051ce8034b733eb9dabdf8c485475396df19d`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3133` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); `README.md:694` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `CHANGELOG.md:52` (SHA-256 `6945523fb414248713ed2d24dfe06645dcbacbca2d555512bfb0e9b147f36a26`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -2194,7 +2194,7 @@ Edited web security configuration rebuilds a live filter chain and changes route
 
 ### P2-CACHE-RELOAD-EVICTION
 
-**Verdict:** PARTIAL.
+**Verdict:** PROVEN_WITH_SCOPE.
 
 Reloading an annotated class evicts existing native caches.
 
@@ -2202,15 +2202,15 @@ Reloading an annotated class evicts existing native caches.
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
-**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; Spring5.3.39 and isolated6.1.14, H2 2.5.250, ConcurrentMapCacheManager. Plain @Bean startup CGLIB product in normal/child application loader; existing public methods and four sequential saves.
 
-**Tests/assertions:** `com.onurkat.reclazz.spring.SpringCacheReloaderTest#annotatedUnknownClassKeepsExistingFallback` (component): Direct cache reloader empties prices/descriptions after warming both.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey` (watcher); `com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey` (watcher). Four body-only saves with unchanged Cacheable annotation evict the same warmed key; each generation executes once, then hits its new cached value. Bean identity/creation count is retained; lazy product remains cold.
 
-**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+**Control:** Each saved class is run in a fresh agent-less JVM before the held proxy observation; unchanged native tx/cache controls remain correct. Helper metadata disabled in scratch restores four stale-metadata failures. Same-key eviction is an already-working behavior, not a new repair.
 
-**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+**Execution:** PASSED on both named JDK17/21 lanes with Spring5.3.39 and6.1.14; exact focused receipts, invocations, source/artifact hashes and follow-up commands in JSON. Full gate and independent audit are separately required.
 
-**Limitation / missing environment:** Direct reloader invocation only; added CacheEvict operation is a separate watcher cell. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+**Limitation / missing environment:** Only existing methods on the named plain factory product and local cache/DB graphs. Added class-default methods, distributed caches, arbitrary providers, concurrent saves and enhanced VMs remain separate. Other OS/JDK providers, other Spring releases/proxy shapes, remote/distributed providers and unlisted registrations; no universal application guarantee.
 
 **Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
 
@@ -2238,7 +2238,7 @@ Ordinary registration/factories/injection/AOP watcher behavior is established on
 
 ### P2-EXISTING-TX-METADATA
 
-**Verdict:** PARTIAL.
+**Verdict:** PROVEN_WITH_SCOPE.
 
 Edited original-method Transactional metadata is re-read.
 
@@ -2246,21 +2246,21 @@ Edited original-method Transactional metadata is re-read.
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
-**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; Spring5.3.39 and isolated6.1.14, H2 2.5.250, ConcurrentMapCacheManager. Plain @Bean startup CGLIB product in normal/child application loader; existing public methods and four sequential saves.
 
-**Tests/assertions:** `com.onurkat.reclazz.spring.SpringOperationSourceReloaderTest#theTransactionSourcesMapIsFoundByItsName` (component): Direct source refresh clears a synthetic warmed attributeCache map.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback` (watcher); `com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback` (watcher). Held startup CGLIB proxy observes readOnly changes, checked-exception rollback rule edits, removal and restoration over four saves using real H2 rows. Bean identity/creation count is retained; lazy product remains cold.
 
-**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+**Control:** Each saved class is run in a fresh agent-less JVM before the held proxy observation; unchanged native tx/cache controls remain correct. Helper metadata disabled in scratch restores four stale-metadata failures. Same-key eviction is an already-working behavior, not a new repair.
 
-**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+**Execution:** PASSED on both named JDK17/21 lanes with Spring5.3.39 and6.1.14; exact focused receipts, invocations, source/artifact hashes and follow-up commands in JSON. Full gate and independent audit are separately required.
 
-**Limitation / missing environment:** Synthetic cache-finder observation only; not a live original-method readOnly/rollback save. Added hidden methods are separately measured. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+**Limitation / missing environment:** Only existing methods on the named plain factory product and local cache/DB graphs. Added class-default methods, distributed caches, arbitrary providers, concurrent saves and enhanced VMs remain separate. Other OS/JDK providers, other Spring releases/proxy shapes, remote/distributed providers and unlisted registrations; no universal application guarantee.
 
 **Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
 
 ### P2-EXISTING-CACHE-METADATA
 
-**Verdict:** PARTIAL.
+**Verdict:** PROVEN_WITH_SCOPE.
 
 Edited original-method Cacheable metadata is re-read.
 
@@ -2268,15 +2268,15 @@ Edited original-method Cacheable metadata is re-read.
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
-**Bounds:** Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; Spring5.3.39 and isolated6.1.14, H2 2.5.250, ConcurrentMapCacheManager. Plain @Bean startup CGLIB product in normal/child application loader; existing public methods and four sequential saves.
 
-**Tests/assertions:** `com.onurkat.reclazz.spring.SpringOperationSourceReloaderTest#theCacheSourcesRenamedMapIsFoundToo` (component): Direct source refresh clears a synthetic warmed operationCache map.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts` (watcher); `com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts` (watcher). Held startup proxy observes cache region/key/condition edits, annotation removal/restoration and actual entries/body counts over four saves. Bean identity/creation count is retained; lazy product remains cold.
 
-**Control:** Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.
+**Control:** Each saved class is run in a fresh agent-less JVM before the held proxy observation; unchanged native tx/cache controls remain correct. Helper metadata disabled in scratch restores four stale-metadata failures. Same-key eviction is an already-working behavior, not a new repair.
 
-**Execution:** PASSED on both named SapMachine17/21 macOS arm64 lanes; exact per-method framework, command, counts/skips and source/artifact hashes in JSON.
+**Execution:** PASSED on both named JDK17/21 lanes with Spring5.3.39 and6.1.14; exact focused receipts, invocations, source/artifact hashes and follow-up commands in JSON. Full gate and independent audit are separately required.
 
-**Limitation / missing environment:** Synthetic cache-finder observation only; not a live original-method cache-condition save. Added hidden methods are separately measured. Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.
+**Limitation / missing environment:** Only existing methods on the named plain factory product and local cache/DB graphs. Added class-default methods, distributed caches, arbitrary providers, concurrent saves and enhanced VMs remain separate. Other OS/JDK providers, other Spring releases/proxy shapes, remote/distributed providers and unlisted registrations; no universal application guarantee.
 
 **Reviewer / next action:** Astra read/mapped assertions; Claude independent audit pending. Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit.
 

@@ -681,6 +681,120 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback",
+          "status": "PASSED",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-17/e2eTest/TEST-com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 5.3.39 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts",
+          "status": "PASSED",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-17/e2eTest/TEST-com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 5.3.39 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey",
+          "status": "PASSED",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-17/e2eTest/TEST-com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 5.3.39 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback",
+          "status": "PASSED",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-17/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 6.1.14 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts",
+          "status": "PASSED",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-17/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 6.1.14 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey",
+          "status": "PASSED",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-17/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 6.1.14 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -719,6 +833,52 @@
           "base_commit": "d5304efd89273e0b0bf0f10e57c600ab926b6e05",
           "artifact_sha256": "1a383722134f7a36073e29546d8df9817be42daeca2a45c3fb192f3b1c47e9a3",
           "host": "Darwin arm64"
+        }
+      ],
+      "rf01_rf02_followup_runs": [
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*ExistingOperationMetadataReloadTest' --tests '*MarkedOperationMetadataReloadTest' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T09:20:37.850126+00:00",
+          "base_commit": "c751c82",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "counts": {
+            "tests": 10,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "e2eTest": {
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-17"
+        },
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*ModernExistingOperationMetadataReloadTest'",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T09:21:55.381499+00:00",
+          "base_commit": "c751c82",
+          "artifact_sha256": "812670407b7cb42ced20ee92e6cea0e56182bfa34fb64a961b59c80bc03f7632",
+          "counts": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "springSixTest": {
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-17"
         }
       ]
     },
@@ -1390,6 +1550,120 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback",
+          "status": "PASSED",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-21/e2eTest/TEST-com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 5.3.39 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts",
+          "status": "PASSED",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-21/e2eTest/TEST-com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 5.3.39 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey",
+          "status": "PASSED",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-21/e2eTest/TEST-com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 5.3.39 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback",
+          "status": "PASSED",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-21/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 6.1.14 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalTransactionRulesFollowSavesAndRealCheckedRollback(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts",
+          "status": "PASSED",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-21/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 6.1.14 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "originalCacheRulesFollowSavesAndRealKeysAndBodyCounts(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey",
+          "status": "PASSED",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "receipt": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-21/springSixTest/TEST-com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest.xml",
+          "framework": "Spring 6.1.14 + H2 2.5.250 + ConcurrentMapCacheManager",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "base_commit": "c751c82",
+          "invocations": [
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "bodyOnlySaveEvictsTheSameWarmedKey(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -1420,6 +1694,52 @@
           "artifact_sha256": "9b3c2fc57a4e4965efeb52df37971494bc2a7b66eb411342fe38b3a4687a8b6d",
           "host": "Darwin arm64"
         }
+      ],
+      "rf01_rf02_followup_runs": [
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*ExistingOperationMetadataReloadTest' --tests '*MarkedOperationMetadataReloadTest' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T09:17:15.875908+00:00",
+          "base_commit": "c751c82",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "counts": {
+            "tests": 10,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "e2eTest": {
+              "tests": 10,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/focused-green-21"
+        },
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*ModernExistingOperationMetadataReloadTest'",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T09:18:53.119306+00:00",
+          "base_commit": "c751c82",
+          "artifact_sha256": "b3367d94785e132a05b39fb89e6543b2b068b841590759c27587696ecebcfcbb",
+          "counts": {
+            "tests": 6,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "springSixTest": {
+              "tests": 6,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/modern-focused-21"
+        }
       ]
     }
   },
@@ -1437,7 +1757,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1051,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-REGISTER-NEW"
         }
       ],
@@ -1477,7 +1797,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1073,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-COMPONENT-PROFILE"
         }
       ],
@@ -1517,7 +1837,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1095,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-COMPONENT-CONDITIONAL"
         }
       ],
@@ -1557,7 +1877,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1117,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-COMPONENT-LAZY"
         }
       ],
@@ -1597,7 +1917,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1139,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-COMPONENT-PROTOTYPE"
         }
       ],
@@ -1637,7 +1957,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1161,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-COMPOSED-STEREOTYPE"
         }
       ],
@@ -1677,7 +1997,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1183,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-NEW-CONSTRUCTOR-INJECTION"
         }
       ],
@@ -1706,7 +2026,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1205,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-REFRESH"
         }
       ],
@@ -1746,7 +2066,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1227,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-HELD-CALLER"
         }
       ],
@@ -1786,7 +2106,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1249,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-INJECTION-AUTOWIRED"
         }
       ],
@@ -1826,7 +2146,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1271,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-INJECTION-VALUE"
         }
       ],
@@ -1866,7 +2186,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1293,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-INJECTION-RESOURCE"
         }
       ],
@@ -1906,7 +2226,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1315,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-LITE-CONFIG"
         }
       ],
@@ -1946,7 +2266,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1337,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-ARGS"
         }
       ],
@@ -1986,7 +2306,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1359,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-RICH-ARGS"
         }
       ],
@@ -2026,7 +2346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1381,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-PROVIDER"
         }
       ],
@@ -2066,7 +2386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1403,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-PRIMITIVE-VALUE"
         }
       ],
@@ -2106,7 +2426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1425,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-ARRAY-SET-ARGS"
         }
       ],
@@ -2146,7 +2466,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1447,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-ALL-PRIMITIVES"
         }
       ],
@@ -2186,7 +2506,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1469,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-VALUE-PROPERTY"
         }
       ],
@@ -2226,7 +2546,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1491,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-ALIASES"
         }
       ],
@@ -2266,7 +2586,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1513,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-QUALIFIER"
         }
       ],
@@ -2306,7 +2626,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1535,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-PRIMARY"
         }
       ],
@@ -2346,7 +2666,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1557,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-CONDITIONAL"
         }
       ],
@@ -2386,7 +2706,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1579,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-BOOT-PROPERTY"
         }
       ],
@@ -2426,7 +2746,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1601,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-BOOT-BEAN"
         }
       ],
@@ -2466,7 +2786,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1623,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-BOOT-MISSING-BEAN"
         }
       ],
@@ -2506,7 +2826,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1645,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-PROFILE"
         }
       ],
@@ -2546,7 +2866,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1667,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-SCOPE-PROTOTYPE"
         }
       ],
@@ -2586,7 +2906,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1689,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-LAZY"
         }
       ],
@@ -2626,7 +2946,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1711,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-FULL-CONFIG"
         }
       ],
@@ -2666,7 +2986,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1733,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-FULL-CONFIG-ARGS"
         }
       ],
@@ -2706,7 +3026,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1755,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-BEAN-STATIC"
         }
       ],
@@ -2746,7 +3066,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1777,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-FULL-CONFIG-STATIC-JAVA"
         }
       ],
@@ -2786,7 +3106,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1799,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-LIFECYCLE-INIT"
         }
       ],
@@ -2833,7 +3153,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1821,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-LIFECYCLE-DESTROY"
         }
       ],
@@ -2880,7 +3200,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1843,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-LIFECYCLE-NATIVE-LIFECYCLE"
         }
       ],
@@ -2927,7 +3247,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1865,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-ADDED-OPERATIONS-PLAIN"
         }
       ],
@@ -2967,7 +3287,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1887,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-ADDED-OPERATIONS-HELD"
         }
       ],
@@ -3007,7 +3327,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1909,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-TX-ROLLBACK"
         }
       ],
@@ -3054,7 +3374,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1931,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-CACHE-HIT"
         }
       ],
@@ -3101,7 +3421,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1953,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-CACHE-PUT"
         }
       ],
@@ -3148,7 +3468,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1975,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-CACHE-EVICT"
         }
       ],
@@ -3195,7 +3515,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1997,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-OPERATIONS-SELF-INVOKE"
         }
       ],
@@ -3242,7 +3562,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2019,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-COMPOSED-TRANSACTION"
         }
       ],
@@ -3282,7 +3602,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2041,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-COMPOSED-CACHE"
         }
       ],
@@ -3322,7 +3642,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2063,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-AOP-REFRESH"
         }
       ],
@@ -3369,7 +3689,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2085,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-SECURITY-PRE-POST"
         }
       ],
@@ -3421,7 +3741,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2107,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-COMPOSED-SECURITY"
         }
       ],
@@ -3478,7 +3798,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2129,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-SECURITY-METADATA"
         }
       ],
@@ -3518,7 +3838,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2151,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-SECURITY-SECURED"
         }
       ],
@@ -3547,7 +3867,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2173,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-SECURITY-FILTER-CHAIN"
         }
       ],
@@ -3576,31 +3896,43 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2195,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-CACHE-RELOAD-EVICTION"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
-      "bounds": "Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.",
+      "bounds": "Stock SapMachine17/21 on macOS arm64; Spring5.3.39 and isolated6.1.14, H2 2.5.250, ConcurrentMapCacheManager. Plain @Bean startup CGLIB product in normal/child application loader; existing public methods and four sequential saves.",
       "tests": [
         {
-          "symbol": "com.onurkat.reclazz.spring.SpringCacheReloaderTest#annotatedUnknownClassKeepsExistingFallback",
-          "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringCacheReloaderTest.java",
-          "source_sha256": "1c8c40672aafa5ae8c85682aafa31526db4c64bf107a9f91a177ff5b33bb847d",
-          "kind": "component",
-          "assertions": "Direct cache reloader empties prices/descriptions after warming both."
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingOperationMetadataReloadTest.java",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "kind": "watcher",
+          "assertions": "Four body-only saves with unchanged Cacheable annotation evict the same warmed key; each generation executes once, then hits its new cached value. Normal/child loader; bean identity/creation count retained and lazy product remains cold."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernExistingOperationMetadataReloadTest.java",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "kind": "watcher",
+          "assertions": "Four body-only saves with unchanged Cacheable annotation evict the same warmed key; each generation executes once, then hits its new cached value. Normal/child loader; bean identity/creation count retained and lazy product remains cold.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#bodyOnlySaveEvictsTheSameWarmedKey",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingOperationMetadataReloadTest.java",
+            "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1"
+          }
         }
       ],
-      "observable": "Direct cache reloader empties prices/descriptions after warming both.",
-      "control": "Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.",
+      "observable": "Four body-only saves with unchanged Cacheable annotation evict the same warmed key; each generation executes once, then hits its new cached value.",
+      "control": "Each saved class is run in a fresh agent-less JVM before the held proxy observation; unchanged native tx/cache controls remain correct. Helper metadata disabled in scratch restores four stale-metadata failures. Same-key eviction is an already-working behavior, not a new repair.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
         "sapmachine-21-macos-arm64"
       ],
-      "verdict": "PARTIAL",
+      "verdict": "PROVEN_WITH_SCOPE",
       "reviewer": "Astra read/mapped assertions; Claude independent audit pending.",
-      "limitation": "Direct reloader invocation only; added CacheEvict operation is a separate watcher cell.",
-      "missing_environment": "Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.",
+      "limitation": "Only existing methods on the named plain factory product and local cache/DB graphs. Added class-default methods, distributed caches, arbitrary providers, concurrent saves and enhanced VMs remain separate.",
+      "missing_environment": "Other OS/JDK providers, other Spring releases/proxy shapes, remote/distributed providers and unlisted registrations; no universal application guarantee.",
       "next_action": "Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit."
     },
     {
@@ -3616,7 +3948,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2217,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-SPRING6-ORDINARY-MATRIX"
         }
       ],
@@ -3645,31 +3977,43 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2239,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-EXISTING-TX-METADATA"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
-      "bounds": "Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.",
+      "bounds": "Stock SapMachine17/21 on macOS arm64; Spring5.3.39 and isolated6.1.14, H2 2.5.250, ConcurrentMapCacheManager. Plain @Bean startup CGLIB product in normal/child application loader; existing public methods and four sequential saves.",
       "tests": [
         {
-          "symbol": "com.onurkat.reclazz.spring.SpringOperationSourceReloaderTest#theTransactionSourcesMapIsFoundByItsName",
-          "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringOperationSourceReloaderTest.java",
-          "source_sha256": "75030f7e91e0245070efc750a92dbf7d754881cb4765998dda3e5cf51f928288",
-          "kind": "component",
-          "assertions": "Direct source refresh clears a synthetic warmed attributeCache map."
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingOperationMetadataReloadTest.java",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "kind": "watcher",
+          "assertions": "Held startup CGLIB proxy observes readOnly changes, checked-exception rollback rule edits, removal and restoration over four saves using real H2 rows. Normal/child loader; bean identity/creation count retained and lazy product remains cold."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernExistingOperationMetadataReloadTest.java",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "kind": "watcher",
+          "assertions": "Held startup CGLIB proxy observes readOnly changes, checked-exception rollback rule edits, removal and restoration over four saves using real H2 rows. Normal/child loader; bean identity/creation count retained and lazy product remains cold.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalTransactionRulesFollowSavesAndRealCheckedRollback",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingOperationMetadataReloadTest.java",
+            "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1"
+          }
         }
       ],
-      "observable": "Direct source refresh clears a synthetic warmed attributeCache map.",
-      "control": "Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.",
+      "observable": "Held startup CGLIB proxy observes readOnly changes, checked-exception rollback rule edits, removal and restoration over four saves using real H2 rows.",
+      "control": "Each saved class is run in a fresh agent-less JVM before the held proxy observation; unchanged native tx/cache controls remain correct. Helper metadata disabled in scratch restores four stale-metadata failures. Same-key eviction is an already-working behavior, not a new repair.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
         "sapmachine-21-macos-arm64"
       ],
-      "verdict": "PARTIAL",
+      "verdict": "PROVEN_WITH_SCOPE",
       "reviewer": "Astra read/mapped assertions; Claude independent audit pending.",
-      "limitation": "Synthetic cache-finder observation only; not a live original-method readOnly/rollback save. Added hidden methods are separately measured.",
-      "missing_environment": "Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.",
+      "limitation": "Only existing methods on the named plain factory product and local cache/DB graphs. Added class-default methods, distributed caches, arbitrary providers, concurrent saves and enhanced VMs remain separate.",
+      "missing_environment": "Other OS/JDK providers, other Spring releases/proxy shapes, remote/distributed providers and unlisted registrations; no universal application guarantee.",
       "next_action": "Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit."
     },
     {
@@ -3685,31 +4029,43 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2261,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-EXISTING-CACHE-METADATA"
         }
       ],
       "opt_in": "Default after explicit startup agent attachment and compiled class save; no additional P2 flag.",
-      "bounds": "Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.",
+      "bounds": "Stock SapMachine17/21 on macOS arm64; Spring5.3.39 and isolated6.1.14, H2 2.5.250, ConcurrentMapCacheManager. Plain @Bean startup CGLIB product in normal/child application loader; existing public methods and four sequential saves.",
       "tests": [
         {
-          "symbol": "com.onurkat.reclazz.spring.SpringOperationSourceReloaderTest#theCacheSourcesRenamedMapIsFoundToo",
-          "path": "agent/src/test/java/com/onurkat/reclazz/spring/SpringOperationSourceReloaderTest.java",
-          "source_sha256": "75030f7e91e0245070efc750a92dbf7d754881cb4765998dda3e5cf51f928288",
-          "kind": "component",
-          "assertions": "Direct source refresh clears a synthetic warmed operationCache map."
+          "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingOperationMetadataReloadTest.java",
+          "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1",
+          "kind": "watcher",
+          "assertions": "Held startup proxy observes cache region/key/condition edits, annotation removal/restoration and actual entries/body counts over four saves. Normal/child loader; bean identity/creation count retained and lazy product remains cold."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ModernExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/ModernExistingOperationMetadataReloadTest.java",
+          "source_sha256": "a78ba21d379a0dc1656558959e85933711d07b64bc4a5a0faacc7a9999902637",
+          "kind": "watcher",
+          "assertions": "Held startup proxy observes cache region/key/condition edits, annotation removal/restoration and actual entries/body counts over four saves. Normal/child loader; bean identity/creation count retained and lazy product remains cold.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ExistingOperationMetadataReloadTest#originalCacheRulesFollowSavesAndRealKeysAndBodyCounts",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ExistingOperationMetadataReloadTest.java",
+            "source_sha256": "c52b4e666b96edbe852df627a14f7bb3625d1f6b6defb47e821c73e591fe34f1"
+          }
         }
       ],
-      "observable": "Direct source refresh clears a synthetic warmed operationCache map.",
-      "control": "Before/after saves and the unchanged/held-object controls named in the observing tests; hook-disabled scratch controls where recorded.",
+      "observable": "Held startup proxy observes cache region/key/condition edits, annotation removal/restoration and actual entries/body counts over four saves.",
+      "control": "Each saved class is run in a fresh agent-less JVM before the held proxy observation; unchanged native tx/cache controls remain correct. Helper metadata disabled in scratch restores four stale-metadata failures. Same-key eviction is an already-working behavior, not a new repair.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
         "sapmachine-21-macos-arm64"
       ],
-      "verdict": "PARTIAL",
+      "verdict": "PROVEN_WITH_SCOPE",
       "reviewer": "Astra read/mapped assertions; Claude independent audit pending.",
-      "limitation": "Synthetic cache-finder observation only; not a live original-method cache-condition save. Added hidden methods are separately measured.",
-      "missing_environment": "Other OS/JDK providers/enhanced VMs; Spring 6 watcher coverage unless explicitly named in this cell.",
+      "limitation": "Only existing methods on the named plain factory product and local cache/DB graphs. Added class-default methods, distributed caches, arbitrary providers, concurrent saves and enhanced VMs remain separate.",
+      "missing_environment": "Other OS/JDK providers, other Spring releases/proxy shapes, remote/distributed providers and unlisted registrations; no universal application guarantee.",
       "next_action": "Independent Claude audit of the record, complete diff, raw receipts and scratch negative witnesses before local commit."
     },
     {
@@ -3725,7 +4081,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2283,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-TX-CLASS-DEFAULTS"
         }
       ],
@@ -3765,7 +4121,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2305,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-CACHE-CLASS-DEFAULTS"
         }
       ],
@@ -3805,7 +4161,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2327,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-SECURITY-FILTER-CHAIN-SWAP"
         }
       ],
@@ -3845,7 +4201,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2349,
-          "sha256": "fd60c3aaa860c15ef50235ef473c63ab8b18657230fc984727ef3da73fb7b3a2",
+          "sha256": "c1cc2a393fbf5e9282e7b665b03c560b29de55fa0dd2fe1354aa6bd363e3f64c",
           "quote": "### P2-SPRING6-BEAN-CONDITION-METADATA"
         }
       ],
@@ -3978,6 +4334,15 @@
       "base_source_sha256": "0f345a1abad4190cf8a732e49f009f5cacbeb3fd1850ed660b08a21b6574e163",
       "mutant_source_sha256": "cf6d9df934edc35111643e0bd519eba7ac2a122bb0d9eb53bd986cc774e2dca1",
       "raw_evidence": ".collab/research/2026-10-09-feature-evidence-p2/negative/modern-security"
+    },
+    {
+      "name": "rf01-rf02-helper-operation-metadata",
+      "expected_status": "RED",
+      "exit_code": 1,
+      "invocations": 4,
+      "disabled_hook": "Only helper operationSourceReloader.reloadOperationSources call; rich flags and class path retained.",
+      "raw_evidence": ".collab/research/2026-10-14-rf01-rf02-fix/scratch-hook-disabled-21",
+      "restoration": ".collab/research/2026-10-14-rf01-rf02-fix/scratch-restoration.json"
     }
   ],
   "registry_verification": {

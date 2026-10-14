@@ -125,12 +125,29 @@ public class SpringReloadOrchestrator {
     }
 
     public void onHelperReloaded(String className, Class<?> type) {
+        onHelperReloaded(className, type, false, false, false, java.util.Set.of(), null);
+    }
+
+    public void onHelperReloaded(String className, Class<?> type,
+                                 boolean isStructural, boolean annotationsChanged,
+                                 boolean addedMethods, java.util.Set<String> addedMethodSigs,
+                                 byte[] newBytecode) {
         if (type == null) return;
+        if (addedMethods) classesWithAddedMembers.add(className);
         ReloadSteps.runAll(java.util.List.of(new ReloadSteps.Step("Cache eviction",
                         r -> cacheReloader.reloadCaches(r.type())),
                 // @Bean/programmatic aspects need not carry a Spring stereotype.
-                new ReloadSteps.Step("AOP proxy refresh", r -> aopReloader.reloadAopProxies(r.type()))),
-                new ReloadSteps.Reloaded(className, type, false, false));
+                new ReloadSteps.Step("AOP proxy refresh", r -> aopReloader.reloadAopProxies(r.type())),
+                // Factory products and registered singletons may have operation
+                // annotations without a class stereotype. Keep their metadata
+                // current without entering bean recreation or lifecycle discovery.
+                new ReloadSteps.Step("Transaction and cache metadata", r -> {
+                    if (r.structural() || r.annotationsChanged()
+                            || classesWithAddedMembers.contains(r.className())) {
+                        operationSourceReloader.reloadOperationSources(r.type(), r.annotationsChanged());
+                    }
+                })),
+                new ReloadSteps.Reloaded(className, type, isStructural, annotationsChanged, addedMethodSigs, newBytecode));
         refreshMappedCacheOwners(className, type);
     }
 
