@@ -2620,6 +2620,31 @@ separately; the new mapping remains installed. Existing entity field additions
 on stock JVMs still require enhanced redefinition or a restart. Existing
 DDL-enabled mapping refresh keeps its previous behavior.
 
+### Held repositories after a prepared mapping refresh
+
+Separate watcher acceptance verifies an already-injected Spring Data repository
+across this prepared-schema refresh on Spring ORM 6.1.14, Spring Data JPA 3.3.4,
+Hibernate 6.5.3.Final and H2 2.5.250, on stock SapMachine 17/21 with ordinary and
+child application loaders. The original repository keeps an existing entity as
+its domain root. After the native factory changes, it writes and reads that
+entity through `saveAndFlush`, `findById`, a warmed JPQL query and `count`. A custom
+repository fragment holding the original shared EntityManager queries the newly
+mapped entity. Repository, holder, shared EntityManager and injected factory-client
+identities remain unchanged; the old native factory closes and an unrelated
+context remains accessible. A body-only save of the mapped entity does not rebuild
+it again. Each mapping state is compared with a fresh agentless native application
+and exact expected values.
+
+This observer also verifies missing-table refusal followed by explicit synthetic
+schema preparation and a body-only retry, opt-out refusal and two-unit ambiguity
+refusal. It does not add automatic schema migration or multi-unit selection.
+These are scoped observations of an existing domain-root repository and a custom
+fragment, not a repository whose generic domain root becomes a new type or a
+startup-declared query that initially names an unmapped entity. Spring5/Boot2
+javax persistence, enhanced existing-field edits, cold/lazy products, active
+transactions or retained open persistence contexts, other databases/providers,
+real-provider close failures and simultaneous swap/publication need separate proof.
+
 ### Reload between requests
 
 Add `reloadBoundary=request` to the agent arguments to keep a supported Spring

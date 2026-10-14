@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Documentation
 
+- Add held Spring Data repository evidence across a prepared-schema native JPA
+  factory swap, including validation retry and opt-out/ambiguity refusals on
+  H2/Spring 6 and JDK17/21. No agent runtime behavior changes.
+
 - Add SQL-native Spring Data watcher evidence on H2/Spring 6 and JDK17/21,
   including query errors and valid-save recovery; distinguish current dependent
   recreation from excluded retired external owners. Agent runtime behavior is unchanged.
