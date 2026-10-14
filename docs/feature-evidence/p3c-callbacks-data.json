@@ -1192,6 +1192,33 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative",
+          "status": "PASSED",
+          "source_sha256": "253ba9cae44915a98c87a78c80cd487d5910c34ccc4e5fbbb2501772f9daf341",
+          "artifact_sha256": "88f7ce7fc6553713df7fd41da15455b8fecfda49a8e0102e834ce35c99ef4318",
+          "base_commit": "0f78107",
+          "raw_evidence": ".collab/research/2026-10-14-rf08-build/targeted-main-17/springSixTest/TEST-com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest.xml",
+          "framework": "Spring6.1.14 / DataJPA3.3.4 / Hibernate6.5.3.Final / H22.5.250",
+          "invocations": [
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [1] false, false",
+              "status": "PASSED"
+            },
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [2] true, false",
+              "status": "PASSED"
+            },
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [3] false, true",
+              "status": "PASSED"
+            },
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [4] true, true",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -1352,7 +1379,31 @@
           "test_harness_unchanged_during_run": true
         }
       ],
-      "note": "Current full serialized gate observations."
+      "note": "Current full serialized gate observations.",
+      "rf08_followup_runs": [
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*SpringDataSqlNativeQueryReloadTest' --tests '*SpringDataRepositoryReloadTest' --tests '*SpringDataNativeQueryTest' --tests '*SpringDataRefreshTest'",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T19:26:29.457051+00:00",
+          "base_commit": "0f78107",
+          "artifact_sha256": "88f7ce7fc6553713df7fd41da15455b8fecfda49a8e0102e834ce35c99ef4318",
+          "counts": {
+            "tests": 19,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "springSixTest": {
+              "tests": 19,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf08-build/targeted-main-17"
+        }
+      ]
     },
     "sapmachine-21-macos-arm64": {
       "status": "PASSED",
@@ -2539,6 +2590,33 @@
               "status": "PASSED"
             }
           ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative",
+          "status": "PASSED",
+          "source_sha256": "253ba9cae44915a98c87a78c80cd487d5910c34ccc4e5fbbb2501772f9daf341",
+          "artifact_sha256": "96d9d48c206fbb52b9b0d02c073b7bb71a4a498d7c95eb5dd8791c0ff82d10bd",
+          "base_commit": "0f78107",
+          "raw_evidence": ".collab/research/2026-10-14-rf08-build/targeted-main-21/springSixTest/TEST-com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest.xml",
+          "framework": "Spring6.1.14 / DataJPA3.3.4 / Hibernate6.5.3.Final / H22.5.250",
+          "invocations": [
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [1] false, false",
+              "status": "PASSED"
+            },
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [2] true, false",
+              "status": "PASSED"
+            },
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [3] false, true",
+              "status": "PASSED"
+            },
+            {
+              "name": "currentTrackedDependentAndRetainedManualHolderMatchNative(boolean, boolean) [4] true, true",
+              "status": "PASSED"
+            }
+          ]
         }
       ],
       "runs": [
@@ -2699,7 +2777,31 @@
           "test_harness_unchanged_during_run": true
         }
       ],
-      "note": "Current full serialized gate observations."
+      "note": "Current full serialized gate observations.",
+      "rf08_followup_runs": [
+        {
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*SpringDataSqlNativeQueryReloadTest' --tests '*SpringDataRepositoryReloadTest' --tests '*SpringDataNativeQueryTest' --tests '*SpringDataRefreshTest'",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+          "utc": "2026-10-14T19:24:52.726582+00:00",
+          "base_commit": "0f78107",
+          "artifact_sha256": "96d9d48c206fbb52b9b0d02c073b7bb71a4a498d7c95eb5dd8791c0ff82d10bd",
+          "counts": {
+            "tests": 19,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "task_counts": {
+            "springSixTest": {
+              "tests": 19,
+              "failures": 0,
+              "errors": 0,
+              "skipped": 0
+            }
+          },
+          "raw_evidence": ".collab/research/2026-10-14-rf08-build/targeted-main-21"
+        }
+      ]
     }
   },
   "claims": [
@@ -2737,7 +2839,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3093,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULED-TIMER"
         }
       ],
@@ -2789,7 +2891,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3117,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULED-CURRENT"
         }
       ],
@@ -2841,7 +2943,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3141,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULED-PROXY"
         }
       ],
@@ -2881,7 +2983,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3165,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULES-REPEATABLE"
         }
       ],
@@ -2921,7 +3023,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3189,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULED-ROLLBACK-PREPARATION"
         }
       ],
@@ -2961,7 +3063,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3213,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULED-REFUSAL"
         }
       ],
@@ -3001,7 +3103,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3237,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULED-PROTOTYPE"
         }
       ],
@@ -3053,7 +3155,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3261,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-DELIVERY"
         }
       ],
@@ -3105,7 +3207,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3285,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-CURRENT"
         }
       ],
@@ -3157,7 +3259,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3309,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-PROXY"
         }
       ],
@@ -3209,7 +3311,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3333,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-RESULT"
         }
       ],
@@ -3249,7 +3351,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3357,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-ORDER-NAMES"
         }
       ],
@@ -3289,7 +3391,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3381,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-DEBUG-NAMES"
         }
       ],
@@ -3329,7 +3431,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3405,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-PROTOTYPE-PROXY-REFUSAL"
         }
       ],
@@ -3369,7 +3471,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3429,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-CUSTOM-FACTORY-REFUSAL"
         }
       ],
@@ -3409,7 +3511,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3453,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-RESULT-REFUSAL"
         }
       ],
@@ -3449,7 +3551,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3477,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-ACTUAL-RESULT-REFUSAL"
         }
       ],
@@ -3501,7 +3603,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3501,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-BEFORE-COMMIT"
         }
       ],
@@ -3553,7 +3655,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3525,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-AFTER-COMMIT"
         }
       ],
@@ -3605,7 +3707,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3549,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-AFTER-ROLLBACK"
         }
       ],
@@ -3657,7 +3759,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3573,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-AFTER-COMPLETION"
         }
       ],
@@ -3709,7 +3811,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3597,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-RETIRE"
         }
       ],
@@ -3761,7 +3863,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3621,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-FALLBACK"
         }
       ],
@@ -3801,7 +3903,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3645,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-BEFORE-FAILURE"
         }
       ],
@@ -3841,7 +3943,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3669,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-AFTER-FAILURE"
         }
       ],
@@ -3881,7 +3983,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3693,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-CONTEXT-REFUSAL"
         }
       ],
@@ -3921,7 +4023,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3717,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-TXEVENT-PHASE-EDIT"
         }
       ],
@@ -3973,7 +4075,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3741,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-COMPLETABLE"
         }
       ],
@@ -4025,7 +4127,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3765,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-CANCEL-ROLLBACK"
         }
       ],
@@ -4077,7 +4179,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3789,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-REMOVE"
         }
       ],
@@ -4117,7 +4219,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3813,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-VOID"
         }
       ],
@@ -4157,7 +4259,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3837,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-FUTURE"
         }
       ],
@@ -4197,7 +4299,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3861,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-GENERICS"
         }
       ],
@@ -4237,7 +4339,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3885,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-REFUSAL"
         }
       ],
@@ -4277,7 +4379,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3909,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-EXCEPTIONAL-FUTURE"
         }
       ],
@@ -4317,7 +4419,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3933,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SERVICE-CACHE"
         }
       ],
@@ -4369,7 +4471,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3957,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-EVENT"
         }
       ],
@@ -4421,7 +4523,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3981,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-SCHEDULED"
         }
       ],
@@ -4461,7 +4563,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4005,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-DEFAULT-EXECUTOR"
         }
       ],
@@ -4501,7 +4603,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4029,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-NAMED-DEFAULT"
         }
       ],
@@ -4541,7 +4643,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4053,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-INFRASTRUCTURE-REFUSAL"
         }
       ],
@@ -4581,7 +4683,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4077,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-ADVISOR-REFUSAL"
         }
       ],
@@ -4627,13 +4729,13 @@
         {
           "path": "docs/usage.md",
           "line": 1847,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4101,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-CALLBACK-TRANSACTIONS"
         }
       ],
@@ -4679,13 +4781,13 @@
         {
           "path": "docs/usage.md",
           "line": 1847,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4125,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-CALLBACK-CACHE"
         }
       ],
@@ -4719,13 +4821,13 @@
         {
           "path": "docs/usage.md",
           "line": 1847,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4149,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-CALLBACK-INSPECT-REFUSAL"
         }
       ],
@@ -4751,13 +4853,13 @@
         {
           "path": "docs/usage.md",
           "line": 1847,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4173,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-CALLBACK-COMPOSED"
         }
       ],
@@ -4795,7 +4897,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4197,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-NEW-ENTITY"
         }
       ],
@@ -4835,7 +4937,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4221,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-PENDING-METADATA"
         }
       ],
@@ -4875,7 +4977,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4245,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-VALIDATION-FAILURE"
         }
       ],
@@ -4915,7 +5017,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4269,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-PREPARED-SCHEMA"
         }
       ],
@@ -4955,7 +5057,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4293,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-SCHEMA-OVERRIDES"
         }
       ],
@@ -4995,7 +5097,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4317,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-OPTIN-AMBIGUITY"
         }
       ],
@@ -5035,7 +5137,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4341,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-CLOSE-REPORT"
         }
       ],
@@ -5069,13 +5171,13 @@
         {
           "path": "docs/usage.md",
           "line": 3011,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4365,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-QUERY-WATCHER"
         }
       ],
@@ -5109,13 +5211,13 @@
         {
           "path": "docs/usage.md",
           "line": 3011,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4389,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-QUERY-COMPONENT"
         }
       ],
@@ -5141,13 +5243,13 @@
         {
           "path": "docs/usage.md",
           "line": 3011,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4413,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP"
         }
       ],
@@ -5213,7 +5315,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4437,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-FIELD-DETECTION"
         }
       ],
@@ -5253,7 +5355,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4461,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-UPDATE-ADVICE"
         }
       ],
@@ -5293,7 +5395,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4485,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-VALIDATE-ADVICE"
         }
       ],
@@ -5333,7 +5435,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4509,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-FIELD-REFRESH-GATE"
         }
       ],
@@ -5373,7 +5475,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4533,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-DDL-GATE"
         }
       ],
@@ -5405,7 +5507,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4557,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-ENHANCED-FIELD"
         }
       ],
@@ -5435,7 +5537,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4581,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-SPRING5"
         }
       ],
@@ -5473,7 +5575,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4605,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-HIBERNATE-L2-ENTITY"
         }
       ],
@@ -5513,7 +5615,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4629,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-HIBERNATE-L2-QUERY"
         }
       ],
@@ -5553,7 +5655,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4653,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-HIBERNATE-L2-ALIASES"
         }
       ],
@@ -5593,7 +5695,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4677,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-HIBERNATE-L2-DISABLED"
         }
       ],
@@ -5625,7 +5727,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4701,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-HIBERNATE-L2-WATCHER"
         }
       ],
@@ -5680,7 +5782,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4725,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SPRING6-NATIVE-EVENT-FAILURE"
         }
       ],
@@ -5725,7 +5827,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4749,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SPRING6-NATIVE-TXEVENT-FAILURE"
         }
       ],
@@ -5777,7 +5879,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4773,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-SCHEDULED-REREGISTER"
         }
       ],
@@ -5817,7 +5919,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4797,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-EVENT-EXISTING-COMPONENT"
         }
       ],
@@ -5857,7 +5959,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4821,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-ASYNC-EXISTING-COMPONENT"
         }
       ],
@@ -5878,32 +5980,42 @@
     {
       "id": "P3C-JPA-SQL-NATIVE-QUERY",
       "statement": "An edited SQL @Query(nativeQuery=true) reaches existing wired repositories after watcher reload.",
-      "tests": [],
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/SpringDataSqlNativeQueryReloadTest.java",
+          "source_sha256": "253ba9cae44915a98c87a78c80cd487d5910c34ccc4e5fbbb2501772f9daf341",
+          "kind": "watcher",
+          "assertions": "Four normal/child loader x plain/Repository interfaces; six compiled SQL-native saves: predicate, UPPER scalar expression, missing-column SQL_ERROR:42122, valid recovery, CONCAT scalar expression, revert. Exact expected result and fresh agentless native JVM per version. Retained managed manual-holder identity, current tracked owner distinct from startup holder/current injected-product identity; unrelated and other-context repository identities, both EMF identities/open state,3 rows."
+        }
+      ],
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
           "line": 3011,
-          "sha256": "5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71",
+          "sha256": "15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4845,
-          "sha256": "895423d9649b08df1dc51fe03a4ea3399a3fd517e4aa57e7ddf9a147ccbb2a24",
+          "sha256": "28ab355af9d48d7ee8981d210e5f5b4cfa8227eb73809f3cb1b9265943d60d9c",
           "quote": "### P3C-JPA-SQL-NATIVE-QUERY"
         }
       ],
       "opt_in": "Startup agent; compile watched class files; existing relevant native Spring infrastructure.",
-      "bounds": "Spring Data JPA3.3.4/Spring6.1.14/Hibernate6.5.3/H2; SQL-native query path.",
-      "observable": "Changed SQL result through the held repository/holder across repeated compiled saves.",
-      "control": "Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.",
-      "execution_lanes": [],
-      "verdict": "UNVERIFIED",
-      "reviewer": "Astra read source assertions; independent Claude audit pending.",
-      "limitation": "Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim.",
-      "missing_environment": "Mapped query fixtures use JPQL and never set nativeQuery=true; their framework-native query caches do not prove SQL-native semantics.",
-      "next_action": "Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.",
-      "missing_proof_design": "PROPOSED SqlNativeQueryWatcherReloadTest: warm SQL-native query through held holder, edit SQL condition, observe changed rows with unchanged holder/application identity; assert no cached old query and repeat saves. No execution inferred."
+      "bounds": "Stock SapMachine17/21 on macOS arm64; isolated Spring6.1.14 / Spring Data JPA3.3.4 / Hibernate6.5.3.Final / H22.5.250; existing wired repository interface with/without Repository stereotype, normal/child application loader; retained Spring-managed ordinary singleton field and current Spring-tracked dependent.",
+      "observable": "Six saved SQL-native predicate/scalar-expression/error/recovery/revert stages match exact H2 results and a fresh agentless native JVM; current tracked owner uses current injected repository, retained managed manual holder follows saves without replacement, unrelated repositories/EMFs remain unchanged.",
+      "control": "Fresh agentless native control for each version plus exact expected strings and stable unrelated/context/EMF/row controls. Research retained-holder hook-disabled counterexample4/4 RED then byte-for-byte restoration/SAME4/4 GREEN; independent audit must recheck the ported tracked-owner observer. No fixture cache reset/context restart.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra main tracked source and JDK17/21 receipts mapped; independent Claude audit pending.",
+      "limitation": "H2 scalar SQL only. Current native recorded dependents follow normal recreation; externally-held retired owners/repository proxies are not rewritten. No other DB dialects/vendors, new interface methods, pagination, projection interfaces, parameter-binding variants, non-singleton products, other Data modules/versions/proxy shapes/custom factories, concurrent publication or EMF swap (RF09).",
+      "missing_environment": "Other OS/JDK providers and all unlisted frameworks/databases/late attachment remain unverified.",
+      "next_action": "Independent Claude audit of source equivalence, main receipts and a scratch hook-disabled counterexample on the ported observer, then local-only commit."
     }
   ],
   "negative_witnesses": [
@@ -5986,6 +6098,21 @@
       },
       "observing_symbol": "com.onurkat.reclazz.e2e.NewEntityPreparedSchemaReloadTest.newEntityUsesPreparedSchemaAndFailedValidationCanRetry",
       "scope": "Whole observer turns RED with the registration/publication hook disabled; not one independent mutation per sub-assertion."
+    },
+    {
+      "family": "rf08-sql-native-research",
+      "disabled_hook": "SpringReloadOrchestrator class Data repository refresh only, scratch only",
+      "receipt": ".collab/research/2026-10-14-rf08-sql-native/hook-disabled-21",
+      "exit_code": 1,
+      "counts": {
+        "tests": 4,
+        "failures": 4,
+        "errors": 0,
+        "skipped": 0
+      },
+      "observing_symbol": "com.onurkat.reclazz.e2e.SpringDataSqlNativeRetainedHolderResearchTest#sqlSavesAndFailureRecoveryMatchFreshNativeOnManagedHolders",
+      "scope": "Research retained-holder observer only, not the newly ported tracked-dependent test; audit must independently recheck that test. Whole observer stops at first saved stale result, not an independent mutation for each later assertion.",
+      "restoration": ".collab/research/2026-10-14-rf08-sql-native/restoration.json"
     }
   ],
   "registry_negative_controls": [
@@ -10167,5 +10294,13 @@
       }
     ]
   },
-  "observed_defects_scope": "Historical P3c observations at2ea1744; superseded by the separately authorized measured spring6_event_factory_repair. Current claims have no FAILED verdict from this defect."
+  "observed_defects_scope": "Historical P3c observations at2ea1744; superseded by the separately authorized measured spring6_event_factory_repair. Current claims have no FAILED verdict from this defect.",
+  "rf08_followup": {
+    "base_commit": "0f78107",
+    "scope": "One SQL-native watcher proof, no runtime/dependency change; P3C-JPA-QUERY-COMPONENT remains PARTIAL and JPQL-specific.",
+    "research": ".collab/research/2026-10-14-rf08-sql-native/FINDINGS.md",
+    "ported_source_equivalence": ".collab/research/2026-10-14-rf08-build/port-check.json",
+    "independent_audit": "pending",
+    "full_gate": "Not run for this approved non-production targeted gate; no full-gate claim."
+  }
 }

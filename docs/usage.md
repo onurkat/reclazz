@@ -3009,13 +3009,28 @@ cold can be invalidated without creating a product; the next normal lookup uses
 the updated factory definition. Non-singleton products are outside this refresh.
 
 Native query edits and repeated saves are tested with Spring Data JPA 3.3.4,
-Spring 6.1.14, Hibernate 6.5.3 and H2. The watcher acceptance uses existing
+Spring 6.1.14, Hibernate 6.5.3.Final and H2 2.5.250 on SapMachine 17/21. Existing
+JPQL watcher coverage and a separate SQL `@Query(nativeQuery=true)` observer use
 repository interfaces with and without Spring's `@Repository`, in normal and
-child application loaders. Successful shape-preserving JVM redefinition reaches
-repository refresh even though an interface has no companion metadata. New
-interface methods and interface default/static
-method hot reload are outside this acceptance. These tests do not establish
-all Spring Data modules, versions, proxy shapes or custom factory behavior.
+child application loaders.
+
+The SQL observer seeds three H2 rows, edits a predicate and scalar expressions,
+observes a missing-column error, recovers on the next valid save and restores the
+original query. Each saved version is compared with a fresh agentless Spring Data
+application and an exact expected result. A retained ordinary managed singleton
+holder follows the query edits without replacement. The current Spring-recorded
+dependent is recreated with the current injected repository; its old externally
+held instance is outside this support. Unrelated repository instances in the same
+and another context retain their identities, both entity-manager factories stay
+open and unchanged, and the row count remains three.
+
+Successful shape-preserving JVM redefinition reaches repository refresh even
+though an interface has no companion metadata. New interface methods and interface
+default/static method hot reload are outside this acceptance. The SQL evidence is
+limited to scalar H2 queries, not other database dialects, native pagination,
+projection interfaces or parameter-binding variants. It does not certify an
+entity-manager-factory swap, concurrent publication, all Spring Data modules,
+versions, proxy shapes or custom factory behavior.
 
 ### Backoffice socket actions
 

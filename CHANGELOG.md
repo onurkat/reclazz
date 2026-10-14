@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Documentation
 
+- Add SQL-native Spring Data watcher evidence on H2/Spring 6 and JDK17/21,
+  including query errors and valid-save recovery; distinguish current dependent
+  recreation from excluded retired external owners. Agent runtime behavior is unchanged.
+
 - Add real broker/file-watcher evidence for plain Service/Repository messaging
   receivers and Kafka factory/concurrency/startup/group options on JDK17/21.
   All seven follow-up records have scoped delivery/reload observations;

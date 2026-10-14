@@ -64,7 +64,7 @@ A reloaded parent still reaches the existing child override without restart.
 
 Isolated added instance initializers give existing objects their own first-read values.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -88,7 +88,7 @@ Isolated added instance initializers give existing objects their own first-read 
 
 Historical constructor arguments are not reconstructed for an added field.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -112,7 +112,7 @@ Historical constructor arguments are not reconstructed for an added field.
 
 An initializer failure is isolated and may retry after a later initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -136,7 +136,7 @@ An initializer failure is isolated and may retry after a later initializer gener
 
 An isolated conditional uses each existing receiver state.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -160,7 +160,7 @@ An isolated conditional uses each existing receiver state.
 
 Equivalent and delegated constructors preserve old/new initialization order.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -184,7 +184,7 @@ Equivalent and delegated constructors preserve old/new initialization order.
 
 A previously unread added field uses the current initializer generation.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -208,7 +208,7 @@ A previously unread added field uses the current initializer generation.
 
 Application values, including an explicit null write before read, survive later saves.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -232,7 +232,7 @@ Application values, including an explicit null write before read, survive later 
 
 Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.
 
-**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3193` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:78` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3208` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -256,7 +256,7 @@ Isolated switch arms and unrelated initializer handlers do not replay old constr
 
 Only selected isolated conditional static initializer arms run.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3160` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3175` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -280,7 +280,7 @@ Only selected isolated conditional static initializer arms run.
 
 An initialized null and an application-written static value remain stored.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3160` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3175` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -304,7 +304,7 @@ An initialized null and an application-written static value remain stored.
 
 A newly added later static field uses the current condition without resetting older fields.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3160` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3175` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -328,7 +328,7 @@ A newly added later static field uses the current condition without resetting ol
 
 Unrelated static blocks are not replayed for isolated static initializers.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3160` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3175` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3133` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); `README.md:694` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `CHANGELOG.md:56` (SHA-256 `022cc3d6c2fe9a7f7ffea346bee0167697efeaec0ee9237192b382da835be5dd`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3148` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); `README.md:694` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `CHANGELOG.md:60` (SHA-256 `762920e28643c87b67c1b49e44e5ec7e35f427f58f865ee68f0d5023ee86f68a`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -760,7 +760,7 @@ Reclazz preserves original hierarchy, applies eligible bodies, pins dependent me
 
 Sequential initialization evidence does not certify concurrent initializer side effects or atomic multi-class reload.
 
-**Shipped surfaces:** `docs/usage.md:3245` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3260` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -784,7 +784,7 @@ Sequential initialization evidence does not certify concurrent initializer side 
 
 Compile-time constants and narrow primitive constant conversions have component evidence.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3160` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3175` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -832,7 +832,7 @@ Intertwined/guarded static initializer shapes are refused by the component slice
 
 Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.
 
-**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3160` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `README.md:79` (SHA-256 `56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9`); `docs/usage.md:3175` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -1120,7 +1120,7 @@ New component conditions use the live application context before class initializ
 
 New lazy singleton waits for first lookup.
 
-**Shipped surfaces:** `docs/usage.md:410` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:410` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1142,7 +1142,7 @@ New lazy singleton waits for first lookup.
 
 New prototype lookup creates a fresh instance; native prototype cleanup belongs to caller.
 
-**Shipped surfaces:** `docs/usage.md:413` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:413` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1164,7 +1164,7 @@ New prototype lookup creates a fresh instance; native prototype cleanup belongs 
 
 A custom component stereotype and AliasFor bean name register through native naming.
 
-**Shipped surfaces:** `docs/usage.md:406` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:406` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1428,7 +1428,7 @@ Added factories convert measured int, long and double Value arguments.
 
 Factory Set/Collection/reference-array arguments use native resolution.
 
-**Shipped surfaces:** `docs/usage.md:542` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:542` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1450,7 +1450,7 @@ Factory Set/Collection/reference-array arguments use native resolution.
 
 All eight primitive Value conversions and reference nulls work.
 
-**Shipped surfaces:** `docs/usage.md:549` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:549` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -1758,7 +1758,7 @@ Full factory calls preserve supported explicit/prototype arguments and held meth
 
 Static companion factories register/replace/retire products with native lifecycle.
 
-**Shipped surfaces:** `docs/usage.md:600` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:600` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2000,7 +2000,7 @@ Added CacheEvict removes the native entry so next lookup executes again.
 
 Native self invocation stays outside transaction interception.
 
-**Shipped surfaces:** `docs/usage.md:2024` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:2024` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -2352,7 +2352,7 @@ Security chain replacement preserves the rebuilt chain identity.
 
 Spring 6 added factory conditions match native startup and saved metadata.
 
-**Shipped surfaces:** `docs/usage.md:435` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:435` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`); this block (digest in JSON).
 
 **Default/opt-in:** Default after explicit startup agent attachment and compiled class save; no additional P2 flag.
 
@@ -3086,7 +3086,7 @@ This package classifies the measured MVC slice and explicitly records missing va
 
 ## P3c — Callbacks and data
 
-The original evidence package is committed at2ea1744. A separately owner-approved native Spring6 event-factory repair now has desired RED/GREEN proof on both JDK lanes; independent audit is pending. The two historical FAILURE cell IDs are retained with current bounded delivery verdicts, and immutable prior claims/lanes remain in history_before_spring6_event_factory_repair. Original observed_defects and negative witnesses describe the historical P3c tree; they are not current failures. Unrelated limits and verdicts remain unchanged. Registered scheduled Runnable controls do not certify timers; Spring Data @Query tests use JPQL, not nativeQuery=true SQL.
+The original evidence package is committed at2ea1744. A separately owner-approved native Spring6 event-factory repair now has desired RED/GREEN proof on both JDK lanes; independent audit is pending. The two historical FAILURE cell IDs are retained with current bounded delivery verdicts, and immutable prior claims/lanes remain in history_before_spring6_event_factory_repair. Original observed_defects and negative witnesses describe the historical P3c tree; they are not current failures. Unrelated limits and verdicts remain unchanged. Registered scheduled Runnable controls do not certify timers; The original Spring Data @Query fixtures use JPQL. RF08 adds a separate SQL nativeQuery=true watcher on the measured H2/Spring6 graph; the SQL record below distinguishes current native dependent recreation from retained ordinary singleton healing and excluded retired external owners.
 
 Machine record: [p3c-callbacks-data.json](feature-evidence/p3c-callbacks-data.json); manifest: [p3c-cells.txt](feature-evidence/p3c-cells.txt).
 
@@ -4104,7 +4104,7 @@ Custom annotation, foreign and duplicated async advisors cannot be silently bypa
 
 Added public callbacks use native transactions with real commit/checked rollback across advice removal and restoration.
 
-**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4128,7 +4128,7 @@ Added public callbacks use native transactions with real commit/checked rollback
 
 Successful callback eviction, failed eviction retention and cached returned-event publication retain native cache semantics.
 
-**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4152,7 +4152,7 @@ Successful callback eviction, failed eviction retention and cached returned-even
 
 Advised private/final/generic and unsupported owner shapes are refused at callback inspection.
 
-**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4176,7 +4176,7 @@ Advised private/final/generic and unsupported owner shapes are refused at callba
 
 Composed transaction/cache/security operation annotations on added callbacks behave at runtime.
 
-**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:1847` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Outside advertised supported callback-operation subset; no expansion authorized.
 
@@ -4368,7 +4368,7 @@ An old-factory close failure after successful swap is reported as installed with
 
 A JPQL @Query edit reaches an existing HTTP holder and current repository without restarting the app.
 
-**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4392,7 +4392,7 @@ A JPQL @Query edit reaches an existing HTTP holder and current repository withou
 
 Native Spring Data JPQL query caches are refreshed through wired holders and tracked dependents.
 
-**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4416,7 +4416,7 @@ Native Spring Data JPQL query caches are refreshed through wired holders and tra
 
 An already-injected Spring Data repository remains usable after a native EntityManagerFactory swap.
 
-**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
@@ -4844,27 +4844,27 @@ Repeated native async reprocessing retains exactly one configured advisor and on
 
 ### P3C-JPA-SQL-NATIVE-QUERY
 
-**Verdict:** UNVERIFIED.
+**Verdict:** PROVEN_WITH_SCOPE.
 
 An edited SQL @Query(nativeQuery=true) reaches existing wired repositories after watcher reload.
 
-**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:3011` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent; compile watched class files; existing relevant native Spring infrastructure.
 
-**Bounds:** Spring Data JPA3.3.4/Spring6.1.14/Hibernate6.5.3/H2; SQL-native query path.
+**Bounds:** Stock SapMachine17/21 on macOS arm64; isolated Spring6.1.14 / Spring Data JPA3.3.4 / Hibernate6.5.3.Final / H22.5.250; existing wired repository interface with/without Repository stereotype, normal/child application loader; retained Spring-managed ordinary singleton field and current Spring-tracked dependent.
 
-**Tests/assertions:** No observing test mapped; UNVERIFIED.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative` (watcher). Four normal/child loader x plain/Repository interfaces; six compiled SQL-native saves: predicate, UPPER scalar expression, missing-column SQL_ERROR:42122, valid recovery, CONCAT scalar expression, revert. Exact expected result and fresh agentless native JVM per version. Retained managed manual-holder identity, current tracked owner distinct from startup holder/current injected-product identity; unrelated and other-context repository identities, both EMF identities/open state,3 rows.
 
-**Observable:** Changed SQL result through the held repository/holder across repeated compiled saves.
+**Observable:** Six saved SQL-native predicate/scalar-expression/error/recovery/revert stages match exact H2 results and a fresh agentless native JVM; current tracked owner uses current injected repository, retained managed manual holder follows saves without replacement, unrelated repositories/EMFs remain unchanged.
 
-**Control:** Exact positive/negative assertions in the named methods; whole-observer scratch disabled-hook witnesses are recorded separately and do not certify every sub-assertion.
+**Control:** Fresh agentless native control for each version plus exact expected strings and stable unrelated/context/EMF/row controls. Research retained-holder hook-disabled counterexample4/4 RED then byte-for-byte restoration/SAME4/4 GREEN; independent audit must recheck the ported tracked-owner observer. No fixture cache reset/context restart.
 
-**Execution:** No current-session lane promotion.
+**Execution:** Main tracked observer4/4 PASSED and15 existing Spring Data neighbors PASSED on each SapMachine17/21 lane. Exact commands, XML invocations and source/artifact digests are recorded in JSON. This evidence-only change uses the approved targeted gate; no new full-suite result is claimed.
 
-**Limitation / missing environment:** Only the listed observables and fixture shapes; no atomic in-flight publication or universal framework compatibility claim. Mapped query fixtures use JPQL and never set nativeQuery=true; their framework-native query caches do not prove SQL-native semantics.
+**Limitation / missing environment:** H2 scalar SQL only. Current native recorded dependents follow normal recreation; externally-held retired owners/repository proxies are not rewritten. No other DB dialects/vendors, new interface methods, pagination, projection interfaces, parameter-binding variants, non-singleton products, other Data modules/versions/proxy shapes/custom factories, concurrent publication or EMF swap (RF09). Other OS/JDK providers and all unlisted frameworks/databases/late attachment remain unverified.
 
-**Reviewer / next action:** Astra read source assertions; independent Claude audit pending. Independent Claude audit and local-only commit. Missing combined scenarios stay unverified; the native Spring6 factory repair now has separate RED/GREEN evidence; its independent audit is pending.
+**Reviewer / next action:** Astra main tracked source and JDK17/21 receipts mapped; independent Claude audit pending. Independent Claude audit of source equivalence, main receipts and a scratch hook-disabled counterexample on the ported observer, then local-only commit.
 
 ## P5 — Properties, XML, messages and templates
 
@@ -5430,7 +5430,7 @@ Property recreation retains unauthenticated/unauthorized refusal and authorized 
 
 Invalid Boot2 configuration-properties conversion holds Environment, bound properties and direct fields together.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5454,7 +5454,7 @@ Invalid Boot2 configuration-properties conversion holds Environment, bound prope
 
 Fixing a rejected Boot2 properties save applies both pending keys to existing consumers.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5478,7 +5478,7 @@ Fixing a rejected Boot2 properties save applies both pending keys to existing co
 
 Removing loaded properties keys reveals startup/default values on existing beans.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5502,7 +5502,7 @@ Removing loaded properties keys reveals startup/default values on existing beans
 
 Deleting and restoring a previously loaded properties file updates existing HTTP consumers.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5526,7 +5526,7 @@ Deleting and restoring a previously loaded properties file updates existing HTTP
 
 Loaded nested YAML keys and indexed lists reach existing HTTP consumers.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5550,7 +5550,7 @@ Loaded nested YAML keys and indexed lists reach existing HTTP consumers.
 
 Deletion/restoration of an identified YAML file reveals defaults then restores its values.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5574,7 +5574,7 @@ Deletion/restoration of an identified YAML file reveals defaults then restores i
 
 Malformed YAML and invalid bound values retain last accepted configuration and correction recovers.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5598,7 +5598,7 @@ Malformed YAML and invalid bound values retain last accepted configuration and c
 
 Owned file replacement preserves higher/lower property-source precedence and does not stack empty sources.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5622,7 +5622,7 @@ Owned file replacement preserves higher/lower property-source precedence and doe
 
 Active YAML documents keep their source order; activation topology edits are held.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5646,7 +5646,7 @@ Active YAML documents keep their source order; activation topology edits are hel
 
 A conversion rejection in one owning context holds all contexts; valid retry reaches each active profile.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5670,7 +5670,7 @@ A conversion rejection in one owning context holds all contexts; valid retry rea
 
 A boundary applies captured file bytes and a nonrunning boundary does not accept them.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5694,7 +5694,7 @@ A boundary applies captured file bytes and a nonrunning boundary does not accept
 
 A live setter failure is PARTIAL and an identical save remains pending for retry.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5718,7 +5718,7 @@ A live setter failure is PARTIAL and an identical save remains pending for retry
 
 An inactive/unowned file is refused before becoming an override.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5742,7 +5742,7 @@ An inactive/unowned file is refused before becoming an override.
 
 External property-source replacement is preserved rather than overwritten by file reload.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5766,7 +5766,7 @@ External property-source replacement is preserved rather than overwritten by fil
 
 Malformed YAML or new config imports do not change live file sources.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5790,7 +5790,7 @@ Malformed YAML or new config imports do not change live file sources.
 
 Read-only collection removal is held rather than reporting stale values as applied.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5814,7 +5814,7 @@ Read-only collection removal is held rather than reporting stale values as appli
 
 A source containing mixed resource origins cannot own a reloaded file.
 
-**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2163` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5838,7 +5838,7 @@ A source containing mixed resource origins cannot own a reloaded file.
 
 Boot validation fallback rejects constraint violations without a validator bean.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5862,7 +5862,7 @@ Boot validation fallback rejects constraint violations without a validator bean.
 
 A self-validating constructor-bound Boot2 record rejects invalid candidates and binds a valid replacement.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5886,7 +5886,7 @@ A self-validating constructor-bound Boot2 record rejects invalid candidates and 
 
 Rejected precheck does not write Boot bound-property tracking or live values.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5910,7 +5910,7 @@ Rejected precheck does not write Boot bound-property tracking or live values.
 
 Named configuration validator and bind-handler advisor participate in candidate validation.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5934,7 +5934,7 @@ Named configuration validator and bind-handler advisor participate in candidate 
 
 Candidate placeholder keys are resolved against the candidate even with a live placeholder configurer.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5958,7 +5958,7 @@ Candidate placeholder keys are resolved against the candidate even with a live p
 
 Boot strict/lenient binding ignore flags retain native semantics.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -5982,7 +5982,7 @@ Boot strict/lenient binding ignore flags retain native semantics.
 
 Unsupported scratch constructor or inaccessible native binder prevents candidate application.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6006,7 +6006,7 @@ Unsupported scratch constructor or inaccessible native binder prevents candidate
 
 Missing internal Boot binder holds the candidate rather than guessing its behavior.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6030,7 +6030,7 @@ Missing internal Boot binder holds the candidate rather than guessing its behavi
 
 Failure only on live application is PARTIAL and is not accepted as an applied candidate.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6246,7 +6246,7 @@ Indirect dependencies stay context-specific, while a failing relevant context ho
 
 Loaded local XML imports outside configured roots update their owner without altering an unrelated context.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6270,7 +6270,7 @@ Loaded local XML imports outside configured roots update their owner without alt
 
 An identical imported XML save does not call its setter again.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6294,7 +6294,7 @@ An identical imported XML save does not call its setter again.
 
 A scope change to prototype is refused while preserving prior live values.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6318,7 +6318,7 @@ A scope change to prototype is refused while preserving prior live values.
 
 Repeated XML saves use native scalar/generic conversion and an overloaded String setter.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6342,7 +6342,7 @@ Repeated XML saves use native scalar/generic conversion and an overloaded String
 
 Invalid XML conversion retains the failed property value/raw metadata while a supported sibling still changes.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6366,7 +6366,7 @@ Invalid XML conversion retains the failed property value/raw metadata while a su
 
 Missing references/invalid primitives keep failed raw definitions and valid correction can be natively recreated.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6390,7 +6390,7 @@ Missing references/invalid primitives keep failed raw definitions and valid corr
 
 Existing depends-on/primary/autowire/candidate edits are named and refused before owner property mutation.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6414,7 +6414,7 @@ Existing depends-on/primary/autowire/candidate edits are named and refused befor
 
 Changed effective lazy-init metadata retains old creation state and values.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6438,7 +6438,7 @@ Changed effective lazy-init metadata retains old creation state and values.
 
 Equivalent explicit/default lazy flags permit subsequent supported properties without eager creation.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6462,7 +6462,7 @@ Equivalent explicit/default lazy flags permit subsequent supported properties wi
 
 Changed plain inner bean values use native value resolution and preserve the outer singleton.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6486,7 +6486,7 @@ Changed plain inner bean values use native value resolution and preserve the out
 
 Unchanged inner declarations do not reconstruct their cached live object.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6510,7 +6510,7 @@ Unchanged inner declarations do not reconstruct their cached live object.
 
 Inner resource/lifecycle edits are refused before updating that owner; independent beans still apply.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6534,7 +6534,7 @@ Inner resource/lifecycle edits are refused before updating that owner; independe
 
 Proven unchanged abstract/prototype/resource XML definitions stay quiet during no-op/sibling saves.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6558,7 +6558,7 @@ Proven unchanged abstract/prototype/resource XML definitions stay quiet during n
 
 Real edits to unsupported XML shapes retain original values and name restart.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6582,7 +6582,7 @@ Real edits to unsupported XML shapes retain original values and name restart.
 
 Alias retarget/removal/addition is refused, keeping already-resolved alias lookups.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6606,7 +6606,7 @@ Alias retarget/removal/addition is refused, keeping already-resolved alias looku
 
 Inline alias removal is captured without replacing the application reader listener.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6630,7 +6630,7 @@ Inline alias removal is captured without replacing the application reader listen
 
 Lookup-method edits preserve the native factory and require restart; restoring the original lookup allows simple properties.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6654,7 +6654,7 @@ Lookup-method edits preserve the native factory and require restart; restoring t
 
 Lifecycle/infrastructure definitions are retained in ordinary/child loaders without side-effect creation.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6678,7 +6678,7 @@ Lifecycle/infrastructure definitions are retained in ordinary/child loaders with
 
 Existing XML FactoryBean definitions are not mutated to pretend their products refreshed.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6702,7 +6702,7 @@ Existing XML FactoryBean definitions are not mutated to pretend their products r
 
 Constructor and explicit static/instance factory XML edits recreate supported products and heal held consumers.
 
-**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6726,7 +6726,7 @@ Constructor and explicit static/instance factory XML edits recreate supported pr
 
 An identical rich XML save does not recreate products or repeat lifecycle effects.
 
-**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6750,7 +6750,7 @@ An identical rich XML save does not recreate products or repeat lifecycle effect
 
 XML type conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6774,7 +6774,7 @@ XML type conversion matches a freshly initialized native Spring bean.
 
 XML mode conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6798,7 +6798,7 @@ XML mode conversion matches a freshly initialized native Spring bean.
 
 XML code conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6822,7 +6822,7 @@ XML code conversion matches a freshly initialized native Spring bean.
 
 XML amount conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6846,7 +6846,7 @@ XML amount conversion matches a freshly initialized native Spring bean.
 
 XML location conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6870,7 +6870,7 @@ XML location conversion matches a freshly initialized native Spring bean.
 
 XML types conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6894,7 +6894,7 @@ XML types conversion matches a freshly initialized native Spring bean.
 
 XML modes conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6918,7 +6918,7 @@ XML modes conversion matches a freshly initialized native Spring bean.
 
 XML mappings conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6942,7 +6942,7 @@ XML mappings conversion matches a freshly initialized native Spring bean.
 
 XML selection conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6966,7 +6966,7 @@ XML selection conversion matches a freshly initialized native Spring bean.
 
 XML integerSelection conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -6990,7 +6990,7 @@ XML integerSelection conversion matches a freshly initialized native Spring bean
 
 XML bigInteger conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7014,7 +7014,7 @@ XML bigInteger conversion matches a freshly initialized native Spring bean.
 
 XML modeSet conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7038,7 +7038,7 @@ XML modeSet conversion matches a freshly initialized native Spring bean.
 
 XML enumKeys conversion matches a freshly initialized native Spring bean.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7062,7 +7062,7 @@ XML enumKeys conversion matches a freshly initialized native Spring bean.
 
 Inherited generic collection type resolves against its actual containing class.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7086,7 +7086,7 @@ Inherited generic collection type resolves against its actual containing class.
 
 Inherited scalar type variable uses its resolved target rather than Object erasure.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7110,7 +7110,7 @@ Inherited scalar type variable uses its resolved target rather than Object erasu
 
 Admitted registered editor/conversion service participates in native XML binding.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7134,7 +7134,7 @@ Admitted registered editor/conversion service participates in native XML binding
 
 Unknown type converter is refused before the new route invokes it.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7158,7 +7158,7 @@ Unknown type converter is refused before the new route invokes it.
 
 Resource target/explicit resource value is refused before editor value resolution.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7182,7 +7182,7 @@ Resource target/explicit resource value is refused before editor value resolutio
 
 Absent or ambiguous physical setters do not acquire fake committed XML values.
 
-**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:189` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7206,7 +7206,7 @@ Absent or ambiguous physical setters do not acquire fake committed XML values.
 
 A failing new init callback restores the prior XML definition and permits a later correction.
 
-**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7230,7 +7230,7 @@ A failing new init callback restores the prior XML definition and permits a late
 
 Failed restoration is reported explicitly without claiming success or a retained live singleton.
 
-**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7254,7 +7254,7 @@ Failed restoration is reported explicitly without claiming success or a retained
 
 A final direct holder prevents destruction before rich XML recreation.
 
-**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7278,7 +7278,7 @@ A final direct holder prevents destruction before rich XML recreation.
 
 A collection holder prevents destruction before rich XML recreation.
 
-**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7302,7 +7302,7 @@ A collection holder prevents destruction before rich XML recreation.
 
 Each owning context resolves the same placeholder using its own live factory.
 
-**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:349` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7326,7 +7326,7 @@ Each owning context resolves the same placeholder using its own live factory.
 
 A setter that mutates then throws leaves its application effect but preserves raw XML metadata; correction can recover.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7350,7 +7350,7 @@ A setter that mutates then throws leaves its application effect but preserves ra
 
 Invalid values on an uncreated lazy XML bean remain deferred until native creation.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7374,7 +7374,7 @@ Invalid values on an uncreated lazy XML bean remain deferred until native creati
 
 Removing an XML property retains the old value/raw definition and requires restart while a sibling edit applies.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7398,7 +7398,7 @@ Removing an XML property retains the old value/raw definition and requires resta
 
 Native FactoryBean refusal does not query/create the product or call factory setters during classification.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7422,7 +7422,7 @@ Native FactoryBean refusal does not query/create the product or call factory set
 
 Changed XML definition metadata protects both owning contexts while unrelated same-named context remains untouched.
 
-**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:178` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7710,7 +7710,7 @@ An unrecognized registered object is not mistaken for a native template engine.
 
 The complete properties/YAML/binding package works on native Boot3.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7830,7 +7830,7 @@ Native Spring MVC/servlet template view resolvers and every HTML dialect render 
 
 Editing source resources automatically copies every resource to the runtime location.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
@@ -7854,7 +7854,7 @@ Editing source resources automatically copies every resource to the runtime loca
 
 P5 native Spring resource proofs certify SAP tenant behavior.
 
-**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `5ea92709c27b39e2fa675d6977b36f1563b0bbead6a4b57b485bf6b5995eed71`).
+**Shipped surfaces:** `docs/usage.md:2107` (SHA-256 `15a782126d5de5b5eebdd1b553b22c879e2bb25c69696ca302ac111443c5cfeb`).
 
 **Default/opt-in:** Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.
 
