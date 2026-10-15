@@ -45,10 +45,10 @@ dependencies {
     // runs somebody else's application, so 25 MB of classes to save sixty
     // lines was the wrong trade. It stays as a test dependency because the
     // tests use its agent attach helper, which never ships.
-    implementation("org.ow2.asm:asm:9.10.1")
-    implementation("org.ow2.asm:asm-commons:9.10.1")
-    implementation("org.ow2.asm:asm-tree:9.10.1")
-    implementation("org.ow2.asm:asm-util:9.10.1")
+    implementation("org.ow2.asm:asm:9.11")
+    implementation("org.ow2.asm:asm-commons:9.11")
+    implementation("org.ow2.asm:asm-tree:9.11")
+    implementation("org.ow2.asm:asm-util:9.11")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation("net.bytebuddy:byte-buddy:1.18.14") {
@@ -77,7 +77,7 @@ dependencies {
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
-    testImplementation("com.h2database:h2:2.5.250")
+    testImplementation("com.h2database:h2:2.5.252")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.25.1")
     // Native method authorization regressions only; never packaged in the agent.
@@ -220,7 +220,7 @@ dependencies {
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
-    add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.5.250")
+    add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.5.252")
     add(springSixTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
     add(springSixTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
 }
