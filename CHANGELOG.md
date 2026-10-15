@@ -32,6 +32,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Preserve native constructor dependency bookkeeping during direct singleton
+  class refreshes on Spring 5.3.39 and 6.1.14 for the bounded plain constructor
+  path. Repeated refreshes re-resolve current dependencies without replaying old
+  dependency names or clearing unrelated definitions. This does not yet coordinate
+  messaging consumers when only their helper or properties change.
+
 - Register added listeners with Spring Kafka 3.2.4 by recognizing its removed
   retryTemplate field within the verified version and preparing the native
   endpoint ID before registration. Unknown versions and unsupported factories

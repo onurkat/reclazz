@@ -68,6 +68,8 @@ public class SpringBeanReloader {
                         mvcBefore = SpringMvcSingletons.capture(contexts);
                         if (batchDepth > 0) batchMvcBefore = mvcBefore;
                     }
+                    var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
+                    if (constructor != null) constructor.apply();
                     Object[] pair = destroyAndRefreshBean(appContext, beanName);
                     if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
                         replacements.put(pair[0], pair[1]);

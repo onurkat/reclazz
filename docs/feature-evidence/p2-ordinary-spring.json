@@ -2071,7 +2071,7 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
@@ -2111,7 +2111,7 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
@@ -2151,7 +2151,7 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
@@ -2311,7 +2311,7 @@
         {
           "path": "README.md",
           "line": 113,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "its constructor autowired"
         },
         {
@@ -2340,7 +2340,7 @@
         {
           "path": "README.md",
           "line": 86,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Spring bean refresh"
         },
         {
@@ -2420,7 +2420,7 @@
         {
           "path": "README.md",
           "line": 88,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Autowired` added to an existing field"
         },
         {
@@ -2460,7 +2460,7 @@
         {
           "path": "README.md",
           "line": 88,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Autowired` added to an existing field"
         },
         {
@@ -2500,7 +2500,7 @@
         {
           "path": "README.md",
           "line": 88,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Autowired` added to an existing field"
         },
         {
@@ -2540,7 +2540,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Bean` method added after startup"
         },
         {
@@ -2580,7 +2580,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Bean` method added after startup"
         },
         {
@@ -2620,7 +2620,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Bean` method added after startup"
         },
         {
@@ -2660,7 +2660,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Bean` method added after startup"
         },
         {
@@ -2700,7 +2700,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Bean` method added after startup"
         },
         {
@@ -2820,7 +2820,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Scalar `@Value` inputs"
         },
         {
@@ -2860,7 +2860,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Multiple names register one singleton"
         },
         {
@@ -2900,7 +2900,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Direct `@Primary`/`@Qualifier`"
         },
         {
@@ -2940,7 +2940,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Direct `@Primary`/`@Qualifier`"
         },
         {
@@ -2980,7 +2980,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Direct method-level `@Conditional`"
         },
         {
@@ -3020,7 +3020,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
@@ -3060,7 +3060,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
@@ -3100,7 +3100,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
@@ -3140,7 +3140,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "and `@Profile` registers"
         },
         {
@@ -3180,7 +3180,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "`@Scope(\"prototype\")` gives"
         },
         {
@@ -3220,7 +3220,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Direct `@Lazy` creates"
         },
         {
@@ -3260,7 +3260,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Default `@Configuration` also supports"
         },
         {
@@ -3300,7 +3300,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "preserve supported explicit-argument/prototype semantics"
         },
         {
@@ -3380,7 +3380,7 @@
         {
           "path": "README.md",
           "line": 87,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Static factories retain plain Java call semantics"
         },
         {
@@ -3420,7 +3420,7 @@
         {
           "path": "README.md",
           "line": 89,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
@@ -3467,7 +3467,7 @@
         {
           "path": "README.md",
           "line": 89,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
@@ -3514,7 +3514,7 @@
         {
           "path": "README.md",
           "line": 89,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
@@ -3561,7 +3561,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "New service methods with `@Transactional`"
         },
         {
@@ -3601,7 +3601,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "New service methods with `@Transactional`"
         },
         {
@@ -3641,7 +3641,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Commit/rollback, cache hits"
         },
         {
@@ -3688,7 +3688,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Commit/rollback, cache hits"
         },
         {
@@ -3735,7 +3735,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Commit/rollback, cache hits"
         },
         {
@@ -3782,7 +3782,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Commit/rollback, cache hits"
         },
         {
@@ -3876,7 +3876,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Supported [composed transaction]"
         },
         {
@@ -3916,7 +3916,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "[composed cache annotations]"
         },
         {
@@ -3956,7 +3956,7 @@
         {
           "path": "README.md",
           "line": 100,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Edited `@Aspect` pointcut"
         },
         {
@@ -4003,7 +4003,7 @@
         {
           "path": "README.md",
           "line": 99,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "New service methods with `@PreAuthorize`"
         },
         {
@@ -4055,7 +4055,7 @@
         {
           "path": "README.md",
           "line": 99,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "fixed composed markers"
         },
         {
@@ -4306,7 +4306,7 @@
         {
           "path": "README.md",
           "line": 103,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Cache eviction"
         },
         {
@@ -4387,7 +4387,7 @@
         {
           "path": "README.md",
           "line": 114,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation"
         },
         {
@@ -4439,7 +4439,7 @@
         {
           "path": "README.md",
           "line": 114,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation"
         },
         {
@@ -4491,7 +4491,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "preserve aliases and class defaults"
         },
         {
@@ -4531,7 +4531,7 @@
         {
           "path": "README.md",
           "line": 98,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "preserve aliases and class defaults"
         },
         {
@@ -4571,7 +4571,7 @@
         {
           "path": "README.md",
           "line": 115,
-          "sha256": "56b239929c766091e7463202e73adc26bda0291e5e5097408c9f9c239ee87ef9",
+          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
           "quote": "the filter chain is rebuilt and swapped into the live proxy"
         },
         {
