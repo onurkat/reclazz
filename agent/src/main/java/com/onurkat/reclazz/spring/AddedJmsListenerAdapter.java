@@ -20,7 +20,7 @@ public final class AddedJmsListenerAdapter {
     private static final String TARGET = InjectedNames.PREFIX + "target";
     private static final String SEND_TO = "Lorg/springframework/messaging/handler/annotation/SendTo;";
     private static final Set<String> RESULTS = Set.of("V", "Ljava/lang/String;", "[B", "Ljava/util/Map;",
-            "Ljavax/jms/Message;", "Lorg/springframework/messaging/Message;");
+            "Ljavax/jms/Message;", "Ljakarta/jms/Message;", "Lorg/springframework/messaging/Message;");
     private static final Set<String> OPTIONS = Set.of("id", "destination", "containerFactory", "selector", "concurrency");
     private static final Set<String> CLASS_ANNOTATIONS = Set.of("Lorg/springframework/stereotype/Component;",
             "Lorg/springframework/stereotype/Service;", "Lorg/springframework/stereotype/Repository;", "Ljava/lang/Deprecated;");

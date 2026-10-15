@@ -239,7 +239,7 @@ class P4RegistryCompletenessTest {
             }
         }
         // Inspect isolated broker test methods without loading their dependency graphs.
-        for (String set : List.of("jmsTest", "rabbitTest")) {
+        for (String set : List.of("jmsTest", "rabbitTest", "modernMessagingTest")) {
             Path isolated = REPO.resolve("agent/build/classes/java/" + set).resolve(resource);
             if (Files.isRegularFile(isolated)) {
                 ClassNode node = new ClassNode();

@@ -34,6 +34,11 @@ final class SpringKafkaListenerExpressions {
             Object previous = get.invoke(scope, key);
             try {
                 add.invoke(scope, key, owner);
+                // Kafka 3.2.4 initializes the ID before processListener, unlike 2.9.13.
+                if ("3.2.4".equals(processorType.getPackage().getImplementationVersion())) {
+                    Object id = required(processorType, "getEndpointId", annotation).invoke(processor, metadata);
+                    endpointType.getMethod("setId", String.class).invoke(endpoint, id);
+                }
                 Object resolvedTopics = topics.invoke(processor, metadata);
                 Object resolvedPartitions = partitions.invoke(processor, metadata);
                 // Infrastructure preflight excludes enhancers, retry topics and

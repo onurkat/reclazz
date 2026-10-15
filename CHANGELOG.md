@@ -32,6 +32,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Register added listeners with Spring Kafka 3.2.4 by recognizing its removed
+  retryTemplate field within the verified version and preparing the native
+  endpoint ID before registration. Unknown versions and unsupported factories
+  retain their refusal guards.
+- Accept native jakarta.jms.Message replies from added Spring JMS callbacks,
+  preserving javax replies and native conversion/correlation behavior.
+
 - Spring method-security policy edits refresh plain factory products as well as
   stereotype classes. Removing the last security annotation also refreshes the
   rules held by an existing proxy; body-only helpers keep their metadata gate.

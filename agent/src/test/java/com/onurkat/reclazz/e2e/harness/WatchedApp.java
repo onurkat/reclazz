@@ -115,6 +115,13 @@ public final class WatchedApp implements AutoCloseable {
         private String extraClasspath = "";
         private boolean mavenLayout;
         private boolean childClassLoader;
+        private boolean agentless;
+
+        /** Launch a fresh native framework control without loading the agent. */
+        public Builder withoutAgent() {
+            this.agentless = true;
+            return this;
+        }
 
         private Builder(Path tempDir) {
             this.tempDir = tempDir;
@@ -157,7 +164,7 @@ public final class WatchedApp implements AutoCloseable {
         }
 
         public WatchedApp start() throws IOException {
-            String agentJar = agentJarOrSkip();
+            String agentJar = agentless ? null : agentJarOrSkip();
             Path sourceDir = Files.createDirectories(tempDir.resolve(mavenLayout ? "src/main/java/app" : "src/app"));
             Path classesDir = Files.createDirectories(tempDir.resolve(mavenLayout ? "target/classes" : "classes"));
 
@@ -203,7 +210,7 @@ public final class WatchedApp implements AutoCloseable {
             List<String> command = new ArrayList<>();
             command.add(javaBinary());
             command.addAll(jvmArgs);
-            command.add("-javaagent:" + agentJar + "=watchDirs=" + classesDir + "," + agentArgs);
+            if (!agentless) command.add("-javaagent:" + agentJar + "=watchDirs=" + classesDir + "," + agentArgs);
             command.add("-cp");
             command.add(classpath);
             command.add(mainClass);

@@ -178,6 +178,12 @@ public final class SpringKafkaReloader {
             throw new IllegalStateException("standard ConcurrentKafkaListenerContainerFactory required: " + name);
         for (String field : List.of("recordFilterStrategy", "retryTemplate", "containerCustomizer", "batchToRecordAdapter")) {
             var metadata = Reflect.findField(factory.getClass(), field);
+            // Kafka 3.2.4 removed this field; unknown or inaccessible shapes still refuse.
+            if (metadata == null && field.equals("retryTemplate")
+                    && "3.2.4".equals(factory.getClass().getPackage().getImplementationVersion())) {
+                try { factory.getClass().getSuperclass().getDeclaredField(field); }
+                catch (NoSuchFieldException absentOnVerifiedVersion) { continue; }
+            }
             if (metadata == null || metadata.get(factory) != null)
                 throw new IllegalStateException("Kafka factory " + field + " is unsupported for added listeners");
         }

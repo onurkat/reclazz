@@ -278,7 +278,71 @@ val springSixTest by tasks.registering(Test::class) {
     testLogging { events("passed", "failed", "skipped") }
 }
 
+// Native Spring 6 messaging regressions on an independent, test-only graph.
+val modernMessagingTests = sourceSets.create("modernMessagingTest") {
+    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
+}
+dependencies {
+    add(modernMessagingTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-messaging:6.1.14")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-tx:6.1.14")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-jms:6.1.14")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka:3.2.4")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka-test:3.2.4")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework.amqp:spring-rabbit:3.1.7")
+    add(modernMessagingTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:6.1.3")
+    add(modernMessagingTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
+    add(modernMessagingTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
+}
+configurations[modernMessagingTests.runtimeClasspathConfigurationName].resolutionStrategy.eachDependency {
+    if (requested.group == "org.springframework") useVersion("6.1.14")
+}
+val modernMessagingTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Native modern Kafka/Jakarta JMS/Rabbit reload and refusal regressions"
+    useJUnitPlatform()
+    testClassesDirs = modernMessagingTests.output.classesDirs
+    classpath = modernMessagingTests.runtimeClasspath
+    dependsOn(tasks.named("shadowJar"))
+    systemProperty("reclazz.agent.jar", tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    outputs.upToDateWhen { false }
+    inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
+    val skipRabbit = providers.gradleProperty("reclazz.skipRabbitBroker").orNull == "true"
+    if (skipRabbit) exclude("com/onurkat/reclazz/e2e/ModernRabbitListenerReloadTest*")
+    testLogging { events("passed", "failed", "skipped") }
+    doFirst {
+        if (skipRabbit) {
+            logger.lifecycle("Modern RabbitMQ tests explicitly NOT RUN (-Preclazz.skipRabbitBroker=true)")
+        } else {
+        // Durable fix for the containerd-store index-digest flake. Under Docker's
+        // containerd image store a reference by multi-platform INDEX digest
+        // (repo@sha256:<index>) intermittently fails `docker image inspect`/`run`
+        // even when the content is present, so pre-pulling the digest does not
+        // reliably stick. Here we ensure a STABLE LOCAL TAG exists (which resolves
+        // reliably), pulling the pinned digest only when the tag is missing. The
+        // test harness never pulls; it inspects and runs this local tag offline.
+        val digest = "rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd"
+        val localTag = "reclazz-rabbit-pinned:4.3.5-alpine"
+        val exec = project.serviceOf<org.gradle.process.ExecOperations>()
+        val present = exec.exec {
+            commandLine("docker", "image", "inspect", localTag)
+            isIgnoreExitValue = true
+            standardOutput = ByteArrayOutputStream()
+            errorOutput = ByteArrayOutputStream()
+        }.exitValue == 0
+        if (!present) {
+            logger.lifecycle("modernMessagingTest: local image $localTag missing; pulling $digest and tagging")
+            exec.exec { commandLine("docker", "pull", digest) }
+            exec.exec { commandLine("docker", "tag", digest, localTag) }
+        }
+        }
+    }
+}
+
 tasks.test {
+    dependsOn(modernMessagingTest)
     dependsOn(springSixTest)
     dependsOn(hibernateTest)
     dependsOn(rabbitTest)
@@ -324,6 +388,7 @@ val unitTest by tasks.registering(Test::class) {
     // P4 provenance checks inspect broker test bytecode without starting a broker.
     dependsOn(tasks.named("jmsTestClasses"))
     dependsOn(tasks.named("rabbitTestClasses"))
+    dependsOn(tasks.named("modernMessagingTestClasses"))
     dependsOn(jmsUnitTest)
     dependsOn(hibernateTest)
     group = "verification"

@@ -9336,15 +9336,27 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-KAFKA-MODERN
 
-**Verdict:** UNVERIFIED. Native Spring6/Jakarta messaging listener reload.
+**Verdict:** PROVEN_WITH_SCOPE.
 
-**Bounds:** SapMachine17/21, macOS arm64; Spring Kafka2.9.13/Spring5.3.39/embedded Kafka3.2.3. 
+Native Spring6/Jakarta messaging listener reload.
 
-**Observation:** No observing test mapped; UNVERIFIED.
+**Shipped surfaces:** `docs/usage.md` (dedicated Kafka/JMS/Rabbit modern compatibility paragraphs; current location/digest pinned in JSON).
 
-**Limit:** Only the named fixture shape and assertions. A component test is never file-watcher evidence; no atomic reload or arbitrary advice/provider guarantee. No native modern messaging graph or observer in this P4 package; ordinary Spring5 tests cannot establish modern compatibility.
+**Default/opt-in:** Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.
 
-**Execution/control:** No verdict promotion. Named assertions observe actual message output or direct component state. Bounded no-duplicate/no-delivery windows do not establish universal exactly-once. Family-level scratch disabled-delegation witnesses are separate. Independent Claude audit pending.
+**Bounds:** Stock SapMachine17/21 macOS arm64; startup agent, normal application loader, EXACT Spring Kafka3.2.4 / kafka-clients+embedded broker3.7.1 / Framework6.1.14, standard plain singleton factory, verified package version3.2.4 only.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ModernKafkaListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsTopicsRemovalAndRestore` (watcher): Actual first/existing added listener delivery over six saves, body/topic edits, removal/private restore/unannotation; native agentless public/private/routing control before each watcher; retired consumers stop, unrelated identity and context close retained. Every original desired assertion retained; native control runs first.; `com.onurkat.reclazz.e2e.ModernKafkaListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone` (watcher): Actual first/existing added listener delivery over six saves, body/topic edits, removal/private restore/unannotation; native agentless public/private/routing control before each watcher; retired consumers stop, unrelated identity and context close retained. Every original desired assertion retained; native control runs first.
+
+**Observable:** Actual first/existing added listener delivery over six saves, body/topic edits, removal/private restore/unannotation; native agentless public/private/routing control before each watcher; retired consumers stop, unrelated identity and context close retained.
+
+**Control:** Native agentless startup controls precede each desired observer. Kafka/JMS research patch removal4/4 behavior RED then v2 identical desired4 GREEN on eachJDK; research receipts kept distinct from independent ported audit. No universal exactly-once claim.
+
+**Execution:** Actual isolated modernMessagingTest57/57 PASSED on eachJDK17/21. Fresh native controls before watchers; source/artifact/XML/runtime provenance in JSON. Kafka/JMS are bounded runtime repairs; Rabbit is existing-behavior evidence. JDK21 gate task coverage completed in sequential runs (2783 tests, zero remaining failures/errors, 5 existing skips); first full command failed a nonreproducing RF09 probe, independent Claude audit pending.
+
+**Limitation / missing environment:** Not every Kafka3.x minor. Custom/filter/batch and retry-topic factories remain refused; other versions, direct child-loader watcher, modern reply, transactions, rebalance, hosted/multinode/late attach and RF14 dependency cascade unverified.
+
+**Reviewer / next action:** Astra actual main JDK17/21 source/XML/native observations mapped; independent Claude audit pending. Independent Claude full gate and ported patch-removal RED/restored GREEN, then local-only commit. All unlisted RF13 axes and RF14 remain separate.
 
 ### P4-KAFKA-OTHER-ENVIRONMENTS
 
@@ -9396,15 +9408,27 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-MODERN
 
-**Verdict:** UNVERIFIED. Native Spring6/Jakarta messaging listener reload.
+**Verdict:** PROVEN_WITH_SCOPE.
 
-**Bounds:** SapMachine17/21, macOS arm64; Spring JMS5.3.39 javax.jms/embedded ActiveMQ Classic5.19.11. 
+Native Spring6/Jakarta messaging listener reload.
 
-**Observation:** No observing test mapped; UNVERIFIED.
+**Shipped surfaces:** `docs/usage.md` (dedicated Kafka/JMS/Rabbit modern compatibility paragraphs; current location/digest pinned in JSON).
 
-**Limit:** Only the named fixture shape and assertions. A component test is never file-watcher evidence; no atomic reload or arbitrary advice/provider guarantee. No native modern messaging graph or observer in this P4 package; ordinary Spring5 tests cannot establish modern compatibility.
+**Default/opt-in:** Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.
 
-**Execution/control:** No verdict promotion. Named assertions observe actual message output or direct component state. Bounded no-duplicate/no-delivery windows do not establish universal exactly-once. Family-level scratch disabled-delegation witnesses are separate. Independent Claude audit pending.
+**Bounds:** Stock SapMachine17/21 macOS arm64; startup agent, normal/child application loaders, SpringJMS6.1.14 / JakartaJMS3.1.0 / ActiveMQClassic6.1.3; synchronous String/native jakarta Message replies and void delivery.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ModernJmsListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsDestinationsRemovalAndRestore` (watcher): Real void delivery and native/String replies follow six saves on normal/child loaders; SendTo/JMSReplyTo/correlation/rollback-redelivery/private restoration, destination edits, single observed reply, retired consumers/unrelated identity/close. Native agentless public/private controls before each desired observer. Every original desired assertion retained; native control runs first.; `com.onurkat.reclazz.e2e.ModernJmsListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone` (watcher): Real void delivery and native/String replies follow six saves on normal/child loaders; SendTo/JMSReplyTo/correlation/rollback-redelivery/private restoration, destination edits, single observed reply, retired consumers/unrelated identity/close. Native agentless public/private controls before each desired observer. Every original desired assertion retained; native control runs first.; `com.onurkat.reclazz.e2e.ModernJmsReplyReloadTest#addedRepliesFollowSavesDestinationsRetirementAndRestore` (watcher): Real void delivery and native/String replies follow six saves on normal/child loaders; SendTo/JMSReplyTo/correlation/rollback-redelivery/private restoration, destination edits, single observed reply, retired consumers/unrelated identity/close. Native agentless public/private controls before each desired observer. Every original desired assertion retained; native control runs first.; `com.onurkat.reclazz.e2e.ModernJmsNativeReplyReloadTest#addedRepliesFollowSavesDestinationsRetirementAndRestore` (watcher): Real void delivery and native/String replies follow six saves on normal/child loaders; SendTo/JMSReplyTo/correlation/rollback-redelivery/private restoration, destination edits, single observed reply, retired consumers/unrelated identity/close. Native agentless public/private controls before each desired observer. Every original desired assertion retained; native control runs first.
+
+**Observable:** Real void delivery and native/String replies follow six saves on normal/child loaders; SendTo/JMSReplyTo/correlation/rollback-redelivery/private restoration, destination edits, single observed reply, retired consumers/unrelated identity/close. Native agentless public/private controls before each desired observer.
+
+**Control:** Native agentless startup controls precede each desired observer. Kafka/JMS research patch removal4/4 behavior RED then v2 identical desired4 GREEN on eachJDK; research receipts kept distinct from independent ported audit. No universal exactly-once claim.
+
+**Execution:** Actual isolated modernMessagingTest57/57 PASSED on eachJDK17/21. Fresh native controls before watchers; source/artifact/XML/runtime provenance in JSON. Kafka/JMS are bounded runtime repairs; Rabbit is existing-behavior evidence. JDK21 gate task coverage completed in sequential runs (2783 tests, zero remaining failures/errors, 5 existing skips); first full command failed a nonreproducing RF09 probe, independent Claude audit pending.
+
+**Limitation / missing environment:** Existing javax Message retained, not a migration engine. No XA/durable/shared/topics/provider-wide, late attach, hosted, arbitrary advice/signatures/async or dependency-cascade guarantee.
+
+**Reviewer / next action:** Astra actual main JDK17/21 source/XML/native observations mapped; independent Claude audit pending. Independent Claude full gate and ported patch-removal RED/restored GREEN, then local-only commit. All unlisted RF13 axes and RF14 remain separate.
 
 ### P4-JMS-OTHER-ENVIRONMENTS
 
@@ -9456,15 +9480,27 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-RABBIT-MODERN
 
-**Verdict:** UNVERIFIED. Native Spring6/Jakarta messaging listener reload.
+**Verdict:** PROVEN_WITH_SCOPE.
 
-**Bounds:** SapMachine17/21, macOS arm64; Spring Rabbit2.4.17/Spring5.3.39/RabbitMQ4.3.5 pinned sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd. 
+Native Spring6/Jakarta messaging listener reload.
 
-**Observation:** No observing test mapped; UNVERIFIED.
+**Shipped surfaces:** `docs/usage.md` (dedicated Kafka/JMS/Rabbit modern compatibility paragraphs; current location/digest pinned in JSON).
 
-**Limit:** Only the named fixture shape and assertions. A component test is never file-watcher evidence; no atomic reload or arbitrary advice/provider guarantee. No native modern messaging graph or observer in this P4 package; ordinary Spring5 tests cannot establish modern compatibility.
+**Default/opt-in:** Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.
 
-**Execution/control:** No verdict promotion. Named assertions observe actual message output or direct component state. Bounded no-duplicate/no-delivery windows do not establish universal exactly-once. Family-level scratch disabled-delegation witnesses are separate. Independent Claude audit pending.
+**Bounds:** Stock SapMachine17/21 macOS arm64; startup agent, normal application loader, SpringRabbit3.1.7 / Framework6.1.14 / pinned RabbitMQ4.3.5 sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd.
+
+**Tests/assertions:** `com.onurkat.reclazz.e2e.ModernRabbitListenerReloadTest#firstListenerOnAnAlreadyUsedBeanFollowsEditsDestinationsRemovalAndRestore` (watcher): Direct first/existing/idless listener delivery over six saves, queue changes, rollback/redelivery, removal/private restore/unannotation; native agentless controls before watchers, retired consumers, unrelated identity and close. Already-working behavior, no Rabbit runtime repair. Every original desired assertion retained; native control runs first.; `com.onurkat.reclazz.e2e.ModernRabbitListenerReloadTest#addingBesideAnExistingListenerKeepsOneConsumerAndLeavesOtherBeanAlone` (watcher): Direct first/existing/idless listener delivery over six saves, queue changes, rollback/redelivery, removal/private restore/unannotation; native agentless controls before watchers, retired consumers, unrelated identity and close. Already-working behavior, no Rabbit runtime repair. Every original desired assertion retained; native control runs first.; `com.onurkat.reclazz.e2e.ModernRabbitListenerReloadTest#addingBesideAnIdlessExistingListenerPreservesItsConsumerAcrossSaves` (watcher): Direct first/existing/idless listener delivery over six saves, queue changes, rollback/redelivery, removal/private restore/unannotation; native agentless controls before watchers, retired consumers, unrelated identity and close. Already-working behavior, no Rabbit runtime repair. Every original desired assertion retained; native control runs first.
+
+**Observable:** Direct first/existing/idless listener delivery over six saves, queue changes, rollback/redelivery, removal/private restore/unannotation; native agentless controls before watchers, retired consumers, unrelated identity and close. Already-working behavior, no Rabbit runtime repair.
+
+**Control:** Native agentless startup controls precede each desired observer. Kafka/JMS research patch removal4/4 behavior RED then v2 identical desired4 GREEN on eachJDK; research receipts kept distinct from independent ported audit. No universal exactly-once claim.
+
+**Execution:** Actual isolated modernMessagingTest57/57 PASSED on eachJDK17/21. Fresh native controls before watchers; source/artifact/XML/runtime provenance in JSON. Kafka/JMS are bounded runtime repairs; Rabbit is existing-behavior evidence. JDK21 gate task coverage completed in sequential runs (2783 tests, zero remaining failures/errors, 5 existing skips); first full command failed a nonreproducing RF09 probe, independent Claude audit pending.
+
+**Limitation / missing environment:** Modern Rabbit reply/async, direct child-loader watcher, other versions/providers/OS, late attach/hosted and RF14 dependency cascade unverified.
+
+**Reviewer / next action:** Astra actual main JDK17/21 source/XML/native observations mapped; independent Claude audit pending. Independent Claude full gate and ported patch-removal RED/restored GREEN, then local-only commit. All unlisted RF13 axes and RF14 remain separate.
 
 ### P4-RABBIT-OTHER-ENVIRONMENTS
 

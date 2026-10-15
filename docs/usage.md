@@ -1064,11 +1064,24 @@ unrelated container identity and context close. Expression tests on normal and
 child classloaders cover self-referencing topics/groups, expression failure,
 multiple-topic recovery, group replay and removal. Native startup comparison
 also covers named beans and property/expression arrays. Start with `-javaagent` before
-application classes load. Other broker/framework versions,
-external clusters, transactions and rebalance/failure delivery guarantees were
-not exercised. Kafka libraries and the embedded broker are test dependencies
+application classes load. Beyond the named legacy and modern lanes, other
+broker/framework versions, external clusters, transactions and rebalance/failure
+delivery guarantees were not exercised. Kafka libraries and the embedded broker are test dependencies
 only. Beans mixing Rabbit, JMS or Kafka listeners require a restart before
 any of their consumers are retired.
+
+Modern compatibility is also measured with **Spring Kafka 3.2.4**, Spring Framework
+6.1.14 and an embedded Kafka 3.7.1 broker on stock JDK17/21. This exact version
+uses native endpoint-ID preparation before registration and no longer has the
+factory `retryTemplate` field. Added listeners follow six saves, including topic
+changes, private restoration, removal, retired consumers and unrelated container
+identity. Native startup controls precede each watcher observer. The factory
+absence exception and endpoint-ID preparation apply only to package version
+3.2.4; this does not certify every Kafka 3.x release. Filtered, batch and custom
+factories retain their restart requirements. Native owner-expression controls
+verify context separation, prior-binding restoration and failed-registration
+cleanup. Modern Kafka reply, transactions, rebalance, late attach, hosted clusters
+and direct child-loader watcher behavior remain outside this measured scope.
 
 ### JMS listeners added after startup
 
@@ -1175,7 +1188,18 @@ map/native and Spring messages, correlation, `JMSReplyTo` priority, null results
 rollback followed by a reply on redelivery, and invalid `@SendTo` recovery.
 Actual-agent reply tests cover normal/child class loaders, repeated saves,
 private restoration and reply queue changes. Other JMS providers and Spring versions,
-Jakarta Messaging 3, late attach, XA and durable topics were not exercised.
+late attach, XA and durable topics were not exercised in that legacy lane.
+
+A separate modern lane measures Spring JMS **6.1.14**, Jakarta Messaging **3.1.0**
+and ActiveMQ Classic **6.1.3** on stock JDK17/21. Added callbacks returning a
+native `jakarta.jms.Message`, String or void follow six saves. Native-message
+and String reply tests observe actual replies, correlation, `JMSReplyTo` priority,
+rollback/redelivery, private restoration and retired containers on normal and
+child classloaders; void delivery also runs on both loader shapes. Each watcher
+observer first checks fresh agentless native delivery. Unsupported return/advice
+shapes remain refused. The existing `javax.jms.Message` support is retained.
+This does not establish XA, durable/shared topics, other JMS providers or
+property/dependency-cascade consumer recreation.
 
 Spring JMS and ActiveMQ are isolated test dependencies. Existing tests retain
 their Jackson/SLF4J versions. `:agent:unitTest`, `:agent:e2eTest` and `:agent:test`
@@ -1277,9 +1301,17 @@ normal and child classloaders cover bean-driven rerouting, invalid result types,
 recovery to multiple queues and removal, with real message delivery. Native
 annotation comparison also covers `Queue` values, mixed lists and property/expression
 composition. A blocked real original
-callback checks force-close, timeout, repeat, interruption and retry. Other
-framework/broker versions and late attach were not verified
-locally. Linux CI is configured for JDK 17/21; those runs are separate evidence.
+callback checks force-close, timeout, repeat, interruption and retry. Beyond
+the named legacy and modern lanes, other framework/broker versions and late attach
+were not verified locally. Linux CI is configured for JDK 17/21; those runs are separate evidence.
+
+A separate modern lane measures Spring Rabbit **3.1.7** with Spring Framework
+6.1.14 and the same pinned RabbitMQ4.3.5 broker on stock JDK17/21. Direct first,
+existing and ID-less listener additions follow the six-save delivery/retirement
+sequence, with fresh agentless public/private/routing controls before each
+watcher observer. This is evidence of existing behavior and requires no Rabbit
+runtime repair. Modern Rabbit reply/async, direct child-loader watcher behavior
+and property/dependency-cascade consumer recreation are not established here.
 
 Spring Rabbit is a test dependency; no AMQP/framework/broker classes ship in the
 agent. The `:agent:rabbitTest` suite requires Docker with Linux containers and a
