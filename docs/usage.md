@@ -1162,8 +1162,9 @@ complete destruction, including their consumers, sessions and connection.
 Spring 5.3 has no registry unregister API; matching entries are removed under
 the registry's registration lock only after destruction finishes. A duplicate
 ID on another container is refused. Failed registration cleans up containers
-registered by that attempt. Unsupported JMS infrastructure leaves unrelated
-bean reloads on their ordinary path. A bean mixing Kafka and JMS consumers, or
+registered by that attempt. The direct-listener preflight leaves unrelated bean reloads on their ordinary
+path when optional JMS infrastructure is unsupported. The indirect helper
+transaction conservatively refuses uninspectable JMS ownership. A bean mixing Kafka and JMS consumers, or
 a JMS bean with uninspectable Kafka ownership, is deferred before shutdown.
 
 Shutdown waits up to 30 seconds. On timeout or interruption, registry ownership
@@ -1172,8 +1173,11 @@ ledger diagnostic. Destruction continues in the background; a later save waits
 for that same operation before releasing the ID. Retained entries may therefore
 refer to already stopped containers until retry or application restart. Already
 reloaded bodies are not rolled back. This coordination covers direct class
-reloads through the Spring orchestrator; property/dependency-cascade recreation
-through other paths is outside scope. It does not make a reload atomic or promise
+reloads through the Spring orchestrator. A separately bounded helper/property
+JMS transaction is described in [constructor dependency refresh](spring-constructor-dependencies.md#jms-helper-and-constructor-property-changes);
+other indirect recreation paths remain outside scope. The indirect transaction
+refuses a still-retiring consumer on a later save and requires restart, rather
+than using the direct path's same-operation retry. It does not make a reload atomic or promise
 global exactly-once delivery. Broker and application acknowledgment/redelivery
 policies still apply.
 

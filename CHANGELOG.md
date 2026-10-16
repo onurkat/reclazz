@@ -32,6 +32,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Recreate bounded local JMS consumers when only a plain injected helper or its
+  constructor property changes. Snapshot native dependencies before destruction,
+  drain owned consumers before reconstructing their owners, and preserve original
+  and added callbacks. Do not rebuild an already-current listener twice when the
+  same property also feeds its own constructor. Direct-only consumer property
+  rebuilds are refused before destruction. Unsupported ownership is refused; failed reconstruction
+  reports partial application. Kafka/Rabbit indirect coordination remains open.
+
 - Preserve native constructor dependency bookkeeping during direct singleton
   class refreshes on Spring 5.3.39 and 6.1.14 for the bounded plain constructor
   path. Repeated refreshes re-resolve current dependencies without replaying old

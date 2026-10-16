@@ -70,11 +70,13 @@ public class SpringBeanReloader {
                     }
                     var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
                     if (constructor != null) constructor.apply();
-                    Object[] pair = destroyAndRefreshBean(appContext, beanName);
+                    var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
+                    Object[] pair = jms == null ? destroyAndRefreshBean(appContext, beanName) : jms.recreate();
                     if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
                         replacements.put(pair[0], pair[1]);
                     }
-                    refreshedNames.add(beanName);
+                    // This transaction already rebuilt all leaf owners. Do not destroy them again in phase 2.
+                    if (jms == null) refreshedNames.add(beanName);
                     ReloadEffects.note("bean " + beanName + " re-created");
                     StatusReporter.detail("Spring bean refreshed: " + beanName);
                     totalRefreshed++;
@@ -191,6 +193,15 @@ public class SpringBeanReloader {
      * reloader recreate beans by name through this same door, so a bean is
      * destroyed and rebuilt in exactly one way everywhere.
      */
+    record NamedRefresh(Object[] instances, java.util.Set<String> names) { }
+
+    static NamedRefresh destroyAndRefreshBean(Object appContext, String beanName, java.util.List<Object> contexts) throws Exception {
+        var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
+        if (jms != null) return new NamedRefresh(jms.recreate(), jms.refreshedNames());
+        SpringJmsReloader.requireNoPropertyConsumer(contexts, appContext, beanName);
+        return new NamedRefresh(destroyAndRefreshBean(appContext, beanName), java.util.Set.of(beanName));
+    }
+
     static Object[] destroyAndRefreshBean(Object appContext, String beanName) throws Exception {
         Object beanFactory = SpringBeans.getBeanFactory(appContext);
 

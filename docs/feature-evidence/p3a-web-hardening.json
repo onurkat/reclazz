@@ -350,7 +350,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2375,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-VALIDATION-ADD"
         }
       ],
@@ -402,7 +402,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2391,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-VALIDATION-CHANGE"
         }
       ],
@@ -454,7 +454,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2407,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-VALIDATION-REMOVE-RESTORE"
         }
       ],
@@ -506,7 +506,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2423,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-VALIDATION-HELD"
         }
       ],
@@ -558,7 +558,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2439,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-VALIDATION-SIDE-EFFECTS"
         }
       ],
@@ -610,7 +610,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2455,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-VALIDATION-CONTROL"
         }
       ],
@@ -655,14 +655,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2683,
-          "sha256": "110125964d24d0db4f54a970a95a94a943d2f6a5b6cfc9fa803bf9bcc54a438b",
+          "line": 2687,
+          "sha256": "27d92c52acf6902866a6b47b2996a01dc292f6196bb42e1ccdc0838d9d663238",
           "quote": "MVC request from crossing a class reload."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2471,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-REQUEST-COMPLETE"
         }
       ],
@@ -707,14 +707,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2683,
-          "sha256": "110125964d24d0db4f54a970a95a94a943d2f6a5b6cfc9fa803bf9bcc54a438b",
+          "line": 2687,
+          "sha256": "27d92c52acf6902866a6b47b2996a01dc292f6196bb42e1ccdc0838d9d663238",
           "quote": "MVC request from crossing a class reload."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2487,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-REQUEST-TIMEOUT"
         }
       ],
@@ -759,14 +759,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2683,
-          "sha256": "110125964d24d0db4f54a970a95a94a943d2f6a5b6cfc9fa803bf9bcc54a438b",
+          "line": 2687,
+          "sha256": "27d92c52acf6902866a6b47b2996a01dc292f6196bb42e1ccdc0838d9d663238",
           "quote": "MVC request from crossing a class reload."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2503,
-          "sha256": "f762db1dec448087d84eb1a21cb89d32a3d23f4c121bdc30431e1c0eb55c1997",
+          "sha256": "6dc76681ab2dcf812886775a6221905358a0fe30c44668680d7505b5dfc0b64a",
           "quote": "### P3A-REQUEST-LATEST"
         }
       ],

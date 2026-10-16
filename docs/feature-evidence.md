@@ -7876,7 +7876,7 @@ P5 native Spring resource proofs certify SAP tenant behavior.
 
 Fresh local broker evidence: Kafka2.9.13/Kafka3.2.3, JMS5.3.39/ActiveMQ5.19.11 and Rabbit2.4.17/RabbitMQ4.3.5, each on stock SapMachine17/21 macOS arm64. Normal/child application loaders apply only where named; the framework/broker libraries remain on the parent. The exact-empty Kafka group predicate is repaired; no dependency or shared harness change. Other pre-existing assertions remain intact.
 
-Classification: 66 PROVEN_WITH_SCOPE, 40 EXPECTED, 22 PARTIAL, 24 UNVERIFIED. Cells are scoped observations or explicit missing/excluded variants, not a count of independent product features.
+Classification: 70 PROVEN_WITH_SCOPE, 40 EXPECTED, 22 PARTIAL, 20 UNVERIFIED. Cells are scoped observations or explicit missing/excluded variants, not a count of independent product features.
 
 Follow-up: all seven owner-selected records now have scoped real broker/watch proof. Exact `groupId=""` now follows ordinary native Spring own-ID/factory fallback after the owner-authorized repair; omitted groupId, `#{null}` and nonempty overrides are also observed. The desired empty-group watcher failed with the original production predicate in an isolated scratch copy; fresh current-tree observations passed on both required lanes. Whitespace-only group literals remain outside this repair.
 
@@ -9468,15 +9468,15 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-JMS-CASCADE
 
-**Verdict:** UNVERIFIED. Consumer coordination during property/dependency-cascade bean recreation.
+**Verdict:** PROVEN_WITH_SCOPE. Bounded JMS helper/property dependency refresh.
 
-**Bounds:** SapMachine17/21, macOS arm64; Spring JMS5.3.39 javax.jms/embedded ActiveMQ Classic5.19.11. 
+**Bounds:** Startup agent, normal application loader, one known root context; Spring/JMS5.3.39 with javax/ActiveMQ5.19.11 or Spring/JMS6.1.14 with JakartaJMS3.1.0/ActiveMQ6.1.3; stock SapMachine17/21 on macOS arm64. Measured @Component helper and leaf listener, original/added callback, literal IDs and standard default/literal factory. Helper body/property saves include a same-key scalar on the listener constructor; direct-only consumer properties require restart.
 
-**Observation:** No observing test mapped; UNVERIFIED.
+**Observation:** `JmsConsumerCascadeReloadTest` and `ModernJmsConsumerCascadeReloadTest` inherit `JmsConsumerCascadeContract.helperAndPropertyChangesCoordinateConsumer`: fresh agentless10/20/30/40 controls, then three watched helper/property saves with actual current helper/own-scalar messages and an accepted-save signal, unchanged Listener.java, current owner/native edges, old worker retired before new owner, unrelated delivery/identity, bounded single-observed delivery and asserted clean close.
 
-**Limit:** Only the named fixture shape and assertions. A component test is never file-watcher evidence; no atomic reload or arbitrary advice/provider guarantee. Direct listener-class reload only; other recreation paths explicitly outside documented scope.
+**Limit:** No Kafka/Rabbit cascade promotion, generic graph reconstruction, atomic rollback or universal exactly-once. Unsupported creation/context/owner shapes refuse before singleton destruction. Indirect timeout can leave a retiring consumer with original singleton/registry ownership and requires restart on later indirect saves. Failed creation/property application can be partial. Child-loader delivery, multiple-owner/save batches, security/XML/Boot constructor-bound paths, hosted providers and XA remain unverified.
 
-**Execution/control:** No verdict promotion. Named assertions observe actual message output or direct component state. Bounded no-duplicate/no-delivery windows do not establish universal exactly-once. Family-level scratch disabled-delegation witnesses are separate. Independent Claude audit pending.
+**Execution/control:** Main24/24 on each graph and each JDK (6 watcher cases plus18 native component guard invocations per run). The source-identical port with class/property routing removed is6/6 behavioral RED on each graph/JDK21 after24 fresh native controls each. Component guards cover a real30s blocked shutdown, failed creation and post-registration cleanup, direct-only property refusal, native parent-only edges and foreign-broker/creation-policy refusals; they do not certify file-watcher behavior. Full source/artifact/command/XML provenance is in JSON; independent Claude audit/commit pending.
 
 ### P4-RABBIT-MODERN
 

@@ -103,7 +103,7 @@ public final class SpringPropertyRebinder {
                 if (updateSources && !updateEnvironment(context, changed)) continue;
                 rebound.addAll(rebind(context, changed, resets, failures));
                 valueFields += reinjectValueFields(context, changed, failures);
-                rebuilt.addAll(recreateValueConstructorBeans(context, changed, failures));
+                rebuilt.addAll(recreateValueConstructorBeans(context, changed, failures, applicationContexts));
             } catch (Throwable t) {
                 String finding = context.getClass().getSimpleName() + ": " + Failures.describe(t);
                 failures.add(finding);
@@ -255,8 +255,9 @@ public final class SpringPropertyRebinder {
      * just filled in.
      */
     private static List<String> recreateValueConstructorBeans(Object context,
-                                                              Map<String, String> changed, List<String> failures) {
+                                                              Map<String, String> changed, List<String> failures, List<Object> contexts) {
         List<String> rebuilt = new ArrayList<>();
+        java.util.Set<String> coordinated = new java.util.HashSet<>();
         try {
             var affected = new PropertyValueDependencies(context, changed);
             Object beanFactory = SpringBeans.getBeanFactory(context);
@@ -284,6 +285,9 @@ public final class SpringPropertyRebinder {
             }
 
             for (String name : (String[]) getSingletonNames.invoke(beanFactory)) {
+                // A helper transaction may already have reconstructed this owner
+                // against the new Environment. Do not destroy its fresh consumer again.
+                if (coordinated.contains(name)) continue;
                 Object bean;
                 try {
                     bean = getSingleton.invoke(beanFactory, name);
@@ -299,7 +303,7 @@ public final class SpringPropertyRebinder {
                     if (factoryValues.targets().isEmpty()) continue;
                     if (factoryValues.targets().stream().anyMatch(target -> target.unsupportedReason() != null))
                         failures.add(name + ": @Value factory creation policy changed after validation");
-                    else if (rebuildSingleton(context, name, type)) rebuilt.add(name);
+                    else if (rebuildSingleton(context, name, type, contexts, coordinated)) rebuilt.add(name);
                     else failures.add(name + ": @Value factory bean could not be rebuilt");
                     continue;
                 }
@@ -308,7 +312,7 @@ public final class SpringPropertyRebinder {
                 }
                 if (!takesChangedValue(type, affected, valueAnnotation, valueMember)) continue;
 
-                if (rebuildSingleton(context, name, type)) rebuilt.add(name);
+                if (rebuildSingleton(context, name, type, contexts, coordinated)) rebuilt.add(name);
                 else failures.add(name + ": @Value constructor bean could not be rebuilt");
             }
         } catch (Throwable notSpringShaped) {
@@ -409,9 +413,10 @@ public final class SpringPropertyRebinder {
     }
 
     /** Replace the singleton and re-point what held it, or say why it stayed. */
-    private static boolean rebuildSingleton(Object context, String beanName, Class<?> type) {
+    private static boolean rebuildSingleton(Object context, String beanName, Class<?> type, List<Object> contexts, java.util.Set<String> coordinated) {
         try {
-            Object[] pair = SpringBeanReloader.destroyAndRefreshBean(context, beanName);
+            var refresh = SpringBeanReloader.destroyAndRefreshBean(context, beanName, contexts);
+            Object[] pair = refresh.instances();
             if (pair == null || pair[1] == null) {
                 RestartLedger.note(beanName,
                         "a @Value construction parameter that could not be rebuilt in place");
@@ -419,6 +424,7 @@ public final class SpringPropertyRebinder {
                         + "and could not be rebuilt in place. A restart is what applies it.");
                 return false;
             }
+            coordinated.addAll(refresh.names());
             if (pair[0] != null && pair[0] != pair[1]) {
                 java.util.IdentityHashMap<Object, Object> replaced = new java.util.IdentityHashMap<>();
                 replaced.put(pair[0], pair[1]);
