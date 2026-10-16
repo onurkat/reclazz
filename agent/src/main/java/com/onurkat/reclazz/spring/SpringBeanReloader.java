@@ -71,12 +71,13 @@ public class SpringBeanReloader {
                     var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
                     if (constructor != null) constructor.apply();
                     var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
-                    Object[] pair = jms == null ? destroyAndRefreshBean(appContext, beanName) : jms.recreate();
+                    var kafka = jms == null ? SpringKafkaReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
+                    Object[] pair = jms != null ? jms.recreate() : kafka != null ? kafka.recreate() : destroyAndRefreshBean(appContext, beanName);
                     if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
                         replacements.put(pair[0], pair[1]);
                     }
                     // This transaction already rebuilt all leaf owners. Do not destroy them again in phase 2.
-                    if (jms == null) refreshedNames.add(beanName);
+                    if (jms == null && kafka == null) refreshedNames.add(beanName);
                     ReloadEffects.note("bean " + beanName + " re-created");
                     StatusReporter.detail("Spring bean refreshed: " + beanName);
                     totalRefreshed++;
@@ -198,7 +199,10 @@ public class SpringBeanReloader {
     static NamedRefresh destroyAndRefreshBean(Object appContext, String beanName, java.util.List<Object> contexts) throws Exception {
         var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
         if (jms != null) return new NamedRefresh(jms.recreate(), jms.refreshedNames());
+        var kafka = SpringKafkaReloader.prepareDependencyRefresh(contexts, appContext, beanName);
+        if (kafka != null) return new NamedRefresh(kafka.recreate(), kafka.refreshedNames());
         SpringJmsReloader.requireNoPropertyConsumer(contexts, appContext, beanName);
+        SpringKafkaReloader.requireNoPropertyConsumer(contexts, appContext, beanName);
         return new NamedRefresh(destroyAndRefreshBean(appContext, beanName), java.util.Set.of(beanName));
     }
 

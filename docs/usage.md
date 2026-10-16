@@ -1046,10 +1046,14 @@ scoped/prototype beans or sharing one registry between multiple contexts.
 
 If consumer stop does not complete within 30 seconds, container entries remain
 registered and this class's bean refresh/framework follow-up is deferred with
-a diagnostic. Already reloaded method bodies are not rolled back. The Kafka
-coordination here runs for direct class reload through the Spring orchestrator;
-property-triggered or dependent-bean recreation through other paths is not
-covered. Existing Spring bean recreation/lifecycle effects remain. The hidden
+a diagnostic. Already reloaded method bodies are not rolled back. The direct-listener coordination here runs through the Spring orchestrator.
+A separately bounded [Kafka helper/property transaction](spring-constructor-dependencies.md#kafka-helper-and-constructor-property-changes)
+recreates one plain local leaf listener after helper-body or scalar constructor
+property saves, including a same-key scalar on the listener constructor. It is
+measured on Framework5.3.39/Kafka2.9.13 and Framework6.1.14/Kafka3.2.4,
+JDK17/21, with nontransactional RECORD and native-default BATCH acknowledgment.
+BATCH acknowledgment is distinct from batch-listener callbacks; other
+reconstruction paths and broader closures remain outside this transaction. Existing Spring bean recreation/lifecycle effects remain. The hidden
 method's declaring class differs from the original, so custom conversion or
 argument factories depending on exact declaring-class identity are outside the
 verified scope. This is not an atomic reload transaction or a Kafka exactly-once

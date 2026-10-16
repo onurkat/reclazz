@@ -32,13 +32,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Recreate bounded local Kafka consumers after injected-helper body or scalar
+  constructor-property saves on the measured Spring5/Kafka2 and Spring6/Kafka3
+  graphs. Coordinate native consumer completion, current constructor edges and
+  original/added callbacks for nontransactional RECORD and default BATCH
+  acknowledgment; refuse unsupported ownership before destruction and report
+  partial reconstruction failures. Batch-listener APIs and Rabbit cascade remain
+  outside this repair.
+
 - Recreate bounded local JMS consumers when only a plain injected helper or its
   constructor property changes. Snapshot native dependencies before destruction,
   drain owned consumers before reconstructing their owners, and preserve original
   and added callbacks. Do not rebuild an already-current listener twice when the
   same property also feeds its own constructor. Direct-only consumer property
   rebuilds are refused before destruction. Unsupported ownership is refused; failed reconstruction
-  reports partial application. Kafka/Rabbit indirect coordination remains open.
+  reports partial application. Rabbit indirect coordination remains open; Kafka has its separately bounded repair above.
 
 - Preserve native constructor dependency bookkeeping during direct singleton
   class refreshes on Spring 5.3.39 and 6.1.14 for the bounded plain constructor

@@ -7876,7 +7876,7 @@ P5 native Spring resource proofs certify SAP tenant behavior.
 
 Fresh local broker evidence: Kafka2.9.13/Kafka3.2.3, JMS5.3.39/ActiveMQ5.19.11 and Rabbit2.4.17/RabbitMQ4.3.5, each on stock SapMachine17/21 macOS arm64. Normal/child application loaders apply only where named; the framework/broker libraries remain on the parent. The exact-empty Kafka group predicate is repaired; no dependency or shared harness change. Other pre-existing assertions remain intact.
 
-Classification: 70 PROVEN_WITH_SCOPE, 40 EXPECTED, 22 PARTIAL, 20 UNVERIFIED. Cells are scoped observations or explicit missing/excluded variants, not a count of independent product features.
+Classification: 71 PROVEN_WITH_SCOPE, 40 EXPECTED, 22 PARTIAL, 19 UNVERIFIED. Cells are scoped observations or explicit missing/excluded variants, not a count of independent product features.
 
 Follow-up: all seven owner-selected records now have scoped real broker/watch proof. Exact `groupId=""` now follows ordinary native Spring own-ID/factory fallback after the owner-authorized repair; omitted groupId, `#{null}` and nonempty overrides are also observed. The desired empty-group watcher failed with the original production predicate in an isolated scratch copy; fresh current-tree observations passed on both required lanes. Whitespace-only group literals remain outside this repair.
 
@@ -9396,15 +9396,15 @@ Native Spring6/Jakarta messaging listener reload.
 
 ### P4-KAFKA-CASCADE
 
-**Verdict:** UNVERIFIED. Consumer coordination during property/dependency-cascade bean recreation.
+**Verdict:** PROVEN_WITH_SCOPE. Bounded Kafka helper/property consumer recreation.
 
-**Bounds:** SapMachine17/21, macOS arm64; Spring Kafka2.9.13/Spring5.3.39/embedded Kafka3.2.3. 
+**Bounds:** Startup agent, normal application loader, stock JDK17/21 on macOS arm64; Framework5.3.39/Kafka2.9.13 and Framework6.1.14/Kafka3.2.4. One plain directly constructed local helper, one plain leaf owner, one literal-id void record callback and standard native infrastructure. Nontransactional explicit RECORD and native-default BATCH acknowledgment; no batch-listener callback claim.
 
-**Observation:** No observing test mapped; UNVERIFIED.
+**Observation:** `KafkaConsumerCascadeReloadTest` and `ModernKafkaConsumerCascadeReloadTest` inherit12 cases from `KafkaConsumerCascadeContract.helperAndPropertyChangesCoordinateConsumer`: four fresh agentless10/20/30/40 controls, then watched helper/property saves20/30/40 for original/added/coaffected callbacks. Actual mode, current helper/own scalar messages, accepted save, unchanged listener, live owner/edges, native worker completion before replacement and at close, unrelated identity/delivery and bounded single-observed delivery are asserted.
 
-**Limit:** Only the named fixture shape and assertions. A component test is never file-watcher evidence; no atomic reload or arbitrary advice/provider guarantee. Direct listener-class reload only; other recreation paths explicitly outside documented scope.
+**Limit:** No generic graph engine, rollback or exactly-once/transaction/rebalance/offset guarantee. Timeout may leave a retiring consumer with original singleton/registry ownership; failed reconstruction may be partial. Batch-listener APIs, richer callbacks/options, multiple workers/partitions/owners, custom infrastructure/advice, parent-child/child-loader watcher, concurrent configuration, hosted providers and two-argument security/XML/Boot reconstruction remain outside scope. Rabbit cascade stays UNVERIFIED; JMS evidence is unchanged.
 
-**Execution/control:** No verdict promotion. Named assertions observe actual message output or direct component state. Bounded no-duplicate/no-delivery windows do not establish universal exactly-once. Family-level scratch disabled-delegation witnesses are separate. Independent Claude audit pending.
+**Execution/control:** Main38/0 per graph/JDK (12 watchers,23 native lifecycle/refusal guards,3 optional-stack controls). Current-base48 desired RED after192 native controls; source-identical caller removal24 behavioral RED and relevance removal4 optional RED on21; byte-identical restoration30 GREEN. Owned second-processor refusal and native completion futures are exercised; component controls do not certify watchers. JSON binds exact commands, source/artifact hashes and raw XML. Independent Claude audit/full gate/commit pending.
 
 ### P4-JMS-MODERN
 
