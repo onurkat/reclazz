@@ -497,3 +497,18 @@ provider lifecycle beyond instance reuse.
 | Hot-swap fails | Schema change on OpenJDK | Use JetBrains Runtime |
 | Spring bean not refreshed | Non-singleton bean | Expected — prototypes recreate automatically |
 | Agent not injected | Plugin disabled or non-Hybris project | Check Settings → Tools → Reclazz |
+
+
+## Synthetic constructor ownership on installed SDK Spring graphs
+
+`scripts/test-sap-constructor-sdk.py` runs agentless fresh startup and cached-constructor controls, then real class-file saves through a held HTTP caller. It uses the installed exact SAP SDK Spring5.3.43/6.2.12 binaries in isolated classpaths and never starts a tenant or writes the SDK tree. The current runner targets local SapMachine17/21 installations on macOS; other JVM/OS layouts need a separately reviewed runner configuration.
+
+```bash
+python3 scripts/test-sap-constructor-sdk.py --sdk-search-root /path/to/local/sdks --agent agent/build/libs/agent-1.3.0.jar --output /tmp/reclazz-constructor-results
+```
+
+The search root must contain the owner's installed SDK directories. The exact measured spring-beans binary hashes are checked; a missing or different binary is a setup failure, not a behavioral failure. No proprietary JAR is downloaded or bundled. The runner builds only synthetic fixtures in temporary directories, sanitizes SDK paths from logs, closes owned JVMs, and writes per-profile/JDK observations and raw logs to the requested output directory. Use a fresh output directory per run; a lock prevents duplicate drivers writing one result set.
+
+Fresh native controls use10/20/30/40. Watcher cases cover direct Owner saves followed by helper-only saves, parent-child helper-only cascade, same-factory recursive destruction, and a withheld-save negative control. Accepted save receipts alone do not pass: exact session/input hashes, current constructor value, current held receiver, native dependency edges and unrelated identity are asserted. The HTTP observer never looks up or recreates a bean to repair the fixture. Exit0 requires all desired/control cases to pass; baseline desired failures remain exit1.
+
+The fixture uses @Component to select actual ordinary Spring recreation. A plain programmatic registration without a stereotype can use the agent's helper-body route, so a stale result from that different route is not constructor-transaction causal proof. SDK-derived native graph acceptance must not be labelled live SAP application/tenant acceptance. Ordinary sibling/shadow/refusal/failure/batch controls also live in the inherited `ConstructorDependencyContract`; the standard Spring5 and isolated Spring6 test wrappers remain their normal Gradle entry points. SDK execution uses existing test-only JUnit artifacts and keeps them out of runtime distributions.

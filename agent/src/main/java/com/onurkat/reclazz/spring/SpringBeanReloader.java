@@ -59,7 +59,10 @@ public class SpringBeanReloader {
             java.util.IdentityHashMap<Object, Object> replacements = new java.util.IdentityHashMap<>();
             int totalRefreshed = 0;
             SpringMvcSingletons mvcBefore = batchDepth > 0 ? batchMvcBefore : null;
+            var seenFactories = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
             for (Object appContext : contexts) {
+                Object localFactory = SpringBeans.getBeanFactory(appContext);
+                if (localFactory != null && !seenFactories.add(localFactory)) continue;
                 String[] beanNames = (reloadedClass != null)
                         ? findBeanNamesByType(appContext, reloadedClass)
                         : findBeanNamesByClass(appContext, className);
@@ -68,10 +71,19 @@ public class SpringBeanReloader {
                         mvcBefore = SpringMvcSingletons.capture(contexts);
                         if (batchDepth > 0) batchMvcBefore = mvcBefore;
                     }
-                    var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
-                    if (constructor != null) constructor.apply();
                     var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
                     var kafka = jms == null ? SpringKafkaReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
+                    var ordinary = jms == null && kafka == null
+                            ? SpringConstructorDependencies.prepareOrdinary(contexts, appContext, beanName) : null;
+                    if (ordinary != null) {
+                        if (batchDepth > 0) queueOrdinary(ordinary);
+                        else ordinary.recreate(platformContext.getAllApplicationContexts(), replacements);
+                        ReloadEffects.note("ordinary constructor owner prepared: " + beanName);
+                        totalRefreshed++;
+                        continue; // This snapshot owns its exact leaf; name-only legacy cascade must not rediscover it.
+                    }
+                    var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
+                    if (constructor != null) constructor.apply();
                     Object[] pair = jms != null ? jms.recreate() : kafka != null ? kafka.recreate() : destroyAndRefreshBean(appContext, beanName);
                     if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
                         replacements.put(pair[0], pair[1]);
@@ -136,6 +148,19 @@ public class SpringBeanReloader {
     private SpringMvcSingletons batchMvcBefore;
     private final java.util.LinkedHashSet<String> batchRefreshedNames = new java.util.LinkedHashSet<>();
     private final java.util.IdentityHashMap<Object, Object> batchReplacements = new java.util.IdentityHashMap<>();
+    private final java.util.List<SpringConstructorDependencies.Ordinary> batchOrdinary = new java.util.ArrayList<>();
+
+    private void queueOrdinary(SpringConstructorDependencies.Ordinary next) throws Exception {
+        // Exactly two nodes, not a graph scheduler: a helper snapshot subsumes a direct save of its leaf.
+        for (var existing : java.util.List.copyOf(batchOrdinary)) {
+            if (existing.covers(next.root())) {
+                existing.validate(platformContext.getAllApplicationContexts());
+                return;
+            }
+            if (next.covers(existing.root())) batchOrdinary.remove(existing);
+        }
+        batchOrdinary.add(next);
+    }
 
     /** Defer dependent cascade and healing until {@link #endBatch()}. */
     public void beginBatch() {
@@ -146,11 +171,14 @@ public class SpringBeanReloader {
     public void endBatch() {
         if (batchDepth == 0) return;
         if (--batchDepth > 0) return;
-        if (batchRefreshedNames.isEmpty() && batchReplacements.isEmpty()) {
+        if (batchRefreshedNames.isEmpty() && batchReplacements.isEmpty() && batchOrdinary.isEmpty()) {
             batchMvcBefore = null;
             return;
         }
         try {
+            var contexts = platformContext.getAllApplicationContexts();
+            for (var plan : batchOrdinary) plan.validate(contexts);
+            for (var plan : batchOrdinary) plan.recreate(contexts, batchReplacements);
             applyDependentsAndHealing(platformContext.getAllApplicationContexts(),
                     new java.util.LinkedHashSet<>(batchRefreshedNames),
                     new java.util.IdentityHashMap<>(batchReplacements));
@@ -160,6 +188,7 @@ public class SpringBeanReloader {
         } finally {
             batchRefreshedNames.clear();
             batchReplacements.clear();
+            batchOrdinary.clear();
             batchMvcBefore = null;
         }
     }
@@ -167,6 +196,12 @@ public class SpringBeanReloader {
     /** Type match with the ACTUAL reloaded Class — classloader-exact. */
     private String[] findBeanNamesByType(Object appContext, Class<?> targetClass) {
         try {
+            Method nonEager = Reflect.findMethod(appContext.getClass(), "getBeanNamesForType",
+                    Class.class, boolean.class, boolean.class);
+            if (nonEager != null) {
+                String[] names = (String[]) nonEager.invoke(appContext, targetClass, true, false);
+                return names != null ? names : new String[0];
+            }
             Method getBeanNamesForType = appContext.getClass().getMethod(
                     "getBeanNamesForType", Class.class);
             String[] names = (String[]) getBeanNamesForType.invoke(appContext, targetClass);
@@ -180,9 +215,7 @@ public class SpringBeanReloader {
         try {
             Class<?> targetClass = Class.forName(className, false,
                     appContext.getClass().getClassLoader());
-            Method getBeanNamesForType = appContext.getClass().getMethod(
-                    "getBeanNamesForType", Class.class);
-            return (String[]) getBeanNamesForType.invoke(appContext, targetClass);
+            return findBeanNamesByType(appContext, targetClass);
         } catch (ClassNotFoundException e) {
             return new String[0];
         }

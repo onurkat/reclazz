@@ -1905,9 +1905,9 @@
         },
         {
           "path": "CHANGELOG.md",
-          "line": 93,
+          "line": 102,
           "quote": "- Separately reloaded watched callers directly read/write added instance fields",
-          "sha256": "baaaddcda2341f795a58bac7b3aa0efce6db192d22717cfd2342eaada057c55c"
+          "sha256": "c3761e6246b41ba4d6ddc4200dc8cb0e511e2ad1ac6a2cdfd12a542af08019ca"
         },
         {
           "path": "docs/feature-evidence.md",

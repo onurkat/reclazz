@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Preserve constructor dependency bookkeeping and captured values when a plain
+  Helper refresh reconstructs one same-factory or direct-child leaf Owner,
+  including SDK Spring5.3.43/6.2.12 profiles, source-factory isolation and ordinary
+  save-batch coalescing. This does not add unannotated body-save discovery,
+  arbitrary context graphs, consumer lifecycle or live SAP tenant guarantees.
+
+
 ### Documentation
 
 - Add held Spring Data repository evidence across a prepared-schema native JPA

@@ -24,8 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public abstract class ConstructorDependencyContract {
     public static class Helper { static int next = 10; final int seed = next; }
     public static class Owner {
+        static int creations;
         final Helper helper; final int captured;
-        public Owner(Helper helper) { this.helper = helper; captured = helper.seed; }
+        public Owner(Helper helper) { creations++; this.helper = helper; captured = helper.seed; }
     }
     public static class Unrelated { }
 
@@ -129,16 +130,212 @@ public abstract class ConstructorDependencyContract {
             edge(c);
         }
     }
-    @Test void separateSameNameContextsDoNotReceiveCacheRepair() {
+    @Test void separateSameNameContextsHaveLocalReadOnlyCachePreparation() {
         try (var a = context(); var b = context()) {
             Object left = a.getBean(Owner.class), right = b.getBean(Owner.class);
             assertEquals(name(a, Owner.class), name(b, Owner.class));
             for (var c : List.of(a,b)) {
-                assertNull(SpringConstructorDependencies.prepare(List.of(a,b), c, name(c, Owner.class)));
+                assertNotNull(SpringConstructorDependencies.prepare(List.of(a,b), c, name(c, Owner.class)));
                 edge(c);
             }
             assertSame(left, a.getBean(Owner.class)); assertSame(right, b.getBean(Owner.class));
         }
+    }
+
+    public static class Held { Owner owner; Held(Owner owner) { this.owner = owner; } }
+    public static class OtherHelper { }
+    public static class OtherOwner {
+        static int creations;
+        final OtherHelper helper;
+        public OtherOwner(OtherHelper helper) { creations++; this.helper = helper; }
+    }
+    public static class SecondOwner { public SecondOwner(Helper helper) { } }
+    public static class Transitive { public Transitive(Owner owner) { } }
+    public static class CallbackOwner implements AutoCloseable {
+        static int closes;
+        public CallbackOwner(Helper helper) { }
+        public void close() { closes++; }
+    }
+    public static class AddedAnnotationMetadata {
+        @org.springframework.beans.factory.annotation.Autowired public Helper injected;
+        @org.springframework.context.event.EventListener public void event(Object value) { }
+    }
+
+    @ParameterizedTest @ValueSource(strings={"method","field"})
+    void addedAnnotatedMetadataRefusesAnAlreadyPreparedClosure(String member) throws Exception {
+        try(var c=context()) {
+            var f=c.getDefaultListableBeanFactory();String h=name(c,Helper.class),o=name(c,Owner.class);
+            Object helper=f.getSingleton(h),owner=f.getSingleton(o),merged=f.getMergedBeanDefinition(o);
+            var plan=SpringConstructorDependencies.prepareOrdinary(List.of(c),c,h);assertNotNull(plan);
+            var methods=member.equals("method") ? List.of(AddedAnnotationMetadata.class.getDeclaredMethod("event",Object.class)) : List.<java.lang.reflect.Method>of();
+            var fields=member.equals("field") ? List.of(AddedAnnotationMetadata.class.getDeclaredField("injected")) : List.<java.lang.reflect.Field>of();
+            com.onurkat.reclazz.bootstrap.ReflectionBridge.replaceClassState(Owner.class,methods,fields);
+            assertThrows(Exception.class,()->plan.recreate(List.of(c),new java.util.IdentityHashMap<>()));
+            assertSame(helper,f.getSingleton(h));assertSame(owner,f.getSingleton(o));
+            assertSame(merged,f.getMergedBeanDefinition(o));edge(c);
+        } finally {
+            com.onurkat.reclazz.bootstrap.ReflectionBridge.replaceClassState(Owner.class,List.of(),List.of());
+            com.onurkat.reclazz.ui.RestartLedger.clear();
+        }
+    }
+
+    @Test void lifecycleOwnedDependentRefusesWithoutCallingClose() {
+        try (var c=new AnnotationConfigApplicationContext(Helper.class,CallbackOwner.class)) {
+            String h=name(c,Helper.class),o=name(c,CallbackOwner.class);
+            Object helper=c.getBeanFactory().getSingleton(h),owner=c.getBeanFactory().getSingleton(o);
+            int before=CallbackOwner.closes;
+            assertThrows(IllegalStateException.class,()->SpringConstructorDependencies.prepareOrdinary(List.of(c),c,h));
+            assertEquals(before,CallbackOwner.closes);
+            assertSame(helper,c.getBeanFactory().getSingleton(h)); assertSame(owner,c.getBeanFactory().getSingleton(o));
+        } finally { com.onurkat.reclazz.ui.RestartLedger.clear(); }
+    }
+
+    @Test void preflightDoesNotCreateLazyConstructorOwner() throws Exception {
+        try (var c=new AnnotationConfigApplicationContext()) {
+            c.register(Helper.class);
+            var definition=new RootBeanDefinition(Owner.class); definition.setLazyInit(true);
+            c.registerBeanDefinition("lazyOwner",definition); c.refresh(); int before=Owner.creations;
+            assertNull(SpringConstructorDependencies.prepareOrdinary(List.of(c),c,name(c,Helper.class)));
+            assertNull(SpringConstructorDependencies.prepare(List.of(c),c,"lazyOwner"));
+            assertNull(c.getBeanFactory().getSingleton("lazyOwner")); assertEquals(before,Owner.creations);
+        }
+    }
+
+    @Test void parentLeafRefreshIgnoresLocalShadowSiblingAndDuplicateCapture() {
+        Helper.next = 10;
+        try (var parent = new AnnotationConfigApplicationContext(Helper.class);
+             var child = new AnnotationConfigApplicationContext();
+             var shadow = new AnnotationConfigApplicationContext();
+             var sibling = new AnnotationConfigApplicationContext()) {
+            child.setParent(parent); child.register(Owner.class); child.refresh();
+            String helperName = name(parent, Helper.class), ownerName = name(child, Owner.class);
+            for (var c : List.of(shadow, sibling)) {
+                if (c == shadow) c.setParent(parent);
+                c.registerBeanDefinition(helperName, new RootBeanDefinition(OtherHelper.class));
+                c.registerBeanDefinition(ownerName, new RootBeanDefinition(OtherOwner.class)); c.refresh();
+            }
+            var held = new Held(child.getBean(Owner.class)); child.getBeanFactory().registerSingleton("held", held);
+            Object shadowOwner = shadow.getBean(ownerName), siblingOwner = sibling.getBean(ownerName);
+            Object shadowMetadata = shadow.getBeanFactory().getMergedBeanDefinition(ownerName);
+            Object siblingMetadata = sibling.getBeanFactory().getMergedBeanDefinition(ownerName);
+            int otherBirths = OtherOwner.creations;
+            for (int seed : new int[]{20,30,40}) {
+                Helper.next = seed;
+                reloader(parent, child, shadow, sibling, child).refreshBean(Helper.class.getName(), Helper.class);
+                assertEquals(seed, held.owner.captured);
+                assertSame(child.getBeanFactory().getSingleton(ownerName), held.owner);
+                assertTrue(Arrays.asList(child.getBeanFactory().getDependentBeans(helperName)).contains(ownerName));
+                assertSame(shadowOwner, shadow.getBeanFactory().getSingleton(ownerName));
+                assertSame(siblingOwner, sibling.getBeanFactory().getSingleton(ownerName));
+                assertSame(shadowMetadata, shadow.getBeanFactory().getMergedBeanDefinition(ownerName));
+                assertSame(siblingMetadata, sibling.getBeanFactory().getMergedBeanDefinition(ownerName));
+                assertEquals(otherBirths, OtherOwner.creations);
+            }
+        } finally { Helper.next = 10; }
+    }
+
+    @Test void duplicateDirectOwnerCaptureRecreatesOnlyOnce() {
+        try (var c = context()) {
+            int before = Owner.creations;
+            reloader(c,c).refreshBean(Owner.class.getName(), Owner.class);
+            assertEquals(before + 1, Owner.creations); edge(c);
+        }
+    }
+
+    @ParameterizedTest @ValueSource(strings={"supplier","factoryMethod","arguments","parentDefinition",
+            "definitionQualifier","alias","extraDependent","transitive"})
+    void unsupportedIndirectClosureRefusesBeforeRetirement(String policy) throws Exception {
+        try (var c = context()) {
+            var f = c.getDefaultListableBeanFactory(); String h = name(c, Helper.class), o = name(c, Owner.class);
+            Object helper = f.getSingleton(h), owner = f.getSingleton(o), merged = f.getMergedBeanDefinition(o);
+            var d = (AbstractBeanDefinition)c.getBeanDefinition(o);
+            switch (policy) {
+                case "supplier" -> d.setInstanceSupplier(() -> owner);
+                case "factoryMethod" -> d.setFactoryMethodName("create");
+                case "arguments" -> d.getConstructorArgumentValues().addIndexedArgumentValue(0, helper);
+                case "parentDefinition" -> d.setParentName("base");
+                case "definitionQualifier" -> d.addQualifier(new AutowireCandidateQualifier("custom"));
+                case "alias" -> f.registerAlias(h, "alternateHelper");
+                case "extraDependent" -> { c.register(SecondOwner.class); c.getBean(SecondOwner.class); }
+                case "transitive" -> { c.register(Transitive.class); c.getBean(Transitive.class); }
+                default -> fail(policy);
+            }
+            assertThrows(IllegalStateException.class, () -> SpringConstructorDependencies.prepareOrdinary(List.of(c),c,h));
+            assertSame(helper, f.getSingleton(h)); assertSame(owner, f.getSingleton(o));
+            assertSame(merged, f.getMergedBeanDefinition(o)); edge(c);
+        } finally { com.onurkat.reclazz.ui.RestartLedger.clear(); }
+    }
+
+    @ParameterizedTest @ValueSource(strings={"definition","instance","context"})
+    void ordinaryPlanRevalidatesBeforeInvalidation(String change) throws Exception {
+        try (var c = context()) {
+            var f=c.getDefaultListableBeanFactory(); String h=name(c,Helper.class),o=name(c,Owner.class);
+            var plan=SpringConstructorDependencies.prepareOrdinary(List.of(c),c,h); assertNotNull(plan);
+            if (change.equals("definition")) ((AbstractBeanDefinition)c.getBeanDefinition(o)).setInstanceSupplier(() -> new Owner(new Helper()));
+            else if (change.equals("instance")) { f.destroySingleton(o); c.getBean(o); }
+            else c.close();
+            Object owner=f.getSingleton(o), helper=f.getSingleton(h);
+            Object merged=change.equals("context") ? null : f.getMergedBeanDefinition(o);
+            assertThrows(Exception.class, () -> plan.recreate(List.of(c),new java.util.IdentityHashMap<>()));
+            assertSame(owner,f.getSingleton(o)); assertSame(helper,f.getSingleton(h));
+            if (merged!=null) assertSame(merged,f.getMergedBeanDefinition(o));
+        } finally { com.onurkat.reclazz.ui.RestartLedger.clear(); }
+    }
+
+    @ParameterizedTest @ValueSource(strings={"owner-first","helper-first"})
+    void ordinaryBatchRebuildsLeafOnceInEitherOrder(String order) {
+        try (var c=context()) {
+            var held=new Held(c.getBean(Owner.class)); c.getBeanFactory().registerSingleton("held",held);
+            int before=Owner.creations; var r=reloader(c);
+            r.beginBatch(); Helper.next=20;
+            if (order.equals("owner-first")) {
+                r.refreshBean(Owner.class.getName(),Owner.class); r.refreshBean(Helper.class.getName(),Helper.class);
+            } else {
+                r.refreshBean(Helper.class.getName(),Helper.class); r.refreshBean(Owner.class.getName(),Owner.class);
+            }
+            assertEquals(before,Owner.creations,"plain reconstruction is deferred until the complete batch");
+            r.endBatch(); assertEquals(before+1,Owner.creations); assertEquals(20,held.owner.captured);
+            assertSame(c.getBeanFactory().getSingleton(name(c,Owner.class)),held.owner); edge(c);
+        } finally { Helper.next=10; }
+    }
+
+    public static class FailingHelper {
+        static boolean fail;
+        public FailingHelper() { if(fail) throw new IllegalStateException("synthetic constructor failure"); }
+    }
+    public static class FailingOwner {
+        static boolean fail;
+        public FailingOwner(FailingHelper helper) { if(fail) throw new IllegalStateException("synthetic leaf failure"); }
+    }
+    @ParameterizedTest @ValueSource(strings={"helper","owner"})
+    void nativeCreationFailureIsRecordedAsPartialRestart(String failing) throws Exception {
+        com.onurkat.reclazz.ui.RestartLedger.clear(); FailingHelper.fail=false; FailingOwner.fail=false;
+        try(var c=new AnnotationConfigApplicationContext(FailingHelper.class,FailingOwner.class)) {
+            String h=name(c,FailingHelper.class),o=name(c,FailingOwner.class);
+            Object oldHelper=c.getBeanFactory().getSingleton(h);
+            var plan=SpringConstructorDependencies.prepareOrdinary(List.of(c),c,h); assertNotNull(plan);
+            if(failing.equals("helper")) FailingHelper.fail=true; else FailingOwner.fail=true;
+            assertThrows(Exception.class,() -> plan.recreate(List.of(c),new java.util.IdentityHashMap<>()));
+            assertNull(c.getBeanFactory().getSingleton(o));
+            if(failing.equals("helper")) assertNull(c.getBeanFactory().getSingleton(h));
+            else assertNotSame(oldHelper,c.getBeanFactory().getSingleton(h));
+            assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(s->s.contains("partially reconstructed")));
+        } finally { FailingHelper.fail=false; FailingOwner.fail=false; com.onurkat.reclazz.ui.RestartLedger.clear(); }
+    }
+    @Test void proxyAppearingDuringRecreationRequiresPartialRestart() throws Exception {
+        com.onurkat.reclazz.ui.RestartLedger.clear();
+        try(var c=context()) {
+            var proxy=new java.util.concurrent.atomic.AtomicBoolean();
+            c.getBeanFactory().addBeanPostProcessor(new org.springframework.beans.factory.config.BeanPostProcessor() {
+                @Override public Object postProcessAfterInitialization(Object bean,String n) {
+                    return proxy.get() && bean instanceof Owner ? new ProxyFactory(bean).getProxy() : bean;
+                }
+            });
+            String h=name(c,Helper.class);var plan=SpringConstructorDependencies.prepareOrdinary(List.of(c),c,h);
+            assertNotNull(plan);proxy.set(true);
+            assertThrows(Exception.class,()->plan.recreate(List.of(c),new java.util.IdentityHashMap<>()));
+            assertTrue(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(s->s.contains("partially reconstructed")));
+        } finally { com.onurkat.reclazz.ui.RestartLedger.clear(); }
     }
     @Test void parentContextDoesNotReceiveCacheRepair() {
         try (var parent = context(); var child = new AnnotationConfigApplicationContext()) {
@@ -146,6 +343,26 @@ public abstract class ConstructorDependencyContract {
             Object original = child.getBean(Owner.class);
             assertNull(SpringConstructorDependencies.prepare(List.of(child), child, name(child, Owner.class)));
             assertSame(original, child.getBean(Owner.class)); edge(child); edge(parent);
+        }
+    }
+    @Test void multilevelOwnerDoesNotReceiveCachePreparation() {
+        try(var parent=new AnnotationConfigApplicationContext(Helper.class);
+            var middle=new AnnotationConfigApplicationContext();var child=new AnnotationConfigApplicationContext()) {
+            middle.setParent(parent);middle.refresh();child.setParent(middle);child.register(Owner.class);child.refresh();
+            var contexts=List.<Object>of(parent,middle,child);String h=name(parent,Helper.class),o=name(child,Owner.class);
+            Object helper=parent.getBeanFactory().getSingleton(h),owner=child.getBeanFactory().getSingleton(o);
+            assertNull(SpringConstructorDependencies.prepare(contexts,child,o));
+            assertThrows(IllegalStateException.class,()->SpringConstructorDependencies.prepareOrdinary(contexts,parent,h));
+            assertSame(helper,parent.getBeanFactory().getSingleton(h));assertSame(owner,child.getBeanFactory().getSingleton(o));
+        } finally { com.onurkat.reclazz.ui.RestartLedger.clear(); }
+    }
+    @Test void parentQualifierIsOutsideTheNewCacheScope() {
+        try(var parent=new AnnotationConfigApplicationContext();var child=new AnnotationConfigApplicationContext()) {
+            parent.registerBeanDefinition("blue",new RootBeanDefinition(Helper.class));parent.refresh();
+            child.setParent(parent);child.register(QualifiedOwner.class);child.refresh();
+            String o=name(child,QualifiedOwner.class);Object owner=child.getBeanFactory().getSingleton(o);
+            assertNull(SpringConstructorDependencies.prepare(List.of(parent,child),child,o));
+            assertSame(owner,child.getBeanFactory().getSingleton(o));
         }
     }
     @Test void proxyDoesNotReceiveCacheRepair() {
