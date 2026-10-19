@@ -1,11 +1,13 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions and scope
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 1.1.x   | :white_check_mark: |
-| 1.0.x   | :x:                |
+Use the newest published release applicable to your environment. The repository's
+source version does not establish publication or an ongoing maintenance promise
+for an older branch. No separate LTS or enterprise support window is declared.
+See the [installation and version requirements](docs/installation.md#versions-and-requirements)
+and [changelog](CHANGELOG.md) for version-specific scope. This is a local development
+tool; do not attach it to production servers.
 
 ## Reporting a Vulnerability
 
@@ -22,13 +24,12 @@ You can expect an initial response within 48 hours.
 Reclazz is designed with security in mind:
 
 - **100% local** - No outbound network requests, no telemetry, no analytics
-- **Loopback-only status socket** - The agent listens on 127.0.0.1 for the IDE.
-  It broadcasts its own log lines, answers three read-only questions
-  (`DIAGNOSE`, `PENDING`, `HEALTH`) and takes one nudge (`SCAN`, sent when a
-  build finishes, which makes the watcher look at its own directories now
-  rather than on the next poll); nothing a client sends can make it load,
-  reload or run anything it would not have on its own. A command is capped at 512 bytes and a line that
-  never ends drops the connection rather than being held in memory
+- **Loopback-only status socket** - The agent listens on 127.0.0.1. Local clients
+  can read diagnostics, request a scan, hold build output and pause/resume reload
+  admission. These controls are process-wide; loopback is not per-client
+  authentication. Use only trusted local clients. The canonical
+  [protocol command table](docs/protocol.md#commands) describes the accepted syntax,
+  bounds and requester-only responses; it is the single command reference.
 - **What the agent writes** - Class redefinition happens in memory. On disk it
   writes a port file beside the project (`.reclazz/agent.port`), and extracts
   its bootstrap jar into a fresh owner-only temporary directory with a random

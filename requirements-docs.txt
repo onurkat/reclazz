@@ -1,0 +1,4 @@
+# Docs build only; owner approved. No dependency enters JVM/plugin distributions.
+# 3.0.0 supports the contributor baseline Python 3.9 (requires Python >=3.8).
+markdown-it-py==3.0.0
+mdurl==0.1.2

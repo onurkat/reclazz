@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Free, open-source hot-reload for SAP Commerce (Hybris) and Spring, and a free alternative to JRebel. Save an items.xml and it regenerates and reloads instead of costing you ant clean all and a restart. Properties, YAML, log levels, locales, backoffice labels, Spring beans and MVC mappings included, and the methods you add after startup are found: endpoints, @Bean factories, listeners, Kafka, JMS and RabbitMQ consumers, Jackson properties. Apache 2.0, supported JDK 17+ paths.">
+    <meta name="keywords" content="SAP Commerce, Hybris, hybris hot reload, items.xml, impex hot reload, hybris localization reload, backoffice labels reload, hybris properties reload, JRebel alternative, DCEVM alternative, Spring Boot, hot-reload, Java agent, hot-swap, Spring bean refresh, MVC, Kafka listener hot reload, JMS listener, RabbitMQ listener, application.yml reload, @Bean added at runtime, Jackson, Reclazz, IntelliJ plugin">
+    <meta name="author" content="Onur Kat">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#06060a" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)">
+    <meta property="og:title" content="Reclazz: Free Hot-Reload for SAP Commerce and Spring">
+    <meta property="og:description" content="Stop restarting SAP Commerce. Edit code, build, and the running server picks up the change in about 50ms. Even an items.xml save regenerates and reloads. Free and open source.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://reclazz.com">
+    <meta property="og:image" content="https://reclazz.com/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Reclazz: stop restarting SAP Commerce.">
+    <meta property="og:site_name" content="Onur Kat">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Reclazz: Free Hot-Reload for SAP Commerce and Spring">
+    <meta name="twitter:description" content="Stop restarting SAP Commerce. Edit code, build, and the running server picks up the change in about 50ms. Even an items.xml save regenerates and reloads. Free and open source.">
+    <meta name="twitter:image" content="https://reclazz.com/og-image.png">
+    <meta name="twitter:image:alt" content="Reclazz: stop restarting SAP Commerce.">
+    <link rel="canonical" href="https://reclazz.com/">
+    <link rel="alternate" type="text/markdown" href="https://reclazz.com/llms.txt" title="Reclazz summary for language models">
+    <title>Reclazz: Free Hot-Reload for SAP Commerce (Hybris) and Spring</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
+    {{SITE_HEAD}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Reclazz",
+        "alternateName": "Reclazz",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "description": "Free, open-source hot-reload for Spring and SAP Commerce (Hybris) applications. Edit Java code, build, and the running JVM picks up the change in about 50ms: Spring beans refresh, MVC mappings re-scan, caches evict, Hybris interceptors re-register. No server restart, and application state survives. An alternative to JRebel that costs nothing.",
+        "url": "https://reclazz.com",
+        "downloadUrl": "https://plugins.jetbrains.com/plugin/33498-reclazz",
+              "author": {
+            "@type": "Person",
+            "name": "Onur Kat",
+            "url": "https://www.onurkat.com"
+        },
+        "license": "https://github.com/onurkat/reclazz/blob/main/LICENSE",
+        "codeRepository": "https://github.com/onurkat/reclazz",
+        "softwareVersion": "1.3.0",
+        "isAccessibleForFree": true,
+        "applicationSubCategory": "IDE Plugin",
+        "softwareRequirements": "JDK 17 or newer; IntelliJ IDEA 2023.3 through 2026.2",
+        "installUrl": "https://plugins.jetbrains.com/plugin/33498-reclazz",
+        "releaseNotes": "https://github.com/onurkat/reclazz/releases",
+        "keywords": "SAP Commerce, Hybris, hot reload, Spring Boot, JRebel alternative, items.xml, IntelliJ plugin, Java agent",
+        "sameAs": [
+            "https://github.com/onurkat/reclazz",
+            "https://plugins.jetbrains.com/plugin/33498-reclazz"
+        ],
+        "featureList": [
+            "Hot-reload of Java classes, including added methods and instance fields, on supported JDK 17+ paths",
+            "SAP Commerce items.xml and beans.xml regeneration with reload of the generated model classes",
+            "Property changes applied to a running SAP Commerce server",
+            "Log levels applied to the running logging context",
+            "Spring bean refresh, MVC re-scan, cache eviction, scheduler and event listener re-registration",
+            "A newly added Spring MVC endpoint served without a restart",
+            "Type and enum text from locales files, and backoffice labels, refreshed without a system update",
+            "Hybris interceptor reload and opt-in ImpEx import on save",
+            "Methods added after startup found by Spring MVC, @Bean factories, schedulers, event and transaction listeners, lifecycle callbacks and Jackson on a stock JDK",
+            "Kafka, JMS and RabbitMQ listeners added after startup, with existing consumers stopped before the bean is recreated",
+            "Properties and YAML files reloaded at their own precedence, removed keys falling back to the next source",
+            "Spring XML constructor, factory and init/destroy edits recreating the singleton and repairing its holders"
+        ]
+    }
+    </script>
+    <script type="application/ld+json">
+{
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+                {
+                        "@type": "Question",
+                        "name": "Will Reclazz break my running application?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "No. Reclazz uses the standard JVM Instrumentation API (the same mechanism used by debuggers and profilers). If a hot-swap fails, the original class remains loaded and your application continues running normally."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "How is Reclazz different from Spring Boot DevTools?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "DevTools restarts the entire application context on every change, losing all application state. Reclazz performs true in-place class redefinition, so your application state is preserved, and reloads complete in ~50ms instead of seconds."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Does Reclazz work with Maven and Gradle?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Yes. Reclazz auto-detects target/classes (Maven) or build/classes/java/main (Gradle) from the classpath. Just run mvn compile or gradle classes and Reclazz hot-swaps the changes automatically."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "What happens if a hot-swap fails?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes are superclass or interface changes, which always require a restart."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Does Reclazz send any data to external servers?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Does Reclazz support SAP Commerce (Hybris)?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Yes, and it is the reason Reclazz exists. Saving a *-items.xml or *-beans.xml runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC > Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), *-spring.xml reload, ImpEx auto-import and extension-aware class watching."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "Is there a free alternative to JRebel for SAP Commerce?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Reclazz is one, and it is open source under Apache 2.0 with no licence server and no per-seat cost. It reloads Java classes, including added methods and instance fields, on supported stock JDK 17+ paths. On SAP Commerce it also covers what a Java-only reload does not: saving a *-items.xml or *-beans.xml regenerates and reloads the model and DTO classes, property changes reach the running server, log levels change without a restart, locales text and backoffice labels refresh, *-spring.xml is applied to the live context, and an endpoint you just wrote answers on the next request. Compared against JRebel's own SAP Commerce manual, which documents reloading compiled classes and configuring rebel.xml, those platform-specific parts are not in it."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "How do I reload an items.xml change without running ant clean all?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server."
+                        }
+                },
+                {
+                        "@type": "Question",
+                        "name": "I added a method to a running bean. Will Spring, Jackson or my message broker find it?",
+                        "acceptedAnswer": {
+                                "@type": "Answer",
+                                "text": "On a stock JDK the method lives on a hidden companion class, which is exactly what a reflective scan cannot see, so Reclazz hands each framework the saved metadata through an adapter. A new endpoint, exception handler, binder or model attribute method is served on the next request; a new @Bean, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct or @PreDestroy registers; a new @KafkaListener, @JmsListener or @RabbitListener consumes after the previous consumer has been stopped; a new Jackson getter, setter or field is read and written. Each is a real test against the framework, and a shape without an adapter is named as needing a restart."
+                        }
+                }
+        ]
+}
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Onur Kat", "item": "https://www.onurkat.com" },
+            { "@type": "ListItem", "position": 2, "name": "Reclazz", "item": "https://reclazz.com" }
+        ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareSourceCode",
+        "name": "Reclazz",
+        "description": "Open-source Java agent and IntelliJ plugin for hot-reloading Spring Boot and SAP Commerce (Hybris) applications without a restart. Redefines classes in place on a stock JDK, refreshes Spring beans, re-scans MVC mappings, and reloads Hybris models from items.xml and beans.xml.",
+        "codeRepository": "https://github.com/onurkat/reclazz",
+        "programmingLanguage": ["Java", "Kotlin"],
+        "runtimePlatform": "JDK 17 or newer",
+        "license": "https://www.apache.org/licenses/LICENSE-2.0",
+        "url": "https://reclazz.com",
+        "author": {
+            "@type": "Person",
+            "name": "Onur Kat",
+            "url": "https://www.onurkat.com"
+        },
+        "keywords": "hot reload, Spring Boot, SAP Commerce, Hybris, JRebel alternative, HotswapAgent, DCEVM, Java agent, IntelliJ plugin, items.xml, beans.xml"
+    }
+    </script>
+</head>
+<body class="marketing home-page">
+<!-- Header -->
+{{SITE_HEADER}}
+<main id="main" tabindex="-1">
+<nav class="section-nav" aria-label="On this page"><div class="container"><a href="#sap" data-i18n="nav.sap">SAP Commerce</a><a href="#features" data-i18n="nav.features">Features</a><a href="#comparison" data-i18n="nav.compare">Compare</a><a href="#jdk" data-i18n="nav.jdk">JDK Support</a><a href="#how-it-works" data-i18n="nav.howitworks">How it works</a><a href="#install" data-i18n="nav.install">Install</a><a href="#faq">FAQ</a></div></nav>
+
+<!-- Hero -->
+<section class="hero" id="home">
+    <div class="hero-inner">
+        <div class="hero-badge animate">
+            <span class="dot"></span>
+            <span data-i18n="hero.badge">Free &amp; Open Source</span>
+        </div>
+        <h1 class="animate delay-1">
+            <span data-i18n="hero.title">Stop Restarting<br><span class="text-gradient">SAP Commerce</span></span>
+        </h1>
+        <p class="hero-subtitle animate delay-2" data-i18n="hero.subtitle">Edit. Compile. Keep your JVM running. Explore supported Java and Spring changes, SAP Commerce workflows, and clear restart boundaries.</p>
+        <div class="hero-actions animate delay-3">
+            <a href="https://plugins.jetbrains.com/plugin/33498-reclazz" class="btn-primary" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Install from Marketplace
+            </a>
+            <a href="https://github.com/onurkat/reclazz" class="btn-outline" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                <span class="star-icon" style="color:var(--warning)">&#9733;</span>
+                <span data-i18n="hero.github">Star on GitHub</span>
+                <span id="starCount" style="display:none;background:var(--bg-subtle);padding:2px 8px;border-radius:999px;font-size:0.8em;color:var(--text-muted)"></span>
+            </a>
+        </div>
+        <div class="social-proof animate delay-3" id="socialProof" style="display:none">
+            <div class="proof-item">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                <span class="proof-value" id="proofStars">-</span> stars
+            </div>
+        </div>
+
+        <!-- Terminal demo -->
+        <div class="terminal animate delay-4" role="img" aria-label="Illustrative SAP Commerce development workflow">
+            <div class="terminal-bar">
+                <span class="terminal-dot red"></span>
+                <span class="terminal-dot yellow"></span>
+                <span class="terminal-dot green"></span>
+                <span class="terminal-title">hybris &mdash; Server</span>
+            </div>
+            <div class="terminal-body">
+                <span class="line banner">══════════════════════════════════════════</span>
+                <span class="line banner">  Reclazz</span>
+                <span class="line banner">══════════════════════════════════════════</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:15:03]</span> Platform: SAP Commerce 2211 (auto-detected)</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:15:03]</span> Watching 42 extensions</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:15:03]</span> Structural reload: SUPPORTED (companion-class engine)</span>
+                <span class="line"><span class="ok">[Reclazz]</span> <span class="time">[10:15:03]</span> <span class="ok">Reclazz is active.</span></span>
+                <span class="line">&nbsp;</span>
+                <span class="line"><span class="info">[Reclazz]</span> <span class="time">[10:18:41]</span> items.xml changed: myextension</span>
+                <span class="line"><span class="swap">[Reclazz]</span> <span class="time">[10:18:41]</span> <span class="swap">Regenerated model classes (11s)</span></span>
+                <span class="line"><span class="ok">[Reclazz]</span> <span class="time">[10:18:52]</span> <span class="ok">Reloaded into the running server, no restart</span></span>
+            </div>
+        <p class="terminal-caption">Illustration · supported SAP Commerce reload workflow</p>
+        </div>
+    </div>
+</section>
+
+<!-- SAP Commerce -->
+<section class="section" id="sap">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="sap.label">SAP Commerce</span>
+            <h2 data-i18n="sap.title_html">Built For SAP Commerce,<br><span class="text-gradient">Not Adapted To It.</span></h2>
+            <p data-i18n="sap.subtitle">Reloading Java classes is the easy half. On SAP Commerce most of a day's edits are not Java at all: a type in items.xml, a property, a line of text in a locales file, an ImpEx. Reclazz reloads those too. Every item below was measured on a running 2211 server.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#129513;</div>
+                <h3 data-i18n="sap.items.title">items.xml &amp; beans.xml</h3>
+                <p data-i18n="sap.items.desc">Saving one runs the platform's own code generation and reloads the regenerated model and DTO classes, instead of ant clean all and a restart. A new attribute still needs its database column, so Reclazz tells you to run Update Running System rather than touching your schema itself.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#127793;</div>
+                <h3 data-i18n="sap.spring.title">Spring XML</h3>
+                <p data-i18n="sap.spring.desc">Property edits in a *-spring.xml are applied to the live bean in place. A changed constructor argument, factory method or init/destroy method recreates that singleton through Spring itself and repairs the beans still holding the old one, and a brand new bean definition becomes available without a restart.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#9881;</div>
+                <h3 data-i18n="sap.props.title">Properties</h3>
+                <p data-i18n="sap.props.desc">The platform reads its property files once, at startup. Save one now and the keys whose value actually changed are applied to the running server, through the same call the HAC console makes. Values consumed once at startup are named as still needing a restart, instead of being reported as done, and a key the platform refuses to write stays pending so that saving the same file again retries it.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128220;</div>
+                <h3 data-i18n="sap.logging.title">Log Levels</h3>
+                <p data-i18n="sap.logging.desc">SAP Commerce keeps its levels in the property files rather than a log4j2.xml, as a name and level pair. Change one and it reaches the running logger, so turning a class up to debug costs a save instead of a restart. Levels you did not touch are left where they are, including one you raised from the HAC console.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon pink">&#127760;</div>
+                <h3 data-i18n="sap.l10n.title">Type &amp; Enum Text</h3>
+                <p data-i18n="sap.l10n.desc">Edit a locales file and the new text is served on the next read. No system update, no database write, no restart.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#127991;</div>
+                <h3 data-i18n="sap.labels.title">Backoffice Labels</h3>
+                <p data-i18n="sap.labels.desc">Label files reach the label cache backoffice actually reads from, every copy of it. Reopen the view and your text is there.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#128274;</div>
+                <h3 data-i18n="sap.interceptors.title">Interceptors</h3>
+                <p data-i18n="sap.interceptors.desc">Validate, Prepare, Load, Remove and InitDefaults interceptors re-register: the mapping is captured before Spring refreshes the bean and put back into the platform registry afterwards, verified by a real model save that runs the new rule exactly once. A registration that fails says so instead of claiming success.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#128228;</div>
+                <h3 data-i18n="sap.impex.title">ImpEx On Save</h3>
+                <p data-i18n="sap.impex.desc">Changed .impex files can be imported the moment you save them. It is opt-in, because it runs against your live database, and a file carrying a REMOVE header, written out or hidden behind a macro, is named and refused rather than executed. A header macro the guard cannot resolve is refused the same way.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#128193;</div>
+                <h3 data-i18n="sap.ext.title">Extension Aware</h3>
+                <p data-i18n="sap.ext.desc">It reads your extension layout, classpath and classloader hierarchy on its own. There is no per-extension descriptor to write and keep in sync.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SAP vs JRebel -->
+<section class="section section-alt" id="sap-comparison">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="sapcmp.label">On SAP Commerce, Specifically</span>
+            <h2 data-i18n="sapcmp.title_html"><span class="text-gradient">Reclazz</span> vs JRebel on Hybris</h2>
+            <p data-i18n="sapcmp.subtitle">JRebel reloads Java classes on SAP Commerce, and it does that well. The rest of what a hybris day is made of is a different question, and the honest place to answer it is JRebel's own SAP Commerce manual.</p>
+        </div>
+        <div class="comparison-wrapper reveal" style="overflow-x:auto">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="sapcmp.what">What you changed</th>
+                        <th>Reclazz</th>
+                        <th>JRebel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td data-i18n="sapcmp.price">Price</td><td class="highlight-cell"><span data-i18n="sapcmp.v.free">Free &amp; open source</span></td><td><span data-i18n="sapcmp.v.price_jr">$550+/year per seat</span></td></tr>
+                    <tr><td data-i18n="sapcmp.classes">A Java class</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="sapcmp.setup">Per-extension setup file</td><td class="highlight-cell"><span data-i18n="sapcmp.v.none">None</span></td><td><span data-i18n="sapcmp.v.rebelxml">rebel.xml for backoffice extensions</span></td></tr>
+                    <tr><td data-i18n="sapcmp.items">A type in items.xml or beans.xml</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.regen">regenerates &amp; reloads</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.logging">A log level</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.applied">applied to the running server</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.props">A property</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.applied">applied to the running server</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.l10n">A type or enum name in a locales file</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.labels">A backoffice label</td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.interceptors">An interceptor</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.rereg">re-registered</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.impex">An ImpEx file</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.optin">opt-in, imported on save</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em" data-i18n="sapcmp.v.notdoc">not in its Hybris manual</span></td></tr>
+                    <tr><td data-i18n="sapcmp.offline">Licence server &amp; activation</td><td class="highlight-cell"><span data-i18n="sapcmp.v.nolic">None, nothing leaves your machine</span></td><td><span data-i18n="sapcmp.v.commercial">Commercial licence, activation required</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="margin-top:1.25rem;font-size:0.9em;color:var(--text-dim);max-width:56rem" data-i18n="sapcmp.footnote_html">Compared against <a href="https://manuals.jrebel.com/jrebel/advanced/hybris.html" target="_blank" rel="noopener">JRebel's own SAP Commerce manual</a>, which covers reloading compiled classes and configuring rebel.xml. A cross means that capability is not described there, not that JRebel is broken: it reloads classes on Hybris and that is what it documents.</p>
+    </div>
+</section>
+
+<!-- Features -->
+<section class="section section-alt" id="features">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="features.label">Features</span>
+            <h2 data-i18n="features.title_html">Deep Spring Integration.<br><span class="text-gradient">Not Just Hot-Swap.</span></h2>
+            <p data-i18n="features.subtitle">Reclazz understands Spring internals. When a class reloads, beans refresh, mappings re-scan, caches evict and schedulers re-register, and a method you add after startup is found by the framework that was going to look for it.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#127793;</div>
+                <h3 data-i18n="features.bean.title">Spring Bean Refresh</h3>
+                <p data-i18n="features.bean.desc">Automatically destroys and recreates singleton beans after class reload. Your changes take effect immediately without losing application state.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128268;</div>
+                <h3 data-i18n="features.mvc.title">MVC Re-scan</h3>
+                <p data-i18n="features.mvc.desc">Re-registers @RequestMapping methods when a controller changes. An endpoint you add is served on the next request, on an ordinary JDK and inside a Tomcat webapp as well, instead of after a restart. An @ExceptionHandler, @InitBinder or @ModelAttribute you add to a running controller or advice runs through Spring's own selection, local priority and advice ordering included.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon pink">&#128293;</div>
+                <h3 data-i18n="features.cache.title">Cache Eviction</h3>
+                <p data-i18n="features.cache.desc">Evicts Spring caches for classes with @Cacheable, @CacheEvict, or @CachePut. No stale data after reload.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#9202;</div>
+                <h3 data-i18n="features.scheduler.title">Scheduler Reload</h3>
+                <p data-i18n="features.scheduler.desc">Cancels and re-registers @Scheduled tasks. Changed cron expressions and fixed-rate schedules apply immediately, and a @Scheduled method you add after startup is registered on a stock JDK; removing it, or its annotation, cancels it.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#128736;</div>
+                <h3 data-i18n="features.structural.title">Structural Changes</h3>
+                <p data-i18n="features.structural.desc">Add or remove methods and instance fields, and change annotations, on supported JDK 17+ paths. No patched JVM required. An added static field gets its initial value too, without re-running the rest of the static block. An enum value added on the end is applied to the running JVM, JDK 26 included: what that release closes is sun.misc.Unsafe, and the JDK&#39;s own Unsafe does the same writes. A changed compile-time constant is named together with the files that inlined it, and rebuilt where Reclazz is the compiler.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#128196;</div>
+                <h3 data-i18n="features.templates.title">Template Reload</h3>
+                <p data-i18n="features.templates.desc">Editing a Thymeleaf or Freemarker template takes effect on the next render, with caching left on.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#9881;</div>
+                <h3 data-i18n="features.props.title">Property &amp; Log Changes</h3>
+                <p data-i18n="features.props.desc">Spring Boot reads a properties file once, at startup. Save a .properties or .yml file now and it is reloaded at its own place in the Environment, so command-line overrides keep winning, a nested YAML value or list reaches the same binding as at startup, and a key you delete falls back to the next source or the default instead of staying stale. The @ConfigurationProperties beans that read it are rebound or, when constructor-bound, rebuilt and re-pointed; @Value fields are re-resolved, computed expressions included. Log levels, and a saved logback.xml or log4j2.xml, reach the running logging context too. An invalid value holds the whole save and says why.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128269;</div>
+                <h3 data-i18n="features.diag.title">It Explains Itself</h3>
+                <p data-i18n="features.diag.desc">When nothing happens, ask why: the build did not reach the class, it is built somewhere Reclazz does not watch, the bytes came out identical, or the JVM has not loaded it yet. None of those produce an error, which is why the log was empty. A second question, what still needs a restart, lists what this session left behind, and says so plainly when there is nothing.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#128737;</div>
+                <h3 data-i18n="features.aop.title">AOP &amp; Events</h3>
+                <p data-i18n="features.aop.desc">Clears AOP proxy caches for @Aspect classes and parses an edited pointcut again, instead of leaving every proxy matching the old expression. The one half a restart is still needed for is named: a bean already proxied keeps the advice it was built with until it is itself reloaded. Re-registers @EventListener methods, including ones you add after startup, and a @TransactionalEventListener you add fires at its transaction phase through Spring's own synchronization. Refreshes @Async processing.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon cyan">&#128218;</div>
+                <h3 data-i18n="features.data.title">Spring Data &amp; Security</h3>
+                <p data-i18n="features.data.desc">Refreshes Repository beans. An edited @EnableWebSecurity configuration is rebuilt into the running filter chain, and method security (@PreAuthorize, @Secured) is re-read on the service class that carries it, not only on the security configuration. A @PreAuthorize or @PostAuthorize you add to a running service method, direct or a fixed composed marker, is enforced on both the classic Spring 5 and modern Spring 6 stacks.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#128260;</div>
+                <h3 data-i18n="features.caches.title">What The Frameworks Cached</h3>
+                <p data-i18n="features.caches.desc">A reload is only half the job. Every framework answers from what it worked out about your class once, at startup, and nothing tells it otherwise. So an @Autowired you add to an existing field actually injects, a constraint you add is enforced on the next request, an @ExceptionHandler, @InitBinder or @ModelAttribute you add runs, an edited @Aspect pointcut is parsed again, and Jackson stops serialising the shape it first saw: a getter, a setter or a field you add to a DTO is written and read by the next request's JSON. Each one was measured on a running server, before and after.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon green">&#128295;</div>
+                <h3 data-i18n="features.added.title">Methods You Add Are Found</h3>
+                <p data-i18n="features.added.desc">On a stock JDK a method you add lives on a hidden companion class, where a framework's scan cannot see it. Reclazz hands the framework the saved metadata instead: a new @Bean factory registers its product, with collections, Optional, providers and @Value arguments resolved by Spring; a new @PostConstruct or @PreDestroy runs on the next instance and keeps its destroy callback; a new @Transactional, @Cacheable, @Async or @PreAuthorize/@PostAuthorize service method runs through the real interceptors, custom composed forms and both the Spring 5 and Spring 6 security stacks included; an added @KafkaListener or @RabbitListener topic, group or queue can be a #{SpEL} expression and a @JmsListener can reply through @SendTo; an added @Bean factory honours a direct @Conditional or the Boot @ConditionalOnProperty, @ConditionalOnBean and @ConditionalOnMissingBean. A shape without an adapter is named as needing a restart, never silently skipped.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon orange">&#128236;</div>
+                <h3 data-i18n="features.brokers.title">Message Listeners</h3>
+                <p data-i18n="features.brokers.desc">A @KafkaListener, @JmsListener or @RabbitListener you add to a running component registers through the application's own listener processor and container factory. Before the bean is recreated its existing consumers are stopped and waited for, so a queue is never consumed twice; edits, topic or queue changes, removal and restoration follow later saves. Verified against embedded Kafka and ActiveMQ brokers and a real RabbitMQ container.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon">&#9889;</div>
+                <h3 data-i18n="features.hotswap.title">Instant Hot-Swap</h3>
+                <p data-i18n="features.hotswap.desc">Redefines classes in the running JVM via the Instrumentation API. Method body changes apply in ~50ms. Zero downtime.</p>
+            </div>
+            <div class="feature-card reveal">
+                <div class="feature-icon pink">&#128274;</div>
+                <h3 data-i18n="features.privacy.title">100% Local &amp; Private</h3>
+                <p data-i18n="features.privacy.desc">No telemetry, no analytics, no license server, no outbound requests. Everything runs on your machine. Your code never leaves your environment. The download carries its licence terms and a list of everything inside the agent, for whoever reviews it on your behalf.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comparison -->
+<section class="section" id="comparison">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="compare.label">Comparison</span>
+            <h2 data-i18n="compare.title_html"><span class="text-gradient">Reclazz</span> vs DevTools vs JRebel</h2>
+            <p data-i18n="compare.subtitle">Spring Boot DevTools restarts your entire context. JRebel costs $550+/year. Reclazz is free, open-source, and performs true in-place hot-swap.</p>
+        </div>
+        <div class="comparison-wrapper reveal" style="overflow-x:auto">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="compare.feature">Feature</th>
+                        <th>Reclazz</th>
+                        <th>Spring Boot DevTools</th>
+                        <th>JRebel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td data-i18n="compare.price">Price</td><td class="highlight-cell">Free &amp; open source</td><td>Free</td><td>$550+/year</td></tr>
+                    <tr><td data-i18n="compare.reload_type">Reload type</td><td class="highlight-cell">In-place hot-swap</td><td>Full context restart</td><td>In-place hot-swap</td></tr>
+                    <tr><td data-i18n="compare.app_state">Application state</td><td class="highlight-cell">Preserved</td><td>Lost on restart</td><td>Preserved</td></tr>
+                    <tr><td data-i18n="compare.speed">Reload speed</td><td class="highlight-cell">~50ms</td><td>Seconds</td><td>~50ms</td></tr>
+                    <tr><td data-i18n="compare.method_body">Method body changes</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.structural">Add/remove methods &amp; instance fields</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">supported JDK 17+ paths</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.static_fields">Added static field gets its value</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(constants &amp; self-contained initialisers)</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em">(initialiser not re-run)</span></td></tr>
+                    <tr><td data-i18n="compare.enum">Add enum values (on the end)</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">add or remove at the end, JDK 17-25</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.interfaces">Add/remove an interface</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">JBR or DCEVM; stock JDK refuses and says so</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.superclass">Change superclass</td><td><span class="cross">&#10007;</span> <span style="color:var(--text-dim);font-size:0.8em">no JVM redefines it</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">loads classes itself</span></td></tr>
+                    <tr><td data-i18n="compare.spring_bean">Spring bean refresh</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.new_bean">New @Service / @Controller class</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">supported JDK 17+ paths, wired and mapped</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.security">Spring Security rules</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">filter chain rebuilt live</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">separate plugin</span></td></tr>
+                    <tr><td data-i18n="compare.added_bean">@Bean method added after startup</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">supported JDK 17+ paths; collections, Optional, providers and @Value arguments</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.added_handlers">Handler or callback method added after startup</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">@ExceptionHandler, @InitBinder, @ModelAttribute, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct, @PreDestroy</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.brokers">Message listener added after startup</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">@KafkaListener, @JmsListener, @RabbitListener; the old consumer is stopped first</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.jackson">Jackson property added after startup</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">getter, setter or field on a running DTO</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.config">Properties and YAML follow the saved file</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">removed keys fall back, constructor-bound beans rebuilt</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.xml">Spring XML constructor, factory and init/destroy edits</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">singleton recreated, holders repaired</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.removed">Deleted members stop being visible</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">hidden from reflection</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.mvc">MVC mapping re-scan</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.cache">Cache eviction</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.scheduler">@Scheduled re-register</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.events">@EventListener refresh</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.aop">AOP proxy refresh</td><td><span class="check">&#10003;</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span style="color:var(--text-dim);font-size:0.85em">not documented</span></td></tr>
+                    <tr><td data-i18n="compare.jpa">JPA mapping picks up a new field</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">opt-in (jpaRefresh=true), JBR/DCEVM with ddl-auto; otherwise named in the log</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">column still yours to add</span></td></tr>
+                    <tr><td data-i18n="compare.new_entity">New @Entity class picks up a mapping</td><td class="highlight-cell"><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">supported JDK 17+ paths, opt-in</span></td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">(restart)</span></td><td><span class="check">&#10003;</span></td></tr>
+                    <tr><td data-i18n="compare.sap">SAP Commerce support</td><td class="highlight-cell"><a href="#sap-comparison" style="color:inherit">Purpose-built</a></td><td><span class="cross">&#10007;</span></td><td>Generic</td></tr>
+                    <tr><td data-i18n="compare.open_source">Open source</td><td><span class="check">&#10003;</span> <span style="color:var(--text-dim);font-size:0.8em">Apache 2.0</span></td><td><span class="check">&#10003;</span></td><td><span class="cross">&#10007;</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p style="margin-top:1.25rem;font-size:0.9em;color:var(--text-dim);max-width:56rem" data-i18n="compare.footnote_html">The Reclazz column is what the <a href="https://github.com/onurkat/reclazz" target="_blank" rel="noopener">test suite</a> covers, on SAP Commerce 2211 and Spring Boot 2.7 and 3.3. The JRebel column is what JRebel's own documentation describes; where it describes nothing, this says so rather than guessing. JRebel reloads Java classes well, and a blank cell is a gap in its manual, not a claim that it fails.</p>
+    </div>
+</section>
+
+<!-- JDK Support -->
+<section class="section section-alt" id="jdk">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="jdk.label">JDK Support</span>
+            <h2 data-i18n="jdk.title_html">Works With <span class="text-gradient">Your JDK</span></h2>
+            <p data-i18n="jdk.subtitle">Reclazz auto-detects your JDK and configures the right flags. Structural changes work everywhere; JetBrains Runtime additionally makes new members visible to reflection.</p>
+            <p data-i18n="jdk.verified" style="margin-top:0.75rem;color:var(--text-dim);font-size:0.95rem">Measured, not assumed: SAP Commerce 2211 (20 of 20 integration scenarios on a live server), Spring Boot 2.7 and 3.3, Java 17 and 21 plus JetBrains Runtime 25, IntelliJ IDEA 2023.3 through 2026.2.</p>
+        </div>
+        <div class="jdk-grid">
+            <div class="jdk-card standard reveal">
+                <h3 data-i18n="jdk.standard.title">Standard JDK</h3>
+                <span class="jdk-type standard">JDK 17 / 21 / 25, any vendor</span>
+                <ul>
+                    <li data-i18n="jdk.standard.method">Method body changes</li>
+                    <li><strong style="color:var(--cyan)" data-i18n="jdk.standard.structural">Add &amp; remove methods and fields</strong></li>
+                    <li data-i18n="jdk.standard.spring">Spring bean refresh</li>
+                    <li data-i18n="jdk.standard.mvc">MVC re-scan &amp; cache eviction</li>
+                    <li data-i18n="jdk.standard.scheduler">Scheduler &amp; event reload</li>
+                    <li><strong style="color:var(--cyan)" data-i18n="jdk.standard.annotations">Change annotations</strong></li>
+                    <li>Auto-configured <code style="font-family:var(--font-mono);font-size:0.85em;color:var(--cyan)">--add-opens</code> flags</li>
+                </ul>
+            </div>
+            <div class="jdk-card jbr reveal" style="border-color: rgba(6,214,160,0.2);">
+                <h3 data-i18n="jdk.jbr.title">JetBrains Runtime / DCEVM <span style="font-size:0.7em;color:var(--accent);font-weight:400;">optional</span></h3>
+                <span class="jdk-type jbr">JBR / DCEVM 17 / 21 / 25</span>
+                <ul>
+                    <li data-i18n="jdk.jbr.everything">Everything above, plus:</li>
+                    <li><strong style="color:var(--accent)" data-i18n="jdk.jbr.reflection">New members visible to reflection</strong></li>
+                    <li><strong style="color:var(--accent)" data-i18n="jdk.jbr.caches">Reflective caches see them without a restart</strong></li>
+                    <li>Auto-configured <code style="font-family:var(--font-mono);font-size:0.85em;color:var(--accent)">-XX:+AllowEnhancedClassRedefinition</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section" id="how-it-works">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="architecture.label">Architecture</span>
+            <h2 data-i18n="architecture.title_html">How <span class="text-gradient">Reclazz</span> Works</h2>
+            <p data-i18n="architecture.subtitle">A lightweight Java agent runs inside your application JVM. It watches compiled classes and orchestrates Spring-aware reloading.</p>
+        </div>
+        <div class="architecture-diagram reveal" role="img" aria-label="Architecture diagram showing Reclazz agent pipeline: FileWatcher monitors compiled classes, ClassReloader redefines them via Instrumentation API, then Spring-aware modules handle bean refresh, MVC re-scan, cache eviction, scheduler re-registration, and AOP proxy refresh">
+<span class="dim">  Build Tool (mvn/gradle/ant)         Application JVM</span>
+<span class="dim">  ===========================         ===============</span>
+
+  <span class="label">mvn compile</span>                           <span class="label">[Reclazz Agent]</span>
+  <span class="label">gradle classes</span>                              |
+       |                                <span class="highlight">FileWatcher</span>
+       v                             (NIO WatchService)
+  classes/*.class                     watches output dir
+                                            |
+                                     <span class="highlight">ClassReloader</span>
+                                  (Instrumentation API)
+                                            |
+                              +------+------+------+------+
+                              |      |      |      |      |
+                           <span class="highlight">Spring</span>  <span class="highlight">MVC</span>  <span class="highlight">Cache</span>  <span class="highlight">Sched</span>  <span class="highlight">AOP</span>
+                           Bean   Re-   Evict  Re-    Proxy
+                           Refresh scan        reg    Refresh
+                                  + Events, Async, Data, Security</div>
+    </div>
+</section>
+
+<!-- Limitations -->
+<section class="section section-alt" id="limitations">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="limits.label">Transparency</span>
+            <h2 data-i18n="limits.title_html">What <span class="text-gradient">Can't</span> Be Hot-Reloaded</h2>
+            <p data-i18n="limits.subtitle">These are fundamental JVM and framework limitations that no tool can fully overcome.</p>
+        </div>
+        <div class="limitations-grid">
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.hierarchy_title">Class Hierarchy Changes</h4>
+                <p data-i18n="limits.hierarchy_desc">Changing superclass or interfaces is a JVM limitation. No tool can work around this. It requires a restart.</p>
+            </div>
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.structural_title">Reflection on New Members (standard JDKs)</h4>
+                <p data-i18n="limits.structural_desc">Adding and removing methods or fields works on supported JDK 17+ paths. On a standard JDK the new members live on a hidden companion class, so code that calls them directly sees them, but reflection on the original class does not. Spring MVC, @Bean factories, schedulers, event and transaction listeners, lifecycle callbacks, Jackson and the Kafka, JMS and RabbitMQ listener containers get the saved metadata through adapters; a framework without one, Hybris ModelService attribute dispatch for instance, still needs a restart and is named. JetBrains Runtime or DCEVM removes the caveat entirely.</p>
+            </div>
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.config_title">Configuration Beyond a File Edit</h4>
+                <p data-i18n="limits.config_desc">A loaded properties or YAML file reloads at its own precedence, and supported XML edits recreate the bean. What still needs a restart: a new config location, profile or import, a bean definition removed from XML, a changed class, scope or parent, and XML definitions with nested beans or managed collections. Each is named when it happens.</p>
+            </div>
+            <div class="limitation-card reveal">
+                <h4 data-i18n="limits.new_beans_title">Creators, Proxies and Custom Scans</h4>
+                <p data-i18n="limits.new_beans_desc">A new @Component class is live, but some shapes stay outside: Jackson constructor and record creators for added properties, a listener or lifecycle callback added to a proxied bean, custom listener factories, Jakarta lifecycle annotations, and frameworks that read your classes through their own reflection. Reclazz refuses these with the reason rather than applying half of them.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Install -->
+<section class="section" id="install">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label" data-i18n="install.label">Get Started</span>
+            <h2 data-i18n="install.title_html">Up and Running in <span class="text-gradient">3 Steps</span></h2>
+        </div>
+        <div class="install-steps">
+            <div class="install-step reveal">
+                <div class="step-number">1</div>
+                <h3 data-i18n="install.step1.title">Add the Agent</h3>
+                <p data-i18n="install.step1.desc">Download the agent from the latest GitHub release and add the -javaagent flag to your JVM arguments, or install the IntelliJ plugin, which injects it for you.</p>
+                <code>-javaagent:/path/to/reclazz-agent.jar</code>
+            </div>
+            <div class="install-step reveal">
+                <div class="step-number">2</div>
+                <h3 data-i18n="install.step2.title">Run Your App</h3>
+                <p data-i18n="install.step2.desc">Start your Spring Boot application normally. Reclazz auto-detects your project layout and begins watching.</p>
+                <code>mvn spring-boot:run</code>
+            </div>
+            <div class="install-step reveal">
+                <div class="step-number">3</div>
+                <h3 data-i18n="install.step3.title">Build &amp; Reload</h3>
+                <p data-i18n="install.step3.desc">Change your code, then compile. Reclazz hot-swaps the changes automatically. No restart needed.</p>
+                <code>mvn compile  or  gradle classes</code>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section class="section section-alt" id="faq">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-label">FAQ</span>
+            <h2 data-i18n="faq.title_html">Frequently Asked <span class="text-gradient">Questions</span></h2>
+        </div>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q1">Will Reclazz break my running application?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a1">No. Reclazz uses the standard JVM Instrumentation API, the same mechanism used by debuggers and profilers. If a hot-swap fails (e.g., a structural change on standard OpenJDK), the original class remains loaded and your application continues running normally.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q2">How is Reclazz different from Spring Boot DevTools?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a2">DevTools restarts the entire Spring application context on every change, which takes seconds and loses all application state. Reclazz performs true in-place class redefinition, so your state is preserved, and reloads complete in ~50ms. Reclazz also handles Spring-specific concerns like MVC re-scanning, cache eviction, and scheduler re-registration without a restart.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q3">Does Reclazz work with Maven and Gradle?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a3">Yes. Reclazz auto-detects <code style="font-family:var(--font-mono);font-size:0.9em">target/classes</code> (Maven) or <code style="font-family:var(--font-mono);font-size:0.9em">build/classes/java/main</code> (Gradle) from the classpath. Just run <code style="font-family:var(--font-mono);font-size:0.9em">mvn compile</code> or <code style="font-family:var(--font-mono);font-size:0.9em">gradle classes</code> and Reclazz hot-swaps the changes automatically.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q4">What happens when a hot-swap fails?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a4">Reclazz reports the error in the tool window and via a notification. The original class stays loaded, so your application is never left in a broken state. Common causes: superclass or interface changes, which always require a restart.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q5">Does Reclazz send any data to external servers?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a5">No. Reclazz is 100% local. There is no telemetry, no analytics, no license server, and no outbound network requests. Everything runs entirely on your machine. Your code never leaves your environment.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q6">Does Reclazz support SAP Commerce (Hybris)?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a6">Yes, and it is the reason Reclazz exists. Saving a <strong>*-items.xml</strong> or <strong>*-beans.xml</strong> runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes, instead of ant clean all and a restart. New attributes still need a database column, so Reclazz reminds you to run HAC &gt; Update Running System rather than touching your database itself. On top of that: property changes applied to the running server, log levels applied to the running Log4j2 context, type and enum text re-read from locales files, backoffice labels refreshed, interceptor reload (Validate, Prepare, Load, Remove), <strong>*-spring.xml</strong> reload, ImpEx auto-import and extension-aware class watching.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q7">Do I need JetBrains Runtime?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a7">Not required. Structural changes (adding and removing methods and fields) work on supported JDK 17+ paths. JetBrains Runtime or DCEVM additionally makes those new members visible to reflection and to caches built at startup. Reclazz auto-detects which runtime you're using and configures itself accordingly.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q8">Is there a free alternative to JRebel for SAP Commerce?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a8">Reclazz is one, and it is open source under Apache 2.0 with no licence server and no per-seat cost. It reloads Java classes, including added methods and instance fields, on supported stock JDK 17+ paths. On SAP Commerce it also covers what a Java-only reload does not: saving a *-items.xml or *-beans.xml regenerates and reloads the model and DTO classes, property changes reach the running server, log levels change without a restart, locales text and backoffice labels refresh, *-spring.xml is applied to the live context, and an endpoint you just wrote answers on the next request. Compared against JRebel's own SAP Commerce manual, which documents reloading compiled classes and configuring rebel.xml, those platform-specific parts are not in it.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q9">How do I reload an items.xml change without running ant clean all?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a9">Save the file with Reclazz running. It runs the platform's own code generation in the background and hot-reloads the regenerated model and DTO classes into the server that is already up, so the change is live in seconds instead of a full rebuild and restart. A new attribute still needs a database column, so Reclazz prints a reminder to run HAC > Platform > Update Running System; it will not run DDL against your database itself. Measured on a running SAP Commerce 2211 server.</div></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false" data-i18n="faq.q10">I added a method to a running bean. Will Spring, Jackson or my message broker find it?<span class="faq-arrow">&#9660;</span></button>
+                <div class="faq-answer"><div class="faq-answer-inner" data-i18n="faq.a10">On a stock JDK the method lives on a hidden companion class, which is exactly what a reflective scan cannot see, so Reclazz hands each framework the saved metadata through an adapter. A new endpoint, exception handler, binder or model attribute method is served on the next request; a new @Bean, @Scheduled, @EventListener, @TransactionalEventListener, @PostConstruct or @PreDestroy registers; a new @KafkaListener, @JmsListener or @RabbitListener consumes after the previous consumer has been stopped; a new Jackson getter, setter or field is read and written. Each is a real test against the framework, and a shape without an adapter is named as needing a restart.</div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container">
+        <h2 class="reveal" data-i18n="cta.title_html">Stop Wasting Time on<br><span class="text-gradient">Application Restarts</span></h2>
+        <p class="reveal" data-i18n="cta.subtitle">Keep your development session moving with supported reloads. Read the documentation for setup, framework conditions and restart requirements.</p>
+        <div class="cta-actions reveal">
+            <a href="https://plugins.jetbrains.com/plugin/33498-reclazz" class="btn-primary" target="_blank" rel="noopener noreferrer">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span data-i18n="cta.install">Install from Marketplace</span>
+            </a>
+            <a href="https://github.com/onurkat/reclazz" class="btn-outline" target="_blank" rel="noopener noreferrer" data-i18n="cta.github">View Source on GitHub</a>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<aside class="community-link" aria-label="Community listing">
+            <a href="https://alternativeto.net/software/reclazz/about/?utm_source=badge&amp;utm_medium=referral" target="_blank" rel="noopener noreferrer">
+                <img src="https://alternativeto.net/static/badges/badge-wide-dark.svg" alt="Reclazz | AlternativeTo" width="406" height="77" loading="lazy"  />
+            </a>
+        </aside>
+</main>
+{{SITE_FOOTER}}
+{{SITE_UTILITIES}}
+<script src="/assets/home.js" defer></script>
+
+
+</body>
+</html>

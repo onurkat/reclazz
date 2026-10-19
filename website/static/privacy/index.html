@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Reclazz collects nothing. No telemetry, no analytics, no outbound network requests. What the agent reads and writes on your machine, in plain terms.">
+    <meta name="robots" content="index, follow">
+    <title>Privacy | Reclazz</title>
+    <link rel="canonical" href="https://reclazz.com/privacy/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- Fonts -->
+
+    {{SITE_HEAD}}
+</head>
+<body class="marketing privacy-page">
+
+{{SITE_HEADER}}
+
+<main class="license-page" id="main" tabindex="-1">
+    <div class="container">
+        <a href="/" class="back-link">
+            &larr; Back to Reclazz
+        </a>
+
+        <h1><span class="text-gradient">Privacy</span></h1>
+        <p class="subtitle">Reclazz collects nothing about you, your code or your machine. It makes no network requests to anywhere. This page says exactly what it does touch, because a tool that puts an agent into the JVM running your code owes you that answer.</p>
+
+        <div class="tldr-card">
+            <h2>In Plain English <span class="badge">TL;DR</span></h2>
+            <ul class="tldr-list">
+                <li><span class="icon" style="color:var(--success)">&#10003;</span> No telemetry, no analytics, no crash reporting, no usage statistics</li>
+                <li><span class="icon" style="color:var(--success)">&#10003;</span> No account, no sign-in, no licence check</li>
+                <li><span class="icon" style="color:var(--success)">&#10003;</span> No outbound network requests of any kind, so nothing about your code leaves your machine</li>
+                <li><span class="icon" style="color:var(--success)">&#10003;</span> The one socket it opens is bound to 127.0.0.1 and reachable only from your own machine</li>
+                <li><span class="icon" style="color:var(--success)">&#10003;</span> The source is public, so none of this has to be taken on trust</li>
+            </ul>
+        </div>
+
+        <h2 style="font-family:var(--font-primary);font-size:1.5rem;font-weight:700;margin:48px 0 16px">What Reclazz reads</h2>
+        <p style="color:var(--text-secondary);margin-bottom:16px">Only what it needs to reload your classes, and only on your own disk:</p>
+        <ul style="color:var(--text-secondary);line-height:1.9;padding-left:22px;margin-bottom:16px">
+            <li>Compiled <code>.class</code> files in the output directories you or your build tool point it at</li>
+            <li>Java source files, when you ask it to compile changes for you</li>
+            <li>On SAP Commerce, your installation layout: extension directories, <code>localextensions.xml</code> and the platform properties, so it knows what to watch</li>
+        </ul>
+        <p style="color:var(--text-secondary)">All of it is read locally and used in memory. None of it is uploaded, copied off your machine or retained anywhere by us.</p>
+
+        <h2 style="font-family:var(--font-primary);font-size:1.5rem;font-weight:700;margin:48px 0 16px">What Reclazz writes</h2>
+        <ul style="color:var(--text-secondary);line-height:1.9;padding-left:22px">
+            <li><code>~/.reclazz/agent/reclazz-agent.jar</code>, a copy of the agent that ships inside the plugin. It lives outside the IDE installation so that upgrading your IDE cannot leave a server pointing at a jar that no longer exists.</li>
+            <li><code>.idea/reclazz/agent.port</code> in your project, so the IDE can find the running agent.</li>
+            <li>On SAP Commerce, a <code>95-local.properties</code> file in your optional configuration directory, containing the agent flag and nothing else. Your own <code>local.properties</code> is not modified, and the install verifies that it changed nothing but the agent.</li>
+        </ul>
+
+        <h2 style="font-family:var(--font-primary);font-size:1.5rem;font-weight:700;margin:48px 0 16px">The local socket</h2>
+        <p style="color:var(--text-secondary)">The agent opens one TCP socket so the IDE plugin can show you reload status. It is bound to the loopback address, <code>127.0.0.1</code>, which means nothing outside your machine can connect to it, including other machines on your network. It carries reload events: which class was reloaded, whether it succeeded and how long it took. The IDE plugin connects to that same loopback port and to nothing else.</p>
+
+        <h2 style="font-family:var(--font-primary);font-size:1.5rem;font-weight:700;margin:48px 0 16px">Third parties</h2>
+        <p style="color:var(--text-secondary)">There are none. Reclazz embeds no analytics or reporting library, and contacts no service of ours or anyone else&rsquo;s. Your IDE and your operating system have their own privacy policies covering their own behaviour; those are between you and their vendors, and Reclazz neither adds to nor changes what they do.</p>
+
+        <h2 style="font-family:var(--font-primary);font-size:1.5rem;font-weight:700;margin:48px 0 16px">Checking any of this</h2>
+        <p style="color:var(--text-secondary)">Reclazz is open source under the Apache License 2.0. If you would rather verify than believe, the agent&rsquo;s socket setup is in <code>StatusServer.java</code>, and a search of the repository for outbound HTTP will come back empty. Read it at <a href="https://github.com/onurkat/reclazz">github.com/onurkat/reclazz</a>.</p>
+
+        <h2 style="font-family:var(--font-primary);font-size:1.5rem;font-weight:700;margin:48px 0 16px">Changes, and getting in touch</h2>
+        <p style="color:var(--text-secondary)">If this ever stops being accurate, this page changes first and the release notes will say so. Questions go to <a href="https://github.com/onurkat/reclazz/issues">GitHub issues</a>.</p>
+
+        <p style="color:var(--text-dim);font-size:0.9rem;margin-top:40px">Last updated 12 August 2026.</p>
+    </div>
+</main>
+
+{{SITE_FOOTER}}
+{{SITE_UTILITIES}}
+
+
+</body>
+</html>

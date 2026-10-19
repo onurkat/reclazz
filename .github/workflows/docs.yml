@@ -1,0 +1,75 @@
+name: Documentation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'website/**'
+      - 'scripts/*docs-site.py'
+      - 'requirements-docs.txt'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'SECURITY.md'
+      - 'gradle.properties'
+      - '.github/workflows/docs.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'website/**'
+      - 'scripts/*docs-site.py'
+      - 'requirements-docs.txt'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'SECURITY.md'
+      - 'gradle.properties'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: requirements-docs.txt
+      - name: Install isolated documentation tools
+        run: python -m pip install --disable-pip-version-check -r requirements-docs.txt
+      - name: Test source rendering and migration guards
+        run: python scripts/test-docs-site.py
+      - name: Build the entire site from canonical sources
+        run: python scripts/build-docs-site.py --revision "$GITHUB_SHA"
+      - name: Check source coverage, routes, anchors and evidence
+        run: python scripts/check-docs-site.py --revision "$GITHUB_SHA"
+      - name: Package the checked site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy the checked main artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

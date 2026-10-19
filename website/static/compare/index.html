@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Reclazz compared with JRebel, Spring Boot DevTools and HotswapAgent for hot reload on Spring Boot and SAP Commerce (Hybris) in 2026: price, stock-JDK structural reload, new beans and listeners after startup, and setup.">
+    <meta name="robots" content="index, follow">
+    <title>Reclazz vs JRebel, Spring Boot DevTools and HotswapAgent (2026)</title>
+    <link rel="canonical" href="https://reclazz.com/compare/">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+
+    <!-- Fonts -->
+
+    {{SITE_HEAD}}
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "What is the best free JRebel alternative in 2026?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Reclazz is a free, open-source (Apache 2.0) hot-reload tool for Java, Spring Boot and SAP Commerce. Unlike JRebel it has no licence server and no per-seat cost, and unlike a patched-JVM approach it adds and removes methods and fields on any stock JDK 17 or newer."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I hot reload a SAP Commerce (Hybris) server without restarting?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Install the Reclazz IntelliJ plugin, let it add its agent to the platform, then edit and build. Java classes hot-swap in place, and saving an items.xml or beans.xml runs the platform's own code generation in the background and reloads the regenerated model and DTO classes, instead of ant clean all and a four to ten minute restart. A new database column still needs HAC Update Running System."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I hot reload a Spring Boot app without restarting, on a stock JDK?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Reclazz redefines classes through the Instrumentation API and uses a companion-class engine for the structural changes redefineClasses refuses, so adding or removing methods and instance fields and changing annotations works on supported JDK 17+ paths with no patched JVM. Beans are refreshed, MVC mappings re-scanned, caches evicted, and many things you add after startup (a @Bean factory, a listener, a @Scheduled or security-annotated method) are picked up live."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Reclazz vs Spring Boot DevTools: what is the difference?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Spring Boot DevTools restarts the whole application context on every change, so in-memory state is lost and the restart still costs seconds. Reclazz redefines the changed classes in place and keeps application state, and it also covers SAP Commerce, which DevTools does not."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Reclazz vs HotswapAgent / DCEVM: do I need a patched JVM?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "HotswapAgent needs DCEVM, an enhanced JVM, for structural changes. Reclazz does the common structural changes (add and remove methods and fields, change annotations, add many Spring beans and callbacks after startup) on a stock JDK 17+, and uses JetBrains Runtime or DCEVM only for the extras such as making new members visible to reflection or changing an interface."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Reclazz work with items.xml and beans.xml changes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, on SAP Commerce. Saving an items.xml or beans.xml triggers the platform's own code generation and reloads the regenerated classes; interceptors re-register, properties and log levels apply to the running server, and an ImpEx on save is supported. This is the ground a Java-only reload tool does not cover."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is Reclazz really free and open source?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Reclazz is Apache 2.0, published on GitHub, with no licence server, no account and no paid tier. The plugin is on the JetBrains Marketplace and the agent jar is attached to each GitHub release, signed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does Reclazz send any data anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. There is no telemetry, no analytics and no outbound network request. The one socket the agent opens is bound to loopback and reachable only from your own machine. The source is public, so this can be verified rather than trusted."
+      }
+    }
+  ]
+}
+    </script>
+</head>
+<body class="marketing compare-page">
+
+{{SITE_HEADER}}
+
+<main class="license-page" id="main" tabindex="-1">
+    <div class="container">
+        <a href="/" class="back-link">&larr; Back to Reclazz</a>
+
+        <h1><span class="text-gradient">Reclazz vs JRebel, DevTools &amp; HotswapAgent</span></h1>
+        <p class="subtitle">A 2026 comparison of hot-reload options for Java, Spring Boot and SAP Commerce (Hybris). Reclazz is the free, open-source one that does structural reloads on a stock JDK and covers SAP Commerce, not just Java.</p>
+
+        <div class="cmp-wrap" tabindex="0" role="region" aria-label="Hot reload comparison table">
+        <table class="cmp">
+            <thead>
+                <tr><th scope="col">Capability</th><th scope="col" class="me">Reclazz</th><th scope="col">JRebel</th><th scope="col">Spring Boot DevTools</th><th scope="col">HotswapAgent / DCEVM</th></tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row">Price</th><td class="me y">Free &amp; open source</td><td class="n">Commercial, $550+/yr</td><td class="y">Free</td><td class="y">Free & open source</td></tr>
+            <tr><th scope="row">Reload type</th><td class="me y">In-place hot-swap</td><td class="y">In-place hot-swap</td><td class="n">Full context restart</td><td class="y">In-place hot-swap</td></tr>
+            <tr><th scope="row">Application state kept</th><td class="me y">Preserved</td><td class="y">Preserved</td><td class="n">Lost on restart</td><td class="y">Preserved</td></tr>
+            <tr><th scope="row">Add / remove methods & fields on a stock JDK</th><td class="me y">Yes, supported JDK 17+ paths</td><td class="y">Yes</td><td class="n">Restart</td><td class="n">Needs DCEVM</td></tr>
+            <tr><th scope="row">Patched / enhanced JVM required</th><td class="me y">No</td><td class="y">No</td><td class="y">No</td><td class="n">Yes (DCEVM) for structural</td></tr>
+            <tr><th scope="row">New @Bean, listener or @Scheduled after startup</th><td class="me y">Yes, on a stock JDK</td><td class="p">Partial</td><td class="n">Restart</td><td class="p">Varies</td></tr>
+            <tr><th scope="row">Added-method transactions, cache, async, security</th><td class="me y">Yes, native Spring</td><td class="p">Partial</td><td class="n">Restart</td><td class="n">Not covered</td></tr>
+            <tr><th scope="row">SAP Commerce (Hybris): items.xml, beans.xml, ImpEx</th><td class="me y">Yes</td><td class="p">Limited</td><td class="n">No</td><td class="n">No</td></tr>
+            <tr><th scope="row">Setup</th><td class="me y">One-click IntelliJ + agent</td><td class="p">Agent + licence server</td><td class="y">Add a dependency</td><td class="p">JVM + DCEVM setup</td></tr>
+            <tr><th scope="row">Telemetry / phone-home</th><td class="me y">None, 100% local</td><td class="n">Contacts licence server</td><td class="y">None</td><td class="y">None</td></tr>
+            <tr><th scope="row">IDE</th><td class="me y">IntelliJ IDEA 2023.3 to 2026.2</td><td class="p">IntelliJ, Eclipse, others</td><td class="p">Any (build tool)</td><td class="p">Any (JVM agent)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <p style="color:var(--text-muted);font-size:0.9rem;margin:-32px 0 48px">Comparison compiled September 2026 from each project's own documentation and Reclazz's measured behaviour. JRebel is a trademark of Perforce; Spring Boot is a trademark of Broadcom; HotswapAgent and DCEVM are open-source projects. Reclazz is not affiliated with any of them.</p>
+
+        <h2 class="faq-h2">Frequently asked questions</h2>
+        
+        <div class="faq-item">
+            <h3>What is the best free JRebel alternative in 2026?</h3>
+            <p>Reclazz is a free, open-source (Apache 2.0) hot-reload tool for Java, Spring Boot and SAP Commerce. Unlike JRebel it has no licence server and no per-seat cost, and unlike a patched-JVM approach it adds and removes methods and fields on any stock JDK 17 or newer.</p>
+        </div>
+        <div class="faq-item">
+            <h3>How do I hot reload a SAP Commerce (Hybris) server without restarting?</h3>
+            <p>Install the Reclazz IntelliJ plugin, let it add its agent to the platform, then edit and build. Java classes hot-swap in place, and saving an items.xml or beans.xml runs the platform's own code generation in the background and reloads the regenerated model and DTO classes, instead of ant clean all and a four to ten minute restart. A new database column still needs HAC Update Running System.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Can I hot reload a Spring Boot app without restarting, on a stock JDK?</h3>
+            <p>Yes. Reclazz redefines classes through the Instrumentation API and uses a companion-class engine for the structural changes redefineClasses refuses, so adding or removing methods and instance fields and changing annotations works on supported JDK 17+ paths with no patched JVM. Beans are refreshed, MVC mappings re-scanned, caches evicted, and many things you add after startup (a @Bean factory, a listener, a @Scheduled or security-annotated method) are picked up live.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Reclazz vs Spring Boot DevTools: what is the difference?</h3>
+            <p>Spring Boot DevTools restarts the whole application context on every change, so in-memory state is lost and the restart still costs seconds. Reclazz redefines the changed classes in place and keeps application state, and it also covers SAP Commerce, which DevTools does not.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Reclazz vs HotswapAgent / DCEVM: do I need a patched JVM?</h3>
+            <p>HotswapAgent needs DCEVM, an enhanced JVM, for structural changes. Reclazz does the common structural changes (add and remove methods and fields, change annotations, add many Spring beans and callbacks after startup) on a stock JDK 17+, and uses JetBrains Runtime or DCEVM only for the extras such as making new members visible to reflection or changing an interface.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Does Reclazz work with items.xml and beans.xml changes?</h3>
+            <p>Yes, on SAP Commerce. Saving an items.xml or beans.xml triggers the platform's own code generation and reloads the regenerated classes; interceptors re-register, properties and log levels apply to the running server, and an ImpEx on save is supported. This is the ground a Java-only reload tool does not cover.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Is Reclazz really free and open source?</h3>
+            <p>Yes. Reclazz is Apache 2.0, published on GitHub, with no licence server, no account and no paid tier. The plugin is on the JetBrains Marketplace and the agent jar is attached to each GitHub release, signed.</p>
+        </div>
+        <div class="faq-item">
+            <h3>Does Reclazz send any data anywhere?</h3>
+            <p>No. There is no telemetry, no analytics and no outbound network request. The one socket the agent opens is bound to loopback and reachable only from your own machine. The source is public, so this can be verified rather than trusted.</p>
+        </div>
+
+        <div class="cta-row">
+            <a class="btn btn-primary" href="https://plugins.jetbrains.com/plugin/33498-reclazz">Install from Marketplace</a>
+            <a class="btn btn-ghost" href="https://github.com/onurkat/reclazz">Star on GitHub</a>
+        </div>
+    </div>
+</main>
+
+{{SITE_FOOTER}}
+{{SITE_UTILITIES}}
+
+
+</body>
+</html>

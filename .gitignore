@@ -60,3 +60,7 @@ docs/release-notes-archive/
 .collab/
 /AGENTS.md
 /CLAUDE.md
+
+# Isolated documentation build environment
+.venv-docs/
+__pycache__/

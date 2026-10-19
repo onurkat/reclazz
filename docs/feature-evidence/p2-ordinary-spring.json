@@ -2069,15 +2069,15 @@
       "statement": "A new direct component becomes a live bean without restarting.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 113,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 57,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1051,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-REGISTER-NEW"
         }
       ],
@@ -2109,15 +2109,15 @@
       "statement": "A new component is admitted only by the active profile.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 113,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 57,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1073,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-COMPONENT-PROFILE"
         }
       ],
@@ -2149,15 +2149,15 @@
       "statement": "New component conditions use the live application context before class initialization.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 113,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 57,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "New `@Service` / `@Component` / `@Controller` class"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1095,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-COMPONENT-CONDITIONAL"
         }
       ],
@@ -2197,7 +2197,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1117,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-COMPONENT-LAZY"
         }
       ],
@@ -2237,7 +2237,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1139,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-COMPONENT-PROTOTYPE"
         }
       ],
@@ -2277,7 +2277,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1161,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-COMPOSED-STEREOTYPE"
         }
       ],
@@ -2309,15 +2309,15 @@
       "statement": "New components support native constructor injection.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 113,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 57,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "its constructor autowired"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1183,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-NEW-CONSTRUCTOR-INJECTION"
         }
       ],
@@ -2338,15 +2338,15 @@
       "statement": "An edited plain singleton is recreated and loses mutable instance state.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 86,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 30,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Spring bean refresh"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1205,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-REFRESH"
         }
       ],
@@ -2386,7 +2386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1227,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-HELD-CALLER"
         }
       ],
@@ -2418,15 +2418,15 @@
       "statement": "Autowired added to an existing warmed field is satisfied after refresh.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 88,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 32,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Autowired` added to an existing field"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1249,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-INJECTION-AUTOWIRED"
         }
       ],
@@ -2458,15 +2458,15 @@
       "statement": "Value added to an existing warmed field resolves the live property.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 88,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 32,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Autowired` added to an existing field"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1271,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-INJECTION-VALUE"
         }
       ],
@@ -2498,15 +2498,15 @@
       "statement": "Resource added to an existing warmed field resolves the named bean.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 88,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 32,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Autowired` added to an existing field"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1293,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-INJECTION-RESOURCE"
         }
       ],
@@ -2538,15 +2538,15 @@
       "statement": "New private instance Bean factory on lite Configuration registers, replaces, removes and recovers.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1315,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-LITE-CONFIG"
         }
       ],
@@ -2578,15 +2578,15 @@
       "statement": "Saved factory reference parameters use native qualifier selection.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1337,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-ARGS"
         }
       ],
@@ -2618,15 +2618,15 @@
       "statement": "Added factory list/map/Optional arguments preserve measured native resolution.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1359,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-RICH-ARGS"
         }
       ],
@@ -2658,15 +2658,15 @@
       "statement": "An added factory provider stays lazy and resolves the current target after retirement.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1381,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-PROVIDER"
         }
       ],
@@ -2698,15 +2698,15 @@
       "statement": "Added factories convert measured int, long and double Value arguments.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Bean` method added after startup"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1403,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-PRIMITIVE-VALUE"
         }
       ],
@@ -2746,7 +2746,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1425,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-ARRAY-SET-ARGS"
         }
       ],
@@ -2786,7 +2786,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1447,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-ALL-PRIMITIVES"
         }
       ],
@@ -2818,15 +2818,15 @@
       "statement": "Checked scalar property edits recreate an already added unproxied factory product.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Scalar `@Value` inputs"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1469,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-VALUE-PROPERTY"
         }
       ],
@@ -2858,15 +2858,15 @@
       "statement": "Factory names/aliases follow edits, removal and recovery without duplicate singleton products.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Multiple names register one singleton"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1491,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-ALIASES"
         }
       ],
@@ -2898,15 +2898,15 @@
       "statement": "Saved factory qualifiers and parameter qualifiers select matching native candidates.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Direct `@Primary`/`@Qualifier`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1513,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-QUALIFIER"
         }
       ],
@@ -2938,15 +2938,15 @@
       "statement": "Saved Primary metadata updates default selection and reports ambiguity.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Direct `@Primary`/`@Qualifier`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1535,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-PRIMARY"
         }
       ],
@@ -2978,15 +2978,15 @@
       "statement": "Saved method Conditional admits/rejects against the live context and retires old products.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Direct method-level `@Conditional`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1557,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-CONDITIONAL"
         }
       ],
@@ -3018,15 +3018,15 @@
       "statement": "Direct Boot ConditionalOnProperty uses the measured native decision on added factories.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1579,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-BOOT-PROPERTY"
         }
       ],
@@ -3058,15 +3058,15 @@
       "statement": "Direct Boot ConditionalOnBean uses the measured native decision on added factories.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1601,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-BOOT-BEAN"
         }
       ],
@@ -3098,15 +3098,15 @@
       "statement": "Direct Boot ConditionalOnMissingBean uses the measured native decision on added factories.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Direct Boot `@ConditionalOnProperty`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1623,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-BOOT-MISSING-BEAN"
         }
       ],
@@ -3138,15 +3138,15 @@
       "statement": "Saved direct factory Profile expressions re-evaluate admitted products.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "and `@Profile` registers"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1645,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-PROFILE"
         }
       ],
@@ -3178,15 +3178,15 @@
       "statement": "Added prototype factory creates distinct lookup products.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "`@Scope(\"prototype\")` gives"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1667,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-SCOPE-PROTOTYPE"
         }
       ],
@@ -3218,15 +3218,15 @@
       "statement": "Added lazy factory waits for first lookup and keeps singleton identity.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Direct `@Lazy` creates"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1689,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-LAZY"
         }
       ],
@@ -3258,15 +3258,15 @@
       "statement": "Full enhanced Configuration inter-bean calls preserve container singleton identity across saves.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Default `@Configuration` also supports"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1711,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-FULL-CONFIG"
         }
       ],
@@ -3298,15 +3298,15 @@
       "statement": "Full factory calls preserve supported explicit/prototype arguments and held method references.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "preserve supported explicit-argument/prototype semantics"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1733,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-FULL-CONFIG-ARGS"
         }
       ],
@@ -3346,7 +3346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1755,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-BEAN-STATIC"
         }
       ],
@@ -3378,15 +3378,15 @@
       "statement": "Static factories retain plain Java call semantics outside container lookup.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 87,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 31,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Static factories retain plain Java call semantics"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1777,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-FULL-CONFIG-STATIC-JAVA"
         }
       ],
@@ -3418,15 +3418,15 @@
       "statement": "Entirely new PostConstruct initializes after injection and before InitializingBean.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 89,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 33,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1799,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-LIFECYCLE-INIT"
         }
       ],
@@ -3465,15 +3465,15 @@
       "statement": "Entirely new PreDestroy remains owed per instance through metadata edits/removal and context close.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 89,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 33,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1821,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-LIFECYCLE-DESTROY"
         }
       ],
@@ -3512,15 +3512,15 @@
       "statement": "InitializingBean and DisposableBean retain native callback ordering during recreation.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 89,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 33,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Entirely new `@PostConstruct` / `@PreDestroy` methods"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1843,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-LIFECYCLE-NATIVE-LIFECYCLE"
         }
       ],
@@ -3559,15 +3559,15 @@
       "statement": "First transaction/cache operations added to a plain singleton use real native interceptors.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "New service methods with `@Transactional`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1865,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-ADDED-OPERATIONS-PLAIN"
         }
       ],
@@ -3599,15 +3599,15 @@
       "statement": "Added operations invoked through an old CGLIB reference use real interceptors and retain target identity.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "New service methods with `@Transactional`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1887,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-ADDED-OPERATIONS-HELD"
         }
       ],
@@ -3639,15 +3639,15 @@
       "statement": "A checked exception from an added transactional method rolls back the real database write.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1909,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-TX-ROLLBACK"
         }
       ],
@@ -3686,15 +3686,15 @@
       "statement": "Added Cacheable executes once for a repeated key.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1931,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-CACHE-HIT"
         }
       ],
@@ -3733,15 +3733,15 @@
       "statement": "Added CachePut updates the native cache entry.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1953,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-CACHE-PUT"
         }
       ],
@@ -3780,15 +3780,15 @@
       "statement": "Added CacheEvict removes the native entry so next lookup executes again.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Commit/rollback, cache hits"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 1975,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-CACHE-EVICT"
         }
       ],
@@ -3835,7 +3835,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1997,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-OPERATIONS-SELF-INVOKE"
         }
       ],
@@ -3874,15 +3874,15 @@
       "statement": "Supported composed transaction aliases follow saves through held proxy and affect DB rollback/readOnly.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Supported [composed transaction]"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2019,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-COMPOSED-TRANSACTION"
         }
       ],
@@ -3914,15 +3914,15 @@
       "statement": "Supported composed cache aliases/conditions follow saves through held proxy and affect real cache entries.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "[composed cache annotations]"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2041,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-COMPOSED-CACHE"
         }
       ],
@@ -3954,15 +3954,15 @@
       "statement": "Edited aspect pointcuts change advice on already injected mutable JDK/CGLIB singleton proxies.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 100,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 44,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Edited `@Aspect` pointcut"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2063,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-AOP-REFRESH"
         }
       ],
@@ -4001,15 +4001,15 @@
       "statement": "Added/saved PreAuthorize and PostAuthorize enforce real authentication/authorization through a held native proxy.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 99,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 43,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "New service methods with `@PreAuthorize`"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2085,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-SECURITY-PRE-POST"
         }
       ],
@@ -4053,15 +4053,15 @@
       "statement": "Fixed composed policy markers enforce saved native pre/post authorization through the held proxy.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 99,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 43,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "fixed composed markers"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2107,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-COMPOSED-SECURITY"
         }
       ],
@@ -4118,7 +4118,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2129,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-SECURITY-METADATA"
         }
       ],
@@ -4189,7 +4189,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2151,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-SECURITY-SECURED"
         }
       ],
@@ -4260,7 +4260,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2173,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-SECURITY-FILTER-CHAIN"
         }
       ],
@@ -4304,15 +4304,15 @@
       "statement": "Reloading an annotated class evicts existing native caches.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 103,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 47,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Cache eviction"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2195,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-CACHE-RELOAD-EVICTION"
         }
       ],
@@ -4364,7 +4364,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2217,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-SPRING6-ORDINARY-MATRIX"
         }
       ],
@@ -4385,15 +4385,15 @@
       "statement": "Edited original-method Transactional metadata is re-read.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 114,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 58,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2239,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-EXISTING-TX-METADATA"
         }
       ],
@@ -4437,15 +4437,15 @@
       "statement": "Edited original-method Cacheable metadata is re-read.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 114,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 58,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "Edited `@Transactional` / `@Cacheable` annotation"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2261,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-EXISTING-CACHE-METADATA"
         }
       ],
@@ -4489,15 +4489,15 @@
       "statement": "Added operations honor class-level transaction defaults.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "preserve aliases and class defaults"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2283,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-TX-CLASS-DEFAULTS"
         }
       ],
@@ -4529,15 +4529,15 @@
       "statement": "Added operations honor CacheConfig defaults and saved parameter names.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 98,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 42,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "preserve aliases and class defaults"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2305,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-CACHE-CLASS-DEFAULTS"
         }
       ],
@@ -4569,15 +4569,15 @@
       "statement": "Security chain replacement preserves the rebuilt chain identity.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 115,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 59,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "the filter chain is rebuilt and swapped into the live proxy"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2327,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-SECURITY-FILTER-CHAIN-SWAP"
         }
       ],
@@ -4636,7 +4636,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2349,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P2-SPRING6-BEAN-CONDITION-METADATA"
         }
       ],

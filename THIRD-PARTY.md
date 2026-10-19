@@ -85,3 +85,13 @@ nothing else along for the ride. The relocation is checkable the same way:
 unzip -l agent/reclazz-agent.jar | grep -c org/objectweb/asm            # 0
 unzip -l agent/reclazz-agent.jar | grep -c com/onurkat/reclazz/shaded/asm  # 149
 ```
+
+## Documentation build only
+
+| Component | Version | Licence | Scope |
+|---|---|---|---|
+| [markdown-it-py](https://pypi.org/project/markdown-it-py/3.0.0/) | 3.0.0 | MIT | Render canonical Markdown into static website pages |
+| [mdurl](https://pypi.org/project/mdurl/0.1.2/) | 0.1.2 | MIT | URL handling for the Markdown parser |
+
+Pinned in `requirements-docs.txt`, installed only in the documentation environment.
+No Python dependency is included in the agent, IDE plugin or Maven/Gradle artifacts.

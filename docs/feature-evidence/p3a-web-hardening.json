@@ -342,15 +342,15 @@
       "statement": "An existing DTO field gaining NotBlank/Size rejects invalid HTTP input.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 90,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "A constraint added to a field (`@NotBlank`)"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2375,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-VALIDATION-ADD"
         }
       ],
@@ -394,15 +394,15 @@
       "statement": "A changed Size minimum is enforced after warmed native metadata.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 90,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "A constraint added to a field (`@NotBlank`)"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2391,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-VALIDATION-CHANGE"
         }
       ],
@@ -446,15 +446,15 @@
       "statement": "Removing and restoring constraints changes acceptance without restarting.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 90,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "A constraint added to a field (`@NotBlank`)"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2407,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-VALIDATION-REMOVE-RESTORE"
         }
       ],
@@ -498,15 +498,15 @@
       "statement": "A validator reference and DTO instance captured before edits use current constraints.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 90,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "A constraint added to a field (`@NotBlank`)"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2423,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-VALIDATION-HELD"
         }
       ],
@@ -550,15 +550,15 @@
       "statement": "Rejected validation/malformed JSON never executes the controller body.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 90,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "A constraint added to a field (`@NotBlank`)"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2439,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-VALIDATION-SIDE-EFFECTS"
         }
       ],
@@ -602,15 +602,15 @@
       "statement": "Unedited DTO constraints and context identity remain correct across saves.",
       "shipped_surfaces": [
         {
-          "path": "README.md",
-          "line": 90,
-          "sha256": "7ae89b5846b46051f94c718290267b10c2afd5d23b536d980feefa3dc7bcb21e",
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "7b9346f929f3f20f6fce74ef6f32ec304be8cb839dc91078ecae2148b27cb9a8",
           "quote": "A constraint added to a field (`@NotBlank`)"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2455,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-VALIDATION-CONTROL"
         }
       ],
@@ -662,7 +662,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2471,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-REQUEST-COMPLETE"
         }
       ],
@@ -714,7 +714,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2487,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-REQUEST-TIMEOUT"
         }
       ],
@@ -766,7 +766,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2503,
-          "sha256": "b5f76f4fa773758c192e300598d27998f1efa2dd39c38e20e411ddd888911a25",
+          "sha256": "dc4e8dc608aed1bdc97cb0df0c7e062b2a250e615ecadd73c43c6bd0b940c06e",
           "quote": "### P3A-REQUEST-LATEST"
         }
       ],

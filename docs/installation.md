@@ -30,7 +30,7 @@ Finish with [your first reload](#your-first-reload).
   are in [usage](usage.md) and [superclass feasibility](superclass-feasibility.md).
 - Examples use source version **1.3.0**. A source version is not proof that every
   registry has published it. Choose a version present in your chosen channel or
-  use the local build steps below. Match the agent and its integration artifacts;
+  [build from source](#building-from-source). Match the agent and its integration artifacts;
   newer BUILD/VERIFY/MCP features may require local builds.
 
 ## IntelliJ IDEA
@@ -43,7 +43,7 @@ Finish with [your first reload](#your-first-reload).
    It is off by default. This also works for non-SAP projects.
 3. Start a Java run configuration handled by the IDE. Reclazz supplies its bundled
    agent and watches the IDE's module compiler outputs. For a run delegated to
-   Gradle or Maven, use that tool's setup below rather than assuming IDE injection.
+   Gradle or Maven, follow the [Gradle](#gradle) or [Maven](#maven) setup rather than assuming IDE injection.
 4. Compile a small edit with the build that writes those watched outputs, then
    check the running application's response. Detailed options: [usage](usage.md).
 
@@ -134,8 +134,7 @@ for the first reload. Keep it in development configuration if you choose it.
 ## Standalone agent
 
 Download `reclazz-agent-X.Y.Z.jar` from the assets of your chosen
-[GitHub release](https://github.com/onurkat/reclazz/releases), or build from source
-below. Replace `X.Y.Z` and the application paths. Keep the entire agent argument
+[GitHub release](https://github.com/onurkat/reclazz/releases), or [build from source](#building-from-source). Replace `X.Y.Z` and the application paths. Keep the entire agent argument
 quoted when paths contain spaces.
 
 ```sh
@@ -218,7 +217,7 @@ These commands build local files; they do not publish a release.
 
 If only connection succeeds, do not call installation accepted: check the agent
 was present at startup, the compiled output is watched, and the current change
-is supported. [Troubleshooting](../README.md#troubleshooting).
+is supported. [Troubleshooting](usage.md#when-a-reload-goes-wrong).
 
 Validation scope for this guide: the Maven example and standalone launch were
 exercised on macOS arm64 with SapMachine 21; details are in the

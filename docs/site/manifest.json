@@ -1,0 +1,178 @@
+{
+  "source_commit": "75535bd739d7eefd43523dcc63799436c472fe12",
+  "reviewed": "2026-10-19",
+  "pages": [
+    {
+      "slug": "",
+      "title": "The development loop, uninterrupted.",
+      "description": "Make a change. Compile it. Keep the JVM running. Learn what Reclazz reloads, where the limits are, and how to verify the result.",
+      "group": "Start here",
+      "eyebrow": "Reclazz documentation",
+      "sources": [
+        "docs/product-reference.md",
+        "docs/installation.md",
+        "docs/usage.md#state-during-a-reload"
+      ],
+      "nav_title": "Overview"
+    },
+    {
+      "slug": "quickstart",
+      "title": "Your first reload",
+      "description": "Start with the route that launches your application JVM, then prove a changed response without restarting.",
+      "group": "Start here",
+      "eyebrow": "Tutorial",
+      "sources": [
+        "docs/installation.md",
+        "docs/gradle-plugin.md",
+        "docs/maven.md"
+      ],
+      "nav_title": "Quickstart"
+    },
+    {
+      "slug": "java",
+      "title": "Java changes & JVM limits",
+      "description": "Understand method bodies, structural reload, field initialization, enum edits and reflective visibility.",
+      "group": "Reload reference",
+      "eyebrow": "Core JVM",
+      "sources": [
+        "docs/usage.md#known-limitations",
+        "docs/superclass-feasibility.md",
+        "docs/feature-evidence/p1-core.json"
+      ],
+      "nav_title": "Java & JVM limits"
+    },
+    {
+      "slug": "spring",
+      "title": "Spring beans & web behavior",
+      "description": "Follow bean recreation, newly added components, MVC callbacks, advice, Jackson and constructor dependency boundaries.",
+      "group": "Reload reference",
+      "eyebrow": "Spring integration",
+      "sources": [
+        "docs/usage.md",
+        "docs/spring-constructor-dependencies.md",
+        "docs/feature-evidence/p2-ordinary-spring.json",
+        "docs/feature-evidence/p3b-mvc-web.json"
+      ],
+      "nav_title": "Spring & MVC"
+    },
+    {
+      "slug": "messaging",
+      "title": "Messaging without blind spots",
+      "description": "Understand listener additions, consumer retirement, routing changes and the difference between direct saves and dependency cascades.",
+      "group": "Reload reference",
+      "eyebrow": "Kafka \u00b7 JMS \u00b7 RabbitMQ",
+      "sources": [
+        "docs/usage.md#kafka-listeners-added-after-startup",
+        "docs/usage.md#jms-listeners-added-after-startup",
+        "docs/usage.md#rabbit-listeners-added-after-startup",
+        "docs/feature-evidence/p4-messaging.json"
+      ],
+      "nav_title": "Kafka, JMS & RabbitMQ"
+    },
+    {
+      "slug": "configuration",
+      "title": "Configuration, XML & resources",
+      "description": "Know which physical files are watched, how validation works, and when a configuration edit needs a restart.",
+      "group": "Reload reference",
+      "eyebrow": "Files & runtime state",
+      "sources": [
+        "docs/usage.md#property-changes-keep-the-last-working-values",
+        "docs/usage.md#loaded-spring-xml-resources",
+        "docs/usage.md#message-bundles-and-cached-templates",
+        "docs/feature-evidence/p5-resources.json"
+      ],
+      "nav_title": "Configuration & resources"
+    },
+    {
+      "slug": "sap-commerce",
+      "title": "SAP Commerce: keep the server warm",
+      "description": "Separate Java reload, platform generation, type-system updates and runtime configuration in the SAP development loop.",
+      "group": "Guides",
+      "eyebrow": "SAP Commerce / Hybris",
+      "sources": [
+        "docs/sap-commerce.md",
+        "docs/usage.md#what-cannot-be-hot-reloaded",
+        "docs/usage.md#sap-reload-outcomes-and-verification"
+      ],
+      "nav_title": "SAP Commerce"
+    },
+    {
+      "slug": "persistence",
+      "title": "Persistence & cache boundaries",
+      "description": "Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload.",
+      "group": "Guides",
+      "eyebrow": "Data & application state",
+      "sources": [
+        "docs/usage.md#new-jpa-entities-with-a-prepared-schema",
+        "docs/usage.md#spring-data-repository-refresh",
+        "docs/usage.md#cache-dependencies-after-reload"
+      ],
+      "nav_title": "Persistence & caches"
+    },
+    {
+      "slug": "boundaries",
+      "title": "Reload timing & build safety",
+      "description": "Choose immediate or request-boundary application, and understand pause, build holds and partial failures.",
+      "group": "Operations",
+      "eyebrow": "Execution model",
+      "sources": [
+        "docs/usage.md#reload-between-requests",
+        "docs/protocol.md#holding-a-build-until-it-succeeds",
+        "docs/protocol.md#pausing-automatic-reload"
+      ],
+      "nav_title": "Reload timing"
+    },
+    {
+      "slug": "troubleshooting",
+      "title": "Find the cause. Keep the evidence.",
+      "description": "Diagnose the right process, watched output, pending restart and framework follow-up without guessing.",
+      "group": "Operations",
+      "eyebrow": "Troubleshooting",
+      "sources": [
+        "docs/protocol.md",
+        "docs/usage.md#when-a-reload-goes-wrong",
+        "SECURITY.md"
+      ],
+      "nav_title": "Troubleshooting"
+    },
+    {
+      "slug": "configuration-reference",
+      "title": "Agent configuration reference",
+      "description": "Find every source-supported startup option, its default and the consequence of enabling it.",
+      "group": "Operations",
+      "eyebrow": "Reference",
+      "sources": [
+        "docs/usage.md#agent-arguments",
+        "agent/src/main/java/com/onurkat/reclazz/config/AgentConfig.java"
+      ],
+      "nav_title": "Agent options"
+    },
+    {
+      "slug": "evidence",
+      "title": "Versions, evidence & contributing",
+      "description": "Read support claims with their exact boundaries, inspect source and help keep the documentation honest.",
+      "group": "Project",
+      "eyebrow": "Open source, explicit scope",
+      "sources": [
+        "docs/installation.md",
+        "docs/feature-evidence.md",
+        "LICENSE",
+        "CONTRIBUTING.md"
+      ],
+      "nav_title": "Versions & evidence"
+    },
+    {
+      "slug": "support-matrix",
+      "title": "Will your change reload?",
+      "description": "Find the outcome, exact conditions and next action for the edit you want to make.",
+      "group": "Reload reference",
+      "eyebrow": "Reload support matrix",
+      "sources": [
+        "docs/usage.md",
+        "docs/feature-evidence.md",
+        "docs/superclass-feasibility.md"
+      ],
+      "nav_title": "Reload support matrix"
+    }
+  ]
+}

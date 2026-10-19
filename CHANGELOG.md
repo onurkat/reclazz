@@ -25,6 +25,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Documentation
 
+- Unify home, comparison, privacy, license and docs navigation/footer; share theme
+  and search, preserve bilingual home, and improve responsive content layouts.
+
+- Consolidate documentation in main/docs, generate the complete website reference,
+  and reduce README to a concise project entry point. Derive setup excerpts, support
+  matrix, AI discovery and version labels from canonical sources; align security
+  and publishing guidance and validate source anchors.
+
 - Add held Spring Data repository evidence across a prepared-schema native JPA
   factory swap, including validation retry and opt-out/ambiguity refusals on
   H2/Spring 6 and JDK17/21. No agent runtime behavior changes.
