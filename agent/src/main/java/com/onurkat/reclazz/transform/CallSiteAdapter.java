@@ -42,7 +42,7 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         // INVOKESPECIAL: constructors stay as-is. For super calls and private
         // method calls on a watched class, redirect to the renamed copy
-        // directly — calling the trampoline would do virtual dispatch and
+        // directly, calling the trampoline would do virtual dispatch and
         // loop back into the override (e.g., super.greet() calling the
         // child's overridden greet() forever).
         if (opcode == INVOKESPECIAL) {
@@ -98,7 +98,7 @@ public class CallSiteAdapter extends MethodVisitor implements Opcodes {
         // Skip interface call sites: interfaces are not transformed by
         // ReclazzTransformer (they cannot host PRIVATE SYNTHETIC fields), so
         // they have no renamed __reclazz$v0$ method to dispatch to. Calls go
-        // through normal Java virtual dispatch — and the actual implementation
+        // through normal Java virtual dispatch, and the actual implementation
         // class still gets trampolined separately.
         if (isInterface) {
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);

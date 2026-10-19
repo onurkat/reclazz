@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Unit tests for {@link FileWatcher#enqueueExistingFiles} — the fix that
+ * Unit tests for {@link FileWatcher#enqueueExistingFiles}, the fix that
  * patches a race where Java's non-recursive {@code WatchService} would
  * miss files that landed inside a brand-new subdirectory before the
  * watcher got a chance to register it.
@@ -64,7 +64,7 @@ class FileWatcherEnqueueTest {
         for (FileWatcher.PendingEvent event : queue.values()) {
             assertEquals("moduleX", event.moduleName());
             assertEquals("classes", event.sourceRoot());
-            // All synthetic events are CREATED — we only call this path
+            // All synthetic events are CREATED, we only call this path
             // from the ENTRY_CREATE-on-a-new-dir branch.
             assertEquals("CREATED", event.type().name());
         }
@@ -104,7 +104,7 @@ class FileWatcherEnqueueTest {
 
     /**
      * Regression: a WatchService OVERFLOW used to be skipped outright, so
-     * the changes the kernel dropped were lost forever — the reload simply
+     * the changes the kernel dropped were lost forever, the reload simply
      * never fired. Overflow must instead re-scan the affected directory.
      */
     @Test
@@ -145,5 +145,5 @@ class FileWatcherEnqueueTest {
         assertTrue(queue.keySet().stream().anyMatch(p -> p.endsWith("CustomData.class")));
     }
 
-    /** Minimal PlatformContext stub — the watcher's constructor only stores it. */
+    /** Minimal PlatformContext stub, the watcher's constructor only stores it. */
 }

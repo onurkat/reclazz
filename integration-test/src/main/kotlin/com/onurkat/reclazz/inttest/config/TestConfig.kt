@@ -14,7 +14,7 @@ data class TestConfig(
     val eventTimeoutMs: Long = System.getenv("RECLAZZ_TEST_EVENT_TIMEOUT")?.toLongOrNull() ?: 30_000L,
     val settleDelayMs: Long = System.getenv("RECLAZZ_TEST_SETTLE_DELAY")?.toLongOrNull() ?: 2_000L,
     /**
-     * Reload mode of the target JVM. "companion" (default — standard JVMs:
+     * Reload mode of the target JVM. "companion" (default, standard JVMs:
      * new members live on a hidden nestmate, invisible to reflection/MVC
      * scans) or "enhanced" (JBR/DCEVM: full reflective visibility).
      * Mode-sensitive tests assert the documented semantics of each mode.

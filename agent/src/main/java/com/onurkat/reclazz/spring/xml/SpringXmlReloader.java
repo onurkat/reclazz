@@ -23,7 +23,7 @@ import com.onurkat.reclazz.util.Reflect;
  * <h2>Supported changes</h2>
  * <ul>
  *   <li><b>Property value mutations</b> on existing singleton beans. Applied
- *       in place via reflection setters — the bean is NOT destroyed and
+ *       in place via reflection setters, the bean is NOT destroyed and
  *       recreated, so BeanPostProcessors don't re-run, autowired consumers
  *       keep holding the same instance, and they see the new value on the
  *       next method call. {@code <ref>}, {@code ${placeholder}}, {@code <list>},
@@ -32,7 +32,7 @@ import com.onurkat.reclazz.util.Reflect;
  *   <li><b>New bean registration</b> for beans whose shape is safe
  *       (singleton, no init-method, no constructor-args, not a
  *       BeanPostProcessor). {@code registerBeanDefinition} + {@code getBean}
- *       — if instantiation fails, the partial state is rolled back.</li>
+ *      , if instantiation fails, the partial state is rolled back.</li>
  *   <li>Selected existing constructor/factory/lifecycle edits use native
  *       recreation and direct holder repair through {@link XmlBeanRecreator}.</li>
  * </ul>
@@ -41,7 +41,7 @@ import com.onurkat.reclazz.util.Reflect;
  * Bean removal, class changes, unsupported constructor/factory/lifecycle shapes,
  * BeanPostProcessors, {@code InitializingBean}/{@code DisposableBean}
  * implementers. Any such change is collected into a single warning asking
- * the user to restart — the live context stays untouched.
+ * the user to restart, the live context stays untouched.
  *
  * <h2>Caveats surfaced to the user</h2>
  * When a brand-new bean is added live, existing {@code @Autowired} consumers
@@ -67,7 +67,7 @@ public final class SpringXmlReloader {
     public void reloadLoaded(Path xmlPath) {
         List<Object> owners = SpringXmlResources.owners(xmlPath, gatherCandidateContexts());
         if (owners.isEmpty()) {
-            StatusReporter.info("Spring XML " + xmlPath.getFileName() + " — no active owner; nothing applied");
+            StatusReporter.info("Spring XML " + xmlPath.getFileName() + ", no active owner; nothing applied");
             return;
         }
         for (Object context : owners) {
@@ -92,12 +92,12 @@ public final class SpringXmlReloader {
         }
         // Gather all candidate application contexts. On Hybris there are
         // usually multiple (platform tenant context, web storefront contexts,
-        // backoffice context, etc.) — we have to target the one that owns
+        // backoffice context, etc.), we have to target the one that owns
         // THIS XML file's beans, not just the first one captured.
         List<Object> candidates = gatherCandidateContexts();
         if (candidates.isEmpty()) {
             StatusReporter.info("Spring XML changed: " + xmlPath.getFileName()
-                    + " — no live ApplicationContext yet, change will apply on next startup");
+                    + ", no live ApplicationContext yet, change will apply on next startup");
             return;
         }
 
@@ -124,7 +124,7 @@ public final class SpringXmlReloader {
         // Sandbox parse. If this fails, we haven't touched any live context.
         Object tempFactory = SpringReflection.newTempBeanFactory(springCl);
         if (tempFactory == null) {
-            StatusReporter.warn("Spring XML: DefaultListableBeanFactory not on classpath — skip");
+            StatusReporter.warn("Spring XML: DefaultListableBeanFactory not on classpath, skip");
             return;
         }
         if (!SpringReflection.loadXml(tempFactory, xmlPath.toFile(), springCl)) {
@@ -147,7 +147,7 @@ public final class SpringXmlReloader {
             // context wasn't captured. Fall back to the first candidate.
             owningContexts = List.of(candidates.get(0));
             StatusReporter.warn("Spring XML " + xmlPath.getFileName()
-                    + ": no existing context recognised these beans — applying to first available context");
+                    + ": no existing context recognised these beans, applying to first available context");
         }
 
         for (int i = 0; i < owningContexts.size(); i++) {
@@ -169,7 +169,7 @@ public final class SpringXmlReloader {
 
         if (!diff.hasChanges()) {
             StatusReporter.info("Spring XML " + xmlPath.getFileName() + ctxLabel
-                    + " — parsed OK, no live-applicable changes detected");
+                    + ", parsed OK, no live-applicable changes detected");
             return;
         }
 
@@ -281,7 +281,7 @@ public final class SpringXmlReloader {
             Method add = pvs.getClass().getMethod("add", String.class, Object.class);
             add.invoke(pvs, change.propertyName, change.newRawValue);
         } catch (Throwable ignored) {
-            // Mirroring is best-effort — if the BD doesn't expose a
+            // Mirroring is best-effort, if the BD doesn't expose a
             // MutablePropertyValues we continue with the live-instance
             // mutation only.
         }
@@ -312,7 +312,7 @@ public final class SpringXmlReloader {
     // ─── Reflection helpers for setter lookup + primitive coercion ────────────
 
     /**
-     * Collect every live ApplicationContext we can see — union of the
+     * Collect every live ApplicationContext we can see, union of the
      * platform-specific lookup (e.g. Hybris Registry / master tenant) and
      * the intercept transformer's holder. On Hybris, multiple contexts
      * exist side by side (platform tenant, web contexts for each storefront,
@@ -321,7 +321,7 @@ public final class SpringXmlReloader {
     private List<Object> gatherCandidateContexts() {
         List<Object> result = new ArrayList<>();
 
-        // Intercept-transformer holder first — captures every Spring
+        // Intercept-transformer holder first, captures every Spring
         // context that completes refresh() in this JVM, regardless of
         // Hybris tenant state.
         for (Object ctx : ApplicationContextHolder.getAllContexts()) {
@@ -338,7 +338,7 @@ public final class SpringXmlReloader {
 
     /**
      * Walk the candidate contexts and return every one whose bean factory
-     * already knows at least one of the XML's bean names — each of them is
+     * already knows at least one of the XML's bean names, each of them is
      * a real "owner" of the XML and needs its own property mutations /
      * bean additions applied.
      */
@@ -369,7 +369,7 @@ public final class SpringXmlReloader {
         if (target == float.class || target == Float.class) return Float.valueOf(s);
         if (target == short.class || target == Short.class) return Short.valueOf(s);
         if (target == byte.class || target == Byte.class) return Byte.valueOf(s);
-        // Fall through — setter.invoke will throw IllegalArgumentException
+        // Fall through, setter.invoke will throw IllegalArgumentException
         // with the actual type mismatch if this doesn't work.
         return value;
     }

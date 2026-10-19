@@ -33,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *
  * The {@link HybrisContext} state is injected directly via reflection so
  * the tests don't have to run a full {@code ExtensionScanner} or parse a
- * {@code localextensions.xml} — we only care about the path-matching
+ * {@code localextensions.xml}, we only care about the path-matching
  * logic, not the startup discovery pipeline.
  */
 class HybrisPlatformContextTest {
@@ -80,7 +80,7 @@ class HybrisPlatformContextTest {
                 "bootstrap dirs must surface under the synthetic platform label");
         List<Path> bootstrapEntries = dirs.get("__platform_bootstrap__");
         assertTrue(bootstrapEntries.contains(modelClasses),
-                "modelclasses/ must be watched — it holds DTOs generated from *-beans.xml");
+                "modelclasses/ must be watched, it holds DTOs generated from *-beans.xml");
         assertTrue(bootstrapEntries.contains(bootstrapClasses),
                 "bootstrap/classes/ must be watched");
     }

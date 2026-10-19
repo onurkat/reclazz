@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Metadata registry that merges original + structurally-added Method/Field objects.
- * Frameworks like Spring MVC call Class.getDeclaredMethods() internally — without
+ * Frameworks like Spring MVC call Class.getDeclaredMethods() internally, without
  * this bridge they would never see methods added via structural reload.
  *
  * ReflectionInterceptTransformer rewrites call sites so that
@@ -383,7 +383,7 @@ public final class ReflectionBridge {
 
     /**
      * Per-class state tracking added methods and fields.
-     * Uses CopyOnWriteArrayList for thread safety — reads (getDeclaredMethods)
+     * Uses CopyOnWriteArrayList for thread safety, reads (getDeclaredMethods)
      * can happen concurrently with writes (registerAddedMethod/clearClass).
      */
     /**

@@ -110,7 +110,7 @@ public class ReclazzAgent {
 
     /**
      * Java changes waiting to be compiled. Populated on the watcher thread,
-     * drained on the single-threaded reload executor — every drain compiles
+     * drained on the single-threaded reload executor, every drain compiles
      * everything that accumulated while the previous batch was running.
      */
     // Retries are driven by a new source event, not leftover tasks from one save.
@@ -285,7 +285,7 @@ public class ReclazzAgent {
                 bootstrapInstalled = false;
                 StatusReporter.error("Failed to install bootstrap JAR: " + Failures.describe(e));
                 if (enableStructural) {
-                    StatusReporter.warn("Structural reload disabled — falling back to method-body-only mode");
+                    StatusReporter.warn("Structural reload disabled, falling back to method-body-only mode");
                     enableStructural = false;
                 }
             }
@@ -336,7 +336,7 @@ public class ReclazzAgent {
 
             boolean isHybris = platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS;
 
-            // Register SpringContextInterceptTransformer for ALL platforms —
+            // Register SpringContextInterceptTransformer for ALL platforms,
             // it instruments AbstractApplicationContext.refresh() to register
             // the context in ApplicationContextHolder. On Hybris this is
             // strictly additive alongside the Registry-based lookup, and
@@ -363,7 +363,7 @@ public class ReclazzAgent {
             platformContext.initialize();
 
             // Attach mode: web contexts refreshed BEFORE the agent loaded are
-            // invisible to the intercept transformer — discover them from the
+            // invisible to the intercept transformer, discover them from the
             // running Tomcat so web-layer reloads (MVC re-scan, web beans,
             // caches) actually reach them.
             try {
@@ -502,7 +502,7 @@ public class ReclazzAgent {
             SpringReloadOrchestrator springOrchestrator = new SpringReloadOrchestrator(platformContext);
             springOrchestrator.setRefreshOwnersOnHelper(config.getRefreshOwnersOnHelper());
 
-            // Set up XML reloader — parses *-spring.xml changes into a
+            // Set up XML reloader, parses *-spring.xml changes into a
             // throwaway factory, diffs against the live bean factory, and
             // applies safe changes (property mutations + new-bean adds) in
             // place without destroy+recreate. Unsafe changes become a single
@@ -515,7 +515,7 @@ public class ReclazzAgent {
             if (isHybris) {
                 interceptorReloader = new InterceptorReloader();
                 impexImporter = new ImpexAutoImporter(config.isImpexAllowRemove());
-                // Hybris codegen hot-reload — handles both *-beans.xml
+                // Hybris codegen hot-reload, handles both *-beans.xml
                 // (DTOs) and *-items.xml (model classes). On save, the
                 // reloader shells out to platform `ant build` in the
                 // background and the resulting regenerated .class
@@ -869,7 +869,7 @@ public class ReclazzAgent {
         } catch (Throwable e) {
             // Throwable, not Exception: ASM and defineHiddenClass surface
             // LinkageError/VerifyError, which previously escaped this handler
-            // and silently killed the batch (no event, no log — a test just
+            // and silently killed the batch (no event, no log, a test just
             // times out waiting for RELOAD).
             StatusReporter.error("Error handling change: " + e);
             if (e.getCause() != null) {
@@ -1350,7 +1350,7 @@ public class ReclazzAgent {
         StatusReporter.info("Spring XML changed: " + event.getPath().getFileName());
         SpringXmlReloader reloader = springXmlReloader;
         if (reloader == null) {
-            StatusReporter.warn("Spring XML reload not available — agent not fully initialised");
+            StatusReporter.warn("Spring XML reload not available, agent not fully initialised");
             return;
         }
         if (ChangeKind.of(event.getPath().getFileName().toString()) == ChangeKind.UNKNOWN
@@ -1617,7 +1617,7 @@ public class ReclazzAgent {
     }
 
     /**
-     * Unified dispatch for both *-beans.xml and *-items.xml saves —
+     * Unified dispatch for both *-beans.xml and *-items.xml saves,
      * the {@link CodegenReloader}
      * picks the right kind from the file suffix and customises its
      * post-run reporting accordingly.
@@ -1626,7 +1626,7 @@ public class ReclazzAgent {
         CodegenReloader reloader = codegenReloader;
         if (reloader == null) {
             StatusReporter.info("Codegen XML changed: " + event.getPath().getFileName());
-            StatusReporter.warn("Codegen reload requires a Hybris platform — not available here.");
+            StatusReporter.warn("Codegen reload requires a Hybris platform, not available here.");
             return;
         }
         reloader.handle(event);
@@ -1680,7 +1680,7 @@ public class ReclazzAgent {
         }
 
         if (JvmCapabilityProbe.isGraalVM()) {
-            StatusReporter.warn("  GraalVM detected — class redefinition support is limited.");
+            StatusReporter.warn("  GraalVM detected, class redefinition support is limited.");
             StatusReporter.warn("  Some method body changes may fail. Consider using a standard OpenJDK or JBR instead.");
         }
     }

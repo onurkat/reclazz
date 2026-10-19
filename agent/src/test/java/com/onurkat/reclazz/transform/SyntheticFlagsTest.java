@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Spring (and most frameworks) filter out synthetic methods/fields when
  * scanning classes (e.g. {@code BeanUtils.findMethod}, classpath scanners).
- * The trampoline must NOT be synthetic — it's the public API the framework
+ * The trampoline must NOT be synthetic, it's the public API the framework
  * sees. The renamed copy and the infrastructure fields MUST be synthetic so
  * frameworks ignore them.
  */
@@ -34,7 +34,7 @@ class SyntheticFlagsTest extends TransformTestBase {
         Class<?> cls = defineAndLoad(classes, "T");
         Method m = cls.getDeclaredMethod("run");
         assertFalse(m.isSynthetic(),
-                "Trampoline must NOT be synthetic — Spring filters synthetic methods out");
+                "Trampoline must NOT be synthetic, Spring filters synthetic methods out");
     }
 
     @Test

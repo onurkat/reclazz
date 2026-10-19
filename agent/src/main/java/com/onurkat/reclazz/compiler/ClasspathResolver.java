@@ -50,7 +50,7 @@ public class ClasspathResolver {
             collectJars(bootstrapBin, entries);
         }
 
-        // Platform ext libraries. ext/ itself contains no jars — each
+        // Platform ext libraries. ext/ itself contains no jars, each
         // platform extension keeps them in ext/<name>/lib (Spring lives in
         // ext/core/lib). These extensions are auto-required and absent from
         // localextensions.xml, so they never appear in the extensions map
@@ -69,7 +69,7 @@ public class ClasspathResolver {
                         entries.add(binDir.toString());
                         // Platform extensions ship compiled code as jars in
                         // bin/ (e.g. ext/core/bin/coreserver.jar holds the
-                        // whole servicelayer) — a bare directory entry does
+                        // whole servicelayer), a bare directory entry does
                         // not reach classes inside those jars.
                         collectJars(binDir, entries);
                     }

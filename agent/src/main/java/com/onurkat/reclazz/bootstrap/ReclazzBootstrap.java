@@ -83,7 +83,7 @@ public final class ReclazzBootstrap {
             // Renamed method not found. This happens when the call site targets an
             // inherited method that was never renamed by MethodTrampolineAdapter
             // (e.g. anonymous subclass of HashMap calling put() in its initializer
-            // block — javac compiles the call as INVOKEVIRTUAL Subclass.put even
+            // block, javac compiles the call as INVOKEVIRTUAL Subclass.put even
             // though Subclass doesn't declare put). Fall back to the original
             // (un-renamed) method, which virtual dispatch will resolve to the
             // inherited implementation.
@@ -93,7 +93,7 @@ public final class ReclazzBootstrap {
                     initialTarget = ownerLookup.findVirtual(ownerClass, name,
                             type.dropParameterTypes(0, 1));
                 } catch (Exception ignored) {
-                    // Truly not found — fall through to throwing handle below.
+                    // Truly not found, fall through to throwing handle below.
                 }
             }
             if (initialTarget == null) {
@@ -239,7 +239,7 @@ public final class ReclazzBootstrap {
             ownerLookup = MethodHandles.privateLookupIn(ownerClass, lookup);
             initialTarget = ownerLookup.findStatic(ownerClass, renamedMethod, type);
         } catch (Exception e) {
-            // Fall back to the original (un-renamed) static method — see comment
+            // Fall back to the original (un-renamed) static method, see comment
             // in bootstrapMethod for the inherited-method case.
             initialTarget = null;
             if (ownerClass != null && ownerLookup != null) {

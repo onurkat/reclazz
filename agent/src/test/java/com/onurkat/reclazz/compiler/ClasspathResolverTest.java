@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Regression test: the internal compiler's classpath must include jars
  * nested under platform/ext/&lt;name&gt;/lib. In SAP Commerce 2211 the Spring
- * jars live in ext/core/lib — a flat scan of ext/ found nothing, so every
+ * jars live in ext/core/lib, a flat scan of ext/ found nothing, so every
  * autoCompile attempt failed with
  * "package org.springframework.stereotype does not exist".
  */

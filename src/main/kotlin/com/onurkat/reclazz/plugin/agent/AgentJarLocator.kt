@@ -57,7 +57,7 @@ object AgentJarLocator {
      * A SAP Commerce install writes that path into properties the server
      * starts from, where it then long outlives the IDE build it names.
      * Upgrading the IDE, or uninstalling the plugin, leaves the server
-     * pointing at a jar that no longer exists — and a `-javaagent` that
+     * pointing at a jar that no longer exists, and a `-javaagent` that
      * cannot be opened does not degrade to "no hot-reload", it aborts JVM
      * startup:
      *

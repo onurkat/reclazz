@@ -19,7 +19,7 @@ class LargeClassReloadTest(
      * Twenty-five endpoints added in one save. The point is that a large
      * structural reload neither fails nor disturbs what already worked, and
      * now also that the new endpoints answer: the companion branch used to
-     * check /ping and note the new ones were "invisible — documented", which
+     * check /ping and note the new ones were "invisible, documented", which
      * stopped being true when handler methods added by a reload started being
      * mapped. Asking for the last of the twenty-five tests both things at once.
      */

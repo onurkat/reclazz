@@ -14,7 +14,7 @@ import com.onurkat.reclazz.util.Reflect;
 /**
  * Reflection-based access to the Spring classes used by the XML reloader.
  *
- * The agent ships without any compile-time Spring dependency — all Spring
+ * The agent ships without any compile-time Spring dependency, all Spring
  * access goes through these helpers. Every method returns a null / default on
  * failure and logs via {@link StatusReporter}; callers check returns and skip.
  *
@@ -95,7 +95,7 @@ final class SpringReflection {
             readerCls.getMethod("setResourceLoader", resourceLoaderIface)
                     .invoke(reader, resourceLoader);
 
-            // Disable XML validation — many Hybris / Spring extension XMLs
+            // Disable XML validation, many Hybris / Spring extension XMLs
             // reference schemas that are shipped inside other jars and aren't
             // resolvable from a raw file path without EntityResolver setup.
             readerCls.getMethod("setValidating", boolean.class).invoke(reader, false);
@@ -123,7 +123,7 @@ final class SpringReflection {
      * via the thread context classloader, then the default. On Hybris the
      * Spring classes live on the Tomcat / webapp classloader which is
      * neither the agent's CL nor (necessarily) the TCCL of the file
-     * watcher thread — so we have to be explicit.
+     * watcher thread, so we have to be explicit.
      */
     private static Class<?> loadClass(String name, ClassLoader hint) throws ClassNotFoundException {
         if (hint != null) {
@@ -319,7 +319,7 @@ final class SpringReflection {
         // PropertySourcesPlaceholderConfigurer registers via
         // ConfigurableBeanFactory.addEmbeddedValueResolver at refresh time.
         // For beans loaded at startup, Spring also rewrites BD strings via
-        // BeanDefinitionVisitor at that moment — but our reloader sees the
+        // BeanDefinitionVisitor at that moment, but our reloader sees the
         // XML AFTER refresh, so the raw ${...} survives. Run the registered
         // resolvers manually on any String result that still contains ${.
         if (result instanceof String) {
@@ -330,7 +330,7 @@ final class SpringReflection {
                     Object resolved = rev.invoke(beanFactory, s);
                     if (resolved instanceof String) return resolved;
                 } catch (Throwable ignored) {
-                    // No placeholder resolver registered — return the raw string
+                    // No placeholder resolver registered, return the raw string
                     // and let the setter receive the literal ${...}.
                 }
             }

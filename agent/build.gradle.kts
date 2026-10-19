@@ -66,7 +66,7 @@ dependencies {
     // an application whose persistence API the agent has never seen.
     testImplementation("jakarta.persistence:jakarta.persistence-api:3.2.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    // Spring for XML reloader tests only — production code stays
+    // Spring for XML reloader tests only, production code stays
     // reflection-only and has no Spring compile dependency.
     testImplementation("org.springframework:spring-beans:5.3.39")
     testImplementation("org.springframework:spring-context:5.3.39")
@@ -545,7 +545,7 @@ tasks.shadowJar {
     relocate("org.objectweb.asm", "com.onurkat.reclazz.shaded.asm")
     exclude("org/slf4j/**")
     exclude("META-INF/services/org.slf4j.*")
-    // Exclude bootstrap classes from shadow JAR — they are loaded on the bootstrap
+    // Exclude bootstrap classes from shadow JAR, they are loaded on the bootstrap
     // classloader via appendToBootstrapClassLoaderSearch. If they existed in both
     // the shadow JAR (agent CL) and bootstrap JAR (bootstrap CL), the JVM would
     // see two different Class objects, making DispatchTable retargeting a no-op.

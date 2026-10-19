@@ -25,7 +25,7 @@ import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.util.BoundedProcess;
 
 /**
- * Tier 1 hot-reload for Hybris code generation — handles both
+ * Tier 1 hot-reload for Hybris code generation, handles both
  * {@code *-beans.xml} (DTO classes) and {@code *-items.xml} (model
  * classes). Both file types flow through the same Hybris
  * {@code gensource} / {@code ycodegenerator} ant macro, so the reloader
@@ -50,19 +50,19 @@ import com.onurkat.reclazz.util.BoundedProcess;
  *       structural reload path takes over automatically.</li>
  * </ol>
  *
- * <h2>beans.xml vs items.xml — the only functional difference</h2>
+ * <h2>beans.xml vs items.xml, the only functional difference</h2>
  * {@code *-items.xml} changes generate model classes tied to the Hybris
  * persistence layer: new attributes need new database columns plus a
  * refresh of the type system cache. Reclazz can regenerate the class
  * bytecode automatically but cannot safely run DDL against a live
- * database — the user must click <b>HAC → Platform → Update Running
+ * database, the user must click <b>HAC → Platform → Update Running
  * System</b> after the regen finishes. The reloader prints an explicit
  * reminder whenever an items.xml save is in the batch.
  *
  * <h2>Single instance serialises ant runs</h2>
  * Both kinds share one {@link #lock} + {@link #running} flag. A
  * simultaneous save of beans.xml + items.xml doesn't fork two parallel
- * ant subprocesses — the second save hits the coalesce path and waits
+ * ant subprocesses, the second save hits the coalesce path and waits
  * for the current run to finish. {@code ant build} is platform-wide
  * anyway, so a single run regenerates both kinds regardless of which
  * file triggered it.
@@ -110,7 +110,7 @@ public class CodegenReloader {
 
     /**
      * Kinds of XML that were saved during (or just before) the current
-     * ant run — used to decide which post-run reminder messages to
+     * ant run, used to decide which post-run reminder messages to
      * surface (items.xml always triggers the HAC updatesystem note).
      * Guarded by {@link #lock}.
      */
@@ -144,12 +144,12 @@ public class CodegenReloader {
         Path file = event.getPath();
         String fileName = file.getFileName().toString();
         Kind kind = Kind.fromFileName(fileName);
-        if (kind == null) return; // not one of ours — defensive
+        if (kind == null) return; // not one of ours, defensive
 
         ExtensionInfo ext = findOwningExtension(file);
         if (ext == null) {
             StatusReporter.warn(kind.label() + " changed: " + fileName
-                    + " — could not map to an extension. Run `ant build` manually to apply.");
+                    + ", could not map to an extension. Run `ant build` manually to apply.");
             return;
         }
 
@@ -165,7 +165,7 @@ public class CodegenReloader {
                 pendingExtName = ext.getName();
                 pendingFile = file;
                 StatusReporter.info(kind.label() + " changed: " + fileName
-                        + " [" + ext.getName() + "] — ant still running, will retry after it finishes");
+                        + " [" + ext.getName() + "], ant still running, will retry after it finishes");
                 return;
             }
             running = true;
@@ -204,7 +204,7 @@ public class CodegenReloader {
                     reportSuccess(ext, batchKinds, elapsedMs);
                 } else {
                     StatusReporter.error("Codegen regen FAILED for " + ext.getName()
-                            + " — ant exited non-zero. Run `ant build` manually for full output.");
+                            + ", ant exited non-zero. Run `ant build` manually for full output.");
                 }
 
                 synchronized (lock) {
@@ -232,8 +232,8 @@ public class CodegenReloader {
 
     private void reportSuccess(ExtensionInfo ext, Set<Kind> batchKinds, long elapsedMs) {
         if (batchKinds.isEmpty()) {
-            // Shouldn't normally happen — the first save always adds a
-            // kind before the run starts — but be defensive.
+            // Shouldn't normally happen, the first save always adds a
+            // kind before the run starts, but be defensive.
             StatusReporter.success("Codegen regen+compile done for " + ext.getName()
                     + " (" + (elapsedMs / 1000) + "s)");
             return;
@@ -250,7 +250,7 @@ public class CodegenReloader {
             subject = "model classes";
         }
         StatusReporter.success("Codegen regen+compile done for " + ext.getName()
-                + " — " + subject + " ready (" + (elapsedMs / 1000) + "s). "
+                + ", " + subject + " ready (" + (elapsedMs / 1000) + "s). "
                 + "Structural reloader is applying new bytecode now.");
 
         if (hasItems) {
@@ -274,7 +274,7 @@ public class CodegenReloader {
     SchemaOutcome handleNewPersistence(boolean autoUpdate, RunningSystemUpdater updater) {
         boolean attempted = autoUpdate && updater != null;
         if (attempted && updater.updateSchema()) {
-            StatusReporter.success("items.xml changed — ran Update Running System (schema only); "
+            StatusReporter.success("items.xml changed, ran Update Running System (schema only); "
                     + "the new attributes and enum values are live. No restart, no HAC click.");
             return SchemaOutcome.APPLIED;
         }
@@ -282,7 +282,7 @@ public class CodegenReloader {
         // the Hybris persistence layer: new attributes map to new DB columns, and the
         // type system cache must be invalidated. Without the opt-in (or when the update
         // did not complete) the developer runs it in HAC before using the new attributes.
-        StatusReporter.warn("items.xml changed — new attributes require a DB schema update + "
+        StatusReporter.warn("items.xml changed, new attributes require a DB schema update + "
                 + "type system refresh. Open HAC → Platform → Update Running System "
                 + "(default URL: https://localhost:9002/hac/platform/update) to apply.");
         StatusReporter.warn("New attributes on existing model instances will return null "
@@ -351,7 +351,7 @@ public class CodegenReloader {
         if (!launch.present()) {
             StatusReporter.warn("Codegen: Hybris platform ant not found at " + platform
                     + " (" + launch.setEnv().getFileName() + " and " + launch.antBin().getFileName()
-                    + ") — Tier 1 ant strategy skipped. Run `ant build` manually.");
+                    + "), Tier 1 ant strategy skipped. Run `ant build` manually.");
             return false;
         }
 

@@ -73,7 +73,7 @@ public class PlatformDetector {
             return true;
         }
 
-        // HYBRIS_BIN_DIR — Hybris's Tanuki Wrapper sets this as a -D system property,
+        // HYBRIS_BIN_DIR, Hybris's Tanuki Wrapper sets this as a -D system property,
         // not an environment variable, so we have to check both.
         if (System.getenv("HYBRIS_BIN_DIR") != null) {
             return true;
@@ -133,7 +133,7 @@ public class PlatformDetector {
      * Auto-detect Hybris home directory.
      */
     private static Path detectHybrisHome() {
-        // Try HYBRIS_BIN_DIR — check both env var and system property,
+        // Try HYBRIS_BIN_DIR, check both env var and system property,
         // since Hybris's Tanuki Wrapper sets it as -D system property.
         String binDir = System.getenv("HYBRIS_BIN_DIR");
         if (binDir == null) {
@@ -152,7 +152,7 @@ public class PlatformDetector {
             return Paths.get(platformHome).getParent();
         }
 
-        // Try classpath — Hybris always has platform/bootstrap/bin on classpath
+        // Try classpath, Hybris always has platform/bootstrap/bin on classpath
         String classpath = System.getProperty("java.class.path", "");
         for (String entry : classpath.split(java.io.File.pathSeparator)) {
             Path p = Paths.get(entry);

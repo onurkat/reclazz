@@ -30,7 +30,7 @@ import com.onurkat.reclazz.util.BytecodeVersion;
  * {@code redefineClasses} only accepts method-body changes, so structural
  * edits to unwatched classes fall back to the advice built below.
  *
- * <p>For watched classes (the common case — user project code),
+ * <p>For watched classes (the common case, user project code),
  * {@link StructuralReloader} handles structural
  * changes via the companion-class path on ANY JDK 17+ regardless of vendor.
  *
@@ -43,7 +43,7 @@ public class ClassReloader {
     private final JvmCapabilityProbe.CapabilityLevel capabilityLevel;
     private final String vmDescription;
 
-    // Cache reflection lookups — classes rarely change their annotations at runtime
+    // Cache reflection lookups, classes rarely change their annotations at runtime
     private final Map<String, Boolean> springBeanCache = new ConcurrentHashMap<>();
     private final Map<String, Boolean> interceptorCache = new ConcurrentHashMap<>();
 
@@ -100,7 +100,7 @@ public class ClassReloader {
             EnumConstantAppender.applyOrExplain(
                     className, existingClass, newBytecode, enumChange, instrumentation);
 
-            // Invalidate caches — class may have gained/lost annotations
+            // Invalidate caches, class may have gained/lost annotations
             springBeanCache.remove(className);
             interceptorCache.remove(className);
 
@@ -192,7 +192,7 @@ public class ClassReloader {
             return "GraalVM has limited class redefinition support. " +
                     "Consider switching to JetBrains Runtime (JBR) or standard OpenJDK. VM: " + vmDescription;
         } else if (isEnhancedVm && hasFlag) {
-            return "JBR/DCEVM enhanced redefinition active but change rejected — " +
+            return "JBR/DCEVM enhanced redefinition active but change rejected, " +
                     "this may be a JVM version limitation. VM: " + vmDescription;
         } else if (isEnhancedVm) {
             return vmDescription + " detected but -XX:+AllowEnhancedClassRedefinition not set. " +
@@ -201,7 +201,7 @@ public class ClassReloader {
             // COMPANION_MODE reached this fallback: the class is unwatched
             // (not in transformContext), so the companion-class path doesn't
             // apply. Reclazz's structural reloader handles watched project
-            // code — this branch means the edit targets something outside
+            // code, this branch means the edit targets something outside
             // the watched set.
             return "Structural change detected on unwatched class " + vmDescription + ". " +
                     "Reclazz's companion-class reloader only handles classes in the watched " +
@@ -333,7 +333,7 @@ public class ClassReloader {
          * @param structural whether the change actually added or removed
          *                   members. This drives user-facing reporting, so
          *                   it must reflect the CHANGE, not which engine ran
-         *                   — every watched class goes through the companion
+         *                  , every watched class goes through the companion
          *                   path, and hardcoding true here made a one-line
          *                   body edit announce itself as "Structural reload"
          *                   and inflate the IDE widget's structural counter.

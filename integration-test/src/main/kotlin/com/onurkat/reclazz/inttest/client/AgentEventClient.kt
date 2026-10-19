@@ -27,7 +27,7 @@ class AgentEventClient(portFile: String) {
     private var reader: BufferedReader? = null
     private val running = AtomicBoolean(false)
     private val events = CopyOnWriteArrayList<AgentEvent>()
-    /** Monotonic event counter — survives clearEvents(), used by waitForQuiet. */
+    /** Monotonic event counter, survives clearEvents(), used by waitForQuiet. */
     private val totalReceived = AtomicLong()
 
     init {

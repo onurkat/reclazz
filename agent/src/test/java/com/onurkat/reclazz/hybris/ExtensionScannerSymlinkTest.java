@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Regression test: custom extensions symlinked into bin/custom (a common
- * dev setup — the extension lives in its own working copy) must be
+ * dev setup, the extension lives in its own working copy) must be
  * discovered. Files.walk without FOLLOW_LINKS listed the symlink itself
  * but never descended into it, so the extension was silently invisible
  * ("Watching 0 directories" in autoCompile mode).

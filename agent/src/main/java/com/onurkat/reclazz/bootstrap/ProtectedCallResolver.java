@@ -25,7 +25,7 @@ import java.lang.reflect.Field;
  * {@code AbstractItemModel.getPersistenceContext()}), the original Java
  * access check succeeded because {@code ComposedTypeModel} is a
  * legitimate subclass of {@code AbstractItemModel}. The companion is NOT
- * — it extends {@code Object} and is a hidden class in its own runtime
+ *, it extends {@code Object} and is a hidden class in its own runtime
  * package. The same {@code INVOKEVIRTUAL} instruction, when executed
  * from the companion's bytecode, fails with {@code IllegalAccessError}.
  *
@@ -41,7 +41,7 @@ import java.lang.reflect.Field;
  *       is a {@link MethodHandles.Lookup} produced by calling
  *       {@code MethodHandles.lookup()} inside the target class, so it has
  *       full private access including inherited protected members.</li>
- *   <li>Resolves the call via that lookup — {@code findVirtual},
+ *   <li>Resolves the call via that lookup, {@code findVirtual},
  *       {@code findSpecial}, or {@code findStatic} depending on the
  *       original opcode. Access checks on the resulting
  *       {@link MethodHandle} are performed by Lookup at resolution time,
@@ -50,7 +50,7 @@ import java.lang.reflect.Field;
  * </ol>
  *
  * <p>Once the call site is bootstrapped the JVM calls the MethodHandle
- * directly on every subsequent invocation — post-JIT this is roughly as
+ * directly on every subsequent invocation, post-JIT this is roughly as
  * fast as a direct virtual call. The only cost is the one-time bsm
  * resolution on first invocation of each rewritten site.
  */
@@ -99,7 +99,7 @@ public final class ProtectedCallResolver {
         if (targetLookup == null) {
             // Fall back to caller's lookup. If that fails too, the
             // IllegalAccessError propagates through the bsm and surfaces
-            // at the call site — exactly where it would have landed
+            // at the call site, exactly where it would have landed
             // without the fix, so we're no worse off.
             targetLookup = caller;
         }

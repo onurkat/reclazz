@@ -109,7 +109,7 @@ class AgentInjector internal constructor(private val locateAgentJar: () -> File?
 
         log.info("Reclazz agent ${if (configured.isEmpty()) "injected" else "reused"}: ${agentJar.absolutePath}")
         if (jdkInfo != null) {
-            log.info("JDK detected: ${jdkInfo.displayName} — ${jdkInfo.capabilityDescription}")
+            log.info("JDK detected: ${jdkInfo.displayName}, ${jdkInfo.capabilityDescription}")
         }
     }
 

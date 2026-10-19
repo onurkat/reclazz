@@ -440,7 +440,7 @@ public class CompanionGenerator implements Opcodes {
 
         @Override
         public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-            // Check if this is access to an added field — use FieldStore helpers
+            // Check if this is access to an added field, use FieldStore helpers
             if (owner.equals(originalClass) && addedFields.contains(name + ":" + descriptor)) {
                 switch (opcode) {
                     case GETFIELD -> {
@@ -513,7 +513,7 @@ public class CompanionGenerator implements Opcodes {
                 }
             }
 
-            // Regular field access — companion has NESTMATE access to original class
+            // Regular field access, companion has NESTMATE access to original class
             super.visitFieldInsn(opcode, owner, name, descriptor);
         }
 
@@ -538,7 +538,7 @@ public class CompanionGenerator implements Opcodes {
          * access checks happen at resolve time inside the bsm; after that
          * the call site is a {@link java.lang.invoke.ConstantCallSite}
          * with no per-call access cost. Same-package calls keep their
-         * original opcode — same-package access rules always pass from
+         * original opcode, same-package access rules always pass from
          * the companion's hidden package because the hidden class is in
          * the same classloader nest and shares the binary-name prefix.
          */
@@ -576,7 +576,7 @@ public class CompanionGenerator implements Opcodes {
          *       {@code getSecret} is declared on a superclass in a
          *       different package. The JVM's runtime resolution walks
          *       inheritance to find the actual method, then runs the
-         *       access check against the ACTUAL declaring class — which
+         *       access check against the ACTUAL declaring class, which
          *       fails from the companion (a hidden class with no
          *       subclass relationship to the declarer).</li>
          *   <li>Without loading the target's class hierarchy and
@@ -584,7 +584,7 @@ public class CompanionGenerator implements Opcodes {
          *       can't tell which calls are "self-only" (NESTMATE
          *       accessible) from inherited ones. A blanket rewrite is
          *       correct and avoids the classloading complexity.</li>
-         *   <li>The bsm uses {@code targetLookup.findVirtual(owner, ...)} —
+         *   <li>The bsm uses {@code targetLookup.findVirtual(owner, ...)},
          *       findVirtual walks inheritance from {@code owner}, finds
          *       the actual method, and the access check against
          *       targetLookup's PRIVATE-mode lookup succeeds because the
@@ -596,7 +596,7 @@ public class CompanionGenerator implements Opcodes {
          * is essentially a direct call. The only real cost is one bsm
          * invocation per call site at first use.
          *
-         * <p>Static calls are exempt — they don't have receiver-type
+         * <p>Static calls are exempt, they don't have receiver-type
          * issues and the access rules collapse to plain class-level
          * checks that hidden classes also pass for public targets.
          * Array {@code clone()} and similar are exempt by virtue of
@@ -613,7 +613,7 @@ public class CompanionGenerator implements Opcodes {
             // Never rewrite <init>/<clinit>: the JVMS forbids invokedynamic
             // call sites with internal method names, so `new Watched(...)`
             // inside a companion produced "VerifyError: Illegal call to
-            // internal method". Constructors keep their INVOKESPECIAL —
+            // internal method". Constructors keep their INVOKESPECIAL,
             // access-wise safe because the companion is a NESTMATE of the
             // original class and shares its package.
             if (name.startsWith("<")) return false;
@@ -677,7 +677,7 @@ public class CompanionGenerator implements Opcodes {
                     mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Character", "charValue", "()C", false);
                 }
                 default -> {
-                    // Object type — just cast
+                    // Object type, just cast
                     String internalName = type.getInternalName();
                     if (!"java/lang/Object".equals(internalName)) {
                         mv.visitTypeInsn(CHECKCAST, internalName);

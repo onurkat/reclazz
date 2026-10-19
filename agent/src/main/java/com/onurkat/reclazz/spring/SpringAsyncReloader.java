@@ -18,7 +18,7 @@ import com.onurkat.reclazz.ui.Failures;
  * stale method implementations. This reloader re-processes the bean through
  * AsyncAnnotationBeanPostProcessor.
  *
- * All Spring interaction is via reflection — graceful no-op if Spring Async is not present.
+ * All Spring interaction is via reflection, graceful no-op if Spring Async is not present.
  */
 public class SpringAsyncReloader {
 

@@ -169,14 +169,14 @@ public class ExtensionScanner {
      * That's depth 4 from {@code bin/modules}, so our previous limit of 3
      * was missing those (~21 of them in a typical SAP Commerce install,
      * producing "Extension not found" warnings on every startup). Use an
-     * unbounded walk — Hybris module trees aren't deep enough for this to
+     * unbounded walk, Hybris module trees aren't deep enough for this to
      * be expensive.
      *
      * FOLLOW_LINKS: custom extensions are commonly symlinked into
      * bin/custom from a separate working copy; without following links
      * those extensions are silently invisible to the watcher. Symlink
      * cycles surface as FileSystemLoopException (wrapped in
-     * UncheckedIOException mid-stream) — caught below so a single bad
+     * UncheckedIOException mid-stream), caught below so a single bad
      * link degrades to a partial index instead of aborting the scan.
      */
     private void scanExtensionDirectory(Path root, Map<String, Path> index) {

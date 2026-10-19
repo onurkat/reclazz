@@ -209,7 +209,7 @@ public class HybrisPlatformContext implements PlatformContext {
         // Platform-level generated model classes (from *-beans.xml and
         // *-items.xml). Generated DTOs land in bootstrap/modelclasses/,
         // bootstrapped classes land in bootstrap/classes/. These aren't
-        // owned by any extension — they're platform-wide.
+        // owned by any extension, they're platform-wide.
         Path bootstrap = hybrisContext.getPlatformHome().resolve("bootstrap");
         Path modelClasses = bootstrap.resolve("modelclasses");
         if (classFile.startsWith(modelClasses)) {
@@ -252,7 +252,7 @@ public class HybrisPlatformContext implements PlatformContext {
     public Object getApplicationContext() {
         // Preferred path: ApplicationContextHolder, populated by
         // SpringContextInterceptTransformer when AbstractApplicationContext.refresh()
-        // completes. This works from any thread — no tenant activation, no
+        // completes. This works from any thread, no tenant activation, no
         // Hybris-version-specific Registry API quirks. As of Commerce Cloud
         // 2205+ the tenant's context field is populated late in tenant init
         // (after Spring refresh), so Registry.getMasterTenant().getApplicationContext()
@@ -267,7 +267,7 @@ public class HybrisPlatformContext implements PlatformContext {
         try {
             Class<?> registryClass = Class.forName("de.hybris.platform.core.Registry");
 
-            // First try master tenant — no ThreadLocal tenant state required.
+            // First try master tenant, no ThreadLocal tenant state required.
             try {
                 Method getMasterTenant = registryClass.getMethod("getMasterTenant");
                 Object masterTenant = getMasterTenant.invoke(null);
@@ -277,7 +277,7 @@ public class HybrisPlatformContext implements PlatformContext {
                     if (ctx != null) return ctx;
                 }
             } catch (NoSuchMethodException ignored) {
-                // getMasterTenant() not on this Hybris version — fall through
+                // getMasterTenant() not on this Hybris version, fall through
             }
 
             // Legacy: Registry.getApplicationContext() needs a ThreadLocal

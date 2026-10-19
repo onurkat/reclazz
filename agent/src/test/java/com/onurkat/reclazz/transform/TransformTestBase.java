@@ -93,7 +93,7 @@ public abstract class TransformTestBase {
 
     /**
      * Compile and transform the sources. Verification is left to the JVM's
-     * own verifier when classes are loaded — using {@link CheckClassAdapter}
+     * own verifier when classes are loaded, using {@link CheckClassAdapter}
      * here would require a ClassLoader populated with all referenced types,
      * which is impractical for in-memory test sources. The
      * compile→transform→define→invoke cycle is the actual end-to-end test.

@@ -156,7 +156,7 @@ class GenericsAdvancedTest extends TransformTestBase {
 
     @Test
     void streamComparatorChains() {
-        // Comparator.comparing(...).thenComparing(...) — lambda-heavy
+        // Comparator.comparing(...).thenComparing(...), lambda-heavy
         Map<String, byte[]> classes = compileAndTransform(
                 new SourceFile("Person",
                         "public class Person {\n" +

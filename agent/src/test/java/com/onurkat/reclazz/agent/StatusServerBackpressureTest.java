@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * thread emitting events.
  *
  * Before the fix, ClientConnection.send() wrote and flushed synchronously
- * on the caller's thread — which is the reload thread. A client whose
+ * on the caller's thread, which is the reload thread. A client whose
  * receive window filled up (suspended IDE, hung debugger) blocked the
  * whole hot-reload pipeline indefinitely.
  */

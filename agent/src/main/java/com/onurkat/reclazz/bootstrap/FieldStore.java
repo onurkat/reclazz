@@ -467,7 +467,7 @@ public final class FieldStore {
                 }
             }
         } catch (Exception e) {
-            // Silently fail — field store not available for this instance
+            // Silently fail, field store not available for this instance
         }
     }
 
@@ -489,7 +489,7 @@ public final class FieldStore {
 
     /**
      * Resolve the __reclazz$ext field for a class, with caching.
-     * Does NOT cache misses — the field may be added later by retransformation.
+     * Does NOT cache misses, the field may be added later by retransformation.
      */
     private static java.lang.reflect.Field resolveExtField(Class<?> clazz) {
         Object cached = extFieldCache.get(clazz);

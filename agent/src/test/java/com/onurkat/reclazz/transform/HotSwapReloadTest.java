@@ -68,7 +68,7 @@ class HotSwapReloadTest extends TransformTestBase {
         ClassDefinition def = new ClassDefinition(cls, v2Classes.get("HotClass"));
         instrumentation.redefineClasses(def);
 
-        // Same instance, same Method object — should now return v2
+        // Same instance, same Method object, should now return v2
         assertEquals("v2", greet.invoke(instance));
     }
 
@@ -76,7 +76,7 @@ class HotSwapReloadTest extends TransformTestBase {
     void reloadBeforeFirstInvocationStillTakesEffect() throws Exception {
         // Reload a class BEFORE invoking any of its methods. Without a fix,
         // the first call site bootstrap installs a handle to the v0 renamed
-        // method (because the dispatch table has no entry yet — call sites
+        // method (because the dispatch table has no entry yet, call sites
         // are lazy), so the v2 reload is silently lost until the SECOND
         // invocation. This reproduces the user-reported "first reload doesn't
         // work but second and third do" bug.
@@ -111,7 +111,7 @@ class HotSwapReloadTest extends TransformTestBase {
      * has been bootstrapped yet (lazy invokedynamic, first server startup
      * with no traffic), the dispatch table is empty and retargetAll
      * silently does nothing. The first user request after the reload
-     * bootstraps a CallSite pointing to the v0 renamed method — the
+     * bootstraps a CallSite pointing to the v0 renamed method, the
      * reload is silently lost. This test calls retargetAll BEFORE any
      * trampoline has fired and verifies the next invocation picks up
      * the new target.
@@ -176,7 +176,7 @@ class HotSwapReloadTest extends TransformTestBase {
      * invokes {@link StructuralReloader#reload(String, byte[])} with raw v2
      * bytes BEFORE the class's method has ever been called. This is the
      * "first server startup with no traffic yet, file saved in IDE" scenario
-     * — the bug surface covered by release 1.0.14.
+     *, the bug surface covered by release 1.0.14.
      */
     @Test
     void structuralReloaderEndToEndBeforeFirstInvocation() throws Exception {
@@ -197,13 +197,13 @@ class HotSwapReloadTest extends TransformTestBase {
                 "EndToEndFirstTouch", null, null, v1Raw);
         assertNotNull(v1Transformed, "v1 transform must produce output");
 
-        // Load transformed v1 — clinit populates __reclazz$lookup
+        // Load transformed v1, clinit populates __reclazz$lookup
         Map<String, byte[]> loadMap = new LinkedHashMap<>();
         loadMap.put("EndToEndFirstTouch", v1Transformed);
         Class<?> cls = defineAndLoad(loadMap, "EndToEndFirstTouch");
         Object instance = cls.getDeclaredConstructor().newInstance();
 
-        // Raw v2 — StructuralReloader.reload takes untransformed new bytes
+        // Raw v2, StructuralReloader.reload takes untransformed new bytes
         byte[] v2Raw = compile(new SourceFile("EndToEndFirstTouch",
                 "public class EndToEndFirstTouch {\n" +
                 "    public String greet() { return \"v2\"; }\n" +
@@ -218,7 +218,7 @@ class HotSwapReloadTest extends TransformTestBase {
                 "Structural reload must succeed, got: " + result.getError());
 
         // First-ever invocation of greet() on this instance. The trampoline
-        // triggers the invokedynamic bootstrap now — which must consult the
+        // triggers the invokedynamic bootstrap now, which must consult the
         // just-installed companion target and call the v2 body.
         Method greet = cls.getDeclaredMethod("greet");
         assertEquals("v2", greet.invoke(instance),
@@ -300,7 +300,7 @@ class HotSwapReloadTest extends TransformTestBase {
         AgentConfig config = AgentConfig.parse(null);
         ctx.addWatched("com/reclazz/probe/child/ProtectedAccessChild");
 
-        // Parent in its own package — NOT watched / not transformed.
+        // Parent in its own package, NOT watched / not transformed.
         // Child extends parent from a different package and calls the
         // parent's protected method.
         SourceFile parentSource = new SourceFile(
@@ -323,7 +323,7 @@ class HotSwapReloadTest extends TransformTestBase {
 
         Map<String, byte[]> compiled = compile(parentSource, childV1Source);
 
-        // Transform only the child — parent stays as-is.
+        // Transform only the child, parent stays as-is.
         ReclazzTransformer transformer = new ReclazzTransformer(ctx, config);
         byte[] childRaw = compiled.get("com/reclazz/probe/child/ProtectedAccessChild");
         byte[] childTransformed = transformer.transform(
@@ -341,11 +341,11 @@ class HotSwapReloadTest extends TransformTestBase {
         Class<?> childCls = loader.load("com.reclazz.probe.child.ProtectedAccessChild");
         Object instance = childCls.getDeclaredConstructor().newInstance();
 
-        // v1 sanity check — baseline call works.
+        // v1 sanity check, baseline call works.
         assertEquals("v1:parent-secret",
                 childCls.getDeclaredMethod("greet").invoke(instance));
 
-        // v2 — method body keeps the cross-package protected call.
+        // v2, method body keeps the cross-package protected call.
         // After StructuralReloader.reload() copies this body into the
         // companion class, the INVOKEVIRTUAL on getSecret() would fail
         // with IllegalAccessError without the bytecode rewrite.

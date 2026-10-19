@@ -21,7 +21,7 @@ class EnterprisePatternsTest extends TransformTestBase {
     void springStyleConstructorInjectionWithFinalFields() {
         // The canonical Spring service: final dependencies, single
         // constructor, no @Autowired (implicit injection). Bytecode
-        // has PUTFIELD on final fields inside <init> — this exercised
+        // has PUTFIELD on final fields inside <init>, this exercised
         // the 1.0.9 final-field fix.
         Map<String, byte[]> classes = compileAndTransform(
                 new SourceFile("ServiceImpl",

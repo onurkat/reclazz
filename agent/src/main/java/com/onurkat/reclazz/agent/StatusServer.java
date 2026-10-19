@@ -105,7 +105,7 @@ public class StatusServer implements StatusReporter.StatusListener {
             try {
                 Files.createDirectories(portFile.getParent());
                 if (Files.exists(portFile) && Files.isSymbolicLink(portFile)) {
-                    StatusReporter.warn("Port file is a symlink — refusing to write: " + portFile);
+                    StatusReporter.warn("Port file is a symlink, refusing to write: " + portFile);
                 } else {
                     // Written whole: the IDE polls this file with no lock
                     // between us, and a reader arriving mid-write gets whatever
@@ -381,7 +381,7 @@ public class StatusServer implements StatusReporter.StatusListener {
                 conn.send(welcomeJson);
 
             } catch (SocketTimeoutException e) {
-                // Expected — accept() timed out, loop back to check running flag
+                // Expected, accept() timed out, loop back to check running flag
             } catch (IOException e) {
                 if (running) {
                     StatusReporter.error("StatusServer accept error: " + Failures.describe(e));
@@ -501,7 +501,7 @@ public class StatusServer implements StatusReporter.StatusListener {
      * bounded queue: a slow or hung reader must never stall the caller.
      *
      * Before this, {@code send} wrote and flushed synchronously on whatever
-     * thread emitted the event — including the reload thread. A client that
+     * thread emitted the event, including the reload thread. A client that
      * stopped reading (suspended IDE, hung debugger) filled the TCP window
      * and blocked the entire hot-reload pipeline indefinitely.
      */
@@ -602,14 +602,14 @@ public class StatusServer implements StatusReporter.StatusListener {
          * Enqueue without blocking.
          *
          * @return false when the connection is dead (the caller drops it);
-         *         a full queue is NOT fatal — the event is dropped instead.
+         *         a full queue is NOT fatal, the event is dropped instead.
          */
         boolean send(String line) {
             if (!alive) return false;
             if (!outbox.offer(line)) {
                 long n = dropped.incrementAndGet();
                 if (n == 1 || n % 1000 == 0) {
-                    StatusReporter.warn("Status client is not keeping up — dropped "
+                    StatusReporter.warn("Status client is not keeping up, dropped "
                             + Plural.of(n, "event")
                             + ". Reload is unaffected.");
                 }

@@ -204,7 +204,7 @@ public class FileWatcher {
         try {
             return java.lang.management.ManagementFactory.getRuntimeMXBean().getStartTime();
         } catch (Throwable t) {
-            // java.management not present — fall back to agent load time,
+            // java.management not present, fall back to agent load time,
             // which is the JVM start for -javaagent.
             return System.currentTimeMillis();
         }
@@ -349,7 +349,7 @@ public class FileWatcher {
             long prepopMs = System.currentTimeMillis() - prepopStart;
             if (config.isVerbose()) {
                 StatusReporter.info("Content-hash baseline: " + prepopulatedClasses
-                        + " class files hashed in " + prepopMs + "ms — subsequent dispatches"
+                        + " class files hashed in " + prepopMs + "ms, subsequent dispatches"
                         + " skip files whose bytes haven't changed");
             }
             dispatchClassesChangedDuringStartup();
@@ -363,7 +363,7 @@ public class FileWatcher {
             for (Path resDir : entry.getValue()) {
                 if (Files.isDirectory(resDir)) {
                     // Recursive: .impex/.xml/.properties live in subfolders
-                    // (e.g. resources/impex/test-data.impex) — a single-level
+                    // (e.g. resources/impex/test-data.impex), a single-level
                     // watch never saw those changes.
                     registerRecursive(resDir, moduleName, "resources");
                     baselinePropertyFiles(resDir);
@@ -524,7 +524,7 @@ public class FileWatcher {
     /**
      * Walk a freshly-registered subtree and enqueue synthetic CREATE
      * events for every interesting file we find. Needed because the
-     * WatchService only reports events that fire AFTER registration —
+     * WatchService only reports events that fire AFTER registration,
      * if a code generator creates a whole package in one go (new
      * subdirectory + new .class files inside), the file events fire
      * before the new subdirectory is registered and are lost. Called
@@ -537,8 +537,8 @@ public class FileWatcher {
      *
      * The JDK keeps a bounded per-directory event queue (~512 entries); a
      * full {@code ant build} rewrites far more than that and the kernel
-     * reports OVERFLOW instead of the individual events. Skipping it — as
-     * we used to — lost those changes permanently: the user's reload
+     * reports OVERFLOW instead of the individual events. Skipping it, as
+     * we used to, lost those changes permanently: the user's reload
      * simply never happened, with nothing in the log to explain it.
      *
      * Re-scanning the directory re-enqueues everything; the content-hash
@@ -681,7 +681,7 @@ public class FileWatcher {
 
     void handleOverflow(WatchedDirectory watchedDir, Map<Path, PendingEvent> pendingEvents) {
         StatusReporter.warn("File event overflow in " + watchedDir.directory()
-                + " — re-scanning directory to recover dropped changes");
+                + ", re-scanning directory to recover dropped changes");
         enqueueExistingFiles(watchedDir.directory(), watchedDir.moduleName(),
                 watchedDir.sourceRoot(), pendingEvents);
     }
@@ -1037,7 +1037,7 @@ public class FileWatcher {
         // templates) fires hundreds of ENTRY_MODIFY events for
         // unchanged files. Skip any whose bytes match the last
         // dispatched version so the class reloader / structural
-        // reloader doesn't waste cycles on noise — and, more
+        // reloader doesn't waste cycles on noise, and, more
         // importantly, doesn't apply companion-class patches to
         // classes whose bytecode didn't actually change. Deleted
         // events are exempt (nothing to hash) and so are first-ever
@@ -1063,7 +1063,7 @@ public class FileWatcher {
                         return null;
                     }
                     StatusReporter.info("Change to " + pending.path.getFileName()
-                            + " landed while Reclazz was starting — reloading it now");
+                            + " landed while Reclazz was starting, reloading it now");
                 }
             }
         }
@@ -1084,13 +1084,13 @@ public class FileWatcher {
      * empty cache → no previous hash → dispatch). On Hybris that means
      * hundreds of unchanged platform classes get pushed through the
      * structural reloader on the FIRST save. Pre-populating fixes
-     * that — every regen that produces byte-identical output is
+     * that, every regen that produces byte-identical output is
      * dropped at the watcher boundary.
      *
      * <p>Cost: walks the entire watched class tree once and CRC32s
      * each .class file. ~5 seconds for a full Hybris install (~50k
      * class files) at 500 MB/s read throughput. Runs synchronously
-     * inside {@code registerDirectories} — by the time
+     * inside {@code registerDirectories}, by the time
      * {@code pollLoop} starts, the cache is fully primed.
      */
     /**
@@ -1100,7 +1100,7 @@ public class FileWatcher {
      * A build finishing during server startup (the very window
      * {@code startupDelaySec} exists for) writes new bytes to disk while
      * the JVM has already loaded the old ones. No watch event will ever
-     * fire for those files — registration happened afterwards — and the
+     * fire for those files, registration happened afterwards, and the
      * content baseline records the NEW bytes, so nothing downstream can
      * tell the class is stale. The result was a class that silently never
      * hot-reloaded for the rest of the session.
@@ -1114,7 +1114,7 @@ public class FileWatcher {
 
         StatusReporter.info(Plural.of(startupChangedClasses.size(), "class file")
                 + " changed while the JVM"
-                + " was starting — reloading them so the running code matches disk");
+                + " was starting, reloading them so the running code matches disk");
         for (var entry : startupChangedClasses.entrySet()) {
             WatchedDirectory dir = entry.getValue();
             dispatchEvent(new PendingEvent(System.currentTimeMillis(), entry.getKey(),
@@ -1172,7 +1172,7 @@ public class FileWatcher {
      * if the file can't be read (mid-write, vanished, etc). CRC32 is
      * massive overkill for collision resistance on our key space
      * (at most a few thousand class files per hybris install) and
-     * processes ~500 MB/s on modern CPUs — the overhead per dispatch
+     * processes ~500 MB/s on modern CPUs, the overhead per dispatch
      * is in the order of 100 microseconds for a 50 KB class file.
      */
     /**

@@ -144,7 +144,7 @@ public class ImpexAutoImporter {
                         + "impexAllowRemove is set.");
             }
 
-            // Find the Hybris global context via the holder — the agent's own
+            // Find the Hybris global context via the holder, the agent's own
             // classloader (system CL) cannot see de.hybris.* classes, so
             // Registry and friends must be loaded through the CONTEXT's
             // classloader (this used to fail with ClassNotFoundException and
@@ -167,11 +167,11 @@ public class ImpexAutoImporter {
                 }
             }
             if (appContext == null || importService == null) {
-                StatusReporter.warn("ImportService not reachable in any live Spring context — ImpEx import skipped.");
+                StatusReporter.warn("ImportService not reachable in any live Spring context, ImpEx import skipped.");
                 return;
             }
 
-            // The watcher thread has no tenant — activate the master tenant
+            // The watcher thread has no tenant, activate the master tenant
             // (Registry loaded via the context's classloader).
             ClassLoader hybrisCl = appContext.getClass().getClassLoader();
             if (!PlatformTenant.ensureActive(hybrisCl)) {

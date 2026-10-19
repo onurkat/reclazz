@@ -21,12 +21,12 @@ import com.onurkat.reclazz.ui.Failures;
  * the global context (via the Hybris Registry fallback) and web-layer
  * reloads (MVC re-scan, web-scoped beans, caches) would silently no-op.
  *
- * Strategy: walk Tomcat's container tree via reflection —
+ * Strategy: walk Tomcat's container tree via reflection,
  * Bootstrap.daemon → Catalina → Server → Services → Engine → Hosts →
  * StandardContexts → ServletContext attributes. Spring stores its
  * contexts as well-known ServletContext attributes.
  *
- * All reflection — no Tomcat or Spring compile dependency. Graceful
+ * All reflection, no Tomcat or Spring compile dependency. Graceful
  * no-op when Tomcat isn't present (standalone Spring Boot uses the
  * intercept transformer path instead).
  */
@@ -89,7 +89,7 @@ public final class TomcatContextScanner {
             return invoke(catalina, "getServer");
         } catch (ClassNotFoundException | NoSuchFieldException e) {
             // Not a standalone Tomcat (embedded servers take the
-            // intercept-transformer path) — nothing to scan.
+            // intercept-transformer path), nothing to scan.
             return null;
         } catch (Exception e) {
             return null;
@@ -126,7 +126,7 @@ public final class TomcatContextScanner {
                 }
                 Object candidate = getAttribute.invoke(servletContext, name);
                 // A failed web context stores its startup EXCEPTION under
-                // the ROOT attribute — only register real contexts.
+                // the ROOT attribute, only register real contexts.
                 if (isApplicationContext(candidate)) {
                     ApplicationContextHolder.register(candidate);
                     registered++;

@@ -25,7 +25,7 @@ import com.onurkat.reclazz.ui.RestartLedger;
  * running with the old method implementations. This reloader cancels old tasks and
  * re-registers them with the updated methods.
  *
- * All Spring interaction is via reflection — graceful no-op if Spring Scheduling is not present.
+ * All Spring interaction is via reflection, graceful no-op if Spring Scheduling is not present.
  */
 public class SpringSchedulerReloader {
 

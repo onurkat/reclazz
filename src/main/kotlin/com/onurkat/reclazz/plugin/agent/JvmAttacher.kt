@@ -87,7 +87,7 @@ object JvmAttacher {
                 vm.detach()
             }
         } catch (_: Exception) {
-            // Can't attach (permission, different user, etc.) — skip
+            // Can't attach (permission, different user, etc.), skip
             null
         }
     }
@@ -129,7 +129,7 @@ object JvmAttacher {
                 message.contains("permission", ignoreCase = true) ||
                 message.contains("denied", ignoreCase = true) ->
                     AttachResult.Error(
-                        "Cannot attach to PID $pid — permission denied. " +
+                        "Cannot attach to PID $pid, permission denied. " +
                         "Make sure IntelliJ and the target JVM are running as the same user.",
                         e
                     )

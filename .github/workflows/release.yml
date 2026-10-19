@@ -100,4 +100,4 @@ jobs:
             --title "Reclazz $tag" \
             --draft --verify-tag \
             --notes-file /tmp/release-notes.md
-          echo 'GitHub: awaiting manual action — draft created; signed ZIP and complete-asset check required before publication.'
+          echo 'GitHub: awaiting manual action, draft created; signed ZIP and complete-asset check required before publication.'

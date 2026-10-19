@@ -72,7 +72,7 @@ public final class WatchedApp implements AutoCloseable {
         String agentJar = System.getProperty("reclazz.agent.jar");
         org.junit.jupiter.api.Assumptions.assumeTrue(
                 agentJar != null && Files.exists(Path.of(agentJar)),
-                "agent shadow jar not built — run :agent:shadowJar");
+                "agent shadow jar not built, run :agent:shadowJar");
         return agentJar;
     }
 

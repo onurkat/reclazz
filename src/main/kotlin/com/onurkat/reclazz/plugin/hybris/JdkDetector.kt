@@ -35,7 +35,7 @@ enum class JdkVendor(val displayLabel: String) {
      * and reflective caches (e.g. Hybris `ModelService`) see them immediately.
      *
      * On any other JDK 17+, structural hot-reload still works via Reclazz's
-     * companion-class path — new members live on a hidden nestmate and are
+     * companion-class path, new members live on a hidden nestmate and are
      * reached through invokedynamic rewriting, which means hot-compiled code
      * can call them but reflection on the original class cannot.
      */
@@ -53,7 +53,7 @@ data class JdkInfo(
     enum class CapabilityLevel {
         /** Structural hot-reload via Reclazz companion classes (any JDK 17+). */
         COMPANION_MODE,
-        /** Enhanced redefinition — JBR/DCEVM with `-XX:+AllowEnhancedClassRedefinition`. */
+        /** Enhanced redefinition, JBR/DCEVM with `-XX:+AllowEnhancedClassRedefinition`. */
         ENHANCED_REDEFINITION
     }
 
@@ -144,7 +144,7 @@ object JdkDetector {
             return JdkVendor.DCEVM
         }
 
-        // GraalVM — check before Oracle since GraalVM may also contain "Oracle"
+        // GraalVM, check before Oracle since GraalVM may also contain "Oracle"
         if (implementor.contains("GraalVM", ignoreCase = true) ||
             implementorVersion.contains("GraalVM", ignoreCase = true) ||
             normalizedPath.contains("graalvm")) {
@@ -193,7 +193,7 @@ object JdkDetector {
             return JdkVendor.LIBERICA
         }
 
-        // Generic OpenJDK — any build with "OpenJDK" in implementor or path
+        // Generic OpenJDK, any build with "OpenJDK" in implementor or path
         if (implementor.contains("OpenJDK", ignoreCase = true) ||
             releaseContent.contains("OpenJDK", ignoreCase = true) ||
             normalizedPath.contains("openjdk")) {
@@ -216,7 +216,7 @@ object JdkDetector {
     private fun buildJvmArgs(hasEnhancedRedefinition: Boolean): List<String> {
         val args = mutableListOf<String>()
 
-        // Module access flags for JDK 17+ — required for instrumentation
+        // Module access flags for JDK 17+, required for instrumentation
         args.add("--add-opens=java.base/java.lang=ALL-UNNAMED")
         args.add("--add-opens=java.base/java.lang.reflect=ALL-UNNAMED")
         args.add("--add-opens=java.base/java.io=ALL-UNNAMED")

@@ -69,7 +69,7 @@ object ReloadNotifications {
     }
 
     fun notifyJdkDetection(project: Project, jdkInfo: JdkInfo) {
-        val message = "Detected ${jdkInfo.displayName} — ${jdkInfo.capabilityDescription}"
+        val message = "Detected ${jdkInfo.displayName}, ${jdkInfo.capabilityDescription}"
         when {
             jdkInfo.vendor == JdkVendor.GRAALVM -> {
                 warn(project, "Reclazz", "$message. GraalVM has known limitations with class redefinition.")
@@ -88,7 +88,7 @@ object ReloadNotifications {
      * Offer to switch Reclazz on for a project where it is currently off.
      *
      * Reclazz is enabled per project, while the welcome dialog is shown
-     * once per installation — so the second project a user opens would
+     * once per installation, so the second project a user opens would
      * otherwise sit there doing nothing, with no hint why. This carries
      * the action itself rather than pointing at Settings, and the caller
      * shows it once per project per IDE session so it stays an offer

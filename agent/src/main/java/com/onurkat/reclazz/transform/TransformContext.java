@@ -16,7 +16,7 @@ import com.onurkat.reclazz.ui.Failures;
 
 /**
  * Tracks which classes are watched for structural reload transformation.
- * Only custom extension classes are transformed — platform/library code is untouched.
+ * Only custom extension classes are transformed, platform/library code is untouched.
  */
 public class TransformContext {
 
@@ -150,7 +150,7 @@ public class TransformContext {
     }
 
     /**
-     * Metadata about a transformed class — tracks original method/field signatures
+     * Metadata about a transformed class, tracks original method/field signatures
      * so we can detect structural changes on reload.
      */
     public static class ClassMetadata {

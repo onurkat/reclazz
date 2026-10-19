@@ -44,7 +44,7 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
             // cost of the agent at startup.
             if (!constantPoolMentionsTarget(reader)) return null;
 
-            // COMPUTE_MAXS only — this transform rewrites invokevirtual→invokestatic with
+            // COMPUTE_MAXS only, this transform rewrites invokevirtual→invokestatic with
             // identical stack effects, so frames are unchanged. COMPUTE_FRAMES would require
             // a SafeClassWriter and is too expensive for this broad (all-class) transform.
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
@@ -54,7 +54,7 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
 
             return writer.toByteArray();
         } catch (Exception e) {
-            // Never fail a transform — return null to use original bytecode
+            // Never fail a transform, return null to use original bytecode
             return null;
         }
     }

@@ -77,7 +77,7 @@ class ReloadManager(private val project: Project) : Disposable {
                     onResult?.invoke(ConnectResult.NO_AGENT_FOUND)
                     return@executeOnPooledThread
                 }
-                // Disconnect on pooled thread — stopReconnect() may block up to 2s
+                // Disconnect on pooled thread, stopReconnect() may block up to 2s
                 disconnectFromAgent()
                 statusClient = AgentStatusClient(
                     port = port,
@@ -146,7 +146,7 @@ class ReloadManager(private val project: Project) : Disposable {
             }
             "RELOAD", "STRUCTURAL_RELOAD" -> {
                 // Both light (method-body) and heavy (structural / companion
-                // class) reloads bump the same counter — the user just wants
+                // class) reloads bump the same counter, the user just wants
                 // to see "something reloaded".
                 _reloadCount.incrementAndGet()
                 lastError = null
@@ -245,7 +245,7 @@ class ReloadManager(private val project: Project) : Disposable {
         if (settings.agentPort in VALID_PORT_RANGE) {
             val port = settings.agentPort
             return if (isPortOpen(port)) port else {
-                log.info("Configured port $port not open — agent may not be running")
+                log.info("Configured port $port not open, agent may not be running")
                 null
             }
         }
@@ -274,7 +274,7 @@ class ReloadManager(private val project: Project) : Disposable {
 
         for (portFile in portFilePaths) {
             try {
-                // Read atomically — Files.readString handles non-existence by throwing,
+                // Read atomically, Files.readString handles non-existence by throwing,
                 // avoiding the TOCTOU between exists() and readString().
                 val content = try {
                     Files.readString(portFile).trim()
@@ -284,7 +284,7 @@ class ReloadManager(private val project: Project) : Disposable {
                 val port = content.toIntOrNull() ?: continue
                 if (port in VALID_PORT_RANGE) {
                     return if (isPortOpen(port)) port else {
-                        log.info("Port file $portFile found but port $port not open — agent may not be running")
+                        log.info("Port file $portFile found but port $port not open, agent may not be running")
                         null
                     }
                 }

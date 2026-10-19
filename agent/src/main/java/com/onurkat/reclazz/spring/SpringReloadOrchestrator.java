@@ -263,7 +263,7 @@ public class SpringReloadOrchestrator {
                 injectionMetadataReloader.reload();
             }
 
-            // 1. Bean refresh — pass the actual Class object: its own
+            // 1. Bean refresh, pass the actual Class object: its own
             // classloader is the only reliable way to match bean types
             // across contexts with different classloaders.
             if (!rabbitReloader.beforeBeanRefresh(reloadedClass, newBytecode, addedMethodSigs, kafkaReloader, jmsReloader)) return;

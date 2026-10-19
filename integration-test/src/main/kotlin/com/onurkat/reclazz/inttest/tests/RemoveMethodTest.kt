@@ -41,7 +41,7 @@ class RemoveMethodTest(
             val httpResult = httpVerifier.get("${config.testEndpointBase}/removable")
             if (!config.enhancedMode) {
                 // Companion mode: existing callers keep the previous
-                // implementation of removed methods (documented) — the
+                // implementation of removed methods (documented), the
                 // endpoint must still answer with the old body.
                 return if (httpResult.statusCode == 200 && httpResult.body == "removable-v1") {
                     result(start, TestStatus.PASS,

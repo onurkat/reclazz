@@ -112,7 +112,7 @@ fun main() {
             test.writeTemplate(path, template)
         }
 
-        // Wait for the baseline compile/reload storm to finish completely —
+        // Wait for the baseline compile/reload storm to finish completely,
         // 10 files each take ~0.5s to compile, so a fixed 2s sleep left
         // in-flight events that tests then mistook for their own.
         agentClient.waitForQuiet(quietMs = 3_000, maxWaitMs = 90_000)

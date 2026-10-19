@@ -220,7 +220,7 @@ public class IncrementalCompiler {
         options.add("-nowarn");
 
         // Match the build tool's compile settings: -g keeps the local
-        // variable table and -parameters keeps reflective parameter names —
+        // variable table and -parameters keeps reflective parameter names,
         // Spring MVC needs one of them to resolve @RequestParam names on
         // recompiled controllers.
         options.add("-g");

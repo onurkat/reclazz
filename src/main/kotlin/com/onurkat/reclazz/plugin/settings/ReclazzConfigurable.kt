@@ -68,14 +68,14 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
         val connected = manager.isConnected
         val reloadCount = manager.reloadCount
         val statusLine = if (connected) {
-            "Status: Connected — $reloadCount reload${if (reloadCount == 1) "" else "s"} this session"
+            "Status: Connected, $reloadCount reload${if (reloadCount == 1) "" else "s"} this session"
         } else {
             "Status: Not connected"
         }
         val agentInstalled = if (isHybris) HybrisAgentInstaller.isInstalled(project) else false
 
         return panel {
-            // Status header — always visible, orients the user immediately.
+            // Status header, always visible, orients the user immediately.
             row {
                 label("Reclazz $version").applyToComponent {
                     font = font.deriveFont(font.size + 2f).deriveFont(java.awt.Font.BOLD)
@@ -91,7 +91,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
             }
             separator()
 
-            // Hybris hero — only shown when a SAP Commerce project is detected.
+            // Hybris hero, only shown when a SAP Commerce project is detected.
             // Promotes the single most important action: "Install Agent".
             if (isHybris) {
                 group("SAP Commerce Cloud") {
@@ -118,7 +118,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                         row {
                             comment("One-time setup: add the Reclazz agent to your SAP " +
                                     "Commerce server so class changes hot-reload at runtime. " +
-                                    "Safe to re-run — fully idempotent.")
+                                    "Safe to re-run, fully idempotent.")
                         }
                         row {
                             button("Install Reclazz Agent") {
@@ -155,7 +155,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
 
             // The only place Reclazz mentions sponsorship: one line, opt-out,
             // never shown again once dismissed. No popups, no notifications,
-            // no startup banner — a dev tool that nags is a dev tool people
+            // no startup banner, a dev tool that nags is a dev tool people
             // uninstall.
             if (!settings.supportLineDismissed) {
                 row {
@@ -285,7 +285,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
             return
         }
 
-        // Pick *replaces* the current selection — prior behavior (merge)
+        // Pick *replaces* the current selection, prior behavior (merge)
         // trapped users with stale picks they had to manually clear.
         val dialog = JBPopupFactory.getInstance()
             .createPopupChooserBuilder(extensions)

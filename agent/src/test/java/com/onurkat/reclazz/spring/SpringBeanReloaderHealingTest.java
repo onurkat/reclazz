@@ -32,13 +32,13 @@ class SpringBeanReloaderHealingTest {
 
     public static class Holder {
         @Autowired
-        Service service; // wired by Spring — Spring records a dependency edge
+        Service service; // wired by Spring, Spring records a dependency edge
     }
 
     /**
      * Captures the service WITHOUT Spring recording a dependency edge
      * (wired manually after refresh). Only stale-reference healing can fix
-     * this holder — the dependent cascade cannot see it.
+     * this holder, the dependent cascade cannot see it.
      */
     public static class ManualHolder {
         Service service;

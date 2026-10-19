@@ -48,7 +48,7 @@ object HybrisProjectDetector {
             base.resolve("config/localextensions.xml"),
             base.resolve("hybris/config/localextensions.xml"),
             base.resolve("bin/platform/build.xml"),
-            // SAP Commerce Cloud project layout — hybris nested at core-customize/hybris
+            // SAP Commerce Cloud project layout, hybris nested at core-customize/hybris
             base.resolve("core-customize/hybris/config/localextensions.xml"),
             base.resolve("core-customize/hybris/bin/platform/build.xml")
         )

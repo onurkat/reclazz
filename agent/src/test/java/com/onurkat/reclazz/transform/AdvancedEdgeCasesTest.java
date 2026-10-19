@@ -96,7 +96,7 @@ class AdvancedEdgeCasesTest extends TransformTestBase {
 
     @Test
     void aspectStyleClassWithAroundAdvice() {
-        // Simulates an @Aspect class — a class with methods that wrap a
+        // Simulates an @Aspect class, a class with methods that wrap a
         // Runnable / Callable, no actual AOP runtime.
         Map<String, byte[]> classes = compileAndTransform(
                 new SourceFile("LoggingAspect",
@@ -108,7 +108,7 @@ class AdvancedEdgeCasesTest extends TransformTestBase {
                         "            return target.call();\n" +
                         "        } finally {\n" +
                         "            long elapsed = System.nanoTime() - start;\n" +
-                        "            // \"log\" — not really\n" +
+                        "            // \"log\", not really\n" +
                         "        }\n" +
                         "    }\n" +
                         "    public static String run() throws Exception {\n" +
@@ -183,7 +183,7 @@ class AdvancedEdgeCasesTest extends TransformTestBase {
 
     @Test
     void manyExceptionHandlersInOneMethod() {
-        // 20 try-catch blocks in one method — stresses exception table
+        // 20 try-catch blocks in one method, stresses exception table
         StringBuilder body = new StringBuilder();
         body.append("StringBuilder sb = new StringBuilder();\n");
         for (int i = 0; i < 20; i++) {
@@ -224,7 +224,7 @@ class AdvancedEdgeCasesTest extends TransformTestBase {
 
     @Test
     void staticMethodReturningSelfFromBuilder() {
-        // Fluent API where every method returns this — common builder
+        // Fluent API where every method returns this, common builder
         // shape that exercises ARETURN with `this` on the stack.
         Map<String, byte[]> classes = compileAndTransform(
                 new SourceFile("StringBuilderLike",

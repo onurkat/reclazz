@@ -52,7 +52,7 @@ class ReclazzStartup : ProjectActivity {
 
         // Always try to discover and connect to a running agent, even when
         // the plugin is "disabled" in settings. The status widget is purely
-        // informational — if the agent is running externally (e.g. attached
+        // informational, if the agent is running externally (e.g. attached
         // via wrapper.conf), the user wants to see its status regardless of
         // whether they've toggled the plugin's own injection features on.
         // Only the agent-injection / auto-compile features are gated by
@@ -95,7 +95,7 @@ class ReclazzStartup : ProjectActivity {
         if (!settings.state.enabled) {
             // Enablement is per project but the welcome is per installation,
             // so a second project would otherwise be silently inert. Offer
-            // it once per project per session — an offer, not a reminder.
+            // it once per project per session, an offer, not a reminder.
             if (offeredProjects.add(projectKey)) {
                 ReloadNotifications.offerToEnable(project, isHybris)
             }
@@ -123,7 +123,7 @@ class ReclazzStartup : ProjectActivity {
             log.info("Reclazz enabled for project: ${project.name}")
         }
 
-        // Run JDK detection — only notify once per project per IDE session
+        // Run JDK detection, only notify once per project per IDE session
         if (settings.state.autoDetectJdk) {
             val jdkInfo = JdkDetector.detect(project)
             if (jdkInfo != null) {

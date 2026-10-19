@@ -68,7 +68,7 @@ public final class MethodForge {
             mSig = u.objectFieldOffset(Method.class.getDeclaredField("signature"));
             mAnnot = u.objectFieldOffset(Method.class.getDeclaredField("annotations"));
 
-            // MethodAccessor field — in jdk.internal.reflect package
+            // MethodAccessor field, in jdk.internal.reflect package
             mAccessor = u.objectFieldOffset(Method.class.getDeclaredField("methodAccessor"));
 
             // Field field offsets
@@ -86,7 +86,7 @@ public final class MethodForge {
             // as direct declared fields on Method. Reflection patching (which
             // forges synthetic Method/Field objects so reflective scans see
             // structurally-added members) is unavailable on these JVMs. Hot
-            // reload itself still works — only the reflection-based view of
+            // reload itself still works, only the reflection-based view of
             // newly-added methods/fields is degraded. Stay quiet here; the
             // outer agent init logs the degraded mode once with the rest of
             // the capability summary so users see it in context, not as a
@@ -149,7 +149,7 @@ public final class MethodForge {
             UNSAFE.putObject(m, METHOD_RETURN_TYPE_OFFSET, returnType);
             UNSAFE.putObject(m, METHOD_PARAM_TYPES_OFFSET, parameterTypes.clone());
             UNSAFE.putInt(m, METHOD_MODIFIERS_OFFSET, modifiers);
-            UNSAFE.putInt(m, METHOD_SLOT_OFFSET, Integer.MAX_VALUE); // synthetic slot — avoids -1 clash
+            UNSAFE.putInt(m, METHOD_SLOT_OFFSET, Integer.MAX_VALUE); // synthetic slot, avoids -1 clash
             UNSAFE.putObject(m, METHOD_SIGNATURE_OFFSET, null);
 
             if (annotations != null) {
@@ -254,7 +254,7 @@ public final class MethodForge {
                     return dispatchMH.invokeWithArguments(fullArgs);
                 }
             }
-            // Other methods (equals, hashCode, toString) — default behavior
+            // Other methods (equals, hashCode, toString), default behavior
             if ("hashCode".equals(method.getName())) return System.identityHashCode(proxy);
             if ("equals".equals(method.getName())) return proxy == args[0];
             if ("toString".equals(method.getName())) return "ReclazzMethodAccessor";

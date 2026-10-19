@@ -63,7 +63,7 @@ public final class DispatchTable {
      * Re-target all call sites for a class to new method handles from a companion class.
      * Thread-safe: uses per-class lock.
      *
-     * Always creates the dispatch entry if it doesn't exist yet — the latest
+     * Always creates the dispatch entry if it doesn't exist yet, the latest
      * target map needs to be populated so that lazy bootstrap of call sites
      * (which happens on first invocation, possibly AFTER a reload) picks up
      * the latest companion handle instead of the v0 renamed method.
@@ -88,7 +88,7 @@ public final class DispatchTable {
         // the first reload that happens before any user request to the class
         // is silently lost (the user sees v0 behavior on the first request,
         // and only the SECOND reload after that request actually takes
-        // effect — matching the reported bug).
+        // effect, matching the reported bug).
         private final ConcurrentHashMap<String, MethodHandle> latestMethodTargets = new ConcurrentHashMap<>();
 
         /**
@@ -146,7 +146,7 @@ public final class DispatchTable {
                             // It needs the same proxy/override guard as a warm site.
                             site.setTarget(respectingOverrides(key, latest));
                         } catch (Exception ignored) {
-                            // type mismatch — leave the v0 handle in place
+                            // type mismatch, leave the v0 handle in place
                         }
                     }
                 }

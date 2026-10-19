@@ -26,7 +26,7 @@ public final class TransformExclusions {
         // Abstract methods have no body
         if ((access & Opcodes.ACC_ABSTRACT) != 0) return true;
 
-        // Static initializer — keep as-is (only inject __reclazz$lookup init)
+        // Static initializer, keep as-is (only inject __reclazz$lookup init)
         if ("<clinit>".equals(name)) return true;
 
         // Enum synthetic methods
@@ -43,7 +43,7 @@ public final class TransformExclusions {
         // but the resulting target dispatches via our invokedynamic which
         // currently produces wrong results in some configurations. Safer to
         // leave lambda body methods untouched. They're rarely the hot-reload
-        // target — users edit their own methods, and the lambda body is reached
+        // target, users edit their own methods, and the lambda body is reached
         // from there.
         if (name.startsWith("lambda$")) return true;
 

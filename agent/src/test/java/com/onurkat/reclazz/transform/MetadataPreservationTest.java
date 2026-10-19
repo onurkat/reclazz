@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Reflection-based metadata that frameworks (Spring, Hybris, JPA) read from
  * trampoline methods. The trampoline replaces the original method, so its
- * parameter names and annotations must match the original — otherwise
+ * parameter names and annotations must match the original, otherwise
  * frameworks like Spring's @RequestParam without explicit name will fail with
  * "Ensure that the compiler uses the '-parameters' flag".
  */

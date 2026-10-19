@@ -83,7 +83,7 @@ class SpringXmlReloaderTest {
 
         reloader.reload(xml);
 
-        // Same instance — no destroy + recreate
+        // Same instance, no destroy + recreate
         TestBean sameInstance = liveContext.getBean("target", TestBean.class);
         assertTrue(bean == sameInstance, "live singleton identity preserved");
 
@@ -201,7 +201,7 @@ class SpringXmlReloaderTest {
 
         reloader.reload(xml);
 
-        // Live context unchanged — class still the original TestBean
+        // Live context unchanged, class still the original TestBean
         assertEquals(originalClass, liveContext.getBean("target").getClass().getName());
     }
 
@@ -472,7 +472,7 @@ class SpringXmlReloaderTest {
         // of lazy beans just to apply property changes)
         assertFalse(liveContext.getBeanFactory().containsSingleton("lazy"));
 
-        // But when the user finally looks it up, the new value is there —
+        // But when the user finally looks it up, the new value is there,
         // the BD was mirrored with the new property.
         TestBean bean = liveContext.getBean("lazy", TestBean.class);
         assertEquals("v2", bean.getMessage());
@@ -640,7 +640,7 @@ class SpringXmlReloaderTest {
 
         reloader.reload(xml);
 
-        // BPP rejected — live factory untouched
+        // BPP rejected, live factory untouched
         assertFalse(liveContext.containsBean("bpp"),
                 "BeanPostProcessor must not be live-added (side effects on other beans)");
     }
@@ -818,7 +818,7 @@ class SpringXmlReloaderTest {
 
         TestBean bean = liveContext.getBean("target", TestBean.class);
 
-        // Switch to prototype — reloader must reject even the property change
+        // Switch to prototype, reloader must reject even the property change
         writeXml("beans.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <beans xmlns="http://www.springframework.org/schema/beans">
@@ -831,7 +831,7 @@ class SpringXmlReloaderTest {
         reloader.reload(xml);
 
         assertEquals("orig", bean.getMessage(),
-                "scope change classifies the whole bean as unsafe — property change skipped");
+                "scope change classifies the whole bean as unsafe, property change skipped");
     }
 
     // ═══ Extended coverage: removal detection ═════════════════════════════════
@@ -898,7 +898,7 @@ class SpringXmlReloaderTest {
         loadIntoLiveContext(fileB);
         liveContext.refresh();
 
-        // Edit file A, empty it out — fromA's removal must be detected but
+        // Edit file A, empty it out, fromA's removal must be detected but
         // fromB must NOT show up as removed (it's defined in file B).
         writeXml("a-spring.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
@@ -1031,7 +1031,7 @@ class SpringXmlReloaderTest {
 
         reloader.reload(xml);
 
-        // Both the id and the alias look-ups see the new value — same
+        // Both the id and the alias look-ups see the new value, same
         // singleton, property applied in place, alias never changed.
         assertEquals("customised", liveContext.getBean("defaultFooService", TestBean.class).getMessage());
         assertEquals("customised", liveContext.getBean("fooService", TestBean.class).getMessage());
@@ -1085,7 +1085,7 @@ class SpringXmlReloaderTest {
 
     @Test
     void hybrisInterceptorListPropertyReplacementAppliesLive() throws Exception {
-        // Interceptor chain / populator list — the #1 list-valued injection
+        // Interceptor chain / populator list, the #1 list-valued injection
         // in Hybris XML config.
         Path xml = writeXml("interceptor-spring.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
@@ -1136,7 +1136,7 @@ class SpringXmlReloaderTest {
 
         reloader.reload(xml);
 
-        // Live singleton now has the expanded list — next method call reads
+        // Live singleton now has the expanded list, next method call reads
         // it without any bean destroy / recreate.
         assertEquals(2, chain.getInterceptors().size());
         assertEquals("first", chain.getInterceptors().get(0).getName());
@@ -1145,7 +1145,7 @@ class SpringXmlReloaderTest {
 
     @Test
     void hybrisMapPropertyTypeCodeDispatchReplacementAppliesLive() throws Exception {
-        // Map-valued injection — think "type code → handler" dispatch tables
+        // Map-valued injection, think "type code → handler" dispatch tables
         // (defaultCartEntryProductInfoPopulator's typeCodeToProductConverterMap, etc.)
         Path xml = writeXml("typecodemap-spring.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
@@ -1344,7 +1344,7 @@ class SpringXmlReloaderTest {
         TestBean coreService = liveContext.getBean("defaultPlatformService", TestBean.class);
         TestBean customService = liveContext.getBean("defaultCustomService", TestBean.class);
 
-        // Edit custom extension — core must be untouched
+        // Edit custom extension, core must be untouched
         writeXml("customext-spring.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <beans xmlns="http://www.springframework.org/schema/beans">
@@ -1376,7 +1376,7 @@ class SpringXmlReloaderTest {
         reader.loadBeanDefinitions(new FileSystemResource(xml.toFile()));
     }
 
-    /** Minimal PlatformContext stub — only getApplicationContext() is consulted. */
+    /** Minimal PlatformContext stub, only getApplicationContext() is consulted. */
     private static final class TestPlatformContext implements PlatformContext {
         private final Object context;
 
@@ -1431,14 +1431,14 @@ class SpringXmlReloaderTest {
         public void setCollaborator(Collaborator collaborator) { this.collaborator = collaborator; }
     }
 
-    /** Ctor-only bean — tests constructor-arg unsafe classification. */
+    /** Ctor-only bean, tests constructor-arg unsafe classification. */
     public static class CtorBean {
         private final String value;
         public CtorBean(String value) { this.value = value; }
         public String getValue() { return value; }
     }
 
-    /** Bean whose setter throws — exercises per-bean failure isolation. */
+    /** Bean whose setter throws, exercises per-bean failure isolation. */
     public static class ExplodingBean {
         private String payload;
         public String getPayload() { return payload; }
@@ -1447,7 +1447,7 @@ class SpringXmlReloaderTest {
         }
     }
 
-    /** Implements Spring's BeanPostProcessor — should be rejected as unsafe. */
+    /** Implements Spring's BeanPostProcessor, should be rejected as unsafe. */
     public static class CustomPostProcessor
             implements org.springframework.beans.factory.config.BeanPostProcessor {
         @Override
@@ -1456,7 +1456,7 @@ class SpringXmlReloaderTest {
         public Object postProcessAfterInitialization(Object bean, String beanName) { return bean; }
     }
 
-    /** Implements InitializingBean — should be rejected as unsafe. */
+    /** Implements InitializingBean, should be rejected as unsafe. */
     public static class CustomInitializingBean
             implements org.springframework.beans.factory.InitializingBean {
         private String data;
@@ -1467,7 +1467,7 @@ class SpringXmlReloaderTest {
     }
 
     /**
-     * Service bean with a list of collaborators — models an interceptor chain
+     * Service bean with a list of collaborators, models an interceptor chain
      * or populator list, the most common Hybris list-valued injection pattern.
      */
     public static class InterceptorChain {

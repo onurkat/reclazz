@@ -122,11 +122,11 @@ public class ReclazzTransformer implements ClassFileTransformer {
             // Always validate transformed bytecode before handing it to the JVM.
             // If our generated frames are inconsistent (which would crash class
             // loading with VerifyError), drop the transform and let the JVM load
-            // the original class — the user keeps a working server, just without
+            // the original class, the user keeps a working server, just without
             // hot-reload for that one class.
             if (!isBytecodeValid(className, transformed)) {
                 StatusReporter.warn("Transform produced invalid bytecode for " + className +
-                        " — falling back to original. Hot-reload disabled for this class.");
+                        ", falling back to original. Hot-reload disabled for this class.");
                 return null;
             }
 
@@ -198,7 +198,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
         ClassReader reader = new ClassReader(classfileBuffer);
 
         // Custom ClassWriter that walks class hierarchies via ClassReader rather
-        // than Class.forName — required because target classes are typically not
+        // than Class.forName, required because target classes are typically not
         // yet loaded by the JVM at premain transform time.
         ClassWriter writer = new SafeClassWriter(reader, ClassWriter.COMPUTE_FRAMES, loader);
 
@@ -265,7 +265,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
      * Custom ClassWriter that resolves class hierarchies for COMPUTE_FRAMES.
      *
      * The default ASM implementation calls Class.forName(type) which fails for
-     * classes not yet loaded — which is the common case at premain time. The
+     * classes not yet loaded, which is the common case at premain time. The
      * naive fix (catch the exception and return java.lang.Object) produces
      * stackmap frames that pass ASM's frame computation but later fail JVM
      * verification at instructions like `athrow` that require a specific type.

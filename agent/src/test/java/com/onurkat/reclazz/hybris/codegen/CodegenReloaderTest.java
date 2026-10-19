@@ -115,7 +115,7 @@ class CodegenReloaderTest {
         ExtensionInfo found = reloader.findOwningExtension(itemsFile);
         assertNotNull(found);
         assertEquals("myStuff", found.getName(),
-                "items.xml path lookup is identical to beans.xml path lookup — same owning-extension logic");
+                "items.xml path lookup is identical to beans.xml path lookup, same owning-extension logic");
     }
 
     @Test
@@ -167,7 +167,7 @@ class CodegenReloaderTest {
         ExtensionInfo first = reloader.findOwningExtension(beansFile);
         ExtensionInfo second = reloader.findOwningExtension(beansFile);
         assertSame(first, second,
-                "lookup is a pure function of the extensions map — same object both calls");
+                "lookup is a pure function of the extensions map, same object both calls");
     }
 
     // ─── handleNewPersistence (items.xml schema side) ──────────────────────────

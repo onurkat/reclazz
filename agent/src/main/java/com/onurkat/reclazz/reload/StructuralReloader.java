@@ -53,14 +53,14 @@ public class StructuralReloader {
     private final boolean isHybris;
     private final PlatformContext platformContext;
 
-    // Hybris-specific reloaders — lazily initialized only on Hybris platform
+    // Hybris-specific reloaders, lazily initialized only on Hybris platform
     private Object hibernateInvalidator; // HibernateCacheInvalidator, loaded via reflection to avoid import
 
     // Load-time transformer, used to re-transform new bytecode so body-only
     // diffs (incl. constructor bodies) can be applied via redefineClasses.
     private ReclazzTransformer transformer;
 
-    // Per-class version counter — thread-safe
+    // Per-class version counter, thread-safe
     private final ConcurrentHashMap<String, Integer> versionCounters = new ConcurrentHashMap<>();
 
     public StructuralReloader(Instrumentation instrumentation, TransformContext context,
@@ -81,7 +81,7 @@ public class StructuralReloader {
                 // invalidation with no trace: reloads would appear to work
                 // while the ORM kept serving cached instances.
                 StatusReporter.warn("Hibernate cache invalidation unavailable ("
-                        + e + ") — reloaded entities may serve cached data until restart");
+                        + e + "), reloaded entities may serve cached data until restart");
                 RestartLedger.note("the Hibernate second-level cache",
                         "could not be invalidated, so a reloaded entity may still be served "
                         + "from it");
@@ -1396,7 +1396,7 @@ public class StructuralReloader {
             // constructor. For body-only diffs the schema is unchanged (same
             // members, same injected infrastructure), so we can legally
             // redefine the original class with the freshly transformed new
-            // bytecode — this applies constructor bodies directly.
+            // bytecode, this applies constructor bodies directly.
             // Constructor bodies reach the loaded class either way. For a
             // body-only diff the shape already matches. For a structural one
             // the added members are stripped first, which is the only reason
@@ -1528,7 +1528,7 @@ public class StructuralReloader {
             result.setShape(shape);
             if (diff.isAnnotationOnly()) {
                 StatusReporter.info("Annotation change on " + className
-                        + " — re-scanning the frameworks that read it");
+                        + ", re-scanning the frameworks that read it");
             }
             return result;
 
@@ -1536,11 +1536,11 @@ public class StructuralReloader {
             // Throwable: defineHiddenClass surfaces VerifyError (an Error)
             // for e.g. cross-companion invocations between nested classes.
             // For body-only diffs a plain redefinition of the original class
-            // is a fully valid application of the change — the registered
+            // is a fully valid application of the change, the registered
             // transformer re-injects the infrastructure during redefine.
             if (!diff.isStructural()) {
                 StatusReporter.warn("Companion reload failed for " + className +
-                        " (" + e + ") — falling back to class redefinition");
+                        " (" + e + "), falling back to class redefinition");
                 // On the pinned path the raw payload still carries the
                 // entangled methods' NEW bodies, and redefining it would put
                 // exactly the crash back that the splice exists to prevent.
@@ -1834,7 +1834,7 @@ public class StructuralReloader {
             }
         }
 
-        // Atomic swap — no window where reflection sees incomplete state
+        // Atomic swap, no window where reflection sees incomplete state
         ReflectionBridge.replaceClassState(targetClass, forgedMethods, forgedFields);
     }
 
@@ -1865,7 +1865,7 @@ public class StructuralReloader {
             return companionLookup.findStatic(companionClass, methodName, mt);
         } catch (Exception e) {
             // Returning null here means "this member has no companion
-            // target", which is normal for unchanged members — but a real
+            // target", which is normal for unchanged members, but a real
             // resolution failure looks identical, so surface it in verbose.
             if (config.isVerbose()) {
                 StatusReporter.warn("No companion target for " + methodName

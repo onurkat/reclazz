@@ -17,7 +17,7 @@ import com.onurkat.reclazz.util.Reflect;
  * Generic Spring bean reloader that works with any Spring application.
  * Refreshes singleton beans by destroying and recreating them.
  *
- * All Spring interaction is via reflection — no compile-time Spring dependency.
+ * All Spring interaction is via reflection, no compile-time Spring dependency.
  * Graceful no-op if Spring is not present.
  */
 public class SpringBeanReloader {
@@ -36,7 +36,7 @@ public class SpringBeanReloader {
     }
 
     /**
-     * Refresh with the actual reloaded Class when available — class-object
+     * Refresh with the actual reloaded Class when available, class-object
      * type matching works across contexts regardless of classloaders.
      */
     public void refreshBean(String className, Class<?> reloadedClass) {
@@ -47,7 +47,7 @@ public class SpringBeanReloader {
             if (contexts.isEmpty()) {
                 // Spring context isn't ready yet. Reloads triggered during
                 // server startup (before the context is built) have nothing
-                // to refresh — Spring will instantiate the new class version
+                // to refresh, Spring will instantiate the new class version
                 // when it eventually wires beans. Stay silent: spamming this
                 // on every reload is noise.
                 return;
@@ -121,11 +121,11 @@ public class SpringBeanReloader {
      * Phase 2 (dependent cascade) + phase 3 (stale-reference healing).
      *
      * Phase 2: a bean that @Autowired the refreshed one records that
-     * dependency in ITS OWN factory — e.g. a controller in a child
+     * dependency in ITS OWN factory, e.g. a controller in a child
      * DispatcherServlet context depending on a service from the parent.
      * Phase 3: dependency bookkeeping is best-effort (edges are scrubbed on
      * destroy), so also sweep live singletons and re-point fields that still
-     * hold a destroyed instance. Identity comparison — no type guessing.
+     * hold a destroyed instance. Identity comparison, no type guessing.
      */
     private void applyDependentsAndHealing(java.util.List<Object> contexts,
                                            java.util.LinkedHashSet<String> refreshedNames,
@@ -194,7 +194,7 @@ public class SpringBeanReloader {
         }
     }
 
-    /** Type match with the ACTUAL reloaded Class — classloader-exact. */
+    /** Type match with the ACTUAL reloaded Class, classloader-exact. */
     private String[] findBeanNamesByType(Object appContext, Class<?> targetClass) {
         try {
             Method nonEager = Reflect.findMethod(appContext.getClass(), "getBeanNamesForType",
@@ -277,14 +277,14 @@ public class SpringBeanReloader {
      * Sweep every live singleton in every context and re-point fields that
      * still hold a destroyed bean instance to its replacement. This is what
      * actually fixes the "existing @Autowired references still hold the old
-     * instance" problem — dependency-map cascading alone cannot, because
+     * instance" problem, dependency-map cascading alone cannot, because
      * Spring scrubs those edges during destroySingleton.
      */
     /**
      * Per-class list of reference-typed instance fields, computed once.
      *
      * getDeclaredFields() allocates a fresh Field[] (with a full copy of
-     * each Field) on EVERY call, and setAccessible has its own cost — at
+     * each Field) on EVERY call, and setAccessible has its own cost, at
      * ~10k singletons a naive sweep re-derived hundreds of thousands of
      * Field objects per reload. Class objects are weakly held so unloaded
      * classes (including our own hidden companions) stay collectable.
@@ -308,7 +308,7 @@ public class SpringBeanReloader {
                     try {
                         f.setAccessible(true);
                     } catch (Throwable e) {
-                        continue; // module-protected — never readable, skip forever
+                        continue; // module-protected, never readable, skip forever
                     }
                     out.add(f);
                 }
@@ -370,7 +370,7 @@ public class SpringBeanReloader {
                     swapped++;
                 }
             } catch (Throwable ignored) {
-                // final/inaccessible at write time — leave the field alone
+                // final/inaccessible at write time, leave the field alone
             }
         }
         return swapped;
@@ -387,7 +387,7 @@ public class SpringBeanReloader {
     /**
      * Iteratively refresh singletons that depend on any of the given bean
      * names, in every live context, until a fixpoint is reached. Dependency
-     * registrations live in the factory that CREATED the dependent bean —
+     * registrations live in the factory that CREATED the dependent bean,
      * so each context's own factory must be queried.
      */
     private void cascadeDependents(java.util.List<Object> contexts,
@@ -421,7 +421,7 @@ public class SpringBeanReloader {
                         }
                     }
                 } catch (Exception e) {
-                    // Do not silently skip a context — that hides genuine
+                    // Do not silently skip a context, that hides genuine
                     // cascade failures (e.g. a servlet context whose factory
                     // rejects the reflective dependent-beans lookup).
                     StatusReporter.warn("Dependent cascade skipped a context: " + e);

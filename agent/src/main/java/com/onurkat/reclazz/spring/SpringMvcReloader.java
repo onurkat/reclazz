@@ -19,7 +19,7 @@ import com.onurkat.reclazz.util.Reflect;
  * Generic Spring MVC reloader that re-scans @RequestMapping methods after reload.
  * Works with any Spring MVC application (not just Hybris).
  *
- * All Spring interaction is via reflection — no compile-time Spring dependency.
+ * All Spring interaction is via reflection, no compile-time Spring dependency.
  * Graceful no-op if Spring MVC is not present.
  */
 public class SpringMvcReloader {
@@ -41,7 +41,7 @@ public class SpringMvcReloader {
         boolean reloaded = false;
         boolean[] sapFailure = {false};
         int contexts = 0;
-        // Controllers live in web application contexts — iterate all live
+        // Controllers live in web application contexts, iterate all live
         // contexts and re-scan wherever this controller is registered.
         for (Object appContext : platformContext.getAllApplicationContexts()) {
             contexts++;
@@ -247,7 +247,7 @@ public class SpringMvcReloader {
         try {
             return getBeanMethod.invoke(appContext, targetType);
         } catch (java.lang.reflect.InvocationTargetException e) {
-            // NoSuchBeanDefinitionException — this context has no MVC
+            // NoSuchBeanDefinitionException, this context has no MVC
             // infrastructure (e.g. the Hybris global context). Not an error.
             return null;
         }

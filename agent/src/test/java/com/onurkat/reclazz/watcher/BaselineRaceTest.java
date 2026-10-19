@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * The baseline captured the new bytes while the JVM was still running the
  * old ones, so when the watch event finally arrived the hash matched and
  * the dispatch was skipped as a no-op. That class then never hot-reloaded
- * again for the rest of the session, with nothing in the log — the exact
+ * again for the rest of the session, with nothing in the log, the exact
  * window `startupDelaySec` exists for (a build landing during boot).
  *
  * Found by the generic-path smoke test, which edits a class immediately
@@ -114,7 +114,7 @@ class BaselineRaceTest {
                 "a class written while the JVM was booting must be reloaded");
         assertEquals(classFile, dispatched.get(0).getPath());
 
-        // And exactly once — a second sweep must not re-fire it.
+        // And exactly once, a second sweep must not re-fire it.
         watcher.dispatchClassesChangedDuringStartup();
         assertEquals(1, dispatched.size());
     }

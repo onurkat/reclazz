@@ -27,7 +27,7 @@ import java.util.Set;
  *       constructor-args differ → <b>unsafe</b> (would need destroy+recreate)</li>
  *   <li>Existing ordinary {@code depends-on}, {@code primary}, {@code autowire},
  *       or {@code autowire-candidate} changes → <b>unsafe</b> before property mutation</li>
- *   <li>Otherwise, per-property diff of {@code <property>} values — emit
+ *   <li>Otherwise, per-property diff of {@code <property>} values, emit
  *       one {@link BeanDefinitionDiff.PropertyChange} per changed property</li>
  * </ul>
  *
@@ -120,7 +120,7 @@ final class XmlSafetyClassifier {
 
     /**
      * Find beans in the live factory whose {@code resourceDescription} points
-     * to {@code xmlPath} but which are absent from the newly parsed XML —
+     * to {@code xmlPath} but which are absent from the newly parsed XML,
      * those beans were removed by the user. Reported as unsafe (report-only);
      * the reloader never calls {@code destroySingleton} for removals.
      *
@@ -128,7 +128,7 @@ final class XmlSafetyClassifier {
      * hold stale refs" problem as live add, but unlike add, existing
      * {@code @Autowired} consumers calling into a destroyed bean can trip over
      * already-executed {@code destroy-method} side effects (closed connections,
-     * stopped threads). The user can just restart to apply the removal — the
+     * stopped threads). The user can just restart to apply the removal, the
      * warning tells them exactly which beans will go away.
      */
     private static void detectRemovals(Object liveFactory, Path xmlPath,
@@ -152,18 +152,18 @@ final class XmlSafetyClassifier {
             if (!res.contains(absPath) && !res.endsWith(fileNameMarker)) continue;
 
             out.unsafe.add(new BeanDefinitionDiff.UnsafeChange(
-                    liveName, "bean removed from XML — restart to destroy the live instance"));
+                    liveName, "bean removed from XML, restart to destroy the live instance"));
         }
     }
 
     /**
      * Reasons that disqualify a bean regardless of the live factory state.
-     * Applied to both new beans and existing ones — if a user starts setting
+     * Applied to both new beans and existing ones, if a user starts setting
      * an init-method on an existing bean, that counts as an unsafe change.
      */
     private static String unsafeShapeReason(Object bd) {
         if (SpringReflection.isAbstract(bd)) {
-            return "abstract bean (template — nothing to instantiate)";
+            return "abstract bean (template, nothing to instantiate)";
         }
         String scope = SpringReflection.getScope(bd);
         if (scope != null && !scope.isEmpty() && !"singleton".equals(scope)) {
@@ -180,7 +180,7 @@ final class XmlSafetyClassifier {
             return "factory-bean / factory-method construction";
         }
         if (SpringReflection.hasConstructorArgs(bd)) {
-            return "has constructor-arg (not reloadable — restart to apply)";
+            return "has constructor-arg (not reloadable, restart to apply)";
         }
         return null;
     }
@@ -209,7 +209,7 @@ final class XmlSafetyClassifier {
         // arg values accurately is expensive and mistakes produce broken
         // beans; users can restart instead.
         if (SpringReflection.hasConstructorArgs(newBd) || SpringReflection.hasConstructorArgs(liveBd)) {
-            return "constructor-arg present (not reloadable — restart to apply)";
+            return "constructor-arg present (not reloadable, restart to apply)";
         }
         return null;
     }
@@ -252,7 +252,7 @@ final class XmlSafetyClassifier {
             // Removal requires restart even when other properties were edited
             // or added. Keep the removed value; do not guess its default.
             out.unsafe.add(new BeanDefinitionDiff.UnsafeChange(
-                    beanName, "<property> removed — live instance keeps old value until restart"));
+                    beanName, "<property> removed, live instance keeps old value until restart"));
         }
     }
 

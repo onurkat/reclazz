@@ -17,7 +17,7 @@ class DisconnectAction : AnAction("Disconnect from Reclazz Agent") {
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
         val manager = ReloadManager.getInstance(project)
-        // Run off EDT — stopReconnect() may block briefly
+        // Run off EDT, stopReconnect() may block briefly
         ApplicationManager.getApplication().executeOnPooledThread {
             manager.disconnectFromAgent()
         }

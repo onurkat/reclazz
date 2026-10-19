@@ -13,11 +13,11 @@ import java.util.List;
  *
  * Outcomes per bean (including native recreation of selected definitions):
  * <ul>
- *   <li>{@link NewBean} — absent in the live factory, safe to register + instantiate</li>
- *   <li>{@link PropertyChange} — exists live, only {@code <property>} value differs,
- *       apply in place via reflection setter (no destroy / recreate — autowired
+ *   <li>{@link NewBean}, absent in the live factory, safe to register + instantiate</li>
+ *   <li>{@link PropertyChange}, exists live, only {@code <property>} value differs,
+ *       apply in place via reflection setter (no destroy / recreate, autowired
  *       consumers keep the same instance and see the new value on next call)</li>
- *   <li>{@link UnsafeChange} — requires a server restart (class changed, init-method,
+ *   <li>{@link UnsafeChange}, requires a server restart (class changed, init-method,
  *       BeanPostProcessor, constructor-arg change, etc.)</li>
  * </ul>
  *
@@ -47,7 +47,7 @@ final class BeanDefinitionDiff {
     static final class PropertyChange {
         final String beanName;
         final String propertyName;
-        /** Raw (unresolved) value — may be a {@code TypedStringValue}, {@code RuntimeBeanReference}, etc. */
+        /** Raw (unresolved) value, may be a {@code TypedStringValue}, {@code RuntimeBeanReference}, etc. */
         final Object newRawValue;
         /** Needed by {@code BeanDefinitionValueResolver} to resolve the raw value in context. */
         final Object newBeanDefinition;

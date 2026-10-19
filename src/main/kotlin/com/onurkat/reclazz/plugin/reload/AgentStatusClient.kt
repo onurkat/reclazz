@@ -118,7 +118,7 @@ class AgentStatusClient(
                             val line = try {
                                 reader.readLine() ?: break
                             } catch (_: SocketTimeoutException) {
-                                log.info("Socket read timeout — agent may be unresponsive")
+                                log.info("Socket read timeout, agent may be unresponsive")
                                 break
                             }
                             val event = parseEvent(line) ?: continue
@@ -166,7 +166,7 @@ class AgentStatusClient(
             val agentVersion = fields["agent"] ?: ""
             AgentEvent(level, message, timestamp, type, version, agentVersion)
         } catch (e: Exception) {
-            log.debug("Failed to parse agent event: ${e.message} — payload: ${json.take(200)}")
+            log.debug("Failed to parse agent event: ${e.message}, payload: ${json.take(200)}")
             null
         }
     }

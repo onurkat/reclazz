@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * A reload must report what CHANGED, not which engine ran.
  *
  * Every watched class goes through the companion engine, and the result
- * used to hardcode "structural" — so editing a single string literal was
+ * used to hardcode "structural", so editing a single string literal was
  * announced as "Structural reload" and counted by the IDE widget's
  * structural-reload counter.
  */

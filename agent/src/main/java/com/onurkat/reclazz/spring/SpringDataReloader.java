@@ -22,7 +22,7 @@ import java.util.List;
  * the generated proxy may reference stale method handles.
  * This reloader destroys and recreates the repository bean.
  *
- * All Spring interaction is via reflection — graceful no-op if Spring Data is not present.
+ * All Spring interaction is via reflection, graceful no-op if Spring Data is not present.
  */
 public class SpringDataReloader {
 

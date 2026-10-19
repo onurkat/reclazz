@@ -13,12 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Regression tests — one per shipped fix. Each test reproduces the exact
+ * Regression tests, one per shipped fix. Each test reproduces the exact
  * pattern that was reported as a bug.
  */
 class RegressionTest extends TransformTestBase {
 
-    /** 1.0.6 — VerifyError from common-supertype merge falling back to Object. */
+    /** 1.0.6, VerifyError from common-supertype merge falling back to Object. */
     @Test
     void v106_verifyErrorFromUnloadableThrowableMerge() {
         Map<String, byte[]> classes = compileAndTransform(
@@ -45,7 +45,7 @@ class RegressionTest extends TransformTestBase {
         }
     }
 
-    /** 1.0.7 — Interface should be skipped, not rejected with ClassFormatError. */
+    /** 1.0.7, Interface should be skipped, not rejected with ClassFormatError. */
     @Test
     void v107_interfaceWithDefaultMethodSkipped() {
         Map<String, byte[]> classes = compileAndTransform(
@@ -64,7 +64,7 @@ class RegressionTest extends TransformTestBase {
         assertEquals("v1:raw:hello", invokeStatic(cls, "run"));
     }
 
-    /** 1.0.8 — Anonymous subclass of HashMap calling inherited put() in initializer. */
+    /** 1.0.8, Anonymous subclass of HashMap calling inherited put() in initializer. */
     @Test
     void v108_inheritedMethodFromAnonymousInnerClass() {
         Map<String, byte[]> classes = compileAndTransform(

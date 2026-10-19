@@ -79,7 +79,7 @@ public interface PlatformContext {
     /**
      * Get ALL live Spring ApplicationContexts (e.g. the Hybris global
      * context plus every web application context). Spring reloaders must
-     * iterate these — a reloaded controller lives in a web context, not
+     * iterate these, a reloaded controller lives in a web context, not
      * the global one. Never returns null; empty list when no context is
      * available yet.
      */

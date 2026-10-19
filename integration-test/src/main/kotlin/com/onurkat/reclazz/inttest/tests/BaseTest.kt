@@ -53,7 +53,7 @@ abstract class BaseTest(
                 writeTemplate(path, template)
             }
 
-            // Wait for OUR file's compile — filtered by file name so a
+            // Wait for OUR file's compile, filtered by file name so a
             // stray event from another change can't satisfy the wait.
             val targetFileName = File(targetPath).name
             val targetClassName = targetFileName.removeSuffix(".java")

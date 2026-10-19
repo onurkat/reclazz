@@ -18,9 +18,9 @@ import com.onurkat.reclazz.ui.Failures;
  * Multi-layer JVM capability detection for enhanced class redefinition support.
  *
  * Detection strategy (in order):
- * 1. JVM flags — scan for -XX:+AllowEnhancedClassRedefinition
- * 2. VM identity — check vm.name/vendor for JBR, DCEVM, Trava
- * 3. Runtime probe — attempt a structural redefinition to definitively test
+ * 1. JVM flags, scan for -XX:+AllowEnhancedClassRedefinition
+ * 2. VM identity, check vm.name/vendor for JBR, DCEVM, Trava
+ * 3. Runtime probe, attempt a structural redefinition to definitively test
  */
 public class JvmCapabilityProbe {
 
@@ -73,10 +73,10 @@ public class JvmCapabilityProbe {
             return new ProbeResult(CapabilityLevel.ENHANCED_REDEFINITION, vmDescription, "jvm-flag");
         }
 
-        // Layer 2: Check VM identity (informational — used if probe fails/skipped)
+        // Layer 2: Check VM identity (informational, used if probe fails/skipped)
         String vmIdentity = detectVmIdentity();
 
-        // Layer 3: Runtime probe — definitive test
+        // Layer 3: Runtime probe, definitive test
         CapabilityLevel probed = runtimeProbe(instrumentation);
         if (probed != null) {
             return new ProbeResult(probed, vmDescription, "probe");
@@ -174,7 +174,7 @@ public class JvmCapabilityProbe {
         if (vmName.contains("dcevm") || vmVendor.contains("trava") || vmVersion.contains("dcevm")) {
             return "DCEVM";
         }
-        // GraalVM, Oracle, SapMachine etc. — standard redefinition only, return null
+        // GraalVM, Oracle, SapMachine etc., standard redefinition only, return null
         return null;
     }
 
@@ -188,7 +188,7 @@ public class JvmCapabilityProbe {
     }
 
     /**
-     * Layer 3: Runtime probe — generate a class, then attempt a structural redefinition.
+     * Layer 3: Runtime probe, generate a class, then attempt a structural redefinition.
      * This is the only 100% reliable way to determine capability.
      */
     private static CapabilityLevel runtimeProbe(Instrumentation instrumentation) {
@@ -216,7 +216,7 @@ public class JvmCapabilityProbe {
         } catch (UnsupportedOperationException e) {
             // Standard JVM rejects structural changes via JVMTI. The Reclazz
             // companion-class reloader still handles structural reloads on
-            // any JDK 17+ — report COMPANION_MODE so the agent installs its
+            // any JDK 17+, report COMPANION_MODE so the agent installs its
             // transform engine instead of falling back to body-only.
             return CapabilityLevel.COMPANION_MODE;
         } catch (Exception e) {
@@ -226,7 +226,7 @@ public class JvmCapabilityProbe {
             return null; // Let fallback logic decide
         } catch (Error e) {
             // JVM-level errors (e.g., "attempted to add a method"). This is
-            // the common path on standard JVMs — same reasoning as the
+            // the common path on standard JVMs, same reasoning as the
             // UnsupportedOperationException branch above: companion mode
             // still handles structural reloads.
             return CapabilityLevel.COMPANION_MODE;

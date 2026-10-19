@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  *
  * Every reloader talks to Spring purely through reflection (the agent has
  * no compile-time Spring dependency), and each had grown its own private
- * copy of the same four helpers — six copies of {@code findBeanName},
+ * copy of the same four helpers, six copies of {@code findBeanName},
  * six of {@code getBeanNamesForType}, four of {@code findMethod}. They
  * were byte-identical, so a fix in one never reached the others.
  *
@@ -35,7 +35,7 @@ final class SpringBeans {
                     appContext.getClass().getClassLoader());
             return beanNamesForType(appContext, type);
         } catch (ClassNotFoundException e) {
-            // Spring module not on the classpath — nothing to reload.
+            // Spring module not on the classpath, nothing to reload.
             return new String[0];
         }
     }
