@@ -1,10 +1,10 @@
-# Reclazz — Test Guide for SAP Commerce (Hybris)
+# Reclazz: Test Guide for SAP Commerce (Hybris)
 
 ## Prerequisites
 
 - SAP Commerce (Hybris) 2211 or later
 - IntelliJ IDEA 2023.3+ (Ultimate or Community)
-- JDK 17 or 21 — any vendor. Structural hot-reload works on standard JVMs
+- JDK 17 or 21, any vendor. Structural hot-reload works on standard JVMs
   (SapMachine, OpenJDK, Temurin, Corretto…) via Reclazz's companion-class
   reloader, and on JBR/DCEVM via enhanced redefinition.
 - Project configured and `ant all` completed successfully
@@ -31,7 +31,7 @@
 - Check IDE log (`Help → Show Log in Explorer`) for:
   ```
   Reclazz: Detected Hybris home at /path/to/hybris
-  Reclazz: JDK detection — version=17, isJBR=true/false
+  Reclazz: JDK detection, version=17, isJBR=true/false
   ```
 
 ## 3. JDK Detection
@@ -40,7 +40,7 @@
 1. Set project SDK to OpenJDK / SapMachine / Temurin / Corretto 17 or 21
 2. Check Reclazz tool window log
 
-**Expected**: `Detected JDK 21 (SapMachine) — structural hot-reload enabled (companion-class mode)`
+**Expected**: `Detected JDK 21 (SapMachine), structural hot-reload enabled (companion-class mode)`
 
 The notification also mentions the one caveat of companion mode:
 reflective caches (e.g. Hybris `ModelService`) won't see newly added
@@ -51,10 +51,10 @@ original class can't reach the hidden companion nestmate.
 1. Set project SDK to JBR 17 or 21
 2. Check Reclazz tool window log
 
-**Expected**: `Detected JDK 21 (JetBrains Runtime) — structural hot-reload enabled (enhanced redefinition)`
+**Expected**: `Detected JDK 21 (JetBrains Runtime), structural hot-reload enabled (enhanced redefinition)`
 
-Enhanced redefinition does not have the reflective-visibility caveat
-— new members are applied to the original `Class` object directly.
+Enhanced redefinition does not have the reflective-visibility caveat;
+new members are applied to the original `Class` object directly.
 
 ## 4. Agent Injection
 
@@ -88,7 +88,7 @@ Enhanced redefinition does not have the reflective-visibility caveat
 
 ## 6. Hot-Reload: Method Body Change
 
-This tests the most common scenario — changing method logic.
+This tests the most common scenario, changing method logic.
 
 1. Find a simple service class in your custom extension, e.g.:
    ```java
@@ -125,7 +125,7 @@ This tests the most common scenario — changing method logic.
 
 ## 8. Hot-Reload: Structural Change (any JDK 17+)
 
-Works on any JDK 17+ — standard or enhanced-redefinition.
+Works on any JDK 17+, standard or enhanced-redefinition.
 
 1. Add a new method or field to an existing class:
    ```java
@@ -452,10 +452,10 @@ provider lifecycle beyond instance reuse.
 - Run configuration should NOT have `-javaagent` flag
 
 ### Wrong JDK version
-- JDK < 17: Agent may not load — check for error in console
+- JDK < 17: Agent may not load, check for error in console
 
 ### Non-Hybris project
-- Plugin should be invisible — no tool window, no status widget activity
+- Plugin should be invisible, no tool window, no status widget activity
 - Settings section still available but disabled state
 
 ## 13. Settings Persistence
@@ -495,7 +495,7 @@ provider lifecycle beyond instance reuse.
 | No console logs after agent | SLF4J conflict | Ensure agent JAR has no `slf4j-simple` |
 | `Reclazz: Disconnected` persists | Port mismatch | Delete `.idea/reclazz/agent.port`, restart |
 | Hot-swap fails | Schema change on OpenJDK | Use JetBrains Runtime |
-| Spring bean not refreshed | Non-singleton bean | Expected — prototypes recreate automatically |
+| Spring bean not refreshed | Non-singleton bean | Expected, prototypes recreate automatically |
 | Agent not injected | Plugin disabled or non-Hybris project | Check Settings → Tools → Reclazz |
 
 

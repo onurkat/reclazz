@@ -23,7 +23,7 @@ tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar=hybrisHome=/path/to/hyb
 ```
 
 Structural hot-reload (adding/removing methods and fields) works on any
-JDK 17+ via Reclazz's companion-class reloader — no extra JVM flags
+JDK 17+ via Reclazz's companion-class reloader, no extra JVM flags
 required. On standard JVMs, the new members live on a hidden nestmate
 and are reached through `invokedynamic` routed from hot-compiled
 callers; reflective access (`Class.getMethod(...)`, `ModelService`) is
@@ -140,7 +140,7 @@ source-resource copying is not established by these observations.
 These observations use stock SapMachine JDK 17/21 on macOS arm64 and startup
 agent attachment. They do not certify other versions, operating systems, late
 attachment or native SAP tenant behavior. Engine libraries are test-only and are
-not packaged with the production agent. See the [P5 registry](feature-evidence.md#p5--properties-xml-messages-and-templates)
+not packaged with the production agent. See the [P5 registry](feature-evidence.md#p5-properties-xml-messages-and-templates)
 for separate watcher, component, refusal and unverified claims.
 
 ### Loaded Spring XML resources
@@ -969,7 +969,7 @@ is added.
 ### Kafka listeners added after startup
 
 Current broker observations, component-only contracts and unverified variants are
-listed separately in [P4 messaging evidence](feature-evidence.md#p4--messaging).
+listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
 
 With Spring Kafka already configured, compile a new listener method on a
 running plain singleton `@Component` / `@Service` / `@Repository`:
@@ -1090,7 +1090,7 @@ and direct child-loader watcher behavior remain outside this measured scope.
 ### JMS listeners added after startup
 
 Current broker observations, component-only contracts and unverified variants are
-listed separately in [P4 messaging evidence](feature-evidence.md#p4--messaging).
+listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
 
 With Spring JMS already configured, add a listener to a running plain singleton
 `@Component`, `@Service` or `@Repository` and compile:
@@ -1218,7 +1218,7 @@ reports under `jmsUnitTest`, `jmsE2eTest` and `jmsTest`. Run just JMS with
 ### Rabbit listeners added after startup
 
 Current broker observations, component-only contracts and unverified variants are
-listed separately in [P4 messaging evidence](feature-evidence.md#p4--messaging).
+listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
 
 With Spring Rabbit already configured, add a method to a running plain singleton
 `@Component`, `@Service` or `@Repository`, then compile:
@@ -2779,7 +2779,7 @@ itself is not aborted.
 4. Reclazz detects the new .class files and hot-swaps them instantly
    └── "Hot-swapped: com.example.MyService (12ms)" appears in the console
 
-5. Test your changes — no server restart needed
+5. Test your changes, no server restart needed
 ```
 
 ---
@@ -2849,7 +2849,7 @@ If you prefer to skip `ant build` entirely, enable **AutoCompile**. In this mode
    └── Hot-swaps the resulting bytecode
    └── "Compiled: MyService.java (45ms) → Hot-swapped: com.example.MyService (8ms)"
 
-4. Test your changes immediately — no ant build, no server restart
+4. Test your changes immediately, no ant build, no server restart
 ```
 
 AutoCompile treats the sources collected in one attempt as a package. All
@@ -2885,10 +2885,10 @@ existing file-watching behavior continues.
 ### What the Plugin Shows
 
 - **Status bar widget:** Bottom-right corner shows connection status and reload count
-  - `Reclazz: Idle` — Plugin enabled, server not running
-  - `Reclazz: Connected` — Agent connected, watching for changes
-  - `Reclazz: 5 reloads` — Number of successful hot-swaps in this session
-  - `Reclazz: Error` — Last reload failed (check tool window for details)
+  - `Reclazz: Idle`, Plugin enabled, server not running
+  - `Reclazz: Connected`, Agent connected, watching for changes
+  - `Reclazz: 5 reloads`, Number of successful hot-swaps in this session
+  - `Reclazz: Error`, Last reload failed (check tool window for details)
 
 - **Tool window:** Bottom panel labeled "Reclazz" shows a detailed log of all events:
   - Compilation results (autoCompile mode)
@@ -2924,7 +2924,7 @@ When enabled, Reclazz monitors your editing activity. After you stop typing for 
 ### Setup
 
 1. Go to **Settings** > **Tools** > **Reclazz**
-2. Check **AutoCompile** — this is required for auto-build to work
+2. Check **AutoCompile**, this is required for auto-build to work
 3. The debounce timer controls how long Reclazz waits after your last edit before triggering compilation
 
 ### How the Debounce Timer Works
@@ -2947,10 +2947,10 @@ If you resume typing before the timer expires, it resets. This prevents unnecess
 
 | Setting | Effect |
 |---|---|
-| **100ms** | Very aggressive — compiles almost instantly after every pause. High CPU usage. |
-| **500ms** (default) | Good balance — compiles after a brief pause. Suitable for most workflows. |
-| **1000-2000ms** | Conservative — waits for a longer pause. Lower CPU usage, but slower feedback. |
-| **3000-5000ms** | Very conservative — only compiles after you clearly stop editing. |
+| **100ms** | Very aggressive, compiles almost instantly after every pause. High CPU usage. |
+| **500ms** (default) | Good balance, compiles after a brief pause. Suitable for most workflows. |
+| **1000-2000ms** | Conservative, waits for a longer pause. Lower CPU usage, but slower feedback. |
+| **3000-5000ms** | Very conservative, only compiles after you clearly stop editing. |
 
 Adjust the timer in **Settings** > **Tools** > **Reclazz** > **Debounce (ms)**.
 
@@ -2968,7 +2968,7 @@ Use auto-build for rapid iteration on small changes (fixing a service method, tw
 
 ## Option 4: Attach to Running Server
 
-Use this option when the SAP Commerce server is **already running** without the `-javaagent` flag — for example, started from a terminal or by another team member. Reclazz uses the JVM Attach API to load the agent into the running process without restarting it.
+Use this option when the SAP Commerce server is **already running** without the `-javaagent` flag, for example, started from a terminal or by another team member. Reclazz uses the JVM Attach API to load the agent into the running process without restarting it.
 
 ### How It Works
 
@@ -3017,7 +3017,7 @@ The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (b
 
 ### Limitations
 
-- **JBR flags cannot be added retroactively**: If the server was started without `-XX:+AllowEnhancedClassRedefinition`, the JVM cannot switch to enhanced redefinition mid-run. The companion-class reloader still works on the attached JVM, so structural changes are still applied — but reflective access to the new members carries the standard-JVM caveat (see below).
+- **JBR flags cannot be added retroactively**: If the server was started without `-XX:+AllowEnhancedClassRedefinition`, the JVM cannot switch to enhanced redefinition mid-run. The companion-class reloader still works on the attached JVM, so structural changes are still applied, but reflective access to the new members carries the standard-JVM caveat (see below).
 - **Startup delay is skipped**: Since the server is already running, the agent starts watching immediately (no `startupDelaySec` wait).
 
 ### Troubleshooting
@@ -3170,12 +3170,12 @@ the agent did and when without the console log.
 
 ## Supported JDK Providers
 
-Reclazz works with **any JDK 17+** that supports the standard Java Instrumentation API (`java.lang.instrument`). Structural hot-reload (adding/removing methods and fields) works on every supported vendor — the difference between enhanced-redefinition VMs (JBR/DCEVM) and standard JVMs is reflective visibility, not whether the change takes effect.
+Reclazz works with **any JDK 17+** that supports the standard Java Instrumentation API (`java.lang.instrument`). Structural hot-reload (adding/removing methods and fields) works on every supported vendor, the difference between enhanced-redefinition VMs (JBR/DCEVM) and standard JVMs is reflective visibility, not whether the change takes effect.
 
 | JDK Provider | Method Body | Structural Reload | Reflective Visibility of New Members |
 |---|---|---|---|
-| **JetBrains Runtime (JBR)** | Yes | Yes (enhanced redefinition) | Full — reflection sees new members |
-| **DCEVM** | Yes | Yes (enhanced redefinition) | Full — reflection sees new members |
+| **JetBrains Runtime (JBR)** | Yes | Yes (enhanced redefinition) | Full, reflection sees new members |
+| **DCEVM** | Yes | Yes (enhanced redefinition) | Full, reflection sees new members |
 | **Oracle JDK** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
 | **SapMachine** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
 | **OpenJDK** (generic) | Yes | Yes (companion-class mode) | Hot-compiled callers only |
@@ -3183,9 +3183,9 @@ Reclazz works with **any JDK 17+** that supports the standard Java Instrumentati
 | **Eclipse Temurin (Adoptium)** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
 | **Azul Zulu** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
 | **BellSoft Liberica** | Yes | Yes (companion-class mode) | Hot-compiled callers only |
-| **GraalVM** | Limited | Limited | — (not recommended) |
+| **GraalVM** | Limited | Limited | No (not recommended) |
 
-> **Important:** The `-XX:+AllowEnhancedClassRedefinition` flag is **JBR/DCEVM-only**. Do not add this flag manually when using Oracle JDK, SapMachine, OpenJDK, or any other standard JVM — it will cause a startup crash. The plugin only adds this flag when it detects a compatible JDK.
+> **Important:** The `-XX:+AllowEnhancedClassRedefinition` flag is **JBR/DCEVM-only**. Do not add this flag manually when using Oracle JDK, SapMachine, OpenJDK, or any other standard JVM, it will cause a startup crash. The plugin only adds this flag when it detects a compatible JDK.
 
 > **GraalVM note:** GraalVM has known limitations with `Instrumentation.redefineClasses()`. Some method body changes may fail. If you experience issues, consider switching to a standard OpenJDK or JBR.
 
@@ -3196,7 +3196,7 @@ instead of modifying the original `Class` object (which the JVM
 doesn't allow). This has one consequence worth knowing:
 
 **Works after a structural reload (any JDK 17+):**
-- Hot-compiled Java code that calls a new method directly — the
+- Hot-compiled Java code that calls a new method directly, the
   invocation is rewritten through the companion via `invokedynamic`
 - Hot-compiled Java code within the owner or another reloaded watched class that reads/writes a new instance field; see the [cross-class scope](#cross-class-access-to-added-instance-fields)
 - Jackson JSON input/output through the [added property adapter](#jackson-properties-added-after-startup)

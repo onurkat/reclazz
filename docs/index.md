@@ -22,7 +22,7 @@ complete references for configuration, APIs and lifecycle details.
 | [Reclazz Spring Boot starter](spring-boot-starter.md) | Open guide → |
 | [Constructor dependency ownership during ordinary class refresh](spring-constructor-dependencies.md) | Open guide → |
 | [Superclass changes without a custom classloader](superclass-feasibility.md) | Open guide → |
-| [Reclazz — Test Guide for SAP Commerce (Hybris)](test-guide.md) | Open guide → |
+| [Reclazz: Test Guide for SAP Commerce (Hybris)](test-guide.md) | Open guide → |
 | [Usage Guide](usage.md) | Open guide → |
 | [Reload support reference](reload-support.md) | Open guide → |
 

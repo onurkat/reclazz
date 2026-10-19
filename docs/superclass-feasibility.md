@@ -47,7 +47,7 @@ If another JVM accepts the direct change, the probe prints `directRedefine=accep
 and fails the recorded expectation. Inspect that result as a different capability;
 do not call it another refusal or silently expand the conclusion.
 
-## Observed results — 2026-09-23
+## Observed results: 2026-09-23
 
 Host: macOS aarch64. Both versions were compiled and run with their own JDK tools.
 The commands above completed successfully with these actual runtime versions:
