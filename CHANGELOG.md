@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Recreate bounded local Rabbit consumers after helper-body or scalar constructor-
+  property saves on the measured Spring5/AMQP2 and Spring6/AMQP3 graphs. Wait for
+  complete native workers before reconstructing current helper/owner callbacks,
+  including already-added callbacks and a same-key owner scalar. The indirect
+  path requires standard AUTO acknowledgment and nontransacted channels;
+  unsupported ownership is refused before destruction and failed reconstruction
+  records partial application.
+
 - Preserve constructor dependency bookkeeping and captured values when a plain
   Helper refresh reconstructs one same-factory or direct-child leaf Owner,
   including SDK Spring5.3.43/6.2.12 profiles, source-factory isolation and ordinary
@@ -55,7 +63,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   and added callbacks. Do not rebuild an already-current listener twice when the
   same property also feeds its own constructor. Direct-only consumer property
   rebuilds are refused before destruction. Unsupported ownership is refused; failed reconstruction
-  reports partial application. Rabbit indirect coordination remains open; Kafka has its separately bounded repair above.
+  reports partial application. Rabbit and Kafka have their separately bounded repairs above.
 
 - Preserve native constructor dependency bookkeeping during direct singleton
   class refreshes on Spring 5.3.39 and 6.1.14 for the bounded plain constructor

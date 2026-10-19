@@ -200,6 +200,16 @@ public final class SpringRabbitReloader {
         for (var a : method.visibleAnnotations) if (a.desc.equals(AddedRabbitListenerAdapter.RABBIT) && a.values != null)
             for (int i = 0; i < a.values.size(); i += 2)
                 if (a.values.get(i).equals("containerFactory")) name = (String) a.values.get(i + 1);
+        requireFactory(scope, name);
+    }
+    private static void requireFactory(Infrastructure scope, String name) throws Exception {
+        if (name.isEmpty()) {
+            Object defaultName = Reflect.readField(scope.processor(), "defaultContainerFactoryBeanName");
+            if (!(defaultName instanceof String value)) throw new IllegalStateException("Rabbit default factory inaccessible");
+            name = value;
+        }
+        if (name.isBlank() || name.contains("${") || name.contains("#{"))
+            throw new IllegalStateException("literal Rabbit factory required");
         Object factory = SpringBeans.getBean(scope.context(), name);
         if (factory == null || !factory.getClass().getName().equals("org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory"))
             throw new IllegalStateException("standard SimpleRabbitListenerContainerFactory required: " + name);
@@ -226,9 +236,12 @@ public final class SpringRabbitReloader {
     }
 
     private List<Infrastructure> infrastructures() throws Exception {
+        return infrastructures(platform.getAllApplicationContexts());
+    }
+    private static List<Infrastructure> infrastructures(List<Object> contexts) throws Exception {
         List<Infrastructure> result = new ArrayList<>();
         Set<Object> seen = Collections.newSetFromMap(new IdentityHashMap<>());
-        for (Object context : platform.getAllApplicationContexts()) {
+        for (Object context : contexts) {
             String[] names = SpringBeans.beanNamesForType(context, PROCESSOR);
             if (names.length == 0) continue;
             if (names.length != 1) throw new IllegalStateException("multiple Rabbit listener processors are unsupported");
@@ -348,6 +361,313 @@ public final class SpringRabbitReloader {
             } catch (ReflectiveOperationException failure) { throw new IllegalStateException("Cannot read Rabbit singleton " + name, failure); }
         };
     }
+    private record RegistryScope(Object context, Object registry) { }
+
+    /** Read native callback ownership without assuming a supported processor configuration. */
+    private static List<RegistryScope> registryScopes(List<Object> contexts) throws Exception {
+        List<RegistryScope> result = new ArrayList<>();
+        for (Object context : contexts) {
+            Object factory = SpringBeans.getBeanFactory(context);
+            if (factory == null) continue;
+            Class<?> registryType;
+            try { registryType = Class.forName(REGISTRY, false, context.getClass().getClassLoader()); }
+            catch (ClassNotFoundException absent) { continue; }
+            String[] names = (String[]) factory.getClass().getMethod("getBeanNamesForType", Class.class, boolean.class, boolean.class)
+                    .invoke(factory, registryType, true, false);
+            for (String name : names) {
+                Object registry = factory.getClass().getMethod("getBean", String.class).invoke(factory, name);
+                if (registry == null) throw new IllegalStateException("Rabbit registry ownership is inaccessible");
+                result.add(new RegistryScope(context, registry));
+            }
+        }
+        return result;
+    }
+
+    private static boolean hasDependentConsumers(List<Object> contexts, String root) throws Exception {
+        for (Object context : contexts) {
+            Object factory = SpringBeans.getBeanFactory(context);
+            if (factory == null) continue;
+            String[] dependents = (String[]) factory.getClass().getMethod("getDependentBeans", String.class).invoke(factory, root);
+            if (dependents.length == 0) continue;
+            for (var scope : registryScopes(List.of(context))) for (var container : containers(scope.registry())) {
+                Object receiver = listenerBean(messageListener(container.instance()));
+                for (String name : dependents) {
+                    Object bean = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, name);
+                    if (bean != null && (receiver == bean || AddedRabbitListenerAdapter.ownerOf(receiver) == bean.getClass())) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** A direct property target is not a consumer lifecycle transaction. */
+    static void requireNoPropertyConsumer(List<Object> contexts, Object context, String name) throws Exception {
+        Object factory = SpringBeans.getBeanFactory(context);
+        if (factory == null) return;
+        Object bean = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, name);
+        if (bean == null) return;
+        boolean owned = declaresRabbit(bean.getClass(), null);
+        if (!owned) for (var scope : registryScopes(contexts)) for (var container : containers(scope.registry())) {
+            Object receiver = listenerBean(messageListener(container.instance()));
+            if (receiver == bean || AddedRabbitListenerAdapter.ownerOf(receiver) == bean.getClass()) owned = true;
+        }
+        if (owned) {
+            RestartLedger.note(name, "direct Rabbit constructor-property refresh needs a coordinated helper or restart");
+            throw new IllegalStateException("direct Rabbit property consumer refused before singleton destruction: " + name);
+        }
+    }
+
+    /**
+     * A bounded helper -> leaf Rabbit owner refresh. Read the native edges and every
+     * callback before Spring's recursive destruction removes that information.
+     * Null means no owned Rabbit dependent; unsupported affected shapes throw.
+     */
+    static DependencyRefresh prepareDependencyRefresh(List<Object> contexts, Object context, String root) throws Exception {
+        try { return inspectDependencyRefresh(contexts, context, root); }
+        catch (Exception failure) {
+            RestartLedger.note(root, "Rabbit dependency refresh refused before singleton destruction: " + Failures.describe(failure));
+            throw failure;
+        }
+    }
+
+    private static DependencyRefresh inspectDependencyRefresh(List<Object> contexts, Object context, String root) throws Exception {
+        Object factory = SpringBeans.getBeanFactory(context);
+        if (factory == null) return null;
+        if (!hasDependentConsumers(contexts, root)) return null;
+        List<Infrastructure> scopes = infrastructures(contexts);
+        if (scopes.isEmpty()) throw new IllegalStateException("owned Rabbit dependency has no standard processor");
+        String[] dependents = (String[]) factory.getClass().getMethod("getDependentBeans", String.class).invoke(factory, root);
+        // A child factory records its own dependency on a parent helper. Do not
+        // miss that ownership merely because the root factory has no such edge.
+        for (var scope : scopes) if (scope.context() != context) {
+            Object foreign = SpringBeans.getBeanFactory(scope.context());
+            String[] names = (String[]) foreign.getClass().getMethod("getDependentBeans", String.class).invoke(foreign, root);
+            for (String name : names) {
+                Object bean = foreign.getClass().getMethod("getSingleton", String.class).invoke(foreign, name);
+                for (var c : containers(scope.registry())) {
+                    Object receiver = listenerBean(messageListener(c.instance()));
+                    if (bean != null && (receiver == bean || AddedRabbitListenerAdapter.ownerOf(receiver) == bean.getClass()))
+                        throw new IllegalStateException("nonlocal Rabbit dependent requires a restart");
+                }
+            }
+        }
+        if (dependents.length == 0) return null;
+        List<DependencyOwner> owners = new ArrayList<>();
+        List<Container> selected = new ArrayList<>();
+        List<SavedCallback> callbacks = new ArrayList<>();
+        for (String name : dependents) {
+            Object bean = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, name);
+            if (bean == null) continue;
+            Class<?> type = bean.getClass();
+            List<Container> owned = new ArrayList<>();
+            for (var scope : scopes) for (var c : containers(scope.registry())) {
+                Object adapter = messageListener(c.instance());
+                Object receiver = listenerBean(adapter);
+                if (receiver != bean && AddedRabbitListenerAdapter.ownerOf(receiver) != type) continue;
+                if (!adapter.getClass().getName().equals(ADAPTER))
+                    throw new IllegalStateException("custom dependent Rabbit adapter requires a restart");
+                requireLifecycle(c);
+                if (!c.instance().getClass().getName().equals("org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer"))
+                    throw new IllegalStateException("standard simple Rabbit container required");
+                if (!Boolean.TRUE.equals(c.instance().getClass().getMethod("isRunning").invoke(c.instance())))
+                    throw new IllegalStateException("dependent Rabbit consumer is inactive or shutting down: " + c.id());
+                Object handler = Reflect.readField(adapter, "handlerAdapter");
+                Object invoker = Reflect.readField(handler, "invokerHandlerMethod");
+                if (invoker == null || Reflect.readField(handler, "delegatingHandler") != null)
+                    throw new IllegalStateException("single-method Rabbit callback required");
+                Method method = (Method) invoker.getClass().getMethod("getMethod").invoke(invoker);
+                Object metadata = Arrays.stream(method.getDeclaredAnnotations())
+                        .filter(a -> a.annotationType().getName().equals("org.springframework.amqp.rabbit.annotation.RabbitListener"))
+                        .findFirst().orElseThrow(() -> new IllegalStateException("literal Rabbit callback metadata required"));
+                String id = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("id").invoke(metadata);
+                if (!id.equals(c.id()) || id.isBlank() || id.contains("${") || id.contains("#{"))
+                    throw new IllegalStateException("dependent Rabbit callback requires a stable literal id");
+                requireFactory(scope, (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata));
+                if (method.getReturnType() != void.class) throw new IllegalStateException("void dependent Rabbit callbacks required");
+                String factoryName = (String) ((java.lang.annotation.Annotation) metadata).annotationType().getMethod("containerFactory").invoke(metadata);
+                if (factoryName.isEmpty()) factoryName = (String) Reflect.readField(scope.processor(), "defaultContainerFactoryBeanName");
+                Object dependencyFactory = SpringBeans.getBean(scope.context(), factoryName);
+                if (Boolean.TRUE.equals(Reflect.readField(dependencyFactory, "channelTransacted"))
+                        || !Boolean.FALSE.equals(c.instance().getClass().getMethod("isChannelTransacted").invoke(c.instance())))
+                    throw new IllegalStateException("nontransacted Rabbit callback/factory required in this stage");
+                var annotation = (java.lang.annotation.Annotation) metadata;
+                for (Method option : annotation.annotationType().getDeclaredMethods())
+                    if (!Set.of("id", "queues", "containerFactory", "concurrency").contains(option.getName())
+                            && !Objects.deepEquals(option.getDefaultValue(), option.invoke(metadata)))
+                        throw new IllegalStateException("dependent Rabbit option requires separate research: " + option.getName());
+                boolean added = receiver != bean;
+                if (added && (!receiver.getClass().isHidden()
+                        || !(Reflect.readField(receiver, com.onurkat.reclazz.bootstrap.InjectedNames.PREFIX + "target") instanceof Supplier<?> current)
+                        || current.get() != bean))
+                    throw new IllegalStateException("dependent Rabbit delegate does not own the current singleton");
+                if (!added && method.getDeclaringClass() != type)
+                    throw new IllegalStateException("inherited dependent Rabbit callback requires a restart");
+                callbacks.add(new SavedCallback(scope, c, name, type, receiver, method, metadata, added));
+                owned.add(c);
+            }
+            if (!owned.isEmpty()) {
+                var cache = SpringConstructorDependencies.prepare(contexts, context, name);
+                if (cache == null || type.getSuperclass() != Object.class || type.getInterfaces().length != 0
+                        || !plainCallbacks(type)
+                        || !Arrays.equals(new String[]{name}, SpringBeans.beanNamesForType(context, type))
+                        || ((String[]) factory.getClass().getMethod("getDependentBeans", String.class).invoke(factory, name)).length != 0
+                        || !Set.of((String[]) factory.getClass().getMethod("getDependenciesForBean", String.class).invoke(factory, name)).equals(Set.of(root)))
+                    throw new IllegalStateException("dependent Rabbit owner requires one plain local leaf constructor: " + name);
+                owners.add(new DependencyOwner(name, bean, cache));
+                selected.addAll(owned);
+            }
+        }
+        if (owners.isEmpty()) return null;
+        for (var scope : scopes) {
+            if (!Set.of("2.4.17", "3.1.7").contains(scope.processor().getClass().getPackage().getImplementationVersion()))
+                throw new IllegalStateException("unverified Rabbit processor version");
+        }
+        if (owners.size() != 1 || selected.size() != 1) throw new IllegalStateException("one Rabbit leaf owner/callback required in this stage");
+        if (contexts.size() != 1 || contexts.get(0) != context || scopes.size() != 1
+                || scopes.get(0).context() != context || owners.size() != dependents.length)
+            throw new IllegalStateException("Rabbit dependency refresh requires one root context and only direct Rabbit leaf owners");
+        for (String other : List.of("org.springframework.jms.annotation.JmsListenerAnnotationBeanPostProcessor",
+                "org.springframework.kafka.annotation.KafkaListenerAnnotationBeanPostProcessor")) {
+            try {
+                Class<?> type = Class.forName(other, false, factory.getClass().getClassLoader());
+                String[] names = (String[]) factory.getClass().getMethod("getBeanNamesForType", Class.class, boolean.class, boolean.class)
+                        .invoke(factory, type, true, false);
+                if (names.length != 0) throw new IllegalStateException("mixed broker contexts require a restart for Rabbit dependency refresh");
+            } catch (ClassNotFoundException absent) { /* Optional module absent. */ }
+        }
+        Object rootBean = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, root);
+        Object raw = factory.getClass().getMethod("getBeanDefinition", String.class).invoke(factory, root);
+        if (rootBean == null || !plainRoot(raw, rootBean)
+                || ((String[]) factory.getClass().getMethod("getDependenciesForBean", String.class).invoke(factory, root)).length != 0)
+            throw new IllegalStateException("Rabbit dependency refresh requires a plain directly constructed helper");
+        for (var scope : scopes) for (var c : containers(scope.registry())) {
+            if (AddedRabbitListenerAdapter.ownerOf(listenerBean(messageListener(c.instance()))) == rootBean.getClass())
+                throw new IllegalStateException("a Rabbit consumer cannot also be the dependency root");
+        }
+        Object merged = factory.getClass().getMethod("getMergedBeanDefinition", String.class).invoke(factory, root);
+        if (!(Reflect.readField(scopes.get(0).processor(), "typeCache") instanceof Map<?,?>))
+            throw new IllegalStateException("Rabbit negative scan cache is inaccessible");
+        return new DependencyRefresh(List.copyOf(contexts), context, factory, root, rootBean, merged,
+                List.copyOf(owners), List.copyOf(selected), List.copyOf(callbacks));
+    }
+
+    private static boolean plainCallbacks(Class<?> type) {
+        for (var field : type.getDeclaredFields()) for (var annotation : field.getDeclaredAnnotations())
+            if (!annotation.annotationType().getName().equals("java.lang.Deprecated")) return false;
+        for (var a : type.getDeclaredAnnotations())
+            if (!Set.of("org.springframework.stereotype.Component", "org.springframework.stereotype.Service").contains(a.annotationType().getName())) return false;
+        for (var method : type.getDeclaredMethods()) for (var a : method.getDeclaredAnnotations()) {
+            String name = a.annotationType().getName();
+            if (!name.equals("org.springframework.amqp.rabbit.annotation.RabbitListener")
+                    && !name.equals("java.lang.Deprecated")) return false;
+        }
+        return true;
+    }
+
+    private static boolean plainRoot(Object definition, Object bean) throws Exception {
+        Class<?> type = bean.getClass();
+        if (type.getSuperclass() != Object.class || type.getInterfaces().length != 0
+                || type.getDeclaredConstructors().length != 1 || !plainCallbacks(type) || declaresRabbit(type, null)) return false;
+        if (!Set.of("org.springframework.beans.factory.support.RootBeanDefinition",
+                "org.springframework.beans.factory.support.GenericBeanDefinition",
+                "org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition",
+                "org.springframework.context.annotation.ScannedGenericBeanDefinition",
+                "org.springframework.context.support.GenericApplicationContext$ClassDerivedBeanDefinition")
+                .contains(definition.getClass().getName())) return false;
+        if (!type.getName().equals(definition.getClass().getMethod("getBeanClassName").invoke(definition))) return false;
+        for (String getter : List.of("getParentName", "getFactoryBeanName", "getFactoryMethodName", "getInstanceSupplier",
+                "getInitMethodName", "getDestroyMethodName"))
+            if (definition.getClass().getMethod(getter).invoke(definition) != null) return false;
+        for (String getter : List.of("isAbstract", "hasConstructorArgumentValues", "hasMethodOverrides"))
+            if (!Boolean.FALSE.equals(definition.getClass().getMethod(getter).invoke(definition))) return false;
+        return Boolean.TRUE.equals(definition.getClass().getMethod("isSingleton").invoke(definition))
+                && definition.getClass().getMethod("getQualifiers").invoke(definition) instanceof Set<?> set && set.isEmpty();
+    }
+
+    private record DependencyOwner(String name, Object bean, SpringConstructorDependencies.Prepared cache) { }
+    private record SavedCallback(Infrastructure scope, Container container, String name, Class<?> type,
+                                 Object receiver, Method method, Object metadata, boolean added) { }
+
+    static final class DependencyRefresh {
+        private final SpringRabbitReloader coordinator = new SpringRabbitReloader(null);
+        private final List<Object> contexts;
+        private final Object context, factory, rootBean, merged;
+        private final String root;
+        private final List<DependencyOwner> owners;
+        private final List<Container> selected;
+        private final List<SavedCallback> callbacks;
+
+        private DependencyRefresh(List<Object> contexts, Object context, Object factory, String root, Object rootBean,
+                Object merged, List<DependencyOwner> owners, List<Container> selected, List<SavedCallback> callbacks) {
+            this.contexts = contexts; this.context = context; this.factory = factory; this.root = root;
+            this.rootBean = rootBean; this.merged = merged; this.owners = owners; this.selected = selected; this.callbacks = callbacks;
+        }
+
+        java.util.Set<String> refreshedNames() {
+            var names = new java.util.LinkedHashSet<String>();
+            names.add(root);
+            for (var owner : owners) names.add(owner.name());
+            return java.util.Set.copyOf(names);
+        }
+
+        Object[] recreate() throws Exception {
+            var fresh = prepareDependencyRefresh(contexts, context, root);
+            if (fresh == null || fresh.factory != factory || fresh.rootBean != rootBean || fresh.merged != merged
+                    || !fresh.selected.equals(selected) || fresh.owners.size() != owners.size())
+                throw new IllegalStateException("Rabbit dependency ownership changed after preflight");
+            for (int i = 0; i < owners.size(); i++) {
+                var a = owners.get(i); var b = fresh.owners.get(i);
+                if (!a.name().equals(b.name()) || a.bean() != b.bean() || a.cache().merged() != b.cache().merged())
+                    throw new IllegalStateException("Rabbit dependent singleton changed after preflight");
+            }
+            // Timeout leaves helper/owner singletons intact. An inactive retirement
+            // is refused on later saves, not started concurrently a second time.
+            try { coordinator.stopAndRemove(selected); }
+            catch (Exception failure) {
+                RestartLedger.note(root, "dependent Rabbit shutdown incomplete; helper and owner singletons retained; restart required");
+                throw failure;
+            }
+            try {
+                for (var owner : owners) owner.cache().apply();
+                for (var callback : callbacks)
+                    ((Map<?,?>) Reflect.readField(callback.scope().processor(), "typeCache")).remove(callback.type());
+                Object[] result = SpringBeanReloader.destroyAndRefreshBean(context, root);
+                for (var owner : owners) context.getClass().getMethod("getBean", String.class).invoke(context, owner.name());
+                for (var callback : callbacks) if (callback.added()) {
+                    Class<?> annotation = Class.forName("org.springframework.amqp.rabbit.annotation.RabbitListener", false, callback.type().getClassLoader());
+                    Method process = Reflect.findMethod(callback.scope().processor().getClass(), "processAmqpListener", annotation, Method.class, Object.class, String.class);
+                    if (process == null) throw new IllegalStateException("Rabbit processor replay method inaccessible");
+                    process.invoke(callback.scope().processor(), callback.metadata(), callback.method(), callback.receiver(), callback.name());
+                }
+                for (var callback : callbacks) {
+                    Object container = container(callback.scope().registry(), callback.container().id());
+                    Object current = factory.getClass().getMethod("getSingleton", String.class).invoke(factory, callback.name());
+                    if (container == null || container == callback.container().instance()
+                            || !Boolean.TRUE.equals(container.getClass().getMethod("isRunning").invoke(container))
+                            || current == null
+                            || current.getClass() != callback.type()
+                            || listenerBean(messageListener(container)) != (callback.added() ? callback.receiver() : current))
+                        throw new IllegalStateException("Rabbit dependent callback was not restored: " + callback.container().id());
+                }
+                ReloadEffects.note("dependent Rabbit consumers re-created");
+                return result;
+            } catch (Exception | LinkageError failure) {
+                // No rollback of application work. Retire only this attempt's known
+                // callback IDs; unrelated registry entries are never cleared.
+                List<Container> created = new ArrayList<>();
+                for (var callback : callbacks) {
+                    Object value = container(callback.scope().registry(), callback.container().id());
+                    if (value != null && value != callback.container().instance()
+                            && AddedRabbitListenerAdapter.ownerOf(listenerBean(messageListener(value))) == callback.type())
+                        created.add(new Container(callback.scope().registry(), callback.container().id(), value));
+                }
+                try { coordinator.stopAndRemove(created); } catch (Exception cleanup) { failure.addSuppressed(cleanup); }
+                RestartLedger.note(root, "dependent Rabbit refresh partially applied; restart required");
+                throw failure;
+            }
+        }
+    }
+
     private static void report(Class<?> type, String reason) {
         StatusReporter.warn("@RabbitListener reload for " + type.getName() + " could not apply: " + reason);
         RestartLedger.note(type.getName(), "Rabbit listener declaration not applied: " + reason);

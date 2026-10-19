@@ -285,6 +285,8 @@ val modernMessagingTests = sourceSets.create("modernMessagingTest") {
 }
 dependencies {
     add(modernMessagingTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
+    // Existing repository test-only attacher for native Rabbit worker tracking.
+    add(modernMessagingTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-messaging:6.1.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-tx:6.1.14")
@@ -302,6 +304,7 @@ configurations[modernMessagingTests.runtimeClasspathConfigurationName].resolutio
 val modernMessagingTest by tasks.registering(Test::class) {
     group = "verification"
     description = "Native modern Kafka/Jakarta JMS/Rabbit reload and refusal regressions"
+    jvmArgs("-Djdk.attach.allowAttachSelf=true")
     useJUnitPlatform()
     testClassesDirs = modernMessagingTests.output.classesDirs
     classpath = modernMessagingTests.runtimeClasspath
@@ -310,7 +313,11 @@ val modernMessagingTest by tasks.registering(Test::class) {
     outputs.upToDateWhen { false }
     inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
     val skipRabbit = providers.gradleProperty("reclazz.skipRabbitBroker").orNull == "true"
-    if (skipRabbit) exclude("com/onurkat/reclazz/e2e/ModernRabbitListenerReloadTest*")
+    if (skipRabbit) {
+        exclude("com/onurkat/reclazz/e2e/ModernRabbitListenerReloadTest*")
+        exclude("com/onurkat/reclazz/e2e/ModernRabbitConsumerCascadeReloadTest*")
+        exclude("com/onurkat/reclazz/spring/ModernRabbitDependencyRefreshTest*")
+    }
     testLogging { events("passed", "failed", "skipped") }
     doFirst {
         if (skipRabbit) {

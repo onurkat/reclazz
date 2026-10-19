@@ -73,7 +73,8 @@ public class SpringBeanReloader {
                     }
                     var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
                     var kafka = jms == null ? SpringKafkaReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
-                    var ordinary = jms == null && kafka == null
+                    var rabbit = jms == null && kafka == null ? SpringRabbitReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
+                    var ordinary = jms == null && kafka == null && rabbit == null
                             ? SpringConstructorDependencies.prepareOrdinary(contexts, appContext, beanName) : null;
                     if (ordinary != null) {
                         if (batchDepth > 0) queueOrdinary(ordinary);
@@ -84,12 +85,12 @@ public class SpringBeanReloader {
                     }
                     var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
                     if (constructor != null) constructor.apply();
-                    Object[] pair = jms != null ? jms.recreate() : kafka != null ? kafka.recreate() : destroyAndRefreshBean(appContext, beanName);
+                    Object[] pair = jms != null ? jms.recreate() : kafka != null ? kafka.recreate() : rabbit != null ? rabbit.recreate() : destroyAndRefreshBean(appContext, beanName);
                     if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
                         replacements.put(pair[0], pair[1]);
                     }
                     // This transaction already rebuilt all leaf owners. Do not destroy them again in phase 2.
-                    if (jms == null && kafka == null) refreshedNames.add(beanName);
+                    if (jms == null && kafka == null && rabbit == null) refreshedNames.add(beanName);
                     ReloadEffects.note("bean " + beanName + " re-created");
                     StatusReporter.detail("Spring bean refreshed: " + beanName);
                     totalRefreshed++;
@@ -234,6 +235,9 @@ public class SpringBeanReloader {
         if (jms != null) return new NamedRefresh(jms.recreate(), jms.refreshedNames());
         var kafka = SpringKafkaReloader.prepareDependencyRefresh(contexts, appContext, beanName);
         if (kafka != null) return new NamedRefresh(kafka.recreate(), kafka.refreshedNames());
+        var rabbit = SpringRabbitReloader.prepareDependencyRefresh(contexts, appContext, beanName);
+        if (rabbit != null) return new NamedRefresh(rabbit.recreate(), rabbit.refreshedNames());
+        SpringRabbitReloader.requireNoPropertyConsumer(contexts, appContext, beanName);
         SpringJmsReloader.requireNoPropertyConsumer(contexts, appContext, beanName);
         SpringKafkaReloader.requireNoPropertyConsumer(contexts, appContext, beanName);
         return new NamedRefresh(destroyAndRefreshBean(appContext, beanName), java.util.Set.of(beanName));

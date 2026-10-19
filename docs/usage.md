@@ -1293,8 +1293,14 @@ An unavailable startup hook, timeout or interruption retains registry ownership,
 defers bean recreation and records a restart diagnostic. A later save waits for
 the same retirement; it may find stopped containers still holding their IDs.
 
-This covers direct listener-class reloads through the Spring orchestrator.
-Property/dependency-cascade recreation is outside scope. Already reloaded bodies
+This direct-listener path runs through the Spring orchestrator. A separately
+bounded [Rabbit helper/property transaction](spring-constructor-dependencies.md#rabbit-helper-and-constructor-property-changes)
+recreates one plain local leaf listener after helper-body or scalar constructor
+property saves, including a same-key scalar on the listener constructor. That
+indirect path is measured on Framework5.3.39/AMQP2.4.17 and
+Framework6.1.14/AMQP3.1.7, JDK17/21, with native default AUTO acknowledgment
+and nontransacted channels. It does not extend the direct path's local-channel
+transaction support to helper/property reconstruction. Already reloaded bodies
 are not rolled back, and this does not make reload atomic or promise exactly-once
 delivery. Broker/application acknowledgment and redelivery policies still apply.
 Custom conversion depending on the callback’s exact declaring-class identity is
