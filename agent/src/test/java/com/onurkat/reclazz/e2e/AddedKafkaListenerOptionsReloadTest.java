@@ -204,6 +204,23 @@ class AddedKafkaListenerOptionsReloadTest {
             @org.springframework.context.annotation.ComponentScan("app")
             @org.springframework.kafka.annotation.EnableKafka
             public class App {
+
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
                 private static String id(String value) { return System.getProperty("test." + value + ".id", value); }
                 @org.springframework.context.annotation.Bean
                 public org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory<Integer,String> kafkaListenerContainerFactory() { return factory(100); }
@@ -223,6 +240,7 @@ class AddedKafkaListenerOptionsReloadTest {
                     return factory;
                 }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     var ctx = new org.springframework.context.annotation.AnnotationConfigApplicationContext(App.class);
                     var registry = ctx.getBean(org.springframework.kafka.config.KafkaListenerEndpointRegistry.class);
                     registry.setAlwaysStartAfterRefresh(Boolean.getBoolean("test.always"));
@@ -236,7 +254,7 @@ class AddedKafkaListenerOptionsReloadTest {
                     server.createContext("/", exchange -> {
                         String path = exchange.getRequestURI().getPath(); String text;
                         if (path.equals("/use")) text = ctx.getBean(Listener.class).use();
-                        else if (path.equals("/original")) text = "" + java.util.Arrays.stream(Listener.class.getDeclaredMethods()).anyMatch(m -> m.getName().equals("added"));
+                        else if (path.equals("/original")) text = "" + physicallyDeclared(Listener.class,"added");
                         else if (path.equals("/snapshot")) {
                             previous.clear(); previous.addAll(registry.getListenerContainers()); seen.addAll(previous); text = "saved";
                         } else if (path.startsWith("/start-")) {

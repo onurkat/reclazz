@@ -6,6 +6,7 @@ package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -39,8 +40,31 @@ class JacksonEnumCachesTest {
     @TempDir
     Path dir;
 
+    private java.util.List<Object> previousMapperReferences;
+
+    @BeforeEach
+    @SuppressWarnings("unchecked")
+    void isolateConstructorRegistry() throws Exception {
+        // Other in-process agent tests can have registered real Jackson mappers.
+        // This fixture explicitly supplies its own mapper universe.
+        synchronized (com.onurkat.reclazz.bootstrap.JacksonMapperRegistry.class) {
+            var field=com.onurkat.reclazz.bootstrap.JacksonMapperRegistry.class.getDeclaredField("mappers");
+            field.setAccessible(true);
+            var entries=(java.util.List<Object>)field.get(null);
+            previousMapperReferences=new java.util.ArrayList<>(entries);
+            entries.clear();
+        }
+    }
+
     @AfterEach
-    void unregisterContexts() {
+    @SuppressWarnings("unchecked")
+    void unregisterContexts() throws Exception {
+        synchronized (com.onurkat.reclazz.bootstrap.JacksonMapperRegistry.class) {
+            var field=com.onurkat.reclazz.bootstrap.JacksonMapperRegistry.class.getDeclaredField("mappers");
+            field.setAccessible(true);
+            var entries=(java.util.List<Object>)field.get(null);
+            entries.clear();entries.addAll(previousMapperReferences);
+        }
         ApplicationContextHolder.clear();
     }
 

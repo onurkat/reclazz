@@ -1,0 +1,1231 @@
+{
+  "status": "INTEGRATED_PENDING_INDEPENDENT_AUDIT",
+  "scope": "Consolidated Reflection/JavaBeans, standalone Jackson/Orika, member metadata, constructor and mutable int instance VarHandle get/set/CAS work; independent audit pending. Historical receipts below refer to earlier scratch binaries and do not certify the merged main tree.",
+  "prior_candidate_receipts": "previous historical runs retained separately in review receipts",
+  "integrated_into_main_worktree": true,
+  "independently_audited": false,
+  "historical_artifact_sha256": "021964dc844ac347eb895a642a0ff1ca54a2a18a1495e931041e78e48b853937",
+  "historical_scratch_runs": {
+    "jdk21-focused": {
+      "gapsFocusedTest": {
+        "counts": {
+          "tests": 46,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "cases": [
+          {
+            "class": "com.onurkat.reclazz.bootstrap.RemovedMemberHidingTest",
+            "name": "unhidingANameThatWasNeverHiddenChangesNothing()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.RemovedMemberHidingTest",
+            "name": "aHiddenMethodIsNotAnsweredAndComesBackWhenUnhidden()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedOrikaPropertyReloadTest",
+            "name": "retainedDefaultPlansFollowAddedPropertiesAndKeepUserPoliciesAcrossSaves()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest",
+            "name": "addedGettersReachHttpWithMapperPoliciesAcrossSaves()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "missingRequiredRecordFieldIsRejected()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "unrunLaneCannotBePromotedToProven()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "unknownVerdictIsRejected()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "nonexistentTestMethodIsRejected()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "componentObservationCannotCertifyWatcherBehavior()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "changedSurfaceDigestIsRejected()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "unrelatedDeclaringClassCannotCertifyAnInheritedTest()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "omittedCellIsRejectedEvenWhenAllOtherRowsAreValid()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.evidence.P3bRegistryCompletenessTest",
+            "name": "currentRegistryHasEveryPlannedCellAndVerifiableProvenance()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedReflectionBeanReloadTest",
+            "name": "metaReflectionAndWarmJavaBeansFollowAdditionBodyChangeRemovalAndRestore()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgeHidesInternalsTest",
+            "name": "theUnchangedCaseDoesNotCopy()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgeHidesInternalsTest",
+            "name": "declaredFieldsDoNotLeakTheInjectedOnes()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgeHidesInternalsTest",
+            "name": "aClassWithNothingToStripIsUntouched()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgeHidesInternalsTest",
+            "name": "lookupByNameBehavesAsIfTheyDoNotExist()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgeHidesInternalsTest",
+            "name": "thePublicVariantsHideThemToo()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgeHidesInternalsTest",
+            "name": "declaredMethodsDoNotLeakRenamedOriginals()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgeHidesInternalsTest",
+            "name": "theNameCheckIsAnchoredNotASubstring()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest",
+            "name": "addedSettersReadJsonAcrossSaves [1] false",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest",
+            "name": "addedSettersReadJsonAcrossSaves [2] true",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest",
+            "name": "addedFieldsReadAndWriteJsonAcrossSaves [1] false",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest",
+            "name": "addedFieldsReadAndWriteJsonAcrossSaves [2] true",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.JacksonMapperRegistryTest",
+            "name": "discardedMapperIsNotRetained()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.JacksonMapperRegistryTest",
+            "name": "identityDedupKeepsDistinctEqualMappers()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.StandaloneJacksonGetterReloadTest",
+            "name": "standaloneAndCopiedMappersKeepPoliciesAcrossSaves()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.transform.ReflectionRewriteCoverageTest",
+            "name": "nativeSpringMethodScansKeepPhysicalSchemaWhileApplicationsSeeAddedMethods()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.transform.ReflectionRewriteCoverageTest",
+            "name": "everyRewrittenFormSeesAStructurallyAddedMember()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.transform.ReflectionRewriteCoverageTest",
+            "name": "aClassWithoutReflectionIsNotRewritten()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest",
+            "name": "addedSettersReadJsonAcrossSaves [1] false",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest",
+            "name": "addedSettersReadJsonAcrossSaves [2] true",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest",
+            "name": "addedFieldsReadAndWriteJsonAcrossSaves [1] false",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest",
+            "name": "addedFieldsReadAndWriteJsonAcrossSaves [2] true",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgePublicLookupTest",
+            "name": "getMethodsDoesNotMergeANonPublicMethod()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgePublicLookupTest",
+            "name": "getMethodsMergesAnAddedPublicMethod()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgePublicLookupTest",
+            "name": "getMethodStillThrowsForSomethingThatIsNotThere()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgePublicLookupTest",
+            "name": "getFieldFindsAnAddedPublicField()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgePublicLookupTest",
+            "name": "withNothingAddedTheAnswerIsTheJdkAnswer()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgePublicLookupTest",
+            "name": "getMethodFindsAnAddedPublicMethodAndStillWalksTheHierarchy()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.bootstrap.ReflectionBridgePublicLookupTest",
+            "name": "getFieldsMergesOnlyPublicAddedFields()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.reload.JacksonEnumCachesTest",
+            "name": "withoutJacksonOrSpringTheFlushDoesNothingAndSaysNothing()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.reload.JacksonEnumCachesTest",
+            "name": "everyMapperBeanHasBothCachesFlushedAndTheRootMapCleared()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.reload.JacksonEnumCachesTest",
+            "name": "aMapperWhoseCacheFieldsAreMissingIsSkippedNotHalfFlushed()",
+            "status": "PASSED"
+          },
+          {
+            "class": "com.onurkat.reclazz.reload.JacksonEnumCachesTest",
+            "name": "realJacksonFlushDropsTheReadOnlySerializerSnapshotToo()",
+            "status": "PASSED"
+          }
+        ]
+      },
+      "jmsTest": {
+        "counts": {
+          "tests": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "cases": [
+          {
+            "class": "com.onurkat.reclazz.e2e.AddedJmsListenerPlaceholderReloadTest",
+            "name": "placeholderDestinationResolvesAgainstTheEnvironmentAndConsumes()",
+            "status": "PASSED"
+          }
+        ]
+      }
+    },
+    "jdk17-gapsJdk17Test": {
+      "counts": {
+        "tests": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "status": "PASSED",
+      "cases": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedReflectionBeanReloadTest#metaReflectionAndWarmJavaBeansFollowAdditionBodyChangeRemovalAndRestore()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.AddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.JacksonMapperRegistryTest#discardedMapperIsNotRetained()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.bootstrap.JacksonMapperRegistryTest#identityDedupKeepsDistinctEqualMappers()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonGetterReloadTest#standaloneAndCopiedMappersKeepPoliciesAcrossSaves()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionRewriteCoverageTest#nativeSpringMethodScansKeepPhysicalSchemaWhileApplicationsSeeAddedMethods()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionRewriteCoverageTest#everyRewrittenFormSeesAStructurallyAddedMember()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.transform.ReflectionRewriteCoverageTest#aClassWithoutReflectionIsNotRewritten()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.JacksonEnumCachesTest#withoutJacksonOrSpringTheFlushDoesNothingAndSaysNothing()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.JacksonEnumCachesTest#everyMapperBeanHasBothCachesFlushedAndTheRootMapCleared()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.JacksonEnumCachesTest#aMapperWhoseCacheFieldsAreMissingIsSkippedNotHalfFlushed()",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.reload.JacksonEnumCachesTest#realJacksonFlushDropsTheReadOnlySerializerSnapshotToo()",
+          "status": "PASSED"
+        }
+      ]
+    },
+    "jdk17-springSixTest": {
+      "counts": {
+        "tests": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "status": "PASSED",
+      "cases": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaAddedJacksonGetterReloadTest#addedGettersReachHttpWithMapperPoliciesAcrossSaves()",
+          "status": "PASSED"
+        }
+      ]
+    },
+    "sdk21": {
+      "status": "PASSED",
+      "checks": 46,
+      "artifact_sha256": "021964dc844ac347eb895a642a0ff1ca54a2a18a1495e931041e78e48b853937",
+      "scope": "actual SAP generator; synthetic XML; bounded manual Ant adapter; no tenant/DB"
+    },
+    "native-probes17": {
+      "artifact_sha256": "021964dc844ac347eb895a642a0ff1ca54a2a18a1495e931041e78e48b853937",
+      "runs": {
+        "gapsJdk17Test": {
+          "counts": {
+            "tests": 42,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#explicitFactoryAndConcurrencyFollowDeliveryReloadAndRetirement()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [1] true, true, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [2] true, true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [3] true, false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [4] true, false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [5] false, true, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [6] false, true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [7] false, false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [8] false, false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [1] null, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [2] null, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [3] override, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [4] override, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#explicitEmptyGroupMatchesNativeAcrossBrokerReloads(boolean) [1] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#explicitEmptyGroupMatchesNativeAcrossBrokerReloads(boolean) [2] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [1] false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [2] true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [3] false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [4] true, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#missingRequiredRecordFieldIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#unrunLaneCannotBePromotedToProven()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#unknownVerdictIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#nonexistentTestMethodIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#componentObservationCannotCertifyWatcherBehavior()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#changedSurfaceDigestIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#unrelatedDeclaringClassCannotCertifyAnInheritedTest()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#omittedCellIsRejectedEvenWhenAllOtherRowsAreValid()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#currentRegistryHasEveryPlannedCellAndVerifiableProvenance()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#missingRequiredRecordFieldIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#unrunLaneCannotBePromotedToProven()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#nonexistentTestMethodIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#componentObservationCannotCertifyWatcherBehavior()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#changedSurfaceDigestIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#unrelatedDeclaringClassCannotCertifyAnInheritedTest()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#omittedCellIsRejectedEvenWhenAllOtherRowsAreValid()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#currentRegistryHasEveryPlannedCellAndVerifiableProvenance()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerExpressionReloadTest#selfReferencingExpressionsRouteTopicsAndGroupsAcrossSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerExpressionReloadTest#selfReferencingExpressionsRouteTopicsAndGroupsAcrossSaves(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [1] false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [2] true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [3] false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [4] true, true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        "rabbitTest": {
+          "counts": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedRabbitListenerExpressionReloadTest#queueExpressionsMoveConsumersAndRecoverAfterErrors(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedRabbitListenerExpressionReloadTest#queueExpressionsMoveConsumersAndRecoverAfterErrors(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        }
+      }
+    },
+    "native-probes21": {
+      "artifact_sha256": "021964dc844ac347eb895a642a0ff1ca54a2a18a1495e931041e78e48b853937",
+      "runs": {
+        "gapsFocusedTest": {
+          "counts": {
+            "tests": 42,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#explicitFactoryAndConcurrencyFollowDeliveryReloadAndRetirement()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [1] true, true, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [2] true, true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [3] true, false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [4] true, false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [5] false, true, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [6] false, true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [7] false, false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls(boolean, boolean, boolean) [8] false, false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [1] null, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [2] null, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [3] override, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls(String, boolean) [4] override, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#explicitEmptyGroupMatchesNativeAcrossBrokerReloads(boolean) [1] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#explicitEmptyGroupMatchesNativeAcrossBrokerReloads(boolean) [2] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [1] false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [2] true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [3] false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration(boolean, boolean) [4] true, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#missingRequiredRecordFieldIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#unrunLaneCannotBePromotedToProven()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#unknownVerdictIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#nonexistentTestMethodIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#componentObservationCannotCertifyWatcherBehavior()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#changedSurfaceDigestIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#unrelatedDeclaringClassCannotCertifyAnInheritedTest()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#omittedCellIsRejectedEvenWhenAllOtherRowsAreValid()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P4RegistryCompletenessTest#currentRegistryHasEveryPlannedCellAndVerifiableProvenance()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#missingRequiredRecordFieldIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#unrunLaneCannotBePromotedToProven()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#nonexistentTestMethodIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#componentObservationCannotCertifyWatcherBehavior()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#changedSurfaceDigestIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#unrelatedDeclaringClassCannotCertifyAnInheritedTest()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#omittedCellIsRejectedEvenWhenAllOtherRowsAreValid()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P2RegistryCompletenessTest#currentRegistryHasEveryPlannedCellAndVerifiableProvenance()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerExpressionReloadTest#selfReferencingExpressionsRouteTopicsAndGroupsAcrossSaves(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedKafkaListenerExpressionReloadTest#selfReferencingExpressionsRouteTopicsAndGroupsAcrossSaves(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [1] false, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [2] true, false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [3] false, true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts(boolean, boolean) [4] true, true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        "rabbitTest": {
+          "counts": {
+            "tests": 2,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedRabbitListenerExpressionReloadTest#queueExpressionsMoveConsumersAndRecoverAfterErrors(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedRabbitListenerExpressionReloadTest#queueExpressionsMoveConsumersAndRecoverAfterErrors(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        }
+      }
+    },
+    "jdk17-spring-native-probes": {
+      "status": "PASSED",
+      "jdk": 17,
+      "artifact_sha256": "021964dc844ac347eb895a642a0ff1ca54a2a18a1495e931041e78e48b853937",
+      "command": "GAP_JDK=17 GAP_LOG=gaps-spring-native-probes17 python3 run-gap-tests.py gapsJdk17Test [seven affected ordinary classes] --rerun :agent:springSixTest [five affected inherited classes]; exact class names in cases",
+      "completion_summary": "BUILD SUCCESSFUL in 2m 23s",
+      "runs": {
+        "gapsJdk17Test": {
+          "counts": {
+            "tests": 14,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ComposedTransactionOperationReloadTest#composedTransactionsFollowSavesThroughHeldProxy(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ComposedTransactionOperationReloadTest#composedTransactionsFollowSavesThroughHeldProxy(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ComposedCacheOperationReloadTest#composedCacheFollowsSavesThroughHeldProxy(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ComposedCacheOperationReloadTest#composedCacheFollowsSavesThroughHeldProxy(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ComposedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ComposedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        "springSixTest": {
+          "counts": {
+            "tests": 10,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ModernComposedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.ModernComposedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncEventReloadTest#asyncEventsUseNativeExecutorAndKeepAdmittedBodyAcrossReloadAndRemoval(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedModernMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedModernMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncServiceReloadTest#heldCallsGetNativeFuturesAcrossExecutorChangesRemovalAndRestore(boolean) [2] true",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks(boolean) [1] false",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.JakartaAddedAsyncScheduledReloadTest#asyncSchedulesKeepAcceptedWorkAndRefreshFutureTicks(boolean) [2] true",
+              "status": "PASSED"
+            }
+          ]
+        }
+      }
+    },
+    "jdk21-complete-case-coverage": {
+      "status": "PASSED_SPLIT_CASE_COVERAGE",
+      "command": "python3 run-gaps-remaining.py: :agent:unitTest --rerun :agent:springSixTest --tests (five affected classes; exact filters in reproduction/run-gaps-remaining.py) --rerun :agent:test --rerun -x :agent:hibernateTest -x :agent:jmsTest -x :agent:jmsUnitTest -x :agent:rabbitTest -x :agent:modernMessagingTest; -I focused.init.gradle --offline --no-daemon",
+      "earlier_partial_command": "GAP_LOG=gaps-full-final21 python3 run-gap-tests.py unitTest --rerun :agent:test",
+      "final_diagnostic_commands": {
+        "17": [
+          "./gradlew",
+          "-I",
+          "/private/tmp/reclazz-sap-comparison/focused.init.gradle",
+          ":agent:gapsJdk17Test",
+          "--tests",
+          "*AddedMethodIsAnnouncedTest",
+          "--tests",
+          "*CoreMemberReloadTest",
+          "--tests",
+          "*P1RegistryCompletenessTest",
+          "--rerun",
+          "--offline",
+          "--no-daemon"
+        ],
+        "21": [
+          "./gradlew",
+          "-I",
+          "/private/tmp/reclazz-sap-comparison/focused.init.gradle",
+          ":agent:gapsFocusedTest",
+          "--tests",
+          "*AddedMethodIsAnnouncedTest",
+          "--tests",
+          "*CoreMemberReloadTest",
+          "--tests",
+          "*P1RegistryCompletenessTest",
+          "--rerun",
+          "--offline",
+          "--no-daemon"
+        ]
+      },
+      "spring_case_sources": [
+        "gaps-before-spring-native-probe21.json (351 unchanged passing cases)",
+        "gaps-remaining21 springSixTest (all10 replaced old-control cases)"
+      ],
+      "execution_note": "All six suites covered across three JDK21 executions on the same frozen runtime; four completed unchanged suites carried forward after six ordinary Spring test-native-slot probes and evidence declarations changed. The first execution later failed in Spring 6 on the superseded reflection-absence controls. The second execution completed all ordinary cases but retained two superseded added-method visibility assertions, replaced only by the final targeted pass. No claim of a single monolithic successful invocation.",
+      "runtime": "SapMachine21.0.10.0.1",
+      "artifact_sha256": "021964dc844ac347eb895a642a0ff1ca54a2a18a1495e931041e78e48b853937",
+      "child_jvm_artifact_pinned": true,
+      "remaining_full_command_summary": "BUILD FAILED in 35m 17s",
+      "final_targeted_summary": "BUILD SUCCESSFUL in 28s",
+      "counts": {
+        "tests": 3083,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 5
+      },
+      "suites": {
+        "hibernateTest": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "jmsTest": {
+          "tests": 53,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "modernMessagingTest": {
+          "tests": 152,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "rabbitTest": {
+          "tests": 43,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "springSixTest": {
+          "tests": 361,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "test": {
+          "tests": 2471,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 5
+        }
+      },
+      "skipped_cases": [
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.reload.ReloadPhasesBench#measure()",
+          "status": "SKIPPED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.transform.ReflectionInterceptBench#measure()",
+          "status": "SKIPPED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.transform.TransformThroughputBench#measure()",
+          "status": "SKIPPED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.transform.FootprintBench#measure()",
+          "status": "SKIPPED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.watcher.WatcherFootprintBench#measure()",
+          "status": "SKIPPED"
+        }
+      ],
+      "new_cases": [
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.e2e.AddedReflectionBeanReloadTest#metaReflectionAndWarmJavaBeansFollowAdditionBodyChangeRemovalAndRestore()",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.bootstrap.JacksonMapperRegistryTest#discardedMapperIsNotRetained()",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.bootstrap.JacksonMapperRegistryTest#identityDedupKeepsDistinctEqualMappers()",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonGetterReloadTest#standaloneAndCopiedMappersKeepPoliciesAcrossSaves()",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.transform.ReflectionRewriteCoverageTest#nativeSpringMethodScansKeepPhysicalSchemaWhileApplicationsSeeAddedMethods()",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedSettersReadJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [1] false",
+          "status": "PASSED"
+        },
+        {
+          "task": "test",
+          "symbol": "com.onurkat.reclazz.e2e.StandaloneJacksonPropertyReloadTest#addedFieldsReadAndWriteJsonAcrossSaves [2] true",
+          "status": "PASSED"
+        }
+      ]
+    },
+    "getter-warning17-21": {
+      "status": "PASSED",
+      "artifact_sha256": "021964dc844ac347eb895a642a0ff1ca54a2a18a1495e931041e78e48b853937",
+      "scope": "Updated getter diagnostic and core member visibility/removal/restore controls plus P1 provenance validation. No production changes.",
+      "runs": {
+        "17": {
+          "command": [
+            "./gradlew",
+            "-I",
+            "/private/tmp/reclazz-sap-comparison/focused.init.gradle",
+            ":agent:gapsJdk17Test",
+            "--tests",
+            "*AddedMethodIsAnnouncedTest",
+            "--tests",
+            "*CoreMemberReloadTest",
+            "--tests",
+            "*P1RegistryCompletenessTest",
+            "--rerun",
+            "--offline",
+            "--no-daemon"
+          ],
+          "counts": {
+            "tests": 10,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "completion_summary": "BUILD SUCCESSFUL in 28s",
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#missingRequiredRecordFieldIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#unrunLaneCannotBePromotedToProven()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#nonexistentTestMethodIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#componentObservationCannotCertifyWatcherBehavior()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#changedSurfaceDigestIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#omittedCellIsRejectedEvenWhenAllOtherRowsAreValid()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#currentRegistryHasEveryPlannedCellAndVerifiableProvenance()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#directAddedFieldCallerSharesOwnerValuesAcrossSaves()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedMethodIsAnnouncedTest#anAddedGetterIsNamedRatherThanSilentlyIgnored()",
+              "status": "PASSED"
+            }
+          ]
+        },
+        "21": {
+          "command": [
+            "./gradlew",
+            "-I",
+            "/private/tmp/reclazz-sap-comparison/focused.init.gradle",
+            ":agent:gapsFocusedTest",
+            "--tests",
+            "*AddedMethodIsAnnouncedTest",
+            "--tests",
+            "*CoreMemberReloadTest",
+            "--tests",
+            "*P1RegistryCompletenessTest",
+            "--rerun",
+            "--offline",
+            "--no-daemon"
+          ],
+          "counts": {
+            "tests": 10,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "completion_summary": "BUILD SUCCESSFUL in 28s",
+          "cases": [
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#missingRequiredRecordFieldIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#unrunLaneCannotBePromotedToProven()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#nonexistentTestMethodIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#componentObservationCannotCertifyWatcherBehavior()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#changedSurfaceDigestIsRejected()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#omittedCellIsRejectedEvenWhenAllOtherRowsAreValid()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.evidence.P1RegistryCompletenessTest#currentRegistryHasEveryPlannedCellAndVerifiableProvenance()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.CoreMemberReloadTest#directAddedFieldCallerSharesOwnerValuesAcrossSaves()",
+              "status": "PASSED"
+            },
+            {
+              "symbol": "com.onurkat.reclazz.e2e.AddedMethodIsAnnouncedTest#anAddedGetterIsNamedRatherThanSilentlyIgnored()",
+              "status": "PASSED"
+            }
+          ]
+        }
+      },
+      "replaced_case_symbols": [
+        "com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore()",
+        "com.onurkat.reclazz.e2e.AddedMethodIsAnnouncedTest#anAddedGetterIsNamedRatherThanSilentlyIgnored()"
+      ]
+    }
+  },
+  "last_frozen_scratch_sha256": "8f829cd53356a9f73233ab193c40fef3732f031757f5e6eb7621bc654ea5813a"
+}

@@ -80,6 +80,23 @@ class AddedMethodSecurityReloadTest {
             @Configuration(proxyBeanMethods=false)
             @EnableGlobalMethodSecurity(prePostEnabled=true,proxyTargetClass=true)
             public class App {
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
+
                 @Bean public Store store() { return new Store(); }
                 static void login(String role) {
                     SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("alice","unused",
@@ -94,6 +111,7 @@ class AddedMethodSecurityReloadTest {
                     if(!expected.equals(actual))throw new AssertionError(actual);
                 }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     try(var context=new AnnotationConfigApplicationContext(App.class)) {
                         Store held=context.getBean(Store.class);
                         System.out.println("READY="+(held instanceof org.springframework.aop.framework.Advised));
@@ -118,7 +136,7 @@ class AddedMethodSecurityReloadTest {
                                     login("WRITE"); allowed(held,i);
                                 }
                                 login("WRITE"); if(!"control".equals(held.original()))throw new AssertionError("native control");
-                                boolean reflected=java.util.Arrays.stream(Store.class.getDeclaredMethods()).anyMatch(m->m.getName().equals("work"));
+                                boolean reflected=physicallyDeclared(Store.class,"work");
                                 System.out.println("R"+i+"="+held.calls()+":"+(held==context.getBean(Store.class))+":"+reflected);
                             } finally { SecurityContextHolder.clearContext(); }
                         }

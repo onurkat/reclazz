@@ -48,7 +48,7 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
             // identical stack effects, so frames are unchanged. COMPUTE_FRAMES would require
             // a SafeClassWriter and is too expensive for this broad (all-class) transform.
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
-            ClassVisitor visitor = new ReflectionRewriteVisitor(writer);
+            ClassVisitor visitor = new ReflectionRewriteVisitor(writer, className.startsWith("org/springframework/"));
 
             reader.accept(visitor, ClassReader.EXPAND_FRAMES);
 
@@ -112,8 +112,10 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
      * ClassVisitor that rewrites reflection call sites in method bodies.
      */
     private static class ReflectionRewriteVisitor extends ClassVisitor {
-        ReflectionRewriteVisitor(ClassVisitor cv) {
+        private final boolean physicalMethods;
+        ReflectionRewriteVisitor(ClassVisitor cv, boolean physicalMethods) {
             super(Opcodes.ASM9, cv);
+            this.physicalMethods=physicalMethods;
         }
 
         @Override
@@ -121,7 +123,7 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
                                           String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
             if (mv == null) return null;
-            return new ReflectionRewriteMethodVisitor(mv);
+            return new ReflectionRewriteMethodVisitor(mv, physicalMethods);
         }
     }
 
@@ -130,8 +132,10 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
      * and rewrites them to invokestatic on ReflectionBridge.
      */
     private static class ReflectionRewriteMethodVisitor extends MethodVisitor {
-        ReflectionRewriteMethodVisitor(MethodVisitor mv) {
+        private final boolean physicalMethods;
+        ReflectionRewriteMethodVisitor(MethodVisitor mv, boolean physicalMethods) {
             super(Opcodes.ASM9, mv);
+            this.physicalMethods=physicalMethods;
         }
 
         @Override
@@ -142,7 +146,12 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
                 if (bridgeDesc != null) {
                     // Rewrite: invokevirtual Class.xxx -> invokestatic ReflectionBridge.xxx
                     // The Class instance (receiver) becomes the first argument
-                    super.visitMethodInsn(Opcodes.INVOKESTATIC, BRIDGE, name,
+                    // Native Spring lifecycle scans must not register companion
+                    // callbacks before their dedicated adapters can own them.
+                    String bridgeName=physicalMethods && (name.equals("getDeclaredMethods")
+                            || name.equals("getMethods") || name.equals("getDeclaredMethod") || name.equals("getMethod"))
+                            ? name+"ForFramework" : name;
+                    super.visitMethodInsn(Opcodes.INVOKESTATIC, BRIDGE, bridgeName,
                             bridgeDesc, false);
                     return;
                 }

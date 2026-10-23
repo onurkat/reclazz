@@ -74,7 +74,7 @@ class AddedJacksonPropertyReloadTest {
                             assertEquals("initial", body.path("json").path("note").asText(), "nulls=SKIP preserves initializer");
                             assertFalse(body.path("json").has("secret"), response);
                             assertEquals("hidden", body.path("state").path("secret").asText());
-                            assertFalse(body.path("reflected").asBoolean(), "original reflection stays unchanged");
+                            assertTrue(body.path("reflected").asBoolean(), "added setters and fields must be visible through ordinary reflection");
                             if (stage == 3) {
                                 assertFalse(body.path("json").has("display_name"));
                                 assertFalse(body.path("json").has("renamed"));

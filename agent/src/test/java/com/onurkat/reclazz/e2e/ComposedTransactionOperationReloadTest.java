@@ -104,6 +104,23 @@ class ComposedTransactionOperationReloadTest {
             import org.springframework.transaction.annotation.EnableTransactionManagement;
             @Configuration(proxyBeanMethods=false) @EnableTransactionManagement(proxyTargetClass=true)
             public class App {
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
+
                 @Bean public org.h2.jdbcx.JdbcDataSource dataSource() {
                     var ds=new org.h2.jdbcx.JdbcDataSource(); ds.setURL("jdbc:h2:mem:composed;DB_CLOSE_DELAY=-1"); return ds;
                 }
@@ -113,6 +130,7 @@ class ComposedTransactionOperationReloadTest {
                 }
                 @Bean public Store store(JdbcTemplate jdbc) { return new Store(jdbc); }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     try(var context=new AnnotationConfigApplicationContext(App.class)) {
                         JdbcTemplate jdbc=context.getBean(JdbcTemplate.class); jdbc.execute("create table entries(id int)");
                         Store held=context.getBean(Store.class);
@@ -131,7 +149,7 @@ class ComposedTransactionOperationReloadTest {
                                 try { Probe.call(held,i,true); throw new AssertionError("missing exception"); }
                                 catch(Exception expected) { if(!"checked rollback".equals(expected.getMessage()))throw expected; }
                             }
-                            boolean reflected=java.util.Arrays.stream(Store.class.getDeclaredMethods()).anyMatch(m->m.getName().equals("write"));
+                            boolean reflected=physicallyDeclared(Store.class,"write");
                             System.out.println("R"+i+"="+result+":"+jdbc.queryForObject("select count(*) from entries",Integer.class)
                                 +":"+held.calls()+":"+(held==context.getBean(Store.class))+":"+reflected);
                         }

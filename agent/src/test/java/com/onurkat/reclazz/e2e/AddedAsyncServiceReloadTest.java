@@ -36,7 +36,7 @@ class AddedAsyncServiceReloadTest {
                 else app.rewrite("Service",service(stage));
                 await(app,"Service",stage);if(stage==1)await(app,"Probe",1);
                 Files.createFile(tmp.resolve("probe"+stage));app.awaitOrFail("R"+stage+"=","async service probe failed");
-                assertEquals("R"+stage+"="+expected[stage-1]+" reflected=false",app.latest("R"+stage+"="),app.tail());
+                assertEquals("R"+stage+"="+expected[stage-1]+" nativeSlot=false",app.latest("R"+stage+"="),app.tail());
                 assertTrue(app.output().stream().noneMatch(line->line.contains("compute() was added")),app.tail());
                 System.out.println("[async-service] child="+child+" "+app.latest("R"+stage+"="));
             }
@@ -94,6 +94,23 @@ class AddedAsyncServiceReloadTest {
             @Configuration(proxyBeanMethods=false) @ComponentScan("app")
             @EnableAsync(proxyTargetClass=true) @EnableTransactionManagement(proxyTargetClass=true)
             public class App implements AsyncConfigurer {
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
+
                 public static volatile int calls;
                 static final List<String> errors=new CopyOnWriteArrayList<>(),original=new CopyOnWriteArrayList<>();
                 static final QueueExecutor ONE=new QueueExecutor("one"),TWO=new QueueExecutor("two");
@@ -114,6 +131,7 @@ class AddedAsyncServiceReloadTest {
                     }
                 }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     try(var context=new AnnotationConfigApplicationContext(App.class)) {
                         var jdbc=context.getBean(JdbcTemplate.class);jdbc.execute("create table entries(id int)");
                         Service old=context.getBean(Service.class);int oldId=old.identity();
@@ -142,8 +160,8 @@ class AddedAsyncServiceReloadTest {
                                 var self=current.self();boolean selfOk=self.isDone()&&self.get().equals("v5:9:"+Thread.currentThread().getName()+":false:"+current.identity())&&TWO.queue.isEmpty();
                                 old.original();ONE.runNext();result="restored="+restoredOk+" self="+selfOk+" original="+original.equals(List.of("one"));
                             }
-                            boolean reflected=Arrays.stream(Service.class.getDeclaredMethods()).anyMatch(m->m.getName().equals("compute"));
-                            System.out.println("R"+stage+"="+result+" reflected="+reflected);
+                            boolean nativeSlot=physicallyDeclared(Service.class,"compute");
+                            System.out.println("R"+stage+"="+result+" nativeSlot="+nativeSlot);
                         }
                     }
                 }

@@ -36,6 +36,8 @@ public final class JacksonBridge {
         return members.get(owner).schema != null;
     }
 
+    static Class<?> schema(Class<?> owner) { return members.get(owner).schema; }
+
     /** Publish routes before making their metadata discoverable. */
     public static void replace(Class<?> owner, Class<?> schema, Map<Method, MethodHandle> targets) {
         replace(owner, schema, targets, Map.of());
@@ -153,7 +155,7 @@ public final class JacksonBridge {
     }
 
     /** Reflection permits unboxing and primitive widening, never narrowing. */
-    private static Object checkedValue(Class<?> type, Object value) {
+    static Object checkedValue(Class<?> type, Object value) {
         if (!type.isPrimitive()) {
             if (value == null || type.isInstance(value)) return value;
         } else if (type == boolean.class && value instanceof Boolean) return value;

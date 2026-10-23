@@ -1,0 +1,258 @@
+/*
+ * Copyright 2026 Onur Kat
+ * SPDX-License-Identifier: Apache-2.0
+ */
+package com.onurkat.reclazz.bootstrap;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.ref.WeakReference;
+import java.lang.ref.ReferenceQueue;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.WeakHashMap;
+
+/** Orika property metadata for added bean accessors. No Orika runtime dependency. */
+public final class OrikaBridge {
+    private OrikaBridge() { }
+
+    private static final Map<Object, List<Stamp>> refreshed = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<Object, Boolean> defaultBuilders = Collections.synchronizedMap(new WeakHashMap<>());
+    private static final ReferenceQueue<Object> deadPlanKeys = new ReferenceQueue<>();
+    private static final Map<IdentityKey, Boolean> defaultPlans = new HashMap<>();
+    private static final class IdentityKey extends WeakReference<Object> {
+        private final int hash;
+        IdentityKey(Object value, ReferenceQueue<Object> queue) { super(value, queue); hash = System.identityHashCode(value); }
+        @Override public int hashCode() { return hash; }
+        @Override public boolean equals(Object other) {
+            if (this == other) return true;
+            Object value = get();
+            return other instanceof IdentityKey key && value != null && value == key.get();
+        }
+    }
+    private static synchronized boolean defaultPlan(Object plan) {
+        IdentityKey dead;
+        while ((dead = (IdentityKey) deadPlanKeys.poll()) != null) defaultPlans.remove(dead);
+        return Boolean.TRUE.equals(defaultPlans.get(new IdentityKey(plan, null)));
+    }
+    private static synchronized void rememberPlan(Object plan) {
+        defaultPlan(plan);
+        defaultPlans.put(new IdentityKey(plan, deadPlanKeys), true);
+    }
+    private static final ThreadLocal<Boolean> rebuilding = new ThreadLocal<>();
+
+    // Values contain weak class references only, never a path back to the weak factory key.
+    private record Stamp(WeakReference<Class<?>> a, WeakReference<Class<?>> b,
+                         WeakReference<Class<?>> schemaA, WeakReference<Class<?>> schemaB) {
+        boolean pair(Class<?> x, Class<?> y) { return a.get() == x && b.get() == y; }
+        boolean current(Class<?> x, Class<?> y) { return schemaA.get() == x && schemaB.get() == y; }
+    }
+
+    /** Refresh a cached ordinary mapping plan before the facade consults its strategy cache. */
+    public static void beforeMapping(Object facade, Object source, Type sourceType, Type destinationType) {
+        if (source == null || Boolean.TRUE.equals(rebuilding.get())) return;
+        Class<?> a = raw(sourceType == null ? source.getClass() : sourceType), b = raw(destinationType);
+        if (a == null || b == null) return;
+        Class<?> schemaA = JacksonBridge.schema(a), schemaB = JacksonBridge.schema(b);
+        if (schemaA == null && schemaB == null) return;
+        try {
+            ClassLoader loader = facade.getClass().getClassLoader();
+            Class<?> facadeType = Class.forName("ma.glasnost.orika.impl.MapperFacadeImpl", false, loader);
+            var field = facadeType.getDeclaredField("mapperFactory");
+            field.setAccessible(true);
+            Object factory = field.get(facade);
+            if (!factory.getClass().getName().equals("ma.glasnost.orika.impl.DefaultMapperFactory"))
+                return;
+            List<Stamp> stamps;
+            synchronized (refreshed) { stamps = refreshed.computeIfAbsent(factory, ignored -> new ArrayList<>()); }
+            synchronized (factory) {
+                stamps.removeIf(s -> s.a().get() == null || s.b().get() == null);
+                for (Stamp stamp : stamps) if (stamp.pair(a, b) && stamp.current(schemaA, schemaB)) return;
+                rebuilding.set(true);
+                try {
+                    refreshPlan(factory, sourceType == null ? source.getClass() : sourceType, destinationType, loader);
+                    stamps.removeIf(s -> s.pair(a, b));
+                    stamps.add(new Stamp(new WeakReference<>(a), new WeakReference<>(b),
+                            new WeakReference<>(schemaA), new WeakReference<>(schemaB)));
+                } finally { rebuilding.remove(); }
+            }
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Reclazz could not refresh the added Orika property mapping", failure);
+        }
+    }
+
+    /** Record the actual byDefault policy, rather than inferring it from existing fields. */
+    public static void defaults(Object builder, Object direction, Object[] hints) {
+        try {
+            Class<?> base = Class.forName("ma.glasnost.orika.metadata.ClassMapBuilder", false, builder.getClass().getClassLoader());
+            if (builder.getClass() != base) return;
+            var defaults = base.getDeclaredField("defaults");
+            defaults.setAccessible(true);
+            Object[] configured = (Object[]) defaults.get(builder);
+            boolean ordinary = direction instanceof Enum<?> e && e.name().equals("BIDIRECTIONAL")
+                    && hints != null && hints.length == 0 && (configured == null || configured.length == 0);
+            defaultBuilders.merge(builder, ordinary, (previous, next) -> previous && next);
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Reclazz could not retain the Orika default mapping policy", failure);
+        }
+    }
+
+    public static void copiedPlan(Object map, Object original) {
+        if (defaultPlan(original)) rememberPlan(map);
+    }
+
+    public static void plan(Object map, Object builder) {
+        if (Boolean.TRUE.equals(defaultBuilders.get(builder))) rememberPlan(map);
+    }
+
+    private static Class<?> raw(Type type) {
+        return type instanceof Class<?> c ? c
+                : type instanceof ParameterizedType p && p.getRawType() instanceof Class<?> c ? c : null;
+    }
+
+    private static void refreshPlan(Object factory, Type source, Type destination, ClassLoader loader)
+            throws ReflectiveOperationException {
+        Class<?> typeFactory = Class.forName("ma.glasnost.orika.metadata.TypeFactory", false, loader);
+        Class<?> type = Class.forName("ma.glasnost.orika.metadata.Type", false, loader);
+        Class<?> keyType = Class.forName("ma.glasnost.orika.metadata.MapperKey", false, loader);
+        Class<?> classMapType = Class.forName("ma.glasnost.orika.metadata.ClassMap", false, loader);
+        Method valueOf = typeFactory.getMethod("valueOf", Type.class);
+        Object a = valueOf.invoke(null, source), b = valueOf.invoke(null, destination);
+        Object key = keyType.getConstructor(type, type).newInstance(a, b);
+        Object old = factory.getClass().getMethod("getClassMap", keyType).invoke(factory, key);
+        // A fresh mapper will discover the current metadata normally.
+        if (old == null || !defaultPlan(old)) return;
+        Object oldA = classMapType.getMethod("getAType").invoke(old);
+        Object oldB = classMapType.getMethod("getBType").invoke(old);
+        Object builder = factory.getClass().getMethod("classMap", type, type).invoke(factory, oldA, oldB);
+        Class<?> hint = Class.forName("ma.glasnost.orika.DefaultFieldMapper", false, loader);
+        Object hints = java.lang.reflect.Array.newInstance(hint, 0);
+        builder.getClass().getMethod("byDefault", hints.getClass()).invoke(builder, hints);
+        Object defaults = builder.getClass().getMethod("toClassMap").invoke(builder);
+        Method mappings = classMapType.getMethod("getFieldsMapping");
+        Set<?> existing = (Set<?>) mappings.invoke(old);
+        Set<Object> merged = new LinkedHashSet<>(existing);
+        Set<String> usedA = new HashSet<>(), usedB = new HashSet<>();
+        Class<?> fieldMap = Class.forName("ma.glasnost.orika.metadata.FieldMap", false, loader);
+        Method sourceExpression = fieldMap.getMethod("getSourceExpression");
+        Method destinationExpression = fieldMap.getMethod("getDestinationExpression");
+        for (Object map : existing) {
+            usedA.add(root((String) sourceExpression.invoke(map)));
+            usedB.add(root((String) destinationExpression.invoke(map)));
+        }
+        for (Object map : (Set<?>) mappings.invoke(defaults)) {
+            String from = root((String) sourceExpression.invoke(map));
+            String to = root((String) destinationExpression.invoke(map));
+            if (!usedA.contains(from) && !usedB.contains(to)) merged.add(map);
+        }
+        if (merged.size() == existing.size()) return;
+        // copy(Set) preserves custom mapper, converters on old fields, exclusions,
+        // used mappings, constructors and null policies; only new default fields are added.
+        Object replacement = classMapType.getMethod("copy", Set.class).invoke(old, merged);
+        refreshCompiler(factory, raw(source), raw(destination), loader);
+        rememberPlan(replacement);
+        var lookup = factory.getClass().getDeclaredMethod("getRegisteredMapper", keyType);
+        lookup.setAccessible(true);
+        Object previousMapper = lookup.invoke(factory, key);
+        factory.getClass().getMethod("registerClassMap", classMapType).invoke(factory, replacement);
+        // This SDK's generated mapper uses identity equality; registerClassMap's
+        // remove(newMapper) does not remove the previous instance for the pair.
+        if (previousMapper != null) {
+            var registryField = factory.getClass().getDeclaredField("mappersRegistry");
+            registryField.setAccessible(true);
+            ((java.util.Collection<?>) registryField.get(factory)).remove(previousMapper);
+        }
+    }
+
+    private static void refreshCompiler(Object factory, Class<?> a, Class<?> b, ClassLoader loader)
+            throws ReflectiveOperationException {
+        var strategyField = factory.getClass().getDeclaredField("compilerStrategy");
+        strategyField.setAccessible(true);
+        Object strategy = strategyField.get(factory);
+        if (!strategy.getClass().getName().equals("ma.glasnost.orika.impl.generator.JavassistCompilerStrategy")) return;
+        var poolField = strategy.getClass().getDeclaredField("classPool");
+        poolField.setAccessible(true);
+        Object pool = poolField.get(strategy);
+        Class<?> poolType = Class.forName("javassist.ClassPool", false, loader);
+        Class<?> ctType = Class.forName("javassist.CtClass", false, loader);
+        synchronized (pool) {
+            for (Class<?> owner : new Class<?>[]{a, b}) {
+                if (owner == null || JacksonBridge.schema(owner) == null) continue;
+                Object ct = poolType.getMethod("getOrNull", String.class).invoke(pool, owner.getName());
+                if (ct != null) ctType.getMethod("detach").invoke(ct);
+            }
+        }
+    }
+
+    private static String root(String expression) {
+        if (expression == null) return "";
+        int dot = expression.indexOf('.'), bracket = expression.indexOf('[');
+        int end = dot < 0 ? bracket : bracket < 0 ? dot : Math.min(dot, bracket);
+        return end < 0 ? expression : expression.substring(0, end);
+    }
+
+    /** Overlay saved accessor metadata; leave unrelated resolver results untouched. */
+    public static Map<?, ?> properties(Map<?, ?> original, Type type, Object resolver) {
+        Class<?> owner = type instanceof Class<?> c ? c
+                : type instanceof ParameterizedType p && p.getRawType() instanceof Class<?> c ? c : null;
+        if (owner == null || !JacksonBridge.hasGetters(owner)) return original;
+
+        Map<String, Method> reads = new LinkedHashMap<>();
+        Map<String, Method> writes = new LinkedHashMap<>();
+        for (Method method : JacksonBridge.getDeclaredMethods(owner)) {
+            // The ordinary resolver owns existing properties, annotations and exclusions.
+            // Only the saved metadata carrier represents newly added members.
+            if (method.getDeclaringClass() == owner || !Modifier.isPublic(method.getModifiers())
+                    || Modifier.isStatic(method.getModifiers())) continue;
+            String name = method.getName();
+            if (method.getParameterCount() == 0 && method.getReturnType() != void.class) {
+                if (name.startsWith("get") && name.length() > 3) reads.put(decap(name.substring(3)), method);
+                else if (name.startsWith("is") && name.length() > 2 && method.getReturnType() == boolean.class)
+                    reads.put(decap(name.substring(2)), method);
+            } else if (method.getParameterCount() == 1 && method.getReturnType() == void.class
+                    && name.startsWith("set") && name.length() > 3) writes.put(decap(name.substring(3)), method);
+        }
+        if (reads.isEmpty() && writes.isEmpty()) return original;
+        try {
+            Class<?> builderType = Class.forName("ma.glasnost.orika.metadata.Property$Builder", false,
+                    resolver.getClass().getClassLoader());
+            Method propertyFor = builderType.getMethod("propertyFor", Class.class, String.class);
+            Method propertyType = builderType.getMethod("type", Type.class);
+            Method getter = builderType.getMethod("getter", String.class);
+            Method setter = builderType.getMethod("setter", String.class);
+            Method build = builderType.getMethod("build");
+            Map<Object, Object> merged = new LinkedHashMap<>(original);
+            Map<String, Method> all = new LinkedHashMap<>(writes);
+            all.putAll(reads);
+            for (String name : all.keySet()) {
+                Method read = reads.get(name), write = writes.get(name);
+                // A mismatched accessor pair needs the resolver's normal diagnostics.
+                if (read != null && write != null && read.getReturnType() != write.getParameterTypes()[0])
+                    throw new IllegalStateException("Incompatible added Orika accessors: " + name);
+                Object builder = propertyFor.invoke(null, owner, name);
+                propertyType.invoke(builder, read != null ? read.getGenericReturnType() : write.getGenericParameterTypes()[0]);
+                if (read != null) getter.invoke(builder, read.getName() + "()");
+                if (write != null) setter.invoke(builder, write.getName() + "(%s)");
+                merged.put(name, build.invoke(builder));
+            }
+            return merged;
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Reclazz could not expose added Orika properties", failure);
+        }
+    }
+
+    private static String decap(String value) {
+        if (value.length() > 1 && Character.isUpperCase(value.charAt(0)) && Character.isUpperCase(value.charAt(1)))
+            return value;
+        return Character.toLowerCase(value.charAt(0)) + value.substring(1);
+    }
+}

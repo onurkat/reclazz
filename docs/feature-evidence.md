@@ -358,9 +358,9 @@ An updated caller can invoke an added method on the existing receiver.
 
 **Bounds:** Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
-**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
 **Control:** Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.
 
@@ -382,9 +382,9 @@ Held Method and unchanged callers keep the last implementation when an original 
 
 **Bounds:** Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
-**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
 **Control:** Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.
 
@@ -406,9 +406,9 @@ Original members removed by reload disappear from native reflection scans.
 
 **Bounds:** Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
-**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
 **Control:** Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.
 
@@ -430,9 +430,9 @@ Restoring an original removed member makes it visible and callable again.
 
 **Bounds:** Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
-**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
 **Control:** Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.
 
@@ -454,9 +454,9 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 **Bounds:** Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.
 
-**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Tests/assertions:** `com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore` (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
-**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, added extra/added remain invisible; same PID/nonce.
+**Observable:** Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.
 
 **Control:** Named test before/after controls; same process/held-object controls where asserted. Scratch disabled-hook witnesses are separately retained for central paths.
 
@@ -472,7 +472,7 @@ A removed original field is hidden while a held Field and unchanged caller retai
 
 Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.
 
-**Shipped surfaces:** `docs/usage.md:3173` (SHA-256 `8ead7cf6fa2bb990365f8a6ba2ca58765b157319662da8ee1a5820eb494902aa`); `docs/product-reference.md:597` (SHA-256 `fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230`); `CHANGELOG.md:64` (SHA-256 `8a9c01d972356ce670ee8dbb5ddfbb362c93389909f2d55aaf2f8cff0049ef63`); this block (digest in JSON).
+**Shipped surfaces:** `docs/usage.md:3173` (SHA-256 `8ead7cf6fa2bb990365f8a6ba2ca58765b157319662da8ee1a5820eb494902aa`); `docs/product-reference.md:597` (SHA-256 `fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230`); `CHANGELOG.md:141` (SHA-256 `e38e7394a21a87dacb73f7efc334c95edd9e759f6ad3f70d6841e4de1b5d9a2c`); this block (digest in JSON).
 
 **Default/opt-in:** Default companion reload after explicit agent attachment and class compilation.
 
@@ -8628,15 +8628,15 @@ Machine record: [p4-messaging.json](feature-evidence/p4-messaging.json); frozen 
 
 ### P4-JMS-WATCHED-REPLY-REFLECTION
 
-**Verdict:** PROVEN_WITH_SCOPE. Actual added request/reply handling uses a companion callback invisible on the original class.
+**Verdict:** PARTIAL.
 
 **Bounds:** SapMachine17/21, macOS arm64; Spring JMS5.3.39 javax.jms/embedded ActiveMQ Classic5.19.11. Normal/child application loaders, six saves; native TextMessage, explicit correlation, local session transaction; no XA.
 
-**Observation:** `com.onurkat.reclazz.e2e.AddedJmsRequestReplyReloadTest#addedRepliesFollowSavesDestinationsRetirementAndRestore` (watcher): reflected=false after each save with actual replies observed.
+**Observation:** `com.onurkat.reclazz.e2e.AddedJmsRequestReplyReloadTest#addedRepliesFollowSavesDestinationsRetirementAndRestore` (watcher): Baseline and stage4 have no added method; stages1,2,3,5,6 expose it through getDeclaredMethods, including private restoration and an annotation-free retained method.
 
-**Limit:** Only the named fixture shape and assertions. A component test is never file-watcher evidence; no atomic reload or arbitrary advice/provider guarantee. Other OS/JVM providers, unlisted brokers/frameworks, hosted/external clusters, late attach and native Spring6/Jakarta messaging are unverified.
+**Limit:** Updated Reflection assertion verified in this session only on SapMachine21 application/child loaders. Historical SapMachine17 receipts predate this assertion refresh; no fresh JDK17 JMS run is claimed. Other OS/JVM providers, unlisted brokers/frameworks, hosted/external clusters, late attach and native Spring6/Jakarta messaging are unverified.
 
-**Execution/control:** Both required lanes observed; actual invocations/raw XML/source and artifact hashes in the machine record. Named assertions observe actual message output or direct component state. Bounded no-duplicate/no-delivery windows do not establish universal exactly-once. Family-level scratch disabled-delegation witnesses are separate. Independent Claude audit pending.
+**Execution/control:** The updated reflection assertions have current-source JDK21 request/reply observations. The updated JDK17 reflection expectation has not been rerun in this fix; the verdict remains PARTIAL. Historical lanes and fresh candidate receipts remain separate in the machine record. Named assertions observe actual message output or direct component state. Bounded no-duplicate/no-delivery windows do not establish universal exactly-once. Family-level scratch disabled-delegation witnesses are separate.
 
 ### P4-KAFKA-COMPONENT-STANDARD-PROCESSOR-CONVERTS-MESSAGES-AND-PRIVATE-DELEGATE-USES-CURRENT-SINGLETON
 

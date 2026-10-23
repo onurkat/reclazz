@@ -42,8 +42,6 @@ class ReflectionRewriteCoverageTest extends TransformTestBase {
     private static final String TARGET_SRC =
             "public class Target {\n" +
             "    public String original() { return \"original\"; }\n" +
-            "    public String added() { return \"added\"; }\n" +
-            "    public String addedField = \"\";\n" +
             "}";
 
     private Class<?> targetKey;
@@ -59,7 +57,8 @@ class ReflectionRewriteCoverageTest extends TransformTestBase {
     void everyRewrittenFormSeesAStructurallyAddedMember() throws Exception {
         Map<String, byte[]> compiled = compile(
                 new SourceFile("Caller", CALLER_SRC),
-                new SourceFile("Target", TARGET_SRC));
+                new SourceFile("Target", TARGET_SRC),
+                new SourceFile("AddedMembers", "public class AddedMembers { public String added(){return \"added\";} public String addedField; }"));
 
         // Run the reflection interception over the caller exactly as the agent
         // does at load time.
@@ -81,9 +80,11 @@ class ReflectionRewriteCoverageTest extends TransformTestBase {
         int fieldsBefore = (int) invokeStatic(caller, "publicFieldCount", target);
 
         // Register "added" members the way StructuralReloader does.
-        Method added = target.getDeclaredMethod("added");
+        assertThrows(NoSuchMethodException.class, () -> target.getDeclaredMethod("added"));
+        Class<?> metadata = loader.load("AddedMembers");
+        Method added = metadata.getDeclaredMethod("added");
         ReflectionBridge.replaceClassState(targetKey,
-                List.of(added), List.of(target.getDeclaredField("addedField")));
+                List.of(added), List.of(metadata.getDeclaredField("addedField")));
 
         assertEquals(declaredBefore + 1, (int) invokeStatic(caller, "declaredCount", target),
                 "getDeclaredMethods() call site did not go through the bridge");
@@ -93,6 +94,34 @@ class ReflectionRewriteCoverageTest extends TransformTestBase {
                 "getFields() call site did not go through the bridge");
         assertEquals("added", invokeStatic(caller, "publicLookup", target, "added"),
                 "getMethod() call site did not go through the bridge");
+    }
+
+    @Test
+    void nativeSpringMethodScansKeepPhysicalSchemaWhileApplicationsSeeAddedMethods() throws Exception {
+        String framework="org.springframework.example.Caller";
+        Map<String,byte[]> compiled=compile(new SourceFile("Caller",CALLER_SRC),
+                new SourceFile(framework,"package org.springframework.example;\n"+CALLER_SRC),
+                new SourceFile("Target",TARGET_SRC),
+                new SourceFile("AddedMembers","public class AddedMembers {public String added(){return \"added\";}}"));
+        var transformer=new ReflectionInterceptTransformer();
+        var classes=new java.util.HashMap<>(compiled);
+        classes.put("Caller",transformer.transform(null,"Caller",null,null,compiled.get("Caller")));
+        classes.put(framework,transformer.transform(null,framework.replace('.','/'),null,null,compiled.get(framework)));
+        var loader=sharedLoader(classes);
+        Class<?> target=loader.load("Target"), app=loader.load("Caller"), nativeScan=loader.load(framework);
+        targetKey=target;
+        int declared=(int)invokeStatic(app,"declaredCount",target);
+        int publicCount=(int)invokeStatic(app,"publicCount",target);
+        Method added=loader.load("AddedMembers").getDeclaredMethod("added");
+        ReflectionBridge.replaceClassState(target,List.of(added),List.of());
+        assertEquals(declared+1,invokeStatic(app,"declaredCount",target));
+        assertEquals(publicCount+1,invokeStatic(app,"publicCount",target));
+        assertEquals(declared,invokeStatic(nativeScan,"declaredCount",target));
+        assertEquals(publicCount,invokeStatic(nativeScan,"publicCount",target));
+        assertEquals("added",invokeStatic(app,"publicLookup",target,"added"));
+        var failure=assertThrows(java.lang.reflect.InvocationTargetException.class,()->
+                nativeScan.getMethod("publicLookup",Class.class,String.class).invoke(null,target,"added"));
+        assertInstanceOf(NoSuchMethodException.class,failure.getCause());
     }
 
     /** A class with no reflection in it must be left exactly alone. */

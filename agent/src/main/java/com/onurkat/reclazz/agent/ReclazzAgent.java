@@ -169,6 +169,8 @@ public class ReclazzAgent {
      * so naming them here does not start the engine early.
      */
     private static void trustEngineCallers() {
+        LookupCapture.trust(com.onurkat.reclazz.transform.ReflectionMethodTransformer.class);
+        LookupCapture.trust(com.onurkat.reclazz.reload.ConstructorInitializerFactory.class);
         LookupCapture.trust(
                 ReflectionRootFilter.class);
         LookupCapture.trust(
@@ -399,6 +401,10 @@ public class ReclazzAgent {
                 // Jackson must take its specialised metadata route before the general
                 // reflection transformer rewrites these same Class calls.
                 instrumentation.addTransformer(new JacksonAccessorTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.OrikaPropertyTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.OrikaMappingPolicyTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.OrikaMapperCacheTransformer(), true);
+                instrumentation.addTransformer(new com.onurkat.reclazz.transform.OrikaGeneratedMapperTransformer(transformContext), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.ExceptionHandlerTransformer(), true);
                 instrumentation.addTransformer(new com.onurkat.reclazz.transform.MvcBindingTransformer(), true);
                 if (bootstrapInstalled) instrumentation.addTransformer(new com.onurkat.reclazz.transform.MvcSingletonTransformer(), false);
@@ -442,6 +448,8 @@ public class ReclazzAgent {
                 }
 
                 ReflectionRootFilter.install(instrumentation);
+                com.onurkat.reclazz.transform.ReflectionMethodTransformer.install(instrumentation,
+                        com.onurkat.reclazz.reload.ConstructorInitializerFactory::create);
                 for (Class<?> loaded : instrumentation.getAllLoadedClasses()) {
                     String internal = loaded.getName().replace('.', '/');
                     if (transformContext.isWatched(internal)
@@ -456,7 +464,7 @@ public class ReclazzAgent {
                 StatusReporter.success("Structural reload engine active on " +
                         (probeResult != null ? probeResult.getVmDescription() : "standard JVM"));
                 if (!MethodForge.isAvailable() && config.isVerbose()) {
-                    StatusReporter.info("Reflection patching disabled (JDK 17+ refactored " +
+                    StatusReporter.info("Reflection patching disabled (unavailable " +
                             "java.lang.reflect.Method internals). Hot-reload still works; " +
                             "only reflective scans of newly-added methods/fields are degraded.");
                 }

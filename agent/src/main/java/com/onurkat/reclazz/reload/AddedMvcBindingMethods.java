@@ -38,7 +38,7 @@ final class AddedMvcBindingMethods {
         var source = new ClassNode();
         new ClassReader(bytes).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
         Set<String> original = new HashSet<>();
-        for (Method m : owner.getDeclaredMethods()) original.add(m.getName() + Type.getMethodDescriptor(m));
+        for (Method m : com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalDeclaredMethods(owner)) original.add(m.getName() + Type.getMethodDescriptor(m));
         List<MethodNode> handlers = source.methods.stream().filter(AddedMvcBindingMethods::isCallback).toList();
         Set<String> added = new LinkedHashSet<>();
         for (var m : handlers) if (!original.contains(m.name + m.desc)) added.add(m.name + m.desc);

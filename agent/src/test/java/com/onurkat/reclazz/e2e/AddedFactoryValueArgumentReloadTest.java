@@ -37,16 +37,16 @@ class AddedFactoryValueArgumentReloadTest {
 
             Files.writeString(properties, content("8", "4", "new"));
             awaitApplied(app, 1);
-            probe(app, 1, "8000:25:new:8:4:new:0:2:1:true:true:false");
+            probe(app, 1, "8000:25:new:8:4:new:0:2:1:true:true:true");
             Files.writeString(properties, content("10", "0", "rejected"));
             app.awaitOrFail("Rejected: the running configuration is unchanged", "division by zero was not held");
-            probe(app, 2, "8000:25:new:8:4:new:0:2:1:true:true:false");
+            probe(app, 2, "8000:25:new:8:4:new:0:2:1:true:true:true");
             Files.writeString(properties, content("10", "5", "recovered"));
             awaitApplied(app, 2);
-            probe(app, 3, "10000:20:recovered:10:5:recovered:0:3:2:true:true:false");
+            probe(app, 3, "10000:20:recovered:10:5:recovered:0:3:2:true:true:true");
             Files.writeString(properties, content("T(app.App).sideEffect()", "5", "unsupported"));
             app.awaitOrFail("Uncheckable: the running configuration is unchanged", "unsafe expression was not held");
-            probe(app, 4, "10000:20:recovered:10:5:recovered:0:3:2:true:true:false");
+            probe(app, 4, "10000:20:recovered:10:5:recovered:0:3:2:true:true:true");
 
             // Restore the on-disk accepted candidate before a new method save.
             Files.writeString(properties, content("10", "5", "recovered"));
@@ -56,7 +56,7 @@ class AddedFactoryValueArgumentReloadTest {
             app.awaitOrFail("RECAPTURED=6000", "new saved Value dependency was not installed");
             Files.writeString(properties, content("10", "5", "final") + "cfg.next=9\n");
             awaitApplied(app, 3);
-            probe(app, 5, "9000:20:final:10:5:final:0:5:4:true:true:false");
+            probe(app, 5, "9000:20:final:10:5:final:0:5:4:true:true:true");
             Files.createFile(tmp.resolve("close"));
             app.awaitOrFail("CLOSED=5", "latest recreated product was not destroyed exactly once");
         }

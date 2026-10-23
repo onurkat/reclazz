@@ -1025,9 +1025,16 @@ public class StructuralReloader {
             // other check of this kind.
             EnumConstantChange.Change enumChange =
                     EnumConstantChange.check(loadedClass, newBytecode);
+            Set<String> reflectionConstructors=new HashSet<>();
+            var constructorShape=new org.objectweb.asm.tree.ClassNode();
+            new org.objectweb.asm.ClassReader(newBytecode).accept(constructorShape,org.objectweb.asm.ClassReader.SKIP_CODE);
+            Set<String> physicalConstructors=new HashSet<>();
+            if(loadedClass!=null)for(var constructor:ReflectionBridge.physicalDeclaredConstructors(loadedClass))
+                physicalConstructors.add(org.objectweb.asm.Type.getConstructorDescriptor(constructor));
+            for(var method:constructorShape.methods)if(method.name.equals("<init>") && !physicalConstructors.contains(method.desc))reflectionConstructors.add(method.desc);
             CompanionGenerator.CompanionResult companion = CompanionGenerator.generate(
                     internalName, newBytecode, diff, version, staticsNeedingValue,
-                    pinnedMethods.keySet(), context);
+                    pinnedMethods.keySet(), context,reflectionConstructors);
 
             // Get Lookup from the target class's __reclazz$lookup field
             Class<?> targetClass = findLoadedClass(className);
@@ -1136,7 +1143,7 @@ public class StructuralReloader {
             // Register forged Method/Field objects with ReflectionBridge
             // so that getDeclaredMethods()/getDeclaredFields() return added members
             afterSwitch(className, "showing the added members to reflection", () -> {
-            registerReflectionMetadata(targetClass, internalName, diff, newTargets, companionLookup, companionClass);
+            registerReflectionMetadata(targetClass, newBytecode, newTargets, companionLookup, companionClass);
             });
 
             // Hide the injected members at the root of reflection. Placed
@@ -1507,6 +1514,8 @@ public class StructuralReloader {
                 redefine(targetClass, payloadToApply, afterRedefine);
             }
 
+            afterSwitch(className, "refreshing reflection and JavaBeans caches", () ->
+                    com.onurkat.reclazz.transform.ReflectionMethodTransformer.invalidate(instrumentation,targetClass));
             boolean springBean = isSpringBean(targetClass);
 
             // Spring reload orchestration is now handled by ReclazzAgent.handleClassFileChange()
@@ -1750,92 +1759,66 @@ public class StructuralReloader {
     /**
      * Register forged Method/Field objects with ReflectionBridge for added members.
      */
-    private void registerReflectionMetadata(Class<?> targetClass, String internalName,
-                                             StructuralAnalyzer.StructuralDiff diff,
+    private void registerReflectionMetadata(Class<?> targetClass, byte[] bytecode,
                                              Map<String, MethodHandle> newTargets,
                                              MethodHandles.Lookup companionLookup,
                                              Class<?> companionClass) {
         if (!MethodForge.isAvailable()) return;
-
-        // Collect all forged objects first, then atomically swap into ReflectionBridge
-        List<java.lang.reflect.Method> forgedMethods = new ArrayList<>();
-        List<java.lang.reflect.Field> forgedFields = new ArrayList<>();
-
-        // Forge Method objects for each added method
-        for (String methodKey : diff.getAddedMethods()) {
-            int colonIdx = methodKey.indexOf(':');
-            String methodName = methodKey.substring(0, colonIdx);
-            String descriptor = methodKey.substring(colonIdx + 1);
-
-            // Skip constructors and class initializers
-            if ("<init>".equals(methodName) || "<clinit>".equals(methodName)) continue;
-
-            try {
-                // Find the MethodSig from the new methods list to get access modifiers
-                int modifiers = Modifier.PUBLIC; // default
-                for (var sig : diff.getNewMethods()) {
-                    if (sig.name().equals(methodName) && sig.descriptor().equals(descriptor)) {
-                        modifiers = sig.access();
-                        break;
-                    }
-                }
-
-                // Parse descriptor to get parameter types and return type
-                MethodType mt = MethodType.fromMethodDescriptorString(descriptor,
-                        targetClass.getClassLoader());
-                Class<?>[] paramTypes = mt.parameterArray();
-                Class<?> returnType = mt.returnType();
-
-                // Find dispatch MethodHandle for this method
-                MethodHandle dispatchMH = findDispatchHandle(methodName, descriptor,
-                        newTargets, companionLookup, companionClass, targetClass);
-
-                java.lang.reflect.Method forged = MethodForge.forgeMethod(
-                        targetClass, methodName, paramTypes, returnType,
-                        modifiers, dispatchMH, null);
-
-                if (forged != null) {
-                    forgedMethods.add(forged);
-                }
-            } catch (Exception e) {
-                if (config.isVerbose()) {
-                    StatusReporter.warn("Failed to forge Method " + methodName + ": " + Failures.describe(e));
-                }
-            }
+        var source = new org.objectweb.asm.tree.ClassNode();
+        new org.objectweb.asm.ClassReader(bytecode).accept(source,org.objectweb.asm.ClassReader.SKIP_CODE);
+        Set<String> physical = new HashSet<>(), physicalConstructors=new HashSet<>(), physicalFields=new HashSet<>();
+        for (var method : ReflectionBridge.physicalDeclaredMethods(targetClass))physical.add(method.getName()+org.objectweb.asm.Type.getMethodDescriptor(method));
+        for (var ctor : ReflectionBridge.physicalDeclaredConstructors(targetClass))physicalConstructors.add(org.objectweb.asm.Type.getConstructorDescriptor(ctor));
+        for (var field : ReflectionBridge.physicalDeclaredFields(targetClass))physicalFields.add(field.getName()+":"+field.getType().descriptorString());
+        var methods = new ArrayList<java.lang.reflect.Method>();
+        var fields = new ArrayList<java.lang.reflect.Field>();
+        var constructors = new ArrayList<java.lang.reflect.Constructor<?>>();
+        var metadataWriter = new org.objectweb.asm.ClassWriter(org.objectweb.asm.ClassWriter.COMPUTE_MAXS);
+        metadataWriter.visit(org.objectweb.asm.Opcodes.V17,org.objectweb.asm.Opcodes.ACC_PUBLIC,
+                source.name+"$__reclazz$Reflection",JacksonAddedGetters.typeParameters(source.signature),"java/lang/Object",null);
+        for(var field:source.fields)if(!physicalFields.contains(field.name+":"+field.desc))field.accept(metadataWriter);
+        for(var method:source.methods) {
+            if(method.name.equals("<clinit>") || (!method.name.equals("<init>") && physical.contains(method.name+method.desc))
+                    || method.name.equals("<init>") && physicalConstructors.contains(method.desc)
+                    || (method.access & (0x0100|0x0400|0x1000|0x0040))!=0)continue;
+            var mv=metadataWriter.visitMethod(method.access,method.name,method.desc,method.signature,method.exceptions.toArray(String[]::new));
+            method.accept(new org.objectweb.asm.MethodVisitor(org.objectweb.asm.Opcodes.ASM9,mv){
+                @Override public void visitEnd(){super.visitCode();super.visitInsn(org.objectweb.asm.Opcodes.ACONST_NULL);super.visitInsn(org.objectweb.asm.Opcodes.ATHROW);super.visitMaxs(0,0);super.visitEnd();}
+            });
         }
-
-        // Forge Field objects for each added field
-        for (String fieldKey : diff.getAddedFields()) {
-            int colonIdx = fieldKey.indexOf(':');
-            String fieldName = fieldKey.substring(0, colonIdx);
-            String fieldDesc = fieldKey.substring(colonIdx + 1);
-
-            try {
-                int modifiers = Modifier.PUBLIC;
-                for (var sig : diff.getNewFields()) {
-                    if (sig.name().equals(fieldName) && sig.descriptor().equals(fieldDesc)) {
-                        modifiers = sig.access();
-                        break;
-                    }
-                }
-
-                Class<?> fieldType = descriptorToClass(fieldDesc, targetClass.getClassLoader());
-
-                java.lang.reflect.Field forged = MethodForge.forgeField(
-                        targetClass, fieldName, fieldType, modifiers);
-
-                if (forged != null) {
-                    forgedFields.add(forged);
-                }
-            } catch (Exception e) {
-                if (config.isVerbose()) {
-                    StatusReporter.warn("Failed to forge Field " + fieldName + ": " + Failures.describe(e));
-                }
+        metadataWriter.visitEnd();
+        Class<?> metadata;
+        try {metadata=companionLookup.defineHiddenClass(metadataWriter.toByteArray(),false,MethodHandles.Lookup.ClassOption.NESTMATE).lookupClass();}
+        catch(IllegalAccessException failure){throw new IllegalStateException(failure);}
+        try {
+            for(var field:source.fields)if(!physicalFields.contains(field.name+":"+field.desc)) {
+                com.onurkat.reclazz.bootstrap.MemberForge.fieldSignature(metadata,field.name,field.signature);
+                fields.add(com.onurkat.reclazz.bootstrap.MemberForge.field(targetClass,metadata.getDeclaredField(field.name)));
             }
-        }
-
-        // Atomic swap, no window where reflection sees incomplete state
-        ReflectionBridge.replaceClassState(targetClass, forgedMethods, forgedFields);
+            for(var method:source.methods) {
+                if(method.name.equals("<clinit>") || (method.access & (0x0100|0x0400|0x1000|0x0040))!=0)continue;
+                var type=MethodType.fromMethodDescriptorString(method.desc,targetClass.getClassLoader());
+                if(method.name.equals("<init>")) {
+                    var factoryType=MethodType.fromMethodDescriptorString(AddedConstructorGenerator.descriptor(source.name,method.desc),targetClass.getClassLoader());
+                    MethodHandle factory=companionLookup.findStatic(companionClass,AddedConstructorGenerator.name(method.desc),factoryType);
+                    com.onurkat.reclazz.bootstrap.MemberForge.initializer(targetClass,method.desc,factory);
+                    if(physicalConstructors.contains(method.desc))continue;
+                    constructors.add(com.onurkat.reclazz.bootstrap.MemberForge.constructor(targetClass,metadata.getDeclaredConstructor(type.parameterArray()),method.access,method.signature,factory));
+                    continue;
+                }
+                if(physical.contains(method.name+method.desc))continue;
+                var handle=findDispatchHandle(method.name,method.desc,newTargets,companionLookup,companionClass,targetClass);
+                if(handle!=null) {
+                    String key=Modifier.isStatic(method.access)?InjectedNames.staticSiteKey(method.name,CallSiteAdapter.descHash(method.desc)):InjectedNames.siteKey(method.name,CallSiteAdapter.descHash(method.desc));
+                    handle=DispatchTable.getOrCreate(targetClass).getOrCreateMethodSite(key,new java.lang.invoke.MutableCallSite(handle)).dynamicInvoker();
+                }
+                var carrier=metadata.getDeclaredMethod(method.name,type.parameterArray());
+                var forged=MethodForge.forgeMethod(targetClass,method.name,type.parameterArray(),type.returnType(),method.access,handle,method.signature,carrier.getExceptionTypes());
+                if(forged!=null){MethodForge.metadata(forged,carrier,handle);methods.add(forged);}
+            }
+        }catch(ReflectiveOperationException failure){throw new IllegalStateException(failure);}
+        ReflectionBridge.replaceClassState(targetClass,methods,fields,constructors);
+        com.onurkat.reclazz.transform.ReflectionMethodTransformer.invalidate(instrumentation,targetClass);
     }
 
     /**

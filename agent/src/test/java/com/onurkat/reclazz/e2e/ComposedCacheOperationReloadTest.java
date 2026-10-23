@@ -112,11 +112,29 @@ class ComposedCacheOperationReloadTest {
             import org.springframework.cache.annotation.EnableCaching;
             @Configuration(proxyBeanMethods=false) @EnableCaching(proxyTargetClass=true)
             public class App {
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
+
                 @Bean public org.springframework.cache.CacheManager cacheManager() {
                     return new org.springframework.cache.concurrent.ConcurrentMapCacheManager("values","changed","control");
                 }
                 @Bean public Store store() { return new Store(); }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     try (var context=new AnnotationConfigApplicationContext(App.class)) {
                         Store held=context.getBean(Store.class);
                         var caches=context.getBean(org.springframework.cache.CacheManager.class);
@@ -141,7 +159,7 @@ class ComposedCacheOperationReloadTest {
                                 }
                             }
                             if (held.original()!=11) throw new AssertionError("native method changed");
-                            boolean reflected=java.util.Arrays.stream(Store.class.getDeclaredMethods()).anyMatch(m->m.getName().equals("value"));
+                            boolean reflected=physicallyDeclared(Store.class,"value");
                             System.out.println("R"+stage+"="+result+":"+held.calls()+":"+(held==context.getBean(Store.class))+":"+reflected);
                         }
                     }

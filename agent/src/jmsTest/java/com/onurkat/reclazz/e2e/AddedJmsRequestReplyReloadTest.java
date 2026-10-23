@@ -54,6 +54,7 @@ class AddedJmsRequestReplyReloadTest {
             assertEquals("used", http(port, "/use"));
             waitState(port, "other:assigned", app);
             if (existing) waitState(port, "existing:assigned", app);
+            assertTrue(http(port, "/state").contains("reflected=false"), "baseline has no added method");
             deliver(producer, app, other, "OTHER:initial", "initial");
             if (existing) deliver(producer, app, base, "BASE:initial", "initial");
             for (int stage = 1; stage <= 6; stage++) {
@@ -85,7 +86,9 @@ class AddedJmsRequestReplyReloadTest {
                 deliver(producer, app, other, "OTHER:save" + stage, "save" + stage);
                 assertTrue(http(port, "/state").contains("retiredRunning=0"), "old containers must stop: " + app.tail());
                 assertTrue(http(port, "/state").contains("otherSame=true"), "unrelated container must retain identity");
-                assertTrue(http(port, "/state").contains("reflected=false"), app.tail());
+                String state = http(port, "/state");
+                assertTrue(state.contains("reflected=" + (stage != 4)),
+                        "saved method visibility at stage " + stage + ": " + state + "\n" + app.tail());
                 if (stage >= 3) {
                     producer.convertAndSend(first, "old-topic-" + stage);
                     Thread.sleep(300);

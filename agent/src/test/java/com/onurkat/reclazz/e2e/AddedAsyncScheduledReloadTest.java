@@ -39,7 +39,7 @@ class AddedAsyncScheduledReloadTest {
                 assertEquals(stage,reloads(app),app.tail());
                 Files.createFile(tmp.resolve("probe"+stage));
                 app.awaitOrFail("R"+stage+"=","async probe failed");
-                assertEquals("R"+stage+"="+expected[stage-1]+" reflected=false",app.latest("R"+stage+"="),app.tail());
+                assertEquals("R"+stage+"="+expected[stage-1]+" nativeSlot=false",app.latest("R"+stage+"="),app.tail());
                 assertTrue(app.output().stream().noneMatch(line -> line.contains("tick() was added")), app.tail());
                 System.out.println("[async-scheduled] child="+child+" "+app.latest("R"+stage+"="));
             }
@@ -90,6 +90,23 @@ class AddedAsyncScheduledReloadTest {
             @Configuration(proxyBeanMethods=false) @ComponentScan("app")
             @EnableAsync(proxyTargetClass=true) @EnableScheduling @EnableTransactionManagement(proxyTargetClass=true)
             public class App implements AsyncConfigurer {
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
+
                 static final List<String> calls=new CopyOnWriteArrayList<>(),errors=new CopyOnWriteArrayList<>(),original=new CopyOnWriteArrayList<>();
                 static boolean fail;
                 static final QueueExecutor ONE=new QueueExecutor("one"),TWO=new QueueExecutor("two");
@@ -121,6 +138,7 @@ class AddedAsyncScheduledReloadTest {
                     new Thread(completion,"scheduler-probe").start();completion.get(5,TimeUnit.SECONDS);
                 }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     try(var context=new AnnotationConfigApplicationContext(App.class)) {
                         var jdbc=context.getBean(JdbcTemplate.class);jdbc.execute("create table entries(id varchar(30))");
                         Service old=context.getBean(Service.class);
@@ -164,8 +182,8 @@ class AddedAsyncScheduledReloadTest {
                                 context.close();
                                 result="restored="+restored+" closed="+scheduler.getScheduledTasks().isEmpty();
                             }
-                            boolean reflected=Arrays.stream(Service.class.getDeclaredMethods()).anyMatch(m->m.getName().equals("tick"));
-                            System.out.println("R"+stage+"="+result+" reflected="+reflected);
+                            boolean nativeSlot=physicallyDeclared(Service.class,"tick");
+                            System.out.println("R"+stage+"="+result+" nativeSlot="+nativeSlot);
                         }
                     }
                 }

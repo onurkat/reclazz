@@ -20,12 +20,23 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
         if (name == null || !name.startsWith("com/fasterxml/jackson/databind/")) return null;
         try {
             ClassReader reader = new ClassReader(bytes);
-            ClassWriter writer = new ClassWriter(reader, 0);
+            ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
             boolean[] changed = {false};
             reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
                 @Override public MethodVisitor visitMethod(int access, String name, String desc,
                                                            String signature, String[] exceptions) {
                     return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, desc, signature, exceptions)) {
+                        @Override public void visitInsn(int opcode) {
+                            if (opcode == Opcodes.RETURN && name.equals("<init>")
+                                    && reader.getClassName().equals("com/fasterxml/jackson/databind/ObjectMapper")) {
+                                super.visitVarInsn(Opcodes.ALOAD, 0);
+                                super.visitMethodInsn(Opcodes.INVOKESTATIC,
+                                        "com/onurkat/reclazz/bootstrap/JacksonMapperRegistry", "track",
+                                        "(Ljava/lang/Object;)V", false);
+                                changed[0] = true;
+                            }
+                            super.visitInsn(opcode);
+                        }
                         @Override public void visitMethodInsn(int opcode, String owner, String method,
                                                               String descriptor, boolean isInterface) {
                             String replacement = null;

@@ -23,6 +23,95 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public final class ReflectionBridge {
 
+    private static final ThreadLocal<Boolean> physicalScan = ThreadLocal.withInitial(() -> false);
+
+    /** Original JVM schema for reload diffing, without virtual reflection roots. */
+    public static Method[] physicalDeclaredMethods(Class<?> owner) {
+        boolean previous=physicalScan.get();
+        physicalScan.set(true);
+        try { return owner.getDeclaredMethods(); }
+        finally { physicalScan.set(previous); }
+    }
+
+    public static Field[] physicalDeclaredFields(Class<?> owner) {
+        boolean previous=physicalScan.get();physicalScan.set(true);
+        try{return owner.getDeclaredFields();}finally{physicalScan.set(previous);}
+    }
+    public static java.lang.reflect.Constructor<?>[] physicalDeclaredConstructors(Class<?> owner) {
+        boolean previous=physicalScan.get();physicalScan.set(true);
+        try{return owner.getDeclaredConstructors();}finally{physicalScan.set(previous);}
+    }
+    public static Field[] mergeFieldRoots(Field[] original,Class<?> owner,boolean publicOnly) {
+        if(physicalScan.get())return original;
+        var added=stateFor(owner).addedFields;if(added.isEmpty())return original;
+        var result=new ArrayList<Field>(java.util.Arrays.asList(original));
+        for(Field field:added)if(!hiddenField(field) && (!publicOnly || java.lang.reflect.Modifier.isPublic(field.getModifiers())) && !result.contains(field))result.add(field);
+        return result.toArray(Field[]::new);
+    }
+    public static java.lang.reflect.Constructor<?>[] mergeConstructorRoots(java.lang.reflect.Constructor<?>[] original,Class<?> owner,boolean publicOnly) {
+        if(physicalScan.get())return original;
+        var added=stateFor(owner).addedConstructors;if(added.isEmpty())return original;
+        var result=new ArrayList<java.lang.reflect.Constructor<?>>(java.util.Arrays.asList(original));
+        for(var ctor:added)if((!publicOnly || java.lang.reflect.Modifier.isPublic(ctor.getModifiers())) && !result.contains(ctor))result.add(ctor);
+        return result.toArray(java.lang.reflect.Constructor<?>[]::new);
+    }
+    public static Field[] publicFieldCache(Field[] cached,Class<?> owner) {
+        return states.get(owner).dynamicPublicMethods?null:cached;
+    }
+
+    /** Class.privateGetDeclaredMethods returns roots; the JDK copies them for its public API. */
+    public static Method[] mergeDeclaredRoots(Method[] original,Class<?> owner,boolean publicOnly) {
+        if(physicalScan.get())return original;
+        Members state=stateFor(owner);
+        if(state.addedMethods.isEmpty())return original;
+        var result=new ArrayList<Method>(java.util.Arrays.asList(original));
+        for(Method added:state.addedMethods) {
+            if(hiddenMethod(added) || publicOnly && !java.lang.reflect.Modifier.isPublic(added.getModifiers()))continue;
+            if(result.stream().noneMatch(m -> m.equals(added)))result.add(added);
+        }
+        return result.toArray(Method[]::new);
+    }
+
+    /** Native Spring scanners keep their physical view; dedicated adapters own added callbacks. */
+    public static Method[] getDeclaredMethodsForFramework(Class<?> owner) {
+        return hideInternal(physicalDeclaredMethods(owner));
+    }
+
+    public static Method[] getMethodsForFramework(Class<?> owner) {
+        boolean previous=physicalScan.get();
+        physicalScan.set(true);
+        try { return hideInternal(owner.getMethods()); }
+        finally { physicalScan.set(previous); }
+    }
+
+    public static Method getDeclaredMethodForFramework(Class<?> owner,String name,Class<?>... parameters)
+            throws NoSuchMethodException {
+        if(hiddenName(owner,name,false))throw new NoSuchMethodException(name);
+        boolean previous=physicalScan.get();
+        physicalScan.set(true);
+        try {return owner.getDeclaredMethod(name,parameters);}
+        finally {physicalScan.set(previous);}
+    }
+
+    public static Method getMethodForFramework(Class<?> owner,String name,Class<?>... parameters)
+            throws NoSuchMethodException {
+        if(hiddenName(owner,name,false))throw new NoSuchMethodException(name);
+        boolean previous=physicalScan.get();
+        physicalScan.set(true);
+        try {return owner.getMethod(name,parameters);}
+        finally {physicalScan.set(previous);}
+    }
+
+    /** A cached public array must not cross the application/physical reflection views. */
+    public static Method[] publicMethodCache(Method[] cached,Class<?> owner) {
+        return states.get(owner).dynamicPublicMethods ? null : cached;
+    }
+
+    /** Existing subtypes are marked on publication; future subtypes inherit this mode. */
+    public static void inheritPublicCacheMode(Class<?> owner,Class<?> subtype) {
+        if(states.get(owner).dynamicPublicMethods)states.get(subtype).dynamicPublicMethods=true;
+    }
+
     /**
      * Added members, held on the class they belong to.
      *
@@ -41,7 +130,12 @@ public final class ReflectionBridge {
     private static final ClassValue<ClassReflectionState> states = new ClassValue<>() {
         @Override
         protected ClassReflectionState computeValue(Class<?> type) {
-            return new ClassReflectionState();
+            var state=new ClassReflectionState();
+            Class<?> parent=type.getSuperclass();
+            if(parent!=null && states.get(parent).dynamicPublicMethods)state.dynamicPublicMethods=true;
+            for(Class<?> face:type.getInterfaces())
+                if(states.get(face).dynamicPublicMethods)state.dynamicPublicMethods=true;
+            return state;
         }
     };
 
@@ -194,7 +288,7 @@ public final class ReflectionBridge {
         for (Method m : original) {
             merged.add(m);
         }
-        merged.addAll(state.addedMethods);
+        for (Method added : state.addedMethods) if (!merged.contains(added)) merged.add(added);
         return merged.toArray(new Method[0]);
     }
 
@@ -215,7 +309,7 @@ public final class ReflectionBridge {
         for (Field f : original) {
             merged.add(f);
         }
-        merged.addAll(state.addedFields);
+        for(Field field:state.addedFields)if(!merged.contains(field))merged.add(field);
         return merged.toArray(new Field[0]);
     }
 
@@ -233,7 +327,7 @@ public final class ReflectionBridge {
         if (state != null) {
             for (Method m : state.addedMethods) {
                 if (m.getName().equals(name) && paramTypesMatch(m.getParameterTypes(), parameterTypes)) {
-                    return m;
+                    return MethodForge.isAvailable() ? clazz.getDeclaredMethod(name, parameterTypes) : m;
                 }
             }
         }
@@ -256,7 +350,7 @@ public final class ReflectionBridge {
         if (state != null) {
             for (Field f : state.addedFields) {
                 if (f.getName().equals(name)) {
-                    return f;
+                    return MethodForge.isAvailable()?clazz.getDeclaredField(name):f;
                 }
             }
         }
@@ -291,7 +385,7 @@ public final class ReflectionBridge {
         }
         for (Method m : state.addedMethods) {
             if (java.lang.reflect.Modifier.isPublic(m.getModifiers())) {
-                merged.add(m);
+                if (!merged.contains(m)) merged.add(m);
             }
         }
         return merged.toArray(new Method[0]);
@@ -311,7 +405,7 @@ public final class ReflectionBridge {
         }
         for (Field f : state.addedFields) {
             if (java.lang.reflect.Modifier.isPublic(f.getModifiers())) {
-                merged.add(f);
+                if(!merged.contains(f))merged.add(f);
             }
         }
         return merged.toArray(new Field[0]);
@@ -331,7 +425,7 @@ public final class ReflectionBridge {
                 if (java.lang.reflect.Modifier.isPublic(m.getModifiers())
                         && m.getName().equals(name)
                         && paramTypesMatch(m.getParameterTypes(), parameterTypes)) {
-                    return m;
+                    return MethodForge.isAvailable() ? clazz.getMethod(name, parameterTypes) : m;
                 }
             }
         }
@@ -346,7 +440,7 @@ public final class ReflectionBridge {
             for (Field f : state.addedFields) {
                 if (java.lang.reflect.Modifier.isPublic(f.getModifiers())
                         && f.getName().equals(name)) {
-                    return f;
+                    return MethodForge.isAvailable()?clazz.getField(name):f;
                 }
             }
         }
@@ -370,10 +464,16 @@ public final class ReflectionBridge {
      */
     public static void replaceClassState(Class<?> owner,
                                          List<Method> methods, List<Field> fields) {
-        states.get(owner).members = new Members(methods, fields);
+        replaceClassState(owner,methods,fields,List.of());
+    }
+    public static void replaceClassState(Class<?> owner,List<Method> methods,List<Field> fields,List<java.lang.reflect.Constructor<?>> constructors) {
+        ClassReflectionState state=states.get(owner);
+        if(!methods.isEmpty() || !fields.isEmpty())state.dynamicPublicMethods=true;
+        state.members = new Members(methods, fields,constructors);
     }
 
     private static boolean paramTypesMatch(Class<?>[] a, Class<?>[] b) {
+        if (b == null) return a.length == 0;
         if (a.length != b.length) return false;
         for (int i = 0; i < a.length; i++) {
             if (a[i] != b[i]) return false;
@@ -392,6 +492,7 @@ public final class ReflectionBridge {
      */
     static final class ClassReflectionState {
         volatile Members members = Members.EMPTY;
+        volatile boolean dynamicPublicMethods;
     }
 
     /**
@@ -406,8 +507,13 @@ public final class ReflectionBridge {
 
         final List<Method> addedMethods;
         final List<Field> addedFields;
+        final List<java.lang.reflect.Constructor<?>> addedConstructors;
 
         Members(List<Method> methods, List<Field> fields) {
+            this(methods,fields,List.of());
+        }
+        Members(List<Method> methods,List<Field> fields,List<java.lang.reflect.Constructor<?>> constructors) {
+            this.addedConstructors=List.copyOf(constructors);
             this.addedMethods = List.copyOf(methods);
             this.addedFields = List.copyOf(fields);
         }

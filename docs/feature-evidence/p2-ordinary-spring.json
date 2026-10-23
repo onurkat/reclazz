@@ -2077,7 +2077,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1051,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-REGISTER-NEW"
         }
       ],
@@ -2117,7 +2117,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1073,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-COMPONENT-PROFILE"
         }
       ],
@@ -2157,7 +2157,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1095,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-COMPONENT-CONDITIONAL"
         }
       ],
@@ -2197,7 +2197,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1117,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-COMPONENT-LAZY"
         }
       ],
@@ -2237,7 +2237,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1139,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-COMPONENT-PROTOTYPE"
         }
       ],
@@ -2277,7 +2277,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1161,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-COMPOSED-STEREOTYPE"
         }
       ],
@@ -2317,7 +2317,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1183,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-NEW-CONSTRUCTOR-INJECTION"
         }
       ],
@@ -2346,7 +2346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1205,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-REFRESH"
         }
       ],
@@ -2386,7 +2386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1227,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-HELD-CALLER"
         }
       ],
@@ -2426,7 +2426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1249,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-INJECTION-AUTOWIRED"
         }
       ],
@@ -2466,7 +2466,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1271,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-INJECTION-VALUE"
         }
       ],
@@ -2506,7 +2506,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1293,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-INJECTION-RESOURCE"
         }
       ],
@@ -2546,7 +2546,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1315,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-LITE-CONFIG"
         }
       ],
@@ -2586,7 +2586,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1337,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-ARGS"
         }
       ],
@@ -2626,7 +2626,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1359,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-RICH-ARGS"
         }
       ],
@@ -2666,7 +2666,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1381,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-PROVIDER"
         }
       ],
@@ -2706,7 +2706,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1403,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-PRIMITIVE-VALUE"
         }
       ],
@@ -2746,7 +2746,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1425,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-ARRAY-SET-ARGS"
         }
       ],
@@ -2786,7 +2786,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1447,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-ALL-PRIMITIVES"
         }
       ],
@@ -2826,7 +2826,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1469,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-VALUE-PROPERTY"
         }
       ],
@@ -2836,7 +2836,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedFactoryValueArgumentReloadTest#addedFactoryValuesFollowPropertyEdits",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFactoryValueArgumentReloadTest.java",
-          "source_sha256": "5269a82dbc7ea36bd4786d1be3463e33b76500db6541f2de7b8caf514087f5bf",
+          "source_sha256": "36bc0cc57a389e3b3cdbcebf828acae736dbf03b06a6c0834c7cffea733d44a0",
           "kind": "watcher",
           "assertions": "Scalar factory values produce CAPTURED=5000:20:old, then checked property edits yield 8000:25:new and recover; invalid/unsafe expressions retain accepted product and sideEffect count zero; CLOSED=5."
         }
@@ -2866,7 +2866,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1491,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-ALIASES"
         }
       ],
@@ -2906,7 +2906,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1513,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-QUALIFIER"
         }
       ],
@@ -2946,7 +2946,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1535,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-PRIMARY"
         }
       ],
@@ -2986,7 +2986,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1557,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-CONDITIONAL"
         }
       ],
@@ -2996,7 +2996,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedBeanNativeConditionsReloadTest#conditionalFactoriesFollowActivationErrorsRemovalAndLazyRestoration",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanNativeConditionsReloadTest.java",
-          "source_sha256": "36d72f1423b30706d600606a36e949396edbe75fa2105c7a5aefcab98aa12216",
+          "source_sha256": "95ea4bee4bf8105b30f7d9be5f487ffa8cc7c6ba30812a8c7c227bd99b640be1",
           "kind": "watcher",
           "assertions": "Disabled/admitted/throwing/removed/restored factories change presence and exact made/closed counts; saved MethodMetadata and live bean factory/registry/environment/loader/resource checked; final lazy made count 2 before lookup, CLOSED=3 CONDITIONS=6."
         }
@@ -3026,7 +3026,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1579,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-BOOT-PROPERTY"
         }
       ],
@@ -3036,7 +3036,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
-          "source_sha256": "a8373a96eef702ea1145cfb13b76670d1eb4cac72f8c0f8f87cbed54c707483b",
+          "source_sha256": "44deeb635c240c492d0fb6b7344e3e54addb62666dc18315cca25faee560e7a2",
           "kind": "watcher",
           "assertions": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4."
         }
@@ -3066,7 +3066,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1601,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-BOOT-BEAN"
         }
       ],
@@ -3076,7 +3076,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
-          "source_sha256": "a8373a96eef702ea1145cfb13b76670d1eb4cac72f8c0f8f87cbed54c707483b",
+          "source_sha256": "44deeb635c240c492d0fb6b7344e3e54addb62666dc18315cca25faee560e7a2",
           "kind": "watcher",
           "assertions": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4."
         }
@@ -3106,7 +3106,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1623,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-BOOT-MISSING-BEAN"
         }
       ],
@@ -3116,7 +3116,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedBeanBootConditionsReloadTest#bootConditionsEvaluateHiddenFactoriesAndRetireTheirProducts",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
-          "source_sha256": "a8373a96eef702ea1145cfb13b76670d1eb4cac72f8c0f8f87cbed54c707483b",
+          "source_sha256": "44deeb635c240c492d0fb6b7344e3e54addb62666dc18315cca25faee560e7a2",
           "kind": "watcher",
           "assertions": "Native property/bean/missing-bean decisions yield exact present/made/closed sequence; aliases agree, startup control identity retained, lazy restoration leaves made=3 until lookup; CLOSED=4."
         }
@@ -3146,7 +3146,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1645,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-PROFILE"
         }
       ],
@@ -3186,7 +3186,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1667,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-SCOPE-PROTOTYPE"
         }
       ],
@@ -3226,7 +3226,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1689,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-LAZY"
         }
       ],
@@ -3266,7 +3266,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1711,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-FULL-CONFIG"
         }
       ],
@@ -3306,7 +3306,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1733,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-FULL-CONFIG-ARGS"
         }
       ],
@@ -3316,7 +3316,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedFullConfigurationArgumentsReloadTest#argumentsAndHeldReferencesFollowFiveSaves",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedFullConfigurationArgumentsReloadTest.java",
-          "source_sha256": "507a98145eb623aa80d33652ad58fbf0d1230ecb478f5933757f24d872aee0d7",
+          "source_sha256": "e4e6a91139409a5b573b6fa0e207215a6c25d70d4c73ddd2a79d8a3b6dede2e8",
           "kind": "watcher",
           "assertions": "Five saves prove injected/full inter-bean identity, explicit prototype arguments and held method reference semantics; plain new Config retains Java arguments, removal/restoration observed."
         }
@@ -3346,7 +3346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1755,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-BEAN-STATIC"
         }
       ],
@@ -3386,7 +3386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1777,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-FULL-CONFIG-STATIC-JAVA"
         }
       ],
@@ -3426,7 +3426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1799,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-LIFECYCLE-INIT"
         }
       ],
@@ -3473,7 +3473,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1821,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-LIFECYCLE-DESTROY"
         }
       ],
@@ -3520,7 +3520,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1843,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-LIFECYCLE-NATIVE-LIFECYCLE"
         }
       ],
@@ -3567,7 +3567,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1865,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-ADDED-OPERATIONS-PLAIN"
         }
       ],
@@ -3607,7 +3607,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1887,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-ADDED-OPERATIONS-HELD"
         }
       ],
@@ -3647,7 +3647,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1909,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-TX-ROLLBACK"
         }
       ],
@@ -3694,7 +3694,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1931,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-CACHE-HIT"
         }
       ],
@@ -3741,7 +3741,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1953,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-CACHE-PUT"
         }
       ],
@@ -3788,7 +3788,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1975,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-CACHE-EVICT"
         }
       ],
@@ -3835,7 +3835,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1997,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-OPERATIONS-SELF-INVOKE"
         }
       ],
@@ -3882,7 +3882,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2019,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-COMPOSED-TRANSACTION"
         }
       ],
@@ -3892,7 +3892,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ComposedTransactionOperationReloadTest#composedTransactionsFollowSavesThroughHeldProxy",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ComposedTransactionOperationReloadTest.java",
-          "source_sha256": "8b0e99256668acb254f4ef030b3d352ad6a7a77e5bb427248282f7a760efdf60",
+          "source_sha256": "821b73c1174924043b89bff32e6420fafb387381c85a5a16ada4e65ff98c7a6e",
           "kind": "watcher",
           "assertions": "Held proxy follows meta-transaction readOnly aliases; checked-exception DB counts distinguish rollback from annotation removal; same target retained, removal/restoration observed on normal/child loaders."
         }
@@ -3922,7 +3922,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2041,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-COMPOSED-CACHE"
         }
       ],
@@ -3932,7 +3932,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.ComposedCacheOperationReloadTest#composedCacheFollowsSavesThroughHeldProxy",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ComposedCacheOperationReloadTest.java",
-          "source_sha256": "426ecca00e0d5ce7f4ff4bf73c91a554030116e6c3b96940446b1bed948b0900",
+          "source_sha256": "5abb96a7aef70bc03c43fe874426c117ba699654432deef4cd7f9cdef523743a",
           "kind": "watcher",
           "assertions": "Held native proxy returns identical cached repeats; changed region/key aliases use actual cache entries, condition false/annotation removal execute twice, native control remains cached; removal/restoration and identity checked."
         }
@@ -3962,7 +3962,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2063,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-AOP-REFRESH"
         }
       ],
@@ -4009,7 +4009,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2085,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-SECURITY-PRE-POST"
         }
       ],
@@ -4019,7 +4019,7 @@
         {
           "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
           "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
-          "source_sha256": "0aeaebe3793eb0b45c02f3b954e6d653857955365bfb9fa56b164920ee125b01",
+          "source_sha256": "088c9942fcab2fb0c4e97f0765ebd7fd6347365aabfc0b87d6cb8271cd141e95",
           "kind": "watcher",
           "assertions": "Native pre/post authorization permits/denies real calls with exact body counts 1,2,4,5,5,6; unauthenticated denied, return policy enforced; body/policy/removal/restoration, same held proxy and native original control."
         },
@@ -4032,7 +4032,7 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
-            "source_sha256": "0aeaebe3793eb0b45c02f3b954e6d653857955365bfb9fa56b164920ee125b01"
+            "source_sha256": "088c9942fcab2fb0c4e97f0765ebd7fd6347365aabfc0b87d6cb8271cd141e95"
           }
         }
       ],
@@ -4061,7 +4061,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2107,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-COMPOSED-SECURITY"
         }
       ],
@@ -4077,7 +4077,7 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
-            "source_sha256": "0aeaebe3793eb0b45c02f3b954e6d653857955365bfb9fa56b164920ee125b01"
+            "source_sha256": "088c9942fcab2fb0c4e97f0765ebd7fd6347365aabfc0b87d6cb8271cd141e95"
           }
         },
         {
@@ -4089,7 +4089,7 @@
           "declaration": {
             "symbol": "com.onurkat.reclazz.e2e.AddedMethodSecurityReloadTest#heldNativeSecurityProxyFollowsPolicyBodyRemovalAndRestore",
             "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
-            "source_sha256": "0aeaebe3793eb0b45c02f3b954e6d653857955365bfb9fa56b164920ee125b01"
+            "source_sha256": "088c9942fcab2fb0c4e97f0765ebd7fd6347365aabfc0b87d6cb8271cd141e95"
           }
         }
       ],
@@ -4118,7 +4118,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2129,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-SECURITY-METADATA"
         }
       ],
@@ -4189,7 +4189,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2151,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-SECURITY-SECURED"
         }
       ],
@@ -4260,7 +4260,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2173,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-SECURITY-FILTER-CHAIN"
         }
       ],
@@ -4312,7 +4312,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2195,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-CACHE-RELOAD-EVICTION"
         }
       ],
@@ -4364,7 +4364,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2217,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-SPRING6-ORDINARY-MATRIX"
         }
       ],
@@ -4393,7 +4393,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2239,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-EXISTING-TX-METADATA"
         }
       ],
@@ -4445,7 +4445,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2261,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-EXISTING-CACHE-METADATA"
         }
       ],
@@ -4497,7 +4497,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2283,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-TX-CLASS-DEFAULTS"
         }
       ],
@@ -4537,7 +4537,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2305,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-CACHE-CLASS-DEFAULTS"
         }
       ],
@@ -4577,7 +4577,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2327,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-SECURITY-FILTER-CHAIN-SWAP"
         }
       ],
@@ -4636,7 +4636,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2349,
-          "sha256": "e02a60feff9e5978bc919e18955c383dea632abcb790631dbddd9e8b33551e86",
+          "sha256": "3b640350decee32150a25131369927333439fa35cde4ae7dba48f06f27bea785",
           "quote": "### P2-SPRING6-BEAN-CONDITION-METADATA"
         }
       ],
@@ -4852,5 +4852,52 @@
       "failure": "org.opentest4j.AssertionFailedError: unrun lane cannot prove P2-BEAN-REGISTER-NEW ==> expected: <PASSED> but was: <UNRUN>"
     }
   ],
-  "remaining_proof_design": ".collab/current/P2_PROPOSED_ACCEPTANCE.md (PROPOSED, not an executed test mapping; archived with this task)"
+  "remaining_proof_design": ".collab/current/P2_PROPOSED_ACCEPTANCE.md (PROPOSED, not an executed test mapping; archived with this task)",
+  "candidate_native_slot_probe_refresh": {
+    "scope": "physical companion-path control migrated to native VM lookup; existing message, lifecycle, factory and cleanup assertions retained",
+    "receipt": "docs/feature-evidence/reflection-jackson-candidate.json",
+    "changed_source_mappings": [
+      {
+        "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanNativeConditionsReloadTest.java",
+        "historical_source_sha256": "36d72f1423b30706d600606a36e949396edbe75fa2105c7a5aefcab98aa12216",
+        "current_source_sha256": "95ea4bee4bf8105b30f7d9be5f487ffa8cc7c6ba30812a8c7c227bd99b640be1"
+      },
+      {
+        "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
+        "historical_source_sha256": "a8373a96eef702ea1145cfb13b76670d1eb4cac72f8c0f8f87cbed54c707483b",
+        "current_source_sha256": "44deeb635c240c492d0fb6b7344e3e54addb62666dc18315cca25faee560e7a2"
+      },
+      {
+        "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
+        "historical_source_sha256": "a8373a96eef702ea1145cfb13b76670d1eb4cac72f8c0f8f87cbed54c707483b",
+        "current_source_sha256": "44deeb635c240c492d0fb6b7344e3e54addb62666dc18315cca25faee560e7a2"
+      },
+      {
+        "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedBeanBootConditionsReloadTest.java",
+        "historical_source_sha256": "a8373a96eef702ea1145cfb13b76670d1eb4cac72f8c0f8f87cbed54c707483b",
+        "current_source_sha256": "44deeb635c240c492d0fb6b7344e3e54addb62666dc18315cca25faee560e7a2"
+      }
+    ]
+  },
+  "candidate_spring_native_slot_probe_refresh": {
+    "scope": "Current claim declarations only; historical execution receipts are unchanged. Class reflection now exposes companion methods, so VM-declared membership is checked through native MethodHandles lookup with App.main as a positive control. Behaviour assertions remain unchanged.",
+    "receipt": "docs/feature-evidence/reflection-jackson-candidate.json",
+    "files": [
+      {
+        "path": "agent/src/test/java/com/onurkat/reclazz/e2e/AddedMethodSecurityReloadTest.java",
+        "historical_source_sha256": "0aeaebe3793eb0b45c02f3b954e6d653857955365bfb9fa56b164920ee125b01",
+        "current_source_sha256": "088c9942fcab2fb0c4e97f0765ebd7fd6347365aabfc0b87d6cb8271cd141e95"
+      },
+      {
+        "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ComposedCacheOperationReloadTest.java",
+        "historical_source_sha256": "426ecca00e0d5ce7f4ff4bf73c91a554030116e6c3b96940446b1bed948b0900",
+        "current_source_sha256": "5abb96a7aef70bc03c43fe874426c117ba699654432deef4cd7f9cdef523743a"
+      },
+      {
+        "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ComposedTransactionOperationReloadTest.java",
+        "historical_source_sha256": "8b0e99256668acb254f4ef030b3d352ad6a7a77e5bb427248282f7a760efdf60",
+        "current_source_sha256": "821b73c1174924043b89bff32e6420fafb387381c85a5a16ada4e65ff98c7a6e"
+      }
+    ]
+  }
 }

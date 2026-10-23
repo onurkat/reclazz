@@ -8,6 +8,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Expose companion methods, fields and added constructors through ordinary
+  Class reflection on the tested JDK 17/21 paths. Back fields with the shared
+  FieldStore, preserve access checks and primitive conversions, and refresh held
+  constructor/MethodHandle dispatch across saves. Preserve parameter names and
+  parameter, return, nested, receiver and throws type-use annotations through real
+  metadata carriers with logical declarations. Support unreflect, unreflectSpecial,
+  unreflectConstructor and field getter/setter handles without resolving virtual
+  VM slots. Added constructors execute the actual superclass/this delegation;
+  preserve pre-super receiver writes on instrumented delegation chains. Support
+  get/set/compareAndSet VarHandles for mutable added int instance fields and
+  added-constructor findConstructor/canonical watched-caller new expressions. Flush standalone and copied Jackson mapper caches through
+  weak constructor tracking as well as Spring bean discovery. Keep native Spring
+  method scans on VM-declared methods so existing callback adapters retain
+  lifecycle ownership and warm JavaBeans caches remain current. Keep enum memory
+  operations on physical fields so reflectively visible added constants still
+  use FieldStore without asking the JVM for a nonexistent field offset.
+
+- Expose added DTO bean accessors to the tested SAP Commerce Orika resolver,
+  route generated mapper calls to current implementations, and refresh retained
+  ordinary bidirectional default mappings while preserving explicit fields,
+  exclusions and renamed mappings. Verified against the local SDK Orika graph;
+  this mapper path does not certify live tenant or database schema updates.
+
 - Recreate bounded local Rabbit consumers after helper-body or scalar constructor-
   property saves on the measured Spring5/AMQP2 and Spring6/AMQP3 graphs. Wait for
   complete native workers before reconstructing current helper/owner callbacks,

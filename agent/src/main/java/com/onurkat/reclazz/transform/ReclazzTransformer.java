@@ -214,7 +214,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
         MethodTrampolineAdapter adapter = new MethodTrampolineAdapter(
                 writer, context, AnnotationSignatures.of(classfileBuffer), originalUid, loader);
 
-        reader.accept(adapter, ClassReader.EXPAND_FRAMES);
+        reader.accept(ConstructorCallRewriter.visitor(adapter,context::isWatched), ClassReader.EXPAND_FRAMES);
 
         return writer.toByteArray();
     }

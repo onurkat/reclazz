@@ -95,7 +95,7 @@ public final class LookupCapture {
         sealed = false;
     }
 
-    private static void requireTrusted(Class<?> caller, String action) {
+    static void requireTrusted(Class<?> caller, String action) {
         // Before sealing, the only code running is the agent's own start-up:
         // the engine registers its classes and closes the list within premain,
         // which finishes before the application's main method begins. So the

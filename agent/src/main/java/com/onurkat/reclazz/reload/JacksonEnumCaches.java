@@ -49,8 +49,8 @@ import java.util.Map;
  * every ObjectMapper registered as a Spring bean, all through reflection:
  * Reclazz has no Jackson dependency and must behave identically when Jackson
  * is absent. Everything else those caches held rebuilds lazily on next use,
- * which is the trade a development reload is allowed to make. Mappers that
- * are not Spring beans cannot be found and stay stale; the fields walked here
+ * which is the trade a development reload is allowed to make. Constructor tracking also finds standalone and copied mappers through weak
+ * identity references. The fields walked here
  * ({@code _serializerProvider._serializerCache}, {@code
  * _deserializationContext._cache}, {@code _rootDeserializers}) have been
  * stable across Jackson 2.x, and a Jackson that renames one makes this skip
@@ -64,11 +64,15 @@ final class JacksonEnumCaches {
     /**
      * Flush every ObjectMapper bean in every live ApplicationContext.
      *
-     * @return how many mappers were flushed; 0 when Jackson or Spring is absent
+     * @return how many distinct mappers were flushed; 0 when none are reachable
      */
     static int flush() {
         Map<Object, Boolean> seen = new IdentityHashMap<>();
         int flushed = 0;
+        for (Object mapper : com.onurkat.reclazz.bootstrap.JacksonMapperRegistry.live()) {
+            seen.put(mapper, Boolean.TRUE);
+            if (flushMapper(mapper)) flushed++;
+        }
         for (Object context : ApplicationContextHolder.getAllContexts()) {
             try {
                 Class<?> mapperType = Class.forName("com.fasterxml.jackson.databind.ObjectMapper",

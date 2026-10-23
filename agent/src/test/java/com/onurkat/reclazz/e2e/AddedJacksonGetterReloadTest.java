@@ -77,7 +77,7 @@ class AddedJacksonGetterReloadTest {
                                     }
                                 }
                             }
-                            assertEquals("false", get(client, port, "reflection"), "ordinary reflection must stay unchanged");
+                            assertEquals(Boolean.toString(stage != 3), get(client, port, "reflection"), "added accessor visibility must follow source removal/restoration");
                             assertEquals("\"custom-alpha\"", get(client, port, "custom/old"), "user's DTO serializer must stay in charge");
                             break;
                         } catch (AssertionError | java.io.IOException notConsistentYet) {

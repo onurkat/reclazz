@@ -129,6 +129,23 @@ class AddedRabbitListenerExpressionReloadTest {
             @org.springframework.context.annotation.ComponentScan("app")
             @org.springframework.amqp.rabbit.annotation.EnableRabbit
             public class App {
+
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
                 @org.springframework.context.annotation.Bean
                 public org.springframework.amqp.rabbit.connection.CachingConnectionFactory rabbitConnectionFactory() {
                     var cf = new org.springframework.amqp.rabbit.connection.CachingConnectionFactory("127.0.0.1", Integer.parseInt(System.getProperty("test.rabbit.port")));
@@ -141,6 +158,7 @@ class AddedRabbitListenerExpressionReloadTest {
                     return factory;
                 }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     var ctx = new org.springframework.context.annotation.AnnotationConfigApplicationContext(App.class);
                     var registry = ctx.getBean(org.springframework.amqp.rabbit.listener.RabbitListenerEndpointRegistry.class);
                     var server = com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1", 0), 0);
@@ -149,7 +167,7 @@ class AddedRabbitListenerExpressionReloadTest {
                         String path = exchange.getRequestURI().getPath();
                         if (path.equals("/move")) { ctx.getBean(Routing.class).move(); b.append("moved"); }
                         else if (path.equals("/original")) {
-                            b.append(java.util.Arrays.stream(Listener.class.getDeclaredMethods()).anyMatch(m -> m.getName().equals("added")));
+                            b.append(physicallyDeclared(Listener.class,"added"));
                         } else if (path.equals("/queues")) {
                             var c = (SimpleMessageListenerContainer) registry.getListenerContainer("added");
                             b.append(c == null ? "none" : String.join(",", c.getQueueNames()));

@@ -104,6 +104,15 @@ public class CompanionGenerator implements Opcodes {
                                             StructuralAnalyzer.StructuralDiff diff,
                                             int version, Set<String> staticsToInitialise,
                                             Set<String> skipMethods, TransformContext context) {
+        Set<String> constructors=new LinkedHashSet<>();
+        for(String key:diff.getAddedMethods())if(key.startsWith("<init>:"))constructors.add(key.substring(7));
+        return generate(originalClassName,newBytecode,diff,version,staticsToInitialise,skipMethods,context,constructors);
+    }
+
+    /** Physical constructor absence survives body-only saves whose logical diff calls it common. */
+    public static CompanionResult generate(String originalClassName,byte[] newBytecode,
+                                            StructuralAnalyzer.StructuralDiff diff,int version,Set<String> staticsToInitialise,
+                                            Set<String> skipMethods,TransformContext context,Set<String> constructors) {
         ClassReader reader = new ClassReader(newBytecode);
         String companionName = originalClassName + "$$Reclazz$v" + version;
 
@@ -137,7 +146,7 @@ public class CompanionGenerator implements Opcodes {
         CompanionMethodExtractor extractor = new CompanionMethodExtractor(
                 writer, originalClassName, companionName, addedFieldKeys, methodHandleKeys,
                 diff, skipMethods, context);
-        reader.accept(extractor, ClassReader.EXPAND_FRAMES);
+        reader.accept(context==null?extractor:com.onurkat.reclazz.transform.ConstructorCallRewriter.visitor(extractor,context::isWatched), ClassReader.EXPAND_FRAMES);
 
         // The initial value of an added static field. The slice is written
         // through the same adapter as every other companion method, so a
@@ -181,6 +190,15 @@ public class CompanionGenerator implements Opcodes {
             adapter.visitEnd();
         }
 
+        var constructorSource=new org.objectweb.asm.tree.ClassNode();
+        reader.accept(constructorSource,ClassReader.EXPAND_FRAMES);
+        for(var constructor:constructorSource.methods)if(constructor.name.equals("<init>")) {
+            MethodVisitor factory=writer.visitMethod(ACC_PUBLIC|ACC_STATIC,AddedConstructorGenerator.name(constructor.desc),
+                    AddedConstructorGenerator.descriptor(originalClassName,constructor.desc),null,constructor.exceptions.toArray(String[]::new));
+            MethodVisitor body=new CompanionMethodAdapter(externalInstanceFields(factory,originalClassName,context),
+                    originalClassName,companionName,addedFieldKeys,diff.getAddedMethods(),true);
+            AddedConstructorGenerator.emit(constructorSource,constructor,writer,body);
+        }
         writer.visitEnd();
 
         return new CompanionResult(writer.toByteArray(), companionName, methodHandleKeys,
@@ -341,7 +359,7 @@ public class CompanionGenerator implements Opcodes {
      * - Rewrites field access for added fields to FieldStore helper calls
      * - Regular field access works via NESTMATE access to original class
      */
-    private static class CompanionMethodAdapter extends MethodVisitor {
+    static class CompanionMethodAdapter extends MethodVisitor {
         private final String originalClass;
         private final String companionName;
         private final Set<String> addedFields;
@@ -686,7 +704,7 @@ public class CompanionGenerator implements Opcodes {
             }
         }
 
-        private static void box(MethodVisitor mv, Type type) {
+        static void box(MethodVisitor mv, Type type) {
             switch (type.getSort()) {
                 case Type.INT -> mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer",
                         "valueOf", "(I)Ljava/lang/Integer;", false);

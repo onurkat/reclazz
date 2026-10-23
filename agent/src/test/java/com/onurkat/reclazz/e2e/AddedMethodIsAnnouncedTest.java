@@ -12,23 +12,8 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Adding a getter, and being told what it will and will not do.
- *
- * <p>A method added by a reload lives in the companion class, because a stock
- * JDK will not put a new method on a loaded one. Calls from the developer's own
- * code reach it, since those call sites are rewritten. Reflection does not, and
- * reflection is how frameworks find methods, so an added getter is not
- * serialised, an added {@code @Bean} method is not a bean and an added
- * {@code @Scheduled} method never runs.
- *
- * <p>What made that worth a round of work is not the wall, which is the JDK's,
- * but the silence in front of it: the reload succeeded, the log said so, and
- * the thing the developer had just written did nothing at all.
- *
- * <p>Both halves are measured here, on a running JVM: the wall is real, and it
- * is now announced by name.
- */class AddedMethodIsAnnouncedTest {
+/** Added plain and type-annotated getters remain visible without a false restart warning. */
+class AddedMethodIsAnnouncedTest {
 
     @TempDir
     Path tmp;
@@ -41,6 +26,12 @@ import static org.junit.jupiter.api.Assertions.*;
                         public class Dto {
                             public String getName() { return "before"; }
                         }
+                        """)
+                .with("TypeMark", """
+                        package app;
+                        import java.lang.annotation.*;
+                        @Retention(RetentionPolicy.RUNTIME) @Target(ElementType.TYPE_USE)
+                        public @interface TypeMark {}
                         """)
                 .with("App", """
                         package app;
@@ -58,8 +49,15 @@ import static org.junit.jupiter.api.Assertions.*;
                                     } catch (NoSuchMethodException absent) {
                                         seen = "INVISIBLE";
                                     }
+                                    String token;
+                                    try {
+                                        Method tokenMethod=Dto.class.getMethod("getToken");
+                                        token = "VISIBLE:" + tokenMethod.invoke(dto) + ":annotated=" + tokenMethod.getAnnotatedReturnType().isAnnotationPresent(TypeMark.class);
+                                    } catch (NoSuchMethodException absent) {
+                                        token = "INVISIBLE";
+                                    }
                                     System.out.println("STATE name=" + dto.getName()
-                                            + " getEmail=" + seen);
+                                            + " getEmail=" + seen + " getToken=" + token);
                                 }
                             }
                         }
@@ -78,21 +76,24 @@ import static org.junit.jupiter.api.Assertions.*;
                         public String getEmail() { return "e@x"; }
                     }
                     """);
-            app.awaitOrFail("name=after",
-                    "the reload never landed, so nothing here is about added methods");
+            app.awaitOrFail("name=after getEmail=VISIBLE:e@x getToken=INVISIBLE",
+                    "the plain added getter was not visible and invokable");
+            assertTrue(app.latest("STATE ").contains("getEmail=VISIBLE:e@x"), app.tail());
 
-            String state = app.latest("STATE ");
-            System.out.println("[diag] " + state);
-            assertTrue(state.contains("getEmail=INVISIBLE"),
-                    () -> "reflection found an added method, so this JDK is not the one the "
-                            + "warning is for: " + state);
-
-            String warning = app.latest("getEmail()");
-            System.out.println("[diag] " + warning);
-            assertNotNull(warning,
-                    () -> "the getter was added, did nothing, and nothing was said:\n" + app.tail());
-            assertTrue(warning.contains("serialisation"),
-                    () -> "warned, but not about what will not happen: " + warning);
+            // Type-use metadata must be visible on the same logical Method root.
+            app.rewrite("Dto", """
+                    package app;
+                    public class Dto {
+                        public String getName() { return "after2"; }
+                        public String getEmail() { return "e@x"; }
+                        public @TypeMark String getToken() { return "token"; }
+                    }
+                    """);
+            app.awaitOrFail("name=after2 getEmail=VISIBLE:e@x getToken=VISIBLE:token:annotated=true",
+                    "the added type-use annotation must be visible and invokable");
+            assertNull(app.latest("getToken() was added"),"a visible annotated getter must not warn");
+            assertNull(app.latest("getEmail() was added"),
+                    "a visible getter must not receive a false restart warning:\n" + app.tail());
         }
     }
 }

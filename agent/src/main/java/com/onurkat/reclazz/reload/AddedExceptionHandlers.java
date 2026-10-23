@@ -37,7 +37,7 @@ final class AddedExceptionHandlers {
         var source = new ClassNode();
         new ClassReader(bytes).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_FRAMES);
         Set<String> original = new HashSet<>();
-        for (Method m : owner.getDeclaredMethods()) original.add(m.getName() + Type.getMethodDescriptor(m));
+        for (Method m : com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalDeclaredMethods(owner)) original.add(m.getName() + Type.getMethodDescriptor(m));
         List<MethodNode> handlers = source.methods.stream().filter(m -> m.visibleAnnotations != null
                 && m.visibleAnnotations.stream().anyMatch(a -> a.desc.equals(EXCEPTION))).toList();
         Set<String> added = new LinkedHashSet<>();

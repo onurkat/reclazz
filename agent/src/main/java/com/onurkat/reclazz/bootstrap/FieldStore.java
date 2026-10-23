@@ -424,6 +424,22 @@ public final class FieldStore {
     }
 
     /** JVM default value for a field descriptor (boxed for primitives). */
+    public static boolean compareAndSetInt(Object instance,String owner,String name,int expected,int update) {
+        // Initialiser code must execute before taking the atomic update monitor.
+        getExtField(instance,owner,name,"I");
+        synchronized(instance) {
+            int index=registerField(owner,name,"I");
+            try {
+                java.lang.reflect.Field field=resolveExtField(instance.getClass());
+                if(field==null)throw new IllegalStateException("Added-field storage unavailable");
+                Object[] values=(Object[])field.get(instance);Object raw=getField(values,index);
+                int current=raw instanceof Integer value?value:0;
+                if(current!=expected)return false;
+                field.set(instance,setField(values,index,update));return true;
+            } catch(ReflectiveOperationException failure){throw new IllegalStateException(failure);}
+        }
+    }
+
     private static Object defaultValue(String desc) {
         if (desc == null || desc.isEmpty()) return null;
         switch (desc.charAt(0)) {

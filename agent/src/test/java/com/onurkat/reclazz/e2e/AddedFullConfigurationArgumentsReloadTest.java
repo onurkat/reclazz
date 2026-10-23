@@ -96,6 +96,10 @@ class AddedFullConfigurationArgumentsReloadTest {
                         while (!java.nio.file.Files.exists(java.nio.file.Path.of(System.getProperty("test.dir"), "probe"+stage))) Thread.sleep(25);
                         try {
                             String answer;
+                            boolean visible=false;
+                            for(var method:Config.class.getDeclaredMethods())
+                                if(method.getName().equals("leaf")) visible=true;
+                            if(visible!=(stage!=4)) throw new AssertionError("factory reflection visibility at stage "+stage+": "+visible);
                             if(stage==4) {
                                 for(String name : new String[]{"leaf","leafAlias","auto","proto"})
                                     if(context.containsBean(name)) throw new AssertionError("removed factory remains: "+name);
@@ -128,8 +132,6 @@ class AddedFullConfigurationArgumentsReloadTest {
                                 if(recovered.wire()!=resolved || recovered.count()!=stage+4) throw new AssertionError("failed call leaked arguments: "+recovered);
                                 Product manual=new Config().fromOldReference(explicit,42);
                                 if(manual==leaf || manual.wire()!=explicit || manual.count()!=42) throw new AssertionError("manual config lost Java arguments");
-                                for(var method:Config.class.getDeclaredMethods())
-                                    if(method.getName().equals("leaf")) throw new AssertionError("added method visible to reflection");
                                 answer="full:"+stage+":"+auto.count()+":"+leaf.count();
                             }
                             System.out.println("PROBE"+stage+"="+answer);

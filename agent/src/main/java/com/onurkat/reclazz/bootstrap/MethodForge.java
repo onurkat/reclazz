@@ -4,261 +4,232 @@
  */
 package com.onurkat.reclazz.bootstrap;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.lang.invoke.*;
+import java.lang.reflect.*;
+import java.util.ArrayList;
 
-/**
- * Creates synthetic java.lang.reflect.Method and Field objects that represent
- * structurally-added members. These forged objects appear in getDeclaredMethods()
- * results (via ReflectionBridge) and support Method.invoke() by dispatching
- * through the DispatchTable's companion class MethodHandle.
- *
- * Uses sun.misc.Unsafe to allocate uninitialized Method/Field instances and
- * set their private fields. Requires:
- *   --add-opens java.base/java.lang.reflect=ALL-UNNAMED
- *   --add-opens java.base/jdk.internal.reflect=ALL-UNNAMED
- *
- * BOOTSTRAP CLASS: Must have ZERO dependencies outside java.* / sun.* packages.
- */
+/** Guarded JDK17/21 reflection roots backed by companion handles and real metadata carriers. */
 public final class MethodForge {
+    private static MethodHandle constructor;
+    private static MethodHandle accessorSetter;
+    private static MethodHandle nativeParameters;
+    private static MethodHandle nativeTypeAnnotations;
+    private record Entry(MethodHandle target, Executable metadata) { }
+    private static final ClassValue<java.util.concurrent.ConcurrentHashMap<Executable,Entry>> entries=new ClassValue<>() {
+        @Override protected java.util.concurrent.ConcurrentHashMap<Executable,Entry> computeValue(Class<?> owner){return new java.util.concurrent.ConcurrentHashMap<>();}
+    };
+    private static MethodHandle parameterConstructor, realParameters, verifyAccess, specialCallerCheck;
+    private static Class<?> accessorType;
+    private static VarHandle declaredAnnotations;
+    private static volatile boolean available;
+    public static Throwable initializationFailure;
+    private MethodForge() { }
 
-    private static final sun.misc.Unsafe UNSAFE;
-    // Method field offsets
-    private static final long METHOD_CLAZZ_OFFSET;
-    private static final long METHOD_NAME_OFFSET;
-    private static final long METHOD_RETURN_TYPE_OFFSET;
-    private static final long METHOD_PARAM_TYPES_OFFSET;
-    private static final long METHOD_MODIFIERS_OFFSET;
-    private static final long METHOD_SLOT_OFFSET;
-    private static final long METHOD_SIGNATURE_OFFSET;
-    private static final long METHOD_ANNOTATIONS_OFFSET;
-    private static final long METHOD_ACCESSOR_OFFSET;
-    // Field field offsets
-    private static final long FIELD_CLAZZ_OFFSET;
-    private static final long FIELD_NAME_OFFSET;
-    private static final long FIELD_TYPE_OFFSET;
-    private static final long FIELD_MODIFIERS_OFFSET;
-    private static final long FIELD_SLOT_OFFSET;
-    private static final long FIELD_SIGNATURE_OFFSET;
-
-    private static final boolean AVAILABLE;
-
-    static {
-        sun.misc.Unsafe u = null;
-        long mClazz = -1, mName = -1, mRet = -1, mParams = -1, mMods = -1;
-        long mSlot = -1, mSig = -1, mAnnot = -1, mAccessor = -1;
-        long fClazz = -1, fName = -1, fType = -1, fMods = -1, fSlot = -1, fSig = -1;
-        boolean avail = false;
-
+    /** Called after Instrumentation opens java.lang.reflect to the bootstrap module. */
+    public static synchronized boolean initialize() {
+        if (available) return true;
         try {
-            Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-            theUnsafe.setAccessible(true);
-            u = (sun.misc.Unsafe) theUnsafe.get(null);
-
-            // Method field offsets
-            mClazz = u.objectFieldOffset(Method.class.getDeclaredField("clazz"));
-            mName = u.objectFieldOffset(Method.class.getDeclaredField("name"));
-            mRet = u.objectFieldOffset(Method.class.getDeclaredField("returnType"));
-            mParams = u.objectFieldOffset(Method.class.getDeclaredField("parameterTypes"));
-            mMods = u.objectFieldOffset(Method.class.getDeclaredField("modifiers"));
-            mSlot = u.objectFieldOffset(Method.class.getDeclaredField("slot"));
-            mSig = u.objectFieldOffset(Method.class.getDeclaredField("signature"));
-            mAnnot = u.objectFieldOffset(Method.class.getDeclaredField("annotations"));
-
-            // MethodAccessor field, in jdk.internal.reflect package
-            mAccessor = u.objectFieldOffset(Method.class.getDeclaredField("methodAccessor"));
-
-            // Field field offsets
-            fClazz = u.objectFieldOffset(Field.class.getDeclaredField("clazz"));
-            fName = u.objectFieldOffset(Field.class.getDeclaredField("name"));
-            fType = u.objectFieldOffset(Field.class.getDeclaredField("type"));
-            fMods = u.objectFieldOffset(Field.class.getDeclaredField("modifiers"));
-            fSlot = u.objectFieldOffset(Field.class.getDeclaredField("slot"));
-            fSig = u.objectFieldOffset(Field.class.getDeclaredField("signature"));
-
-            avail = true;
-        } catch (Exception e) {
-            // The internal layout of java.lang.reflect.Method changed in JDK
-            // 17+: the 'clazz', 'name', 'slot', etc. fields no longer exist
-            // as direct declared fields on Method. Reflection patching (which
-            // forges synthetic Method/Field objects so reflective scans see
-            // structurally-added members) is unavailable on these JVMs. Hot
-            // reload itself still works, only the reflection-based view of
-            // newly-added methods/fields is degraded. Stay quiet here; the
-            // outer agent init logs the degraded mode once with the rest of
-            // the capability summary so users see it in context, not as a
-            // scary stderr dump on every reload.
-        }
-
-        UNSAFE = u;
-        METHOD_CLAZZ_OFFSET = mClazz;
-        METHOD_NAME_OFFSET = mName;
-        METHOD_RETURN_TYPE_OFFSET = mRet;
-        METHOD_PARAM_TYPES_OFFSET = mParams;
-        METHOD_MODIFIERS_OFFSET = mMods;
-        METHOD_SLOT_OFFSET = mSlot;
-        METHOD_SIGNATURE_OFFSET = mSig;
-        METHOD_ANNOTATIONS_OFFSET = mAnnot;
-        METHOD_ACCESSOR_OFFSET = mAccessor;
-        FIELD_CLAZZ_OFFSET = fClazz;
-        FIELD_NAME_OFFSET = fName;
-        FIELD_TYPE_OFFSET = fType;
-        FIELD_MODIFIERS_OFFSET = fMods;
-        FIELD_SLOT_OFFSET = fSlot;
-        FIELD_SIGNATURE_OFFSET = fSig;
-        AVAILABLE = avail;
+            var lookup=MethodHandles.privateLookupIn(Method.class,MethodHandles.lookup());
+            accessorType=Class.forName("jdk.internal.reflect.MethodAccessor");
+            constructor=lookup.findConstructor(Method.class,MethodType.methodType(void.class,
+                    Class.class,String.class,Class[].class,Class.class,Class[].class,int.class,int.class,
+                    String.class,byte[].class,byte[].class,byte[].class));
+            accessorSetter=lookup.findSetter(Method.class,"methodAccessor",accessorType);
+            declaredAnnotations=MethodHandles.privateLookupIn(Executable.class,MethodHandles.lookup())
+                    .findVarHandle(Executable.class,"declaredAnnotations",java.util.Map.class);
+            var executable=MethodHandles.privateLookupIn(Executable.class,MethodHandles.lookup());
+            nativeParameters=executable.findVirtual(Executable.class,"getParameters0",MethodType.methodType(Parameter[].class));
+            nativeTypeAnnotations=executable.findVirtual(Executable.class,"getTypeAnnotationBytes0",MethodType.methodType(byte[].class));
+            parameterConstructor=MethodHandles.privateLookupIn(Parameter.class,MethodHandles.lookup()).findConstructor(Parameter.class,
+                    MethodType.methodType(void.class,String.class,int.class,Executable.class,int.class));
+            realParameters=executable.findVirtual(Executable.class,"hasRealParameterData",MethodType.methodType(boolean.class));
+            var special=MethodHandles.Lookup.class.getDeclaredMethod("checkSpecialCaller",Class.class,Class.class);
+            special.setAccessible(true);
+            specialCallerCheck=MethodHandles.lookup().unreflect(special);
+            Class<?> verify=Class.forName("sun.invoke.util.VerifyAccess");
+            verifyAccess=MethodHandles.privateLookupIn(verify,MethodHandles.lookup()).findStatic(verify,"isMemberAccessible",
+                    MethodType.methodType(boolean.class,Class.class,Class.class,int.class,Class.class,Class.class,int.class));
+            if(!MemberForge.initialize())throw new IllegalStateException("Field/constructor accessors unavailable",MemberForge.initializationFailure);
+            available=true;
+        } catch (Throwable unsupported) { initializationFailure=unsupported;available=false; }
+        return available;
     }
 
-    /**
-     * Whether MethodForge is operational (Unsafe available + field offsets resolved).
-     */
-    public static boolean isAvailable() {
-        return AVAILABLE;
+    public static boolean isAvailable() { return available; }
+
+    /** Never publish virtual roots unless all native-query guards were installed. */
+    public static void disable() { available=false; }
+
+    public static Method forgeMethod(Class<?> owner,String name,Class<?>[] parameters,Class<?> result,
+                                     int modifiers,MethodHandle target,byte[] annotations) {
+        return forgeMethod(owner,name,parameters,result,modifiers,target,null,new Class<?>[0]);
     }
 
-    /**
-     * Forge a synthetic Method object that appears to belong to the given class.
-     * When invoke() is called, it dispatches through the provided MethodHandle
-     * (which points to the companion class implementation).
-     *
-     * @param declaringClass the class the method should appear to belong to
-     * @param name           the method name
-     * @param parameterTypes parameter types
-     * @param returnType     return type
-     * @param modifiers      access modifiers (e.g., Modifier.PUBLIC)
-     * @param dispatchMH     MethodHandle to the companion class method (for invoke support)
-     * @param annotations    raw annotation bytes (may be null)
-     * @return a forged Method object, or null if forge is unavailable
-     */
-    public static Method forgeMethod(Class<?> declaringClass, String name,
-                                      Class<?>[] parameterTypes, Class<?> returnType,
-                                      int modifiers, MethodHandle dispatchMH,
-                                      byte[] annotations) {
-        if (!AVAILABLE) return null;
-
+    public static Method forgeMethod(Class<?> owner,String name,Class<?>[] parameters,Class<?> result,
+                                     int modifiers,MethodHandle target,String signature,Class<?>[] exceptions) {
+        if (!available || target==null) return null;
         try {
-            // Allocate an uninitialized Method object
-            Method m = (Method) UNSAFE.allocateInstance(Method.class);
-
-            // Set core fields
-            UNSAFE.putObject(m, METHOD_CLAZZ_OFFSET, declaringClass);
-            UNSAFE.putObject(m, METHOD_NAME_OFFSET, name);
-            UNSAFE.putObject(m, METHOD_RETURN_TYPE_OFFSET, returnType);
-            UNSAFE.putObject(m, METHOD_PARAM_TYPES_OFFSET, parameterTypes.clone());
-            UNSAFE.putInt(m, METHOD_MODIFIERS_OFFSET, modifiers);
-            UNSAFE.putInt(m, METHOD_SLOT_OFFSET, Integer.MAX_VALUE); // synthetic slot, avoids -1 clash
-            UNSAFE.putObject(m, METHOD_SIGNATURE_OFFSET, null);
-
-            if (annotations != null) {
-                UNSAFE.putObject(m, METHOD_ANNOTATIONS_OFFSET, annotations);
-            }
-
-            // Set up MethodAccessor for invoke() support via dynamic proxy
-            if (dispatchMH != null) {
-                Object accessor = createMethodAccessor(dispatchMH);
-                if (accessor != null) {
-                    UNSAFE.putObject(m, METHOD_ACCESSOR_OFFSET, accessor);
+            Method method=(Method)constructor.invoke(owner,name.intern(),parameters.clone(),result,
+                    exceptions.clone(),modifiers,-1,signature,null,null,null);
+            Object accessor=Proxy.newProxyInstance(null,new Class<?>[]{accessorType},(proxy,called,args)->{
+                if (!called.getName().equals("invoke")) {
+                    return switch(called.getName()) {
+                        case "equals" -> proxy==args[0];
+                        case "hashCode" -> System.identityHashCode(proxy);
+                        default -> "ReclazzMethodAccessor";
+                    };
                 }
-            }
-
-            return m;
-        } catch (Exception e) {
-            System.err.println("[Reclazz] Failed to forge Method " + name + ": " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Forge a synthetic Field object that appears to belong to the given class.
-     * The field's get/set operations are backed by FieldStore.
-     *
-     * @param declaringClass the class the field should appear to belong to
-     * @param name           the field name
-     * @param type           the field type
-     * @param modifiers      access modifiers
-     * @return a forged Field object, or null if forge is unavailable
-     */
-    public static Field forgeField(Class<?> declaringClass, String name,
-                                    Class<?> type, int modifiers) {
-        if (!AVAILABLE) return null;
-
-        try {
-            Field f = (Field) UNSAFE.allocateInstance(Field.class);
-
-            UNSAFE.putObject(f, FIELD_CLAZZ_OFFSET, declaringClass);
-            UNSAFE.putObject(f, FIELD_NAME_OFFSET, name);
-            UNSAFE.putObject(f, FIELD_TYPE_OFFSET, type);
-            UNSAFE.putInt(f, FIELD_MODIFIERS_OFFSET, modifiers);
-            UNSAFE.putInt(f, FIELD_SLOT_OFFSET, Integer.MAX_VALUE);
-            UNSAFE.putObject(f, FIELD_SIGNATURE_OFFSET, null);
-
-            return f;
-        } catch (Exception e) {
-            System.err.println("[Reclazz] Failed to forge Field " + name + ": " + e.getMessage());
-            return null;
-        }
-    }
-
-    /**
-     * Create a MethodAccessor proxy that dispatches Method.invoke() calls
-     * through a MethodHandle pointing to the companion class implementation.
-     *
-     * Uses jdk.internal.reflect.MethodAccessor interface via dynamic proxy.
-     */
-    private static Object createMethodAccessor(MethodHandle dispatchMH) {
-        try {
-            // Load the MethodAccessor interface from the bootstrap classloader
-            Class<?> methodAccessorClass = Class.forName("jdk.internal.reflect.MethodAccessor");
-
-            // Create a proxy that implements MethodAccessor and dispatches via the MethodHandle
-            return Proxy.newProxyInstance(
-                    null, // bootstrap classloader
-                    new Class<?>[]{methodAccessorClass},
-                    new MethodHandleAccessorHandler(dispatchMH)
-            );
-        } catch (Exception e) {
-            // If MethodAccessor is not accessible, invoke() won't work but
-            // reflection discovery (getDeclaredMethods) still will
-            return null;
-        }
-    }
-
-    /**
-     * InvocationHandler that dispatches MethodAccessor.invoke() through a MethodHandle.
-     */
-    private static final class MethodHandleAccessorHandler implements InvocationHandler {
-        private final MethodHandle dispatchMH;
-
-        MethodHandleAccessorHandler(MethodHandle mh) {
-            this.dispatchMH = mh;
-        }
-
-        @Override
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if ("invoke".equals(method.getName())) {
-                // MethodAccessor.invoke(Object obj, Object[] args)
-                Object receiver = args[0];
-                Object[] methodArgs = (Object[]) args[1];
-
-                if (methodArgs == null || methodArgs.length == 0) {
-                    // Instance method: receiver is first arg to companion static method
-                    return dispatchMH.invoke(receiver);
-                } else {
-                    // Build args array: [receiver, arg0, arg1, ...]
-                    Object[] fullArgs = new Object[methodArgs.length + 1];
-                    fullArgs[0] = receiver;
-                    System.arraycopy(methodArgs, 0, fullArgs, 1, methodArgs.length);
-                    return dispatchMH.invokeWithArguments(fullArgs);
+                Object receiver=args[0];
+                Object[] values=args[1]==null?new Object[0]:(Object[])args[1];
+                boolean statik=Modifier.isStatic(modifiers);
+                if (!statik) {
+                    if(receiver==null)throw new NullPointerException("method receiver");
+                    if(!owner.isInstance(receiver))throw new IllegalArgumentException("Invalid method receiver");
                 }
-            }
-            // Other methods (equals, hashCode, toString), default behavior
-            if ("hashCode".equals(method.getName())) return System.identityHashCode(proxy);
-            if ("equals".equals(method.getName())) return proxy == args[0];
-            if ("toString".equals(method.getName())) return "ReclazzMethodAccessor";
-            return null;
+                if(values.length!=parameters.length)throw new IllegalArgumentException("Wrong argument count");
+                var actual=new ArrayList<Object>();
+                if(!statik)actual.add(receiver);
+                for(int i=0;i<values.length;i++)actual.add(JacksonBridge.checkedValue(parameters[i],values[i]));
+                try {return target.invokeWithArguments(actual);}
+                catch(Throwable failure){throw new InvocationTargetException(failure);}
+            });
+            accessorSetter.invoke(method,accessor);
+            entries.get(owner).put(method,new Entry(target,null));
+            return method;
+        } catch(Throwable unsupported) { return null; }
+    }
+
+    static boolean isForged(Executable method) { return entry(method)!=null; }
+    private static Entry entry(Executable method){return entries.get(method.getDeclaringClass()).get(method);}
+
+    public static void metadata(Executable logical,Executable source,MethodHandle target) {
+        entries.get(logical.getDeclaringClass()).put(logical,new Entry(target,source));
+        var map=new java.util.LinkedHashMap<Class<? extends java.lang.annotation.Annotation>,java.lang.annotation.Annotation>();
+        for(var value:source.getDeclaredAnnotations())map.put(value.annotationType(),value);
+        declaredAnnotations.setVolatile(logical,java.util.Map.copyOf(map));
+    }
+
+    /** Native parameter queries require a VM slot. Create Parameters attached to the logical copy. */
+    public static Parameter[] parameters(Executable method) {
+        Entry entry=entry(method);
+        try {
+            if(entry==null)return (Parameter[])nativeParameters.invoke(method);
+            if(entry.metadata==null || !(boolean)realParameters.invoke(entry.metadata))return null;
+            Parameter[] original=entry.metadata.getParameters(), result=new Parameter[original.length];
+            for(int i=0;i<result.length;i++)result[i]=(Parameter)parameterConstructor.invoke(original[i].isNamePresent()?original[i].getName():null,original[i].getModifiers(),method,i);
+            return result;
+        }catch(RuntimeException | Error failure){throw failure;}
+        catch(Throwable failure){throw new IllegalStateException(failure);}
+    }
+
+    public static byte[] typeAnnotations(Executable method) {
+        if(isForged(method))return null; // Public annotated-type queries below use the carrier's pool.
+        try {return (byte[])nativeTypeAnnotations.invoke(method);}
+        catch(RuntimeException | Error failure){throw failure;}
+        catch(Throwable failure){throw new IllegalStateException(failure);}
+    }
+
+    public static boolean hasMetadata(Executable method){Entry value=entry(method);return value!=null && value.metadata!=null;}
+
+    public static java.lang.annotation.Annotation[][] parameterAnnotations(Executable method) {
+        Entry entry=entry(method);
+        return entry==null?null:entry.metadata==null?new java.lang.annotation.Annotation[method.getParameterCount()][0]:entry.metadata.getParameterAnnotations();
+    }
+    public static AnnotatedType annotatedReturn(Executable method) {
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedReturnType(),entry.metadata,method);
+    }
+    public static AnnotatedType[] annotatedParameters(Executable method) {
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedParameterTypes(),entry.metadata,method);
+    }
+    public static AnnotatedType[] annotatedExceptions(Executable method) {
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedExceptionTypes(),entry.metadata,method);
+    }
+    public static AnnotatedType annotatedReceiver(Executable method) {
+        Entry entry=entry(method);return entry==null || entry.metadata==null?null:ReflectionTypes.wrap(entry.metadata.getAnnotatedReceiverType(),entry.metadata,method);
+    }
+
+    /** Apply the same JDK member/mode/module check without resolving an invented VM slot. */
+    @SuppressWarnings("deprecation")
+    static void checkAccess(MethodHandles.Lookup lookup,Member member,boolean override,boolean constructor,boolean setter) throws IllegalAccessException {
+        int mods=member.getModifiers();
+        if(setter && Modifier.isFinal(mods) && (!override || Modifier.isStatic(mods) || member.getDeclaringClass().isRecord() || member.getDeclaringClass().isHidden()))
+            throw new IllegalAccessException("final field: "+member);
+        if(override)return;
+        if(constructor && Modifier.isProtected(mods))mods^=Modifier.PROTECTED;
+        int requested=mods & (Modifier.PUBLIC|Modifier.PRIVATE|Modifier.PROTECTED);
+        if(requested==0)requested=MethodHandles.Lookup.PACKAGE;
+        int modes=lookup.lookupModes();
+        Class<?> owner=member.getDeclaringClass();
+        boolean samePackage=samePackage(owner,lookup.lookupClass());
+        boolean mode=(requested & modes)!=0 || (requested & Modifier.PROTECTED)!=0 && (modes & MethodHandles.Lookup.PACKAGE)!=0 && samePackage;
+        try {
+            if(!mode || !(boolean)verifyAccess.invoke(owner,owner,mods,lookup.lookupClass(),lookup.previousLookupClass(),modes))
+                throw new IllegalAccessException("Member is not accessible to "+lookup+": "+member);
+        }catch(IllegalAccessException failure){throw failure;}
+        catch(Throwable failure){throw new IllegalStateException(failure);}
+    }
+
+    @SuppressWarnings("deprecation")
+    public static MethodHandle unreflect(MethodHandles.Lookup lookup,Method method,Class<?> specialCaller) throws IllegalAccessException {
+        Entry entry=entry(method);if(entry==null)return null;
+        boolean special=specialCaller!=null;
+        if(special) {
+            try{specialCallerCheck.invoke(lookup,specialCaller,method.getDeclaringClass());}
+            catch(IllegalAccessException failure){throw failure;}
+            catch(Throwable failure){throw new IllegalStateException(failure);}
+            if(Modifier.isStatic(method.getModifiers()) || !method.getDeclaringClass().isAssignableFrom(specialCaller))throw new IllegalAccessException("Invalid invokespecial receiver");
         }
+        MethodHandles.Lookup checked=special?lookup.in(specialCaller):lookup;
+        checkAccess(checked,method,!special && method.isAccessible(),false,false);
+        MethodHandle result=entry.target;
+        if(!special && !Modifier.isStatic(method.getModifiers()) && !Modifier.isPrivate(method.getModifiers())) {
+            try {
+                result=MethodHandles.lookup().findStatic(MethodForge.class,"invokeVirtual",
+                        MethodType.methodType(Object.class,Method.class,Object.class,Object[].class)).bindTo(method)
+                        .asCollector(Object[].class,method.getParameterCount()).asType(entry.target.type());
+            }catch(NoSuchMethodException failure){throw new IllegalStateException(failure);}
+        }
+        if(special)result=result.asType(result.type().changeParameterType(0,specialCaller));
+        else if(!method.isAccessible() && Modifier.isProtected(method.getModifiers()) && !Modifier.isStatic(method.getModifiers())
+                && !samePackage(method.getDeclaringClass(),lookup.lookupClass()))
+            result=result.asType(result.type().changeParameterType(0,lookup.lookupClass()));
+        return method.isVarArgs()?result.asVarargsCollector(method.getParameterTypes()[method.getParameterCount()-1]):result;
+    }
+
+    public static MethodHandle unreflectSpecial(MethodHandles.Lookup lookup,Method method,Class<?> caller) throws IllegalAccessException {
+        return unreflect(lookup,method,java.util.Objects.requireNonNull(caller));
+    }
+
+    private static Object invokeVirtual(Method method,Object receiver,Object[] values) throws Throwable {
+        java.util.Objects.requireNonNull(receiver);
+        Class<?> owner=method.getDeclaringClass();
+        if(!owner.isInstance(receiver))throw new ClassCastException("Wrong method receiver");
+        for(Class<?> type=receiver.getClass();!Modifier.isFinal(method.getModifiers()) && type!=null && type!=owner;type=type.getSuperclass()) {
+            int visibility=method.getModifiers() & (Modifier.PUBLIC|Modifier.PROTECTED|Modifier.PRIVATE);
+            if(visibility==0 && !samePackage(owner,type))continue;
+            Method override=null;
+            for(Method candidate:type.getDeclaredMethods())if(candidate.getName().equals(method.getName())
+                    && java.util.Arrays.equals(candidate.getParameterTypes(),method.getParameterTypes())
+                    && !Modifier.isStatic(candidate.getModifiers()) && !Modifier.isPrivate(candidate.getModifiers())){override=candidate;break;}
+            if(override!=null) {
+                Entry next=entry(override);
+                if(next!=null){var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);return next.target.invokeWithArguments(args);}
+                override.setAccessible(true);
+                try{return override.invoke(receiver,values);}catch(InvocationTargetException failure){throw failure.getCause();}
+            }
+        }
+        Entry entry=entry(method);var args=new ArrayList<Object>();args.add(receiver);java.util.Collections.addAll(args,values);
+        return entry.target.invokeWithArguments(args);
+    }
+
+    /** Annotation instances are parsed against the metadata carrier's constant pool, never the owner's. */
+    public static void annotations(Method method,java.lang.annotation.Annotation[] values) {
+        var map=new java.util.LinkedHashMap<Class<? extends java.lang.annotation.Annotation>,java.lang.annotation.Annotation>();
+        for(var value:values)map.put(value.annotationType(),value);
+        declaredAnnotations.setVolatile(method,java.util.Map.copyOf(map));
+    }
+
+    static boolean samePackage(Class<?> left,Class<?> right) {
+        return left.getModule()==right.getModule() && left.getPackageName().equals(right.getPackageName());
     }
 }

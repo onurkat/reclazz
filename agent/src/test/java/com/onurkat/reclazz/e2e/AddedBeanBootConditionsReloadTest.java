@@ -97,7 +97,25 @@ class AddedBeanBootConditionsReloadTest {
             import org.springframework.context.annotation.AnnotationConfigApplicationContext;
             import org.springframework.core.env.MapPropertySource;
             public class App {
+
+                // A reflected companion Method is visible now. Native lookup still
+                // proves whether the VM really declares the callback/factory slot.
+                static boolean physicallyDeclared(Class<?> owner,String name) {
+                    try {
+                        var lookup=java.lang.invoke.MethodHandles.privateLookupIn(owner,java.lang.invoke.MethodHandles.lookup());
+                        for(var method:owner.getDeclaredMethods()) if(method.getName().equals(name)) {
+                            var signature=java.lang.invoke.MethodType.methodType(method.getReturnType(),method.getParameterTypes());
+                            try {
+                                if(java.lang.reflect.Modifier.isStatic(method.getModifiers()))lookup.findStatic(owner,name,signature);
+                                else lookup.findVirtual(owner,name,signature);
+                                return true;
+                            } catch(NoSuchMethodException absent) { }
+                        }
+                        return false;
+                    } catch(IllegalAccessException denied) {throw new AssertionError("native method probe was denied",denied);}
+                }
                 public static void main(String[] args) throws Exception {
+                    if(!physicallyDeclared(App.class,"main"))throw new AssertionError("native method probe missed a physical control");
                     try (var c = new AnnotationConfigApplicationContext()) {
                         c.getEnvironment().getPropertySources().addFirst(new MapPropertySource("fixture", Map.of("feature.enabled", "true")));
                         c.getEnvironment().setActiveProfiles("enabled");
@@ -116,7 +134,7 @@ class AddedBeanBootConditionsReloadTest {
                             if (!c.getBean("marker").equals("marker")) throw new IllegalStateException("external bean changed");
                             System.out.println("R" + stage + "=present=" + present + " alias=" + alias
                                 + " made=" + Product.made + " closed=" + Product.closed + " version=" + (product == null ? -1 : product.version)
-                                + " originalMethod=" + Arrays.stream(Config.class.getDeclaredMethods()).anyMatch(m -> m.getName().equals("client"))
+                                + " originalMethod=" + physicallyDeclared(Config.class,"client")
                                 + " control=" + (control == c.getBean("control")));
                         }
                         while (!Files.exists(dir.resolve("close"))) Thread.sleep(10);

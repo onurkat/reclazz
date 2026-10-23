@@ -303,7 +303,7 @@ public final class EnumSurgery {
         for (Class<?> candidate : loadedClasses) {
             Field[] fields;
             try {
-                fields = candidate.getDeclaredFields();
+                fields = ReflectionBridge.physicalDeclaredFields(candidate);
             } catch (Throwable t) {
                 continue;                       // a class this JVM will not describe
             }
@@ -346,7 +346,7 @@ public final class EnumSurgery {
         }
         Field found = null;
         try {
-            for (Field field : enumClass.getDeclaredFields()) {
+            for (Field field : ReflectionBridge.physicalDeclaredFields(enumClass)) {
                 if (!java.lang.reflect.Modifier.isStatic(field.getModifiers())) continue;
                 if (!field.getType().isArray()) continue;
                 if (!enumClass.equals(field.getType().getComponentType())) continue;
@@ -361,7 +361,11 @@ public final class EnumSurgery {
 
     private static Field declaredField(Class<?> owner, String name) {
         try {
-            return owner.getDeclaredField(name);
+            // Only physical roots have VM offsets; logical added constants live in FieldStore.
+            for (Field field : ReflectionBridge.physicalDeclaredFields(owner)) {
+                if (field.getName().equals(name)) return field;
+            }
+            return null;
         } catch (Throwable t) {
             return null;
         }

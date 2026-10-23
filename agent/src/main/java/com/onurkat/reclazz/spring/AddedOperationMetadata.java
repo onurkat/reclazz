@@ -48,7 +48,7 @@ final class AddedOperationMetadata {
                 transactions.has(m.visibleAnnotations) || SpringSecurityAdvice.hasSecurity(m.visibleAnnotations, owner.getClassLoader()) || has(m.visibleAnnotations, Set.of(ASYNC)) || caches.has(m.visibleAnnotations));
         if (!operations && !previouslyActive) return new Plan(List.of(), false);
         Set<String> reflected = new HashSet<>();
-        for (Method method : owner.getDeclaredMethods()) reflected.add(method.getName() + Type.getMethodDescriptor(method));
+        for (Method method : com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalDeclaredMethods(owner)) reflected.add(method.getName() + Type.getMethodDescriptor(method));
         List<MethodNode> added = source.methods.stream().filter(m -> !m.name.startsWith("<")
                 && !reflected.contains(m.name + m.desc) && (m.access & Opcodes.ACC_PUBLIC) != 0
                 && (m.access & (Opcodes.ACC_STATIC | Opcodes.ACC_ABSTRACT | Opcodes.ACC_NATIVE | Opcodes.ACC_SYNTHETIC | Opcodes.ACC_BRIDGE)) == 0)

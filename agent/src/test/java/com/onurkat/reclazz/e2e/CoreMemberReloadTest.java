@@ -71,14 +71,14 @@ class CoreMemberReloadTest {
             app.rewriteAll(Map.of("Holder", holder(2, true, true), "Caller",
                     "package app; public class Caller { public static String call(Holder h) { return h.extra() + \":\" + h.readAdded(); } }"));
             awaitReloads(app, before + 2);
-            probe(app, 1, "v2:extra2:7:gone2:23:gone2:23:visible=true,true:addedVisible=false:false", id);
+            probe(app, 1, "v2:extra2:7:gone2:23:gone2:23:visible=true,true:addedVisible=true:true", id);
 
             reload(app, holder(3, false, true));
-            probe(app, 2, "v3:extra3:7:gone2:23:gone2:23:visible=false,false:addedVisible=false:false", id);
+            probe(app, 2, "v3:extra3:7:gone2:23:gone2:23:visible=false,false:addedVisible=true:true", id);
             reload(app, holder(4, true, true));
-            probe(app, 3, "v4:extra4:7:gone4:23:gone4:23:visible=true,true:addedVisible=false:false", id);
+            probe(app, 3, "v4:extra4:7:gone4:23:gone4:23:visible=true,true:addedVisible=true:true", id);
             reload(app, holder(5, false, true));
-            probe(app, 4, "v5:extra5:7:gone4:23:gone4:23:visible=false,false:addedVisible=false:false", id);
+            probe(app, 4, "v5:extra5:7:gone4:23:gone4:23:visible=false,false:addedVisible=true:true", id);
             assertEquals(1, app.output().stream().filter(s -> s.startsWith("READY=")).count());
         }
     }

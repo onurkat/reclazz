@@ -40,7 +40,7 @@ final class JacksonAddedGetters {
         ClassNode source = new ClassNode();
         new ClassReader(bytes).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         Set<String> reflected = new HashSet<>();
-        for (Method method : owner.getDeclaredMethods())
+        for (Method method : com.onurkat.reclazz.bootstrap.ReflectionBridge.physicalDeclaredMethods(owner))
             reflected.add(method.getName() + Type.getMethodDescriptor(method));
         // Diff metadata may already include a companion getter on the second
         // save; the loaded JVM class still does not. Compare against that class.
@@ -132,7 +132,7 @@ final class JacksonAddedGetters {
     }
 
     /** Copy the type-variable declarations, but not the original superclass/interface signature. */
-    private static String typeParameters(String signature) {
+    static String typeParameters(String signature) {
         if (signature == null || !signature.startsWith("<")) return null;
         int depth = 0;
         for (int i = 0; i < signature.length(); i++) {
