@@ -5,6 +5,9 @@
 package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.config.AgentConfig;
+import com.onurkat.reclazz.ext.NoopStructuralReloadHook;
+import com.onurkat.reclazz.ext.StructuralReloadHook;
+import com.onurkat.reclazz.platform.BackofficeSocketEventDetector;
 import com.onurkat.reclazz.agent.ClassReloader;
 import com.onurkat.reclazz.bootstrap.DispatchTable;
 import com.onurkat.reclazz.bootstrap.FieldStore;
@@ -52,6 +55,7 @@ public class StructuralReloader {
     private final AgentConfig config;
     private final boolean isHybris;
     private final PlatformContext platformContext;
+    private final StructuralReloadHook structuralReloadHook;
 
     // Hybris-specific reloaders, lazily initialized only on Hybris platform
     private Object hibernateInvalidator; // HibernateCacheInvalidator, loaded via reflection to avoid import
@@ -65,6 +69,13 @@ public class StructuralReloader {
 
     public StructuralReloader(Instrumentation instrumentation, TransformContext context,
                               AgentConfig config, PlatformContext platformContext) {
+        this(instrumentation, context, config, platformContext, new NoopStructuralReloadHook());
+    }
+
+    public StructuralReloader(Instrumentation instrumentation, TransformContext context,
+                              AgentConfig config, PlatformContext platformContext,
+                              StructuralReloadHook structuralReloadHook) {
+        this.structuralReloadHook = Objects.requireNonNull(structuralReloadHook);
         this.instrumentation = instrumentation;
         this.context = context;
         this.config = config;
@@ -1523,9 +1534,9 @@ public class StructuralReloader {
 
             // Existing action bodies reload normally. Only new SocketEvent
             // registrations need a separate restart finding, read from the save.
-            if (isHybris && isStructural && com.onurkat.reclazz.hybris.backoffice.BackofficeWidgetReloader
+            if (isHybris && isStructural && BackofficeSocketEventDetector
                     .hasAddedSocketEvent(newBytecode, diff.getAddedMethods())) {
-                com.onurkat.reclazz.hybris.backoffice.BackofficeWidgetReloader.reloadWidget(targetClass);
+                structuralReloadHook.afterReload(targetClass);
             }
 
             ClassReloader.ReloadResult result = ClassReloader.ReloadResult.structuralSuccess(

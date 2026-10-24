@@ -5,6 +5,9 @@
 package com.onurkat.reclazz.watcher;
 
 import com.onurkat.reclazz.config.AgentConfig;
+import com.onurkat.reclazz.ext.Capability;
+import com.onurkat.reclazz.ext.PlatformChangeHandler;
+import com.onurkat.reclazz.ext.AdviceOnlyChangeHandler;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
@@ -239,6 +242,18 @@ public class FileWatcher {
 
     public void onPropertyFileFound(Consumer<Path> baseline) {
         this.propertyFileBaseline = baseline;
+    }
+
+    private volatile PlatformChangeHandler platformChangeHandler = new AdviceOnlyChangeHandler();
+
+    public void onPlatformChange(PlatformChangeHandler handler) {
+        this.platformChangeHandler = Objects.requireNonNull(handler);
+    }
+
+    /** Called by the queued reload dispatch; no automation runs on the polling thread. */
+    public PlatformChangeHandler.Outcome dispatchPlatformChange(Capability capability, ChangeEvent event) {
+        return platformChangeHandler.handle(new PlatformChangeHandler.Change(capability, event.getPath(),
+                event.getType().name(), event.getModuleName(), event.getSourceRoot()));
     }
 
     public void onFileChanges(Consumer<List<ChangeEvent>> handler) {

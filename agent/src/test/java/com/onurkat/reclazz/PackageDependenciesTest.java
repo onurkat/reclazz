@@ -45,17 +45,19 @@ class PackageDependenciesTest {
     private static final Pattern PROJECT_PACKAGE = Pattern.compile("com/onurkat/reclazz/([a-z]+)/");
 
     /** Package -> the project packages it may reference. Absent means unconstrained. */
-    private static final Map<String, Set<String>> ALLOWED = Map.of(
-            "ui", Set.of(),
-            "config", Set.of("ui"),
-            "util", Set.of("ui", "config"),
-            "spring", Set.of("ui", "util", "config", "platform", "transform", "bootstrap", "reload"),
-            "hybris", Set.of("ui", "util", "config", "platform", "watcher", "bootstrap"),
-            "compiler", Set.of("ui", "util", "config", "platform", "hybris"),
+    private static final Map<String, Set<String>> ALLOWED = Map.ofEntries(
+            Map.entry("ui", Set.of()),
+            Map.entry("config", Set.of("ui")),
+            Map.entry("util", Set.of("ui", "config")),
+            Map.entry("spring", Set.of("ui", "util", "config", "platform", "transform", "bootstrap", "reload")),
+            Map.entry("hybris", Set.of("ui", "util", "config", "platform", "watcher", "bootstrap", "ext")),
+            Map.entry("compiler", Set.of("ui", "util", "config", "platform", "hybris")),
             // The composition root assembles these; they do not know it.
-            "platform", Set.of("ui", "util", "config", "compiler", "hybris"),
-            "transform", Set.of("ui", "util", "config", "bootstrap", "platform"),
-            "watcher", Set.of("ui", "util", "config", "platform", "transform", "hybris"));
+            Map.entry("platform", Set.of("ui", "util", "config", "compiler", "hybris")),
+            Map.entry("transform", Set.of("ui", "util", "config", "bootstrap", "platform")),
+            Map.entry("watcher", Set.of("ui", "util", "config", "platform", "transform", "hybris", "ext")),
+            Map.entry("ext", Set.of("ui", "util", "config")),
+            Map.entry("reload", Set.of("agent", "bootstrap", "config", "ext", "platform", "spring", "transform", "ui", "util", "watcher")));
 
     @Test
     void theLowerPackagesDoNotReachUp() throws IOException {
@@ -72,6 +74,28 @@ class PackageDependenciesTest {
         }
         assertEquals(List.of(), violations,
                 "packages reaching where they should not; the graph is\n" + render(graph));
+    }
+
+    @Test
+    void reloadAndWatcherDoNotNamePlatformAutomationClasses() throws IOException {
+        List<String> violations = new ArrayList<>();
+        for (String pkg : List.of("reload", "watcher")) {
+            try (Stream<Path> files = Files.walk(classesDir().resolve(pkg))) {
+                for (Path file : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".class"))::iterator) {
+                    for (String name : referencedNames(Files.readAllBytes(file))) {
+                        if (name.startsWith("com/onurkat/reclazz/hybris/backoffice/")
+                                || name.startsWith("com/onurkat/reclazz/hybris/codegen/")
+                                || name.startsWith("com/onurkat/reclazz/hybris/interceptor/")
+                                || name.startsWith("com/onurkat/reclazz/hybris/impex/")
+                                || name.equals("com/onurkat/reclazz/hybris/HybrisLocalizationReloader")
+                                || name.equals("com/onurkat/reclazz/hybris/HacRunningSystemUpdater")) {
+                            violations.add(file.getFileName() + " -> " + name);
+                        }
+                    }
+                }
+            }
+        }
+        assertEquals(List.of(), violations);
     }
 
     /** The one that drove most of the cycles: nothing but the ledger's own package and its users' reporting. */
