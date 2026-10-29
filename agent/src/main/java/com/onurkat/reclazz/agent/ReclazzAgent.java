@@ -18,6 +18,7 @@ import com.onurkat.reclazz.platform.HybrisPlatformContext;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.platform.PlatformDetector;
 import com.onurkat.reclazz.platform.SapIndexingGuidance;
+import com.onurkat.reclazz.platform.SapConfigFiles;
 import com.onurkat.reclazz.platform.SpringContextInterceptTransformer;
 import com.onurkat.reclazz.reload.StructuralReloader;
 import com.onurkat.reclazz.spring.SpringReloadOrchestrator;
@@ -51,7 +52,7 @@ import com.onurkat.reclazz.transform.CacheComputationTransformer;
 import com.onurkat.reclazz.bootstrap.CacheDependencyLedger;
 import com.onurkat.reclazz.hybris.HybrisConfigReloader;
 import com.onurkat.reclazz.hybris.HybrisLocalizationReloader;
-import com.onurkat.reclazz.hybris.PropertyFileSnapshots;
+import com.onurkat.reclazz.platform.PropertyFileSnapshots;
 import com.onurkat.reclazz.hybris.backoffice.BackofficeConfigReloader;
 import com.onurkat.reclazz.hybris.codegen.CodegenReloader;
 import com.onurkat.reclazz.platform.TomcatContextScanner;
@@ -914,7 +915,7 @@ public class ReclazzAgent {
                 case PROPERTIES -> {
                     if (platformContext instanceof HybrisPlatformContext) {
                         // Classification is free even when no automation module is registered.
-                        if (HybrisConfigReloader.isPlatformConfiguration(event.getPath()))
+                        if (SapConfigFiles.isPlatformConfiguration(event.getPath()))
                             platformChanges.apply(Capability.CONFIG_APPLY, event);
                         else StatusReporter.info(fileName + " is not platform configuration, so nothing was applied.");
                     } else handlePropertiesChange(event);
@@ -1445,7 +1446,7 @@ public class ReclazzAgent {
         // difference matters: applying one changes what the whole server reads,
         // and it takes no edit at all to arrive, a checked-out branch will do.
         if (platformContext instanceof HybrisPlatformContext
-                && !HybrisConfigReloader
+                && !SapConfigFiles
                         .isPlatformConfiguration(event.getPath())) {
             StatusReporter.info(fileName + " is not platform configuration, so nothing was applied.");
             return;

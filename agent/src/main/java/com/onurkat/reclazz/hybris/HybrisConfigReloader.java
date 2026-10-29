@@ -4,7 +4,11 @@
  */
 package com.onurkat.reclazz.hybris;
 
+import com.onurkat.reclazz.platform.PlatformTenant;
+import com.onurkat.reclazz.platform.PropertyFileSnapshots;
+
 import com.onurkat.reclazz.ui.StatusReporter;
+import com.onurkat.reclazz.platform.SapConfigFiles;
 
 import java.lang.reflect.Method;
 import java.nio.file.Path;
@@ -57,17 +61,7 @@ public class HybrisConfigReloader {
      * a {@code props} directory.
      */
     public static boolean isPlatformConfiguration(Path file) {
-        if (file == null || file.getFileName() == null) return false;
-
-        String name = file.getFileName().toString();
-        if (name.equals("local.properties") || name.equals("project.properties")) {
-            return true;
-        }
-        if (!name.endsWith(".properties")) return false;
-
-        Path parent = file.getParent();
-        return parent != null && parent.getFileName() != null
-                && parent.getFileName().toString().equals("props");
+        return SapConfigFiles.isPlatformConfiguration(file);
     }
 
     private final ClassLoader platformClassLoader;

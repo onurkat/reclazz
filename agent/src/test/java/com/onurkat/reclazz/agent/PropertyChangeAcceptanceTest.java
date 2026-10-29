@@ -6,7 +6,7 @@ package com.onurkat.reclazz.agent;
 
 import com.onurkat.reclazz.bootstrap.RequestGate;
 import com.onurkat.reclazz.config.AgentConfig;
-import com.onurkat.reclazz.hybris.PropertyFileSnapshots;
+import com.onurkat.reclazz.platform.PropertyFileSnapshots;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.spring.SpringPropertyRebinder;
 import com.onurkat.reclazz.spring.PropertyChangeOutcome;

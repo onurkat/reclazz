@@ -1,5 +1,8 @@
 package com.onurkat.reclazz.hybris.codegen;
 
+import com.onurkat.reclazz.platform.HybrisContext;
+import com.onurkat.reclazz.platform.ExtensionInfo;
+
 import java.nio.file.*;
 import java.lang.reflect.Field;
 import java.util.List;

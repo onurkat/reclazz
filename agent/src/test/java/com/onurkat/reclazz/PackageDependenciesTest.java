@@ -51,11 +51,11 @@ class PackageDependenciesTest {
             Map.entry("util", Set.of("ui", "config")),
             Map.entry("spring", Set.of("ui", "util", "config", "platform", "transform", "bootstrap", "reload")),
             Map.entry("hybris", Set.of("ui", "util", "config", "platform", "watcher", "bootstrap", "ext")),
-            Map.entry("compiler", Set.of("ui", "util", "config", "platform", "hybris")),
+            Map.entry("compiler", Set.of("ui", "util", "config", "platform")),
             // The composition root assembles these; they do not know it.
-            Map.entry("platform", Set.of("ui", "util", "config", "compiler", "hybris")),
+            Map.entry("platform", Set.of("ui", "util", "config", "compiler")),
             Map.entry("transform", Set.of("ui", "util", "config", "bootstrap", "platform")),
-            Map.entry("watcher", Set.of("ui", "util", "config", "platform", "transform", "hybris", "ext")),
+            Map.entry("watcher", Set.of("ui", "util", "config", "platform", "transform", "ext")),
             Map.entry("ext", Set.of("ui", "util", "config")),
             Map.entry("reload", Set.of("agent", "bootstrap", "config", "ext", "platform", "spring", "transform", "ui", "util", "watcher")));
 
@@ -96,6 +96,19 @@ class PackageDependenciesTest {
             }
         }
         assertEquals(List.of(), violations);
+    }
+
+    @Test
+    void onlyCompositionRootReferencesPremiumAutomation() throws IOException {
+        Map<String, Set<String>> graph = dependencyGraph();
+        assertFalse(graph.isEmpty(), "no compiled classes found; run the build first");
+        List<String> violations = new ArrayList<>();
+        for (Map.Entry<String, Set<String>> entry : graph.entrySet()) {
+            if (!Set.of("agent", "hybris").contains(entry.getKey()) && entry.getValue().contains("hybris")) {
+                violations.add(entry.getKey() + " -> hybris");
+            }
+        }
+        assertEquals(List.of(), violations, "premium references outside composition root: " + render(graph));
     }
 
     /** The one that drove most of the cycles: nothing but the ledger's own package and its users' reporting. */

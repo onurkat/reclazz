@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.hybris;
 
+import com.onurkat.reclazz.platform.PropertyFileSnapshots;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.*;

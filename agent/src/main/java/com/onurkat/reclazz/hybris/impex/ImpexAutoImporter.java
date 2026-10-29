@@ -4,13 +4,13 @@
  */
 package com.onurkat.reclazz.hybris.impex;
 
-import com.onurkat.reclazz.hybris.HybrisContext;
+import com.onurkat.reclazz.platform.HybrisContext;
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import com.onurkat.reclazz.hybris.PlatformTenant;
+import com.onurkat.reclazz.platform.PlatformTenant;
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
 import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.Plural;

@@ -4608,7 +4608,7 @@ The prepared-schema/new-entity path works on Spring5/Boot2 JPA.
 
 Explicit DAO invalidation evicts real cached entity data so a later load sees an external SQL update.
 
-**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/hybris/hibernate/HibernateCacheInvalidator.java:16` (SHA-256 `73f77d80663652a6712fef736e2620f5f3398dedcdd9b31035de26efe496014e`).
+**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java:16` (SHA-256 `a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b`).
 
 **Default/opt-in:** Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.
 
@@ -4632,7 +4632,7 @@ Explicit DAO invalidation evicts real cached entity data so a later load sees an
 
 Explicit DAO invalidation evicts query cache so a later cacheable query sees an external SQL update.
 
-**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/hybris/hibernate/HibernateCacheInvalidator.java:16` (SHA-256 `73f77d80663652a6712fef736e2620f5f3398dedcdd9b31035de26efe496014e`).
+**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java:16` (SHA-256 `a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b`).
 
 **Default/opt-in:** Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.
 
@@ -4656,7 +4656,7 @@ Explicit DAO invalidation evicts query cache so a later cacheable query sees an 
 
 Aliases and repeated contexts evict a single native Hibernate factory once.
 
-**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/hybris/hibernate/HibernateCacheInvalidator.java:16` (SHA-256 `73f77d80663652a6712fef736e2620f5f3398dedcdd9b31035de26efe496014e`).
+**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java:16` (SHA-256 `a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b`).
 
 **Default/opt-in:** Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.
 
@@ -4680,7 +4680,7 @@ Aliases and repeated contexts evict a single native Hibernate factory once.
 
 Disabled Hibernate L2 is not reported as an eviction.
 
-**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/hybris/hibernate/HibernateCacheInvalidator.java:16` (SHA-256 `73f77d80663652a6712fef736e2620f5f3398dedcdd9b31035de26efe496014e`).
+**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java:16` (SHA-256 `a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b`).
 
 **Default/opt-in:** Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.
 
@@ -4704,7 +4704,7 @@ Disabled Hibernate L2 is not reported as an eviction.
 
 A watched DAO class edit triggers real native L2/query eviction.
 
-**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/hybris/hibernate/HibernateCacheInvalidator.java:16` (SHA-256 `73f77d80663652a6712fef736e2620f5f3398dedcdd9b31035de26efe496014e`).
+**Shipped surfaces:** `agent/src/main/java/com/onurkat/reclazz/platform/HibernateCacheInvalidator.java:16` (SHA-256 `a8e7242c4429c923454365c8cfd8b7657bcac082d7b7cf0a2ab0971978414d6b`).
 
 **Default/opt-in:** Optional Hibernate ORM with L2/query caching as the fixture enables; direct invalidator invocation only. Startup-agent DAO watcher behavior remains unverified.
 

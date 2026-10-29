@@ -4,6 +4,9 @@
  */
 package com.onurkat.reclazz.hybris;
 
+import com.onurkat.reclazz.platform.ExtensionInfo;
+import com.onurkat.reclazz.platform.ExtensionScanner;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

@@ -2,7 +2,7 @@
  * Copyright 2026 Onur Kat
  * SPDX-License-Identifier: Apache-2.0
  */
-package com.onurkat.reclazz.hybris.hibernate;
+package com.onurkat.reclazz.platform;
 
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
 import com.onurkat.reclazz.ui.StatusReporter;

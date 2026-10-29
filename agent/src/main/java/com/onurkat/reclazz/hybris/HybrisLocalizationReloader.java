@@ -4,6 +4,8 @@
  */
 package com.onurkat.reclazz.hybris;
 
+import com.onurkat.reclazz.platform.PlatformTenant;
+
 import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.instrument.Instrumentation;

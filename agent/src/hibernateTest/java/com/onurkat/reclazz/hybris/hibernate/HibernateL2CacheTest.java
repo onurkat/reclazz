@@ -1,5 +1,7 @@
 package com.onurkat.reclazz.hybris.hibernate;
 
+import com.onurkat.reclazz.platform.HibernateCacheInvalidator;
+
 import jakarta.persistence.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.annotations.Cache;

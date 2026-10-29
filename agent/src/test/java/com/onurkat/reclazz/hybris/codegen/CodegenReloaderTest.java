@@ -4,8 +4,8 @@
  */
 package com.onurkat.reclazz.hybris.codegen;
 
-import com.onurkat.reclazz.hybris.ExtensionInfo;
-import com.onurkat.reclazz.hybris.HybrisContext;
+import com.onurkat.reclazz.platform.ExtensionInfo;
+import com.onurkat.reclazz.platform.HybrisContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;

@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.compiler;
 
-import com.onurkat.reclazz.hybris.HybrisContext;
+import com.onurkat.reclazz.platform.HybrisContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import java.nio.file.*;

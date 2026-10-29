@@ -22,7 +22,7 @@ import java.util.zip.CRC32;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 import com.onurkat.reclazz.ui.RestartLedger;
-import com.onurkat.reclazz.hybris.HybrisConfigReloader;
+import com.onurkat.reclazz.platform.SapConfigFiles;
 import com.onurkat.reclazz.platform.HybrisPlatformContext;
 import com.onurkat.reclazz.platform.StartupSignal;
 import com.onurkat.reclazz.transform.TransformedClassCache;
@@ -1210,7 +1210,7 @@ public class FileWatcher {
         // rest of an application.properties, so there it is every file.
         java.util.function.Predicate<Path> worthKeeping =
                 (platformContext instanceof HybrisPlatformContext)
-                        ? HybrisConfigReloader::isPlatformConfiguration
+                        ? SapConfigFiles::isPlatformConfiguration
                         : f -> f.getFileName().toString().endsWith(".properties");
 
         try (java.util.stream.Stream<Path> files = Files.walk(dir, 4)) {

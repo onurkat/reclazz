@@ -4,7 +4,7 @@
  */
 package com.onurkat.reclazz.hybris.interceptor;
 
-import com.onurkat.reclazz.hybris.PlatformTenant;
+import com.onurkat.reclazz.platform.PlatformTenant;
 import com.onurkat.reclazz.ui.StatusReporter;
 import com.onurkat.reclazz.ui.RestartLedger;
 import java.lang.reflect.Method;

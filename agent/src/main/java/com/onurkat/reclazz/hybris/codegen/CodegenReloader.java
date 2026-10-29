@@ -4,8 +4,8 @@
  */
 package com.onurkat.reclazz.hybris.codegen;
 
-import com.onurkat.reclazz.hybris.ExtensionInfo;
-import com.onurkat.reclazz.hybris.HybrisContext;
+import com.onurkat.reclazz.platform.ExtensionInfo;
+import com.onurkat.reclazz.platform.HybrisContext;
 import com.onurkat.reclazz.hybris.RunningSystemUpdater;
 import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.StatusReporter;

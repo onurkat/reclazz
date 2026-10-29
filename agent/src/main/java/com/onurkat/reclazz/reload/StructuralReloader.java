@@ -50,6 +50,9 @@ import com.onurkat.reclazz.util.BytecodeVersion;
  */
 public class StructuralReloader {
 
+    private static final String HIBERNATE_CACHE_INVALIDATOR_CLASS =
+            "com.onurkat.reclazz.platform.HibernateCacheInvalidator";
+
     private final Instrumentation instrumentation;
     private final TransformContext context;
     private final AgentConfig config;
@@ -84,8 +87,7 @@ public class StructuralReloader {
                 platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS;
         if (isHybris) {
             try {
-                this.hibernateInvalidator = Class.forName(
-                        "com.onurkat.reclazz.hybris.hibernate.HibernateCacheInvalidator")
+                this.hibernateInvalidator = Class.forName(HIBERNATE_CACHE_INVALIDATOR_CLASS)
                         .getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 // Swallowing this silently used to disable Hibernate L2
