@@ -29,14 +29,12 @@ class CaseConversionsNameALocaleTest {
     @Test
     void everyCaseConversionInTheAgentNamesALocale() throws IOException {
         List<String> offenders = new ArrayList<>();
-        try (Stream<Path> files = Files.walk(AgentSources.root())) {
-            for (Path file : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".java"))::iterator) {
-                List<String> lines = Files.readAllLines(file);
-                for (int i = 0; i < lines.size(); i++) {
-                    String line = lines.get(i);
-                    if (line.contains(".toLowerCase()") || line.contains(".toUpperCase()")) {
-                        offenders.add(AgentSources.root().relativize(file) + ":" + (i + 1) + ": " + line.strip());
-                    }
+        for (Path file : AgentSources.javaFiles()) {
+            List<String> lines = Files.readAllLines(file);
+            for (int i = 0; i < lines.size(); i++) {
+                String line = lines.get(i);
+                if (line.contains(".toLowerCase()") || line.contains(".toUpperCase()")) {
+                    offenders.add(AgentSources.root().relativize(file) + ":" + (i + 1) + ": " + line.strip());
                 }
             }
         }

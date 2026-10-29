@@ -12,8 +12,6 @@ import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.ui.RestartLedger;
 
 import com.onurkat.reclazz.compiler.IncrementalCompiler;
-import com.onurkat.reclazz.hybris.interceptor.InterceptorReloader;
-import com.onurkat.reclazz.hybris.impex.ImpexAutoImporter;
 import com.onurkat.reclazz.platform.HybrisPlatformContext;
 import com.onurkat.reclazz.platform.PlatformContext;
 import com.onurkat.reclazz.platform.PlatformDetector;
@@ -50,11 +48,7 @@ import com.onurkat.reclazz.bootstrap.UnsafeAccess;
 import com.onurkat.reclazz.transform.RequestBoundaryTransformer;
 import com.onurkat.reclazz.transform.CacheComputationTransformer;
 import com.onurkat.reclazz.bootstrap.CacheDependencyLedger;
-import com.onurkat.reclazz.hybris.HybrisConfigReloader;
-import com.onurkat.reclazz.hybris.HybrisLocalizationReloader;
 import com.onurkat.reclazz.platform.PropertyFileSnapshots;
-import com.onurkat.reclazz.hybris.backoffice.BackofficeConfigReloader;
-import com.onurkat.reclazz.hybris.codegen.CodegenReloader;
 import com.onurkat.reclazz.platform.TomcatContextScanner;
 import com.onurkat.reclazz.reload.ConstantChangeWarning;
 import com.onurkat.reclazz.reload.ConstantDependents;
@@ -794,83 +788,32 @@ public class ReclazzAgent {
         return tempJar;
     }
 
-    /** Explicit wiring only; the core registry publishes the module atomically. */
+    /** One fixed optional entry point, isolated by the registry's Throwable boundary. */
     private static void registerPremiumAutomation(PremiumModules modules, AgentConfig config, PlatformContext platform) {
         modules.register(() -> {
-            boolean sap = platform.getPlatformId() == PlatformContext.Platform.HYBRIS;
-            InterceptorReloader interceptors = sap ? new InterceptorReloader() : null;
-            ImpexAutoImporter importer = sap ? new ImpexAutoImporter(config.isImpexAllowRemove()) : null;
-            CodegenReloader codegen;
-            if (platform instanceof HybrisPlatformContext hybris) {
-                java.util.function.Supplier<ClassLoader> loader = () -> {
-                    Object app = platform.getApplicationContext();
-                    return app != null ? app.getClass().getClassLoader() : platform.getClass().getClassLoader();
-                };
-                var updater = new com.onurkat.reclazz.hybris.HacRunningSystemUpdater(loader);
-                codegen = new CodegenReloader(hybris.getHybrisContext(), config.isAutoUpdateRunningSystem(),
-                        () -> modules.request(Capability.RUNNING_SYSTEM_UPDATE).granted() && updater.updateSchema());
-            } else codegen = null;
-            java.util.Map<Capability, PlatformChangeHandler> handlers = new java.util.EnumMap<>(Capability.class);
-            // This dispatch also existed for non-SAP contexts; preserve it.
-            handlers.put(Capability.BACKOFFICE_RELOAD, change -> {
-                handleBackofficeConfigChange(changeEvent(change));
-                return PlatformChangeHandler.Outcome.HANDLED;
-            });
-            java.util.Set<Capability> capabilities = java.util.EnumSet.of(Capability.BACKOFFICE_RELOAD);
-            if (sap) {
-                capabilities.addAll(java.util.EnumSet.of(Capability.INTERCEPTOR_REFRESH, Capability.IMPEX_IMPORT,
-                        Capability.CONFIG_APPLY, Capability.LOCALIZATION_RELOAD));
-                handlers.put(Capability.IMPEX_IMPORT, change -> {
-                    handleImpexChange(changeEvent(change), importer);
-                    return PlatformChangeHandler.Outcome.HANDLED;
+            try {
+                var factory = (PremiumModuleFactory) Class.forName(
+                        "com.onurkat.reclazz.hybris.SapPremiumModuleFactory", true,
+                        ReclazzAgent.class.getClassLoader()).getDeclaredConstructor().newInstance();
+                return factory.create(new PremiumContext() {
+                    @Override public PlatformContext platform() { return platform; }
+                    @Override public AgentConfig config() { return config; }
+                    @Override public PropertyFileSnapshots propertySnapshots() { return propertySnapshots; }
+                    @Override public Instrumentation instrumentation() { return instrumentation; }
+                    @Override public int applyLoggerLevels(Map<String, String> content, java.util.Collection<String> keys) {
+                        return ReclazzAgent.applyLoggerLevels(content, keys);
+                    }
+                    @Override public boolean requestRunningSystemUpdate() {
+                        return modules.request(Capability.RUNNING_SYSTEM_UPDATE).granted();
+                    }
                 });
-                handlers.put(Capability.CONFIG_APPLY, change -> {
-                    handlePropertiesChange(changeEvent(change));
-                    return PlatformChangeHandler.Outcome.HANDLED;
-                });
-                handlers.put(Capability.LOCALIZATION_RELOAD, change -> {
-                    handleLocalizationChange(changeEvent(change));
-                    return PlatformChangeHandler.Outcome.HANDLED;
-                });
+            } catch (ClassNotFoundException absent) {
+                StatusReporter.info("Optional platform automation is absent; free reload remains active.");
+                return () -> java.util.Set.of();
+            } catch (ReflectiveOperationException failure) {
+                throw new IllegalStateException("Optional platform automation factory could not be created", failure);
             }
-            if (codegen != null) {
-                capabilities.add(Capability.CODEGEN);
-                capabilities.add(Capability.RUNNING_SYSTEM_UPDATE);
-                handlers.put(Capability.CODEGEN, change -> {
-                    handleCodegenXmlChange(changeEvent(change), codegen);
-                    return PlatformChangeHandler.Outcome.HANDLED;
-                });
-            }
-            return new PremiumModule() {
-                @Override public java.util.Set<Capability> capabilities() { return capabilities; }
-                @Override public java.util.Map<Capability, PlatformChangeHandler> changeHandlers() { return handlers; }
-                @Override public StructuralReloadHook structuralReloadHook() {
-                    return new com.onurkat.reclazz.hybris.backoffice.BackofficeWidgetReloader();
-                }
-                @Override public PreparedRefresh prepareInterceptor(String name, List<Object> contexts) {
-                    var refresh = interceptors == null ? null : interceptors.prepare(name, contexts);
-                    return refresh == null ? null : refresh::complete;
-                }
-            };
         });
-    }
-
-    private static ChangeEvent changeEvent(PlatformChangeHandler.Change change) {
-        return new ChangeEvent(change.path(), ChangeEvent.Type.valueOf(change.eventType()),
-                change.moduleName(), change.sourceRoot());
-    }
-
-    private static void handleBackofficeConfigChange(ChangeEvent event) {
-        StatusReporter.info("Backoffice config changed: "
-                + event.getPath().getFileName() + " [" + event.getModuleName() + "]");
-        int reset = BackofficeConfigReloader
-                .reload(event.getPath().getFileName().toString(),
-                        platformContext.getAllApplicationContexts());
-        if (reset == 0) {
-            StatusReporter.info("No running backoffice holds this configuration "
-                    + "(the backoffice web context is not up, or this is not a "
-                    + "backoffice server). Nothing to reset.");
-        }
     }
 
     private static void handleChange(ChangeEvent event,
@@ -910,7 +853,10 @@ public class ReclazzAgent {
                 case BACKOFFICE_CONFIG -> platformChanges.apply(Capability.BACKOFFICE_RELOAD, event);
                 case CODEGEN_XML -> {
                     if (platformContext instanceof HybrisPlatformContext) platformChanges.apply(Capability.CODEGEN, event);
-                    else handleCodegenXmlChange(event, null);
+                    else {
+                        StatusReporter.info("Codegen XML changed: " + fileName);
+                        StatusReporter.warn("Codegen reload requires a Hybris platform, not available here.");
+                    }
                 }
                 case PROPERTIES -> {
                     if (platformContext instanceof HybrisPlatformContext) {
@@ -1441,34 +1387,21 @@ public class ReclazzAgent {
     private static void handlePropertiesChange(ChangeEvent event) {
         String fileName = event.getPath().getFileName().toString();
 
-        // A .properties file in an extension is far more often a message bundle
-        // or a library's settings than the platform's configuration, and the
-        // difference matters: applying one changes what the whole server reads,
-        // and it takes no edit at all to arrive, a checked-out branch will do.
-        if (platformContext instanceof HybrisPlatformContext
-                && !SapConfigFiles
-                        .isPlatformConfiguration(event.getPath())) {
-            StatusReporter.info(fileName + " is not platform configuration, so nothing was applied.");
-            return;
-        }
-
         StatusReporter.info("Config file changed: " + fileName);
         var candidate = fileName.endsWith(".properties") ? propertySnapshots.pending(event.getPath()) : null;
-        if (!(platformContext instanceof HybrisPlatformContext)) {
-            var fileResult = springPropertyFiles.apply(event.getPath(), platformContext::getAllApplicationContexts,
-                    agentConfig != null && agentConfig.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
-            if (fileResult != null) {
-                if (fileResult.outcome().state() == com.onurkat.reclazz.spring.PropertyChangeOutcome.State.APPLIED) {
-                    applyLoggerLevels(fileResult.effective(), fileResult.changed());
-                    StatusReporter.success("Applied " + Plural.of(fileResult.changed().size(), "property change")
-                            + " from " + fileName + ": " + fileResult.changed());
-                    if (fileResult.changed().stream().anyMatch(key -> isLoggingKey(key) && !fileResult.effective().containsKey(key))) {
-                        StatusReporter.warn("A removed logging level has no lower configured value; restart to reset that logger.");
-                        RestartLedger.note(fileName, "a removed logging level has no lower configured value; the logger needs resetting");
-                    }
+        var fileResult = springPropertyFiles.apply(event.getPath(), platformContext::getAllApplicationContexts,
+                agentConfig != null && agentConfig.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
+        if (fileResult != null) {
+            if (fileResult.outcome().state() == com.onurkat.reclazz.spring.PropertyChangeOutcome.State.APPLIED) {
+                applyLoggerLevels(fileResult.effective(), fileResult.changed());
+                StatusReporter.success("Applied " + Plural.of(fileResult.changed().size(), "property change")
+                        + " from " + fileName + ": " + fileResult.changed());
+                if (fileResult.changed().stream().anyMatch(key -> isLoggingKey(key) && !fileResult.effective().containsKey(key))) {
+                    StatusReporter.warn("A removed logging level has no lower configured value; restart to reset that logger.");
+                    RestartLedger.note(fileName, "a removed logging level has no lower configured value; the logger needs resetting");
                 }
-                return;
             }
+            return;
         }
         if (candidate == null) return;
         if (candidate.changed().isEmpty()) {
@@ -1477,53 +1410,7 @@ public class ReclazzAgent {
             return;
         }
 
-        // On SAP Commerce the platform keeps its properties in memory and only
-        // reads the files at startup, so an edit reaches nothing on its own.
-        // The keys that actually differ are applied the same way the HAC
-        // console applies them.
-        if (platformContext instanceof HybrisPlatformContext) {
-            // The platform's classloader, not the agent's: the agent is on the
-            // system classpath and cannot see de.hybris.platform.util.Config
-            // from there. The application context is loaded by the platform,
-            // so its loader is the one that can.
-            Object appContext = platformContext.getApplicationContext();
-            ClassLoader platformLoader = appContext != null
-                    ? appContext.getClass().getClassLoader()
-                    : platformContext.getClass().getClassLoader();
-            HybrisConfigReloader configReloader =
-                    new HybrisConfigReloader(platformLoader, propertySnapshots);
-            var propertyResult = configReloader.applyResult(candidate);
-            java.util.List<String> applied = propertyResult.applied();
-            applyLoggerLevels(candidate.content(), applied);
-
-            if (applied.isEmpty() && propertyResult.reachable()) {
-                if (!propertyResult.pending().isEmpty()) return;
-                // The file was compared against the running configuration and
-                // held nothing new: a comment, a reformat, or a save with no
-                // edit. Warning about a restart here would be noise.
-                StatusReporter.info("No property values changed.");
-                return;
-            }
-            if (!applied.isEmpty()) {
-                StatusReporter.info("Applied "
-                        + Plural.of(applied.size(), "property change") + ": "
-                        + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));
-                StatusReporter.info("Values read per request take effect now; "
-                        + "anything consumed once at startup still needs a restart.");
-                return;
-            }
-        }
-
         java.util.Map<String, String> changed = candidate.changed();
-        if (platformContext instanceof HybrisPlatformContext) {
-            // Preserve the logger-only fallback when the platform Config API is absent.
-            int levels = applyLoggerLevels(candidate.content(), changed.keySet());
-            propertySnapshots.acceptKeys(candidate, changed.keySet().stream()
-                    .filter(ReclazzAgent::isLoggingKey).toList());
-            if (levels == 0 || !changed.keySet().stream().allMatch(ReclazzAgent::isLoggingKey))
-                reportUnconsumedProperties(changed);
-            return;
-        }
         int[] levelsApplied = {0};
         var applied = new SpringPropertyRebinder(platformContext.getAllApplicationContexts())
                 .apply(changed,
@@ -1644,69 +1531,10 @@ public class ReclazzAgent {
 
     private static void handleLocalizationChange(ChangeEvent event) {
         String fileName = event.getPath().getFileName().toString();
-        if (!(platformContext instanceof HybrisPlatformContext)) {
-            // Spring caches a message bundle after the first lookup and ships
-            // the reset for it, so this is a cache to drop rather than a
-            // restart to ask for.
-            SpringMessageSourceReloader.report(fileName,
-                    new SpringMessageSourceReloader(platformContext)
-                            .reload());
-            return;
-        }
-
-        Object appContext = platformContext.getApplicationContext();
-        ClassLoader platformLoader = appContext != null
-                ? appContext.getClass().getClassLoader()
-                : platformContext.getClass().getClassLoader();
-        HybrisLocalizationReloader reloader =
-                new HybrisLocalizationReloader(
-                        platformLoader, instrumentation);
-
-        java.nio.file.Path parent = event.getPath().getParent();
-        boolean backofficeLabels = parent != null && parent.getFileName() != null
-                && parent.getFileName().toString().endsWith("-backoffice-labels");
-
-        if (backofficeLabels) {
-            if (reloader.reloadBackofficeLabels()) {
-                StatusReporter.success("Backoffice labels re-read. Reopen the view to see them.");
-            } else {
-                // Backoffice loads ZK lazily; before anyone opens it there is
-                // no cache to clear and nothing to report.
-                StatusReporter.warn("Backoffice is not running here, so its labels were left alone.");
-            }
-            return;
-        }
-
-        if (reloader.reloadTypeLocalizations()) {
-            StatusReporter.success("Type and enum names re-read from " + fileName + ".");
-        } else {
-            StatusReporter.warn("Could not reach the platform's localization cache; "
-                    + fileName + " needs a restart to take effect.");
-            RestartLedger.note(fileName, "localization text the platform's cache did not take");
-        }
+        SpringMessageSourceReloader.report(fileName,
+                new SpringMessageSourceReloader(platformContext).reload());
     }
 
-    private static void handleImpexChange(ChangeEvent event,
-                                          ImpexAutoImporter impexImporter) {
-        StatusReporter.info("ImpEx file changed: " + event.getPath().getFileName());
-        impexImporter.importFile(event.getPath(),
-                ((HybrisPlatformContext) platformContext).getHybrisContext());
-    }
-
-    /**
-     * Unified dispatch for both *-beans.xml and *-items.xml saves,
-     * the {@link CodegenReloader}
-     * picks the right kind from the file suffix and customises its
-     * post-run reporting accordingly.
-     */
-    private static void handleCodegenXmlChange(ChangeEvent event, CodegenReloader reloader) {
-        if (reloader == null) {
-            StatusReporter.info("Codegen XML changed: " + event.getPath().getFileName());
-            StatusReporter.warn("Codegen reload requires a Hybris platform, not available here.");
-            return;
-        }
-        reloader.handle(event);
-    }
 
 
     /**

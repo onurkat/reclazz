@@ -43,7 +43,9 @@ class NoOutboundNetworkTest {
         Path pluginSources = repo.resolve("src/main/kotlin");
         List<String> problems = new ArrayList<>();
 
-        for (Path root : List.of(agentSources, pluginSources)) {
+        List<Path> roots = new ArrayList<>(AgentSources.shippedRoots());
+        roots.add(pluginSources);
+        for (Path root : roots) {
             try (Stream<Path> files = Files.walk(root)) {
                 for (Path file : (Iterable<Path>) files.filter(p -> p.toString().matches(".*\\.(java|kt)"))::iterator) {
                     String text = Files.readString(file);

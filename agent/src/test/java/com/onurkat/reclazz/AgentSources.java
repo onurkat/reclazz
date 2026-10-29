@@ -64,8 +64,13 @@ public final class AgentSources {
 
     /** Every Java file under the root, with the floor already checked. */
     public static List<Path> javaFiles() {
-        try (Stream<Path> files = Files.walk(root())) {
-            List<Path> found = files.filter(p -> p.toString().endsWith(".java")).sorted().toList();
+        try {
+            List<Path> found = new java.util.ArrayList<>();
+            for (Path root : shippedRoots()) {
+                try (Stream<Path> files = Files.walk(root)) {
+                    found.addAll(files.filter(p -> p.toString().endsWith(".java")).sorted().toList());
+                }
+            }
             if (found.size() < AT_LEAST) {
                 throw new IllegalStateException("only " + found.size() + " source files under "
                         + root() + "; a guard that reads nothing passes for the wrong reason");
@@ -74,6 +79,13 @@ public final class AgentSources {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /** Both source sets ship in the canonical agent. Missing either is a broken guard. */
+    public static List<Path> shippedRoots() {
+        Path premium = root().getParent().getParent().resolve("premium/java");
+        if (!Files.isDirectory(premium)) throw new IllegalStateException("premium sources missing: " + premium);
+        return List.of(root(), premium);
     }
 
     /** One file's lines, since every one of these guards reads line by line. */

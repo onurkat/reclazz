@@ -136,8 +136,14 @@ class PropertyChangeAcceptanceTest {
             Object previousPlatform = swap("platformContext", platform);
             Object previousInstrumentation = swap("instrumentation", logger.instrumentation());
             try {
+                var modules = new com.onurkat.reclazz.ext.PremiumModules(new com.onurkat.reclazz.ext.AlwaysAdmit());
+                Method register = ReclazzAgent.class.getDeclaredMethod("registerPremiumAutomation",
+                        com.onurkat.reclazz.ext.PremiumModules.class, AgentConfig.class, PlatformContext.class);
+                register.setAccessible(true); register.invoke(null, modules, AgentConfig.parse(null), platform);
+                assertTrue(modules.has(com.onurkat.reclazz.ext.Capability.CONFIG_APPLY));
                 Files.writeString(file, "logging.level.app=DEBUG\n");
-                handle(file);
+                modules.handle(new com.onurkat.reclazz.ext.PlatformChangeHandler.Change(
+                        com.onurkat.reclazz.ext.Capability.CONFIG_APPLY, file, "MODIFIED", "app", "classes"));
                 assertEquals("DEBUG", logger.level());
                 assertTrue(snapshots().pending(file).changed().isEmpty());
             } finally {

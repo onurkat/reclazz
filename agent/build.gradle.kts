@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.io.ByteArrayOutputStream
 import org.gradle.kotlin.dsl.support.serviceOf
 
@@ -114,11 +115,23 @@ dependencies {
     testImplementation("org.thymeleaf:thymeleaf:3.1.3.RELEASE")
 }
 
+// Core compilation never sees premium output; the optional module sees core.
+val premium = sourceSets.create("premium") {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+configurations[premium.implementationConfigurationName].extendsFrom(configurations.implementation.get())
+configurations[premium.runtimeOnlyConfigurationName].extendsFrom(configurations.runtimeOnly.get())
+sourceSets.test {
+    compileClasspath += premium.output
+    runtimeClasspath += premium.output
+}
+
 // The broker's Jackson/SLF4J versions belong to JMS tests only. Extending the
 // dependency declarations resolves a separate graph; it does not change test.
 val jmsTests = sourceSets.create("jmsTest") {
-    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
-    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output
 }
 configurations[jmsTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[jmsTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
@@ -154,8 +167,8 @@ for (suite in listOf(jmsTest, jmsUnitTest, jmsE2eTest)) suite.configure {
 }
 
 val rabbitTests = sourceSets.create("rabbitTest") {
-    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
-    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output
 }
 configurations[rabbitTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[rabbitTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
@@ -206,8 +219,8 @@ val rabbitTest by tasks.registering(Test::class) {
 // support and gets its only executable proof here, on an isolated graph so
 // the ordinary test classpath keeps its versions. Owner-approved, test-only.
 val hibernateTests = sourceSets.create("hibernateTest") {
-    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output
-    runtimeClasspath += sourceSets.main.get().output + sourceSets.test.get().output
+    compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output
+    runtimeClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output
 }
 configurations[hibernateTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[hibernateTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
@@ -231,10 +244,10 @@ val hibernateTest by tasks.registering(Test::class) {
 // the Spring 5 test classpath, so it gets its own isolated graph. Spring 6
 // needs JDK 17+, which this build already targets. Test-only; never packaged.
 val springSixTests = sourceSets.create("springSixTest") {
-    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
+    compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
     // Direct registrar tests need the agent's existing ASM runtime as well as
     // its classes. This adds no Spring 5 test dependencies to the isolated graph.
-    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
+    runtimeClasspath += premium.output + sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
 }
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
@@ -280,8 +293,8 @@ val springSixTest by tasks.registering(Test::class) {
 
 // Native Spring 6 messaging regressions on an independent, test-only graph.
 val modernMessagingTests = sourceSets.create("modernMessagingTest") {
-    compileClasspath += sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
-    runtimeClasspath += sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
+    compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
+    runtimeClasspath += premium.output + sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
 }
 dependencies {
     add(modernMessagingTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
@@ -438,6 +451,8 @@ val e2eTest by tasks.registering(Test::class) {
 // do, and both are tested. The number is a floor under this process, not a
 // measure of the suite.
 tasks.jacocoTestReport {
+    classDirectories.setFrom(sourceSets.main.get().output.classesDirs, premium.output.classesDirs)
+    sourceDirectories.setFrom(sourceSets.main.get().allSource.srcDirs, premium.allSource.srcDirs)
     dependsOn(tasks.test)
     reports {
         xml.required.set(true)
@@ -452,6 +467,8 @@ tasks.jacocoTestReport {
 // uncovered on purpose: the Spring and hybris reloaders need a live container
 // and are exercised by the integration suite, which does not report into this.
 tasks.jacocoTestCoverageVerification {
+    classDirectories.setFrom(sourceSets.main.get().output.classesDirs, premium.output.classesDirs)
+    sourceDirectories.setFrom(sourceSets.main.get().allSource.srcDirs, premium.allSource.srcDirs)
     dependsOn(tasks.jacocoTestReport)
     violationRules {
         rule {
@@ -531,8 +548,23 @@ tasks.named("assemble") {
 }
 
 tasks.shadowJar {
-    dependsOn(bootstrapJar)
+    from(premium.output)
     archiveClassifier.set("")
+}
+
+// Local verification artifact only; publication and every consumer keep shadowJar.
+val coreShadowJar by tasks.registering(ShadowJar::class) {
+    archiveClassifier.set("core")
+    // Match the manifest inherited by the canonical Shadow task from the Java jar.
+    manifest { attributes("Implementation-Version" to project.version) }
+    from(sourceSets.main.get().output)
+    configurations = listOf(project.configurations.runtimeClasspath.get())
+    // Shadow's canonical Java task already drops the dependency module descriptor.
+    exclude("module-info.class")
+}
+
+tasks.withType<ShadowJar>().configureEach {
+    dependsOn(bootstrapJar)
 
     // The licence terms travel with the thing they license, and this jar is a
     // thing on its own: the README tells people to build it and attach it with
@@ -562,6 +594,18 @@ tasks.shadowJar {
             "Implementation-Version" to project.version
         )
     }
+}
+
+tasks.named<Jar>("sourcesJar") { from(premium.allSource) }
+tasks.javadoc {
+    source(premium.allJava)
+    classpath += premium.output + premium.compileClasspath
+}
+
+for (name in listOf("test", "unitTest", "e2eTest")) tasks.named<Test>(name) {
+    dependsOn(coreShadowJar, tasks.named("shadowJar"))
+    systemProperty("reclazz.core.agent.jar", coreShadowJar.get().archiveFile.get().asFile.absolutePath)
+    inputs.file(coreShadowJar.flatMap { it.archiveFile }).withPropertyName("coreAgentJar")
 }
 
 // Maven Central publication of the standalone agent, so the Gradle plugin and

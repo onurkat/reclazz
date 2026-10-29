@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Build
+
+- Compile SAP automation in a separate premium source set while retaining the
+  complete Apache-2.0 canonical agent. Add a local core-only verification jar;
+  published and bundled agents continue to include the automation module.
+
 ### Fixed
 
 - Expose companion methods, fields and added constructors through ordinary

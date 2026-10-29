@@ -56,7 +56,7 @@ class PackageDependenciesTest {
             Map.entry("platform", Set.of("ui", "util", "config", "compiler")),
             Map.entry("transform", Set.of("ui", "util", "config", "bootstrap", "platform")),
             Map.entry("watcher", Set.of("ui", "util", "config", "platform", "transform", "ext")),
-            Map.entry("ext", Set.of("ui", "util", "config")),
+            Map.entry("ext", Set.of("ui", "util", "config", "platform")),
             Map.entry("reload", Set.of("agent", "bootstrap", "config", "ext", "platform", "spring", "transform", "ui", "util", "watcher")));
 
     @Test
@@ -111,6 +111,24 @@ class PackageDependenciesTest {
         assertEquals(List.of(), violations, "premium references outside composition root: " + render(graph));
     }
 
+    @Test
+    void coreBytecodeNeverReferencesPremium() throws IOException {
+        try (var files = Files.walk(classesDir())) {
+            for (Path file : files.filter(p -> p.toString().endsWith(".class")).toList()) {
+                assertFalse(classesDir().relativize(file).toString().startsWith("hybris"), file.toString());
+                assertTrue(referencedNames(Files.readAllBytes(file)).stream()
+                        .noneMatch(name -> name.startsWith("com/onurkat/reclazz/hybris/")), file.toString());
+            }
+        }
+    }
+
+    private static Path premiumClassesDir() {
+        Path dir = classesDir().getParent().getParent().getParent().getParent()
+                .resolve("premium/com/onurkat/reclazz");
+        assertTrue(Files.isDirectory(dir), "premium classes missing: " + dir);
+        return dir;
+    }
+
     /** The one that drove most of the cycles: nothing but the ledger's own package and its users' reporting. */
     @Test
     void theRestartLedgerIsReportingAndLivesWithIt() throws IOException {
@@ -121,17 +139,18 @@ class PackageDependenciesTest {
 
     private static Map<String, Set<String>> dependencyGraph() throws IOException {
         Map<String, Set<String>> graph = new TreeMap<>();
-        Path classes = classesDir();
-        try (Stream<Path> files = Files.walk(classes)) {
-            for (Path file : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".class"))::iterator) {
-                String rel = classes.relativize(file).toString().replace('\\', '/');
-                int slash = rel.indexOf('/');
-                if (slash < 0) continue;
-                String pkg = rel.substring(0, slash);
-                Set<String> deps = graph.computeIfAbsent(pkg, k -> new TreeSet<>());
-                for (String name : referencedNames(Files.readAllBytes(file))) {
-                    Matcher m = PROJECT_PACKAGE.matcher(name + "/");
-                    if (m.find() && !m.group(1).equals(pkg)) deps.add(m.group(1));
+        for (Path classes : List.of(classesDir(), premiumClassesDir())) {
+            try (Stream<Path> files = Files.walk(classes)) {
+                for (Path file : (Iterable<Path>) files.filter(p -> p.toString().endsWith(".class"))::iterator) {
+                    String rel = classes.relativize(file).toString().replace('\\', '/');
+                    int slash = rel.indexOf('/');
+                    if (slash < 0) continue;
+                    String pkg = rel.substring(0, slash);
+                    Set<String> deps = graph.computeIfAbsent(pkg, k -> new TreeSet<>());
+                    for (String name : referencedNames(Files.readAllBytes(file))) {
+                        Matcher m = PROJECT_PACKAGE.matcher(name + "/");
+                        if (m.find() && !m.group(1).equals(pkg)) deps.add(m.group(1));
+                    }
                 }
             }
         }
