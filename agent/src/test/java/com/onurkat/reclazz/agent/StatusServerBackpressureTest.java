@@ -51,8 +51,8 @@ class StatusServerBackpressureTest {
         client = new Socket("127.0.0.1", port);
 
         // Give the accept loop a moment to register the connection.
-        long deadline = System.currentTimeMillis() + 5000;
-        while (server.getClientCount() == 0 && System.currentTimeMillis() < deadline) {
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(5);
+        while (server.getClientCount() == 0 && System.nanoTime() - deadline < 0) {
             Thread.sleep(50);
         }
         assertEquals(1, server.getClientCount(), "client should be connected");

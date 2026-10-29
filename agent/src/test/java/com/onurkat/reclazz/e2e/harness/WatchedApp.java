@@ -293,8 +293,11 @@ public final class WatchedApp implements AutoCloseable {
 
     /** Waits for a line containing this, and says whether it arrived. */
     public boolean awaits(String needle, long timeoutSec) {
-        long deadline = System.currentTimeMillis() + timeoutSec * 1000;
-        while (System.currentTimeMillis() < deadline) {
+        // Elapsed time, not the wall clock: when the host sleeps, the clock
+        // jumps ahead on wake while this JVM and the app did not run, and a
+        // wall-clock deadline then expires before either side had a chance.
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(timeoutSec);
+        while (System.nanoTime() - deadline < 0) {
             if (output.stream().anyMatch(line -> line.contains(needle))) return true;
             try {
                 Thread.sleep(100);

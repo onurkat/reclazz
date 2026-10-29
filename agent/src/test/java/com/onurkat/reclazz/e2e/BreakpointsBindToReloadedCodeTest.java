@@ -151,9 +151,10 @@ class BreakpointsBindToReloadedCodeTest {
     }
 
     private static BreakpointEvent awaitBreakpoint(VirtualMachine vm, long timeoutMs) throws InterruptedException {
-        long deadline = System.currentTimeMillis() + timeoutMs;
-        while (System.currentTimeMillis() < deadline) {
-            EventSet set = vm.eventQueue().remove(Math.max(1, deadline - System.currentTimeMillis()));
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(timeoutMs);
+        while (System.nanoTime() - deadline < 0) {
+            EventSet set = vm.eventQueue().remove(Math.max(1,
+                    java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime())));
             if (set == null) return null;
             for (Event event : set) {
                 if (event instanceof BreakpointEvent bp) return bp;
