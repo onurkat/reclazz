@@ -1141,30 +1141,16 @@ public class StructuralReloader {
             // while the class was already dispatching the new code, and took
             // every step after it down with it.
 
-            // Register new fields in FieldStore (bootstrap-CL copy)
-            afterSwitch(className, "registering the added fields", () -> {
-            Runnable probe = afterSwitchProbe;
-            if (probe != null) probe.run();
-            for (String fieldKey : diff.getAddedFields()) {
-                int colonIdx = fieldKey.indexOf(':');
-                String fieldName = fieldKey.substring(0, colonIdx);
-                String fieldDesc = fieldKey.substring(colonIdx + 1);
-                FieldStore.registerField(internalName, fieldName, fieldDesc);
-            }
-            });
-
-            // Register forged Method/Field objects with ReflectionBridge
-            // so that getDeclaredMethods()/getDeclaredFields() return added members
-            afterSwitch(className, "showing the added members to reflection", () -> {
-            registerReflectionMetadata(targetClass, newBytecode, newTargets, companionLookup, companionClass);
-            });
-
             // Hide the injected members at the root of reflection. Placed
             // after the lookup and companion work above (the filter's captures
             // need the pre-hiding window this reload is still in on its first
-            // pass) and before the constructor-body redefinition below, so the
-            // redefinition's reflection-cache invalidation lands on a class
-            // whose filter is already on. Idempotent from the second reload on.
+            // pass), and before the added members are shown to reflection: a
+            // class loaded after startup is first registered here, and a scan
+            // landing between the two steps used to see the added members and
+            // the __reclazz$ ones together. Also before the constructor-body
+            // redefinition below, so the redefinition's reflection-cache
+            // invalidation lands on a class whose filter is already on.
+            // Idempotent from the second reload on.
             afterSwitch(className, "hiding the injected members from reflection", () -> {
             ReflectionRootFilter
                     .registerInjectedMembersOn(targetClass);
@@ -1193,6 +1179,25 @@ public class StructuralReloader {
             ReflectionRootFilter
                     .unhideRestoredMembersOn(targetClass, declaredFieldNames, declaredMethodNames);
             });
+
+            // Register new fields in FieldStore (bootstrap-CL copy)
+            afterSwitch(className, "registering the added fields", () -> {
+            Runnable probe = afterSwitchProbe;
+            if (probe != null) probe.run();
+            for (String fieldKey : diff.getAddedFields()) {
+                int colonIdx = fieldKey.indexOf(':');
+                String fieldName = fieldKey.substring(0, colonIdx);
+                String fieldDesc = fieldKey.substring(colonIdx + 1);
+                FieldStore.registerField(internalName, fieldName, fieldDesc);
+            }
+            });
+
+            // Register forged Method/Field objects with ReflectionBridge
+            // so that getDeclaredMethods()/getDeclaredFields() return added members
+            afterSwitch(className, "showing the added members to reflection", () -> {
+            registerReflectionMetadata(targetClass, newBytecode, newTargets, companionLookup, companionClass);
+            });
+
 
             Set<String> jacksonGetters = new LinkedHashSet<>();
             boolean hadJacksonGetters = com.onurkat.reclazz.bootstrap.JacksonBridge.hasGetters(targetClass);
@@ -1585,6 +1590,8 @@ public class StructuralReloader {
      * in for a failure the bookkeeping has no other way to be given.
      */
     static volatile Runnable afterSwitchProbe;
+    /** Test hook: told each completed post-switch step, in order. */
+    static volatile java.util.function.Consumer<String> afterSwitchStepProbe;
 
     /**
      * Bookkeeping after the switch is best-effort, step by step: the new
@@ -1595,6 +1602,8 @@ public class StructuralReloader {
     private static void afterSwitch(String className, String what, AfterSwitchStep step) {
         try {
             step.run();
+            java.util.function.Consumer<String> probe = afterSwitchStepProbe;
+            if (probe != null) probe.accept(what);
         } catch (Throwable t) {
             StatusReporter.warn("Reloading " + className + ": " + what + " did not complete ("
                     + Failures.describe(t) + "). The new method bodies are "
