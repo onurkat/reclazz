@@ -93,6 +93,22 @@ public final class CompileAttempt {
     }
 
     /** A failed attempt cannot resurrect sources deleted while javac was running. */
+    /**
+     * Take back the files that were queued only because they read a changed
+     * constant. Nobody saved them; held after a failed compile they would join
+     * every later batch and fail it the same way. Returns what was dropped.
+     */
+    public static <T> List<Path> dropSpeculative(Map<Path, T> pending, Set<Path> speculative) {
+        synchronized (pending) {
+            List<Path> dropped = new ArrayList<>();
+            for (Path path : speculative) {
+                if (pending.remove(path) != null) dropped.add(path);
+            }
+            speculative.clear();
+            return dropped;
+        }
+    }
+
     public static <T> void retainExisting(Map<Path, T> pending, Map<Path, T> attempted) {
         synchronized (pending) {
             attempted.forEach((path, value) -> {

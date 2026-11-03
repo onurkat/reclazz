@@ -93,4 +93,23 @@ class CompileAttemptTest {
         CompileAttempt.retainExisting(pending, Map.of(missing, 1, exists, 1));
         assertEquals(Map.of(exists, 2), pending);
     }
+
+    /**
+     * Files queued only because they read a changed constant were never saved
+     * by anyone. When they fail to compile (on SAP Commerce, other extensions'
+     * sources often do with the agent's classpath) holding them meant every
+     * later save joined the same failing batch, and nothing reloaded again
+     * until a restart. They are dropped; what the developer saved stays held.
+     */
+    @Test void aFailedBatchDropsSpeculativeFilesAndKeepsSavedOnes() throws Exception {
+        Path saved = Files.writeString(tmp.resolve("Saved.java"), "class Saved {}");
+        Path dependent = Files.writeString(tmp.resolve("Dependent.java"), "class Dependent {}");
+        Path savedLater = Files.writeString(tmp.resolve("Both.java"), "class Both {}");
+        Map<Path, String> pending = new LinkedHashMap<>(Map.of(saved, "s", dependent, "d", savedLater, "b"));
+        Set<Path> speculative = new HashSet<>(Set.of(dependent));
+
+        assertEquals(List.of(dependent), CompileAttempt.dropSpeculative(pending, speculative));
+        assertEquals(Set.of(saved, savedLater), pending.keySet());
+        assertTrue(speculative.isEmpty());
+    }
 }

@@ -44,6 +44,16 @@ public interface PlatformContext {
     Map<String, List<Path>> getSourceDirs();
 
     /**
+     * Class directories the platform's own build writes and Reclazz never
+     * compiles into, watched for .class changes in every mode. On SAP Commerce
+     * these are the model and DTO classes ant generates from items.xml and
+     * beans.xml; with autoCompile nothing else would ever see them.
+     */
+    default Map<String, List<Path>> getGeneratedClassDirs() {
+        return Map.of();
+    }
+
+    /**
      * Returns resource directories to watch for config changes.
      * Each entry maps a module name to its resource directory path.
      */

@@ -100,12 +100,20 @@ public class HybrisPlatformContext implements PlatformContext {
             }
         }
 
-        // Platform-level generated code: DTOs from *-beans.xml and models
-        // from *-items.xml are generated into bootstrap/modelclasses/ and
-        // bootstrap/classes/. Without watching these, changes triggered by
-        // the beans.xml reloader (`ant build`) wouldn't flow into the
-        // structural reload path because the agent's class watcher
-        // wouldn't see them.
+        result.putAll(getGeneratedClassDirs());
+        return result;
+    }
+
+    /**
+     * Platform-level generated code: DTOs from *-beans.xml and models from
+     * *-items.xml are generated into bootstrap/modelclasses/ and
+     * bootstrap/classes/. Without watching these, changes triggered by the
+     * codegen reloader (`ant build`) wouldn't flow into the structural reload
+     * path because the agent's class watcher wouldn't see them. Watched in
+     * autoCompile mode too, where nothing else watches class files.
+     */
+    @Override
+    public Map<String, List<Path>> getGeneratedClassDirs() {
         Path bootstrap = hybrisContext.getPlatformHome()
                 .resolve("bootstrap");
         List<Path> bootstrapDirs = new ArrayList<>();
@@ -117,10 +125,7 @@ public class HybrisPlatformContext implements PlatformContext {
         if (Files.isDirectory(bootstrapClasses)) {
             bootstrapDirs.add(bootstrapClasses);
         }
-        if (!bootstrapDirs.isEmpty()) {
-            result.put("__platform_bootstrap__", bootstrapDirs);
-        }
-        return result;
+        return bootstrapDirs.isEmpty() ? Map.of() : Map.of("__platform_bootstrap__", bootstrapDirs);
     }
 
     @Override

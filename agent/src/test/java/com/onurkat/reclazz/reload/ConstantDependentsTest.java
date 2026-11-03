@@ -133,4 +133,39 @@ class ConstantDependentsTest {
 
         assertTrue(found.byModule().isEmpty());
     }
+
+    /**
+     * Every SAP Commerce extension declares its own EXTENSIONNAME. Saving one
+     * extension's items.xml regenerated its constants class, and the search
+     * picked up twenty files in other extensions that read their own
+     * EXTENSIONNAME. Those failed to compile with the agent's classpath, and
+     * the failure held every later save. A file can only have inlined this
+     * class's constant if it can see the class: it names it (qualified use,
+     * import, static import, extends), or it shares its package.
+     */
+    @Test
+    void anotherClassesConstantOfTheSameNameIsNotADependent(@TempDir Path root) throws Exception {
+        Path src = root.resolve("src");
+        write(src, "com/ext/constants/ExtConstants.java",
+                "package com.ext.constants;\npublic class ExtConstants { public static final String EXTENSIONNAME = \"ext\"; }\n");
+        write(src, "com/other/constants/OtherConstants.java",
+                "package com.other.constants;\npublic class OtherConstants { public static final String EXTENSIONNAME = \"other\"; }\n");
+        write(src, "com/other/OtherManager.java",
+                "package com.other;\nimport com.other.constants.OtherConstants;\n"
+                + "public class OtherManager { String n() { return OtherConstants.EXTENSIONNAME; } }\n");
+        Path qualified = write(src, "com/use/Reader.java",
+                "package com.use;\npublic class Reader { String n() { return com.ext.constants.ExtConstants.EXTENSIONNAME; } }\n");
+        Path staticImport = write(src, "com/use/StaticReader.java",
+                "package com.use;\nimport static com.ext.constants.ExtConstants.EXTENSIONNAME;\n"
+                + "public class StaticReader { String n() { return EXTENSIONNAME; } }\n");
+        Path samePackage = write(src, "com/ext/constants/Sibling.java",
+                "package com.ext.constants;\npublic class Sibling extends Base { String n() { return EXTENSIONNAME; } }\n");
+
+        ConstantDependents.Result found = ConstantDependents.search(
+                "com.ext.constants.ExtConstants", List.of("EXTENSIONNAME"),
+                Map.of("app", List.of(src)));
+
+        assertEquals(java.util.Set.of(qualified, staticImport, samePackage),
+                java.util.Set.copyOf(found.byModule().get("app")));
+    }
 }

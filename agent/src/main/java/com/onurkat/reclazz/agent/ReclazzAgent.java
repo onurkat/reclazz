@@ -114,6 +114,8 @@ public class ReclazzAgent {
     private static long lastJavaAttemptGeneration = -1;
     private static final java.util.LinkedHashMap<Path, ChangeEvent> pendingJavaChanges =
             new java.util.LinkedHashMap<>();
+    /** Pending files queued only as constant dependents, never saved; guarded by pendingJavaChanges. */
+    private static final java.util.Set<Path> speculativeJava = new java.util.HashSet<>();
 
     private static volatile ExecutorService watcherExecutor;
     /** The reload thread and what is queued for it; see {@link ReloadQueue}. */
@@ -599,6 +601,7 @@ public class ReclazzAgent {
                     if (fn.endsWith(".java") && config.isAutoCompile() && compiler != null) {
                         synchronized (pendingJavaChanges) {
                             javaChangeGeneration++;
+                            speculativeJava.remove(event.getPath());
                             if (event.getType() == ChangeEvent.Type.DELETED) pendingJavaChanges.remove(event.getPath());
                             else pendingJavaChanges.put(event.getPath(), event);
                         }
@@ -630,6 +633,8 @@ public class ReclazzAgent {
                         for (var moduleEntry : byModule.entrySet()) {
                             for (Path file : moduleEntry.getValue()) {
                                 javaChangeGeneration++;
+                                if (pendingJavaChanges.containsKey(file)) continue;
+                                speculativeJava.add(file);
                                 pendingJavaChanges.put(file, new ChangeEvent(
                                         file, ChangeEvent.Type.MODIFIED,
                                         moduleEntry.getKey(), null));
@@ -1155,11 +1160,26 @@ public class ReclazzAgent {
             Map<Path, ChangeEvent> attempted = new java.util.LinkedHashMap<>();
             for (ChangeEvent event : batch) attempted.put(event.getPath(), event);
             com.onurkat.reclazz.compiler.CompileAttempt.retainExisting(pendingJavaChanges, attempted);
+            List<Path> dropped = com.onurkat.reclazz.compiler.CompileAttempt.dropSpeculative(
+                    pendingJavaChanges, speculativeJava);
+            boolean retrySaved;
             synchronized (pendingJavaChanges) {
-                StatusReporter.info("Holding " + pendingJavaChanges.size()
-                        + " source files; nothing reloads until compilation succeeds. "
-                        + (result.getErrors().isEmpty() ? "" : result.getErrors().get(0)));
+                retrySaved = !dropped.isEmpty() && !pendingJavaChanges.isEmpty();
+                if (retrySaved) javaChangeGeneration++;
+                if (!dropped.isEmpty()) {
+                    StatusReporter.warn("Gave up rebuilding " + Plural.of(dropped.size(), "constant dependent")
+                            + " that did not compile; they keep the value they were built with until "
+                            + "your build compiles them.");
+                }
+                if (!pendingJavaChanges.isEmpty()) {
+                    StatusReporter.info("Holding " + pendingJavaChanges.size()
+                            + " source files; nothing reloads until compilation succeeds. "
+                            + (result.getErrors().isEmpty() ? "" : result.getErrors().get(0)));
+                }
             }
+            // The dependents may have been all that failed; what was saved gets
+            // its own attempt rather than waiting for the next save.
+            if (retrySaved) handleJavaBatch(compiler, reloader, springOrchestrator, modules);
             return;
         }
         Map<String, byte[]> compiledClasses = result.getCompiledClasses();

@@ -40,12 +40,19 @@ public final class HacRunningSystemUpdater implements RunningSystemUpdater {
     public boolean updateSchema() {
         ClassLoader loader = platformLoader == null ? null : platformLoader.get();
         if (loader == null) return false;
+        // Runs on the codegen thread, which has no tenant: the platform
+        // refused with "no tenant active" until this was bound first.
+        if (!com.onurkat.reclazz.platform.PlatformTenant.ensureActive(loader)) {
+            StatusReporter.warn("Automatic Update Running System could not bind a tenant; apply it in HAC instead.");
+            return false;
+        }
         try {
             Class<?> facadeClass = Class.forName(FACADE, true, loader);
             Class<?> dataClass = Class.forName(DATA, true, loader);
             Class<?> initMethodClass = Class.forName(INIT_METHOD, true, loader);
 
             Object facade = facadeClass.getDeclaredConstructor().newInstance();
+            installQuietNotifier(facadeClass, facade, loader);
             if (Boolean.TRUE.equals(call(facade, "isLocked"))) {
                 StatusReporter.warn("Update Running System is already in progress; "
                         + "skipped the automatic schema update.");
@@ -63,16 +70,58 @@ public final class HacRunningSystemUpdater implements RunningSystemUpdater {
             setBool(dataClass, data, "setCreateProjectData", false);
             setBool(dataClass, data, "setLocalizeTypes", false);
 
-            Object result = facadeClass.getMethod("executeInitUpdate", dataClass).invoke(facade, data);
+            // The update's audit step finds JAXB through the context loader.
+            // On a HAC request thread that is the platform's; on the codegen
+            // thread it was not, and the update failed after the schema work.
+            Thread thread = Thread.currentThread();
+            ClassLoader previous = thread.getContextClassLoader();
+            thread.setContextClassLoader(loader);
+            Object result;
+            try {
+                result = facadeClass.getMethod("executeInitUpdate", dataClass).invoke(facade, data);
+            } finally {
+                thread.setContextClassLoader(previous);
+            }
             boolean ok = succeeded(result);
             if (!ok) StatusReporter.warn("Automatic Update Running System did not report success; "
                     + "apply it in HAC if the new attribute is missing.");
             return ok;
         } catch (Throwable notAvailable) {
             StatusReporter.warn("Automatic Update Running System could not run ("
-                    + notAvailable.getClass().getSimpleName() + "); apply it in HAC instead.");
+                    + com.onurkat.reclazz.ui.Failures.describe(notAvailable)
+                    + "); apply it in HAC instead.");
             return false;
         }
+    }
+
+    /**
+     * HAC creates the facade as a Spring bean and injects a tray notifier, which
+     * executeInitUpdate calls before doing anything else. Built here by reflection
+     * the field is null, and the update died on that first call on every real
+     * installation. A notifier that does nothing stands in for it.
+     */
+    private static void installQuietNotifier(Class<?> facadeClass, Object facade, ClassLoader loader) throws Exception {
+        Class<?> notifierType;
+        try {
+            notifierType = Class.forName("de.hybris.bootstrap.osnotify.SystemTrayNotifier", false, loader);
+        } catch (ClassNotFoundException absent) {
+            return;
+        }
+        if (!notifierType.isInterface()) return;
+        java.lang.reflect.Method setter;
+        try {
+            setter = facadeClass.getMethod("setNotifier", notifierType);
+        } catch (NoSuchMethodException absent) {
+            return;
+        }
+        Object quiet = java.lang.reflect.Proxy.newProxyInstance(loader, new Class<?>[]{notifierType},
+                (proxy, method, args) -> switch (method.getName()) {
+                    case "equals" -> proxy == args[0];
+                    case "hashCode" -> System.identityHashCode(proxy);
+                    case "toString" -> "Reclazz quiet notifier";
+                    default -> null;
+                });
+        setter.invoke(facade, quiet);
     }
 
     /**

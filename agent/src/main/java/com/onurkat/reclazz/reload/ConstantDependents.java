@@ -37,12 +37,14 @@ import com.onurkat.reclazz.util.Supervised;
  * (autoCompile), rebuilding them is one more step of work it was already
  * doing.
  *
- * <p>The match is deliberately loose: the constant's name as a word, anywhere
- * in a source file of a watched module. A file that mentions the name without
- * inlining anything gets recompiled to identical bytes, and the watcher's
- * content hash drops it without a reload, so a false positive costs one javac
- * pass and nothing else. A miss would cost a wrong value in a running server,
- * which is what this exists to prevent.
+ * <p>The match is deliberately loose: the constant's name as a word in a
+ * source file of a watched module that can see the declaring class. A file
+ * that mentions the name without inlining anything gets recompiled to
+ * identical bytes, and the watcher's content hash drops it without a reload.
+ * A miss would cost a wrong value in a running server, which is what this
+ * exists to prevent. A false positive is not free, though: on SAP Commerce a
+ * file from another extension may not compile with the agent's classpath, so
+ * the rebuild treats these files as speculative and drops them when it fails.
  *
  * <p>The scan is off the reload path. A constant change is rare and a source
  * tree can be large; the reload it belongs to should not wait for a walk of
@@ -150,6 +152,10 @@ public final class ConstantDependents {
             patterns.add(Pattern.compile("\\b" + Pattern.quote(name) + "\\b"));
         }
         String ownFile = simpleName(className) + ".java";
+        Pattern seesClass = Pattern.compile("\\b" + Pattern.quote(simpleName(className)) + "\\b");
+        int dot = className.lastIndexOf('.');
+        Pattern samePackage = dot < 0 ? null : Pattern.compile(
+                "^\\s*package\\s+" + Pattern.quote(className.substring(0, dot)) + "\\s*;", Pattern.MULTILINE);
         long deadline = System.currentTimeMillis() + BUDGET_MS;
 
         Map<String, List<Path>> byModule = new LinkedHashMap<>();
@@ -168,7 +174,7 @@ public final class ConstantDependents {
                         // The class that declares the constant is current by
                         // definition: it is the one that just reloaded.
                         if (String.valueOf(file.getFileName()).equals(ownFile)) continue;
-                        if (!mentions(file, patterns)) continue;
+                        if (!mentions(file, patterns, seesClass, samePackage)) continue;
                         byModule.computeIfAbsent(module.getKey(), k -> new ArrayList<>()).add(file);
                     }
                 } catch (Exception oneRoot) {
@@ -181,12 +187,22 @@ public final class ConstantDependents {
         return new Result(byModule, truncated);
     }
 
-    private static boolean mentions(Path file, List<Pattern> patterns) {
+    private static boolean mentions(Path file, List<Pattern> patterns, Pattern seesClass, Pattern samePackage) {
         try {
             // A source that is not UTF-8 used to land in the catch below and
             // count as "does not mention it", so a file that had inlined the
             // changed constant was left out of the warning about exactly that.
             String source = SourceText.readForScanning(file);
+            // Only a file that can see the declaring class can have inlined
+            // its constant: it names the class, or shares its package. Every
+            // SAP Commerce extension declares an EXTENSIONNAME of its own, and
+            // the bare name pulled in other extensions' sources by the dozen.
+            // A subclass two levels down that reads the constant unqualified
+            // from another package is the one shape this misses.
+            if (!seesClass.matcher(source).find()
+                    && (samePackage == null || !samePackage.matcher(source).find())) {
+                return false;
+            }
             for (Pattern pattern : patterns) {
                 if (pattern.matcher(source).find()) return true;
             }

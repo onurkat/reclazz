@@ -339,6 +339,21 @@ public class FileWatcher {
                     }
                 }
             }
+            // Reclazz compiles the sources, but not what the platform's own
+            // build generates: SAP Commerce models from items.xml are compiled
+            // by ant into bootstrap/modelclasses, and only the class files
+            // there can carry a new attribute into the running JVM.
+            for (var entry : platformContext.getGeneratedClassDirs().entrySet()) {
+                String moduleName = entry.getKey();
+                if (!platformContext.shouldWatch(moduleName)) continue;
+                for (Path classDir : entry.getValue()) {
+                    if (Files.isDirectory(classDir)) {
+                        registerRecursive(classDir, moduleName, "classes");
+                        watchCount++;
+                        prepopulateContentHashes(classDir, new WatchedDirectory(classDir, moduleName, "classes"));
+                    }
+                }
+            }
         } else {
             // Default mode: watch compiled class output directories for .class changes
             int prepopulatedClasses = 0;
