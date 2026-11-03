@@ -121,6 +121,10 @@ final class AgentStatusClient {
             return Files.isRegularFile(p) ? p : null;
         }
         List<Path> candidates = new ArrayList<>();
+        // The agent writes where its own portFile argument says; that is the
+        // file to read when the application was started with one.
+        Path fromAgent = portFileFromAgentFlag(ReclazzAgentDetector.agentFlag());
+        if (fromAgent != null) candidates.add(fromAgent);
         if (properties.getHybrisHome() != null) {
             candidates.add(Paths.get(properties.getHybrisHome(), ".reclazz", "agent.port"));
         }
@@ -130,6 +134,24 @@ final class AgentStatusClient {
         for (Path p : candidates) {
             if (Files.isRegularFile(p)) {
                 return p;
+            }
+        }
+        return null;
+    }
+
+    /** The portFile argument of a -javaagent flag, or null when it names none. */
+    static Path portFileFromAgentFlag(String flag) {
+        if (flag == null) return null;
+        int options = flag.indexOf('=');
+        if (options < 0) return null;
+        String args = flag.substring(options + 1);
+        // SAP's wrapper.conf quotes the whole -javaagent:"jar=args" value.
+        if (args.startsWith("\"")) args = args.substring(1);
+        if (args.endsWith("\"")) args = args.substring(0, args.length() - 1);
+        // Arguments split at a comma only where another key= follows, as the agent splits them.
+        for (String argument : args.split(",(?=[A-Za-z][A-Za-z0-9]*=)")) {
+            if (argument.startsWith("portFile=") && argument.length() > "portFile=".length()) {
+                return Paths.get(argument.substring("portFile=".length()));
             }
         }
         return null;

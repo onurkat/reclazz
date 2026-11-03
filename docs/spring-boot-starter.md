@@ -44,7 +44,7 @@ All properties are under the `reclazz` prefix.
 | `reclazz.enabled` | `true` | Master switch for the starter's auto-configuration |
 | `reclazz.fail-on-missing-agent` | `false` | Fail startup when the agent is not attached, instead of only warning |
 | `reclazz.port` | (auto) | Connect to this agent status port directly |
-| `reclazz.port-file` | (auto) | Path to the agent port file, if not in a usual place |
+| `reclazz.port-file` | (auto) | Path to the agent port file. By default the agent's own `portFile` argument, then `.reclazz/agent.port` under the SAP Commerce home or the working directory, then `.idea/reclazz/agent.port` |
 | `reclazz.hybris-home` | (auto) | SAP Commerce home, to locate its port file |
 
 Scope it to development the usual Spring way, for example by keeping the
