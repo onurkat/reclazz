@@ -89,7 +89,7 @@ public final class ReflectionBridge {
         if(hiddenName(owner,name,false))throw new NoSuchMethodException(name);
         boolean previous=physicalScan.get();
         physicalScan.set(true);
-        try {return owner.getDeclaredMethod(name,parameters);}
+        try {return visible(owner.getDeclaredMethod(name,parameters));}
         finally {physicalScan.set(previous);}
     }
 
@@ -98,8 +98,17 @@ public final class ReflectionBridge {
         if(hiddenName(owner,name,false))throw new NoSuchMethodException(name);
         boolean previous=physicalScan.get();
         physicalScan.set(true);
-        try {return owner.getMethod(name,parameters);}
+        try {return visible(owner.getMethod(name,parameters));}
         finally {physicalScan.set(previous);}
+    }
+
+    /** What a reload added to this class itself, without the hidden names. Empty for an untouched class. */
+    public static List<Method> addedMethods(Class<?> owner) {
+        List<Method> added = stateFor(owner).addedMethods;
+        if (added.isEmpty()) return added;
+        List<Method> visible = new ArrayList<>(added.size());
+        for (Method m : added) if (!hiddenMethod(m)) visible.add(m);
+        return visible;
     }
 
     /** A cached public array must not cross the application/physical reflection views. */
@@ -205,8 +214,65 @@ public final class ReflectionBridge {
     }
 
     private static boolean hiddenMethod(Method m) {
-        return isInternal(m.getName())
-                || REMOVED_NAMES.get(m.getDeclaringClass())[1].contains(m.getName());
+        if (isInternal(m.getName())
+                || REMOVED_NAMES.get(m.getDeclaringClass())[1].contains(m.getName())) return true;
+        java.util.Set<String> overloads = REMOVED_OVERLOADS.get(m.getDeclaringClass());
+        return !overloads.isEmpty() && overloads.contains(m.getName() + descriptor(m.getParameterTypes(), m.getReturnType()));
+    }
+
+    /**
+     * Removed methods whose name lives on in another overload, by name and
+     * descriptor. The name sets above cannot hold them, since hiding the name
+     * would take the survivor too, and so they used to stay visible: a
+     * handler whose parameter list changed kept its old method in Spring's
+     * re-scan, which mapped it again, and the new method was then refused as
+     * an ambiguous mapping for the same path. The request kept reaching the
+     * old body.
+     */
+    private static final ClassValue<java.util.Set<String>> REMOVED_OVERLOADS = new ClassValue<>() {
+        @Override
+        protected java.util.Set<String> computeValue(Class<?> type) {
+            return java.util.concurrent.ConcurrentHashMap.newKeySet();
+        }
+    };
+
+    /** @param methods name followed by JVM descriptor, {@code probe()Ljava/lang/String;} */
+    public static void hideRemovedOverloads(Class<?> clazz, java.util.Set<String> methods) {
+        if (clazz != null && methods != null) REMOVED_OVERLOADS.get(clazz).addAll(methods);
+    }
+
+    /** The same signatures, brought back by a later save. */
+    public static void unhideRestoredOverloads(Class<?> clazz, java.util.Set<String> methods) {
+        if (clazz != null && methods != null) REMOVED_OVERLOADS.get(clazz).removeAll(methods);
+    }
+
+    /** A by-name lookup that found a removed overload found nothing. */
+    private static Method visible(Method found) throws NoSuchMethodException {
+        if (hiddenMethod(found)) throw new NoSuchMethodException(found.getName());
+        return found;
+    }
+
+    static String descriptor(Class<?>[] parameters, Class<?> result) {
+        StringBuilder d = new StringBuilder(descriptorParameters(parameters));
+        appendType(d, result);
+        return d.toString();
+    }
+
+    private static String descriptorParameters(Class<?>[] parameters) {
+        StringBuilder d = new StringBuilder("(");
+        for (Class<?> p : parameters) appendType(d, p);
+        return d.append(')').toString();
+    }
+
+    private static void appendType(StringBuilder d, Class<?> type) {
+        while (type.isArray()) { d.append('['); type = type.getComponentType(); }
+        if (type.isPrimitive()) {
+            d.append(type == void.class ? 'V' : type == boolean.class ? 'Z' : type == byte.class ? 'B'
+                    : type == char.class ? 'C' : type == short.class ? 'S' : type == int.class ? 'I'
+                    : type == long.class ? 'J' : type == float.class ? 'F' : 'D');
+        } else {
+            d.append('L').append(type.getName().replace('.', '/')).append(';');
+        }
     }
 
     /**
@@ -333,7 +399,7 @@ public final class ReflectionBridge {
         }
 
         // Fall back to original
-        return clazz.getDeclaredMethod(name, parameterTypes);
+        return visible(clazz.getDeclaredMethod(name, parameterTypes));
     }
 
     /**
@@ -429,7 +495,7 @@ public final class ReflectionBridge {
                 }
             }
         }
-        return clazz.getMethod(name, parameterTypes);
+        return visible(clazz.getMethod(name, parameterTypes));
     }
 
     /** The public counterpart of {@link #getDeclaredField}. */

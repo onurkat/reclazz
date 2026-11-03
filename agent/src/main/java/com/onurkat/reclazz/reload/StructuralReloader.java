@@ -1178,6 +1178,10 @@ public class StructuralReloader {
             }
             ReflectionRootFilter
                     .unhideRestoredMembersOn(targetClass, declaredFieldNames, declaredMethodNames);
+            java.util.Set<String> declaredSignatures = new java.util.LinkedHashSet<>();
+            for (var m : diff.getNewMethods()) declaredSignatures.add(m.name() + m.descriptor());
+            com.onurkat.reclazz.bootstrap.ReflectionBridge
+                    .unhideRestoredOverloads(targetClass, declaredSignatures);
             });
 
             // Register new fields in FieldStore (bootstrap-CL copy)
@@ -1265,11 +1269,17 @@ public class StructuralReloader {
                     survivingMethodNames.add(m.name());
                 }
                 java.util.Set<String> removedMethodNames = new java.util.LinkedHashSet<>();
+                java.util.Set<String> removedOverloads = new java.util.LinkedHashSet<>();
                 for (var m : diff.getRemovedMethodSigs()) {
                     if (!survivingMethodNames.contains(m.name())) {
                         removedMethodNames.add(m.name());
+                    } else {
+                        // The name stays, so only this signature goes.
+                        removedOverloads.add(m.name() + m.descriptor());
                     }
                 }
+                com.onurkat.reclazz.bootstrap.ReflectionBridge
+                        .hideRemovedOverloads(targetClass, removedOverloads);
                 ReflectionRootFilter
                         .hideRemovedMembersOn(targetClass, removedFieldNames, removedMethodNames);
                 if (!removedFieldNames.isEmpty() || !removedMethodNames.isEmpty()) {

@@ -15,6 +15,8 @@ import java.security.ProtectionDomain;
  * Rewrites Class.getDeclaredMethods/Fields call sites across ALL loaded classes
  * to dispatch through ReflectionBridge instead. This ensures that frameworks
  * (Spring MVC, Hibernate, etc.) see structurally-added methods/fields.
+ * Outside Spring, calls into Spring's ReflectionUtils method walks go to
+ * SpringReflectionView, so the caller keeps its own view there too.
  *
  * Registered with canRetransform=true so existing classes can be retransformed
  * on first load.
@@ -25,6 +27,8 @@ import java.security.ProtectionDomain;
 public class ReflectionInterceptTransformer implements ClassFileTransformer {
 
     private static final String BRIDGE = "com/onurkat/reclazz/bootstrap/ReflectionBridge";
+    private static final String SPRING_UTILS = "org/springframework/util/ReflectionUtils";
+    private static final String SPRING_VIEW = "com/onurkat/reclazz/bootstrap/SpringReflectionView";
 
     @Override
     public byte[] transform(ClassLoader loader, String className,
@@ -42,13 +46,14 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
             // Most classes call none of these, and this transformer sees
             // every class the JVM loads, so the cost of saying "no" is the
             // cost of the agent at startup.
-            if (!constantPoolMentionsTarget(reader)) return null;
+            boolean spring = className.startsWith("org/springframework/");
+            if (!constantPoolMentionsTarget(reader, !spring)) return null;
 
             // COMPUTE_MAXS only, this transform rewrites invokevirtual→invokestatic with
             // identical stack effects, so frames are unchanged. COMPUTE_FRAMES would require
             // a SafeClassWriter and is too expensive for this broad (all-class) transform.
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
-            ClassVisitor visitor = new ReflectionRewriteVisitor(writer, className.startsWith("org/springframework/"));
+            ClassVisitor visitor = new ReflectionRewriteVisitor(writer, spring);
 
             reader.accept(visitor, ClassReader.EXPAND_FRAMES);
 
@@ -88,6 +93,11 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
      * one full pass and changes nothing.
      */
     static boolean constantPoolMentionsTarget(ClassReader reader) {
+        return constantPoolMentionsTarget(reader, true);
+    }
+
+    /** @param springUtilities whether a call into Spring's ReflectionUtils counts too */
+    static boolean constantPoolMentionsTarget(ClassReader reader, boolean springUtilities) {
         char[] buffer = new char[reader.getMaxStringLength()];
         int items = reader.getItemCount();
         for (int i = 1; i < items; i++) {
@@ -95,10 +105,13 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
             // Zero is the unused second slot of a long or double constant.
             if (offset == 0) continue;
             if (reader.readByte(offset - 1) != CONSTANT_METHODREF) continue;
-            if (!"java/lang/Class".equals(reader.readClass(offset, buffer))) continue;
+            String owner = reader.readClass(offset, buffer);
+            boolean jdk = "java/lang/Class".equals(owner);
+            if (!jdk && !(springUtilities && SPRING_UTILS.equals(owner))) continue;
             int nameAndType = reader.getItem(reader.readUnsignedShort(offset + 2));
-            if (isTargetMethod(reader.readUTF8(nameAndType, buffer),
-                    reader.readUTF8(nameAndType + 2, buffer))) {
+            String name = reader.readUTF8(nameAndType, buffer);
+            String descriptor = reader.readUTF8(nameAndType + 2, buffer);
+            if (jdk ? isTargetMethod(name, descriptor) : springViewDescriptor(name, descriptor) != null) {
                 return true;
             }
         }
@@ -113,9 +126,17 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
      */
     private static class ReflectionRewriteVisitor extends ClassVisitor {
         private final boolean physicalMethods;
+        /** An ldc of a class constant needs class file 49 (Java 5) or later. */
+        private boolean classConstants;
         ReflectionRewriteVisitor(ClassVisitor cv, boolean physicalMethods) {
             super(Opcodes.ASM9, cv);
             this.physicalMethods=physicalMethods;
+        }
+
+        @Override
+        public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+            classConstants = (version & 0xFFFF) >= Opcodes.V1_5;
+            super.visit(version, access, name, signature, superName, interfaces);
         }
 
         @Override
@@ -123,7 +144,7 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
                                           String signature, String[] exceptions) {
             MethodVisitor mv = super.visitMethod(access, name, descriptor, signature, exceptions);
             if (mv == null) return null;
-            return new ReflectionRewriteMethodVisitor(mv, physicalMethods);
+            return new ReflectionRewriteMethodVisitor(mv, physicalMethods, classConstants);
         }
     }
 
@@ -133,9 +154,11 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
      */
     private static class ReflectionRewriteMethodVisitor extends MethodVisitor {
         private final boolean physicalMethods;
-        ReflectionRewriteMethodVisitor(MethodVisitor mv, boolean physicalMethods) {
+        private final boolean springView;
+        ReflectionRewriteMethodVisitor(MethodVisitor mv, boolean physicalMethods, boolean classConstants) {
             super(Opcodes.ASM9, mv);
             this.physicalMethods=physicalMethods;
+            this.springView=!physicalMethods && classConstants;
         }
 
         @Override
@@ -157,9 +180,49 @@ public class ReflectionInterceptTransformer implements ClassFileTransformer {
                 }
             }
 
+            // Application code calling Spring's ReflectionUtils gets the
+            // application's view of the class: see SpringReflectionView.
+            if (springView && opcode == Opcodes.INVOKESTATIC && SPRING_UTILS.equals(owner)) {
+                String viewDesc = springViewDescriptor(name, descriptor);
+                if (viewDesc != null) {
+                    // Resolved through the caller's loader, so it is the Spring the original call bound to.
+                    super.visitLdcInsn(Type.getObjectType(SPRING_UTILS));
+                    super.visitMethodInsn(Opcodes.INVOKESTATIC, SPRING_VIEW, name, viewDesc, false);
+                    return;
+                }
+            }
+
             // Pass through unchanged
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
         }
+    }
+
+    /**
+     * The SpringReflectionView descriptor for a ReflectionUtils call it covers,
+     * which is the original with the ReflectionUtils class appended, or null.
+     */
+    static String springViewDescriptor(String name, String descriptor) {
+        String callback = "Lorg/springframework/util/ReflectionUtils$MethodCallback;";
+        String filter = "Lorg/springframework/util/ReflectionUtils$MethodFilter;";
+        return switch (name) {
+            case "doWithMethods" -> {
+                if (("(Ljava/lang/Class;" + callback + ")V").equals(descriptor))
+                    yield "(Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/Class;)V";
+                if (("(Ljava/lang/Class;" + callback + filter + ")V").equals(descriptor))
+                    yield "(Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Class;)V";
+                yield null;
+            }
+            case "doWithLocalMethods" -> ("(Ljava/lang/Class;" + callback + ")V").equals(descriptor)
+                    ? "(Ljava/lang/Class;Ljava/lang/Object;Ljava/lang/Class;)V" : null;
+            case "findMethod" -> {
+                if ("(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/reflect/Method;".equals(descriptor))
+                    yield "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Class;)Ljava/lang/reflect/Method;";
+                if ("(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(descriptor))
+                    yield "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;Ljava/lang/Class;)Ljava/lang/reflect/Method;";
+                yield null;
+            }
+            default -> null;
+        };
     }
 
     /**
