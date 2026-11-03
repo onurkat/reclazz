@@ -109,12 +109,60 @@ final class SpringReflection {
             Method load = readerCls.getMethod("loadBeanDefinitions", resourceIface);
             load.invoke(reader, resource);
             com.onurkat.reclazz.platform.SpringXmlAliases.complete(reader, resource);
+            clearSources(tempFactory);
             return true;
         } catch (Throwable t) {
             StatusReporter.warn("Failed to parse " + xmlFile.getName() + ": " + rootCause(t));
             return false;
         } finally {
             current.setContextClassLoader(previousContext);
+        }
+    }
+
+    /**
+     * The alias observer needs each parsed element's resource as its source,
+     * but a live context's reader records none. Native definition equality
+     * includes property value sources, so a parse that kept them would make
+     * every unchanged definition look edited. Once the aliases are recorded,
+     * the sandbox definitions go back to the live reader's null sources.
+     */
+    private static void clearSources(Object tempFactory) throws ReflectiveOperationException {
+        java.util.Set<Object> seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        for (String name : getBeanDefinitionNames(tempFactory)) clearSource(getBeanDefinition(tempFactory, name), seen);
+    }
+
+    private static void clearSource(Object metadata, java.util.Set<Object> seen) {
+        if (metadata == null || !seen.add(metadata)) return;
+        if (metadata instanceof java.util.Map<?, ?> map) {
+            for (var entry : map.entrySet()) { clearSource(entry.getKey(), seen); clearSource(entry.getValue(), seen); }
+        }
+        if (metadata instanceof Iterable<?> items) for (Object item : items) clearSource(item, seen);
+        if (!metadata.getClass().getName().startsWith("org.springframework.")) return;
+        invokeQuietly(metadata, "setSource", new Class<?>[]{Object.class}, (Object) null);
+        clearSource(invokeQuietly(metadata, "getBeanDefinition", new Class<?>[0]), seen);
+        Object values = invokeQuietly(metadata, "getPropertyValues", new Class<?>[0]);
+        if (values != null) clearSource(invokeQuietly(values, "getPropertyValueList", new Class<?>[0]), seen);
+        Object arguments = invokeQuietly(metadata, "getConstructorArgumentValues", new Class<?>[0]);
+        if (arguments != null) {
+            Object indexed = invokeQuietly(arguments, "getIndexedArgumentValues", new Class<?>[0]);
+            if (indexed instanceof java.util.Map<?, ?> map) clearSource(map.values(), seen);
+            clearSource(invokeQuietly(arguments, "getGenericArgumentValues", new Class<?>[0]), seen);
+        }
+        String type = metadata.getClass().getName();
+        if (type.endsWith(".PropertyValue") || type.endsWith("ConstructorArgumentValues$ValueHolder"))
+            clearSource(invokeQuietly(metadata, "getValue", new Class<?>[0]), seen);
+        Object overrides = invokeQuietly(metadata, "getMethodOverrides", new Class<?>[0]);
+        if (overrides != null) clearSource(invokeQuietly(overrides, "getOverrides", new Class<?>[0]), seen);
+        Object names = invokeQuietly(metadata, "attributeNames", new Class<?>[0]);
+        if (names instanceof String[] attributes) for (String attribute : attributes)
+            clearSource(invokeQuietly(metadata, "getMetadataAttribute", new Class<?>[]{String.class}, attribute), seen);
+    }
+
+    private static Object invokeQuietly(Object target, String method, Class<?>[] types, Object... args) {
+        try {
+            return target.getClass().getMethod(method, types).invoke(target, args);
+        } catch (ReflectiveOperationException | RuntimeException absent) {
+            return null;
         }
     }
 
