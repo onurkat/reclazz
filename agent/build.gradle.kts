@@ -2,6 +2,44 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import java.io.ByteArrayOutputStream
 import org.gradle.kotlin.dsl.support.serviceOf
 
+/**
+ * The local tag the Rabbit harness runs, offline. It points at the image for
+ * the daemon's own platform, not at the pinned multi-platform index.
+ *
+ * Under Docker's containerd image store a reference to an index intermittently
+ * stops resolving even though the content is there: `docker image ls` lists the
+ * tag and `docker image inspect` on it answers "No such image". Tagging the
+ * index, which this did, gave a tag with exactly that flake, and the whole
+ * messaging suite failed on it (measured twice in one evening). A
+ * platform-specific inspect of the same index resolved every time, so the tag
+ * is moved onto that child image.
+ */
+fun ensurePinnedRabbitImage(exec: org.gradle.process.ExecOperations, logger: org.gradle.api.logging.Logger, task: String) {
+    val digest = "rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd"
+    val localTag = "reclazz-rabbit-pinned:4.3.5-alpine"
+    fun docker(vararg args: String): Pair<Int, String> {
+        val out = ByteArrayOutputStream()
+        val code = exec.exec {
+            commandLine(listOf("docker") + args)
+            isIgnoreExitValue = true
+            standardOutput = out
+            errorOutput = ByteArrayOutputStream()
+        }.exitValue
+        return code to out.toString().trim()
+    }
+    val platform = docker("version", "--format", "{{.Server.Os}}/{{.Server.Arch}}").second
+    fun child(ref: String) = docker("image", "inspect", "--platform", platform, "--format", "{{.Id}}", ref)
+        .takeIf { it.first == 0 && it.second.startsWith("sha256:") }?.second
+    var image = child(localTag)
+    if (image == null) {
+        logger.lifecycle("$task: local image $localTag missing; pulling $digest for $platform")
+        exec.exec { commandLine("docker", "pull", "--platform", platform, digest) }
+        exec.exec { commandLine("docker", "tag", digest, localTag) }
+        image = child(localTag) ?: throw GradleException("$task: $digest has no $platform image after the pull")
+    }
+    exec.exec { commandLine("docker", "tag", image, localTag) }
+}
+
 plugins {
     id("java")
     id("jacoco")
@@ -191,27 +229,7 @@ val rabbitTest by tasks.registering(Test::class) {
     }
     testLogging { events("passed", "failed", "skipped") }
     doFirst {
-        // Durable fix for the containerd-store index-digest flake. Under Docker's
-        // containerd image store a reference by multi-platform INDEX digest
-        // (repo@sha256:<index>) intermittently fails `docker image inspect`/`run`
-        // even when the content is present, so pre-pulling the digest does not
-        // reliably stick. Here we ensure a STABLE LOCAL TAG exists (which resolves
-        // reliably), pulling the pinned digest only when the tag is missing. The
-        // test harness never pulls; it inspects and runs this local tag offline.
-        val digest = "rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd"
-        val localTag = "reclazz-rabbit-pinned:4.3.5-alpine"
-        val exec = project.serviceOf<org.gradle.process.ExecOperations>()
-        val present = exec.exec {
-            commandLine("docker", "image", "inspect", localTag)
-            isIgnoreExitValue = true
-            standardOutput = ByteArrayOutputStream()
-            errorOutput = ByteArrayOutputStream()
-        }.exitValue == 0
-        if (!present) {
-            logger.lifecycle("rabbitTest: local image $localTag missing; pulling $digest and tagging")
-            exec.exec { commandLine("docker", "pull", digest) }
-            exec.exec { commandLine("docker", "tag", digest, localTag) }
-        }
+        ensurePinnedRabbitImage(project.serviceOf<org.gradle.process.ExecOperations>(), logger, "rabbitTest")
     }
 }
 
@@ -336,27 +354,7 @@ val modernMessagingTest by tasks.registering(Test::class) {
         if (skipRabbit) {
             logger.lifecycle("Modern RabbitMQ tests explicitly NOT RUN (-Preclazz.skipRabbitBroker=true)")
         } else {
-        // Durable fix for the containerd-store index-digest flake. Under Docker's
-        // containerd image store a reference by multi-platform INDEX digest
-        // (repo@sha256:<index>) intermittently fails `docker image inspect`/`run`
-        // even when the content is present, so pre-pulling the digest does not
-        // reliably stick. Here we ensure a STABLE LOCAL TAG exists (which resolves
-        // reliably), pulling the pinned digest only when the tag is missing. The
-        // test harness never pulls; it inspects and runs this local tag offline.
-        val digest = "rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd"
-        val localTag = "reclazz-rabbit-pinned:4.3.5-alpine"
-        val exec = project.serviceOf<org.gradle.process.ExecOperations>()
-        val present = exec.exec {
-            commandLine("docker", "image", "inspect", localTag)
-            isIgnoreExitValue = true
-            standardOutput = ByteArrayOutputStream()
-            errorOutput = ByteArrayOutputStream()
-        }.exitValue == 0
-        if (!present) {
-            logger.lifecycle("modernMessagingTest: local image $localTag missing; pulling $digest and tagging")
-            exec.exec { commandLine("docker", "pull", digest) }
-            exec.exec { commandLine("docker", "tag", digest, localTag) }
-        }
+        ensurePinnedRabbitImage(project.serviceOf<org.gradle.process.ExecOperations>(), logger, "modernMessagingTest")
         }
     }
 }
