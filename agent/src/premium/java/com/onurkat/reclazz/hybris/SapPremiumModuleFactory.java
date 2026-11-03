@@ -54,7 +54,11 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                 };
                 var updater = new com.onurkat.reclazz.hybris.HacRunningSystemUpdater(loader);
                 codegen = new CodegenReloader(hybris.getHybrisContext(), config.isAutoUpdateRunningSystem(),
-                        () -> context.requestRunningSystemUpdate() && updater.updateSchema());
+                        () -> context.requestRunningSystemUpdate() && updater.updateSchema(),
+                        () -> GeneratedClassPath.expose(loader.get(),
+                                hybris.getGeneratedClassDirs().values().stream()
+                                        .flatMap(List::stream).toList(),
+                                instrumentation));
             } else codegen = null;
             java.util.Map<Capability, PlatformChangeHandler> handlers = new java.util.EnumMap<>(Capability.class);
             // This dispatch also existed for non-SAP contexts; preserve it.
@@ -132,9 +136,18 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             StatusReporter.info("Config file changed: " + fileName);
             var candidate = fileName.endsWith(".properties") ? propertySnapshots.pending(event.getPath()) : null;
             if (candidate == null) return;
+            java.util.Set<String> removed = propertySnapshots.removed(candidate);
+            if (!removed.isEmpty()) {
+                // Measured: a key deleted from local.properties kept its value and
+                // the save was reported as "No property values changed".
+                StatusReporter.warn("Removed from " + fileName + ": " + removed + ". The running "
+                        + "configuration keeps " + (removed.size() == 1 ? "its value" : "their values")
+                        + " until a restart, since what a removed key falls back to depends on the other files.");
+                RestartLedger.note(fileName, "removed " + removed + ", still set in the running configuration");
+            }
             if (candidate.changed().isEmpty()) {
                 propertySnapshots.accept(candidate);
-                StatusReporter.info("No property values changed.");
+                if (removed.isEmpty()) StatusReporter.info("No property values changed.");
                 return;
             }
 
@@ -194,6 +207,33 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                     "changed, and a bean that read the value once at startup is still holding the old one");
         }
 
+        /**
+         * The platform's step writes the names of every type, not only the edited
+         * ones: 75 seconds on a full installation, measured. On the reload thread
+         * every save made meanwhile waited behind it, so it runs on its own thread,
+         * and saves that arrive while it runs fold into one more pass.
+         */
+        private final java.util.concurrent.ExecutorService localizer =
+                java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+                    Thread t = new Thread(r, "Reclazz-TypeNames");
+                    t.setDaemon(true);
+                    return t;
+                });
+        private final java.util.concurrent.atomic.AtomicBoolean localizeQueued =
+                new java.util.concurrent.atomic.AtomicBoolean();
+
+        private void localizeInBackground(HybrisLocalizationReloader reloader) {
+            if (!localizeQueued.compareAndSet(false, true)) return;
+            StatusReporter.info("Writing the names onto the types in the background; this covers every type "
+                    + "and can take a minute. Reloads keep running meanwhile.");
+            localizer.submit(() -> {
+                localizeQueued.set(false);
+                if (reloader.localizeStoredTypeNames()) {
+                    StatusReporter.success("Names stored on the types updated from the locales files.");
+                }
+            });
+        }
+
         private void handleLocalizationChange(ChangeEvent event) {
             String fileName = event.getPath().getFileName().toString();
             Object appContext = platformContext.getApplicationContext();
@@ -221,6 +261,14 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
 
             if (reloader.reloadTypeLocalizations()) {
                 StatusReporter.success("Type and enum names re-read from " + fileName + ".");
+                // The names on the types themselves, which Backoffice and
+                // getName() show, are rows the update writes with "Localize types".
+                if (!context.config().isAutoUpdateRunningSystem()) {
+                    StatusReporter.info("Names stored on the types (what Backoffice shows) change with HAC "
+                            + "Update Running System and \"Localize types\", or here with autoUpdateRunningSystem=true.");
+                } else {
+                    localizeInBackground(reloader);
+                }
             } else {
                 StatusReporter.warn("Could not reach the platform's localization cache; "
                         + fileName + " needs a restart to take effect.");

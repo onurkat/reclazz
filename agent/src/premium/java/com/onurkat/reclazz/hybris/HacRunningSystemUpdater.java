@@ -83,9 +83,19 @@ public final class HacRunningSystemUpdater implements RunningSystemUpdater {
                 thread.setContextClassLoader(previous);
             }
             boolean ok = succeeded(result);
-            if (!ok) StatusReporter.warn("Automatic Update Running System did not report success; "
-                    + "apply it in HAC if the new attribute is missing.");
-            return ok;
+            if (!ok) {
+                StatusReporter.warn("Automatic Update Running System did not report success; "
+                        + "apply it in HAC if the new attribute is missing.");
+                return false;
+            }
+            // The schema is new; ModelService still holds converters built for the old one.
+            thread.setContextClassLoader(loader);
+            try {
+                ModelConverterRefresh.refresh(loader);
+            } finally {
+                thread.setContextClassLoader(previous);
+            }
+            return true;
         } catch (Throwable notAvailable) {
             StatusReporter.warn("Automatic Update Running System could not run ("
                     + com.onurkat.reclazz.ui.Failures.describe(notAvailable)

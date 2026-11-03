@@ -33,6 +33,7 @@ class HybrisLocalizationReloadTest {
     @BeforeEach
     void reset() {
         StubTypeLocalization.cleared = 0;
+        StubTypeLocalization.localized = 0;
         StubTypeLocalization.instance = new StubTypeLocalization();
         StubLabels.resets = 0;
         SecondStubLabels.resets = 0;
@@ -95,6 +96,20 @@ class HybrisLocalizationReloadTest {
         assertEquals(1, StubTypeLocalization.cleared,
                 "the platform answers every lookup from this map; clearing it "
                 + "is what makes the next read see the file");
+    }
+
+    /**
+     * The names stored on the types are what Backoffice and getName() show, and
+     * clearing the file cache does not reach them: measured live, the file
+     * lookup answered the new label and getName(Locale) still answered null.
+     */
+    @Test
+    void storedTypeNamesAreWrittenByThePlatformsOwnLocalizeStep() {
+        assertTrue(reloader().localizeStoredTypeNames());
+        assertEquals(1, StubTypeLocalization.localized);
+        assertEquals(0, StubTypeLocalization.cleared, "a separate step from clearing the cache");
+        assertFalse(new HybrisLocalizationReloader(StubBrokenLocalization.class).localizeStoredTypeNames(),
+                "a platform without the step is not reported as done");
     }
 
     @Test
@@ -181,9 +196,14 @@ class HybrisLocalizationReloadTest {
     public static final class StubTypeLocalization {
         static StubTypeLocalization instance = new StubTypeLocalization();
         static int cleared;
+        static int localized;
 
         public static StubTypeLocalization getInstance() {
             return instance;
+        }
+
+        public void localizeTypes() {
+            localized++;
         }
 
         public void clearLocalizationCache() {

@@ -98,6 +98,7 @@ public class CodegenReloader {
     private final HybrisContext hybrisContext;
     private final boolean autoUpdateRunningSystem;
     private final RunningSystemUpdater runningSystemUpdater;
+    private final Runnable generatedClassesReady;
     private final ScheduledExecutorService executor;
     private final Object lock = new Object();
     private volatile boolean running = false;
@@ -130,6 +131,16 @@ public class CodegenReloader {
      */
     public CodegenReloader(HybrisContext hybrisContext, boolean autoUpdateRunningSystem,
                            RunningSystemUpdater runningSystemUpdater) {
+        this(hybrisContext, autoUpdateRunningSystem, runningSystemUpdater, () -> { });
+    }
+
+    /**
+     * @param generatedClassesReady run after a successful regen, before the schema step, so
+     *                              the platform can load the classes the regen just wrote
+     */
+    public CodegenReloader(HybrisContext hybrisContext, boolean autoUpdateRunningSystem,
+                           RunningSystemUpdater runningSystemUpdater, Runnable generatedClassesReady) {
+        this.generatedClassesReady = generatedClassesReady;
         this.hybrisContext = hybrisContext;
         this.autoUpdateRunningSystem = autoUpdateRunningSystem;
         this.runningSystemUpdater = runningSystemUpdater;
@@ -252,6 +263,7 @@ public class CodegenReloader {
         StatusReporter.success("Codegen regen+compile done for " + ext.getName()
                 + ", " + subject + " ready (" + (elapsedMs / 1000) + "s). "
                 + "Structural reloader is applying new bytecode now.");
+        generatedClassesReady.run();
 
         if (hasItems) {
             handleNewPersistence(autoUpdateRunningSystem, runningSystemUpdater);

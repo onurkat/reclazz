@@ -100,6 +100,40 @@ public class HybrisLocalizationReloader {
     }
 
     /**
+     * Writes the names in the locales files onto the types, which is the
+     * "Localize types" step of Update Running System on its own. Clearing the
+     * cache reaches {@code Localization.getLocalizedString}; a type or
+     * attribute name read from its descriptor, which is what Backoffice shows,
+     * is a stored value and stayed at the old text (measured: the file lookup
+     * answered the new label, {@code getName(Locale)} answered null).
+     *
+     * @return true when the platform ran it
+     */
+    public boolean localizeStoredTypeNames() {
+        Class<?> typeLocalization = findTypeLocalization();
+        if (typeLocalization == null) return false;
+        if (typeLocalizationForTests == null
+                && !PlatformTenant.ensureActive(platformClassLoader)) {
+            return false;
+        }
+        Thread thread = Thread.currentThread();
+        ClassLoader previous = thread.getContextClassLoader();
+        if (platformClassLoader != null) thread.setContextClassLoader(platformClassLoader);
+        try {
+            Object instance = typeLocalization.getMethod("getInstance").invoke(null);
+            if (instance == null) return false;
+            instance.getClass().getMethod("localizeTypes").invoke(instance);
+            return true;
+        } catch (Throwable t) {
+            StatusReporter.warn("Could not write the names onto the types: " + describe(t)
+                    + "; HAC Update Running System with \"Localize types\" does the same.");
+            return false;
+        } finally {
+            thread.setContextClassLoader(previous);
+        }
+    }
+
+    /**
      * Drops ZK's label cache, which is what backoffice reads its labels from.
      *
      * @return true when the cache was cleared; false when backoffice is not

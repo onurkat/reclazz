@@ -76,6 +76,19 @@ public final class PropertyFileSnapshots {
         return new Candidate(file, now, changed);
     }
 
+    /**
+     * Keys the recorded version had and this one does not. They are not in
+     * {@link Candidate#changed()}, which holds values to apply, and a removal
+     * has no value: what the key falls back to is another layer's business.
+     */
+    public java.util.Set<String> removed(Candidate candidate) {
+        Map<String, String> previous = lastSeen.get(candidate.file());
+        if (previous == null) return java.util.Set.of();
+        java.util.Set<String> gone = new java.util.TreeSet<>(previous.keySet());
+        gone.removeAll(candidate.content().keySet());
+        return gone;
+    }
+
     public void accept(Candidate candidate) {
         lastSeen.put(candidate.file(), candidate.content());
     }

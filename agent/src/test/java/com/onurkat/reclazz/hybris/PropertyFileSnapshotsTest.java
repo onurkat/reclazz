@@ -44,6 +44,20 @@ class PropertyFileSnapshotsTest {
         assertThrows(UnsupportedOperationException.class, () -> a.content().put("svc.timeout", "999"));
     }
 
+    /** Measured on SAP: deleting the line was reported as "No property values changed". */
+    @Test void aDeletedKeyIsARemovalNotAnEmptySave() throws Exception {
+        var snapshots = new PropertyFileSnapshots();
+        Path file = tmp.resolve("local.properties");
+        Files.writeString(file, "svc.timeout=10\nprobe.flag=v1\n");
+        snapshots.baseline(file);
+        Files.writeString(file, "svc.timeout=10\n");
+        var save = snapshots.pending(file);
+        assertTrue(save.changed().isEmpty(), "nothing to apply");
+        assertEquals(java.util.Set.of("probe.flag"), snapshots.removed(save));
+        snapshots.accept(save);
+        assertTrue(snapshots.removed(snapshots.pending(file)).isEmpty(), "said once, not on every later save");
+    }
+
     @Test void unreadableOrMalformedFileDoesNotAdvanceTheBaseline() throws Exception {
         var snapshots = new PropertyFileSnapshots();
         Path file = tmp.resolve("application.properties");
