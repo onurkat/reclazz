@@ -121,14 +121,19 @@ object ReloadNotifications {
      * so until it restarts it keeps running the old agent while the IDE shows
      * the new version. Saying nothing is how someone ends up reporting a bug
      * that was fixed two releases ago.
+     *
+     * The staged copy is shared by every project on the machine and refreshed
+     * by whichever one opens first, often not the SAP project. Seen in a
+     * sandbox IDE: a plain Java project told to restart "your SAP Commerce
+     * server". So the text names the copy rather than assuming this project.
      */
     fun agentJarRefreshed(project: Project, version: String) {
         NotificationGroupManager.getInstance()
             .getNotificationGroup(WELCOME_GROUP_ID)
             .createNotification(
                 "Reclazz agent updated to $version",
-                "Your SAP Commerce server loads the agent at startup, so restart it "
-                        + "to pick this up. Until then it keeps running the previous agent.",
+                "The agent copy SAP Commerce servers load from ~/.reclazz/agent was updated. "
+                        + "A server started before this keeps the previous agent until it restarts.",
                 NotificationType.INFORMATION
             )
             .notify(project)
