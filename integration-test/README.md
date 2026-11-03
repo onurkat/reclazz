@@ -59,6 +59,7 @@ export RECLAZZ_TEST_PORT_FILE=/path/to/project/.idea/reclazz/agent.port
 | `RECLAZZ_TEST_MODE` | `companion` | `enhanced` on JetBrains Runtime or DCEVM |
 | `RECLAZZ_TEST_EVENT_TIMEOUT` | `30000` | ms to wait for a reload event |
 | `RECLAZZ_TEST_SETTLE_DELAY` | `2000` | ms to let a reload settle before asserting |
+| `RECLAZZ_TEST_ONLY` | all | comma-separated scenario class names, e.g. `ConstructorChangeTest`, to re-run one alone |
 
 ## Why `RECLAZZ_TEST_MODE` matters
 

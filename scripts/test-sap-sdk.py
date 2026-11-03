@@ -17,7 +17,9 @@ jars += sorted((args.hybris_home / 'bin/platform/lib').glob('*.jar'))
 jars += sorted((args.hybris_home / 'bin/platform/bootstrap/bin').glob('*.jar'))
 if not jars[0].is_file():
     parser.error('No platform/ext/core/bin/coreserver.jar in this installation')
-classpath = os.pathsep.join(map(str, [repo / 'agent/build/classes/java/main', *jars]))
+# The interceptor reloader is compiled in the premium source set.
+classpath = os.pathsep.join(map(str, [repo / 'agent/build/classes/java/main',
+                                      repo / 'agent/build/classes/java/premium', *jars]))
 source = repo / 'integration-test/src/sapSdkTest/java/com/onurkat/reclazz/hybris/interceptor/InterceptorRegistrySdkProbe.java'
 with tempfile.TemporaryDirectory(prefix='reclazz-sap-sdk-') as out:
     subprocess.run(['javac', '-proc:none', '-cp', classpath, '-d', out, str(source),

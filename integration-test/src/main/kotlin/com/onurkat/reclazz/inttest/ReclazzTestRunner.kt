@@ -52,7 +52,7 @@ fun main() {
     val report = TestReport()
 
     // Build test list
-    val tests = listOf(
+    val allTests = listOf(
         MethodBodyChangeTest(config, agentClient, httpVerifier),       // 1
         AddMethodTest(config, agentClient, httpVerifier),              // 2
         RemoveMethodTest(config, agentClient, httpVerifier),           // 3
@@ -77,6 +77,13 @@ fun main() {
         CacheableConditionTest(config, agentClient, httpVerifier),     // 22
         EnumTailRemoveTest(config, agentClient, httpVerifier),         // 23
     )
+    // RECLAZZ_TEST_ONLY=ConstructorChangeTest,CacheableConditionTest re-runs named scenarios on a fresh server.
+    val only = System.getenv("RECLAZZ_TEST_ONLY")?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
+    val tests = if (only.isEmpty()) allTests else allTests.filter { it::class.simpleName in only }
+    if (only.isNotEmpty() && tests.size != only.size) {
+        System.err.println("RECLAZZ_TEST_ONLY names unknown scenarios: " + (only - tests.map { it::class.simpleName }.toSet()))
+        exitProcess(1)
+    }
 
     // V1 template restore mappings
     val v1Templates = mapOf(
