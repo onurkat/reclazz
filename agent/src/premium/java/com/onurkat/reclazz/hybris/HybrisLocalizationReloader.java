@@ -10,6 +10,7 @@ import com.onurkat.reclazz.ui.StatusReporter;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Drops the caches that hold static text, so an edited label is read again.
@@ -130,6 +131,134 @@ public class HybrisLocalizationReloader {
             return false;
         } finally {
             thread.setContextClassLoader(previous);
+        }
+    }
+
+    /**
+     * Writes onto the types only the names and descriptions keyed in one
+     * locales file, the way "Localize types" writes each of them: per
+     * language, the platform's merged value when it is not blank, added to the
+     * names already stored. {@code localizeTypes()} walks every type, every
+     * attribute of every type and every enumeration value (75s on a 2211
+     * install with the B2B accelerator); the keys in the file a developer
+     * saved are a few dozen.
+     *
+     * <p>Keys follow the platform's own, lower-cased: {@code type.<code>.name}
+     * and {@code .description} for a type, {@code type.<code>.<qualifier>.name}
+     * and {@code .description} for an attribute of that type, and
+     * {@code type.<enum>.<value>.name} for an enumeration value. A key the
+     * type system does not know is left alone, as the full step leaves it.
+     *
+     * @return how many names or descriptions changed, or -1 when this could
+     *         not run and the full step is the way to write them
+     */
+    public int localizeStoredTypeNames(java.nio.file.Path file) {
+        if (platformClassLoader == null || !PlatformTenant.ensureActive(platformClassLoader)) return -1;
+        Thread thread = Thread.currentThread();
+        ClassLoader previous = thread.getContextClassLoader();
+        thread.setContextClassLoader(platformClassLoader);
+        Object transaction = null;
+        try {
+            java.util.Locale persistence = (java.util.Locale) Class.forName("de.hybris.bootstrap.util.LocaleHelper",
+                    false, platformClassLoader).getMethod("getPersistenceLocale").invoke(null);
+            java.util.Properties saved = new java.util.Properties();
+            try (var reader = java.nio.file.Files.newBufferedReader(file, java.nio.charset.StandardCharsets.UTF_8)) {
+                saved.load(reader);
+            }
+            Object localization = findTypeLocalization().getMethod("getInstance").invoke(null);
+            // Cleared by reloadTypeLocalizations, so this is the files as they are now, merged across extensions.
+            Map<?, ?> merged = (Map<?, ?>) localization.getClass().getMethod("getLocalizations").invoke(localization);
+            Object types = Class.forName("de.hybris.platform.jalo.type.TypeManager", false, platformClassLoader)
+                    .getMethod("getInstance").invoke(null);
+            Class<?> enumeration = Class.forName("de.hybris.platform.jalo.enumeration.EnumerationType", false, platformClassLoader);
+            Class<?> composed = Class.forName("de.hybris.platform.jalo.type.ComposedType", false, platformClassLoader);
+            Class<?> tx = Class.forName("de.hybris.platform.tx.Transaction", false, platformClassLoader);
+            transaction = tx.getMethod("current").invoke(null);
+            tx.getMethod("begin").invoke(transaction);
+            int written = 0;
+            for (String raw : saved.stringPropertyNames()) {
+                String key = raw.toLowerCase(persistence);
+                String[] parts = key.split("\\.", -1);
+                if (parts.length < 3 || parts.length > 4 || !parts[0].equals("type")) continue;
+                String kind = parts[parts.length - 1];
+                if (!kind.equals("name") && !kind.equals("description")) continue;
+                Map<Object, String> values = new java.util.HashMap<>();
+                for (var entry : merged.entrySet()) {
+                    String value = ((java.util.Properties) entry.getValue()).getProperty(key);
+                    if (value != null && !value.isBlank()) values.put(entry.getKey(), value);
+                }
+                if (values.isEmpty()) continue;
+                Object type = lookup(types, "getType", parts[1]);
+                if (type == null) continue;
+                Object target = type;
+                boolean enumValue = false;
+                if (parts.length == 4) {
+                    if (enumeration.isInstance(type) && kind.equals("name")) {
+                        target = enumerationValue(type, parts[2], persistence);
+                        enumValue = true;
+                    } else if (composed.isInstance(type)) {
+                        target = lookup(type, "getAttributeDescriptorIncludingPrivate", parts[2]);
+                    } else {
+                        target = null;
+                    }
+                    if (target == null) continue;
+                }
+                if (write(target, kind.equals("name") ? "AllNames" : "AllDescriptions", values, enumValue)) written++;
+            }
+            tx.getMethod("commit").invoke(transaction);
+            transaction = null;
+            return written;
+        } catch (Throwable t) {
+            StatusReporter.warn("Could not write the names in " + file.getFileName() + " onto the types: " + describe(t)
+                    + "; running the full \"Localize types\" step instead.");
+            return -1;
+        } finally {
+            if (transaction != null) {
+                try { transaction.getClass().getMethod("rollback").invoke(transaction); } catch (Throwable ignored) { }
+            }
+            thread.setContextClassLoader(previous);
+        }
+    }
+
+    /** Added to the stored map, never replacing it: a language the files do not name keeps its value. */
+    @SuppressWarnings("unchecked")
+    private boolean write(Object target, String property, Map<Object, String> values, boolean session)
+            throws ReflectiveOperationException {
+        Object context = null;
+        if (session) {
+            Object jalo = Class.forName("de.hybris.platform.jalo.JaloSession", false, platformClassLoader)
+                    .getMethod("getCurrentSession").invoke(null);
+            context = jalo.getClass().getMethod("getSessionContext").invoke(jalo);
+        }
+        Class<?> contextType = session ? Class.forName("de.hybris.platform.jalo.SessionContext", false, platformClassLoader) : null;
+        Map<Object, Object> stored = (Map<Object, Object>) (session
+                ? target.getClass().getMethod("get" + property, contextType).invoke(target, context)
+                : target.getClass().getMethod("get" + property).invoke(target));
+        Map<Object, Object> next = new java.util.HashMap<>(stored == null ? Map.of() : stored);
+        next.putAll(values);
+        if (next.equals(stored)) return false;
+        if (session) target.getClass().getMethod("set" + property, contextType, Map.class).invoke(target, context, next);
+        else target.getClass().getMethod("set" + property, Map.class).invoke(target, next);
+        return true;
+    }
+
+    private Object enumerationValue(Object type, String code, java.util.Locale persistence) throws ReflectiveOperationException {
+        for (Object value : (java.util.List<?>) type.getClass().getMethod("getValues").invoke(type)) {
+            String valueCode = (String) value.getClass().getMethod("getCode").invoke(value);
+            if (valueCode != null && valueCode.toLowerCase(persistence).equals(code)) return value;
+        }
+        return null;
+    }
+
+    /** The platform answers an unknown code with JaloItemNotFoundException; that is "not here". */
+    private Object lookup(Object owner, String method, String code) throws ReflectiveOperationException {
+        try {
+            return owner.getClass().getMethod(method, String.class).invoke(owner, code);
+        } catch (java.lang.reflect.InvocationTargetException failure) {
+            if (failure.getCause() != null
+                    && failure.getCause().getClass().getName().equals("de.hybris.platform.jalo.JaloItemNotFoundException"))
+                return null;
+            throw failure;
         }
     }
 

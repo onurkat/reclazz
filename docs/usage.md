@@ -91,7 +91,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `watchDirs` | auto-detect | Semicolon-separated class output directories to watch, for a project the detection does not know |
 | `excludeClasses` | (none) | Semicolon-separated class name patterns the transform leaves alone; the way out when instrumenting one class is the problem |
 | `impexAllowRemove` | `false` | Let auto-imported ImpEx files run `REMOVE` lines |
-| `autoUpdateRunningSystem` | `false` | After an items.xml change regenerates the models, run the schema-only Update Running System (add columns, no data, never drop) so a new attribute is live without a manual HAC click. Runs DDL on the live database, so opt-in and dev-only |
+| `autoUpdateRunningSystem` | `false` | After an items.xml change regenerates the models, run the schema-only Update Running System (add columns, no data, never drop) so a new attribute is live without a manual HAC click. A saved `*-locales_<iso>.properties` also writes the type, attribute and enumeration names it keys onto the types, as "Localize types" would for those keys only. Writes to the live database, so opt-in and dev-only |
 | `jpaRefresh` | `false` | Opt-in mapping rebuild. Existing fields require enhanced redefinition; new entities also work on stock JDKs, including supported Hibernate `validate` with a prepared schema. See [scope](#new-jpa-entities-with-a-prepared-schema) |
 | `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
 | `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |
@@ -224,9 +224,22 @@ This requires the standard helper and mapping implementation and an existing
 `fieldSetCache` exposed by a Spring `CacheManager`. Custom helpers, custom mappings,
 referenced/inherited/programmatic maps or unavailable cache invalidation report restart guidance.
 Custom cache resolvers, asynchronous cache loading and arbitrary inherited/programmatic
-mapping configuration are outside this acceptance. This does not rebuild Orika
-schemas or add structural DTO fields. An XML property may have changed even when
-consumer refresh reports a restart requirement; follow that diagnostic.
+mapping configuration are outside this acceptance. Fields a DTO gains are the next
+section's. An XML property may have changed even when consumer refresh reports a
+restart requirement; follow that diagnostic.
+
+### WsDTO properties added in beans.xml
+
+A property added to a data class and its WsDTO in `*-beans.xml` reaches OCC responses
+once the DTOs regenerate (`autoCompile=true`). Orika's mapping for the pair is
+refreshed with the added property; the mapper it generates is compiled against the
+class file the reload applied, because SAP's loader finds `models.jar`, which holds
+the class as it was at startup, before the directory the regen writes. The JAXB
+(EclipseLink MOXy) contexts the OCC message converters cached for a changed class,
+or for a response type that maps it, are dropped and built again on the next
+response, JSON and XML alike. `?fields=` and field-set levels can then name the
+property. Removing it again makes `?fields=` that name it answer as they would on a
+fresh server.
 
 ### OCC request mappings and overrides
 

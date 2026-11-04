@@ -91,7 +91,9 @@ needs its database column: by default Reclazz prints a reminder to run
 **HAC > Update Running System**, and with `autoUpdateRunningSystem=true` it runs that
 schema-only update itself (add columns, no data, never drop) so the attribute is live
 without the manual click. That option runs DDL on the live database, so it is opt-in and
-for development only.
+for development only. With it, a saved locales file also writes the names it keys onto
+the types (what Backoffice shows), only those keys rather than the whole "Localize
+types" step. A property added to a WsDTO shows in OCC responses after the regen.
 
 Business-process actions (`AbstractProceduralAction`, `AbstractSimpleDecisionAction`)
 are prototype-scoped beans the process engine resolves at each transition, so editing an

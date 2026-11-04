@@ -223,7 +223,26 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
         private final java.util.concurrent.atomic.AtomicBoolean localizeQueued =
                 new java.util.concurrent.atomic.AtomicBoolean();
 
-        private void localizeInBackground(HybrisLocalizationReloader reloader) {
+        /**
+         * The keys in the saved file first, which takes well under a second; the
+         * platform's whole step only when that could not run.
+         */
+        private void localizeInBackground(HybrisLocalizationReloader reloader, java.nio.file.Path file) {
+            localizer.submit(() -> {
+                long started = System.nanoTime();
+                int written = reloader.localizeStoredTypeNames(file);
+                if (written < 0) {
+                    localizeAll(reloader);
+                } else if (written == 0) {
+                    StatusReporter.info("The names in " + file.getFileName() + " already match what the types store.");
+                } else {
+                    StatusReporter.success("Names stored on the types updated from " + file.getFileName() + ": "
+                            + written + " changed (" + (System.nanoTime() - started) / 1_000_000 + "ms).");
+                }
+            });
+        }
+
+        private void localizeAll(HybrisLocalizationReloader reloader) {
             if (!localizeQueued.compareAndSet(false, true)) return;
             StatusReporter.info("Writing the names onto the types in the background; this covers every type "
                     + "and can take a minute. Reloads keep running meanwhile.");
@@ -268,7 +287,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                     StatusReporter.info("Names stored on the types (what Backoffice shows) change with HAC "
                             + "Update Running System and \"Localize types\", or here with autoUpdateRunningSystem=true.");
                 } else {
-                    localizeInBackground(reloader);
+                    localizeInBackground(reloader, event.getPath());
                 }
             } else {
                 StatusReporter.warn("Could not reach the platform's localization cache; "
