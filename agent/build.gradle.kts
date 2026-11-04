@@ -28,8 +28,14 @@ fun ensurePinnedRabbitImage(exec: org.gradle.process.ExecOperations, logger: org
         return code to out.toString().trim()
     }
     val platform = docker("version", "--format", "{{.Server.Os}}/{{.Server.Arch}}").second
-    fun child(ref: String) = docker("image", "inspect", "--platform", platform, "--format", "{{.Id}}", ref)
-        .takeIf { it.first == 0 && it.second.startsWith("sha256:") }?.second
+    // Found by listing, then inspected by ID. Under the containerd image store,
+    // inspect by name answered "No such image" for a tag that list and run found.
+    fun child(ref: String): String? {
+        val id = docker("image", "ls", "--no-trunc", "--format", "{{.ID}}", ref).second
+            .lineSequence().firstOrNull { it.startsWith("sha256:") } ?: return null
+        return docker("image", "inspect", "--platform", platform, "--format", "{{.Id}}", id)
+            .takeIf { it.first == 0 && it.second.startsWith("sha256:") }?.second ?: id
+    }
     var image = child(localTag)
     if (image == null) {
         logger.lifecycle("$task: local image $localTag missing; pulling $digest for $platform")

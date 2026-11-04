@@ -33,8 +33,11 @@ public final class RabbitBroker implements AutoCloseable {
             command(15, "docker", "version", "--format", "{{.Server.Version}}");
             // Never invoke a credential helper/download in a test. The build's
             // rabbitTest setup pulls IMAGE_DIGEST and tags it as IMAGE before the
-            // gate; here we only inspect and run the stable local tag, offline.
-            command(30, "docker", "image", "inspect", IMAGE);
+            // gate; here we only look up and run the stable local tag, offline.
+            // Listed, not inspected: under the containerd image store inspect
+            // by name answered "No such image" for a tag that list and run found.
+            if (command(30, "docker", "image", "ls", "--quiet", IMAGE).isBlank())
+                throw new IllegalStateException("local image " + IMAGE + " is missing");
             Runtime.getRuntime().addShutdownHook(broker.cleanup);
             broker.created = true; // also clean a run which created then timed out
             command(45, "docker", "run", "--detach", "--rm", "--pull=never", "--name", broker.name,
