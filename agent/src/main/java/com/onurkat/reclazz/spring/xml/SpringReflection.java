@@ -64,6 +64,12 @@ final class SpringReflection {
     }
 
     static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader, Object environment) {
+        return loadXml(tempFactory, xmlFile, springLoader, environment, null);
+    }
+
+    /** @param documentReader the live context's document reader, null for Spring's default */
+    static boolean loadXml(Object tempFactory, File xmlFile, ClassLoader springLoader, Object environment,
+                           Class<?> documentReader) {
         // Spring finds the handler for a namespace like context: or util: by
         // reading META-INF/spring.handlers from the classpath, through the
         // reader's classloader and, failing that, the thread's. Both default to
@@ -85,6 +91,8 @@ final class SpringReflection {
 
             readerCls.getMethod("setBeanClassLoader", ClassLoader.class)
                     .invoke(reader, springLoader);
+            if (documentReader != null) readerCls.getMethod("setDocumentReaderClass", Class.class)
+                    .invoke(reader, documentReader);
             Class<?> patternResolverCls = loadClass(
                     "org.springframework.core.io.support.PathMatchingResourcePatternResolver",
                     springLoader);

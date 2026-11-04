@@ -31,6 +31,10 @@ final class SapFieldSetRefresher {
         for (Object context : contexts) {
             try {
                 if (!Boolean.TRUE.equals(call(context, "isActive"))) continue;
+                // Only a context that already holds a changed mapping, itself or
+                // through a parent. Asking any other for its mappings creates
+                // them: SAP's web beans are lazy, and some are never created.
+                if (!holdsAny(context, changed)) continue;
                 Object factory = call(context, "getBeanFactory");
                 ClassLoader loader = (ClassLoader) call(factory, "getBeanClassLoader");
                 Class<?> mappingType;
@@ -105,6 +109,16 @@ final class SapFieldSetRefresher {
         Class<?> utility = Class.forName("org.springframework.beans.factory.BeanFactoryUtils", false, loader);
         return (Map<String, Object>) utility.getMethod("beansOfTypeIncludingAncestors", api, Class.class)
                 .invoke(null, context, type);
+    }
+
+    private static boolean holdsAny(Object context, Set<Object> changed) throws ReflectiveOperationException {
+        for (Object current = context; current != null; current = call(current, "getParent")) {
+            Object factory = call(current, "getAutowireCapableBeanFactory");
+            for (String name : (String[]) call(factory, "getSingletonNames")) {
+                if (changed.contains(call(factory, "getSingleton", String.class, name))) return true;
+            }
+        }
+        return false;
     }
 
     private static Object definingFactory(Object context, String name) throws ReflectiveOperationException {

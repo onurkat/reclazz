@@ -184,6 +184,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                             + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));
                     StatusReporter.info("Values read per request take effect now; "
                             + "anything consumed once at startup still needs a restart.");
+                    context.propertiesApplied(applied);
                     return;
                 }
             }

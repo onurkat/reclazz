@@ -811,6 +811,9 @@ public class ReclazzAgent {
                     @Override public boolean requestRunningSystemUpdate() {
                         return modules.request(Capability.RUNNING_SYSTEM_UPDATE).granted();
                     }
+                    @Override public void propertiesApplied(java.util.Collection<String> keys) {
+                        com.onurkat.reclazz.spring.SapCommerceMappings.reselect(keys);
+                    }
                 });
             } catch (ClassNotFoundException absent) {
                 StatusReporter.info("Optional platform automation is absent; free reload remains active.");

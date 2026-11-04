@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Synthetic OCC fixture: the data object a facade would hand out, and the
+     WsDTO the OCC layer maps it to with a field set. -->
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="beans.xsd">
+
+    <bean class="com.onurkat.reclazztest.data.ReclazzProbeData">
+        <property name="code" type="String"/>
+        <property name="label" type="String"/>
+    </bean>
+
+    <bean class="com.onurkat.reclazztest.dto.ReclazzProbeWsDTO">
+        <property name="code" type="String"/>
+        <property name="label" type="String"/>
+    </bean>
+</beans>

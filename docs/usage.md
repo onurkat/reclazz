@@ -212,7 +212,11 @@ For existing SAP Commerce `FieldSetLevelMapping` beans, supported XML property
 edits now refresh the standard `DefaultFieldSetLevelHelper` consumers and their
 manager-backed `fieldSetCache`. BASIC/DEFAULT/FULL selections can add or remove
 existing DTO fields. Descendant contexts that see the changed mapping are included;
-unrelated contexts and other named caches are left alone. Repeated unchanged saves
+unrelated contexts and other named caches are left alone, and nothing is created in
+them: SAP's lazy web beans stay uncreated. The edited file is parsed again with the
+document reader its context used, so SAP's lazy web singletons do not read as a
+`lazy-init` change, and a file under a symlinked extension (`bin/custom` linked to a
+checkout) is matched to the context that loaded it through its target. Repeated unchanged saves
 do not rebuild the table. Multiple declarations for one DTO are rebuilt from fresh
 copies of their inline `levelMapping` maps, avoiding accumulated merges.
 
@@ -231,7 +235,10 @@ override-priority table and bean-discovered handler registrations together. Exis
 or JVM-visible methods can change paths or `@RequestMappingOverride` annotations;
 removing or lowering the winning override makes the remaining eligible handler
 available. SDK API-version filtering remains in charge. Request lookups wait under
-the mapping registry's write lock while the complete registry is rebuilt.
+the mapping registry's write lock while the complete registry is rebuilt. A changed priority
+property (`priorityProperty`, or the derived `requestMappingOverride.<class>.<method>.priority`)
+in `local.properties` rebuilds the registries whose handlers read it, so the handler it
+now favours answers without a restart.
 
 On a registration failure, Reclazz attempts to restore the previous mappings and
 priority table and reports a restart requirement. This restores routing registrations,

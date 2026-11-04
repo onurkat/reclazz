@@ -955,8 +955,12 @@ public class FileWatcher {
         live.addAll(processes);
         loadedXmlMtimes.keySet().retainAll(live);
         Set<Path> watched = new HashSet<>();
-        for (WatchedDirectory directory : watchKeyMap.values())
+        // A file is recorded by the path its classloader found, which is the
+        // target of a symlinked root the watcher holds under its link.
+        for (WatchedDirectory directory : watchKeyMap.values()) {
             watched.add(directory.directory().toAbsolutePath().normalize());
+            watched.add(com.onurkat.reclazz.platform.SpringXmlResources.canonical(directory.directory()));
+        }
         Set<String> modules = platformContext.getResourceDirs().keySet();
         for (Path file : live) {
             ChangeKind named = ChangeKind.of(file.getFileName().toString());

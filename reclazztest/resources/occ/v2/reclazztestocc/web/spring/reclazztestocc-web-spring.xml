@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Loaded into the OCC web context by commercewebservices, which imports
+     classpath*:/occ/v2/*occ/web/spring/*-web-spring.xml. -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.onurkat.reclazztest.occ"/>
+
+    <bean parent="fieldSetLevelMapping" id="reclazzProbeWsDTOFieldSetLevelMapping">
+        <property name="dtoClass" value="com.onurkat.reclazztest.dto.ReclazzProbeWsDTO"/>
+        <property name="levelMapping">
+            <map>
+                <entry key="BASIC" value="code"/>
+                <entry key="DEFAULT" value="code,label"/>
+                <entry key="FULL" value="code,label"/>
+            </map>
+        </property>
+    </bean>
+</beans>

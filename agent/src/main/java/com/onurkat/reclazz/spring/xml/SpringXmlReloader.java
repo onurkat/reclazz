@@ -6,6 +6,7 @@ package com.onurkat.reclazz.spring.xml;
 
 import com.onurkat.reclazz.platform.ApplicationContextHolder;
 import com.onurkat.reclazz.platform.PlatformContext;
+import com.onurkat.reclazz.platform.PlatformTenant;
 import com.onurkat.reclazz.platform.SpringXmlResources;
 import com.onurkat.reclazz.ui.StatusReporter;
 
@@ -77,7 +78,12 @@ public final class SpringXmlReloader {
                 ClassLoader loader = (ClassLoader) factory.getClass().getMethod("getBeanClassLoader").invoke(factory);
                 Object temporary = SpringReflection.newTempBeanFactory(loader);
                 Object environment = context.getClass().getMethod("getEnvironment").invoke(context);
-                if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader, environment))
+                // Parsed the way the context parsed it, or SAP's lazy web beans
+                // read as a lazy-init edit. SAP's reader reads the tenant's config.
+                Class<?> documentReader = SpringXmlResources.documentReader(xmlPath, context);
+                if (documentReader != null) PlatformTenant.ensureActive(loader);
+                if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader, environment,
+                        documentReader))
                     applyToSingleContext(xmlPath, temporary, context, factory, "");
             } catch (ReflectiveOperationException failure) {
                 StatusReporter.warn("Spring XML: application bean classloader unavailable");
@@ -348,6 +354,9 @@ public final class SpringXmlReloader {
             Object factory = SpringReflection.getBeanFactory(ctx);
             if (factory == null) continue;
             for (String name : beanNames) {
+                // annotation-config and component-scan register Spring's own
+                // processors under these names in every context that uses them.
+                if (name.startsWith("org.springframework.")) continue;
                 if (SpringReflection.containsBeanDefinition(factory, name)) {
                     result.add(ctx);
                     break;

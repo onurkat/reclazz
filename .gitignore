@@ -42,6 +42,7 @@ reclazztest/gensrc/
 reclazztest/classes/
 reclazztest/testclasses/
 reclazztest/resources/reclazztest/
+reclazztest/resources/*.xsd
 reclazztest/src/com/onurkat/reclazztest/constants/
 reclazztest/web/webroot/WEB-INF/classes/
 

@@ -19,4 +19,6 @@ public interface PremiumContext {
     Instrumentation instrumentation();
     int applyLoggerLevels(Map<String, String> content, Collection<String> keys);
     boolean requestRunningSystemUpdate();
+    /** Configuration keys the platform now answers with new values; consumers that read them once read again. */
+    default void propertiesApplied(Collection<String> keys) { }
 }
