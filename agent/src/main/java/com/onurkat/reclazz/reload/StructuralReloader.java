@@ -1209,6 +1209,8 @@ public class StructuralReloader {
             afterSwitch(className, "making added properties available to Jackson", () -> {
                 jacksonGetters.addAll(JacksonAddedGetters.publish(targetClass, newBytecode,
                         getterLookup, newTargets));
+                com.onurkat.reclazz.bootstrap.OrikaBridge.reloaded(targetClass,
+                        com.onurkat.reclazz.bootstrap.JacksonBridge.hasGetters(targetClass) ? newBytecode : null);
             });
 
             Set<String> exceptionHandlers = new LinkedHashSet<>();
@@ -1395,6 +1397,14 @@ public class StructuralReloader {
                 // rather than in the Spring orchestrator, because that runs
                 // only for classes that are beans and a request body is not.
                 int constraints = SpringValidatorReloader.flush();
+
+                // SAP Commerce's OCC converters keep a MOXy context per
+                // response type, with the type's properties fixed in it.
+                int jaxbContexts = JaxbContextCaches.evict(targetClass);
+                if (jaxbContexts > 0) {
+                    StatusReporter.info("OCC will map " + targetClass.getSimpleName() + " again on its next response ("
+                            + Plural.of(jaxbContexts, "cached JAXB context") + " dropped).");
+                }
 
                 // Only when something was actually dropped. Under verbose this
                 // printed "Framework caches flushed: 0 Jackson mapper(s), 0

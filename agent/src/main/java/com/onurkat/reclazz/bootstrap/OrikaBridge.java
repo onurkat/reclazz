@@ -49,6 +49,19 @@ public final class OrikaBridge {
         defaultPlans.put(new IdentityKey(plan, deadPlanKeys), true);
     }
     private static final ThreadLocal<Boolean> rebuilding = new ThreadLocal<>();
+    // The class file a reload applied, by class. Javassist compiles a generated
+    // mapper against class files it reads through the loader, and a loader can
+    // answer with an older copy: SAP Commerce's finds models.jar before the
+    // directory a regen writes, so a regenerated DTO's added getter was "not found".
+    private static final Map<Class<?>, byte[]> reloadedBytes = Collections.synchronizedMap(new WeakHashMap<>());
+    // The class path entry this bridge put in each pool, by pool and class name.
+    private static final Map<Object, Map<String, Object>> insertedPaths = Collections.synchronizedMap(new WeakHashMap<>());
+
+    /** The class file a reload just applied to {@code owner}; null when it carries no added accessors. */
+    public static void reloaded(Class<?> owner, byte[] bytes) {
+        if (bytes == null) reloadedBytes.remove(owner);
+        else reloadedBytes.put(owner, bytes.clone());
+    }
 
     // Values contain weak class references only, never a path back to the weak factory key.
     private record Stamp(WeakReference<Class<?>> a, WeakReference<Class<?>> b,
@@ -184,11 +197,23 @@ public final class OrikaBridge {
         Object pool = poolField.get(strategy);
         Class<?> poolType = Class.forName("javassist.ClassPool", false, loader);
         Class<?> ctType = Class.forName("javassist.CtClass", false, loader);
+        Class<?> pathType = Class.forName("javassist.ClassPath", false, loader);
+        Class<?> bytesPathType = Class.forName("javassist.ByteArrayClassPath", false, loader);
         synchronized (pool) {
+            Map<String, Object> inserted;
+            synchronized (insertedPaths) { inserted = insertedPaths.computeIfAbsent(pool, ignored -> new HashMap<>()); }
             for (Class<?> owner : new Class<?>[]{a, b}) {
                 if (owner == null || JacksonBridge.schema(owner) == null) continue;
                 Object ct = poolType.getMethod("getOrNull", String.class).invoke(pool, owner.getName());
                 if (ct != null) ctType.getMethod("detach").invoke(ct);
+                byte[] bytes = reloadedBytes.get(owner);
+                if (bytes == null) continue;
+                // Ahead of the loader's entries, replacing the one a previous reload put there.
+                Object previous = inserted.remove(owner.getName());
+                if (previous != null) poolType.getMethod("removeClassPath", pathType).invoke(pool, previous);
+                Object path = bytesPathType.getConstructor(String.class, byte[].class).newInstance(owner.getName(), bytes);
+                poolType.getMethod("insertClassPath", pathType).invoke(pool, path);
+                inserted.put(owner.getName(), path);
             }
         }
     }
