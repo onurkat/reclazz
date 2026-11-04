@@ -52,10 +52,15 @@ public final class ReflectionMethodTransformer implements ClassFileTransformer {
     public static void invalidate(Instrumentation inst,Class<?> owner) {
         if(reflectionData==null)return;
         try {
+            // The new members are already visible. Flush JavaBeans before the slow scan of every loaded class, so
+            // a request in between does not see an added method next to bean properties computed before it, and
+            // again after it, for bean info computed during the scan from a subclass's old reflection data.
+            var flush=Class.forName("java.beans.Introspector").getMethod("flushCaches");
+            flush.invoke(null);
             for(Class<?> type:inst.getAllLoadedClasses())if(owner.isAssignableFrom(type)) {
                 ReflectionBridge.inheritPublicCacheMode(owner,type);reflectionData.set(type,null);
             }
-            Class.forName("java.beans.Introspector").getMethod("flushCaches").invoke(null);
+            flush.invoke(null);
         } catch(Throwable failure) {StatusReporter.warn("Could not refresh reflection/JavaBeans caches: "+failure);}
     }
 

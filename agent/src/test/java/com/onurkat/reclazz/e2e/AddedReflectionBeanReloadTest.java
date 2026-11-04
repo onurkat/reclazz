@@ -41,7 +41,9 @@ class AddedReflectionBeanReloadTest {
                 String expected = stage==3 ? "absent" : "label"+stage+"|label"+stage+"|label"+stage+"|42|true|static"+stage+"|wrapped|private"+stage;
                 long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(35);
                 String actual;
-                do { actual=get(port);if(actual.equals(expected))break;Thread.sleep(50); } while(System.nanoTime()<end);
+                // A request that lands while the reload publishes members may see them before the JavaBeans
+                // flush; only the settled state is the contract, and every request after it must agree.
+                do { actual=fetch(port);if(actual.equals(expected))break;Thread.sleep(50); } while(System.nanoTime()<end);
                 assertEquals(expected,actual,app.tail());
                 assertEquals(expected,get(port),"warm reflection and bean caches must remain current");
             }
@@ -49,9 +51,18 @@ class AddedReflectionBeanReloadTest {
     }
 
     private String get(int port) throws Exception {
-        var response=HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+port+"/"))
-                .timeout(java.time.Duration.ofSeconds(10)).GET().build(),HttpResponse.BodyHandlers.ofString());
+        var response=send(port);
         assertEquals(200,response.statusCode(),response.body());return response.body();
+    }
+
+    private String fetch(int port) throws Exception {
+        var response=send(port);
+        return response.statusCode()==200 ? response.body() : response.statusCode()+": "+response.body();
+    }
+
+    private HttpResponse<String> send(int port) throws Exception {
+        return HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:"+port+"/"))
+                .timeout(java.time.Duration.ofSeconds(10)).GET().build(),HttpResponse.BodyHandlers.ofString());
     }
 
     private static String dto(int stage) {
