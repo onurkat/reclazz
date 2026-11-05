@@ -1549,7 +1549,11 @@ public class StructuralReloader {
                                 outcome.applied() && !keptBodies);
                     }
                 };
-                redefine(targetClass, payloadToApply, afterRedefine);
+                // Annotations reach reflection only through the redefinition, and
+                // the frameworks re-scan the class as soon as this returns, before
+                // the batch ends: deferred, an MVC re-scan mapped the old path.
+                if (diff.isAnnotationsChanged()) handleOutcome(afterRedefine, redefineOne(targetClass, payloadToApply));
+                else redefine(targetClass, payloadToApply, afterRedefine);
             }
 
             afterSwitch(className, "refreshing reflection and JavaBeans caches", () ->
@@ -1672,7 +1676,9 @@ public class StructuralReloader {
      * the class already serves its new bodies through the companion; what
      * the redefinition brings is the constructors and the renamed copies, so
      * deferring it to the end of the batch widens that window from nothing to
-     * the length of the batch and changes nothing else.
+     * the length of the batch. A class whose annotations changed is the
+     * exception and is redefined at once: its annotations are read by the
+     * framework re-scans that follow it inside the batch.
      */
     public void beginBatch() {
         redefineBatchDepth++;
