@@ -2,7 +2,7 @@
   "source_commit": "75535bd739d7eefd43523dcc63799436c472fe12",
   "source_version": "1.4.0",
   "reviewed": "2026-10-19",
-  "build_revision": "4540b01f5ec433382c0daafa71e028160950b1ff",
+  "build_revision": "4aab8c8ad27504d7a58c1679503a4c7bf1147d3c",
   "pages": 33,
   "site_pages": [
     "compare/index.html",
@@ -195,7 +195,7 @@
     "website/static/apple-touch-icon.png": "d627c45173d68d3b89c26cd88c760a23f123870a065625616dc342d48a859508",
     "website/static/assets/home.js": "106da8ec05512cef99cede006bae4e98332c98e8776df3302f03fd5c29b1cc55",
     "website/static/assets/marketing.css": "77c4ffdddffeaaf43696b550bca1b7e222fe536d8930b1ac2eb949b9adc07860",
-    "website/static/assets/site.css": "bf46d1bfd37d8e602f8ae751f1b470b9ff44d3ea4eaa5d2ade76d2749bf04341",
+    "website/static/assets/site.css": "2ab518d69f6f0fc6b90e10a85fa18d16d3da8fb8d5fa0712ce06bc167a53d3c7",
     "website/static/assets/site.js": "cab0abf769a2f4298c7f59cf28b9211b5a307d3aa42de590857e81b0d9376100",
     "website/static/compare/index.html": "7ffbb51363fdd15813d5c386eab7d200d0c1a274e8fe8c402ecd4e493d90568d",
     "website/static/docs/assets/docs.css": "ac0306ffe52f8d01e231a44f889347d3921c8dfa6025e191c58d3575a2cc9592",

@@ -4,6 +4,10 @@
 .site-header .header-links a { padding:8px 0; }
 .site-header .header-links a[aria-current] { color:var(--accent); }
 .site-header .brand { white-space:nowrap; }
+/* Marketing pages: header and footer line up with the content container
+   (1200px, 1280px from 1600px wide; see marketing.css). */
+@media(min-width:701px) { .marketing .site-header { padding-inline:max(40px,calc((100% - 1200px) / 2)); } }
+@media(min-width:1600px) { .marketing .site-header { padding-inline:calc((100% - 1280px) / 2); }.marketing .site-footer-inner { max-width:1360px; } }
 .site-language { display:grid;place-items:center;min-width:36px;min-height:36px;padding:4px 7px;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:6px;font:11px var(--mono); }
 .site-language:hover { border-color:var(--accent);color:var(--text); }
 .site-menu { display:none;position:relative; }
