@@ -9,7 +9,7 @@ fixture, not a current-version recommendation. Java 17+ and Maven 3.9.x are need
 ## Run
 
 Make matching Reclazz agent and Maven plugin artifacts available first. This
-example selects 1.3.0; if they are not published in your chosen repository, use
+example selects 1.4.0; if they are not published in your chosen repository, use
 [local builds](../../docs/maven.md#local-builds). No starter or MCP client is needed.
 From this directory:
 
@@ -227,7 +227,7 @@ wiring, not proof of a completed CI run or remote artifact availability.
 
 The explicit preparation command and first reload were exercised on macOS arm64,
 SapMachine 21.0.10.0.1, Maven 3.9.16 and Boot 3.3.5, using locally built Reclazz
-1.3.0 artifacts in an isolated Maven repository and a project path with spaces.
+1.4.0 artifacts in an isolated Maven repository and a project path with spaces.
 The extra JVM argument and PID/start time survived reload. This is not evidence
 of registry availability or a fresh Windows/Linux run.
 

@@ -73,6 +73,11 @@ class VersionBumpTest(unittest.TestCase):
     def test_real_repository_metadata_in_scratch(self):
         for name in bump.FILES:
             shutil.copy2(SCRIPTS.parent / name, self.root / name)
+        # Right after a release is prepared the real [Unreleased] is empty, which
+        # preparation rightly refuses; the scratch copy gets one note of its own.
+        changelog = self.root / bump.FILES[2]
+        changelog.write_text(changelog.read_text().replace(
+            '## [Unreleased]\n', '## [Unreleased]\n\n- Scratch note.\n', 1))
         result = self.run_cli('999.0.0')
         self.assertEqual(0, result.returncode, result.stderr)
         for name in bump.FILES:

@@ -236,7 +236,7 @@ Run `python3 scripts/test_sap_flows_proof.py` for the portable acceptance predic
 After `./gradlew :agent:shadowJar`, run:
 
 ```bash
-python3 scripts/test-sap-flows-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+python3 scripts/test-sap-flows-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar
 ```
 
 Use the jar version built by your checkout and a JDK compatible with the SDK. The
@@ -275,9 +275,9 @@ advisory is not evidence that no index can be affected.
 ./gradlew :agent:unitTest --tests '*SapIndexingGuidanceTest' --rerun
 ./gradlew :agent:e2eTest --tests '*SapIndexingGuidanceTest' --rerun
 ./gradlew :agent:shadowJar
-python3 scripts/test-sap-indexing-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+python3 scripts/test-sap-indexing-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar
 # Negative control: must exit nonzero because edited class bytes are withheld.
-python3 scripts/test-sap-indexing-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+python3 scripts/test-sap-indexing-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar --withhold-edit
 ```
 
 The portable tests use synthetic interface identities and a snapshot. The optional
@@ -297,11 +297,11 @@ visibility and selecting affected documents/indexes remain unverified here.
 
 ```bash
 ./gradlew :agent:shadowJar
-python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar
 # Desired-contract probe: currently exits nonzero after proving helper code is live.
-python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --require-fresh-helper
+python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar --require-fresh-helper
 # Negative control: unpublished edited bytes must fail the receipt check.
-python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+python3 scripts/test-sap-caches-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar --withhold-edit
 ```
 
 The optional runner uses installed SDK platform jars and synthetic Spring singleton
@@ -372,9 +372,9 @@ factory/cache APIs alone do not establish isolation to newly started processes.
 
 ```bash
 ./gradlew :agent:shadowJar
-python3 scripts/test-sap-events-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+python3 scripts/test-sap-events-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar
 # Negative control: an unpublished edit must fail the receipt/behavior check.
-python3 scripts/test-sap-events-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+python3 scripts/test-sap-events-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar --withhold-edit
 ```
 
 The runner compiles a synthetic `com.example` subclass of the genuine SDK
@@ -396,9 +396,9 @@ initialization path is **unverified** here because it needs live SAP infrastruct
 
 ```bash
 ./gradlew :agent:shadowJar
-python3 scripts/test-sap-validators-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+python3 scripts/test-sap-validators-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar
 # Negative control: an unpublished edit must fail the receipt/behavior check.
-python3 scripts/test-sap-validators-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar --withhold-edit
+python3 scripts/test-sap-validators-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar --withhold-edit
 ```
 
 The runner builds a genuine Hibernate Validator (the installed provider, jakarta
@@ -504,7 +504,7 @@ provider lifecycle beyond instance reuse.
 `scripts/test-sap-constructor-sdk.py` runs agentless fresh startup and cached-constructor controls, then real class-file saves through a held HTTP caller. It uses the installed exact SAP SDK Spring5.3.43/6.2.12 binaries in isolated classpaths and never starts a tenant or writes the SDK tree. The current runner targets local SapMachine17/21 installations on macOS; other JVM/OS layouts need a separately reviewed runner configuration.
 
 ```bash
-python3 scripts/test-sap-constructor-sdk.py --sdk-search-root /path/to/local/sdks --agent agent/build/libs/agent-1.3.0.jar --output /tmp/reclazz-constructor-results
+python3 scripts/test-sap-constructor-sdk.py --sdk-search-root /path/to/local/sdks --agent agent/build/libs/agent-1.4.0.jar --output /tmp/reclazz-constructor-results
 ```
 
 The search root must contain the owner's installed SDK directories. The exact measured spring-beans binary hashes are checked; a missing or different binary is a setup failure, not a behavioral failure. No proprietary JAR is downloaded or bundled. The runner builds only synthetic fixtures in temporary directories, sanitizes SDK paths from logs, closes owned JVMs, and writes per-profile/JDK observations and raw logs to the requested output directory. Use a fresh output directory per run; a lock prevents duplicate drivers writing one result set.

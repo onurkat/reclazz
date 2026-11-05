@@ -6,169 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Build
-
-- Compile SAP automation in a separate premium source set while retaining the
-  complete Apache-2.0 canonical agent. Add a local core-only verification jar;
-  published and bundled agents continue to include the automation module.
-
-### Fixed
-
-- Expose companion methods, fields and added constructors through ordinary
-  Class reflection on the tested JDK 17/21 paths. Back fields with the shared
-  FieldStore, preserve access checks and primitive conversions, and refresh held
-  constructor/MethodHandle dispatch across saves. Preserve parameter names and
-  parameter, return, nested, receiver and throws type-use annotations through real
-  metadata carriers with logical declarations. Support unreflect, unreflectSpecial,
-  unreflectConstructor and field getter/setter handles without resolving virtual
-  VM slots. Added constructors execute the actual superclass/this delegation;
-  preserve pre-super receiver writes on instrumented delegation chains. Support
-  get/set/compareAndSet VarHandles for mutable added int instance fields and
-  added-constructor findConstructor/canonical watched-caller new expressions. Flush standalone and copied Jackson mapper caches through
-  weak constructor tracking as well as Spring bean discovery. Keep native Spring
-  method scans on VM-declared methods so existing callback adapters retain
-  lifecycle ownership and warm JavaBeans caches remain current. Keep enum memory
-  operations on physical fields so reflectively visible added constants still
-  use FieldStore without asking the JVM for a nonexistent field offset.
-
-- Expose added DTO bean accessors to the tested SAP Commerce Orika resolver,
-  route generated mapper calls to current implementations, and refresh retained
-  ordinary bidirectional default mappings while preserving explicit fields,
-  exclusions and renamed mappings. Verified against the local SDK Orika graph;
-  this mapper path does not certify live tenant or database schema updates.
-
-- Recreate bounded local Rabbit consumers after helper-body or scalar constructor-
-  property saves on the measured Spring5/AMQP2 and Spring6/AMQP3 graphs. Wait for
-  complete native workers before reconstructing current helper/owner callbacks,
-  including already-added callbacks and a same-key owner scalar. The indirect
-  path requires standard AUTO acknowledgment and nontransacted channels;
-  unsupported ownership is refused before destruction and failed reconstruction
-  records partial application.
-
-- Preserve constructor dependency bookkeeping and captured values when a plain
-  Helper refresh reconstructs one same-factory or direct-child leaf Owner,
-  including SDK Spring5.3.43/6.2.12 profiles, source-factory isolation and ordinary
-  save-batch coalescing. This does not add unannotated body-save discovery,
-  arbitrary context graphs, consumer lifecycle or live SAP tenant guarantees.
-
-
-### Documentation
-
-- Unify home, comparison, privacy, license and docs navigation/footer; share theme
-  and search, preserve bilingual home, and improve responsive content layouts.
-
-- Consolidate documentation in main/docs, generate the complete website reference,
-  and reduce README to a concise project entry point. Derive setup excerpts, support
-  matrix, AI discovery and version labels from canonical sources; align security
-  and publishing guidance and validate source anchors.
-
-- Add held Spring Data repository evidence across a prepared-schema native JPA
-  factory swap, including validation retry and opt-out/ambiguity refusals on
-  H2/Spring 6 and JDK17/21. No agent runtime behavior changes.
-
-- Add SQL-native Spring Data watcher evidence on H2/Spring 6 and JDK17/21,
-  including query errors and valid-save recovery; distinguish current dependent
-  recreation from excluded retired external owners. Agent runtime behavior is unchanged.
-
-- Add real broker/file-watcher evidence for plain Service/Repository messaging
-  receivers and Kafka factory/concurrency/startup/group options on JDK17/21.
-  All seven follow-up records have scoped delivery/reload observations;
-  broader variants remain explicitly unverified.
-
-- Record Kafka/JMS/Rabbit messaging evidence from fresh JDK 17/21 broker runs;
-  distinguish watched delivery, component contracts and unverified variants.
-  This evidence package changes no agent runtime behavior.
-
-- Record current properties/XML/message/template evidence with separate watcher,
-  component and unsupported-resource scopes; narrow record-holder, native Boot 3
-  and packaged-template claims to their available evidence. No agent runtime
-  behavior changes in this evidence package.
-
-### Fixed
-
-- Recreate bounded local Kafka consumers after injected-helper body or scalar
-  constructor-property saves on the measured Spring5/Kafka2 and Spring6/Kafka3
-  graphs. Coordinate native consumer completion, current constructor edges and
-  original/added callbacks for nontransactional RECORD and default BATCH
-  acknowledgment; refuse unsupported ownership before destruction and report
-  partial reconstruction failures. Batch-listener APIs and Rabbit cascade remain
-  outside this repair.
-
-- Recreate bounded local JMS consumers when only a plain injected helper or its
-  constructor property changes. Snapshot native dependencies before destruction,
-  drain owned consumers before reconstructing their owners, and preserve original
-  and added callbacks. Do not rebuild an already-current listener twice when the
-  same property also feeds its own constructor. Direct-only consumer property
-  rebuilds are refused before destruction. Unsupported ownership is refused; failed reconstruction
-  reports partial application. Rabbit and Kafka have their separately bounded repairs above.
-
-- Preserve native constructor dependency bookkeeping during direct singleton
-  class refreshes on Spring 5.3.39 and 6.1.14 for the bounded plain constructor
-  path. Repeated refreshes re-resolve current dependencies without replaying old
-  dependency names or clearing unrelated definitions. This does not yet coordinate
-  messaging consumers when only their helper or properties change.
-
-- Register added listeners with Spring Kafka 3.2.4 by recognizing its removed
-  retryTemplate field within the verified version and preparing the native
-  endpoint ID before registration. Unknown versions and unsupported factories
-  retain their refusal guards.
-- Accept native jakarta.jms.Message replies from added Spring JMS callbacks,
-  preserving javax replies and native conversion/correlation behavior.
-
-- Spring method-security policy edits refresh plain factory products as well as
-  stereotype classes. Removing the last security annotation also refreshes the
-  rules held by an existing proxy; body-only helpers keep their metadata gate.
-
-- Plain Spring factory products refresh existing transaction and cache annotation
-  metadata after relevant class saves, without entering bean recreation. Body-only
-  helpers retain the metadata relevance gate; held-proxy rollback/cache behavior
-  and cold-product guards are covered by dedicated reload tests.
-
-- Added Kafka callbacks accept exact `groupId=""` and preserve native listener-ID
-  or factory-group selection. Real broker delivery, repeated body/topic saves,
-  removal and shutdown are observed against normal Spring Kafka2.9.13 controls
-  on JDK17/21; required listener literals remain guarded.
-
-- Added event listeners recognize Spring 6.1.14's native restricted transaction
-  factory, including async and transaction-phase callbacks in transaction-enabled
-  contexts. Custom factory subclasses, duplicate transaction factories, invalid
-  ordering and extra advice on added phase callbacks remain unsupported.
-
-- Registered plain MVC singleton interceptors use current recreated bean identities
-  and dependency state after class reload on measured Spring5.3.39/6.1.14 and JDK17/21.
-  Supported DispatcherServlet lookups follow recreated mappings while native order
-  and path matching remain intact; unsupported routing is retained in the restart ledger.
-
-- Added exception handlers work with the measured Spring 6.1.14 constructor-Function
-  resolver path on stock JDK17/21, including local/controller-advice selection,
-  existing/new endpoints and repeated saves. Unknown factory shapes still refuse
-  the hook; Spring5.3.39 retains its direct-constructor path.
-
-- Separately reloaded watched callers directly read/write added instance fields
-  through the same store as the owning class, preserving first-read values,
-  explicit null writes and later saved-body values. Null instance receivers
-  raise NullPointerException instead of returning a default or dropping a write.
-
-
-- Core JVM documentation states measured field and serialization scope. The
-  current IntelliJ description states Reclazz's superclass policy rather than a
-  universal JVM rule.
-
-- Spring Data refresh now recognizes the actual repository hierarchy, refreshes
-  each warm singleton product once, and re-points ordinary singleton consumers
-  by product identity. Ordinary `@Repository` DAOs are no longer recreated twice.
-  Lazy/cold products are not created for capture; failed recreation is not
-  reported as repository success.
-  Shape-preserving repository interface edits now reach that refresh from the
-  real watcher; temporary missing-type results during recreation are invalidated.
-- Added Backoffice socket actions now produce a restart finding instead of
-  silently relying on an unverified widget registry API. Existing action bodies
-  and separate label/config paths retain their reload behavior.
-- README and the IntelliJ description distinguish retained JVM/object state from
-  recreated bean state, and no longer present unverified specialized competitor
-  behavior as an unconditional negative.
+## [1.4.0] - 2026-11-05
 
 ### Added
+
+- A property added to a SAP Commerce WsDTO in `beans.xml` appears in OCC
+  responses once the DTOs regenerate, in JSON and XML and in field sets that
+  name it. Orika's refreshed mapper compiles against the class file the reload
+  applied rather than the startup copy in `models.jar`, and cached MOXy contexts
+  that map the changed class or a subclass are rebuilt on the next response.
+  Removing the property again answers as a fresh server does. Verified on a
+  running SAP Commerce 2211 server.
+
+- A type or attribute added to `items.xml` is reachable through ModelService on
+  a running SAP Commerce server after code generation and, with
+  `autoUpdateRunningSystem`, the running-system update. Generated model classes
+  load from the regenerated directory, type-system-aware model converters
+  re-read their attributes, and the converter registry drops cached answers.
+
+- With `autoUpdateRunningSystem`, a saved `<ext>-locales_<iso>.properties` file
+  writes the type, attribute and enumeration names and descriptions it keys onto
+  the stored types, the way the platform's "Localize types" step writes them, in
+  one transaction: about one second on a 2211 install instead of the whole
+  75-second step. The full step runs only when the narrow write cannot.
+
+- The live SAP integration runner accepts `RECLAZZ_TEST_ONLY`, a list of scenario
+  class names, to re-run one scenario without editing the runner.
 
 - Add versioned P3b MVC evidence with native endpoint HTTP tests and explicit Spring 6 added-handler and registered-interceptor limitations; retain component-only and unrun variants separately.
 
@@ -380,6 +243,175 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   Receipt support requires the updated agent; it does not prove reload completion.
 
 ### Fixed
+
+- With `autoCompile`, a changed mapping annotation on an existing controller
+  method moves the request mapping. The class's redefinition was deferred to
+  the end of the reload batch, after the MVC re-scan, which mapped the old path
+  again; a class whose annotations changed is now redefined before the re-scan.
+
+- `autoUpdateRunningSystem` now completes on a real SAP Commerce install. The
+  update facade's tray notifier was null when built reflectively, the update
+  thread had no tenant, and the audit step could not find JAXB; each attempt
+  ended in an exception. A regenerated extension constants class no longer
+  queues sources from other extensions, a dependent that fails to compile no
+  longer holds the saved files, and regenerated model classes reload in
+  `autoCompile` mode.
+
+- SAP OCC reloads on a running server: rebuilding the override registry after a
+  controller save binds a tenant first, an edited OCC XML file applies only to
+  the web context that loaded it (also through a `bin/custom` symlink), SAP's
+  lazy web beans are no longer refused as a lazy-init change, a field-set edit
+  no longer instantiates lazy mappings in other web applications, and a changed
+  `@RequestMappingOverride` priority property rebuilds the registries that read it.
+
+- Application code that walks classes with Spring's `ReflectionUtils`
+  (`doWithMethods`, `doWithLocalMethods`, `findMethod`) sees methods a reload
+  added; SAP Commerce's model converter finds accessors this way. A removed
+  method whose name survives in another overload is hidden, so a handler whose
+  parameter list changed maps to the new method instead of being refused as an
+  ambiguous mapping.
+
+- JavaBeans caches are flushed before and after the subclass scan that follows a
+  reload, so a request in between no longer sees an added getter next to stale
+  bean info. Injected `__reclazz$` members are hidden before a class's first
+  reload shows its added members, so a framework scan never sees both.
+
+- Unchanged Spring XML definitions compare equal to their live counterparts
+  after the sandbox parse. Every untouched SAP `ModifyPopulatorList` or
+  `ListMergeDirective` in an edited file was reported as a list directive edit
+  needing a restart.
+
+- A key removed from a SAP platform properties file is reported as kept until a
+  restart instead of "No property values changed".
+
+- The Spring Boot starter's actuator endpoint finds the agent through the
+  `portFile` argument of the attached `-javaagent` flag, including SAP's quoted
+  wrapper form, before the usual places. It reported the agent as unreachable
+  when only that argument named the file.
+
+- The IntelliJ "agent updated" notification names the staged agent shared by
+  every project on the machine and says a server started earlier keeps the
+  previous agent until it restarts, instead of always addressing a SAP server.
+
+- Expose companion methods, fields and added constructors through ordinary
+  Class reflection on the tested JDK 17/21 paths. Back fields with the shared
+  FieldStore, preserve access checks and primitive conversions, and refresh held
+  constructor/MethodHandle dispatch across saves. Preserve parameter names and
+  parameter, return, nested, receiver and throws type-use annotations through real
+  metadata carriers with logical declarations. Support unreflect, unreflectSpecial,
+  unreflectConstructor and field getter/setter handles without resolving virtual
+  VM slots. Added constructors execute the actual superclass/this delegation;
+  preserve pre-super receiver writes on instrumented delegation chains. Support
+  get/set/compareAndSet VarHandles for mutable added int instance fields and
+  added-constructor findConstructor/canonical watched-caller new expressions. Flush standalone and copied Jackson mapper caches through
+  weak constructor tracking as well as Spring bean discovery. Keep native Spring
+  method scans on VM-declared methods so existing callback adapters retain
+  lifecycle ownership and warm JavaBeans caches remain current. Keep enum memory
+  operations on physical fields so reflectively visible added constants still
+  use FieldStore without asking the JVM for a nonexistent field offset.
+
+- Expose added DTO bean accessors to the tested SAP Commerce Orika resolver,
+  route generated mapper calls to current implementations, and refresh retained
+  ordinary bidirectional default mappings while preserving explicit fields,
+  exclusions and renamed mappings. Verified against the local SDK Orika graph;
+  this mapper path does not certify live tenant or database schema updates.
+
+- Recreate bounded local Rabbit consumers after helper-body or scalar constructor-
+  property saves on the measured Spring5/AMQP2 and Spring6/AMQP3 graphs. Wait for
+  complete native workers before reconstructing current helper/owner callbacks,
+  including already-added callbacks and a same-key owner scalar. The indirect
+  path requires standard AUTO acknowledgment and nontransacted channels;
+  unsupported ownership is refused before destruction and failed reconstruction
+  records partial application.
+
+- Preserve constructor dependency bookkeeping and captured values when a plain
+  Helper refresh reconstructs one same-factory or direct-child leaf Owner,
+  including SDK Spring5.3.43/6.2.12 profiles, source-factory isolation and ordinary
+  save-batch coalescing. This does not add unannotated body-save discovery,
+  arbitrary context graphs, consumer lifecycle or live SAP tenant guarantees.
+
+- Recreate bounded local Kafka consumers after injected-helper body or scalar
+  constructor-property saves on the measured Spring5/Kafka2 and Spring6/Kafka3
+  graphs. Coordinate native consumer completion, current constructor edges and
+  original/added callbacks for nontransactional RECORD and default BATCH
+  acknowledgment; refuse unsupported ownership before destruction and report
+  partial reconstruction failures. Batch-listener APIs and Rabbit cascade remain
+  outside this repair.
+
+- Recreate bounded local JMS consumers when only a plain injected helper or its
+  constructor property changes. Snapshot native dependencies before destruction,
+  drain owned consumers before reconstructing their owners, and preserve original
+  and added callbacks. Do not rebuild an already-current listener twice when the
+  same property also feeds its own constructor. Direct-only consumer property
+  rebuilds are refused before destruction. Unsupported ownership is refused; failed reconstruction
+  reports partial application. Rabbit and Kafka have their separately bounded repairs above.
+
+- Preserve native constructor dependency bookkeeping during direct singleton
+  class refreshes on Spring 5.3.39 and 6.1.14 for the bounded plain constructor
+  path. Repeated refreshes re-resolve current dependencies without replaying old
+  dependency names or clearing unrelated definitions. This does not yet coordinate
+  messaging consumers when only their helper or properties change.
+
+- Register added listeners with Spring Kafka 3.2.4 by recognizing its removed
+  retryTemplate field within the verified version and preparing the native
+  endpoint ID before registration. Unknown versions and unsupported factories
+  retain their refusal guards.
+- Accept native jakarta.jms.Message replies from added Spring JMS callbacks,
+  preserving javax replies and native conversion/correlation behavior.
+
+- Spring method-security policy edits refresh plain factory products as well as
+  stereotype classes. Removing the last security annotation also refreshes the
+  rules held by an existing proxy; body-only helpers keep their metadata gate.
+
+- Plain Spring factory products refresh existing transaction and cache annotation
+  metadata after relevant class saves, without entering bean recreation. Body-only
+  helpers retain the metadata relevance gate; held-proxy rollback/cache behavior
+  and cold-product guards are covered by dedicated reload tests.
+
+- Added Kafka callbacks accept exact `groupId=""` and preserve native listener-ID
+  or factory-group selection. Real broker delivery, repeated body/topic saves,
+  removal and shutdown are observed against normal Spring Kafka2.9.13 controls
+  on JDK17/21; required listener literals remain guarded.
+
+- Added event listeners recognize Spring 6.1.14's native restricted transaction
+  factory, including async and transaction-phase callbacks in transaction-enabled
+  contexts. Custom factory subclasses, duplicate transaction factories, invalid
+  ordering and extra advice on added phase callbacks remain unsupported.
+
+- Registered plain MVC singleton interceptors use current recreated bean identities
+  and dependency state after class reload on measured Spring5.3.39/6.1.14 and JDK17/21.
+  Supported DispatcherServlet lookups follow recreated mappings while native order
+  and path matching remain intact; unsupported routing is retained in the restart ledger.
+
+- Added exception handlers work with the measured Spring 6.1.14 constructor-Function
+  resolver path on stock JDK17/21, including local/controller-advice selection,
+  existing/new endpoints and repeated saves. Unknown factory shapes still refuse
+  the hook; Spring5.3.39 retains its direct-constructor path.
+
+- Separately reloaded watched callers directly read/write added instance fields
+  through the same store as the owning class, preserving first-read values,
+  explicit null writes and later saved-body values. Null instance receivers
+  raise NullPointerException instead of returning a default or dropping a write.
+
+
+- Core JVM documentation states measured field and serialization scope. The
+  current IntelliJ description states Reclazz's superclass policy rather than a
+  universal JVM rule.
+
+- Spring Data refresh now recognizes the actual repository hierarchy, refreshes
+  each warm singleton product once, and re-points ordinary singleton consumers
+  by product identity. Ordinary `@Repository` DAOs are no longer recreated twice.
+  Lazy/cold products are not created for capture; failed recreation is not
+  reported as repository success.
+  Shape-preserving repository interface edits now reach that refresh from the
+  real watcher; temporary missing-type results during recreation are invalidated.
+- Added Backoffice socket actions now produce a restart finding instead of
+  silently relying on an unverified widget registry API. Existing action bodies
+  and separate label/config paths retain their reload behavior.
+- README and the IntelliJ description distinguish retained JVM/object state from
+  recreated bean state, and no longer present unverified specialized competitor
+  behavior as an unconditional negative.
+
 - Version preparation validates all release metadata and stages all four outputs
   before replacing files, restoring originals on caught update failures. Plain
   changelog bullets also generate IDE change-notes without leaving mixed versions.
@@ -401,6 +433,50 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   JVM argument. The quoting parser is tested without adding a runtime dependency.
 - Invalid MCP ports return a not-attached result without terminating the stdio
   session. Gradle status requires an agent handshake before reporting attached.
+
+### Documentation
+
+- Unify home, comparison, privacy, license and docs navigation/footer; share theme
+  and search, preserve bilingual home, and improve responsive content layouts.
+
+- Consolidate documentation in main/docs, generate the complete website reference,
+  and reduce README to a concise project entry point. Derive setup excerpts, support
+  matrix, AI discovery and version labels from canonical sources; align security
+  and publishing guidance and validate source anchors.
+
+- Add held Spring Data repository evidence across a prepared-schema native JPA
+  factory swap, including validation retry and opt-out/ambiguity refusals on
+  H2/Spring 6 and JDK17/21. No agent runtime behavior changes.
+
+- Add SQL-native Spring Data watcher evidence on H2/Spring 6 and JDK17/21,
+  including query errors and valid-save recovery; distinguish current dependent
+  recreation from excluded retired external owners. Agent runtime behavior is unchanged.
+
+- Add real broker/file-watcher evidence for plain Service/Repository messaging
+  receivers and Kafka factory/concurrency/startup/group options on JDK17/21.
+  All seven follow-up records have scoped delivery/reload observations;
+  broader variants remain explicitly unverified.
+
+- Record Kafka/JMS/Rabbit messaging evidence from fresh JDK 17/21 broker runs;
+  distinguish watched delivery, component contracts and unverified variants.
+  This evidence package changes no agent runtime behavior.
+
+- Record current properties/XML/message/template evidence with separate watcher,
+  component and unsupported-resource scopes; narrow record-holder, native Boot 3
+  and packaged-template claims to their available evidence. No agent runtime
+  behavior changes in this evidence package.
+
+### Build
+
+- Compile SAP automation in a separate premium source set while retaining the
+  complete Apache-2.0 canonical agent. Add a local core-only verification jar;
+  published and bundled agents continue to include the automation module.
+
+- Test waits measure elapsed time with `System.nanoTime`, so a host that sleeps
+  during a run no longer expires them on wake. The RabbitMQ harnesses find and
+  tag the pinned image through `docker image ls`, which works with the
+  containerd image store. The SAP SDK interceptor probe compiles against the
+  premium classes.
 
 ## [1.3.0] - 2026-09-17
 

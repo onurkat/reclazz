@@ -88,7 +88,7 @@ python3 scripts/test-build-plugin-safety.py \
   --gradle /absolute/path/to/gradle-8.10.2/bin/gradle
 ```
 
-Use a fresh work directory every time. The default artifacts are for 1.3.0;
+Use a fresh work directory every time. The default artifacts are for 1.4.0;
 for another version pass `--version` and the matching artifact paths shown by
 `--help`. Maven 3.9.x and its fixture compiler plugin must be cached for this
 offline harness. The cache-overlay script uses symlinks; Windows execution of

@@ -117,7 +117,7 @@ Build the agent, then pass its versioned jar and an installed SDK explicitly:
 ```bash
 ./gradlew :agent:shadowJar :integration-test:build
 python3 scripts/test_sap_flows_proof.py
-python3 scripts/test-sap-flows-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.3.0.jar
+python3 scripts/test-sap-flows-sdk.py /path/to/hybris --agent agent/build/libs/agent-1.4.0.jar
 ```
 
 The runner compiles synthetic `com.example` fixtures in a temporary directory and
