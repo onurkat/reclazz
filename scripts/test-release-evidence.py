@@ -251,9 +251,17 @@ class GateTest(unittest.TestCase):
             tasks.register('producer') {
                 doLast { throw new GradleException('producer ran during upload') }
             }
-            tasks.register('publishPlugin') {
+            tasks.register('signPlugin') {
                 dependsOn 'producer'
-                ext.archiveFile = layout.file(providers.provider { file('build/distributions/reclazz-1.2.3-signed.zip') })
+                ext.signedArchiveFile = layout.file(providers.provider { file('build/distributions/reclazz-1.2.3-signed.zip') })
+            }
+            tasks.register('publishPlugin') {
+                dependsOn 'signPlugin'
+                // As the platform wires it: the signed zip only if signPlugin did work.
+                ext.archiveFile = objects.fileProperty().convention(layout.file(providers.provider {
+                    file(tasks.signPlugin.didWork ? 'build/distributions/reclazz-1.2.3-signed.zip'
+                                                  : 'build/distributions/reclazz-1.2.3.zip')
+                }))
                 doLast { file('build/uploaded').text = 'uploaded' }
             }
         ''')

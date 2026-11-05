@@ -6,6 +6,12 @@ gradle.taskGraph.whenReady { graph ->
         throw new GradleException('Release upload invocation contains no supported publisher')
     }
     graph.allTasks.each { task ->
+        if (task.path == ':publishPlugin') {
+            // The platform uploads signPlugin's output only when signPlugin did
+            // work in this invocation; it is disabled below, so without this the
+            // unsigned zip would be the one uploaded.
+            task.archiveFile.set(task.project.tasks.getByName('signPlugin').signedArchiveFile)
+        }
         if (uploads.contains(task.path)) {
             task.doFirst {
                 def publisher = task.path == ':publishPlugin' ? 'marketplace' : 'portal'
