@@ -13,7 +13,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
-<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=e3699c344fcb">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=1a3655f79ef4"><link rel="stylesheet" href="/assets/site.css?v=ff823a0eccc6">
 <script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Superclass changes without a custom classloader", "description": "Complete configuration, behavior and scope reference: Superclass changes without a custom classloader.", "url": "https://reclazz.com/docs/reference/superclass-feasibility/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
 </head>
@@ -39,7 +39,7 @@ rejected on both named runtimes tested here. This is a versioned observation,
 not a claim that every JVM extension, present or future, must behave identically.
 This experiment does not add superclass replacement support to Reclazz.</p>
 <h2 id="reproduce">Reproduce</h2>
-<p>The fixture under <a href="https://github.com/onurkat/reclazz/tree/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/scripts/probes/superclass">scripts/probes/superclass</a> is
+<p>The fixture under <a href="https://github.com/onurkat/reclazz/tree/b7dded7708b659717453b79c49d34087d8b28cb1/scripts/probes/superclass">scripts/probes/superclass</a> is
 adapted from the preserved 2026-09-22 research probe. The runner uses Python 3.9+
 and explicitly selected full JDKs (17+); no third-party dependencies, downloads,
 Reclazz build or production agent are involved. Run from the repository root:</p>
@@ -174,11 +174,11 @@ by this fixture. <a href="https://docs.oracle.com/en/java/javase/17/docs/api/jav
 <h2 id="relationship-to-current-reclazz">Relationship to current Reclazz</h2>
 <p>Repository evidence at baseline <code>28e7c6f</code>:</p>
 <ul>
-<li><a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/agent/src/main/java/com/onurkat/reclazz/reload/StructuralAnalyzer.java">StructuralAnalyzer.StructuralDiff.isUnsupported</a>
+<li><a href="https://github.com/onurkat/reclazz/blob/b7dded7708b659717453b79c49d34087d8b28cb1/agent/src/main/java/com/onurkat/reclazz/reload/StructuralAnalyzer.java">StructuralAnalyzer.StructuralDiff.isUnsupported</a>
 marks a changed superclass unsupported.</li>
-<li><a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/agent/src/main/java/com/onurkat/reclazz/reload/HierarchyRevert.java">HierarchyRevert.toLoadedSuperclass</a>
+<li><a href="https://github.com/onurkat/reclazz/blob/b7dded7708b659717453b79c49d34087d8b28cb1/agent/src/main/java/com/onurkat/reclazz/reload/HierarchyRevert.java">HierarchyRevert.toLoadedSuperclass</a>
 keeps the loaded superclass and distinguishes unsafe bodies from class-level
-blockers. <a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java">StructuralReloader</a>
+blockers. <a href="https://github.com/onurkat/reclazz/blob/b7dded7708b659717453b79c49d34087d8b28cb1/agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java">StructuralReloader</a>
 applies eligible methods or pins/refuses methods that depend on the new base.</li>
 <li>StructuralReloader already uses <code>classLookup.defineHiddenClass(..., NESTMATE)</code>
 for companions. That existing mechanism and this standalone probe are evidence
@@ -189,7 +189,7 @@ Neither establishes automatic superclass emulation in the product.</li>
 Reclazz's actual transformer, salvage path, restart ledger or reload receipts.
 The production boundary and reporting tests below are separate from that experiment.</p>
 <h2 id="production-reload-boundary-regressions">Production reload boundary regressions</h2>
-<p><a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/agent/src/test/java/com/onurkat/reclazz/reload/SuperclassTypeBoundaryReloadTest.java">SuperclassTypeBoundaryReloadTest</a>
+<p><a href="https://github.com/onurkat/reclazz/blob/b7dded7708b659717453b79c49d34087d8b28cb1/agent/src/test/java/com/onurkat/reclazz/reload/SuperclassTypeBoundaryReloadTest.java">SuperclassTypeBoundaryReloadTest</a>
 uses Reclazz's actual transformer and <code>StructuralReloader</code>, with instrumentation
 attached to the test JVM. It compiles original and replacement classes in memory,
 warms the original methods, then observes the held receiver after reload. The
@@ -246,7 +246,7 @@ not applied and needs a restart. Eligible method-body application is attempted
 separately; a warning emitted before that attempt is not proof that it succeeded.
 Pinned-method warnings name the retained method and reason. Class-level blockers
 refuse the save and leave its method changes unapplied.</p>
-<p><a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/agent/src/test/java/com/onurkat/reclazz/e2e/SuperclassReportingVerificationTest.java">SuperclassReportingVerificationTest</a>
+<p><a href="https://github.com/onurkat/reclazz/blob/b7dded7708b659717453b79c49d34087d8b28cb1/agent/src/test/java/com/onurkat/reclazz/e2e/SuperclassReportingVerificationTest.java">SuperclassReportingVerificationTest</a>
 starts one real application with the packaged Reclazz agent. Across ordinary
 updates, superclass salvage, a pinned method, two refused saves and recovery, it
 checks fresh live output on the held receiver against exact-input socket receipts:</p>
@@ -278,7 +278,7 @@ state/constructor engines from this result. Retain the lower-cost tests and
 truthful reporting for current refusal/method-salvage behavior. Any production
 expansion needs a separately approved scope and evidence. A custom loader would
 also be a separate design investigation; none was implemented or tested here.</p>
-</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/docs/superclass-feasibility.md">docs/superclass-feasibility.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/spring-constructor-dependencies/"><span>← Previous</span><strong>Constructor dependency ownership during ordinary class refresh</strong></a><a href="/docs/reference/test-guide/"><span>Next →</span><strong>Reclazz: Test Guide for SAP Commerce (Hybris)</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#finding-and-scope">Finding and scope</a><a href="#reproduce">Reproduce</a><a href="#observed-results-2026-09-23">Observed results: 2026-09-23</a><a href="#why-these-are-different-mechanisms">Why these are different mechanisms</a><a href="#relationship-to-current-reclazz">Relationship to current Reclazz</a><a href="#production-reload-boundary-regressions">Production reload boundary regressions</a><a href="#production-reload-reporting">Production reload reporting</a><a href="#decision-and-remaining-limits">Decision and remaining limits</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/b7dded7708b659717453b79c49d34087d8b28cb1/docs/superclass-feasibility.md">docs/superclass-feasibility.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/spring-constructor-dependencies/"><span>← Previous</span><strong>Constructor dependency ownership during ordinary class refresh</strong></a><a href="/docs/reference/test-guide/"><span>Next →</span><strong>Reclazz: Test Guide for SAP Commerce (Hybris)</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#finding-and-scope">Finding and scope</a><a href="#reproduce">Reproduce</a><a href="#observed-results-2026-09-23">Observed results: 2026-09-23</a><a href="#why-these-are-different-mechanisms">Why these are different mechanisms</a><a href="#relationship-to-current-reclazz">Relationship to current Reclazz</a><a href="#production-reload-boundary-regressions">Production reload boundary regressions</a><a href="#production-reload-reporting">Production reload reporting</a><a href="#decision-and-remaining-limits">Decision and remaining limits</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
