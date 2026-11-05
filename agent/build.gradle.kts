@@ -118,8 +118,8 @@ dependencies {
     // Real JSR-250 lifecycle regressions only; never packaged with the agent.
     testImplementation("javax.annotation:javax.annotation-api:1.3.2")
     // Real local Kafka broker regressions only; never packaged with the agent.
-    testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
-    testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
+    testImplementation("org.springframework.kafka:spring-kafka:4.1.2")
+    testImplementation("org.springframework.kafka:spring-kafka-test:4.1.2")
     testImplementation("org.springframework:spring-messaging:5.3.39")
     // Real Rabbit listener regressions only; production remains reflection-only.
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
@@ -328,8 +328,8 @@ dependencies {
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-messaging:6.1.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-tx:6.1.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-jms:6.1.14")
-    add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka:3.2.4")
-    add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka-test:3.2.4")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka:4.1.2")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka-test:4.1.2")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework.amqp:spring-rabbit:3.1.7")
     add(modernMessagingTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:6.1.3")
     add(modernMessagingTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
