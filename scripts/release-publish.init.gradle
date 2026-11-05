@@ -1,6 +1,11 @@
 // Release uploads must consume the files already checked by release.sh.
 // This init script is used only for the upload invocation, never for builds.
 def uploads = [':publishPlugin', ':gradle-plugin:publishPlugins'] as Set
+// Gradle publishes an artifact only if the task that writes it is enabled, so
+// these stay on; they find their outputs up to date, and the checked digests
+// below refuse any byte they would change.
+def portalArtifactTasks = ['jar', 'javadocJar', 'sourcesJar', 'generatePomFileForPluginMavenPublication',
+        'generateMetadataFileForPluginMavenPublication'].collect { ':gradle-plugin:' + it } as Set
 gradle.taskGraph.whenReady { graph ->
     if (!graph.allTasks.any { uploads.contains(it.path) }) {
         throw new GradleException('Release upload invocation contains no supported publisher')
@@ -29,9 +34,9 @@ gradle.taskGraph.whenReady { graph ->
                     commandLine(['python3', 'scripts/release-evidence.py', 'verify-publisher', publisher] + files)
                 }
             }
-        } else {
+        } else if (!portalArtifactTasks.contains(task.path)) {
             // Keep the configured publication and its artifact paths, but do
-            // not run compilers, jar writers, metadata writers or signing again.
+            // not run compilers or signing again.
             task.enabled = false
         }
     }

@@ -54,7 +54,7 @@ class GateTest(unittest.TestCase):
     def capture(self, profile='local'):
         return evidence.create(self.root, '1.2.3', self.commit, profile)
 
-    def distribution(self):
+    def distribution(self, gradle_plugin=True):
         for module, artifact, name in [
             ('agent', 'reclazz-agent', 'agent/build/reclazz-agent-1.2.3-central-bundle.zip'),
             ('spring-boot-starter', 'reclazz-spring-boot-starter', 'spring-boot-starter/build/reclazz-spring-boot-starter-1.2.3-central-bundle.zip'),
@@ -69,7 +69,8 @@ class GateTest(unittest.TestCase):
         for name in ['libs/gradle-plugin-1.2.3.jar', 'libs/gradle-plugin-1.2.3-sources.jar',
                      'libs/gradle-plugin-1.2.3-javadoc.jar', 'publications/pluginMaven/pom-default.xml',
                      'publications/pluginMaven/module.json']:
-            self.write('gradle-plugin/build/' + name, name)
+            if gradle_plugin:
+                self.write('gradle-plugin/build/' + name, name)
         return self.capture('distribution')
 
     def test_receipt_and_copy_identify_exact_bytes(self):
@@ -276,13 +277,27 @@ class GateTest(unittest.TestCase):
             }
             tasks.named('publishPlugins') {
                 actions.clear() // Real plugin/configuration; replace only the remote operation.
-                doLast { file('build/uploaded').text = 'uploaded' }
+                doLast {
+                    // The real task refuses an artifact whose producing task is disabled.
+                    ['jar', 'javadocJar', 'sourcesJar'].each {
+                        if (!tasks.getByName(it).enabled) throw new GradleException("artifact task $it was disabled")
+                    }
+                    file('build/uploaded').text = 'uploaded'
+                }
             }
         """)
         self.git('add', '.')
         self.git('commit', '-qm', 'graph fixture')
         self.commit = self.git('rev-parse', 'HEAD')
-        self.distribution()
+        # The gate builds the Portal artifacts with Gradle, so at upload their
+        # tasks find them up to date; those tasks must stay enabled.
+        built = subprocess.run([os.environ['RECLAZZ_TEST_GRADLE_WRAPPER'], '-p', str(self.root), '--no-daemon',
+                                ':gradle-plugin:jar', ':gradle-plugin:javadocJar', ':gradle-plugin:sourcesJar',
+                                ':gradle-plugin:generatePomFileForPluginMavenPublication',
+                                ':gradle-plugin:generateMetadataFileForPluginMavenPublication'],
+                               capture_output=True, text=True, timeout=120)
+        self.assertEqual(0, built.returncode, built.stdout + built.stderr)
+        self.distribution(gradle_plugin=False)
         command = [os.environ['RECLAZZ_TEST_GRADLE_WRAPPER'], '-p', str(self.root),
                    '-I', str(self.root / 'scripts/release-publish.init.gradle'), ':publishPlugin', ':gradle-plugin:publishPlugins',
                    '--no-daemon', '--no-configuration-cache']
