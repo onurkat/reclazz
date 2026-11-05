@@ -13,11 +13,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
-<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=2ab518d69f6f">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=e3699c344fcb">
 <script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Installation", "description": "Complete configuration, behavior and scope reference: Installation.", "url": "https://reclazz.com/docs/reference/installation/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
 </head>
-<body class="">
+<body class="docs-page">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="docs-header site-header">
 <a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
@@ -157,7 +157,7 @@ It attaches the agent to <code>spring-boot:run</code> while retaining your other
 # In another terminal, in the same application directory:
 mvn compile
 </code></pre></div>
-<p>A complete runnable <a href="https://github.com/onurkat/reclazz/blob/4aab8c8ad27504d7a58c1679503a4c7bf1147d3c/examples/maven-spring-boot/README.md">Maven example</a> includes
+<p>A complete runnable <a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/examples/maven-spring-boot/README.md">Maven example</a> includes
 the POM, endpoint, version selection and first-reload steps. Keep your application's
 existing Boot version; the example's Boot 3.3.5 pin is a reproducible fixture, not
 an upgrade recommendation. The longer dependency-plugin alternative remains in
@@ -242,7 +242,7 @@ you intended. Connection alone only confirms connectivity.</li>
 <li>Change a simple method's returned text, compile to a watched class output,
 then call it again <strong>without restarting</strong>. Expect the new text and the same JVM.</li>
 <li>For complete acceptance with matching agent/MCP builds, follow the
-<a href="https://github.com/onurkat/reclazz/blob/4aab8c8ad27504d7a58c1679503a4c7bf1147d3c/examples/maven-spring-boot/README.md#verify-the-installation">Maven installation verification recipe</a>
+<a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/examples/maven-spring-boot/README.md#verify-the-installation">Maven installation verification recipe</a>
 from its baseline step before editing: confirm the intended JVM/version with
 DOCTOR, hash the compiled class, require a same-session <code>applied</code> VERIFY
 receipt, and check the changed response in the same JVM. A successful
@@ -253,11 +253,11 @@ was present at startup, the compiled output is watched, and the current change
 is supported. <a href="/docs/reference/usage/#when-a-reload-goes-wrong">Troubleshooting</a>.</p>
 <p>Validation scope for this guide: the Maven example and standalone launch were
 exercised on macOS arm64 with SapMachine 21; details are in the
-<a href="https://github.com/onurkat/reclazz/blob/4aab8c8ad27504d7a58c1679503a4c7bf1147d3c/examples/maven-spring-boot/README.md#validation-boundary">example</a>. Windows/Linux
+<a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/examples/maven-spring-boot/README.md#validation-boundary">example</a>. Windows/Linux
 commands, Marketplace installation, IDE launcher installation and a live SAP
 Commerce setup were not rerun for this change. Their references and existing
 coverage are separate from this local verification.</p>
-</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4aab8c8ad27504d7a58c1679503a4c7bf1147d3c/docs/installation.md">docs/installation.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/gradle-plugin/"><span>← Previous</span><strong>Reclazz Gradle plugin</strong></a><a href="/docs/reference/maven/"><span>Next →</span><strong>Reclazz with Maven</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#versions-and-requirements">Versions and requirements</a><a href="#intellij-idea">IntelliJ IDEA</a><a href="#gradle">Gradle</a><a href="#maven">Maven</a><a href="#standalone-agent">Standalone agent</a><a href="#sap-commerce">SAP Commerce</a><a href="#optional-mcp-server">Optional MCP server</a><a href="#building-from-source">Building from source</a><a href="#your-first-reload">Your first reload</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/docs/installation.md">docs/installation.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/gradle-plugin/"><span>← Previous</span><strong>Reclazz Gradle plugin</strong></a><a href="/docs/reference/maven/"><span>Next →</span><strong>Reclazz with Maven</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#versions-and-requirements">Versions and requirements</a><a href="#intellij-idea">IntelliJ IDEA</a><a href="#gradle">Gradle</a><a href="#maven">Maven</a><a href="#standalone-agent">Standalone agent</a><a href="#sap-commerce">SAP Commerce</a><a href="#optional-mcp-server">Optional MCP server</a><a href="#building-from-source">Building from source</a><a href="#your-first-reload">Your first reload</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>

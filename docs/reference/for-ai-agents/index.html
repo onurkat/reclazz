@@ -13,11 +13,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
-<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=2ab518d69f6f">
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=e3699c344fcb">
 <script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "For AI agents", "description": "Complete configuration, behavior and scope reference: For AI agents.", "url": "https://reclazz.com/docs/reference/for-ai-agents/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
 </head>
-<body class="">
+<body class="docs-page">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="docs-header site-header">
 <a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
@@ -64,7 +64,7 @@ download the jar, then attach it at startup:</p>
 <p>The flag must be present when the JVM starts; the agent only reloads classes it
 transformed at load time. Every argument is in <a href="/docs/reference/usage/">usage.md</a>.</p>
 <h2 id="confirm-it-attached-and-verify-a-reload">Confirm it attached and verify a reload</h2>
-<p>Start with the <a href="https://github.com/onurkat/reclazz/blob/4aab8c8ad27504d7a58c1679503a4c7bf1147d3c/examples/maven-spring-boot/README.md#verify-the-installation">complete installation verification recipe</a>:
+<p>Start with the <a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/examples/maven-spring-boot/README.md#verify-the-installation">complete installation verification recipe</a>:
 record the intended JVM, inspect DOCTOR, compile a real change, verify its exact
 class-file hash in the same session and check live behavior. The existing tools
 below supply different evidence; an attachment check is not a reload receipt.</p>
@@ -162,7 +162,7 @@ not establish end-to-end coverage of Gradle/Maven plugin resolution, Spring Boot
 or a third-party MCP client's configuration. Those remain separate integration
 surfaces. The application, compiler, wrapper and MCP subprocesses have bounded
 waits and are cleaned up; their transcripts appear in the test report.</p>
-</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4aab8c8ad27504d7a58c1679503a4c7bf1147d3c/docs/for-ai-agents.md">docs/for-ai-agents.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/feature-evidence/"><span>← Previous</span><strong>Core JVM feature evidence</strong></a><a href="/docs/reference/gradle-plugin/"><span>Next →</span><strong>Reclazz Gradle plugin</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#what-reclazz-gives-your-edit-run-loop">What Reclazz gives your edit-run loop</a><a href="#turn-it-on">Turn it on</a><a href="#confirm-it-attached-and-verify-a-reload">Confirm it attached and verify a reload</a><a href="#drop-in-agentsmd-recipe">Drop-in AGENTS.md recipe</a><a href="#why-an-agent-can-rely-on-this">Why an agent can rely on this</a><a href="#reproducing-the-packaged-consumer-workflow">Reproducing the packaged consumer workflow</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/e12bcaa7a115dba1e0bbd72b40fd5bced470792f/docs/for-ai-agents.md">docs/for-ai-agents.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/feature-evidence/"><span>← Previous</span><strong>Core JVM feature evidence</strong></a><a href="/docs/reference/gradle-plugin/"><span>Next →</span><strong>Reclazz Gradle plugin</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#what-reclazz-gives-your-edit-run-loop">What Reclazz gives your edit-run loop</a><a href="#turn-it-on">Turn it on</a><a href="#confirm-it-attached-and-verify-a-reload">Confirm it attached and verify a reload</a><a href="#drop-in-agentsmd-recipe">Drop-in AGENTS.md recipe</a><a href="#why-an-agent-can-rely-on-this">Why an agent can rely on this</a><a href="#reproducing-the-packaged-consumer-workflow">Reproducing the packaged consumer workflow</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
