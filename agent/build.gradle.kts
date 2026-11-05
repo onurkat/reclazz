@@ -43,7 +43,12 @@ fun ensurePinnedRabbitImage(exec: org.gradle.process.ExecOperations, logger: org
         exec.exec { commandLine("docker", "tag", digest, localTag) }
         image = child(localTag) ?: throw GradleException("$task: $digest has no $platform image after the pull")
     }
-    exec.exec { commandLine("docker", "tag", image, localTag) }
+    // Which reference a daemon can tag differs by image store: on the classic
+    // store of the CI runners the listed ID answered "No such image" while the
+    // pinned digest tagged fine, so the digest is the fallback.
+    if (docker("tag", image, localTag).first != 0 && docker("tag", digest, localTag).first != 0) {
+        throw GradleException("$task: could not tag $localTag from $image or $digest")
+    }
 }
 
 plugins {
