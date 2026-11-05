@@ -121,7 +121,7 @@ def generate(revision='main'):
 ''' + layout.head() + '''
 <script type="application/ld+json">''' + json.dumps(schema).replace('<', '\\u003c') + '''</script>
 </head>
-<body class="''' + ('matrix-page' if slug == 'support-matrix' else '') + '''">
+<body class="docs-page''' + (' matrix-page' if slug == 'support-matrix' else '') + '''">
 ''' + layout.header('docs') + '''
 <details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation">''' + nav + '''</nav></details>
 <div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>''' + escape(manifest['source_version']) + '''</code></div><nav aria-label="Documentation">''' + nav + '''</nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
