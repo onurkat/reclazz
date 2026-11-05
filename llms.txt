@@ -1,199 +1,48 @@
 # Reclazz
 
-> Free, open-source hot-reload for SAP Commerce (Hybris) and Spring. An IntelliJ
-> plugin and a Java agent: you edit a class, build, and the running server picks
-> the change up without restarting. Apache 2.0, no licence server, nothing leaves
-> the machine.
+**Free, open-source hot reload for Java, Spring and SAP Commerce.**
+Edit, compile and see supported changes in the running JVM.
 
-Reclazz exists because restarting a SAP Commerce server costs four to ten
-minutes and a developer does it dozens of times a day. It is the free
-alternative to the commercial tools in this space, and on SAP Commerce it covers
-ground a Java-only reload does not.
+[Documentation](https://reclazz.com/docs/) · [Reload support](https://reclazz.com/docs/support-matrix/) · [Website](https://reclazz.com) · [Releases](https://github.com/onurkat/reclazz/releases)
 
-## What it does
+## Documentation scope
 
-- **Java classes**: method bodies, and structural changes (adding or removing
-  methods and instance fields, changing annotations) on any JDK 17 or newer. No
-  patched JVM is required; a companion-class engine handles what
-  `redefineClasses` refuses.
-- **SAP Commerce `*-items.xml` and `*-beans.xml`**: saving one runs the
-  platform's own code generation in the background and reloads the regenerated
-  model and DTO classes, instead of `ant clean all` and a restart. A new
-  attribute still needs a database column, so Reclazz prints a reminder to run
-  HAC > Update Running System rather than touching the database itself.
-- **Properties**: on SAP Commerce the keys whose value actually changed are
-  applied to the running server, through the same call the HAC console makes. On
-  Spring Boot the changed keys go into the running Environment and the
-  `@ConfigurationProperties` beans that read them are rebound.
-- **Log levels**: SAP Commerce keeps them in properties rather than a
-  `log4j2.xml`, as a `log4j2.logger.<key>.name` and `.level` pair, and changing
-  one reaches the running Log4j2 context. On Spring Boot, `logging.level.*` and a
-  saved `logback.xml` or `log4j2.xml` do the same.
-- **Type and enum text, backoffice labels**: a locales file re-reads the
-  platform's localization cache; label files reach the cache backoffice reads
-  from. No system update, no database write.
-- **Spring**: beans are destroyed and recreated, references to the old instance
-  are re-pointed, MVC mappings are re-scanned, caches evicted, `@Scheduled` tasks
-  and `@EventListener` methods re-registered, AOP proxy caches cleared. A handler
-  method you add is served on the next request, on a stock JDK and inside a
-  Tomcat webapp as well, and so are an `@ExceptionHandler`, `@InitBinder` or
-  `@ModelAttribute`, a `@Bean` factory (collections, `Optional`, providers and
-  `@Value` arguments resolved by Spring, and a direct `@Conditional` or the Boot `@ConditionalOnProperty`/`@ConditionalOnBean`/`@ConditionalOnMissingBean`), a `@Scheduled`, `@EventListener` or
-  `@TransactionalEventListener`, a `@PostConstruct` or `@PreDestroy`, a
-  `@Transactional`, `@Cacheable`, `@Async` or `@PreAuthorize`/`@PostAuthorize` service method (composed forms and both the Spring 5 and Spring 6 security stacks included), and a `@KafkaListener`,
-  `@JmsListener` or `@RabbitListener`, whose previous consumer is stopped and
-  waited for before the bean is recreated; an added `@KafkaListener` or `@RabbitListener` topic, group or queue can be a `#{SpEL}` expression, and an added `@JmsListener` can return a `@SendTo` reply. A
-  brand-new `@Service`, `@Component` or `@RestController` class becomes a live
-  bean with its constructor autowired, because a fresh class is entirely real
-  and only its definition was missing. An edited `@Transactional` or
-  `@Cacheable` takes effect rather than answering from the metadata Spring
-  parsed once. An edited security configuration is rebuilt into the running
-  filter chain, and method security (`@PreAuthorize`, `@Secured`) is re-read on
-  the service class that carries it, and a `@PreAuthorize` or `@PostAuthorize` you
-  add to a service method is enforced on both the classic Spring 5 and modern
-  Spring 6 stacks. A constructor-bound
-  `@ConfigurationProperties` bean is replaced rather than mutated, a `@Value`
-  field is re-resolved in place, and a bean that takes a changed `@Value`
-  through its constructor is rebuilt the same way. A saved `.properties` or
-  `.yml` file is reloaded at its own precedence, so a deleted key falls back to
-  the next source or the default instead of staying stale, and a supported
-  `*-spring.xml` constructor, factory or init/destroy edit recreates the
-  singleton and repairs the beans holding it.
-- **What the frameworks cached about the class**: a reload is only half the job,
-  because each framework answers from what it worked out about that class once,
-  at startup. An `@Autowired` added to a field that was already there injects,
-  and `@Resource`, `@PostConstruct` and `@PreDestroy` with it. A constraint
-  added to a field is enforced on the next request. An `@ExceptionHandler`,
-  `@InitBinder` or `@ModelAttribute` added to an existing method runs. An edited
-  `@Aspect` pointcut is parsed again, with the half that still waits named: a
-  bean already proxied keeps the advice it was built with until it is itself
-  reloaded. And Jackson stops serialising the shape it first saw: a property renamed
-  with `@JsonProperty`, a getter you removed, and a getter, setter or field you
-  *add* all reach the next request's JSON, on a stock JDK too. Each of these was measured on a running Spring Boot 3.3 server before
-  it was written and again after.
-- **Interceptors and ImpEx**: Validate, Prepare, Load, Remove and InitDefaults
-  interceptors re-register: the mapping is captured before Spring refreshes the
-  bean and put back into the platform registry afterwards, verified by a real
-  model save that runs the new rule exactly once. Changed `.impex` files can be
-  imported on save, opt-in, and a file carrying a REMOVE header, written out or
-  behind a macro, is refused rather than run against a live database.
+Source version 1.4.0; evidence baseline 75535bd739d7eefd43523dcc63799436c472fe12; reviewed 2026-10-19.
+Source presence does not establish release availability or acceptance on every runtime.
+Read each support condition and verify the running application.
 
-## What it does not do
+## Guides and references
 
-- An **enum constant added on the end** is applied to the running JVM on JDK 17
-  through 25: `values()` and `valueOf` return it, switches compiled before it
-  existed take their default branch, and the EnumMap and EnumSet instances built
-  before the reload accept it. Adding a constant means writing a final field,
-  which has no supported alternative; JDK 26 refuses the `sun.misc.Unsafe`
-  access it used, so Reclazz falls back to the JDK's own
-  `jdk.internal.misc.Unsafe`, which that deprecation does not cover.
-  `--sun-misc-unsafe-memory-access=allow` keeps the first door open and silences
-  the warning, rather than being the only way to keep this working. A constant removed from
-  the **end** goes the same way, because the tail moves no ordinal and every
-  survivor keeps its number. Inserting or reordering constants renumbers every
-  ordinal after the change, including any `@Enumerated` column already written
-  to a database, so that is refused and explained rather than half-applied.
-- An added **static** field does get its initial value: a compile-time constant
-  is read from the field itself, and an initialiser that forms a self-contained
-  block is lifted out of the class initialiser and run on its own, so a static
-  block with side effects is never re-executed. Where an initialiser is
-  entangled with the rest of the static block (it shares a computation, it
-  branches, it sits in a try/catch), the field reads as null or 0 and the log
-  names the field and the reason.
-- A changed **superclass** cannot be applied to a loaded class by any JVM,
-  JetBrains Runtime included, because every existing object already has the old
-  layout and identity. Reclazz reports it as needing a restart, and applies the
-  method bodies edited in the same save rather than refusing those too, unless a
-  body genuinely needs the superclass it is losing.
-- An added or removed **interface** is applied on JetBrains Runtime or DCEVM with
-  `-XX:+AllowEnhancedClassRedefinition`, objects created before the reload
-  included. On a stock JDK the JVM refuses it; the rest of the class still
-  reloads and Reclazz names the interface rather than reporting plain success.
-- A field added to a **JPA entity** is picked up by the persistence mapping when
-  you opt in with `jpaRefresh=true`, and only on JetBrains Runtime or DCEVM with
-  `ddl-auto` at update, create or create-drop: Reclazz rebuilds the persistence
-  unit, the schema action creates the column, and repositories injected before
-  the rebuild keep working. In every other configuration it is not picked up,
-  because Hibernate builds its metamodel once when the SessionFactory is created
-  and the database has no column for the field; the class still reloads, and
-  Reclazz names the field, says it is neither saved nor loaded, and reads your
-  `ddl-auto` to say whether a restart is enough or the column has to exist first.
-  A brand-new `@Entity` class is the better case: it is entirely real, so with
-  the same opt-in it is added to the persistence unit and mapped on any JDK 17+.
-- Reflective visibility of newly added members is full on JetBrains Runtime or
-  DCEVM, and limited on a stock JVM, where added members live on a companion
-  class. The frameworks that were going to look for a new member get its saved
-  metadata through an adapter instead (Spring MVC, `@Bean` factories, schedulers,
-  event and transaction listeners, lifecycle callbacks, Jackson, and the Kafka,
-  JMS and RabbitMQ listener containers); a framework without one, Hybris
-  ModelService attribute dispatch for instance, is named as needing a restart.
-  Members you REMOVE are hidden from reflection on either, so a deleted
-  getter stops being serialised by a framework that never knew it was gone.
-- A changed **compile-time constant** (`static final` with a constant value)
-  cannot be repaired from the class that changed: javac copied the old value
-  into every use site, so those classes keep it until they are rebuilt
-  themselves. Reclazz names the constant and both values instead of leaving it
-  to be discovered.
-- It is a development tool. It is not meant for production servers.
-
-Ask it: **Tools > Why Didn't My Class Reload?** answers the question the log
-cannot, and **Tools > What Still Needs a Restart?** lists what a restart would
-change, or says that nothing would.
-
-## Verified, not assumed
-
-- SAP Commerce 2211-jdk21.8, the Java 21 and Spring 6.2 line that every
-  installation must be on to keep building after 31 August 2026: 20 of 20
-  integration scenarios on a live server, 23 of 23 as of the current release.
-- Spring Boot 2.7 and 3.3: class reload, structural reload, bean refresh, cache
-  eviction, rebound properties, logger levels, a new endpoint without a restart,
-  a new bean class registered live, a security rule flipped without a restart,
-  `@Bean`, listener, lifecycle and Jackson members added after startup, YAML and
-  removed-key reloads, XML singleton recreation, and Kafka, JMS and RabbitMQ
-  listeners added against real brokers.
-- Java 17 and 21, and JetBrains Runtime 25.
-- IntelliJ IDEA 2023.3 through 2026.1.
-
-## Use it from a coding agent
-
-A coding agent (Claude Code, Cursor, Copilot, Windsurf, Aider) can enable
-Reclazz from the shell and the build files, no IDE required, and keep its
-edit-run loop hot instead of restarting.
-
-- Gradle: apply the plugin `id("com.onurkat.reclazz") version "1.3.0"`; it
-  resolves `com.onurkat.reclazz:reclazz-agent` from Maven Central and attaches
-  the agent to `bootRun` and `Test`.
-- Maven: a `prepare-agent` plugin, or a few lines of POM with no plugin.
-- Any JVM: `java -javaagent:reclazz-agent.jar=platform=spring,watchDirs=<classes> -jar app.jar`.
-- Verify a reload machine-readably: `./gradlew reclazzStatus` prints one JSON
-  line, or drive the MCP server tools `reclazz_status`, `reclazz_scan`,
-  `reclazz_pending`, `reclazz_diagnose`.
-- Drop-in AGENTS.md recipe for the target project, and the full guide:
-  <https://github.com/onurkat/reclazz/blob/main/docs/for-ai-agents.md>.
-
-## Privacy and licence
-
-No telemetry, no analytics, no licence server, no outbound requests. The only
-socket it opens is bound to loopback, and it is opened only when the IDE asks
-for a status port. Apache License 2.0. The download carries its licence terms
-and a list of everything inside the agent.
-
-## Install
-
-JetBrains Marketplace: <https://plugins.jetbrains.com/plugin/33498-reclazz>.
-On Spring Boot or plain Java the plugin adds the agent to your run
-configurations. On SAP Commerce, whose server starts outside the IDE, it writes
-the agent into the platform properties the server starts from, where it survives
-`ant clean all`; run `ant server` once, then start the server.
-
-## Links
-
-- Website: <https://reclazz.com>
-- Source: <https://github.com/onurkat/reclazz>
-- Releases and changelog: <https://github.com/onurkat/reclazz/releases>
-- For AI agents (setup, verify, AGENTS.md recipe): <https://github.com/onurkat/reclazz/blob/main/docs/for-ai-agents.md>
-- Gradle plugin: <https://github.com/onurkat/reclazz/blob/main/docs/gradle-plugin.md>
-- Maven wiring: <https://github.com/onurkat/reclazz/blob/main/docs/maven.md>
-- MCP server: <https://github.com/onurkat/reclazz/blob/main/docs/mcp-server.md>
-- Comparison with JRebel, DevTools and HotswapAgent: <https://reclazz.com/compare/>
-- Licence: Apache 2.0, <https://github.com/onurkat/reclazz/blob/main/LICENSE>
+- [Overview](https://reclazz.com/docs/): Make a change. Compile it. Keep the JVM running. Learn what Reclazz reloads, where the limits are, and how to verify the result.
+- [Quickstart](https://reclazz.com/docs/quickstart/): Start with the route that launches your application JVM, then prove a changed response without restarting.
+- [Reload support matrix](https://reclazz.com/docs/support-matrix/): Find the outcome, exact conditions and next action for the edit you want to make.
+- [Java & JVM limits](https://reclazz.com/docs/java/): Understand method bodies, structural reload, field initialization, enum edits and reflective visibility.
+- [Spring & MVC](https://reclazz.com/docs/spring/): Follow bean recreation, newly added components, MVC callbacks, advice, Jackson and constructor dependency boundaries.
+- [Kafka, JMS & RabbitMQ](https://reclazz.com/docs/messaging/): Understand listener additions, consumer retirement, routing changes and the difference between direct saves and dependency cascades.
+- [Configuration & resources](https://reclazz.com/docs/configuration/): Know which physical files are watched, how validation works, and when a configuration edit needs a restart.
+- [SAP Commerce](https://reclazz.com/docs/sap-commerce/): Separate Java reload, platform generation, type-system updates and runtime configuration in the SAP development loop.
+- [Persistence & caches](https://reclazz.com/docs/persistence/): Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload.
+- [Reload timing](https://reclazz.com/docs/boundaries/): Choose immediate or request-boundary application, and understand pause, build holds and partial failures.
+- [Agent options](https://reclazz.com/docs/configuration-reference/): Find every source-supported startup option, its default and the consequence of enabling it.
+- [Troubleshooting](https://reclazz.com/docs/troubleshooting/): Diagnose the right process, watched output, pending restart and framework follow-up without guessing.
+- [Versions & evidence](https://reclazz.com/docs/evidence/): Read support claims with their exact boundaries, inspect source and help keep the documentation honest.
+- [Reference library](https://reclazz.com/docs/reference/): Complete configuration, behavior and scope reference: Documentation library.
+- [Reproducible agentic workflow evaluation](https://reclazz.com/docs/reference/agentic-evaluation/): Complete configuration, behavior and scope reference: Reproducible agentic workflow evaluation.
+- [Agentic client acceptance matrix](https://reclazz.com/docs/reference/client-matrix/): Complete configuration, behavior and scope reference: Agentic client acceptance matrix.
+- [Documentation workflow](https://reclazz.com/docs/reference/documentation-workflow/): Complete configuration, behavior and scope reference: Documentation workflow.
+- [Core JVM feature evidence](https://reclazz.com/docs/reference/feature-evidence/): Complete configuration, behavior and scope reference: Core JVM feature evidence.
+- [For AI agents](https://reclazz.com/docs/reference/for-ai-agents/): Complete configuration, behavior and scope reference: For AI agents.
+- [Reclazz Gradle plugin](https://reclazz.com/docs/reference/gradle-plugin/): Complete configuration, behavior and scope reference: Reclazz Gradle plugin.
+- [Installation](https://reclazz.com/docs/reference/installation/): Complete configuration, behavior and scope reference: Installation.
+- [Reclazz with Maven](https://reclazz.com/docs/reference/maven/): Complete configuration, behavior and scope reference: Reclazz with Maven.
+- [Reclazz MCP server](https://reclazz.com/docs/reference/mcp-server/): Complete configuration, behavior and scope reference: Reclazz MCP server.
+- [Product technical reference](https://reclazz.com/docs/reference/product-reference/): Complete configuration, behavior and scope reference: Product technical reference.
+- [The Status Socket](https://reclazz.com/docs/reference/protocol/): Complete configuration, behavior and scope reference: The Status Socket.
+- [Publishing Reclazz to the JetBrains Marketplace](https://reclazz.com/docs/reference/publishing/): Complete configuration, behavior and scope reference: Publishing Reclazz to the JetBrains Marketplace.
+- [Reload support reference](https://reclazz.com/docs/reference/reload-support/): Complete configuration, behavior and scope reference: Reload support reference.
+- [Reclazz on SAP Commerce, for a coding agent](https://reclazz.com/docs/reference/sap-commerce/): Complete configuration, behavior and scope reference: Reclazz on SAP Commerce, for a coding agent.
+- [Reclazz Spring Boot starter](https://reclazz.com/docs/reference/spring-boot-starter/): Complete configuration, behavior and scope reference: Reclazz Spring Boot starter.
+- [Constructor dependency ownership during ordinary class refresh](https://reclazz.com/docs/reference/spring-constructor-dependencies/): Complete configuration, behavior and scope reference: Constructor dependency ownership during ordinary class refresh.
+- [Superclass changes without a custom classloader](https://reclazz.com/docs/reference/superclass-feasibility/): Complete configuration, behavior and scope reference: Superclass changes without a custom classloader.
+- [Reclazz: Test Guide for SAP Commerce (Hybris)](https://reclazz.com/docs/reference/test-guide/): Complete configuration, behavior and scope reference: Reclazz: Test Guide for SAP Commerce (Hybris).
+- [Usage Guide](https://reclazz.com/docs/reference/usage/): Complete configuration, behavior and scope reference: Usage Guide.

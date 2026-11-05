@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Status Socket | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: The Status Socket.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/protocol/">
+<meta property="og:type" content="article"><meta property="og:title" content="The Status Socket | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: The Status Socket."><meta property="og:url" content="https://reclazz.com/docs/reference/protocol/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "The Status Socket", "description": "Complete configuration, behavior and scope reference: The Status Socket.", "url": "https://reclazz.com/docs/reference/protocol/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a aria-current="page" href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">◈</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a aria-current="page" href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">◈</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="the-status-socket">The Status Socket</h1><div class="reference-content"><p>What the agent says while it runs, and the commands it accepts, so
+that something other than the IntelliJ plugin can listen: a VS Code or
+Eclipse extension, a build script that nudges the agent when it has finished
+writing class files, a log shipper.</p>
+<p>The agent's own tests hold this document to the code (<code>ProtocolContractTest</code>),
+so a field or command listed here is one the agent has.</p>
+<h2 id="finding-the-port">Finding the port</h2>
+<p>The agent listens on <strong>127.0.0.1 only</strong>, on an ephemeral port unless
+<code>statusPort=N</code> is passed, and writes the port number as plain text to a port
+file:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Where</th>
+<th>When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>the path given as <code>portFile=...</code></td>
+<td>always, when given</td>
+</tr>
+<tr>
+<td><code>&lt;hybris&gt;/.reclazz/agent.port</code></td>
+<td>SAP Commerce, no <code>portFile</code> given</td>
+</tr>
+<tr>
+<td><code>&lt;working directory&gt;/.reclazz/agent.port</code></td>
+<td>everything else, no <code>portFile</code> given</td>
+</tr>
+</tbody>
+</table></div>
+<p>The IntelliJ plugin also writes and reads <code>.idea/reclazz/agent.port</code> for a
+run configuration it injected the agent into. The file is written whole
+(temporary file and rename), so a reader never sees half a number, and it is
+removed when the agent stops.</p>
+<h2 id="the-stream">The stream</h2>
+<p>One JSON object per line, UTF-8, newline-terminated. The first line on
+connecting is a <code>CONNECTED</code> event; after that every status line the agent
+prints, and a <code>HEARTBEAT</code> every 10 seconds when nothing else is said.</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;level&quot;:&quot;RELOAD&quot;,&quot;message&quot;:&quot;Reloaded com.acme.OrderService (12ms)&quot;,&quot;timestamp&quot;:&quot;2026-09-08T09:12:44.120Z&quot;}
+</code></pre></div>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Present</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>level</code></td>
+<td>always</td>
+<td>one of the levels below</td>
+</tr>
+<tr>
+<td><code>message</code></td>
+<td>always</td>
+<td>the text of the line, JSON-escaped, at most 4096 characters</td>
+</tr>
+<tr>
+<td><code>timestamp</code></td>
+<td>always</td>
+<td>ISO-8601, UTC, when the line was emitted</td>
+</tr>
+<tr>
+<td><code>type</code></td>
+<td>structural reloads</td>
+<td><code>structural</code>, so a listener can count them apart</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td><code>CONNECTED</code> only</td>
+<td>the protocol version, <code>1</code></td>
+</tr>
+<tr>
+<td><code>agent</code></td>
+<td><code>CONNECTED</code> only</td>
+<td>the agent's release, such as <code>1.1.1</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Levels: <code>CONNECTED</code>, <code>HEARTBEAT</code>, <code>INFO</code>, <code>OK</code>, <code>WARN</code>, <code>ERROR</code>, <code>RELOAD</code>,
+<code>STRUCTURAL_RELOAD</code>, <code>COMPILE</code>.</p>
+<p>Fields are only ever added, never renamed or removed, and a listener that
+ignores fields it does not know keeps working; <code>version</code> changes only if a
+field's meaning does. The agent keeps at most 5 clients and drops events for
+a client that stops reading rather than blocking a reload on it.</p>
+<h2 id="commands">Commands</h2>
+<p>A client may send one line at a time, at most 512 characters; anything not
+listed here is ignored without an answer, and a line that never ends closes
+the connection. Every answer arrives as ordinary <code>INFO</code> lines on the stream,
+to every client, except requested BUILD receipts, RELOAD state, DOCTOR observations and VERIFY results, which go only to the requesting connection.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Answer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>DIAGNOSE &lt;class&gt;</code></td>
+<td>why the class did or did not reload last time: the class file the bytes came from, the outcome, what a restart would change</td>
+</tr>
+<tr>
+<td><code>PENDING</code></td>
+<td>restart-required changes plus manual-pause state and pending counts</td>
+</tr>
+<tr>
+<td><code>HEALTH</code></td>
+<td>how the session is going: reloads, failures, latency, watched directories, a reload that is still running</td>
+</tr>
+<tr>
+<td><code>BUILD &lt;state&gt; [request=&lt;token&gt;] [owner=&lt;token&gt;]</code></td>
+<td>hold class files when a build starts; accept the complete captured output only after success; failure keeps the hold. States are case-insensitive; <code>request=</code> is literal and its token is echoed unchanged. An unknown argument makes the entire command ignored</td>
+</tr>
+<tr>
+<td><code>VERIFY &lt;token&gt; &lt;class&gt; &lt;sha256&gt;</code></td>
+<td>read the latest exact-byte reload receipt for one class; requester-only structured result (below)</td>
+</tr>
+<tr>
+<td><code>DOCTOR &lt;token&gt;</code></td>
+<td>read bounded JVM, session, watcher and capability evidence; requester-only result (below)</td>
+</tr>
+<tr>
+<td><code>RELOAD &lt;action&gt; request=&lt;token&gt;</code></td>
+<td>pause/resume/status automatic reload admission; requester-only correlated state (below)</td>
+</tr>
+<tr>
+<td><code>SCAN</code></td>
+<td>look at the watched directories now, instead of on the file watcher's next poll; what changed is reloaded as usual. Send it when a build has just finished</td>
+</tr>
+</tbody>
+</table></div>
+<p>Nothing a client sends makes the agent load, reload or run anything it
+would not have on its own.</p>
+<h2 id="pausing-automatic-reload">Pausing automatic reload</h2>
+<p>Send <code>RELOAD pause request=my-request</code> and wait for the requester-only INFO
+message <code>RELOAD_STATE &lt;token&gt; &lt;action&gt; paused=&lt;true|false&gt; pendingClasses=&lt;count&gt; pendingActions=&lt;count&gt; buildHold=&lt;none|named|legacy&gt;</code>.
+Actions are exactly <code>pause</code>, <code>resume</code>, <code>status</code> (lower-case). The mandatory
+request token uses 1–64 ASCII letters, digits, underscores or hyphens.
+Invalid commands or an unavailable listener produce no acknowledgement.</p>
+<p>Pause is an agent-wide manual switch: any local client can resume it; it is
+not a per-client lock. Disconnect does not resume. Repeated pause/resume is
+safe. <code>status</code> only reads state; <code>PENDING</code> also reports the pause state and
+pending counts alongside its existing restart-required entries. <code>HEALTH</code>
+reports a manual pause. Counts cover observed, not-yet-admitted distinct class
+paths and automatic action keys, not every unobserved disk change. A capture
+already reading bytes may return its entries to these pending maps afterward.</p>
+<p>Class files, source compilation and resource actions observed while paused
+are retained/coalesced. <code>SCAN</code> still observes files but cannot bypass pause.
+Resume schedules a scan and eligible pending work using current output. Its
+acknowledgement is an admission-state snapshot, <strong>not reload completion</strong>;
+use VERIFY and application checks for completion. A missing acknowledgement
+leaves the outcome uncertain: query status before retrying. Old agents ignore
+this command; clients must not treat timeout as success.</p>
+<p>Manual pause is independent of BUILD ownership. Resume cannot unlock active
+or failed builds. A successful owner's BUILD ok still validates/captures output
+and releases that build hold, while a manual pause keeps changes pending;
+unreadable output still retains ownership. A later build start/failure continues
+to block class admission. BUILD holds retain their existing class-file scope.</p>
+<p>Work admitted before pause may finish, including captured class batches waiting
+for a request boundary and compilation/framework callbacks already running.
+Pause does not interrupt a batch, roll back changes, prevent an application
+classloader from first loading new disk output, or freeze application requests.
+A pause during class capture postpones the unadmitted batch. No selective
+application, rollback or transactional reload is implied.</p>
+<h2 id="holding-a-build-until-it-succeeds">Holding a build until it succeeds</h2>
+<p>The IntelliJ plugin sends <code>BUILD started</code> at build start and <code>BUILD ok</code>
+only when compilation finishes without errors or cancellation. It sends
+<code>BUILD failed</code> otherwise. Files from a failed build remain held and join
+those from the next successful build. <code>SCAN</code> alone does not release a hold.</p>
+<p>On success the agent waits for its watcher to finish scanning, captures
+all pending class bytes, then accepts that batch. A newer start or failure
+invalidates an unfinished capture. Already accepted bytes may finish
+reloading while the next build is held. This controls admission to reload;
+it does not make JVM redefinitions or framework refreshes transactional.
+A read or scan failure leaves the entire build held for another <code>BUILD ok</code>.</p>
+<p>A missing result or disconnected client never releases output. After five
+minutes there is one warning; <code>HEALTH</code> shows the held count and start time.
+After verifying that the output directory contains a successful build,
+<code>BUILD ok</code> can also recover a hold left by an IDE that closed mid-build.
+Unowned (legacy) commands describe one ordered build stream per agent. They
+cannot alter a named hold, and a named builder cannot take a legacy hold.
+Agents receiving no BUILD signals keep their usual behavior.</p>
+<p>For a whole Gradle or Maven build, install the hold <strong>before</strong> invoking the
+build tool. A <code>classes.doFirst</code> hook runs after its compilation dependencies
+and is too late to protect them. Sending bytes is not proof that the hold has
+been installed: wait for a receipt before starting the compiler.</p>
+<p>An optional <code>request=&lt;token&gt;</code> suffix asks for an acknowledgement. Tokens are
+1–64 ASCII letters, digits, underscores or hyphens; an invalid suffix causes
+the entire command to be ignored. After the build listener returns, only the
+requesting connection receives an <code>INFO</code> event whose <code>message</code> is exactly
+<code>BUILD_ACK &lt;token&gt; &lt;state&gt;</code> (state lower-case). For started/failed the hold is
+installed before this receipt. For ok it confirms scheduling the capture,
+<strong>not</strong> completion of capture or reload. There is no receipt when the listener
+is unavailable or throws. Legacy BUILD commands still work without receipts when no named hold exists.</p>
+<p>Use the terminal wrapper in the MCP jar for either build tool; see
+<a href="/docs/reference/mcp-server/#protecting-terminal-builds">mcp-server.md</a>. It requires this
+receipt support, so an older agent refuses the wrapped build before any
+compiler runs. A missing receipt is a failure, never permission to proceed.
+If an ok receipt is lost, its result is uncertain: the agent may already have
+accepted output; verify live behavior rather than reporting success.</p>
+<h3 id="build-ownership">Build ownership</h3>
+<p>Add <code>owner=&lt;token&gt;</code> together with <code>request=&lt;token&gt;</code> to protect a named build.
+Both tokens use 1–64 ASCII letters, digits, underscores or hyphens. Options may
+appear in either order; duplicate or invalid options are ignored as a whole.
+Only <code>started</code> acquires a free named hold. A different owner, or an unowned
+command, cannot change it with started, ok or failed. Successful requests receive
+<code>BUILD_ACK &lt;token&gt; &lt;state&gt; owner=&lt;owner&gt;</code>; ownership conflicts or completion
+without an active named hold receive <code>BUILD_REJECTED &lt;token&gt; &lt;state&gt; owner=&lt;owner&gt;</code>.
+An unowned request rejected by a named hold receives <code>BUILD_REJECTED &lt;token&gt; &lt;state&gt;</code>.
+Replies go only to the requesting connection. An unavailable listener produces
+no receipt, including when an older listener cannot enforce named ownership.</p>
+<p>Ownership survives failure and disconnect. Reuse the same owner for recovery:
+start another complete build, then signal ok only after successful compilation.
+Scan or read failure retains ownership too. The ok receipt precedes asynchronous
+capture; another owner's start is rejected until that capture is accepted.
+Already accepted batches can finish reloading while the next build is held.
+There is no timeout unlock or force takeover. If the owner token is lost,
+restart the application/agent to reset the hold.</p>
+<p>Choose a unique owner per independent build. This is cooperative correlation,
+not authentication: sharing a token deliberately shares ownership. It cannot
+isolate output from a process that writes without acquiring the hold. Legacy
+unowned builders still require a single ordered builder. An unowned ok can
+recover only an unowned hold after a verified successful build. Attachment
+plugins do not automatically wrap terminal compilation. New wrappers require
+an exact owner-correlated receipt and refuse to compile against older agents.</p>
+<h2 id="nudging-the-agent-from-a-build">Nudging the agent from a build</h2>
+<p>On macOS the JDK's file watcher polls on a two-second cycle, and <code>SCAN</code>
+saves that wait. The IntelliJ plugin sends it after every build; a Gradle
+or Maven build can do the same.</p>
+<p>Gradle, after the classes are written:</p>
+<div class="code-block"><div class="code-label">kotlin</div><pre><code>tasks.named(&quot;classes&quot;) {
+    doLast {
+        val portFile = rootProject.file(&quot;.reclazz/agent.port&quot;)
+        if (portFile.exists()) {
+            java.net.Socket(&quot;127.0.0.1&quot;, portFile.readText().trim().toInt()).use {
+                it.getOutputStream().write(&quot;SCAN\n&quot;.toByteArray())
+            }
+        }
+    }
+}
+</code></pre></div>
+<p>From a shell, after <code>mvn compile</code>:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>printf &#x27;SCAN\n&#x27; | nc 127.0.0.1 &quot;$(cat .reclazz/agent.port)&quot;
+</code></pre></div>
+<h2 id="verifying-exact-compiled-bytes">Verifying exact compiled bytes</h2>
+<p>With matching current agent/MCP jars, send <code>VERIFY &lt;token&gt; &lt;class&gt; &lt;sha256&gt;</code>.
+VERIFY is uppercase; token is 1–64 ASCII letters/digits/underscores/hyphens.
+Class is a dot-separated Java binary name, up to 256 characters, including <code>$</code>
+for nested classes; identifier-ignorable control characters are rejected.
+SHA-256 is exactly 64 lower-case hex digits, calculated from the compiled class
+file the caller expects to have been applied. The agent never reads a path
+supplied by this query. Invalid commands or an unavailable verifier get no reply.</p>
+<p>The requester receives an INFO event with <code>message</code> equal to
+<code>VERIFY_RESULT &lt;token&gt; &lt;json&gt;</code>. Parse the event first, then parse the JSON suffix.
+Existing readers can continue treating message as text. The nested object has
+these string fields:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Receipt member</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>requestId</td>
+<td>The unchanged request token; check it before accepting a result</td>
+</tr>
+<tr>
+<td>sessionId</td>
+<td>Random ID of this agent verifier; changes on initialization</td>
+</tr>
+<tr>
+<td>className</td>
+<td>The requested binary name</td>
+</tr>
+<tr>
+<td>expectedSha256</td>
+<td>The requested hash</td>
+</tr>
+<tr>
+<td>observedSha256</td>
+<td>Hash of the latest captured reload input, or empty if absent</td>
+</tr>
+<tr>
+<td>status</td>
+<td>One of the states below</td>
+</tr>
+<tr>
+<td>source</td>
+<td>Origin path, bounded to 200 characters</td>
+</tr>
+<tr>
+<td>detail</td>
+<td>Outcome or reason, bounded to 200 characters</td>
+</tr>
+<tr>
+<td>completedAt</td>
+<td>ISO UTC batch completion time; empty before completion or if absent</td>
+</tr>
+</tbody>
+</table></div>
+<p>Only <strong>applied</strong> is positive evidence. It means the expected input bytes matched,
+a successful reload outcome was recorded, the class was uniquely loaded before
+the attempt, and the entire batch returned, including deferred redefinition and
+framework refresh, with no WARN/ERROR on the applying thread. A warning in any
+member conservatively prevents success for the other members too.</p>
+<p>A superclass-changing save illustrates this distinction: eligible method bodies
+may run while the original superclass remains. Its warning makes the matching
+receipt <code>unverified</code>, including when a dependent method stays pinned to its old
+body. A class-level blocker instead produces <code>failed</code>. Neither means that the
+requested hierarchy was applied. <code>PENDING</code> retains the session's restart concerns;
+a later ordinary save can have an <code>applied</code> receipt without clearing earlier
+superclass notes. Check current live behavior as well as the receipt; retained
+notes are not an exact diff of the latest source. See
+<a href="/docs/reference/superclass-feasibility/#production-reload-reporting">production reload reporting</a>.</p>
+<ul>
+<li><code>running</code>: matching bytes are being applied; no completion yet.</li>
+<li><code>failed</code>: the matching attempt reported failure or the batch threw; detail says why.</li>
+<li><code>unverified</code>: matching attempt finished without sufficient evidence: absent
+outcome, unloaded/ambiguous class, duplicate input name, or a batch warning/error.</li>
+<li><code>mismatch</code>: the latest attempt used different bytes; an older success cannot
+certify a newer edit. Inspect observedSha256 and source.</li>
+<li><code>not_observed</code>: no retained receipt in this session. This includes eviction,
+restart, classes never reloaded, and untracked mutations invalidating old proof.</li>
+</ul>
+<p>The ledger retains at most 512 latest class receipts, not an operation history.
+It observes external class-file and autoCompile batches; hashes come from the
+captured input, never from a file rewritten while a reload is running. Starting
+a new attempt supersedes old proof even if that attempt later fails. A failed
+compiler that leaves files held creates no receipt for those new bytes.</p>
+<p>This is a point-in-time receipt for one class, not a transaction across classes,
+a full snapshot of all classloaders, or a business-behaviour test. It cannot prove
+that an identical-byte recompile caused a new reload, or that another agent or
+instrumentation tool has not subsequently changed the JVM. Keep one builder per
+agent; verify each changed class with a bounded polling deadline, keep sessionId
+consistent, then exercise the endpoint or application test. No reply, disconnect,
+old-agent timeout or a non-applied state must ever be treated as success.</p>
+<h2 id="doctor-observation">Doctor observation</h2>
+<p><code>DOCTOR &lt;token&gt;</code> accepts a token of 1–64 ASCII letters, digits, underscores or
+hyphens. The requesting connection receives an INFO event whose message is
+<code>DOCTOR_RESULT &lt;token&gt; &lt;json&gt;</code>. Parse the event, match the token, then parse the
+JSON suffix. No build, scan, reload or hold change is performed.</p>
+<p><code>status:observed</code> carries <code>requestId</code>, <code>detail</code>, <code>sessionId</code> (the same process
+identity used by VERIFY), <code>agentVersion</code>, string <code>pid</code>, <code>javaVersion</code>, <code>vmName</code>,
+and target JVM <code>workingDirectory</code>. A working directory is not a repository root.
+<code>watcherState</code> is starting, watching, stopped or unavailable. <code>buildHold</code> is none,
+named, legacy or unavailable; owner tokens are never disclosed. Boolean
+<code>buildOwnershipSupported</code>, <code>verifySupported</code> and <code>scanSupported</code> describe wired
+handlers, not capabilities inferred from a version string. Before wiring, support
+can be false and the verification session empty.</p>
+<p><code>watchedDirectoryCount</code> counts currently valid registrations whose directories
+still exist. <code>watchedDirectories</code> samples at most eight normalized absolute paths,
+each at most 256 characters; longer paths are omitted. <code>watchSampleTruncated</code>
+explicitly marks omitted entries. <code>unwatchableDirectoryCount</code> reports refused
+registrations. Registrations can include class, source and resource directories;
+this sample does not prove coverage of a particular compiled output. The snapshot
+is observational, not atomic with watcher or build changes.</p>
+<p><code>reloadConfirmed</code> is always false. Observation is neither readiness nor reload
+proof. Metadata strings are bounded to 512 characters and the JSON receipt to
+3900 characters so the enclosing 4096-character message limit cannot truncate it.
+If evidence cannot be produced within these bounds, <code>status:unavailable</code> includes
+only correlation and a detail message. Older agents can give no response; clients
+must report unavailable rather than assume support. The existing loopback socket
+trust boundary still applies.</p>
+<h2 id="client-side-batch-verification">Client-side batch verification</h2>
+<p>MCP <code>reclazz_verify_batch</code> composes 1–32 existing VERIFY queries on one connection.
+There is no batch agent command and no atomic snapshot. Every item has its own
+correlation token; the client requires the same sessionId across validated
+receipts and one total time budget. It preserves earlier receipts and marks
+remaining items unavailable on connection/evidence failure. Cancelling the MCP
+request closes only that observation connection; the running agent's reload and
+build ownership are unaffected. See <a href="/docs/reference/mcp-server/#bounded-batch-verification-and-cancellation">MCP batch and cancellation</a>.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/protocol.md">docs/protocol.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/product-reference/"><span>← Previous</span><strong>Product technical reference</strong></a><a href="/docs/reference/publishing/"><span>Next →</span><strong>Publishing Reclazz to the JetBrains Marketplace</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#finding-the-port">Finding the port</a><a href="#the-stream">The stream</a><a href="#commands">Commands</a><a href="#pausing-automatic-reload">Pausing automatic reload</a><a href="#holding-a-build-until-it-succeeds">Holding a build until it succeeds</a><a href="#nudging-the-agent-from-a-build">Nudging the agent from a build</a><a href="#verifying-exact-compiled-bytes">Verifying exact compiled bytes</a><a href="#doctor-observation">Doctor observation</a><a href="#client-side-batch-verification">Client-side batch verification</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

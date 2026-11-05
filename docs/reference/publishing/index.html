@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Publishing Reclazz to the JetBrains Marketplace | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: Publishing Reclazz to the JetBrains Marketplace.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/publishing/">
+<meta property="og:type" content="article"><meta property="og:title" content="Publishing Reclazz to the JetBrains Marketplace | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: Publishing Reclazz to the JetBrains Marketplace."><meta property="og:url" content="https://reclazz.com/docs/reference/publishing/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Publishing Reclazz to the JetBrains Marketplace", "description": "Complete configuration, behavior and scope reference: Publishing Reclazz to the JetBrains Marketplace.", "url": "https://reclazz.com/docs/reference/publishing/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a aria-current="page" href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">◈</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a aria-current="page" href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">◈</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Maintaining the project</span></div><article><div class="article-eyebrow">Maintaining the project</div><h1 id="publishing-reclazz-to-the-jetbrains-marketplace">Publishing Reclazz to the JetBrains Marketplace</h1><div class="reference-content"><p>One-time setup, then three commands per release.</p>
+<h2 id="one-time-signing-certificate">One-time: signing certificate</h2>
+<p>The Marketplace requires uploads to be signed. You generate your own
+certificate; there is no authority to apply to.</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>./scripts/generate-signing-certificate.sh
+</code></pre></div>
+<p>It asks for a passphrase twice and writes two files into <code>certificate/</code>,
+which is git-ignored:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>private.pem</code></td>
+<td>Encrypted RSA-4096 private key. Signs releases as you.</td>
+</tr>
+<tr>
+<td><code>chain.crt</code></td>
+<td>Self-signed X.509 certificate, valid 10 years.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Put the passphrase in your password manager immediately. It cannot be
+recovered, and losing it means future releases must be signed under a
+new identity.</p>
+<p>Back up both files somewhere private (password manager attachment,
+encrypted drive). Losing the key has the same effect as losing the
+passphrase.</p>
+<h2 id="one-time-marketplace-token">One-time: Marketplace token</h2>
+<p>Create a permanent token at
+<a href="https://plugins.jetbrains.com">plugins.jetbrains.com</a> under your
+profile, Marketplace, API tokens. It authorises uploads to plugins you
+own.</p>
+<h2 id="per-release">Per release</h2>
+<div class="code-block"><div class="code-label">bash</div><pre><code>export RECLAZZ_SIGNING_PASSWORD=&#x27;the passphrase you chose&#x27;
+export RECLAZZ_PUBLISH_TOKEN=&#x27;the marketplace token&#x27;
+export RECLAZZ_CENTRAL_TOKEN=&#x27;the Central bearer token&#x27;  # unless --skip-distribution
+
+scripts/release.sh X.Y.Z            # or --dry-run first, to see the steps
+</code></pre></div>
+<p>The script first checks the clean <code>main</code> checkout, matching Gradle/Maven
+versions, both release-note entries and the absence of the tag. Python 3.9+,
+Maven, Node 22+/npm and <code>gh</code> must be available. Local signing keys stay local.
+<code>--skip-publish</code> omits Marketplace; <code>--skip-distribution</code> omits Central/Portal.
+Selected channels require their credentials before any preparation starts;
+missing credentials are errors, not silently skipped channels.</p>
+<p>Preparation runs <code>scripts/release-checks.sh</code>: a clean Gradle build with all tests, plugin
+packaging and compatibility verification, the independent MCP SDK/live-JVM
+acceptance, and Maven <code>clean verify</code> against the locally built agent. It then
+signs and verifies the IDE ZIP. With distribution selected it also builds the
+signed agent/starter Central bundles, builds the signed Maven bundle using
+<code>-DskipPublishing=true</code>, and runs Portal <code>--validate-only</code>. <strong>All of these must
+succeed before the first upload or tag push.</strong> Docker must be available for the
+required RabbitMQ tests; the release path does not opt out of them.</p>
+<p><code>build/release-gate/receipt.json</code> records <code>schemaVersion: 1</code>, <code>sourceCommit</code>,
+<code>version</code>, the selected <code>profile</code>, <code>artifactRoots</code> and relative artifact paths
+mapped to SHA-256 digests in <code>artifacts</code>. It is local gate evidence, not a
+signature or a hosted provenance attestation. Source or artifact changes stop
+subsequent publication. Gradle uploads use <code>release-publish.init.gradle</code> to
+verify the actual publication inputs and disable build/signing/metadata tasks;
+they consume the checked files without rebuilding them. The Maven uploader
+stages the exact checked bundle rather than running a second Maven lifecycle.</p>
+<p>For the selected distribution, export <code>RECLAZZ_CENTRAL_TOKEN</code> from your secret
+store: it is the base64 encoding of your existing Central token's
+<code>username:password</code> pair. The uploader reads it only from the environment,
+never from command arguments or logs; encrypted Maven settings are not parsed
+by the uploader. The existing Central Maven plugin 0.5.0 still needs its
+<code>central</code> server entry in Maven settings even for local bundle preparation.
+It uses the documented <a href="https://central.sonatype.org/publish/publish-portal-api/">Central Publisher API</a>
+with <code>publishingType=USER_MANAGED</code>. HTTP 201 means staged, not published or
+validated. The final Central Publish click remains manual. Agent and starter
+bundles are still uploaded manually using the paths printed by the script;
+run <code>python3 scripts/release-evidence.py verify</code> before uploading those files.</p>
+<p>After the gate, the script uploads Marketplace, stages Maven, uploads Portal,
+and tags the exact checked commit. It pushes only that commit and tag. The tag
+workflow independently runs the shared tests and records/checks its own agent
+and MCP artifacts before creating a <strong>draft</strong> GitHub release. CI does not receive
+the IDE signing key. The local script checks that the intended release is still
+a draft, attaches the checked signed ZIP as <code>reclazz-X.Y.Z.zip</code> from
+<code>build/release-gate/assets/</code>, and checks completeness before publishing the draft.
+The five required assets are the agent JAR, MCP JAR, their two <code>.sha256</code> sidecars,
+and signed IDE ZIP, all named for this version. Each must appear exactly once
+with <code>state: uploaded</code> and a positive size; the ZIP size must match the locally
+checked ZIP. Missing, empty, pending or duplicate assets stop publication.</p>
+<p>This uses <code>gh release view --json tagName,isDraft,assets</code>, followed by
+<code>gh release edit ... --draft=false --verify-tag</code> only after the check. See the
+official <a href="https://cli.github.com/manual/gh_release_view">view</a> and
+<a href="https://cli.github.com/manual/gh_release_edit">edit</a> commands. This is a bounded
+metadata check, not a remote download/digest check or a lock against concurrent
+release edits. CI and local JARs are independently built; their digests are not
+assumed identical. Do not edit the release concurrently with the script.</p>
+<p>Do not replace this route with individual <code>publishPlugin</code>, <code>publishPlugins</code> or
+Maven <code>deploy</code> commands: those do not provide the cross-channel gate. Do not
+edit a generated receipt to continue a failed release. This script stops on
+failure and does not roll back earlier uploads, auto-retry or resume a release.
+The site and final registry/download verification remain separate owner steps.</p>
+<h3 id="channel-outcomes">Channel outcomes</h3>
+<p>The local script prints an exit summary, including on preflight or partial
+failure. <code>completed</code> means only that this run's automated commands succeeded;
+it does <strong>not</strong> mean public availability or Marketplace review approval.
+<code>skipped</code> means an explicit skip flag, never an inferred missing credential.
+<code>awaiting manual action</code> means remaining work or an uncertain/uncompleted step
+that needs inspection before retrying. A dry run reports no completed channels.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>After a successful selected run</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marketplace</td>
+<td>completed: upload command succeeded; review/availability unverified</td>
+</tr>
+<tr>
+<td>Maven Central</td>
+<td>awaiting manual action: Maven plugin staged; upload agent/starter bundles and Publish all three</td>
+</tr>
+<tr>
+<td>Gradle Plugin Portal</td>
+<td>completed: upload command succeeded; availability unverified</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>completed: required asset metadata checked and draft publish command succeeded; downloads unverified</td>
+</tr>
+<tr>
+<td>Site</td>
+<td>awaiting manual action: update separately</td>
+</tr>
+</tbody>
+</table></div>
+<p>The summary names the version, source commit and existing local receipt. It is
+per-invocation output, not a saved multi-registry state database. A nonzero exit
+remains nonzero even if an earlier channel completed. Missing tools or selected
+channel credentials fail before preparation and do not silently skip a channel.</p>
+<h3 id="manual-recovery">Manual recovery</h3>
+<ol>
+<li>
+<p>Preserve the run output and <code>build/release-gate/</code> receipt/assets before cleaning
+or rebuilding. Inspect the first failure and the affected remote channel; a
+timeout/error may follow an accepted upload. Do not blindly rerun the entire
+release script, delete its tag or overwrite existing assets.</p>
+</li>
+<li>
+<p>For an incomplete GitHub draft, wait for the tag workflow to finish and inspect
+its logs and asset list. Keep the draft unpublished. Before uploading a missing
+signed ZIP, return to the exact clean source checkout and verify the existing
+receipt. Upload only the missing checked file; do not use <code>--clobber</code>:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>python3 scripts/release-evidence.py verify
+python3 scripts/release-evidence.py github-check --draft-only
+gh release upload vX.Y.Z build/release-gate/assets/reclazz-X.Y.Z.zip
+python3 scripts/release-evidence.py github-check
+python3 scripts/release-evidence.py verify
+gh release edit vX.Y.Z --draft=false --verify-tag
+</code></pre></div>
+<p>Substitute the receipt's version. If the ZIP already exists, inspect it and
+omit the upload. Missing agent/MCP assets need the matching tag workflow's
+checked outputs; do not substitute unrelated local builds. If the receipt,
+source, draft identity or required assets fail verification, stop and resolve
+the mismatch. An already public release needs manual inspection, not this
+draft completion route.</p>
+</li>
+<li>
+<p>For Central, inspect existing deployments before any retry, upload only absent
+checked agent/starter bundles, validate and manually Publish all three. For
+Marketplace and Portal, inspect the version/review outcome before deciding
+whether another upload is needed. Then verify public downloads/registry
+resolution and update the site separately. The script does not prove these
+final outcomes or automate recovery.</p>
+</li>
+</ol>
+<h2 id="what-the-tag-does-on-its-own">What the tag does on its own</h2>
+<p><code>.github/workflows/release.yml</code> fires on <code>vX.Y.Z</code> and creates a draft release:
+it checks that the tag and <code>gradle.properties</code> agree, takes the notes from
+that version's section of <code>CHANGELOG.md</code> (<code>scripts/changelog-section.sh</code>,
+which fails when there is no such section), runs the shared build/test gate,
+records/checks its artifact receipt, and attaches both jars with a <code>.sha256</code> beside each:
+<code>reclazz-agent-X.Y.Z.jar</code> and <code>reclazz-mcp-X.Y.Z.jar</code>.</p>
+<p>Before releasing, <code>./gradlew :mcp-server:test :mcp-server:mcpRelease</code> locally stages
+<code>mcp-server/build/distributions/mcp/reclazz-mcp-X.Y.Z.jar</code> and its checksum.
+The tests relocate the packaged jar and launch both entry points without Gradle's
+classpath, checking the reported version and stdio tools. This task does not
+publish anything. The tag workflow attaches those exact tested MCP assets;
+older releases are not retroactively changed. See <a href="/docs/reference/mcp-server/#running-it">MCP installation</a>.</p>
+<p>Signing is not in there and cannot be: the private key and its passphrase
+live on your machine and are deliberately not repository secrets. So the
+signed ZIP still comes from the local maintainer's checked build. The tag-only
+workflow intentionally leaves the draft unpublished and reports the remaining
+manual action. The local script (or the verified recovery steps above) completes
+the five assets and then publishes it. Forgetting the ZIP now leaves a draft
+instead of a publicly incomplete release.</p>
+<p>The agent jar is the other reason for it. Somebody using Reclazz without
+IntelliJ had no download: the README told them to clone the repository and
+run Gradle, which is a strange thing to ask of a person evaluating a tool.</p>
+<p>The last two steps used to live only in whoever was doing the release.
+1.0.8 went to the Marketplace and got its tag, and the GitHub release was
+simply forgotten, so for a while the repository's newest release was one
+version behind what people were installing. It happened again, and worse:
+1.0.24, 1.0.25 and 1.0.26 all shipped without one, and the repository's
+newest release read 1.0.23 while users were installing 1.0.26. The backfill
+is possible (the tags are the source of truth, and a rebuild from the tag
+carries the same code under a fresh signature), but the artifact that
+actually shipped is gone once a later build overwrites <code>build/distributions</code>.
+Do this step in the same sitting as the publish.</p>
+<h2 id="website-documentation-is-generated-from-main">Website documentation is generated from main</h2>
+<p>Website sources live with the product: <code>docs/</code> for documentation and
+<code>website/static/</code> for marketing/layout assets. Do not edit generated <code>gh-pages</code>
+files or create a second documentation checkout to author content.</p>
+<p>Follow the <a href="/docs/reference/documentation-workflow/">documentation workflow</a> for local validation,
+review artifacts and the one-time Pages activation. After adoption, the docs workflow
+builds the entire site and deploys its checked artifact on main; release publication
+and documentation publication remain separate operations.</p>
+<p>For a release, check that setup examples match the intended artifacts, update the
+reviewed evidence baseline in <code>docs/site/manifest.json</code> only after reviewing the
+capabilities, and keep English/Turkish marketing wording consistent. <code>llms.txt</code>,
+option tables and the interactive support matrix are generated; never edit them
+independently. A version string alone is not proof that a release channel serves it.</p>
+<h2 id="then-hide-what-it-supersedes">Then hide what it supersedes</h2>
+<div class="code-block"><div class="code-label">bash</div><pre><code># what the Marketplace currently offers, hidden versions excluded
+curl -s &quot;https://plugins.jetbrains.com/api/plugins/33498/updates?size=100&quot; |
+  python3 -c &quot;import json,sys;[print(u[&#x27;version&#x27;], u[&#x27;compatibleVersions&#x27;]) for u in json.load(sys.stdin)]&quot;
+</code></pre></div>
+<p>Hiding is a UI action: plugins.jetbrains.com &gt; the plugin &gt; Versions &gt; hide.
+There is no upload-token endpoint for it, so it cannot be scripted with the
+token the publish step uses.</p>
+<p>Hide, never delete. Deleting is irreversible and takes the rollback path with
+it; hiding keeps the artifact and the history that explains how a defect was
+found. Keep the git tag either way, because it is what answers &quot;what was the
+source at this version&quot;.</p>
+<p>A version is safe to hide when the new one covers the same IDE range, which
+the <code>compatibleVersions</code> above shows directly. When the ranges differ, the
+older version is the only thing some users can install, and hiding it strands
+them.</p>
+<h2 id="release-notes-live-in-two-files">Release notes live in two files</h2>
+<p><code>CHANGELOG.md</code> is for people reading the repository. The <code>&lt;change-notes&gt;</code>
+block in <code>plugin.xml</code> is what the IDE shows in its &quot;What's new&quot; panel when
+it offers the update, and it is the only one most users ever see. Both need
+an entry for the version being released.</p>
+<p><code>checkReleaseNotes</code> fails the build when either is missing, and <code>signPlugin</code>
+and <code>publishPlugin</code> depend on it, so a release cannot go out without them.
+That check exists because 1.0.9 did: its changelog entry was written, its
+plugin.xml notes were not, and it reached the Marketplace showing 1.0.8 at
+the top of the list. Nobody who updated could see what they were getting.</p>
+<h2 id="the-asset-must-be-the-signed-zip">The asset must be the signed zip</h2>
+<p>Attach <code>reclazz-X.Y.Z-signed.zip</code>, renamed on upload to
+<code>reclazz-X.Y.Z.zip</code> by the <code>#</code> suffix above. Two reasons, and the second
+one has already caused a near miss:</p>
+<ul>
+<li>The signed zip is the artifact that went to the Marketplace. Release
+notes claim the download is signed, and it should be true.</li>
+<li><code>build/distributions/reclazz-X.Y.Z.zip</code>, the unsigned one, is rewritten
+by any later build. Running <code>verifyPlugin</code> after starting the next
+version's work, before bumping <code>pluginVersion</code>, leaves newer code
+sitting under the old version's filename. <code>signPlugin</code> does not re-run
+on its own, so the signed zip stays pinned to what was released while
+the unsigned one silently does not.</li>
+</ul>
+<p>Check before uploading rather than trusting the filename:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>unzip -p build/distributions/reclazz-X.Y.Z-signed.zip \
+  reclazz/lib/reclazz-X.Y.Z.jar &gt; /tmp/check.jar
+unzip -l /tmp/check.jar | grep SomethingAddedAfterThatRelease   # expect nothing
+
+java -jar &lt;marketplace-zip-signer-cli.jar&gt; verify \
+  -in build/distributions/reclazz-X.Y.Z-signed.zip -cert certificate/chain.crt
+</code></pre></div>
+<p>The signer prints <code>Provided zip archive is not signed</code> when it is not,
+and says nothing at all when the signature is good. Silence is the pass.</p>
+<p><code>--no-daemon</code> on the two tasks that read secrets is not optional. A
+running Gradle daemon keeps the environment it was started with, so a
+variable you export in your shell afterwards is invisible to the build
+and signing fails claiming the passphrase is missing even though it is
+right there in your shell.</p>
+<p>On macOS, keep the passphrase in the login keychain instead of a shell
+history entry:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>security add-generic-password -s reclazz-signing -a reclazz -w   # once
+security add-generic-password -s reclazz-publish -a reclazz -w   # once, the Marketplace token
+
+RECLAZZ_SIGNING_PASSWORD=&quot;$(security find-generic-password -s reclazz-signing -a reclazz -w)&quot; \
+RECLAZZ_PUBLISH_TOKEN=&quot;$(security find-generic-password -s reclazz-publish -a reclazz -w)&quot; \
+  scripts/release.sh X.Y.Z
+</code></pre></div>
+<p>Those commands prompt and need a real terminal. Run one through anything
+that is not a TTY and it stores an empty value without complaining,
+which then surfaces later as a missing-credential error.</p>
+<p>Never paste either secret into a chat, an issue or a commit. A
+Marketplace token can upload a release under your name, so treat one
+that has been seen anywhere as spent: revoke it and issue another. The
+keychain exists so that the value only ever travels from the prompt to
+the build.</p>
+<p><code>verifyPlugin</code> is also part of CI, so a compatibility break surfaces on
+push rather than in a rejection email.</p>
+<p>If the signing material or the passphrase is missing, the build stops
+with a message naming what is absent. It does not quietly skip signing,
+which the platform's own task would otherwise do.</p>
+<h2 id="about-buildsearchableoptions">About buildSearchableOptions</h2>
+<p>The task starts a whole IDE to index this plugin's settings, and that IDE
+dies during startup roughly one run in five. Its own log, under
+<code>build/idea-sandbox/&lt;version&gt;/log/idea.log</code>, says why:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>Start Failed
+Internal error. Please refer to https://jb.gg/ide/critical-startup-errors
+java.util.ConcurrentModificationException
+</code></pre></div>
+<p>The stack is obfuscated third-party code called straight from
+<code>MainImpl.start</code>, so it happens before this plugin is loaded and is not
+ours. Building against a newer platform is worse rather than better: 2025.1
+failed six times out of six.</p>
+<p>The build retries it, so this should never reach you as a failure. The
+crash happens before the IDE has done anything, so a second attempt costs
+about twenty seconds and works. You will see:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>buildSearchableOptions produced nothing; attempt 2 of 4
+buildSearchableOptions succeeded on attempt 2
+</code></pre></div>
+<p>The retry decides on whether the index was produced rather than on the
+exit code, because the exit code is the thing that lies here. After four
+attempts with no index it fails loudly, naming the sandbox log.</p>
+<p>Measured over ten clean builds: ten successes, one of which needed the
+retry, and the index it produced was byte-identical to the others.</p>
+<p>The heap is also capped at 768m, down from the platform default of 2GB,
+which is more than indexing one configurable needs. That is not what
+causes the crash, but it is worth not reserving on a machine already
+running a SAP Commerce server.</p>
+<p>Turning the task off entirely is possible with
+<code>intellijPlatform { buildSearchableOptions = false }</code>, and costs something
+concrete: the index really does contain this plugin's settings page, so
+disabling it stops Settings &gt; Tools &gt; Reclazz appearing in the Settings
+search box.</p>
+<h2 id="before-the-first-publication">Before the first publication</h2>
+<ul>
+<li>[ ] Screenshots for the listing (the tool window and a reload in
+progress carry the most weight)</li>
+<li>[ ] Read the change-notes in <code>src/main/resources/META-INF/plugin.xml</code>
+as a user would: it is the &quot;What's new&quot; tab</li>
+<li>[ ] Confirm <code>sinceBuild</code> / <code>untilBuild</code> in <code>build.gradle.kts</code> still
+match the IDEs you intend to support</li>
+<li>[ ] Known gaps worth stating openly in the listing rather than being
+reported as bugs: attach mode does not yet discover Spring Boot
+embedded-Tomcat contexts, and Windows is untested</li>
+</ul>
+<h2 id="version-numbering">Version numbering</h2>
+<p>The shared local/tag release gate (<code>scripts/release-checks.sh</code>) also runs
+<code>python3 scripts/test-maven-consumer.py</code> after building and testing the Maven
+plugin. This checks the <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/examples/maven-spring-boot/README.md#automated-local-artifact-acceptance">documented Maven consumer</a>
+against the built artifacts in a fresh project: a matching reload receipt and
+changed response in the same JVM are both required. A failing consumer blocks
+publication. Normal Linux JDK 17 CI runs the same Maven module and consumer checks.
+Evidence remains under <code>build/maven-consumer/run-*/evidence/</code>; these local checks
+do not prove that any remote registry already serves the intended release.</p>
+<p><code>pluginVersion</code> in <code>gradle.properties</code> drives the plugin version, the
+agent jar name, and the zip name. <code>scripts/bump-version.sh X.Y.Z</code> makes the
+release commit's edits together across four files: <code>gradle.properties</code>, the
+Maven plugin's project and agent dependency versions in <code>maven-plugin/pom.xml</code>, the changelog's
+<code>[Unreleased]</code> section dated as <code>[X.Y.Z]</code> with a fresh <code>[Unreleased]</code> above
+it, and an <code>&lt;h3&gt;X.Y.Z&lt;/h3&gt;</code> block at the top of <code>plugin.xml</code>'s change-notes
+seeded with the changelog's headlines, to be edited into the IDE's own
+words. Review, commit, then <code>scripts/release.sh X.Y.Z</code>.</p>
+<p>Preparation requires Python 3 (also used by the release gate). It accepts exactly
+one version: three decimal components with no leading zeros, optionally prefixed
+with <code>v</code>. Prerelease/build suffixes are not supported. <code>RECLAZZ_RELEASE_DATE</code> may
+override today's date with a valid <code>YYYY-MM-DD</code>. All four files and their expected
+sections must exist; the Maven versions must match the current <code>pluginVersion</code>.
+An empty Unreleased section or an already recorded target version is rejected.
+Bold bullet headlines seed the IDE notes. If there are no bold headlines, plain
+bullets supply their text, including indented continuation lines. Text is
+HTML-escaped. Review these generated notes.</p>
+<p>All outputs and original backups are prepared before any source file is replaced.
+A caught replacement error or Ctrl-C restores the original bytes and permissions.
+If restoration itself fails, the command reports incomplete rollback and retains
+<code>.reclazz-version-bump/</code>: <code>0.original</code> is <code>gradle.properties</code>, <code>1.original</code> is
+<code>maven-plugin/pom.xml</code>, <code>2.original</code> is <code>CHANGELOG.md</code>, and <code>3.original</code> is
+<code>src/main/resources/META-INF/plugin.xml</code>. Restore those originals and verify the
+four files before removing that directory and retrying. Another invocation is
+refused while the directory exists; do not remove it while a bump is running.
+Do not edit these files concurrently with preparation. Replacement is atomic per
+file, not across all four files; power loss, SIGKILL and filesystem failure during
+rollback are not covered by automatic recovery. Inspect retained backups after
+such an interruption rather than assuming preparation completed.</p>
+<p>What a number means here:</p>
+<ul>
+<li><strong>Patch</strong> (1.1.x): fixes, and anything that changes no contract: a reload
+that now lands where it did not, a message said better, a cost cut.</li>
+<li><strong>Minor</strong> (1.x.0): something new that an existing set-up does not have to
+know about: a new kind of reload, a new agent argument, a new socket
+command or JFR event, a new IDE version supported.</li>
+<li><strong>Major</strong> (x.0.0): a contract broken: an agent argument or a persisted
+setting removed or renamed, a socket field or command changed, a JDK or
+IDE floor raised, a default that changes what a save does.</li>
+</ul>
+<p>The contracts are the ones the tests pin: the argument table
+(<code>AgentArgumentsAreDocumentedTest</code>), the socket document
+(<code>ProtocolContractTest</code>), the persisted settings (<code>SettingsContractTest</code>)
+and the JFR events (<code>ReloadEventsTest</code>). A change that fails one of them is
+a major bump or a migration, never a quiet rename.</p>
+<h2 id="maven-central-the-agent-the-starter-and-the-maven-plugin">Maven Central: the agent, the starter, and the Maven plugin</h2>
+<p>Three artifacts go to Maven Central under <code>com.onurkat.reclazz</code>, all at the same
+version as the plugin:</p>
+<ul>
+<li><code>reclazz-agent</code>: the shadow (fat) jar with the agent manifest, so the Gradle
+plugin and any build can resolve it by version. Wiring in
+<code>agent/build.gradle.kts</code>.</li>
+<li><code>reclazz-spring-boot-starter</code>: the startup reporter and actuator endpoint.
+Wiring in <code>spring-boot-starter/build.gradle.kts</code>.</li>
+<li><code>reclazz-maven-plugin</code>: the <code>prepare-agent</code> Maven plugin. It is a separate
+Maven module (<code>maven-plugin/pom.xml</code>), published with <code>mvn</code>, not Gradle.</li>
+</ul>
+<p>The agent and the starter each publish the main jar alongside a sources jar, a
+javadoc jar, a POM and their signatures, through <code>maven-publish</code> + <code>signing</code> +
+a <code>centralBundle</code> zip. <code>scripts/release.sh</code> builds both bundles in its
+preparation phase; the section below describes the bundle formats. Use the
+release script for publication so the shared gate runs first.</p>
+<p>One-time account setup (owner):</p>
+<ul>
+<li>A Sonatype Central account at central.sonatype.com with the <code>com.onurkat</code>
+namespace verified, and a user token (a username and password pair).</li>
+<li>A GPG key whose public half is on a keyserver.</li>
+</ul>
+<p>Credentials live in the owner's <code>~/.gradle/gradle.properties</code>, never in the
+repository:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>mavenCentralUsername=&lt;token username&gt;
+mavenCentralPassword=&lt;token password&gt;
+signing.keyId=&lt;last 8 hex of the key id&gt;
+signing.password=&lt;gpg passphrase&gt;
+signing.secretKeyRingFile=/Users/&lt;you&gt;/.gnupg/secring.gpg
+</code></pre></div>
+<p>Modern GnuPG does not keep <code>secring.gpg</code>, so export it once:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>gpg --export-secret-keys &lt;KEY_ID&gt; &gt; ~/.gnupg/secring.gpg
+</code></pre></div>
+<p>To build the agent and starter bundles:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>./gradlew :agent:centralBundle :spring-boot-starter:centralBundle
+</code></pre></div>
+<p>That signs the artifacts and writes
+<code>agent/build/reclazz-agent-&lt;version&gt;-central-bundle.zip</code> and
+<code>spring-boot-starter/build/reclazz-spring-boot-starter-&lt;version&gt;-central-bundle.zip</code>.
+Upload each at central.sonatype.com (Publish, then Upload a bundle), or POST it
+to the Publisher API, and click Publish once it validates. The publication is
+staged, not auto-released, so nothing goes public until that click.</p>
+<p>The Maven plugin prepares its signed bundle through its own <code>release</code> profile
+(<code>maven-source-plugin</code>, <code>maven-javadoc-plugin</code>, <code>maven-gpg-plugin</code>, and
+<code>central-publishing-maven-plugin</code> with <code>autoPublish=false</code>):</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>mvn -f maven-plugin/pom.xml -Prelease clean deploy -DskipPublishing=true
+</code></pre></div>
+<p>This command builds <code>maven-plugin/target/central-publishing/central-bundle.zip</code>
+without staging remotely. Signing uses <code>gpg</code>; <code>release.sh</code> supplies the local
+<code>signing.password</code> through <code>MAVEN_GPG_PASSPHRASE</code>, without echoing it. After the
+whole gate passes, the script stages the checked bundle with
+<code>RECLAZZ_CENTRAL_TOKEN</code>. The Central Portal still requires validation and the
+owner's Publish click. A response lost during upload is ambiguous: check the
+Portal before retrying, since the script does not implement resume yet.</p>
+<h2 id="gradle-plugin-portal-the-gradle-plugin">Gradle Plugin Portal: the Gradle plugin</h2>
+<p>The Gradle plugin is published to the Gradle Plugin Portal as
+<code>com.onurkat.reclazz</code> (a separate registry from Maven Central), so
+<code>id(&quot;com.onurkat.reclazz&quot;) version &quot;X.Y.Z&quot;</code> resolves from a plain <code>plugins {}</code>
+block. Wiring is in <code>gradle-plugin/build.gradle.kts</code> (the
+<code>com.gradle.plugin-publish</code> plugin and the <code>gradlePlugin</code> block).</p>
+<p>One-time setup (owner), already done for 1.x:</p>
+<ul>
+<li>A Gradle Plugin Portal account, with its API key and secret in
+<code>~/.gradle/gradle.properties</code> as <code>gradle.publish.key</code> and
+<code>gradle.publish.secret</code>.</li>
+<li>The first publication of a new plugin id needs manual Gradle approval and,
+because the id is under <code>com.onurkat</code>, ownership of <code>onurkat.com</code> proven with
+a DNS TXT record. Later versions of an approved id publish with no further
+approval.</li>
+</ul>
+<p>For non-publishing validation, the existing plugin supports:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>./gradlew :gradle-plugin:publishPlugins --validate-only
+</code></pre></div>
+<p>Publish through <code>scripts/release.sh X.Y.Z</code>, which first prepares all selected
+channels and then uploads the checked Portal files with producer tasks disabled.</p>
+<p>The version comes from <code>pluginVersion</code> in <code>gradle.properties</code>, the same source
+as the agent, so keeping that one file current keeps the plugin and the agent it
+resolves on the same version. A Portal version is immutable: to correct a
+published build you bump the version and publish again, never overwrite.</p>
+<p>This is why a release is all four registries at once, not the plugin alone. The
+plugin defaults the agent it resolves to its own version (<code>ReclazzPlugin</code> sets
+<code>agentVersion</code> to <code>project.version</code>), so a plugin published as X.Y.Z resolves
+<code>reclazz-agent:X.Y.Z</code> from Central. Publishing the plugin without the matching
+agent on Central leaves every user of it unable to resolve the agent. The Maven
+plugin has the same coupling: its POM depends on <code>reclazz-agent</code> at its own
+version, so its build needs that agent resolvable. <code>release.sh</code> handles the
+build-time half by running <code>:agent:publishToMavenLocal</code> before the Maven checks/bundle build, so
+the Maven plugin resolves the agent from <code>~/.m2</code> rather than waiting for the
+Central sync; the runtime half is the manual Publish click that puts the agent
+on Central for real users.</p>
+<h2 id="verify-what-actually-shipped">Verify what actually shipped</h2>
+<p>A registry can end up serving an older build than the source. It happened once:
+the Gradle plugin's 1.3.0 was published from a build taken before the
+<code>reclazzStatus</code> task and the <code>reclazz {}</code> extension existed, so the Portal
+served a plugin the docs described features it did not have. The publish step
+does not catch this, because it uploads whatever the last build produced. Check
+the served artifact against the source before calling a release done:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code># the Gradle plugin: the served jar has every class the source has
+./gradlew :gradle-plugin:jar
+unzip -l gradle-plugin/build/libs/gradle-plugin-&lt;version&gt;.jar | grep -E &#x27;ReclazzStatusTask|ReclazzExtension|AgentStatus&#x27;
+
+# the agent on Central resolves and carries the Premain manifest
+# (a day or so after Publish, once it syncs to repo1)
+curl -sI https://repo1.maven.org/maven2/com/onurkat/reclazz/reclazz-agent/&lt;version&gt;/reclazz-agent-&lt;version&gt;.jar
+</code></pre></div>
+<p>The Gradle plugin also carries a <code>reclazzStatus</code>/<code>reclazz {}</code> claim in its own
+docs, so the quickest end-to-end check is a throwaway project with
+<code>plugins { id(&quot;com.onurkat.reclazz&quot;) version &quot;&lt;version&gt;&quot; }</code> and
+<code>./gradlew reclazzStatus</code>: a &quot;task not found&quot; there means the Portal is serving
+a build without it, the exact failure the drift above produced.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/publishing.md">docs/publishing.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/protocol/"><span>← Previous</span><strong>The Status Socket</strong></a><a href="/docs/reference/reload-support/"><span>Next →</span><strong>Reload support reference</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#one-time-signing-certificate">One-time: signing certificate</a><a href="#one-time-marketplace-token">One-time: Marketplace token</a><a href="#per-release">Per release</a><a href="#what-the-tag-does-on-its-own">What the tag does on its own</a><a href="#website-documentation-is-generated-from-main">Website documentation is generated from main</a><a href="#then-hide-what-it-supersedes">Then hide what it supersedes</a><a href="#release-notes-live-in-two-files">Release notes live in two files</a><a href="#the-asset-must-be-the-signed-zip">The asset must be the signed zip</a><a href="#about-buildsearchableoptions">About buildSearchableOptions</a><a href="#before-the-first-publication">Before the first publication</a><a href="#version-numbering">Version numbering</a><a href="#maven-central-the-agent-the-starter-and-the-maven-plugin">Maven Central: the agent, the starter, and the Maven plugin</a><a href="#gradle-plugin-portal-the-gradle-plugin">Gradle Plugin Portal: the Gradle plugin</a><a href="#verify-what-actually-shipped">Verify what actually shipped</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

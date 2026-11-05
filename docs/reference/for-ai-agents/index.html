@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>For AI agents | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: For AI agents.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/for-ai-agents/">
+<meta property="og:type" content="article"><meta property="og:title" content="For AI agents | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: For AI agents."><meta property="og:url" content="https://reclazz.com/docs/reference/for-ai-agents/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "For AI agents", "description": "Complete configuration, behavior and scope reference: For AI agents.", "url": "https://reclazz.com/docs/reference/for-ai-agents/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a aria-current="page" href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">◈</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a aria-current="page" href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">◈</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="for-ai-agents">For AI agents</h1><div class="reference-content"><p>This page is for a coding agent (Claude Code, Cursor, Copilot, Windsurf, Aider
+and the like) working on a Spring Boot or SAP Commerce project. It tells you how
+to run that project with Reclazz so your code edits take effect in the running
+JVM without a restart, and how to confirm that they did.</p>
+<h2 id="what-reclazz-gives-your-edit-run-loop">What Reclazz gives your edit-run loop</h2>
+<p>Reclazz is a <code>-javaagent</code> that watches compiled class files and hot-swaps them
+into the running JVM in place. State is preserved, so the app keeps running
+across your edits. It is free, open source, sends no telemetry, and needs no
+IDE: everything below is a shell command or a build-file edit, the two things
+an agent already does.</p>
+<h2 id="turn-it-on">Turn it on</h2>
+<p>Pick the build you are in. Each path attaches the agent to the dev run and the
+test JVM, so a plain <code>bootRun</code> / <code>mvn test</code> runs against reloaded classes.</p>
+<h3 id="gradle-plugin">Gradle (plugin)</h3>
+<div class="code-block"><div class="code-label">kotlin</div><pre><code>plugins {
+    id(&quot;org.springframework.boot&quot;) version &quot;3.3.0&quot;
+    id(&quot;com.onurkat.reclazz&quot;) version &quot;1.4.0&quot;
+}
+</code></pre></div>
+<p>The plugin resolves <code>com.onurkat.reclazz:reclazz-agent</code> from Maven Central and
+wires the flag into <code>bootRun</code> and <code>Test</code>. It is published on the Gradle Plugin
+Portal, so the <code>id(...) version &quot;1.4.0&quot;</code> form above resolves as-is. Details and
+options: <a href="/docs/reference/gradle-plugin/">gradle-plugin.md</a>.</p>
+<h3 id="maven">Maven</h3>
+<p>No plugin is needed. Let the dependency plugin resolve the agent into a property
+and reference it from Surefire and <code>spring-boot:run</code>; a <code>prepare-agent</code> plugin
+is available too. Both are in <a href="/docs/reference/maven/">maven.md</a>.</p>
+<h3 id="any-jvm-works-everywhere-today">Any JVM (works everywhere today)</h3>
+<p>The agent is on Maven Central as <code>com.onurkat.reclazz:reclazz-agent</code>. Resolve or
+download the jar, then attach it at startup:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>java -javaagent:/path/to/reclazz-agent.jar=platform=spring,watchDirs=build/classes/java/main -jar app.jar
+</code></pre></div>
+<p>The flag must be present when the JVM starts; the agent only reloads classes it
+transformed at load time. Every argument is in <a href="/docs/reference/usage/">usage.md</a>.</p>
+<h2 id="confirm-it-attached-and-verify-a-reload">Confirm it attached and verify a reload</h2>
+<p>Start with the <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/examples/maven-spring-boot/README.md#verify-the-installation">complete installation verification recipe</a>:
+record the intended JVM, inspect DOCTOR, compile a real change, verify its exact
+class-file hash in the same session and check live behavior. The existing tools
+below supply different evidence; an attachment check is not a reload receipt.</p>
+<ul>
+<li>
+<p>Gradle task, one JSON line:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>./gradlew reclazzStatus
+</code></pre></div>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;attached&quot;:true,&quot;agent&quot;:&quot;1.4.0&quot;,&quot;protocol&quot;:1,&quot;port&quot;:54123,&quot;health&quot;:[&quot;Reloads: 3, failures: 0, median 12ms&quot;]}
+</code></pre></div>
+<p><code>{&quot;attached&quot;:false,&quot;reason&quot;:&quot;...&quot;}</code> when nothing is running. See
+<a href="/docs/reference/gradle-plugin/#checking-status">gradle-plugin.md</a>.</p>
+</li>
+<li>
+<p>MCP server, if your client speaks MCP: use the matching packaged
+<code>reclazz-mcp-X.Y.Z.jar</code>. Call <code>reclazz_doctor</code> before the change, then
+<code>reclazz_verify</code> for the compiled class/hash; <code>reclazz_status</code>,
+<code>reclazz_pending</code> and <code>reclazz_diagnose</code> help inspect the running target.
+Setup and the tool table:
+<a href="/docs/reference/mcp-server/">mcp-server.md</a>.</p>
+</li>
+</ul>
+<p>For failed-build protection, use the <a href="/docs/reference/mcp-server/#protecting-terminal-builds">terminal build wrapper or acknowledged
+MCP build sequence</a> with matching jars
+that support build receipts. Plain compile commands do not provide that barrier.</p>
+<p>The basic loop: edit code, recompile (<code>./gradlew classes</code> or <code>mvn compile</code>), let the agent swap it, then hit the endpoint or run the test. If a
+change did not take, call <code>reclazz_diagnose</code> with <code>className</code> and the same explicit
+<code>portFile</code>, or inspect the logs. <code>reclazz_pending</code> lists what genuinely needs a restart (a changed superclass, a
+reordered enum). Restart only for those.</p>
+<h2 id="drop-in-agentsmd-recipe">Drop-in AGENTS.md recipe</h2>
+<p>Paste this into the target project's <code>AGENTS.md</code> (or <code>CLAUDE.md</code>, <code>.cursorrules</code>,
+whatever your setup reads) so the agent that works on that project keeps using
+the hot-reload loop instead of restarting on every change. Adjust the build
+commands to the project.</p>
+<div class="code-block"><div class="code-label">markdown</div><pre><code>## Hot reload with Reclazz
+
+This project runs with the Reclazz agent attached, so a running app picks up
+compiled changes without a restart. Prefer this loop over restarting.
+
+Run the app (agent attaches automatically):
+    ./gradlew bootRun          # Gradle, Reclazz plugin applied
+    # or: mvn spring-boot:run  # Maven, see the project&#x27;s POM
+
+Apply a code change while it runs:
+1. Edit the code.
+2. Recompile with the configured Reclazz build wrapper around `./gradlew classes`
+   or `mvn compile`. If using MCP, require acknowledged `reclazz_build started`
+   before compilation, then send `ok` only on exit zero or `failed` otherwise.
+   This requires an agent with build receipt support; stop if unconfirmed.
+3. The agent hot-swaps the changed classes in place. Do not restart.
+4. Verify each changed compiled class with `reclazz_verify`, passing className,
+   its compiled file&#x27;s lower-case SHA-256 as sha256, and the same agent address.
+   Require status applied, matching hashes and the same sessionId. Poll with a
+   bounded deadline; any other status is not proof of success. This requires
+   matching agent/MCP jars with VERIFY support. Then exercise the endpoint or
+   run the test. An attached status or rising reload count alone proves no edit.
+
+Restart only when Reclazz reports the change as pending (for example a changed
+superclass or a reordered enum). Check with `./gradlew reclazzStatus`, or the
+`reclazz_pending` MCP tool if configured. Everything else reloads live.
+</code></pre></div>
+<h2 id="why-an-agent-can-rely-on-this">Why an agent can rely on this</h2>
+<ul>
+<li>Zero config: the flag alone works, no config file required.</li>
+<li>No telemetry, open source: nothing phones home, so a safety layer around the
+agent has nothing to block.</li>
+<li>Loopback only: the status socket and the MCP server open one connection to
+<code>127.0.0.1</code> and reach nothing off the machine. The shipped agent jar opens no
+client socket at all; its own tests enforce that.</li>
+</ul>
+<h2 id="reproducing-the-packaged-consumer-workflow">Reproducing the packaged consumer workflow</h2>
+<p>From a Reclazz source checkout with a JDK 17+ toolchain, run:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>./gradlew :mcp-server:test --rerun --tests &#x27;*AgenticEndToEndTest&#x27;
+</code></pre></div>
+<p>This test builds the current agent and MCP distribution, then creates a clean
+standalone Java consumer project in a temporary directory. It copies both jars
+to an installation path containing spaces, compiles with the real JDK <code>javac</code>,
+and attaches the agent at application startup. A separate <code>java -jar</code> MCP
+process receives actual JSON-RPC stdio requests throughout the scenario.</p>
+<p>The proof covers:</p>
+<ul>
+<li>Attached status, a successful source edit compiled through the packaged
+<code>BuildMain</code>, an exact-hash <code>reclazz_verify</code> receipt, and changed live behavior.</li>
+<li>An acknowledged MCP build hold across a two-stage compilation: the first
+<code>javac</code> writes a changed class, the second fails on invalid source. The partial
+output cannot change the running application during or after that failed build.</li>
+<li>A complete repaired build releasing the hold, with matching hash evidence and
+changed live behavior. A stale hash returns <code>mismatch</code>.</li>
+<li>The same application PID, startup identity, agent session and increasing
+counter on the existing service object across edits and recovery.</li>
+</ul>
+<p>The test uses only local artifacts and JDK tools, without a running IDE or
+registry download. It exercises the documented direct <code>-javaagent</code> route. It does
+not establish end-to-end coverage of Gradle/Maven plugin resolution, Spring Boot
+or a third-party MCP client's configuration. Those remain separate integration
+surfaces. The application, compiler, wrapper and MCP subprocesses have bounded
+waits and are cleaned up; their transcripts appear in the test report.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/for-ai-agents.md">docs/for-ai-agents.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/feature-evidence/"><span>← Previous</span><strong>Core JVM feature evidence</strong></a><a href="/docs/reference/gradle-plugin/"><span>Next →</span><strong>Reclazz Gradle plugin</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#what-reclazz-gives-your-edit-run-loop">What Reclazz gives your edit-run loop</a><a href="#turn-it-on">Turn it on</a><a href="#confirm-it-attached-and-verify-a-reload">Confirm it attached and verify a reload</a><a href="#drop-in-agentsmd-recipe">Drop-in AGENTS.md recipe</a><a href="#why-an-agent-can-rely-on-this">Why an agent can rely on this</a><a href="#reproducing-the-packaged-consumer-workflow">Reproducing the packaged consumer workflow</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

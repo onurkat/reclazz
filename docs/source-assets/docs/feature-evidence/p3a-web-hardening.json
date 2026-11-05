@@ -1,0 +1,1153 @@
+{
+  "format_version": 1,
+  "package": "P3a",
+  "base_commit": "68c499d",
+  "required_lanes": [
+    "sapmachine-17-macos-arm64",
+    "sapmachine-21-macos-arm64"
+  ],
+  "lanes": {
+    "sapmachine-17-macos-arm64": {
+      "status": "PASSED",
+      "exit_code": 0,
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain -x :agent:rabbitTest -x :agent:jmsE2eTest --tests '*ValidationConstraintReloadTest' --tests '*OverlappingMvcRequestBoundaryReloadTest' --tests '*AsyncMvcRequestBoundaryReloadTest' --tests '*RequestBoundaryReloadTest'; JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*JakartaValidationConstraintReloadTest' --tests '*JakartaOverlappingMvcRequestBoundaryReloadTest' --tests '*JakartaAsyncMvcRequestBoundaryReloadTest'",
+      "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+      "utc": "2026-10-09T11:28:10.844841+00:00",
+      "base_commit": "68c499d",
+      "artifact_sha256": "414819045d482b5635a7dcb99ba26b4aa08222510a254545baa3b6b65a27014b",
+      "raw_evidence": ".collab/research/2026-10-09-web-hardening",
+      "counts": {
+        "e2eTest": {
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "springSixTest": {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "cases": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "status": "PASSED",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/ordinary17/e2eTest/TEST-com.onurkat.reclazz.e2e.ValidationConstraintReloadTest.xml",
+          "invocations": [
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/ordinary17/e2eTest/TEST-com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/ordinary17/e2eTest/TEST-com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "status": "PASSED",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest.xml",
+          "invocations": [
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern17/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "exit_code": 0,
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain -x :agent:rabbitTest -x :agent:jmsE2eTest --tests '*ValidationConstraintReloadTest' --tests '*OverlappingMvcRequestBoundaryReloadTest' --tests '*AsyncMvcRequestBoundaryReloadTest' --tests '*RequestBoundaryReloadTest'",
+          "utc": "2026-10-09T11:25:12.022846+00:00",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+          "base_commit": "68c499d",
+          "counts": {
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "artifact_sha256": "414819045d482b5635a7dcb99ba26b4aa08222510a254545baa3b6b65a27014b",
+          "test_source_sha256": {
+            "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+            "agent/src/test/java/com/onurkat/reclazz/e2e/RequestBoundaryReloadTest.java": "2ade7a54aa8a5da8e5be9214acfb68055765cb5861f746fbc674714ce5351a99",
+            "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+            "agent/src/test/java/com/onurkat/reclazz/e2e/AsyncMvcRequestBoundaryReloadTest.java": "e71d46d27b62f5f5cdb5d814edd897c8c3fc9b6f6d93e81cb690ce26340ff645"
+          }
+        },
+        {
+          "exit_code": 0,
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*JakartaValidationConstraintReloadTest' --tests '*JakartaOverlappingMvcRequestBoundaryReloadTest' --tests '*JakartaAsyncMvcRequestBoundaryReloadTest'",
+          "utc": "2026-10-09T11:28:10.844841+00:00",
+          "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+          "base_commit": "68c499d",
+          "counts": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "artifact_sha256": "414819045d482b5635a7dcb99ba26b4aa08222510a254545baa3b6b65a27014b",
+          "test_source_sha256": {
+            "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+            "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+            "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAsyncMvcRequestBoundaryReloadTest.java": "b11b11b962a71fc1d3123da5f012987904b869ab6cfedfcd4f943a7bb69957bb",
+            "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+            "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe"
+          }
+        }
+      ]
+    },
+    "sapmachine-21-macos-arm64": {
+      "status": "PASSED",
+      "exit_code": 0,
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon --console=plain -x :agent:rabbitTest -x :agent:jmsE2eTest --tests '*ValidationConstraintReloadTest' --tests '*OverlappingMvcRequestBoundaryReloadTest' --tests '*AsyncMvcRequestBoundaryReloadTest' --tests '*RequestBoundaryReloadTest'; JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon --console=plain --tests '*JakartaValidationConstraintReloadTest' --tests '*JakartaOverlappingMvcRequestBoundaryReloadTest' --tests '*JakartaAsyncMvcRequestBoundaryReloadTest'",
+      "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+      "utc": "2026-10-09T11:19:37.434452+00:00",
+      "base_commit": "68c499d",
+      "artifact_sha256": "26bd5b553cbc0d6ab3c3a2375e049cac7dff399fcc3d02f1d0f0ae45bd70bca8",
+      "raw_evidence": ".collab/research/2026-10-09-web-hardening",
+      "counts": {
+        "e2eTest": {
+          "tests": 16,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "springSixTest": {
+          "tests": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "cases": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "status": "PASSED",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/ordinary21/e2eTest/TEST-com.onurkat.reclazz.e2e.ValidationConstraintReloadTest.xml",
+          "invocations": [
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/ordinary21/e2eTest/TEST-com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/ordinary21/e2eTest/TEST-com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "status": "PASSED",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest.xml",
+          "invocations": [
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "status": "PASSED",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern21/springSixTest/TEST-com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest.xml",
+          "invocations": [
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [1] false",
+              "status": "PASSED"
+            },
+            {
+              "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [2] true",
+              "status": "PASSED"
+            }
+          ]
+        }
+      ],
+      "runs": [
+        {
+          "exit_code": 0,
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon --console=plain -x :agent:rabbitTest -x :agent:jmsE2eTest --tests '*ValidationConstraintReloadTest' --tests '*OverlappingMvcRequestBoundaryReloadTest' --tests '*AsyncMvcRequestBoundaryReloadTest' --tests '*RequestBoundaryReloadTest'",
+          "utc": "2026-10-09T11:23:04.450372+00:00",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+          "base_commit": "68c499d",
+          "counts": {
+            "tests": 16,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "artifact_sha256": "26bd5b553cbc0d6ab3c3a2375e049cac7dff399fcc3d02f1d0f0ae45bd70bca8",
+          "test_source_sha256": {
+            "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+            "agent/src/test/java/com/onurkat/reclazz/e2e/RequestBoundaryReloadTest.java": "2ade7a54aa8a5da8e5be9214acfb68055765cb5861f746fbc674714ce5351a99",
+            "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+            "agent/src/test/java/com/onurkat/reclazz/e2e/AsyncMvcRequestBoundaryReloadTest.java": "e71d46d27b62f5f5cdb5d814edd897c8c3fc9b6f6d93e81cb690ce26340ff645"
+          }
+        },
+        {
+          "exit_code": 0,
+          "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon --console=plain --tests '*JakartaValidationConstraintReloadTest' --tests '*JakartaOverlappingMvcRequestBoundaryReloadTest' --tests '*JakartaAsyncMvcRequestBoundaryReloadTest'",
+          "utc": "2026-10-09T11:19:37.434452+00:00",
+          "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+          "base_commit": "68c499d",
+          "counts": {
+            "tests": 12,
+            "failures": 0,
+            "errors": 0,
+            "skipped": 0
+          },
+          "artifact_sha256": "26bd5b553cbc0d6ab3c3a2375e049cac7dff399fcc3d02f1d0f0ae45bd70bca8",
+          "test_source_sha256": {
+            "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaAsyncMvcRequestBoundaryReloadTest.java": "b11b11b962a71fc1d3123da5f012987904b869ab6cfedfcd4f943a7bb69957bb",
+            "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+            "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe"
+          }
+        }
+      ]
+    }
+  },
+  "claims": [
+    {
+      "id": "P3A-VALIDATION-ADD",
+      "statement": "An existing DTO field gaining NotBlank/Size rejects invalid HTTP input.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "quote": "A constraint added to a field (`@NotBlank`)"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2375,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-VALIDATION-ADD"
+        }
+      ],
+      "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
+          }
+        }
+      ],
+      "observable": "An existing DTO field gaining NotBlank/Size rejects invalid HTTP input.",
+      "control": "Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-VALIDATION-CHANGE",
+      "statement": "A changed Size minimum is enforced after warmed native metadata.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "quote": "A constraint added to a field (`@NotBlank`)"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2391,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-VALIDATION-CHANGE"
+        }
+      ],
+      "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
+          }
+        }
+      ],
+      "observable": "A changed Size minimum is enforced after warmed native metadata.",
+      "control": "Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-VALIDATION-REMOVE-RESTORE",
+      "statement": "Removing and restoring constraints changes acceptance without restarting.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "quote": "A constraint added to a field (`@NotBlank`)"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2407,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-VALIDATION-REMOVE-RESTORE"
+        }
+      ],
+      "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
+          }
+        }
+      ],
+      "observable": "Removing and restoring constraints changes acceptance without restarting.",
+      "control": "Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-VALIDATION-HELD",
+      "statement": "A validator reference and DTO instance captured before edits use current constraints.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "quote": "A constraint added to a field (`@NotBlank`)"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2423,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-VALIDATION-HELD"
+        }
+      ],
+      "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
+          }
+        }
+      ],
+      "observable": "A validator reference and DTO instance captured before edits use current constraints.",
+      "control": "Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-VALIDATION-SIDE-EFFECTS",
+      "statement": "Rejected validation/malformed JSON never executes the controller body.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "quote": "A constraint added to a field (`@NotBlank`)"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2439,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-VALIDATION-SIDE-EFFECTS"
+        }
+      ],
+      "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
+          }
+        }
+      ],
+      "observable": "Rejected validation/malformed JSON never executes the controller body.",
+      "control": "Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-VALIDATION-CONTROL",
+      "statement": "Unedited DTO constraints and context identity remain correct across saves.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/product-reference.md",
+          "line": 34,
+          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "quote": "A constraint added to a field (`@NotBlank`)"
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2455,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-VALIDATION-CONTROL"
+        }
+      ],
+      "opt_in": "Startup javaagent and compiled annotation edits on existing DTO fields; no extra validation flag.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Native HV6.2.5/HV8.0.2 on existing DTO fields; six sequential compiled annotation edits.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+          "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java",
+          "source_sha256": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+          "kind": "watcher",
+          "assertions": "Native HTTP status/body, application call count and held-provider checks across six saves.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest#warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java",
+            "source_sha256": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
+          }
+        }
+      ],
+      "observable": "Unedited DTO constraints and context identity remain correct across saves.",
+      "control": "Warm native MVC and held-validator caches; unchanged DTO Min constraint, held old DTO, exact controller body counter, malformed JSON rejection and unchanged nonce. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-REQUEST-COMPLETE",
+      "statement": "Completing one request cannot release a second held worker\u2019s code.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/usage.md",
+          "line": 2717,
+          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "quote": "MVC request from crossing a class reload."
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2471,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-REQUEST-COMPLETE"
+        }
+      ],
+      "opt_in": "Startup javaagent with reloadBoundary=request.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Two held native Callable workers, one optionally wrapped in WebAsyncTask with a 500ms timeout; two sequential compiled saves.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
+          }
+        }
+      ],
+      "observable": "Completing one request cannot release a second held worker\u2019s code.",
+      "control": "Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-REQUEST-TIMEOUT",
+      "statement": "A timeout503 and another completed request cannot release an interrupt-ignoring worker\u2019s code.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/usage.md",
+          "line": 2717,
+          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "quote": "MVC request from crossing a class reload."
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2487,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-REQUEST-TIMEOUT"
+        }
+      ],
+      "opt_in": "Startup javaagent with reloadBoundary=request.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Two held native Callable workers, one optionally wrapped in WebAsyncTask with a 500ms timeout; two sequential compiled saves.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
+          }
+        }
+      ],
+      "observable": "A timeout503 and another completed request cannot release an interrupt-ignoring worker\u2019s code.",
+      "control": "Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    },
+    {
+      "id": "P3A-REQUEST-LATEST",
+      "statement": "Overlapping requests drain on old consistent code; two queued saves eventually serve latest consistent code.",
+      "shipped_surfaces": [
+        {
+          "path": "docs/usage.md",
+          "line": 2717,
+          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "quote": "MVC request from crossing a class reload."
+        },
+        {
+          "path": "docs/feature-evidence.md",
+          "line": 2503,
+          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "quote": "### P3A-REQUEST-LATEST"
+        }
+      ],
+      "opt_in": "Startup javaagent with reloadBoundary=request.",
+      "bounds": "Stock SapMachine17/21, macOS arm64; normal/child loaders; Spring5.3.39/Tomcat9.0.121 and Spring6.1.14/Tomcat10.1.60. Two held native Callable workers, one optionally wrapped in WebAsyncTask with a 500ms timeout; two sequential compiled saves.",
+      "tests": [
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#oneCompletedRequestCannotReleaseAnotherWorkersCode",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
+          }
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce."
+        },
+        {
+          "symbol": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+          "path": "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java",
+          "source_sha256": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+          "kind": "watcher",
+          "assertions": "Two held native Callable workers keep 1:1; completion/timeout of one cannot release the other; two saves eventually reach 3:3 with unchanged context nonce.",
+          "declaration": {
+            "symbol": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest#timedOutWorkerCannotReleaseAnotherWorkersCode",
+            "path": "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java",
+            "source_sha256": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112"
+          }
+        }
+      ],
+      "observable": "Overlapping requests drain on old consistent code; two queued saves eventually serve latest consistent code.",
+      "control": "Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
+      "execution_lanes": [
+        "sapmachine-17-macos-arm64",
+        "sapmachine-21-macos-arm64"
+      ],
+      "verdict": "PROVEN_WITH_SCOPE",
+      "reviewer": "Astra built/read actual observing assertions; independent Claude audit pending.",
+      "limitation": "Bounded P3a slice, not all P3 or universal program safety. No throughput claim, field-initializer concurrency, arbitrary async tasks or unlisted validation providers.",
+      "missing_environment": "Other OS/providers, enhanced JVMs, Boot variants and custom validation/async infrastructure unverified.",
+      "next_action": "Independent audit/full gate and local-only commit after actual matrix and negative witnesses."
+    }
+  ],
+  "negative_witnesses": {
+    "scope": "JDK21 only; whole observers fail at first violated assertion, not each later sub-assertion independently. Mutations and restored-source proof stay outside the audited tree.",
+    "runs": [
+      {
+        "name": "validation",
+        "framework": "Spring5",
+        "exit_code": 1,
+        "command": "./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*ValidationConstraintReloadTest' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+        "runtime": "SapMachine21.0.10.0.1 macOS arm64",
+        "utc": "2026-10-09T11:30:02.178521+00:00",
+        "artifact_sha256": "a6f7b24fe4c30fb68fe45d3ca28283eb58a29f3ecbb5991df84a17a3a0112e93",
+        "base_source_sha256": "1a8d22a2d92f2622c5434a7305a8a592780d9d9e449196c0a30050e06be83f9e",
+        "mutant_source_sha256": "44da88b6fa1875745a4130aebe5f839ad1742e0bc4619e9d5ee4e48f1c0d8f51",
+        "cases": [
+          {
+            "classname": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest",
+            "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [1] false",
+            "status": "FAILED",
+            "failure": "expected: <400> but was: <200>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.ValidationConstraintReloadTest",
+            "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [2] true",
+            "status": "FAILED",
+            "failure": "expected: <400> but was: <200>"
+          }
+        ],
+        "raw_evidence": ".collab/research/2026-10-09-web-hardening/negative/validation-ordinary"
+      },
+      {
+        "name": "validation",
+        "framework": "Spring6",
+        "exit_code": 1,
+        "command": "./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*JakartaValidationConstraintReloadTest'",
+        "runtime": "SapMachine21.0.10.0.1 macOS arm64",
+        "utc": "2026-10-09T11:30:15.954549+00:00",
+        "artifact_sha256": "a6f7b24fe4c30fb68fe45d3ca28283eb58a29f3ecbb5991df84a17a3a0112e93",
+        "base_source_sha256": "1a8d22a2d92f2622c5434a7305a8a592780d9d9e449196c0a30050e06be83f9e",
+        "mutant_source_sha256": "44da88b6fa1875745a4130aebe5f839ad1742e0bc4619e9d5ee4e48f1c0d8f51",
+        "cases": [
+          {
+            "classname": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest",
+            "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [1] false",
+            "status": "FAILED",
+            "failure": "expected: <400> but was: <200>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.JakartaValidationConstraintReloadTest",
+            "name": "warmedNativeConstraintsFollowSixSavesBeforeControllerSideEffects [2] true",
+            "status": "FAILED",
+            "failure": "expected: <400> but was: <200>"
+          }
+        ],
+        "raw_evidence": ".collab/research/2026-10-09-web-hardening/negative/validation-modern"
+      },
+      {
+        "name": "boundary",
+        "framework": "Spring5",
+        "exit_code": 1,
+        "command": "./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*OverlappingMvcRequestBoundaryReloadTest' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+        "runtime": "SapMachine21.0.10.0.1 macOS arm64",
+        "utc": "2026-10-09T11:30:42.524957+00:00",
+        "artifact_sha256": "2bc32bc3155ff0b5f0a69b1a4c07714a272a4f52f2d4f8115875334a656521b6",
+        "base_source_sha256": "71a2eecdc61e41283e4cbdb9e39fe66d5de0e9c4b084ba15f6931639f004b329",
+        "mutant_source_sha256": "0f355aa3c03fd5250024a129208d92484c833327a0780f881248a9bdf586db0d",
+        "cases": [
+          {
+            "classname": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest",
+            "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [1] false",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest",
+            "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [2] true",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest",
+            "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [1] false",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.OverlappingMvcRequestBoundaryReloadTest",
+            "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [2] true",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          }
+        ],
+        "raw_evidence": ".collab/research/2026-10-09-web-hardening/negative/boundary-ordinary"
+      },
+      {
+        "name": "boundary",
+        "framework": "Spring6",
+        "exit_code": 1,
+        "command": "./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain --tests '*JakartaOverlappingMvcRequestBoundaryReloadTest'",
+        "runtime": "SapMachine21.0.10.0.1 macOS arm64",
+        "utc": "2026-10-09T11:31:03.922938+00:00",
+        "artifact_sha256": "2bc32bc3155ff0b5f0a69b1a4c07714a272a4f52f2d4f8115875334a656521b6",
+        "base_source_sha256": "71a2eecdc61e41283e4cbdb9e39fe66d5de0e9c4b084ba15f6931639f004b329",
+        "mutant_source_sha256": "0f355aa3c03fd5250024a129208d92484c833327a0780f881248a9bdf586db0d",
+        "cases": [
+          {
+            "classname": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest",
+            "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [1] false",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest",
+            "name": "timedOutWorkerCannotReleaseAnotherWorkersCode [2] true",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest",
+            "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [1] false",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          },
+          {
+            "classname": "com.onurkat.reclazz.e2e.JakartaOverlappingMvcRequestBoundaryReloadTest",
+            "name": "oneCompletedRequestCannotReleaseAnotherWorkersCode [2] true",
+            "status": "FAILED",
+            "failure": "expected: <1:1> but was: <2:2>"
+          }
+        ],
+        "raw_evidence": ".collab/research/2026-10-09-web-hardening/negative/boundary-modern"
+      }
+    ],
+    "registry_runs": [
+      {
+        "mode": "positive",
+        "exit_code": 0,
+        "command": "./gradlew :agent:unitTest --rerun --tests '*P3aRegistryCompletenessTest.currentRegistryHasEveryPlannedCellAndVerifiableProvenance' -x :agent:jmsUnitTest -x :agent:hibernateTest --offline --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "tests": 1,
+        "failures": 0,
+        "failure": null
+      },
+      {
+        "mode": "missing-field",
+        "exit_code": 1,
+        "command": "./gradlew :agent:unitTest --rerun --tests '*P3aRegistryCompletenessTest.currentRegistryHasEveryPlannedCellAndVerifiableProvenance' -x :agent:jmsUnitTest -x :agent:hibernateTest --offline --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "tests": 1,
+        "failures": 1,
+        "failure": "org.opentest4j.AssertionFailedError: missing/empty observable ==> expected: <true> but was: <false>"
+      },
+      {
+        "mode": "omitted-cell",
+        "exit_code": 1,
+        "command": "./gradlew :agent:unitTest --rerun --tests '*P3aRegistryCompletenessTest.currentRegistryHasEveryPlannedCellAndVerifiableProvenance' -x :agent:jmsUnitTest -x :agent:hibernateTest --offline --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "tests": 1,
+        "failures": 1,
+        "failure": "org.opentest4j.AssertionFailedError: registry cell set differs from the planned manifest ==> expected: <[P3A-VALIDATION-ADD, P3A-VALIDATION-HELD, P3A-VALIDATION-CONTROL, P3A-VALIDATION-REMOVE-RESTORE, P3A-REQUEST-TIMEOUT, P3A-VALIDATION-CHANGE, P3A-REQUEST-COMPLETE, P3A-VALIDATION-SIDE-EFFECTS, P3A-REQUEST-LATEST]> but was: <[P3A-VALIDATION-HELD, P3A-VALIDATION-CONTROL, P3A-VALIDATION-REMOVE-RESTORE, P3A-REQUEST-TIMEOUT, P3A-VALIDATION-CHANGE, P3A-REQUEST-COMPLETE, P3A-VALIDATION-SIDE-EFFECTS, P3A-REQUEST-LATEST]>"
+      },
+      {
+        "mode": "unrun-lane",
+        "exit_code": 1,
+        "command": "./gradlew :agent:unitTest --rerun --tests '*P3aRegistryCompletenessTest.currentRegistryHasEveryPlannedCellAndVerifiableProvenance' -x :agent:jmsUnitTest -x :agent:hibernateTest --offline --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+        "tests": 1,
+        "failures": 1,
+        "failure": "org.opentest4j.AssertionFailedError: unrun lane cannot prove P3A-VALIDATION-ADD ==> expected: <PASSED> but was: <UNRUN>"
+      }
+    ],
+    "raw_evidence": ".collab/research/2026-10-09-web-hardening"
+  },
+  "test_only_dependencies": [
+    {
+      "configuration": "springSixTestImplementation",
+      "coordinate": "com.fasterxml.jackson.core:jackson-databind:2.22.3"
+    },
+    {
+      "configuration": "springSixTestImplementation",
+      "coordinate": "org.hibernate.validator:hibernate-validator:8.0.2.Final"
+    },
+    {
+      "configuration": "springSixTestImplementation",
+      "coordinate": "org.glassfish.expressly:expressly:5.0.0"
+    }
+  ],
+  "dependency_sources": [
+    "https://hibernate.org/validator/releases/8.0/",
+    "https://docs.hibernate.org/validator/8.0/reference/en-US/html_single/"
+  ],
+  "fixture_correction": {
+    "result": "The first Spring6 run failed at initial baseline HTTP415 before edits. Adding the existing ordinary Jackson version only to the isolated test graph made the native JSON fixture executable. No production defect inferred.",
+    "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern21-before-json"
+  },
+  "production_scope": {
+    "source_files_changed": 0,
+    "source_files_snapshot_verified": 210,
+    "unverified_scope": "Other P3 MVC/data/callback families and unlisted runtime/provider/race schedules remain separate; independent audit pending."
+  },
+  "regression_gate_runs": [
+    {
+      "exit_code": 0,
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:unitTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+      "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+      "utc": "2026-10-09T11:33:24.311503+00:00",
+      "counts": {
+        "unitTest": {
+          "tests": 2026,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 5
+        },
+        "jmsUnitTest": {
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "hibernateTest": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "artifact_sha256": "b1f90260d3ba0ad1571e20997b084493d6aed77bb5d7ef4be4de0c8c128d0917",
+      "raw_evidence": ".collab/research/2026-10-09-web-hardening/unit21"
+    },
+    {
+      "exit_code": 0,
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:springSixTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+      "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+      "utc": "2026-10-09T11:40:35.617443+00:00",
+      "counts": {
+        "springSixTest": {
+          "tests": 169,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "artifact_sha256": "b1f90260d3ba0ad1571e20997b084493d6aed77bb5d7ef4be4de0c8c128d0917",
+      "raw_evidence": ".collab/research/2026-10-09-web-hardening/modern-full21"
+    },
+    {
+      "exit_code": 0,
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:e2eTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+      "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+      "utc": "2026-10-09T12:01:33.637002+00:00",
+      "counts": {
+        "e2eTest": {
+          "tests": 203,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "rabbitTest": {
+          "tests": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "jmsE2eTest": {
+          "tests": 5,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "artifact_sha256": "b1f90260d3ba0ad1571e20997b084493d6aed77bb5d7ef4be4de0c8c128d0917",
+      "raw_evidence": ".collab/research/2026-10-09-web-hardening/e2e-full21"
+    },
+    {
+      "exit_code": 0,
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home/bin:$PATH ./gradlew :agent:hibernateTest --rerun :agent:jmsUnitTest --rerun :agent:unitTest --rerun --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+      "runtime": "openjdk version \"17.0.16\" 2025-07-15 LTS\nOpenJDK Runtime Environment SapMachine (build 17.0.16+8-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 17.0.16+8-LTS, mixed mode, sharing)\n",
+      "utc": "2026-10-09T12:04:23.027304+00:00",
+      "counts": {
+        "unitTest": {
+          "tests": 2026,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 9
+        },
+        "jmsUnitTest": {
+          "tests": 22,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "hibernateTest": {
+          "tests": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "artifact_sha256": "b1e3eb53bd09141bc2854dafc6959d59aabb57393cbf560dbe103c0b356ddd12",
+      "raw_evidence": ".collab/research/2026-10-09-web-hardening/unit17"
+    },
+    {
+      "exit_code": 0,
+      "command": "JAVA_HOME=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home PATH=/Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home/bin:$PATH ./gradlew :agent:unitTest --rerun --tests '*P1RegistryCompletenessTest' --tests '*P2RegistryCompletenessTest' --tests '*P3aRegistryCompletenessTest' -x :agent:jmsUnitTest -x :agent:hibernateTest --max-workers=1 --no-daemon -Dorg.gradle.jvmargs=-Xmx1024m --console=plain",
+      "runtime": "openjdk version \"21.0.10.0.1\" 2026-02-17 LTS\nOpenJDK Runtime Environment SapMachine (build 21.0.10.0.1+1-LTS)\nOpenJDK 64-Bit Server VM SapMachine (build 21.0.10.0.1+1-LTS, mixed mode, sharing)\n",
+      "utc": "2026-10-09T12:05:08.808897+00:00",
+      "counts": {
+        "unitTest": {
+          "tests": 23,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        }
+      },
+      "artifact_sha256": "b1e3eb53bd09141bc2854dafc6959d59aabb57393cbf560dbe103c0b356ddd12",
+      "raw_evidence": ".collab/research/2026-10-09-web-hardening/registry-final21"
+    }
+  ],
+  "regression_gate_scope": "Full unit suite on JDK17/21, full isolated Spring6 and ordinary e2e/broker suites on JDK21. Final narrow registry check on JDK21 after metadata-only updates. Not an independent Claude audit; not all-project/all-environment feature completion.",
+  "gate_metadata_note": "unit21 preceded final prose/control/receipt metadata updates. New Java observer sources remained unchanged; final unit17 and registry-final21 checked the updated metadata. The first modern21 receipt captured subclass sources only; inherited sources are explicitly hashed in the claim declarations and later modern17 receipt. Historical run fields were not backfilled.",
+  "handoff_observer_source_snapshot": {
+    "utc": "2026-10-09T12:06:11.499740+00:00",
+    "description": "Current source snapshot, not a backdated run receipt.",
+    "files": {
+      "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaOverlappingMvcRequestBoundaryReloadTest.java": "9b122f97254e049ebc9453aa1286cc69d030c2701bfe10b5bcb4bb8708bed21d",
+      "agent/src/springSixTest/java/com/onurkat/reclazz/e2e/JakartaValidationConstraintReloadTest.java": "fa41b0b7d9e899fb0e9635c34d329edd4ecc52b5b30df9d655103c1142620fbe",
+      "agent/src/test/java/com/onurkat/reclazz/e2e/OverlappingMvcRequestBoundaryReloadTest.java": "fa6fc1dc7666fb8f5663dd708cf1f4bb3096e56fbd007b05c28b982c88e53112",
+      "agent/src/test/java/com/onurkat/reclazz/e2e/ValidationConstraintReloadTest.java": "34aea7e12910cddbbbf2beae4d4708c43197b65df8f5922afa63320a2f78882b"
+    }
+  }
+}

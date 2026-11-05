@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Documentation workflow | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: Documentation workflow.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/documentation-workflow/">
+<meta property="og:type" content="article"><meta property="og:title" content="Documentation workflow | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: Documentation workflow."><meta property="og:url" content="https://reclazz.com/docs/reference/documentation-workflow/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Documentation workflow", "description": "Complete configuration, behavior and scope reference: Documentation workflow.", "url": "https://reclazz.com/docs/reference/documentation-workflow/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a aria-current="page" href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">◈</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a aria-current="page" href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">◈</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Maintaining the project</span></div><article><div class="article-eyebrow">Maintaining the project</div><h1 id="documentation-workflow">Documentation workflow</h1><div class="reference-content"><p>The canonical documentation lives in <code>main/docs</code>. The website is generated from
+those sources; <code>gh-pages</code> is no longer an authoring location. README is the short
+project introduction, with links to the site and this source index.</p>
+<h2 id="where-to-make-a-change">Where to make a change</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detailed behavior, setup, protocol or acceptance scope</td>
+<td>The relevant Markdown file under <code>docs/</code></td>
+</tr>
+<tr>
+<td>Curated explanations and navigation</td>
+<td><code>docs/site/</code></td>
+</tr>
+<tr>
+<td>Reload outcome, condition, next action and scope</td>
+<td><code>docs/reload-support.md</code></td>
+</tr>
+<tr>
+<td>Site layout, shared styles or landing pages</td>
+<td><code>website/</code></td>
+</tr>
+<tr>
+<td>Build, coverage and publishing workflow</td>
+<td><code>scripts/*docs-site.py</code>, <code>requirements-docs.txt</code>, <code>.github/workflows/docs.yml</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Every top-level <code>docs/*.md</code> file is listed in <a href="/docs/reference/">the source index</a> and
+rendered in the website’s reference library. The 13 task-oriented guides introduce
+those references; they are maintained in the same source tree, not in a separate
+website checkout. Agent options are extracted from <code>docs/usage.md</code>, not copied
+into a separately authored JSON table. The interactive matrix and downloadable JSON are derived from <code>docs/reload-support.md</code>. Support records must retain their source
+and condition, with missing evidence clearly distinguished from known refusal.</p>
+<h2 id="build-and-preview">Build and preview</h2>
+<p>Use Python 3.9+ in an isolated environment. The pinned dependencies are documentation
+build tools only; they do not enter the agent, IDE plugin or Maven/Gradle artifacts.</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>python3 -m venv .venv-docs
+.venv-docs/bin/python -m pip install -r requirements-docs.txt
+.venv-docs/bin/python scripts/build-docs-site.py
+.venv-docs/bin/python scripts/check-docs-site.py
+.venv-docs/bin/python scripts/test-docs-site.py
+python3 -m http.server 18765 --bind 127.0.0.1 --directory build/site
+</code></pre></div>
+<p>On Windows use <code>.venv-docs/Scripts/python.exe</code> instead of <code>.venv-docs/bin/python</code>.
+Open <code>http://127.0.0.1:18765/docs/</code>. Check a complete reference page, its internal
+links, tables and code examples; also check desktop/mobile, both themes, search
+and keyboard navigation. Build output is ignored and must not be edited by hand.</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>.venv-docs/bin/python scripts/build-docs-site.py --check
+</code></pre></div>
+<p>This check rejects stale output when a source, option, asset or build input changed.
+The build manifest records every canonical document’s digest and public route.
+The reference library includes JSON evidence downloads; it does not certify that
+those acceptance runs were repeated by a documentation build.</p>
+<h2 id="continuous-integration-and-publication">Continuous integration and publication</h2>
+<p>The docs workflow builds and checks documentation-only changes separately from
+the application test gate. Pull requests produce a site artifact for review and
+never deploy. A successful main push can deploy the same checked artifact through
+GitHub Pages Actions. Its GitHub environment and repository branch protections
+remain the owner’s controls; this task does not change those settings.</p>
+<p>Before the first production deployment, finish independent review/commit and set
+<strong>Settings → Pages → Build and deployment → Source → GitHub Actions</strong>. The previous
+branch-based site and custom domain stay in service until that switch and a
+successful deployment. Do not delete a live branch as part of local migration.</p>
+<p>The workflow retains <code>CNAME</code>, <code>.nojekyll</code> and all existing landing/privacy/license
+assets in the built site. No separate branch synchronization or copying of docs
+is needed after adoption. Do not use a generated <code>gh-pages</code> file as source.</p>
+<h2 id="version-and-evidence-discipline">Version and evidence discipline</h2>
+<p>Keep capability evidence tied to its recorded source/version. Site generation
+must not upgrade an unverified lane or a component-only test into a watcher
+acceptance claim. Source presence does not prove artifact publication.</p>
+<p>If a claim moves out of README, relocate its registry surface path/line/quote and
+file digest; keep verdicts, observing tests and execution records unchanged. Run
+the existing evidence, protocol and argument checks before handoff.</p>
+<p>Full reference pages rewrite known Markdown links to site routes. Links to source
+code, examples or non-rendered project files retain the source repository location.
+Markdown HTML/XML examples belong in code fences. Literal angle-bracket prose is escaped; existing empty ID anchors remain linkable. Curated layout fragments under <code>docs/site/</code> retain their separate HTML authoring path.</p>
+<p>Keep examples synthetic and remove private names, credentials and customer paths.</p>
+<h2 id="one-source-per-fact">One source per fact</h2>
+<ul>
+<li>Installation actions and runnable setup snippets: <code>docs/installation.md</code> and <code>docs/maven.md</code>.
+Quickstart uses <code>{{INCLUDE docs/file.md#heading}}</code> to render the canonical section;
+do not paste its commands into an HTML fragment. Missing sections fail the build.</li>
+<li>Agent arguments/defaults: <code>docs/usage.md</code>. The product reference links here and
+the options page is generated from this table.</li>
+<li>Support outcomes/conditions/actions: <code>docs/reload-support.md</code>. Keep linked technical
+scope precise; these are bounded editorial summaries, not automatic certification
+of the runtime test registries. Do not independently author a support JSON file.</li>
+<li>Source version: <code>pluginVersion</code> in <code>gradle.properties</code>. Evidence commit and actual
+review date: <code>docs/site/manifest.json</code>. Reviewing docs does not rerun acceptance tests.
+The build revision is separately recorded; never silently advance recorded evidence.</li>
+<li>AI discovery: <code>llms.txt</code> is generated from the README introduction and page metadata;
+no independent feature claims or support matrix are authored there.</li>
+</ul>
+<p>Use <code>{{REF docs/usage.md#heading}}</code> for guide reading links. These resolve to website
+references; source-code links retain the selected build revision. The evidence footer
+retains the explicit capability baseline. Fix relative Markdown links at their source
+so GitHub/offline reading also works; website aliases are not a source-link repair.</p>
+<p>The checker validates source anchors as well as rendered routes, evidence surface hashes,
+and the absence of independently editable AI/support outputs. Search links directly to
+sections. The large evidence registry remains available in full, but only its introduction
+is indexed to avoid making every reader download thousands of provenance lines.</p>
+<p>Maintainer publishing/workflow pages have their own navigation group. Full reference
+URLs and heading anchors remain stable when navigation is reorganized. When changing a
+heading, preserve a legacy empty ID anchor or update every canonical link to it.</p>
+<h2 id="shared-public-layout">Shared public layout</h2>
+<p><code>website/layout.py</code> owns the public header, footer, search dialog and shared head assets
+for documentation, home, comparison, privacy and license pages. Public HTML under
+<code>website/static/</code> keeps its content and metadata, using the <code>SITE_HEAD</code>, <code>SITE_HEADER</code>,
+<code>SITE_FOOTER</code> and <code>SITE_UTILITIES</code> markers exactly once. The builder rejects bypasses.</p>
+<p>Shared visual tokens remain in <code>website/static/docs/assets/docs.css</code>; <code>assets/site.css</code>
+styles the public navigation/footer and <code>assets/marketing.css</code> styles public content.
+<code>assets/site.js</code> enhances the native mobile navigation; <code>assets/home.js</code> owns the existing
+homepage FAQ and English/Turkish copy. Theme and docs search are shared across every page.
+The full license uses native details so it works with a keyboard and without JavaScript.</p>
+<p>The site checker validates all public HTML pages, their assets and local anchors in
+addition to the documentation contracts. After layout changes, check mobile navigation,
+search, theme persistence between pages, language switching and horizontal table scrolling.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/documentation-workflow.md">docs/documentation-workflow.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/client-matrix/"><span>← Previous</span><strong>Agentic client acceptance matrix</strong></a><a href="/docs/reference/feature-evidence/"><span>Next →</span><strong>Core JVM feature evidence</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#where-to-make-a-change">Where to make a change</a><a href="#build-and-preview">Build and preview</a><a href="#continuous-integration-and-publication">Continuous integration and publication</a><a href="#version-and-evidence-discipline">Version and evidence discipline</a><a href="#one-source-per-fact">One source per fact</a><a href="#shared-public-layout">Shared public layout</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

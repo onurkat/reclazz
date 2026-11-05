@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reload support reference | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: Reload support reference.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/reload-support/">
+<meta property="og:type" content="article"><meta property="og:title" content="Reload support reference | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: Reload support reference."><meta property="og:url" content="https://reclazz.com/docs/reference/reload-support/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Reload support reference", "description": "Complete configuration, behavior and scope reference: Reload support reference.", "url": "https://reclazz.com/docs/reference/reload-support/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a aria-current="page" href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">◈</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a aria-current="page" href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">◈</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="reload-support-reference">Reload support reference</h1><div class="reference-content"><p>This is the canonical support table. The interactive <a href="https://reclazz.com/docs/support-matrix/">reload matrix</a>
+and its downloadable JSON are generated from these rows; edit this file, never generated output.
+Each result applies only to its stated condition and linked scope. An unverified result
+is neither a success nor a refusal. Java 17+ is a target, not certification of every vendor or OS.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Area</th>
+<th>Change</th>
+<th>Outcome</th>
+<th>Conditions</th>
+<th>Next action</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>method-body</td>
+<td>Java</td>
+<td>Edit an existing method body</td>
+<td>works</td>
+<td>Compile a supported edit into a watched output. Existing object fields remain on the JVM method-body-only path. Framework follow-up can separately recreate beans.</td>
+<td>Compile, check the same JVM and inspect the changed result.</td>
+<td><a href="/docs/reference/feature-evidence/#p1-body-super">Scope</a></td>
+</tr>
+<tr>
+<td>added-method</td>
+<td>Java</td>
+<td>Add or remove a method</td>
+<td>conditional</td>
+<td>Stock-JDK companion mode supports hot-compiled calls; new methods do not become native members of the original Class. Previously held removed members can retain their last implementation.</td>
+<td>Compile affected watched callers; use a supported framework adapter for reflection.</td>
+<td><a href="/docs/reference/usage/#companion-class-reflective-visibility-caveat">Scope</a></td>
+</tr>
+<tr>
+<td>instance-field</td>
+<td>Java</td>
+<td>Add an instance field</td>
+<td>conditional</td>
+<td>Stock mode stores added fields separately. Isolated initializers run on first read for existing objects; constructor-dependent or entangled initializers retain type defaults with a reason.</td>
+<td>Read the initializer diagnostic and verify an existing object.</td>
+<td><a href="/docs/reference/usage/#new-field-values-on-objects-that-already-existed">Scope</a></td>
+</tr>
+<tr>
+<td>field-caller</td>
+<td>Java</td>
+<td>Read/write an added field from another class</td>
+<td>conditional</td>
+<td>Both owner and caller must be watched/reloaded in the measured direct-access shape. Field-type changes and every inherited/loader variant are not certified.</td>
+<td>Compile both sides and check the shared value on an existing object.</td>
+<td><a href="/docs/reference/usage/#cross-class-access-to-added-instance-fields">Scope</a></td>
+</tr>
+<tr>
+<td>static-field</td>
+<td>Java</td>
+<td>Add a static field with an initializer</td>
+<td>conditional</td>
+<td>Compile-time constants and separable initializers, including bounded forward conditionals/switches, are supported. Existing static blocks and values are not reset.</td>
+<td>Check the new value and any extraction refusal reason.</td>
+<td><a href="/docs/reference/usage/#added-static-field-values">Scope</a></td>
+</tr>
+<tr>
+<td>static-reset</td>
+<td>Java</td>
+<td>Change an already initialized static field initializer</td>
+<td>restart</td>
+<td>Later saves preserve the current added static value, including null or application writes. Reload does not replay arbitrary static initialization.</td>
+<td>Restart to run startup initialization again; account for external side effects.</td>
+<td><a href="/docs/reference/usage/#added-static-field-values">Scope</a></td>
+</tr>
+<tr>
+<td>inlined-constant</td>
+<td>Java</td>
+<td>Change an inlined compile-time constant</td>
+<td>conditional</td>
+<td>Callers can retain their old literal until recompiled. AutoCompile can rebuild detected watched sources; unwatched consumers remain outside that repair.</td>
+<td>Recompile affected callers or use supported AutoCompile.</td>
+<td><a href="/docs/reference/product-reference/#core">Scope</a></td>
+</tr>
+<tr>
+<td>enum-tail</td>
+<td>Java</td>
+<td>Append an enum constant / remove its final constant</td>
+<td>conditional</td>
+<td>Documented on JDK 17–25 with ordinal-preserving edits. Existing application arrays sized from the old enum length do not grow.</td>
+<td>Check enum consumers and any fixed-size application arrays.</td>
+<td><a href="/docs/reference/product-reference/#comparison">Scope</a></td>
+</tr>
+<tr>
+<td>enum-reorder</td>
+<td>Java</td>
+<td>Insert/reorder enum values or remove a non-tail value</td>
+<td>restart</td>
+<td>The edit renumbers ordinals; Reclazz refuses it. Restart alone does not migrate persisted ordinal data.</td>
+<td>Review persisted ordinals and restart for the type change.</td>
+<td><a href="/docs/reference/product-reference/#comparison">Scope</a></td>
+</tr>
+<tr>
+<td>interface</td>
+<td>Java</td>
+<td>Add or remove an implemented interface</td>
+<td>conditional</td>
+<td>Requires a compatible enhanced-redefinition JVM such as JBR/DCEVM. Stock JVMs refuse the type change.</td>
+<td>Use a supported enhanced runtime or restart.</td>
+<td><a href="/docs/reference/product-reference/#comparison">Scope</a></td>
+</tr>
+<tr>
+<td>superclass</td>
+<td>Java</td>
+<td>Change a superclass</td>
+<td>restart</td>
+<td>The loaded superclass stays unchanged. Eligible bodies may apply; dependent methods stay pinned and unsafe signatures/constructors can refuse the whole save.</td>
+<td>Read partial/refused reporting and restart for the hierarchy.</td>
+<td><a href="/docs/reference/superclass-feasibility/">Scope</a></td>
+</tr>
+<tr>
+<td>reflection</td>
+<td>Java</td>
+<td>Discover added members through arbitrary reflection</td>
+<td>restart</td>
+<td>On stock JVMs the original Class lacks companion members. Explicit framework adapters have separate scope; arbitrary reflective consumers do not.</td>
+<td>Restart, or use a compatible enhanced JVM/explicitly supported adapter.</td>
+<td><a href="/docs/reference/usage/#companion-class-reflective-visibility-caveat">Scope</a></td>
+</tr>
+<tr>
+<td>jdk-new</td>
+<td>Java</td>
+<td>Assume every Java 17+ vendor/version is certified</td>
+<td>unverified</td>
+<td>Java 17+ is the target. The main recorded portable lanes are stock SapMachine 17/21 on macOS arm64, not every vendor, OS or future JDK.</td>
+<td>Validate the exact runtime and change shape.</td>
+<td><a href="/docs/reference/feature-evidence/">Scope</a></td>
+</tr>
+<tr>
+<td>bean</td>
+<td>Spring</td>
+<td>Refresh an affected singleton bean</td>
+<td>conditional</td>
+<td>Supported bean paths destroy/recreate the singleton and repair bounded references. Mutable bean state can reset; arbitrary external holders are not repaired.</td>
+<td>Check lifecycle effects, current references and the served result.</td>
+<td><a href="/docs/reference/usage/#state-during-a-reload">Scope</a></td>
+</tr>
+<tr>
+<td>component</td>
+<td>Spring</td>
+<td>Add a new component class</td>
+<td>conditional</td>
+<td>Direct/composed stereotypes, native name/condition selection and singleton/prototype/lazy creation are supported. Not a repeat of full startup scanning.</td>
+<td>Compile the new class and check registration/condition outcome.</td>
+<td><a href="/docs/reference/usage/#new-component-classes-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>custom-scope</td>
+<td>Spring</td>
+<td>Add a component with a web/custom scope or scoped proxy</td>
+<td>restart</td>
+<td>The new-component path refuses these scope shapes. Normal singleton/prototype support does not imply custom scope enrollment.</td>
+<td>Restart under the application’s normal configuration.</td>
+<td><a href="/docs/reference/usage/#new-component-classes-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>condition-recheck</td>
+<td>Spring</td>
+<td>Reevaluate every filtered component after a profile/property edit</td>
+<td>unverified</td>
+<td>New-component conditions are registration-time decisions. General later rediscovery and startup import/auto-configuration replay are outside this path.</td>
+<td>Use a restart for a changed startup topology; validate any narrower path.</td>
+<td><a href="/docs/reference/usage/#new-component-classes-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>bean-factory</td>
+<td>Spring</td>
+<td>Add an @Bean factory method</td>
+<td>conditional</td>
+<td>Bounded lite/full/static configuration paths support documented arguments, aliases, selection and direct conditions. Existing names/custom scopes/unknown composed conditions are restricted.</td>
+<td>Use the exact factory allowlist and check product identity/lifecycle.</td>
+<td><a href="/docs/reference/usage/#bean-methods-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>injection</td>
+<td>Spring</td>
+<td>Change existing injection or lifecycle metadata</td>
+<td>conditional</td>
+<td>Spring metadata caches are refreshed on supported bean paths. Recreation has state and reference limits; it is not an arbitrary graph rewrite.</td>
+<td>Check the recreated bean’s injection and lifecycle behavior.</td>
+<td><a href="/docs/reference/product-reference/#spring-integration">Scope</a></td>
+</tr>
+<tr>
+<td>new-lifecycle</td>
+<td>Spring</td>
+<td>Add @PostConstruct / @PreDestroy methods</td>
+<td>conditional</td>
+<td>Supported plain singletons use the javax Spring 5 / Jakarta Spring 6 lanes. Each instance keeps its added destroy callback through later edits/removal.</td>
+<td>Verify creation/injection/destruction for the affected instance.</td>
+<td><a href="/docs/reference/usage/#lifecycle-methods-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>service-advice</td>
+<td>Spring</td>
+<td>Add @Transactional or cache-advised service methods</td>
+<td>conditional</td>
+<td>Supported public singleton operations use native interceptors; bounded composed metadata is supported. Compile the caller and respect the proxy/advice allowlist.</td>
+<td>Verify commit/rollback or cache behavior, not only the method result.</td>
+<td><a href="/docs/reference/usage/#operations-on-added-service-methods">Scope</a></td>
+</tr>
+<tr>
+<td>security</td>
+<td>Spring</td>
+<td>Add pre/post authorization to a new service operation</td>
+<td>conditional</td>
+<td>Named classic/modern Spring Security graphs support direct and bounded composed policies. Unknown security infrastructure/advice shapes are refused.</td>
+<td>Check both allowed and denied calls with the installed security graph.</td>
+<td><a href="/docs/reference/usage/#authorization-on-added-service-methods">Scope</a></td>
+</tr>
+<tr>
+<td>aspect</td>
+<td>Spring</td>
+<td>Edit an @Aspect pointcut</td>
+<td>conditional</td>
+<td>Updates supported existing mutable singleton JDK/CGLIB proxy chains. Previously unproxied targets and unsupported proxy shapes are outside this path.</td>
+<td>Check an already-injected reference and inspect unsupported targets.</td>
+<td><a href="/docs/reference/usage/#edited-aspect-pointcuts">Scope</a></td>
+</tr>
+<tr>
+<td>scheduled</td>
+<td>Spring</td>
+<td>Add/edit/remove @Scheduled methods</td>
+<td>conditional</td>
+<td>Direct no-argument void callbacks on supported singletons, with documented proxy/transaction/cache/async combinations. Removal cancels the registration.</td>
+<td>Check one current schedule and retirement of its predecessor.</td>
+<td><a href="/docs/reference/usage/#scheduled-methods-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>event</td>
+<td>Spring</td>
+<td>Add/edit/remove @EventListener methods</td>
+<td>conditional</td>
+<td>Direct callbacks with one reference event input and void/single-event return on supported singletons. Filtering/order/conditions and advice have bounded scope.</td>
+<td>Publish a test event; check current delivery and no stale registration.</td>
+<td><a href="/docs/reference/usage/#event-listener-methods-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>transaction-event</td>
+<td>Spring</td>
+<td>Add @TransactionalEventListener methods</td>
+<td>conditional</td>
+<td>Direct void methods on supported unproxied singletons; Spring handles phase/fallback/conditions/order. Reload retires queued callbacks from the old added registration.</td>
+<td>Check the intended transaction phase and a later edit/removal.</td>
+<td><a href="/docs/reference/usage/#transactional-event-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>async</td>
+<td>Spring</td>
+<td>Add @Async service methods</td>
+<td>conditional</td>
+<td>Direct public methods support void, Future and CompletableFuture with native executor/error handling and supported transaction/cache advice.</td>
+<td>Check execution, returned completion and exception handling.</td>
+<td><a href="/docs/reference/usage/#async-service-methods-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>constructor-helper</td>
+<td>Spring</td>
+<td>Reload a helper captured by a constructor-injected leaf</td>
+<td>conditional</td>
+<td>Exact supported factories, plain two-node shapes and one measured direct-child context form. Aliases, broader graphs, proxies/factory products and lifecycle-owned shapes are excluded.</td>
+<td>Read the ownership contract and verify the retained caller’s value.</td>
+<td><a href="/docs/reference/spring-constructor-dependencies/">Scope</a></td>
+</tr>
+<tr>
+<td>mvc</td>
+<td>Web &amp; JSON</td>
+<td>Add/change a controller endpoint</td>
+<td>conditional</td>
+<td>Supported controller mapping rescans include added methods on stock JVMs. Receiver, metadata and classloader shapes still matter.</td>
+<td>Compile and send a request to the intended route.</td>
+<td><a href="/docs/reference/product-reference/#spring-integration">Scope</a></td>
+</tr>
+<tr>
+<td>exception-handler</td>
+<td>Web &amp; JSON</td>
+<td>Add @ExceptionHandler methods</td>
+<td>conditional</td>
+<td>Plain controllers/advice and standard resolver on Framework 5.3.39/6.1.14; bounded synchronous metadata. Proxy/inheritance/generic/composed/custom resolver shapes are excluded.</td>
+<td>Check status/body and handler precedence; fix ambiguous mappings.</td>
+<td><a href="/docs/reference/usage/#exception-handlers-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>binder-model</td>
+<td>Web &amp; JSON</td>
+<td>Add @InitBinder / @ModelAttribute methods</td>
+<td>conditional</td>
+<td>Supported plain controller/advice adapters preserve named binding, model rules and native advice order/selectors. Read the exact callback allowlist.</td>
+<td>Check a real binding/model request through the current controller.</td>
+<td><a href="/docs/reference/usage/#binding-and-model-methods-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>jackson</td>
+<td>Web &amp; JSON</td>
+<td>Add Jackson getters, setters or DTO fields</td>
+<td>conditional</td>
+<td>Supported Spring-managed mapper adapter; mutable DTOs and saved annotations. Final added fields are not writable; creator/record/builder additions are excluded.</td>
+<td>Check JSON input and output against the installed Jackson version.</td>
+<td><a href="/docs/reference/usage/#jackson-properties-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>serializer</td>
+<td>Web &amp; JSON</td>
+<td>Assume every serializer discovers companion members</td>
+<td>unverified</td>
+<td>Jackson’s explicit adapter does not establish arbitrary Gson/custom mapper or record-creator support. Stock original-class reflection remains limited.</td>
+<td>Validate the serializer or restart for native reflective visibility.</td>
+<td><a href="/docs/reference/usage/#companion-class-reflective-visibility-caveat">Scope</a></td>
+</tr>
+<tr>
+<td>constraint</td>
+<td>Web &amp; JSON</td>
+<td>Change validation constraints on an existing field</td>
+<td>conditional</td>
+<td>Supported Hibernate Validator metadata caches are cleared in both javax/Jakarta factory discovery paths. Do not infer arbitrary validator/provider compatibility.</td>
+<td>Submit both invalid and valid input; inspect the native validation result.</td>
+<td><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/main/java/com/onurkat/reclazz/spring/SpringValidatorReloader.java">Scope</a></td>
+</tr>
+<tr>
+<td>web-security</td>
+<td>Web &amp; JSON</td>
+<td>Edit an existing Spring Security HTTP rule</td>
+<td>conditional</td>
+<td>Supported SecurityFilterChain beans rebuild into the live FilterChainProxy. Inline ignoring chains remain; a failed rebuild can keep the previous rules serving.</td>
+<td>Verify allowed and denied requests; inspect whether the new rules became live.</td>
+<td><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/main/java/com/onurkat/reclazz/spring/SpringSecurityReloader.java">Scope</a></td>
+</tr>
+<tr>
+<td>kafka</td>
+<td>Messaging</td>
+<td>Add/edit/remove a Kafka listener</td>
+<td>conditional</td>
+<td>Plain singleton, direct callback, explicit literal ID, documented topic/group/options and standard record-mode factory. Native consumers retire before replacement.</td>
+<td>Verify message delivery, new route and old-consumer retirement.</td>
+<td><a href="/docs/reference/usage/#kafka-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>jms</td>
+<td>Messaging</td>
+<td>Add/edit/remove a JMS listener</td>
+<td>conditional</td>
+<td>Plain singleton with standard processor/registry/default container factory. Literal or placeholder destinations/selectors; bounded result and callback shapes.</td>
+<td>Verify delivery/selector behavior and complete consumer destruction.</td>
+<td><a href="/docs/reference/usage/#jms-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>jms-reply</td>
+<td>Messaging</td>
+<td>Add synchronous JMS replies</td>
+<td>conditional</td>
+<td>Documented return types and direct @SendTo. JMSReplyTo takes priority; null sends nothing. No arbitrary DTO/Future/reactive return claim.</td>
+<td>Check conversion, correlation and destination on a test request.</td>
+<td><a href="/docs/reference/usage/#jms-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>rabbit</td>
+<td>Messaging</td>
+<td>Add/edit/remove a Rabbit listener</td>
+<td>conditional</td>
+<td>Plain receiver, standard simple container, AUTO acknowledgment/default executor and bounded queue/options. Startup worker hook must track complete retirement.</td>
+<td>Wait for worker retirement and verify real message delivery.</td>
+<td><a href="/docs/reference/usage/#rabbit-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>listener-expression</td>
+<td>Messaging</td>
+<td>Change a Kafka/Rabbit expression-driven route</td>
+<td>conditional</td>
+<td>Documented native SpEL values are reevaluated when the listener is saved. Evaluation occurs after old consumers retire and can fail without restoring them.</td>
+<td>Save the listener again and check the exact route/group.</td>
+<td><a href="/docs/reference/usage/#kafka-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>property-route</td>
+<td>Messaging</td>
+<td>Reroute consumers by changing only a routing property/bean</td>
+<td>conditional</td>
+<td>The documented added Kafka/Rabbit expression path does not automatically reroute on a property/bean-only edit; a listener re-save is the supported live action.</td>
+<td>Re-save/compile the listener, or restart for native startup resolution.</td>
+<td><a href="/docs/reference/usage/#rabbit-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>consumer-helper</td>
+<td>Messaging</td>
+<td>Recreate JMS/Kafka consumers after a helper/property save</td>
+<td>conditional</td>
+<td>Separately measured narrow root-context leaf-owner transactions; exact factories, constructor and callback shapes. Not arbitrary consumer graphs.</td>
+<td>Use the constructor ownership guide and check current-value delivery.</td>
+<td><a href="/docs/reference/spring-constructor-dependencies/">Scope</a></td>
+</tr>
+<tr>
+<td>rabbit-helper</td>
+<td>Messaging</td>
+<td>Recreate Rabbit consumers through property/dependency cascades</td>
+<td>conditional</td>
+<td>Measured on Framework 5.3.39/AMQP 2.4.17 and Framework 6.1.14/AMQP 3.1.7, stock JDK 17/21 on macOS arm64: one root context, plain local helper/leaf owner, one void literal-ID callback, native simple containers, AUTO acknowledgment and nontransacted channels.</td>
+<td>Verify current helper/owner values and complete worker retirement; unsupported ownership, stop timeout or partial reconstruction requires restart.</td>
+<td><a href="/docs/reference/spring-constructor-dependencies/#rabbit-helper-and-constructor-property-changes">Scope</a></td>
+</tr>
+<tr>
+<td>mixed-listener</td>
+<td>Messaging</td>
+<td>Reload one bean mixing Kafka/JMS/Rabbit consumers</td>
+<td>restart</td>
+<td>Unsupported mixed ownership is refused before owned consumers retire. Single-broker coordination is not a combined broker transaction.</td>
+<td>Separate the ownership shape or restart.</td>
+<td><a href="/docs/reference/usage/#rabbit-listeners-added-after-startup">Scope</a></td>
+</tr>
+<tr>
+<td>messaging-advanced</td>
+<td>Messaging</td>
+<td>Assume XA, hosted clusters, rebalances or exactly-once reload</td>
+<td>unverified</td>
+<td>Local broker observations do not certify every hosted/failure/transactional topology. Rabbit reply/async and broader custom container paths are separate gaps.</td>
+<td>Run targeted acceptance for your broker, lifecycle and delivery policy.</td>
+<td><a href="/docs/source-assets/docs/feature-evidence/p4-messaging.json">Scope</a></td>
+</tr>
+<tr>
+<td>boot-properties</td>
+<td>Configuration</td>
+<td>Edit recognized Boot properties</td>
+<td>conditional</td>
+<td>Candidate binding/conversion/validation occurs before live mutation. Uncheckable/invalid candidates remain pending; live setter/recreation failure can partially apply.</td>
+<td>Fix rejected input, save again and inspect actual runtime values.</td>
+<td><a href="/docs/reference/usage/#property-changes-keep-the-last-working-values">Scope</a></td>
+</tr>
+<tr>
+<td>boot-yaml</td>
+<td>Configuration</td>
+<td>Edit nested YAML values or indexed lists</td>
+<td>conditional</td>
+<td>Already-loaded local Boot resources with stable source/document ownership. Current native lane is Boot 2.7.18 / SnakeYAML 1.30, not all Boot versions.</td>
+<td>Edit the actual runtime file and inspect source precedence.</td>
+<td><a href="/docs/reference/usage/#yaml-and-removed-configuration-keys">Scope</a></td>
+</tr>
+<tr>
+<td>key-removal</td>
+<td>Configuration</td>
+<td>Delete a key or a recognized Boot file</td>
+<td>conditional</td>
+<td>Removal reveals lower-priority values/defaults in the supported source path. Mutable property identities are preserved; read-only/write-only removal shapes are uncheckable.</td>
+<td>Verify resulting defaults and supported consumer rebinding.</td>
+<td><a href="/docs/reference/usage/#yaml-and-removed-configuration-keys">Scope</a></td>
+</tr>
+<tr>
+<td>config-topology</td>
+<td>Configuration</td>
+<td>Change active documents, imports, profiles or config locations</td>
+<td>restart</td>
+<td>Stable source positions/document activation are prerequisites. Startup config topology is not rebuilt by a value save.</td>
+<td>Restart with the new startup configuration.</td>
+<td><a href="/docs/reference/usage/#yaml-and-removed-configuration-keys">Scope</a></td>
+</tr>
+<tr>
+<td>value</td>
+<td>Configuration</td>
+<td>Change direct or computed @Value inputs</td>
+<td>conditional</td>
+<td>Fields, scalar constructor inputs and supported factory arguments have distinct check/recreation paths. Unsupported expression operations hold the candidate.</td>
+<td>Check the documented expression/consumer shape before retrying.</td>
+<td><a href="/docs/reference/usage/#computed-value-fields">Scope</a></td>
+</tr>
+<tr>
+<td>xml-property</td>
+<td>Configuration</td>
+<td>Edit a property on a loaded ordinary XML bean</td>
+<td>conditional</td>
+<td>Resolved local file/context ownership plus supported value shape. Setter errors can preserve metadata but still have application side effects.</td>
+<td>Inspect the property result and independent-bean diagnostics.</td>
+<td><a href="/docs/reference/usage/#loaded-spring-xml-resources">Scope</a></td>
+</tr>
+<tr>
+<td>xml-recreate</td>
+<td>Configuration</td>
+<td>Edit existing XML constructor/factory/lifecycle metadata</td>
+<td>conditional</td>
+<td>Bounded ordinary singleton recreation, stable concrete type/ownership and supported direct holders. Native observer: Spring 5.3.39 / JDK 21.</td>
+<td>Check creation/destruction, repaired references and any restore failure.</td>
+<td><a href="/docs/reference/usage/#xml-singleton-recreation">Scope</a></td>
+</tr>
+<tr>
+<td>xml-policy</td>
+<td>Configuration</td>
+<td>Change XML scope, parent, aliases or creation policy</td>
+<td>restart</td>
+<td>Existing metadata changes such as depends-on/primary/autowire/effective lazy flag are guarded. Supported property edits do not rebuild startup policy.</td>
+<td>Follow the bean-specific restart diagnostic.</td>
+<td><a href="/docs/reference/usage/#loaded-spring-xml-resources">Scope</a></td>
+</tr>
+<tr>
+<td>xml-unsupported-noop</td>
+<td>Configuration</td>
+<td>Save unchanged unsupported XML definitions</td>
+<td>not-reloaded</td>
+<td>A proven unchanged standard definition stays quiet, including known abstract/prototype shapes. Unknown/custom metadata retains conservative diagnostics.</td>
+<td>Expect no reconstruction; real unsupported edits still require restart.</td>
+<td><a href="/docs/reference/usage/#loaded-spring-xml-resources">Scope</a></td>
+</tr>
+<tr>
+<td>xml-resource</td>
+<td>Configuration</td>
+<td>Edit newly imported, remote or packaged XML</td>
+<td>unverified</td>
+<td>Captured-local discovery does not cover remote/JAR resources, pre-hook loads or a general import-topology rebuild.</td>
+<td>Edit the actually owned local resource or restart.</td>
+<td><a href="/docs/reference/usage/#loaded-spring-xml-resources">Scope</a></td>
+</tr>
+<tr>
+<td>message</td>
+<td>Configuration</td>
+<td>Edit recognized physical message bundles</td>
+<td>conditional</td>
+<td>Named native Spring message-source/cache lanes; arbitrary custom basenames and automatic source-to-output copying are not established.</td>
+<td>Edit the runtime file and check a warmed formatted lookup.</td>
+<td><a href="/docs/reference/usage/#message-bundles-and-cached-templates">Scope</a></td>
+</tr>
+<tr>
+<td>template</td>
+<td>Configuration</td>
+<td>Edit recognized file templates</td>
+<td>conditional</td>
+<td>Named FreeMarker/Thymeleaf file-resolver lanes. Malformed saves can produce render errors; last-valid retention is not promised.</td>
+<td>Render the current output; fix malformed input and retry.</td>
+<td><a href="/docs/reference/usage/#message-bundles-and-cached-templates">Scope</a></td>
+</tr>
+<tr>
+<td>packaged-resource</td>
+<td>Configuration</td>
+<td>Edit resources inside packaged JAR/WAR files</td>
+<td>unverified</td>
+<td>Physical-file observers do not establish packaged-resource replacement or arbitrary view-resolver integration.</td>
+<td>Use unpacked recognized runtime resources or restart/redeploy.</td>
+<td><a href="/docs/reference/usage/#message-bundles-and-cached-templates">Scope</a></td>
+</tr>
+<tr>
+<td>logging</td>
+<td>Configuration</td>
+<td>Change a supported logging level/configuration</td>
+<td>conditional</td>
+<td>Supported logging.level keys or logback/log4j2 config refresh. Removing a level without a fallback can still need reset/restart.</td>
+<td>Verify the target logger; keep SAP property pairs separate.</td>
+<td><a href="/docs/reference/usage/#yaml-and-removed-configuration-keys">Scope</a></td>
+</tr>
+<tr>
+<td>unknown-files</td>
+<td>Configuration</td>
+<td>Expect arbitrary files to trigger a reload</td>
+<td>not-reloaded</td>
+<td>ChangeKind recognizes specific suffixes and owned resources. Unknown kinds have no Reclazz reload action; another framework may independently serve the file.</td>
+<td>Check the resource classifier and your application’s own resource pipeline.</td>
+<td><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/main/java/com/onurkat/reclazz/watcher/ChangeKind.java">Scope</a></td>
+</tr>
+<tr>
+<td>jpa-existing</td>
+<td>Persistence</td>
+<td>Add a mapped field to an existing entity</td>
+<td>conditional</td>
+<td>Requires enhanced visibility plus supported jpaRefresh=true/DDL-enabled mapping path; stock companion fields are not native ORM members.</td>
+<td>Prepare schema/mapping prerequisites or restart.</td>
+<td><a href="/docs/reference/product-reference/#comparison">Scope</a></td>
+</tr>
+<tr>
+<td>jpa-new</td>
+<td>Persistence</td>
+<td>Add a new JPA entity with a prepared schema</td>
+<td>conditional</td>
+<td>jpaRefresh=true, explicit Hibernate validate, one unit and standard provider/factory in the recorded graph. No automatic migration or update-mode switch.</td>
+<td>Prepare table/columns, compile and verify native mapping installation.</td>
+<td><a href="/docs/reference/usage/#new-jpa-entities-with-a-prepared-schema">Scope</a></td>
+</tr>
+<tr>
+<td>jpa-retry</td>
+<td>Persistence</td>
+<td>Retry a new-entity mapping after a schema failure</td>
+<td>conditional</td>
+<td>Failed candidate leaves the previous factory open before install. Identical bytes are ignored; changing pending mapping declarations is refused.</td>
+<td>Fix schema, then compile a body-only edit to the same pending entity.</td>
+<td><a href="/docs/reference/usage/#new-jpa-entities-with-a-prepared-schema">Scope</a></td>
+</tr>
+<tr>
+<td>jpa-active</td>
+<td>Persistence</td>
+<td>Keep old persistence contexts/transactions through a rebuild</td>
+<td>restart</td>
+<td>A successful persistence-unit swap retires the old native factory. Holding active old contexts across it is unsupported.</td>
+<td>Finish database work first; restart/recover unsupported retained contexts.</td>
+<td><a href="/docs/reference/usage/#held-repositories-after-a-prepared-mapping-refresh">Scope</a></td>
+</tr>
+<tr>
+<td>repository</td>
+<td>Persistence</td>
+<td>Edit supported Spring Data query methods</td>
+<td>conditional</td>
+<td>Warm singleton Repository products and bounded direct holder repair. Scalar H2 native-query evidence does not cover new interface methods/all query shapes.</td>
+<td>Check the query result and the retained managed consumer.</td>
+<td><a href="/docs/reference/usage/#spring-data-repository-refresh">Scope</a></td>
+</tr>
+<tr>
+<td>cache</td>
+<td>Persistence</td>
+<td>Invalidate caches dependent on changed helper code</td>
+<td>conditional</td>
+<td>Observed synchronous Spring cache dependencies in stock companion mode; region-level conservative eviction. Async/unwatched/pre-attach work is not complete.</td>
+<td>Exercise the cache first, reload and check next-call freshness.</td>
+<td><a href="/docs/reference/usage/#cache-dependencies-after-reload">Scope</a></td>
+</tr>
+<tr>
+<td>custom-cache</td>
+<td>Persistence</td>
+<td>Rebuild a custom cache owner after helper changes</td>
+<td>conditional</td>
+<td>refreshOwnersOnHelper opt-in for supported singleton owners. Non-singletons, FactoryBeans and event-listener owners are declined.</td>
+<td>Name the eligible owner and check lifecycle/state reset.</td>
+<td><a href="/docs/reference/usage/#refreshing-a-custom-cache-after-a-helper-reload">Scope</a></td>
+</tr>
+<tr>
+<td>items</td>
+<td>SAP Commerce</td>
+<td>Save *-items.xml / *-beans.xml</td>
+<td>conditional</td>
+<td>Platform generation/build can reload generated classes. Persistence/type-system updates and native reflection are separate requirements.</td>
+<td>Verify generated bytecode; update the platform schema when required.</td>
+<td><a href="/docs/reference/usage/#what-cannot-be-hot-reloaded">Scope</a></td>
+</tr>
+<tr>
+<td>sap-schema</td>
+<td>SAP Commerce</td>
+<td>Create columns through Update Running System</td>
+<td>conditional</td>
+<td>Manual HAC action is separate from reload. autoUpdateRunningSystem=true is a distinct off-by-default dev-only DDL opt-in.</td>
+<td>Choose the schema action explicitly and verify the type/persistence result.</td>
+<td><a href="/docs/reference/usage/#agent-arguments">Scope</a></td>
+</tr>
+<tr>
+<td>sap-config</td>
+<td>SAP Commerce</td>
+<td>Apply changed SAP configuration keys</td>
+<td>conditional</td>
+<td>Changed keys reach the Config path; successful keys acknowledge independently. Startup-only consumers are still reported as restart-required.</td>
+<td>Check each key’s runtime consumer and pending status.</td>
+<td><a href="/docs/reference/usage/#sap-reload-outcomes-and-verification">Scope</a></td>
+</tr>
+<tr>
+<td>sap-localization</td>
+<td>SAP Commerce</td>
+<td>Edit type/enum localization or Backoffice labels</td>
+<td>conditional</td>
+<td>Recognized physical locale/label files refresh the platform caches they serve. Broader tenant/cluster acceptance is not implied.</td>
+<td>Check a new lookup or reopen the affected Backoffice view.</td>
+<td><a href="/docs/reference/product-reference/#sap-commerce-hybris">Scope</a></td>
+</tr>
+<tr>
+<td>impex</td>
+<td>SAP Commerce</td>
+<td>Import a changed ImpEx file automatically</td>
+<td>conditional</td>
+<td>autoImpex=true opt-in writes live development data. REMOVE/macro-expanded REMOVE is refused unless separately permitted; no rollback.</td>
+<td>Use disposable data; inspect import results and guard diagnostics.</td>
+<td><a href="/docs/reference/usage/#sap-reload-outcomes-and-verification">Scope</a></td>
+</tr>
+<tr>
+<td>interceptor</td>
+<td>SAP Commerce</td>
+<td>Refresh supported interceptor mappings</td>
+<td>conditional</td>
+<td>Mappings are captured before bean refresh and re-registered in the actual SAP registry. SDK contract is not live model-save tenant acceptance.</td>
+<td>Check the registry result and a relevant live model operation.</td>
+<td><a href="/docs/reference/usage/#sap-reload-outcomes-and-verification">Scope</a></td>
+</tr>
+<tr>
+<td>occ</td>
+<td>SAP Commerce</td>
+<td>Edit OCC field sets, mappings or supported directives</td>
+<td>conditional</td>
+<td>Dedicated field-set/request-mapping/populator/list-merge paths have individual ownership and registration limits. Not arbitrary platform topology reload.</td>
+<td>Read the matching path and verify the actual OCC response.</td>
+<td><a href="/docs/reference/usage/#occ-field-set-mappings">Scope</a></td>
+</tr>
+<tr>
+<td>extension</td>
+<td>SAP Commerce</td>
+<td>Add an extension to the platform</td>
+<td>restart</td>
+<td>The extension list is established at startup. Generated-bytecode reload does not enroll a new extension.</td>
+<td>Build the platform and restart.</td>
+<td><a href="/docs/reference/usage/#what-cannot-be-hot-reloaded">Scope</a></td>
+</tr>
+<tr>
+<td>backoffice-config</td>
+<td>SAP Commerce</td>
+<td>Edit *-backoffice-config.xml</td>
+<td>conditional</td>
+<td>The source resets supported CockpitConfigurationService caches through Resettable.reset, without resetToDefaults. Packaged module copies can still answer until rebuilt.</td>
+<td>Reopen the view and verify the actual loaded configuration; build a packaged copy if needed.</td>
+<td><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/premium/java/com/onurkat/reclazz/hybris/backoffice/BackofficeConfigReloader.java">Scope</a></td>
+</tr>
+<tr>
+<td>backoffice-socket</td>
+<td>SAP Commerce</td>
+<td>Add a Backoffice @SocketEvent action</td>
+<td>restart</td>
+<td>Class replacement does not register the new action in existing widgets. Existing action-body edits use ordinary class reload; label/config caches are separate.</td>
+<td>Read the widget-specific PENDING entry and restart to register the added action.</td>
+<td><a href="/docs/reference/usage/#backoffice-socket-actions">Scope</a></td>
+</tr>
+<tr>
+<td>sap-process</td>
+<td>SAP Commerce</td>
+<td>Edit or delete a registered SAP process definition XML</td>
+<td>restart</td>
+<td>Recognized local process-definition resources produce a diagnostic only. No running process is changed or replayed; unrelated XML does not become a process resource by name.</td>
+<td>Validate the definition and restart to load it.</td>
+<td><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java">Scope</a></td>
+</tr>
+<tr>
+<td>dependency</td>
+<td>Operations</td>
+<td>Add a new dependency JAR to the JVM classpath</td>
+<td>restart</td>
+<td>The running JVM startup classpath is not replaced by watching class outputs.</td>
+<td>Restart with the updated launch classpath.</td>
+<td><a href="/docs/reference/usage/#what-cannot-be-hot-reloaded">Scope</a></td>
+</tr>
+<tr>
+<td>request-boundary</td>
+<td>Operations</td>
+<td>Avoid a supported request crossing a method-body reload</td>
+<td>conditional</td>
+<td>reloadBoundary=request at startup, supported native MVC hook/lifetimes. Drain deadline defers; it is not batch/schema/background atomicity.</td>
+<td>Check the measured servlet graph and queued-work diagnostics.</td>
+<td><a href="/docs/reference/usage/#reload-between-requests">Scope</a></td>
+</tr>
+<tr>
+<td>build-failure</td>
+<td>Operations</td>
+<td>Apply class output from a failed/paused build</td>
+<td>conditional</td>
+<td>Build admission holds output until a successful captured batch; SCAN alone cannot release the hold. Manual pause is an independent switch.</td>
+<td>Complete the build, release the correct hold and verify completion.</td>
+<td><a href="/docs/reference/protocol/#holding-a-build-until-it-succeeds">Scope</a></td>
+</tr>
+</tbody>
+</table></div>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/reload-support.md">docs/reload-support.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/publishing/"><span>← Previous</span><strong>Publishing Reclazz to the JetBrains Marketplace</strong></a><a href="/docs/reference/sap-commerce/"><span>Next →</span><strong>Reclazz on SAP Commerce, for a coding agent</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

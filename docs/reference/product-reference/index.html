@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Product technical reference | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: Product technical reference.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/product-reference/">
+<meta property="og:type" content="article"><meta property="og:title" content="Product technical reference | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: Product technical reference."><meta property="og:url" content="https://reclazz.com/docs/reference/product-reference/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Product technical reference", "description": "Complete configuration, behavior and scope reference: Product technical reference.", "url": "https://reclazz.com/docs/reference/product-reference/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a aria-current="page" href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">◈</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a aria-current="page" href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">◈</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="product-technical-reference">Product technical reference</h1><div class="reference-content"><p>Detailed support, compatibility and architecture from the source baseline.
+Java 17+ is a target requirement, not certification of every JVM, OS or framework.
+Use the <a href="/docs/reference/reload-support/">support reference</a> for conditions and the
+<a href="/docs/reference/feature-evidence/">evidence scope</a> for measured environments.
+For your first reload use the <a href="/docs/reference/installation/">installation guide</a>; for concise change-specific outcomes use the <a href="https://reclazz.com/docs/support-matrix/">reload matrix</a>.</p>
+<h2 id="why-reclazz">Why Reclazz?</h2>
+<p>Spring Boot DevTools restarts the application context after a code change. Reclazz is <strong>free, open-source</strong>, and can redefine classes in the existing JVM. In-place body edits retain existing object state; Spring bean recreation replaces objects and resets their mutable instance state. See <a href="/docs/reference/usage/#state-during-a-reload">state and reload scope</a>.</p>
+<h3 id="comparison">Comparison</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Reclazz</th>
+<th>Spring Boot DevTools</th>
+<th>JRebel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Price</td>
+<td><strong>Free &amp; open source</strong></td>
+<td>Free</td>
+<td>Commercial</td>
+</tr>
+<tr>
+<td>Reload type</td>
+<td><strong>In-place hot-swap</strong></td>
+<td>Full context restart</td>
+<td>In-place hot-swap</td>
+</tr>
+<tr>
+<td>Application state</td>
+<td>Retained for in-place body edits; recreated beans lose mutable instance state</td>
+<td>Lost on restart</td>
+<td>Preserved</td>
+</tr>
+<tr>
+<td>Method body changes</td>
+<td><strong>Yes</strong></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Add / remove methods</td>
+<td><strong>Yes (supported JDK 17+ paths)</strong></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Add instance fields</td>
+<td><strong>Yes</strong>, and on a stock JDK an object that already existed reads the initialiser's value on the field's first read: <code>cache = new ArrayList&lt;&gt;()</code> added to a live Spring singleton is a list, not a null. The initialiser is lifted out of the constructor on its own, including isolated conditional expressions in single-constructor classes; one that needs a constructor argument is named instead. <a href="/docs/reference/usage/#new-field-values-on-objects-that-already-existed">Scope</a>. Direct reads/writes from another reloaded watched class use the same store on the measured stock-JDK lanes; see the <a href="/docs/reference/usage/#cross-class-access-to-added-instance-fields">cross-class scope</a>. On JBR/DCEVM the field is real and objects from before the reload keep the type default</td>
+<td>Yes (restart)</td>
+<td>No: &quot;will not be initialized in existing instances&quot; (<a href="https://www.jrebel.com/jrebel/learn/faq">FAQ</a>)</td>
+</tr>
+<tr>
+<td>Add static fields</td>
+<td><strong>Yes</strong>, constants and isolated initialisers, including ternary and short-circuit expressions. Only the selected branch runs; later saves preserve the field’s current value. <a href="/docs/reference/usage/#added-static-field-values">Scope</a></td>
+<td>Yes (restart)</td>
+<td>Yes, but the initialiser is not re-run</td>
+</tr>
+<tr>
+<td>Added static field whose initialiser is entangled with the rest of <code>&lt;clinit&gt;</code></td>
+<td>Reads as null/0, and names the field and the reason</td>
+<td>Yes (restart)</td>
+<td>Reads as null/0</td>
+</tr>
+<tr>
+<td>Add enum values (on the end)</td>
+<td><strong>Yes on JDK 17-25</strong>: <code>values()</code>, <code>valueOf</code>, switches and the EnumMap/EnumSet built before the reload all see it. What nothing can find: an array your own code sized with <code>values().length</code> before the reload still has the old length, and indexing it by the new constant's ordinal throws. JDK 26 refuses the <code>sun.misc.Unsafe</code> access this needs, so Reclazz falls back to the JDK's own <code>jdk.internal.misc.Unsafe</code>, which JEP 471 does not cover, by opening that package with the agent's own <code>redefineModule</code>; <code>--sun-misc-unsafe-memory-access=allow</code> keeps the first door open and silences the warning</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Remove the LAST enum value</td>
+<td><strong>Yes on JDK 17-25</strong>, the tail moves no ordinal, so <code>values()</code> and <code>valueOf</code> drop it while every survivor keeps its number</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Insert or reorder enum values</td>
+<td>No, that renumbers every ordinal after the change, including <code>@Enumerated</code> columns already in your database. Reclazz refuses and says why</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Add / remove an interface</td>
+<td><strong>Yes on JetBrains Runtime or DCEVM</strong>, existing objects included; on a stock JDK it is refused by the JVM and Reclazz names the interface</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Change superclass</td>
+<td>Not applied by Reclazz. Eligible method bodies may reload while the class keeps its old superclass; dependent methods stay pinned, and unsafe signatures/constructors refuse the whole save. Restart for the hierarchy change. <a href="/docs/reference/superclass-feasibility/">Versioned evidence and limits</a></td>
+<td>Yes (restart)</td>
+<td>Not verified by this research</td>
+</tr>
+<tr>
+<td>Spring bean refresh</td>
+<td><strong>Yes</strong> (singleton destroy + recreate)</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>@Bean</code> method added after startup</td>
+<td><strong>Yes on a stock JDK</strong>, for direct instance or static <code>@Bean</code> factories on <code>@Configuration(proxyBeanMethods=false)</code>: object return and one unproxied configuration singleton. Parameters support reference beans, typed collections/maps, reference arrays, <code>Optional</code>, Spring providers and direct <code>@Value</code>, including primitives. Scalar <code>@Value</code> inputs can also refresh an existing unproxied singleton on a checked property save (<a href="/docs/reference/usage/#added-factory-values-on-property-changes">scope</a>). Multiple names register one singleton with aliases. Direct <code>@Primary</code>/<code>@Qualifier</code> participates in Spring argument selection. Direct <code>@Lazy</code> creates the bean on first access, <code>@Scope(&quot;prototype&quot;)</code> gives every lookup a new instance, and <code>@Profile</code> registers the bean only when the environment accepts it, re-evaluated on a later save. Default <code>@Configuration</code> also supports overridable instance factories with these parameters: inter-bean calls resolve the container singleton and preserve supported explicit-argument/prototype semantics. Static factories retain plain Java call semantics. Later saves replace the product and update its metadata; removal deletes only Reclazz-owned registrations. Existing names are refused. Direct method-level <code>@Conditional</code> evaluates saved metadata against the live context before registration and re-evaluates on later configuration saves. Direct Boot <code>@ConditionalOnProperty</code>, <code>@ConditionalOnBean</code> and <code>@ConditionalOnMissingBean</code> also use native conditions, verified with Boot 2.7.18 / Spring 5.3.39. Other composed condition annotations, web/custom scopes and scoped proxies stay on restart. <a href="/docs/reference/usage/#bean-methods-added-after-startup">Scope and lifecycle</a></td>
+<td>Yes (restart)</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td><code>@Autowired</code> added to an existing field</td>
+<td><strong>Yes</strong>, Spring resolves a bean's injection points once and keeps them, so this used to reload, re-create the bean and leave the field null. <code>@Resource</code>, <code>@PostConstruct</code> and <code>@PreDestroy</code> come with it</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Entirely new <code>@PostConstruct</code> / <code>@PreDestroy</code> methods</td>
+<td><strong>Yes for supported plain singleton components</strong>, <code>javax.annotation</code> on Spring 5.3 and <code>jakarta.annotation</code> on Spring 6.1. New instances initialize after injection; each keeps its added destroy callback through later edits/removal, including context close. <a href="/docs/reference/usage/#lifecycle-methods-added-after-startup">Scope and lifecycle policy</a></td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>A constraint added to a field (<code>@NotBlank</code>)</td>
+<td><strong>Yes</strong>, enforced on the next request, instead of the request that should now be rejected being accepted</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>@ExceptionHandler</code> / <code>@InitBinder</code> / <code>@ModelAttribute</code></td>
+<td><strong>Yes</strong> on a method that was already there, instead of the endpoint going on answering the framework's default</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Entirely new <code>@ExceptionHandler</code> method</td>
+<td><strong>Yes in the measured Spring 5.3.39 and 6.1.14 / stock JDK 17–21 scope for plain controllers and controller advice</strong>, existing and newly added endpoints in the supported scope use Spring's handler selection, including local priority and advice selectors. Later saves can edit, remove and restore the handler. <a href="/docs/reference/usage/#exception-handlers-added-after-startup">Scope</a></td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>Entirely new <code>@InitBinder</code> / <code>@ModelAttribute</code> methods</td>
+<td><strong>Yes for supported plain controllers and controller advice on a stock JDK</strong>, named binding rules and model initialization apply to existing and new endpoints, with Spring advice order/selectors preserved. <a href="/docs/reference/usage/#binding-and-model-methods-added-after-startup">Scope</a></td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>Registered MVC interceptor dependency state</td>
+<td><strong>Yes for named plain singleton beans in the measured Spring 5.3.39 / 6.1.14 scope</strong>: after class reload, request dispatch uses current interceptor and handler-mapping identities, preserving native ordering and mapped path filters. <a href="/docs/reference/usage/#registered-mvc-interceptors-current-singleton-routing">Scope</a></td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>Entirely new <code>@KafkaListener</code> method</td>
+<td><strong>Yes for supported plain singleton components on a stock JDK</strong>: literal IDs; literal, property or Spring-expression topics/group IDs, including <code>__listener</code> references to the real bean; existing listener preservation, edits/removal/restoration and consumer shutdown before bean recreation. <a href="/docs/reference/usage/#kafka-listeners-added-after-startup">Scope</a></td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>Entirely new <code>@JmsListener</code> method</td>
+<td><strong>Yes for supported plain singleton components on a stock JDK</strong>, literal queue destinations, edits/removal/restoration, existing listener preservation and consumer destruction before bean recreation. <a href="/docs/reference/usage/#jms-listeners-added-after-startup">Scope</a></td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>Entirely new <code>@RabbitListener</code> method</td>
+<td><strong>Yes for supported plain singleton components on a stock JDK</strong>: literal, property or Spring-expression queue names/lists, edits/removal/restoration and complete worker retirement before bean recreation. <a href="/docs/reference/usage/#rabbit-listeners-added-after-startup">Scope</a></td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>New service methods with <code>@Transactional</code> / <code>@Cacheable</code> / <code>@CachePut</code> / <code>@CacheEvict</code></td>
+<td><strong>Yes for supported singleton beans on a stock JDK</strong>: external added-method calls use the application's real Spring interceptors and target. Supported <a href="/docs/reference/usage/#composed-transaction-annotations-on-added-services">composed transaction</a> and <a href="/docs/reference/usage/#composed-cache-annotations-on-added-services">composed cache annotations</a> preserve aliases and class defaults. Commit/rollback, cache hits, updates and eviction are verified; unsupported advice shapes fail explicitly. <a href="/docs/reference/usage/#operations-on-added-service-methods">Scope</a></td>
+<td>Yes (restart)</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>New service methods with <code>@PreAuthorize</code> / <code>@PostAuthorize</code></td>
+<td><strong>Yes for supported classic and modern Spring Security configurations</strong>: native pre/post authorization, including supported fixed composed markers such as <code>@AdminOnly</code>, follows saved policies and old singleton/CGLIB references. Tested with Spring 5.3.39 / Security 5.7.11 and Spring 6.1.14 / Security 6.3.4 (<code>@EnableMethodSecurity</code>); unsupported security infrastructure fails explicitly. <a href="/docs/reference/usage/#authorization-on-added-service-methods">Scope</a></td>
+<td>Yes (restart)</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>Edited <code>@Aspect</code> pointcut</td>
+<td><strong>Yes for existing mutable singleton JDK/CGLIB proxies</strong>, changed advice reaches already-injected references without recreating the target. Previously unproxied beans and unsupported proxy shapes are named. <a href="/docs/reference/usage/#edited-aspect-pointcuts">Scope</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Jackson picks up a changed shape</td>
+<td><strong>Yes</strong>, including getters, void setters and instance fields added to an already loaded DTO on a stock JDK. JSON input populates new or existing mutable DTOs; saved field/method annotations, aliases, naming, null rules and custom serializers/deserializers stay with Jackson. Later saves can rename, remove and restore properties. Mapper caches are refreshed for Spring-managed mappers. Final added fields cannot be written; constructor/record creators and builders are outside this addition. Current HTTP JSON acceptance uses Jackson 2.22.3 on JDK 17/21 and Spring 5.3.39/6.1.14; historical acceptance used 2.13.5. <a href="/docs/reference/usage/#jackson-properties-added-after-startup">Scope</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>MVC mapping re-scan</td>
+<td><strong>Yes</strong></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Cache eviction</td>
+<td><strong>Yes</strong></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>@Scheduled</code> re-register</td>
+<td><strong>Yes</strong>, including a method added after startup on a stock JDK: direct <code>@Scheduled</code>/<code>@Schedules</code>, no arguments, <code>void</code>, on a supported singleton (including standard transaction/cache/async proxies). Supported public callbacks also accept direct transaction/cache annotations and <code>@Async</code> with the application's executor and error handler. Later saves replace its registration; removing the method or annotation cancels it. <a href="/docs/reference/usage/#scheduled-methods-added-after-startup">Scope and example</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>@EventListener</code> refresh</td>
+<td><strong>Yes</strong>, including a method added after startup: direct annotation, one reference event parameter, <code>void</code> or a single event object return, on a supported singleton (including standard transaction/cache proxies). Supported public callbacks also accept direct transaction/cache annotations; void ordinary listeners can use direct <code>@Async</code> with the application's executor and error handler. Spring publishes a returned event; null produces none. Preserves filtering, conditions and <code>@Order</code>; later saves replace or remove its registration. <a href="/docs/reference/usage/#event-listener-methods-added-after-startup">Scope and example</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>@TransactionalEventListener</code> added after startup</td>
+<td><strong>Yes</strong>, for direct <code>void</code> listeners on supported unproxied singletons. Spring handles all four phases, fallback, conditions and order. Reload/removal retires queued callbacks from the previous added registration. <a href="/docs/reference/usage/#transactional-event-listeners-added-after-startup">Scope</a></td>
+<td>Yes (restart)</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>AOP proxy refresh</td>
+<td><strong>Yes</strong></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Spring Data repo refresh</td>
+<td>Warm singleton repository products are recreated and ordinary singleton holders are re-pointed within the <a href="/docs/reference/usage/#spring-data-repository-refresh">tested scope</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><code>@Async</code> re-processing</td>
+<td><strong>Yes</strong>, including direct public service methods added after startup with <code>void</code>, <code>Future&lt;T&gt;</code> or <code>CompletableFuture&lt;T&gt;</code> results, native executor/error handling and supported transaction/cache advice. <a href="/docs/reference/usage/#async-service-methods-added-after-startup">Scope</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>JPA entity class reload</td>
+<td><strong>Yes</strong></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>JPA mapping picks up a new field</td>
+<td><strong>Yes, opt-in</strong> (<code>jpaRefresh=true</code>): on JBR/DCEVM with <code>ddl-auto</code> at update/create/create-drop, Reclazz rebuilds the persistence unit (65ms measured on the demo app), the schema action creates the column, and repositories injected before the rebuild keep working. Open persistence contexts from before the rebuild are closed. In every other configuration Reclazz names the field, says it is neither saved nor loaded, and reads your <code>ddl-auto</code> to tell you whether a restart is enough or the column has to exist first</td>
+<td>Yes (restart)</td>
+<td>Yes, the mapping is refreshed; the database column is still yours to add</td>
+</tr>
+<tr>
+<td>New <code>@Entity</code> class picks up a mapping</td>
+<td><strong>Yes, opt-in</strong> (<code>jpaRefresh=true</code>) on <strong>supported JDK 17+ paths</strong>: a fresh class is entirely real, so Reclazz adds it to the persistence unit and rebuilds (measured at 44ms), and <code>ddl-auto</code> at update/create creates its table. A prepared table can also be mapped with Hibernate <code>validate</code> on the supported Spring ORM path; validation failure keeps the old factory. <a href="/docs/reference/usage/#new-jpa-entities-with-a-prepared-schema">Prepared-schema scope</a>. Several persistence units make it decline and name the ambiguity rather than guess</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>New <code>@Service</code> / <code>@Component</code> / <code>@Controller</code> class</td>
+<td><strong>Yes (supported JDK 17+ paths)</strong>, the bean is registered, its constructor autowired, and a new controller's mappings served on the next request</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Edited <code>@Transactional</code> / <code>@Cacheable</code> annotation</td>
+<td><strong>Yes</strong>, the cached metadata is re-read, so a flipped <code>readOnly</code> or a new <code>condition</code> actually applies</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Spring Security rules</td>
+<td><strong>Yes</strong>, the filter chain is rebuilt and swapped into the live proxy, and method security (<code>@PreAuthorize</code>, <code>@Secured</code> and friends) is re-read on the service class that carries it, not only on the security configuration: the resolved-once metadata is cleared and refilled from fresh <code>Method</code> objects, because the stale one the proxy carries would answer with the expression it read at startup</td>
+<td>Yes (restart)</td>
+<td>Yes, via a separate plugin</td>
+</tr>
+<tr>
+<td><code>@Value</code> field picks up a changed property</td>
+<td><strong>Yes</strong>, placeholders and supported arithmetic/conditional SpEL on scalar fields are re-evaluated after validation, including <a href="/docs/reference/usage/#indirect-value-dependencies">indirect property dependencies</a>. <a href="/docs/reference/usage/#computed-value-fields">Scope and example</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Computed <code>@Value</code> constructor parameter</td>
+<td><strong>Yes</strong>, for supported scalar expressions on directly constructed singletons with one constructor, including <a href="/docs/reference/usage/#transaction-proxies-and-property-recreation">supported transaction and method-security proxies</a>. Arguments are checked before the bean is rebuilt; existing singleton holders are re-pointed. <a href="/docs/reference/usage/#computed-value-constructor-parameters">Scope and lifecycle</a></td>
+<td>Yes (restart)</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>Constructor-bound <code>@ConfigurationProperties</code> (a record)</td>
+<td><strong>Component-verified on Boot 2.7.18</strong>, record replacement is observed; watched record-holder repair remains unverified. <a href="/docs/reference/feature-evidence/#p5-boot-record">Current evidence</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>A lambda added to an edited method body</td>
+<td><strong>Yes (supported JDK 17+ paths)</strong>, the synthetic body travels with the companion and links through Reclazz's own factory. The object is a reflective proxy rather than a spun class, and a serializable lambda loses serializability until restart</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Other methods you add that a framework was going to find</td>
+<td><strong>Named.</strong> Added methods live in the companion, which ordinary reflection does not see. Spring MVC endpoints, exception handlers, binders and model attributes, <code>@Bean</code> factories, <code>@Scheduled</code>, event and transactional listeners, <code>@PostConstruct</code>/<code>@PreDestroy</code>, transactional and cacheable service methods, Jackson properties and Kafka, JMS and RabbitMQ listeners use adapters; a framework scan without one still needs a restart and is named</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Members you deleted stop being visible</td>
+<td><strong>Yes</strong>, a removed field or method is hidden from reflection, so a deleted getter stops being serialised. Old code already holding it keeps the implementation it had, one outcome rather than three: a live caller is never made to throw for a removal you made on purpose</td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Changed compile-time constant (<code>static final</code>)</td>
+<td><strong>Named, and the dependents found</strong>: javac inlines the value and leaves no reference behind, so the changed class cannot reach them, but the sources that read it can be found and are listed by name. With <code>autoCompile</code> they are rebuilt and hot-swapped, so the new value is live without a restart. A constants-only holder is covered too, though the JVM never loads it</td>
+<td>Yes (restart)</td>
+<td>Same limitation, undocumented</td>
+</tr>
+<tr>
+<td>Message bundle (<code>messages.properties</code>)</td>
+<td><strong>Yes within the tested scope</strong>, native Spring message sources reread watched physical bundles. <a href="/docs/reference/usage/#message-bundles-and-cached-templates">Versions and resource limits</a></td>
+<td>Yes (restart)</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Template reload (Thymeleaf, Freemarker)</td>
+<td><strong>Yes within the tested scope</strong>, enabled native caches reread watched physical templates. <a href="/docs/reference/usage/#message-bundles-and-cached-templates">Versions and resolver limits</a></td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>SAP Commerce: <code>*-items.xml</code> regeneration</td>
+<td><strong>Yes</strong>, within the documented opt-in scope</td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>SAP Commerce: ImpEx auto-import</td>
+<td><strong>Yes</strong>, opt-in</td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>SAP Commerce: interceptor reload</td>
+<td><strong>Yes</strong>, the mapping is re-registered in the platform registry and verified by a real model save</td>
+<td>Not verified here</td>
+<td>Not verified here</td>
+</tr>
+<tr>
+<td>IDE support</td>
+<td>Any IDE or none; the IntelliJ plugin adds auto-attach and a status UI</td>
+<td>any</td>
+<td>IntelliJ, Eclipse, VS Code, NetBeans</td>
+</tr>
+<tr>
+<td>Remote / container sync</td>
+<td>Syncing changed <code>.class</code> files into a watched directory is enough; Compose Watch and rsync recipes under <a href="#remote-and-containers">Remote and containers</a>. CCv2 is unreachable for every tool</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Modified JVM required</td>
+<td><strong>No</strong></td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table></div>
+<p>The Reclazz column is measured, on a running JVM, for the release it ships
+with; the field and enum rows in particular are the result of running each
+case rather than reasoning about it. The other two columns come from each
+project's own published documentation, so they say what those tools claim
+rather than what was tested here, and a blank where a tool is silent is not
+evidence of absence.</p>
+<p>For the comparison that matters more: HotswapAgent covers a much wider set
+of frameworks than Reclazz and can add enum values, but needs a modified JVM
+(DCEVM) to do structural reload at all. Reclazz trades that breadth for
+working on the JDK you already have, and for going deeper on SAP Commerce
+than either.</p>
+<h2 id="features">Features</h2>
+<ul>
+<li><strong>Build packages</strong>: AutoCompile stages all modules before publishing output. IntelliJ build signals hold class changes until compilation succeeds. Failed attempts remain held for retry; newer builds invalidate pending acceptance. See the <a href="/docs/reference/usage/">usage guide</a> and <a href="/docs/reference/protocol/#holding-a-build-until-it-succeeds">BUILD protocol</a>.</li>
+</ul>
+<h3 id="spring-integration">Spring Integration</h3>
+<ul>
+<li><strong>Spring Bean Refresh</strong>: Automatically destroys and recreates singleton beans after class reload</li>
+<li><strong>MVC Re-scan</strong>: Re-registers <code>@RequestMapping</code> methods when controllers change structurally, including endpoints added after startup on a stock JDK and inside a Tomcat webapp class loader</li>
+<li><strong>Cache dependencies</strong>: A reloaded helper invalidates the Spring cache regions computed through it, including outer caches that read cached inner results. Unrelated observed regions stay warm. Cache instances and classloaders remain distinct. Unknown or partial history retains conservative annotation fallback. See <a href="/docs/reference/usage/#cache-dependencies-after-reload">scope and concurrency limits</a>.</li>
+<li><strong>Scheduler Reload</strong>: Cancels and re-registers <code>@Scheduled</code> tasks, including supported methods added after startup on a stock JDK. See <a href="/docs/reference/usage/#scheduled-methods-added-after-startup">scope and example</a></li>
+<li><strong>Event Listener Refresh</strong>: Refreshes only the edited beans, preserving unrelated listeners without duplication. Supports added methods within the <a href="/docs/reference/usage/#event-listener-methods-added-after-startup">documented scope</a>, and an added <code>@TransactionalEventListener</code> fires at its transaction phase through Spring's own synchronization. <a href="/docs/reference/usage/#transactional-event-listeners-added-after-startup">Scope</a></li>
+<li><strong>Added service operations</strong>: New transaction/cache methods on supported singleton services run through real Spring interceptors, including old CGLIB references and first operations on plain beans. <a href="/docs/reference/usage/#operations-on-added-service-methods">Scope</a>.</li>
+<li><strong>AOP Proxy Refresh</strong>: Re-parses <code>@Aspect</code> pointcuts and updates supported existing singleton proxy chains in place</li>
+<li><strong>Async Re-processing</strong>: Re-processes <code>@Async</code> beans</li>
+<li><strong>Spring Data Refresh</strong>: Recreates warm singleton products of actual Spring Data repository types and repairs ordinary singleton holders. An ordinary Spring <code>@Repository</code> DAO stays on generic bean refresh. <a href="/docs/reference/usage/#spring-data-repository-refresh">Scope</a>.</li>
+<li><strong>One line per save that says what it touched</strong>: <code>Reloaded OrderService (12ms): bean orderService re-created, mappings re-scanned, caches evicted</code>,
+and <code>; 1 thing now waits on a restart, ask PENDING</code> when the save added
+something only a restart completes. The steps' own sentences are there under
+<code>verbose</code></li>
+<li><strong>A record and a way back</strong>: <code>sessionLog=&lt;path&gt;</code> appends every status line,
+timestamped, to a file; <code>docs/usage.md</code> says how to get back from a reload
+that went wrong and how breakpoints behave in reloaded code; the status
+socket is documented in <code>docs/protocol.md</code> for other IDEs and build tools</li>
+<li><strong>Flight Recorder events</strong>: every reload is a <code>reclazz.Reload</code> JFR event
+(class, structural or not, duration, what changed) and every failure a
+<code>reclazz.ReloadFailed</code> one, so reloads sit on the JVM's own timeline next
+to GC and safepoints in JDK Mission Control; see <code>docs/usage.md</code></li>
+<li><strong>Spring Security rebuild</strong>: an edited <code>@EnableWebSecurity</code> configuration is
+applied to the running filter chain, so a rule that was <code>permitAll</code> starts
+answering 401 on the next request without a restart. Method security
+(<code>@PreAuthorize</code>, <code>@Secured</code> and friends) is a separate cache, resolved once
+per method and keyed by something redefinition does not change; it is cleared
+and refilled on every reload, so an edited expression on a service is
+enforced as written on the next request</li>
+<li><strong>New bean classes</strong>: a brand-new <code>@Service</code>, <code>@Component</code>, <code>@RestController</code>
+or a custom meta-annotated stereotype file becomes a live bean on supported JDK 17+ paths,
+dependencies injected and mappings registered, with the bean name resolved the
+way component scanning would (including <code>@AliasFor</code>), instead of waiting for
+the next restart's component scan. Lazy components wait for first access;
+prototype components are created for each lookup. Class-level <code>@Profile</code> and
+<code>@Conditional</code>, including composed annotations, are checked against the current
+context before registration; a rejected component is neither registered nor
+initialized by the reload path. Web/custom scopes and scoped
+proxies require a restart. <a href="/docs/reference/usage/#new-component-classes-after-startup">Scope</a>.</li>
+<li><strong>Annotation metadata</strong>: an edited <code>@Transactional</code> or <code>@Cacheable</code> takes
+effect, not just the method body it sits on</li>
+<li><strong>New exception handlers (Spring 5.3.39 / 6.1.14 scope)</strong>: add an <code>@ExceptionHandler</code> method to a supported
+running controller or controller advice; real HTTP tests cover status/body,
+local priority, advice selectors and repeated saves, including new endpoints.
+<a href="/docs/reference/usage/#exception-handlers-added-after-startup">Scope and example</a>.</li>
+<li><strong>New binding and model methods</strong>: add <code>@InitBinder</code> and <code>@ModelAttribute</code>
+callbacks to supported running controllers or advice. Named binder scope,
+existing model values, advice ordering and later saves are covered by real
+Spring requests. <a href="/docs/reference/usage/#binding-and-model-methods-added-after-startup">Scope</a>.</li>
+<li><strong>New Kafka consumers</strong>: add a supported <code>@KafkaListener</code> to a running
+component, including topics and groups selected by Spring expressions on the bean.
+Real broker tests cover repeated edits, topic/group changes, removal,
+restoration and shutdown of replaced consumers.
+<a href="/docs/reference/usage/#kafka-listeners-added-after-startup">Scope</a>. <a href="/docs/reference/feature-evidence/#p4-messaging">Evidence</a>.</li>
+<li><strong>New JMS consumers</strong>: add a supported <code>@JmsListener</code> to a running component.
+Synchronous replies support direct <code>@SendTo</code> and the caller's <code>JMSReplyTo</code>.
+Real broker tests cover reply conversion/correlation, queue edits,
+removal/restoration, consumer shutdown and local transaction rollback/redelivery.
+<a href="/docs/reference/usage/#jms-listeners-added-after-startup">Scope</a>. <a href="/docs/reference/feature-evidence/#p4-messaging">Evidence</a>.</li>
+<li><strong>New RabbitMQ consumers</strong>: add a supported <code>@RabbitListener</code> to a running
+component, including queues selected by Spring expressions from application beans.
+Real broker tests cover queue changes, removal/restoration and
+local transaction rollback/redelivery.
+<a href="/docs/reference/usage/#rabbit-listeners-added-after-startup">Scope</a>. <a href="/docs/reference/feature-evidence/#p4-messaging">Evidence</a>.</li>
+<li><strong>New <code>@Bean</code> factories</strong>: add an instance or static <code>@Bean</code> method to a
+running <code>@Configuration</code> class and its product is registered. Lite, default
+configuration and static factories take reference beans, typed collections
+and maps, arrays, <code>Optional</code>, Spring providers and <code>@Value</code> arguments. On a
+default configuration, instance factory calls resolve through the container,
+retaining singleton identity and supported explicit/prototype arguments from
+inter-bean calls, helpers and method references.
+<a href="/docs/reference/usage/#bean-methods-added-after-startup">Scope and lifecycle</a>.</li>
+<li><strong>New lifecycle methods</strong>: a <code>@PostConstruct</code> or <code>@PreDestroy</code> added to a
+supported singleton runs on the next instance, and each instance keeps the
+destroy callback it was initialised with. <a href="/docs/reference/usage/#lifecycle-methods-added-after-startup">Scope and policy</a>.</li>
+<li><strong>Jackson input and output for added members</strong>: a getter, a void setter or
+an instance field added to a running DTO is discovered by Jackson with its
+saved annotations, so JSON is read and written through it on a stock JDK.
+<a href="/docs/reference/usage/#jackson-properties-added-after-startup">Scope</a>.</li>
+<li><strong>Spring XML singleton recreation</strong>: a changed constructor argument, factory
+method or init/destroy method in a <code>*-spring.xml</code> recreates the singleton
+through Spring and repairs the beans still holding the old one; property edits
+keep applying in place. <a href="/docs/reference/usage/#xml-singleton-recreation">Scope</a>.</li>
+<li><strong>What the frameworks cached about your class</strong>: a reload is only half the
+job, because each framework answers from what it worked out about that class
+once, at startup. An <code>@Autowired</code> you add injects, a constraint you add is
+enforced, an <code>@ExceptionHandler</code> or <code>@InitBinder</code> you add runs, an edited
+pointcut is parsed again, and Jackson reads and writes the getter, setter or
+field you added instead of serialising the old shape</li>
+</ul>
+<h3 id="core">Core</h3>
+<ul>
+<li>
+<p><strong>Reload between requests, opt-in:</strong> <code>reloadBoundary=request</code> waits for synchronous Spring MVC dispatches and supported Spring 5 <code>javax</code> or Spring 6 Jakarta MVC <code>Callable</code>/<code>DeferredResult</code> requests before a class reload batch starts. Async requests remain protected until native completion; a timed-out Callable worker remains counted until it actually exits. If a request outlasts the one-second drain deadline, new requests are admitted again and the edit stays queued for a natural idle boundary. This prevents a supported request from crossing a successful method-body reload. See <a href="/docs/reference/usage/#reload-between-requests">scope and setup</a>.</p>
+</li>
+<li>
+<p><strong>Hot class reload</strong>: Redefines classes in the running JVM via Instrumentation API</p>
+</li>
+<li>
+<p><strong>Save to live</strong>: measured end to end on macOS at the default settings, from writing the class file to the running application serving it, 612ms median. The JDK has no native file watching on macOS: it walks its registered directories and stats every file, and on SapMachine 21 here it notices a change about half a second later, whether one directory is registered or nine hundred. The files you are actually editing are checked directly instead, a handful of stat calls rather than a walk of the tree. The first change to any file still waits for the JDK, every one after it does not, and where the JDK watches natively (Linux, Windows) none of this is needed or used</p>
+</li>
+<li>
+<p><strong>Structural changes</strong>: Add/remove methods and instance fields on supported JDK 17+ paths (companion-class engine). An added instance field is initialised on objects created after the reload, and on objects that already existed its initialiser runs on the field's first read: the initialiser's own instructions are lifted out of the constructor, so a live Spring singleton that gained <code>cache = new ArrayList&lt;&gt;()</code> reads a list. Isolated conditional instance initialisers are supported in single-constructor classes and use the object's state on first read. An initialiser that needs a constructor argument, or that is entangled with other fields, is named with the reason and the field reads the type default. An added <em>static</em> field gets its initial value too: a compile-time constant comes straight off the field, and an initialiser that forms a self-contained block, including a supported conditional expression, is lifted out of <code>&lt;clinit&gt;</code> and run on its own, so the rest of the static block is never re-executed. Where the two cannot be separated the field reads as null/0 and the log names it and the reason. An enum value added on the end goes live on JDK 17-25, and so does one removed from the end, which moves no ordinal (see the comparison table for the exact scope); inserting or reordering values is refused with the reason. A member the save <em>removes</em> stops being visible to reflection, so scans stop acting on it, while code that already holds it keeps running the implementation it had. A changed compile-time constant is named together with the sources that inlined it, found by looking for it in the watched modules; with <code>autoCompile</code> those sources are rebuilt and hot-swapped, so the new value takes effect. JBR/DCEVM additionally gives full reflective visibility of new members</p>
+</li>
+<li>
+<p><strong>Property changes</strong>: a saved <code>.properties</code> change is first bound and validated
+on separate objects. An invalid value holds the whole candidate, including
+logger levels, and fixing it retries all pending keys. Unsupported binding
+checks hold the change; a failure during application is reported as partial
+and is not rolled back. Already-loaded Boot <code>.properties</code>, <code>.yml</code> and <code>.yaml</code>
+files also support nested values, lists and removed keys without overriding
+higher-priority sources. Removal reveals lower values or defaults; mutable
+property beans keep their identity. <a href="/docs/reference/usage/#yaml-and-removed-configuration-keys">YAML/removal scope</a>.
+See <a href="/docs/reference/usage/#property-changes-keep-the-last-working-values">validation limits</a>.
+After a clean check, a changed key goes into the running Environment and the
+<code>@ConfigurationProperties</code> beans whose prefix it touches are rebound, so a
+timeout or a feature flag takes effect without a restart. A bean bound through
+its constructor (a record, or <code>@ConstructorBinding</code>) is replaced rather than
+mutated: destroyed, rebuilt through the same constructor binding against the
+updated Environment, and the references holding it re-pointed. A <code>@Value</code>
+placeholder field is re-resolved and written in place, and a bean that takes
+a changed <code>@Value</code> through its constructor is rebuilt the same way the
+constructor-bound properties bean is. Scalar <code>@Value</code> fields can also compute
+arithmetic and conditional expressions from changed placeholders; unsupported
+expression operations hold the candidate without being evaluated. Supported
+scalar <a href="/docs/reference/usage/#computed-value-constructor-parameters">constructor</a> and
+native <a href="/docs/reference/usage/#value-factory-method-parameters"><code>@Bean</code> factory arguments</a>
+are checked before singleton recreation too. See <a href="/docs/reference/usage/#computed-value-fields">computed fields</a></p>
+</li>
+<li>
+<p><strong>Logging configuration</strong>: <code>logging.level.&lt;logger&gt;</code> in a properties file, or a
+saved <code>logback.xml</code> / <code>log4j2.xml</code>, is applied to the running logging context.
+Raising a logger to debug is one of the most common reasons to restart a
+server and one of the least necessary</p>
+</li>
+<li>
+<p><strong>Auto-detection</strong>: Automatically detects Spring Boot, Maven, and Gradle project layouts</p>
+</li>
+<li>
+<p><strong>Zero config</strong>: Just add <code>-javaagent</code>, no configuration files needed</p>
+</li>
+<li>
+<p><strong>IntelliJ IDEA plugin</strong>: Auto-injects agent into run configurations, auto-detects JDK and JBR</p>
+</li>
+</ul>
+<h3 id="platform-support">Platform Support</h3>
+<ul>
+<li><strong>Spring Boot</strong>: Auto-detects <code>target/classes</code> (Maven) or <code>build/classes/java/main</code> (Gradle)</li>
+<li><strong>SAP Commerce (Hybris)</strong>: extension-aware; <code>*-items.xml</code> regeneration and reload, interceptor re-registration in the platform registry verified by a real model save on a live 2211 server, ImpEx auto-import with a macro-aware REMOVE guard, Spring XML property edits and singleton recreation</li>
+<li><strong>Generic Java</strong>: Works with any Java application via <code>watchDirs=</code> configuration</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<h3 id="from-jetbrains-marketplace-recommended">From JetBrains Marketplace (Recommended)</h3>
+<p><a href="https://plugins.jetbrains.com/plugin/33498-reclazz">plugins.jetbrains.com/plugin/33498-reclazz</a></p>
+<p>Or from inside the IDE:</p>
+<ol>
+<li>Go to <strong>Settings</strong> &gt; <strong>Plugins</strong> &gt; <strong>Marketplace</strong></li>
+<li>Search for <strong>&quot;Reclazz&quot;</strong></li>
+<li>Click <strong>Install</strong> and restart the IDE</li>
+</ol>
+<p>The plugin bundles the agent JAR, so there is nothing else to download.</p>
+<h3 id="from-github">From GitHub</h3>
+<p>The agent on its own, which is all you need outside IntelliJ, is attached to
+every release:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>curl -LO https://github.com/onurkat/reclazz/releases/latest/download/reclazz-agent-&lt;version&gt;.jar
+java -javaagent:reclazz-agent-&lt;version&gt;.jar=platform=spring ...
+</code></pre></div>
+<p>Each release also carries a <code>.sha256</code> beside it. The IntelliJ plugin is on the
+JetBrains Marketplace, and the signed zip is attached to the same release.</p>
+<p>Or build both from source:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>git clone https://github.com/onurkat/reclazz.git
+cd reclazz
+
+# The agent, to attach with -javaagent. This is the jar every example below uses.
+./gradlew clean build          # -&gt; agent/build/libs/agent-&lt;version&gt;.jar
+
+# The IntelliJ plugin, if you want the IDE integration as well.
+./gradlew buildPlugin          # -&gt; build/distributions/reclazz-&lt;version&gt;.zip
+# Install: Settings &gt; Plugins &gt; gear icon &gt; Install Plugin from Disk
+</code></pre></div>
+<p><code>build/libs</code> also holds <code>agent-&lt;version&gt;-thin.jar</code>, which is the module's own
+classes without the bytecode library shaded in. It is not the agent and cannot
+be attached as one.</p>
+<p>What watching costs, on a platform where the JDK has to poll: the walk is linear
+in the number of files under the watched directories, not in the directories
+themselves. Measured against a real SAP Commerce extension tree, 953 directories
+holding 18,680 files, the JDK's own watcher thread used 9% of one core across
+four consecutive thirty-second windows with nobody editing anything, and the
+running server's watcher agreed. That is roughly 1% of a core per two thousand
+watched files, all day, and <code>Tools &gt; How Is Reclazz Doing?</code> now reports the file
+count and that figure so it is not invisible. <code>watchExtensions</code> and
+<code>excludePatterns</code> are what shorten the walk. On Linux and Windows the kernel
+tells the JDK instead and none of this is paid at all.</p>
+<p>While it is running, <code>Tools &gt; How Is Reclazz Doing?</code> asks the agent what it has
+actually done: how long it has been up, what it has reloaded and what failed,
+what a save costs at the median and the 95th on your machine rather than on
+mine, how many directories it is watching and how many it could not, and how
+much is waiting on a restart. <code>Tools &gt; Why Didn't My Class Reload?</code> and
+<code>Tools &gt; What Still Needs a Restart?</code> answer the two narrower questions.</p>
+<p><code>./gradlew :agent:check</code> runs the unit suite and a coverage floor with it;
+<code>:agent:jacocoTestReport</code> writes the report to
+<code>agent/build/reports/jacoco/test/html</code>. The figure counts only what runs in the
+test process. Fourteen of the tests launch a child JVM with the real agent
+attached, which is the only honest way to check startup, behaviour under load,
+or a clean build, and none of that is instrumented.</p>
+<h2 id="usage">Usage</h2>
+<h3 id="spring-boot">Spring Boot</h3>
+<p>Add the agent to your JVM arguments:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code># Maven
+java -javaagent:/path/to/reclazz-agent.jar -jar target/myapp.jar
+
+# Gradle
+java -javaagent:/path/to/reclazz-agent.jar -jar build/libs/myapp.jar
+
+# With explicit watch directories
+java -javaagent:/path/to/reclazz-agent.jar=watchDirs=/path/to/target/classes -jar myapp.jar
+</code></pre></div>
+<p>Then build your project in another terminal:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>mvn compile   # Maven
+gradle classes  # Gradle
+</code></pre></div>
+<p>Reclazz watches the compiled <code>.class</code> output and hot-swaps changes automatically.</p>
+<p>Structural changes (adding/removing methods and instance fields) work on supported JDK 17+ paths. On JBR/DCEVM, add <code>-XX:+AllowEnhancedClassRedefinition</code> for full reflective visibility of new members; on standard JVMs, reclazz uses a companion-class fallback (see <a href="#supported-jdk-providers">Supported JDK Providers</a> for the reflective-visibility caveat).</p>
+<h3 id="intellij-idea-recommended">IntelliJ IDEA (Recommended)</h3>
+<p>When you run the application from IntelliJ, the plugin handles everything:</p>
+<ol>
+<li>Install the plugin. Reclazz introduces itself once and asks whether to
+turn on: click <strong>Enable Reclazz</strong>. It starts switched off, because
+enabling it means putting an agent into the JVM that runs your code.
+(Missed the dialog, or opening a second project? <strong>Settings</strong> &gt;
+<strong>Tools</strong> &gt; <strong>Reclazz</strong> &gt; <strong>Enable Reclazz</strong>.)</li>
+<li>Run your application from IntelliJ (Run/Debug)</li>
+<li>The agent is injected automatically with optimal JVM flags</li>
+<li>Build your project. Changes are hot-swapped, status shown in the IDE</li>
+</ol>
+<h3 id="without-intellij">Without IntelliJ</h3>
+<p>The agent has no IDE dependency. It needs three things: the <code>-javaagent</code> flag
+on the JVM, a directory to watch, and any build that writes <code>.class</code> files
+into that directory.</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>java -javaagent:/path/to/reclazz-agent.jar=watchDirs=/path/to/build/classes/java/main -jar myapp.jar
+</code></pre></div>
+<p>Then let any compiler write class files on change:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>gradle -t classes    # Gradle continuous build: recompiles on every save
+mvn compile          # Maven: run it after each change; Maven has no built-in watch mode
+</code></pre></div>
+<p>VS Code's Java extension compiles on save, and Eclipse does the same with
+<strong>Build Automatically</strong> (its default), so both work out of the box: saving a
+file puts the fresh <code>.class</code> where Reclazz is watching. One thing to check in
+VS Code: Gradle projects imported there may have their class output under
+<code>bin/</code> rather than <code>build/classes</code>, so point <code>watchDirs</code> at the directory
+your setup actually writes.</p>
+<p>The IntelliJ plugin is a convenience on top of this, not a requirement: it
+adds auto-attach and a status UI.</p>
+<h3 id="remote-and-containers">Remote and containers</h3>
+<p>The agent does not care where the compiler runs. It only needs the changed
+<code>.class</code> files to appear in a directory it watches, on the filesystem of the
+JVM it lives in. Remote and containerized development is therefore a
+file-sync problem, not an agent feature.</p>
+<p>For Docker, sync the host build output into the watched directory with
+Docker Compose Watch:</p>
+<div class="code-block"><div class="code-label">yaml</div><pre><code>services:
+  app:
+    build: .
+    # your entrypoint or JAVA_TOOL_OPTIONS adds:
+    #   -javaagent:/opt/reclazz/reclazz-agent.jar=watchDirs=/app/classes
+    develop:
+      watch:
+        - action: sync
+          path: ./target/classes
+          target: /app/classes
+</code></pre></div>
+<p><code>docker compose watch</code> copies each changed class file into the container the
+moment the compiler writes it, and the agent inside picks it up.</p>
+<p>For a VM, one rsync after each build does the same:</p>
+<div class="code-block"><div class="code-label">bash</div><pre><code>rsync -az target/classes/ user@devhost:/app/classes/
+</code></pre></div>
+<p>SAP Commerce Cloud (CCv2) is out of reach for this, and for every hot-reload
+tool: there is no SSH into the running container and the images are
+immutable, so a changed class file has no way to arrive. Hot reload on SAP
+Commerce is for locally hosted servers.</p>
+<h3 id="the-trust-boundary">The trust boundary</h3>
+<p>A watched directory is a way to run code in the server's JVM, so it is worth
+stating plainly what that means. Anyone who can write a <code>.class</code> file into a
+watched directory has that class redefined into the running process; anyone who
+can write a <code>.impex</code> file into a watched ImpEx directory (opt-in) has it run
+against the live database. Reclazz does not, and cannot, verify where those
+files came from, any more than the JVM verifies its own classpath. So a watched
+directory should be trusted exactly as much as the server's classpath itself:
+keep it to your own build output on your own machine, which is what local
+development is. The agent opens one socket, bound to loopback, that answers two
+read-only status questions and triggers nothing; it makes no outbound network
+connection of any kind. Nothing about your code or your machine leaves the
+machine. What it will say, to anyone who can reach loopback on that host, is
+class names, the paths those classes were built to, and the list of things this
+session would need a restart for. On your own machine that is you; on a shared
+development server it is anyone with an account there, so treat it as readable
+by them.</p>
+<p>Running under the agent also does not hand the application anything it did not
+have. The engine keeps each watched class's own lookup, which carries private
+access to that class, and its holder sits on the bootstrap classloader where
+every line of code in the process can reach it. Only the engine's own classes,
+named by identity before the application starts, are given it: application code
+asking is refused, which matters because code that can evaluate a submitted
+expression or reach a static method through a deserialized object cannot write
+a class file into a watched directory, and should not get there by another
+route. Reload-added field values are readable and writable through the same
+bootstrap classes, because the code the agent generates calls them, and they
+reach only the values Reclazz itself stores.</p>
+<h3 id="sap-commerce-hybris">SAP Commerce (Hybris)</h3>
+<p>Edit <code>hybris/config/local.properties</code>:</p>
+<div class="code-block"><div class="code-label">properties</div><pre><code>tomcat.javaoptions=-javaagent:/path/to/reclazz-agent.jar
+</code></pre></div>
+<p><code>tomcat.javaoptions</code> is the property the platform leaves empty for exactly this,
+and it is appended to the options the platform builds for itself. Do not write
+<code>tomcat.generaloptions=... ${tomcat.generaloptions}</code>: the platform defines that
+one, so referring to it from <code>local.properties</code> fails the build with
+<code>Property tomcat.generaloptions was circularly defined</code>.</p>
+<p>Reclazz auto-detects the Hybris home directory from <code>platform.home</code>, <code>HYBRIS_BIN_DIR</code>, or the classpath. Start the server and run <code>ant build</code>. Reclazz hot-swaps the compiled classes automatically.</p>
+<p>Set it as a property rather than by editing <code>tomcat/conf/wrapper.conf</code> directly: <code>ant server</code> regenerates that file from the properties, so a line added to it by hand is gone after the next rebuild, with no symptom except that saving a file stops doing anything. The IntelliJ plugin writes the same property for you, into a marked block it manages.</p>
+<p>Hybris-specific features:</p>
+<ul>
+<li><strong>items.xml and beans.xml regeneration</strong>: Saving a <code>*-items.xml</code> or <code>*-beans.xml</code>
+runs the platform's own code generation in the background and hot-reloads the
+regenerated model and DTO classes, instead of <code>ant clean all</code> and a restart.
+New attributes still need a database column, so Reclazz prints a reminder to
+run <strong>HAC &gt; Platform &gt; Update Running System</strong>; it will not run DDL against a
+live database.</li>
+<li><strong>Spring XML reload</strong>: <code>*-spring.xml</code> property edits apply in place. Supported
+existing constructor/factory/lifecycle definitions are recreated, with writable
+direct holder references repaired. <a href="/docs/reference/usage/#xml-singleton-recreation">Scope</a>.</li>
+<li><strong>Interceptor reload</strong>: Captures mappings before Spring refresh and updates the
+actual SAP registry afterwards (Validate, Prepare, Load, Remove, InitDefaults).
+Missing or failed registration is reported instead of success. The SDK
+contract and the live model-save check are described in
+<a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/integration-test/README.md#sap-reliability-checks">integration tests</a>.</li>
+<li><strong>ImpEx auto-import</strong>: Optionally imports changed <code>.impex</code> files on save
+(opt-in). It runs against your live database with no confirmation and
+nothing that undoes it, so files containing a <code>REMOVE</code> header are refused
+and named rather than executed. Set <code>impexAllowRemove=true</code> if you mean it.</li>
+<li><strong>Property changes applied to the running server</strong>: the platform reads its
+property files once, at startup. Saving one now applies the keys whose value
+actually differs, through the same call the HAC console makes. Values that
+are consumed once at startup are named as still needing a restart rather than
+reported as applied.</li>
+<li><strong>Log levels</strong>: SAP Commerce keeps them in properties rather than a
+<code>log4j2.xml</code>, as a <code>log4j2.logger.&lt;key&gt;.name</code> and <code>.level</code> pair. Changing a
+level applies it to the running Log4j2 context, so raising a logger to debug
+no longer costs a restart. Only the loggers the save touched are set, which
+leaves a level raised from the HAC console alone.</li>
+<li><strong>Type and enum text</strong>: editing an <code>&lt;ext&gt;-locales_&lt;iso&gt;.properties</code> re-reads
+the platform's localization cache, so the new text is served on the next
+lookup. No system update and no database write.</li>
+<li><strong>Backoffice labels</strong>: <code>labels_&lt;iso&gt;.properties</code> under an extension's
+<code>*-backoffice-labels</code> folder reach the label cache backoffice reads from,
+every copy of it. Reopen the view and the text is there.</li>
+<li><strong>Extension-aware</strong>: Understands Hybris extension structure, classpath, and classloader hierarchy</li>
+</ul>
+<h4 id="on-sap-commerce-compared-with-jrebel">On SAP Commerce, compared with JRebel</h4>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>What you changed</th>
+<th>Reclazz</th>
+<th>JRebel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Price</td>
+<td>Free and open source</td>
+<td>$550+/year per seat</td>
+</tr>
+<tr>
+<td>A Java class</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Per-extension setup file</td>
+<td>None</td>
+<td><code>rebel.xml</code> for backoffice extensions</td>
+</tr>
+<tr>
+<td>A type in <code>items.xml</code> or <code>beans.xml</code></td>
+<td>Regenerates and reloads</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>A property</td>
+<td>Applied to the running server</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>A log level</td>
+<td>Applied to the running Log4j2 context</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>A type or enum name in a locales file</td>
+<td>Yes</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>A backoffice label</td>
+<td>Yes</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>A <code>*-backoffice-config.xml</code></td>
+<td>Cockpit configuration caches reset on save</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>An interceptor</td>
+<td>Re-registered</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>An ImpEx file</td>
+<td>Imported on save (opt-in)</td>
+<td>Not in its Hybris manual</td>
+</tr>
+<tr>
+<td>Licence server and activation</td>
+<td>None</td>
+<td>Commercial licence, activation required</td>
+</tr>
+</tbody>
+</table></div>
+<p>Compared against <a href="https://manuals.jrebel.com/jrebel/advanced/hybris.html">JRebel's own SAP Commerce manual</a>,
+which covers reloading compiled classes and configuring <code>rebel.xml</code>. &quot;Not in its
+Hybris manual&quot; means exactly that, not that JRebel is broken: it reloads classes
+on Hybris and that is what it documents.</p>
+<h3 id="attach-to-running-server">Attach to Running Server</h3>
+<p>If the server is already running without the <code>-javaagent</code> flag:</p>
+<ol>
+<li>Go to <strong>Tools</strong> &gt; <strong>Attach Reclazz to Running Server</strong></li>
+<li>Select the JVM from the list</li>
+<li>The agent loads into the running JVM, no restart needed</li>
+</ol>
+<h2 id="configuration">Configuration</h2>
+<h3 id="agent-arguments">Agent Arguments</h3>
+<p>The canonical <a href="/docs/reference/usage/#agent-arguments">agent argument table</a> defines every accepted
+option and default. The website <a href="https://reclazz.com/docs/configuration-reference/">configuration reference</a>
+is generated from that table. See <a href="/docs/reference/usage/#agent-arguments">output formatting</a>
+for the <code>NO_COLOR</code> environment variable; it is not an agent argument.</p>
+<h3 id="intellij-plugin-settings">IntelliJ Plugin Settings</h3>
+<p>Go to <strong>Settings</strong> &gt; <strong>Tools</strong> &gt; <strong>Reclazz</strong>:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enable Reclazz</td>
+<td>Off</td>
+<td>Master switch</td>
+</tr>
+<tr>
+<td>Auto-detect JDK</td>
+<td>On</td>
+<td>Detects JDK version and JBR, adds recommended flags</td>
+</tr>
+<tr>
+<td>Verbose logging</td>
+<td>Off</td>
+<td>Extra detail in the Reclazz tool window</td>
+</tr>
+<tr>
+<td>AutoCompile</td>
+<td>Off</td>
+<td>Compile <code>.java</code> files internally instead of using build tool</td>
+</tr>
+<tr>
+<td>Debounce (ms)</td>
+<td>500</td>
+<td>Delay before processing file changes</td>
+</tr>
+<tr>
+<td>Startup delay (s)</td>
+<td>30</td>
+<td>Wait before watching files after server start</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="verified-on">Verified On</h2>
+<p>Everything documented here is measured on a running system rather than inferred
+from the code. What that means concretely:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Environment</th>
+<th>Version</th>
+<th>Covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAP Commerce</td>
+<td>2211-jdk21.8 (Java 21, Spring 6.2)</td>
+<td>21/23 integration scenarios on a live server. The two that do not pass are named rather than hidden: the ImpEx scenario needs <code>autoImpex=true</code> in the agent arguments, and an enum scenario has a 404 flake in the harness that predates the current release</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td>3.3</td>
+<td>class reload, structural reload, bean refresh, cache, MVC, properties, logging</td>
+</tr>
+<tr>
+<td>Spring Boot</td>
+<td>2.7</td>
+<td>the same six, including a new endpoint mapped without a restart</td>
+</tr>
+<tr>
+<td>JDK</td>
+<td>SapMachine 17 and 21, JBR 25</td>
+<td>companion-class engine on both, plus native enhanced redefinition</td>
+</tr>
+<tr>
+<td>Spring Framework</td>
+<td>6.2 (through the SAP Commerce run) and 5.3 / 6.1 (through Spring Boot 2.7 / 3.3)</td>
+<td>bean refresh, MVC re-scan, cache, scheduler, events</td>
+</tr>
+<tr>
+<td>IntelliJ IDEA</td>
+<td>2023.3 to 2026.1</td>
+<td>the range the plugin declares</td>
+</tr>
+</tbody>
+</table></div>
+<p>Older or newer versions are likely to work, and are not claimed to until they
+have been run.</p>
+<h2 id="supported-jdk-providers">Supported JDK Providers</h2>
+<p>Reclazz targets JDK 17+ with the standard <code>java.lang.instrument</code> API. Structural reload uses the documented companion path on stock JVMs. The vendor list below describes intended compatibility, not acceptance evidence for every listed vendor or version. The difference is reflective visibility, not whether the change takes effect.</p>
+<p>There is a second number, and it is about the compiler rather than the runtime.
+Instrumentation reads and writes class files, and this build reads them up to
+<strong>Java 27</strong>. Runtime acceptance is bounded by the recorded JVM lanes; compiling <em>to</em> a newer
+class-file version is a separate limit,
+because the bytecode library learns a class file version after the JDK that
+introduced it ships. In that window the application runs and method body
+changes still reload, since the JVM reads those classes and that path does not
+go through the library, while adding or removing members is off. Reclazz says
+so once, in Java releases rather than header numbers, with the two ways out:
+compile with an older <code>--release</code> while you develop, or update Reclazz.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>JDK Provider</th>
+<th>Method Body</th>
+<th>Structural Reload</th>
+<th>Reflective Visibility of New Members</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>JetBrains Runtime (JBR)</strong></td>
+<td>Yes</td>
+<td>Yes (enhanced redefinition)</td>
+<td>Full: reflection sees new members</td>
+</tr>
+<tr>
+<td><strong>DCEVM</strong></td>
+<td>Yes</td>
+<td>Yes (enhanced redefinition)</td>
+<td>Full: reflection sees new members</td>
+</tr>
+<tr>
+<td><strong>Oracle JDK</strong></td>
+<td>Yes</td>
+<td>Yes (companion-class mode)</td>
+<td>Hot-compiled callers only</td>
+</tr>
+<tr>
+<td><strong>SapMachine</strong></td>
+<td>Yes</td>
+<td>Yes (companion-class mode)</td>
+<td>Hot-compiled callers only, common in SAP Commerce</td>
+</tr>
+<tr>
+<td><strong>OpenJDK</strong></td>
+<td>Yes</td>
+<td>Yes (companion-class mode)</td>
+<td>Hot-compiled callers only</td>
+</tr>
+<tr>
+<td><strong>Amazon Corretto</strong></td>
+<td>Yes</td>
+<td>Yes (companion-class mode)</td>
+<td>Hot-compiled callers only</td>
+</tr>
+<tr>
+<td><strong>Eclipse Temurin</strong></td>
+<td>Yes</td>
+<td>Yes (companion-class mode)</td>
+<td>Hot-compiled callers only</td>
+</tr>
+<tr>
+<td><strong>Azul Zulu</strong></td>
+<td>Yes</td>
+<td>Yes (companion-class mode)</td>
+<td>Hot-compiled callers only</td>
+</tr>
+<tr>
+<td><strong>BellSoft Liberica</strong></td>
+<td>Yes</td>
+<td>Yes (companion-class mode)</td>
+<td>Hot-compiled callers only</td>
+</tr>
+<tr>
+<td><strong>GraalVM</strong></td>
+<td>Limited</td>
+<td>Limited</td>
+<td>Not recommended</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>Enhanced redefinition</strong> (JBR/DCEVM) applies structural changes directly to the original <code>Class</code> object, so reflection and reflective caches (like Hybris <code>ModelService</code>) see new members immediately.</p>
+<p><strong>Companion-class mode</strong> (standard JVMs) puts new members on a hidden nestmate and routes calls through them via <code>invokedynamic</code> rewriting. Hot-compiled code that calls new members works transparently; reflection on the original class (<code>Class.getMethod(...)</code>) and caches built at boot time do not pick up the new members until server restart.</p>
+<h2 id="what-can-be-hot-reloaded">What Can Be Hot-Reloaded?</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Change Type</th>
+<th>Supported JDK 17+ paths</th>
+<th>Caveat on Standard JVMs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Method body changes</td>
+<td>Yes</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Add new methods</td>
+<td><strong>Yes</strong></td>
+<td>Reachable from hot-compiled callers; not from reflection on the original class. Adapters carry the saved metadata to Spring MVC (endpoints, <code>@ExceptionHandler</code>, <code>@InitBinder</code>, <code>@ModelAttribute</code>), <code>@Bean</code> factories, <code>@Scheduled</code>, <code>@EventListener</code> and <code>@TransactionalEventListener</code>, <code>@PostConstruct</code>/<code>@PreDestroy</code>, <code>@Transactional</code>/<code>@Cacheable</code> service methods, Jackson getters and setters, and <code>@KafkaListener</code>/<code>@JmsListener</code>/<code>@RabbitListener</code> without a restart; a scan without an adapter is named</td>
+</tr>
+<tr>
+<td>Add new fields</td>
+<td><strong>Yes within the documented scope</strong></td>
+<td>Reads/writes within the owner and from separately reloaded watched callers share values in the <a href="/docs/reference/usage/#cross-class-access-to-added-instance-fields">measured cross-class scope</a>. Added members are not visible on the original class. Constructor refresh and initializer refusal follow the <a href="/docs/reference/usage/#new-field-values-on-objects-that-already-existed">initialization scope</a>; a failed constructor refresh is named. Jackson DTO adapters have their own framework scope</td>
+</tr>
+<tr>
+<td>Remove methods/fields</td>
+<td><strong>Yes</strong></td>
+<td>Hidden from reflection so scans stop seeing them; existing callers keep the previous implementation until they are hot-recompiled</td>
+</tr>
+<tr>
+<td>Change annotations</td>
+<td><strong>Yes</strong></td>
+<td>None</td>
+</tr>
+<tr>
+<td>Spring bean logic</td>
+<td>Yes</td>
+<td>None</td>
+</tr>
+<tr>
+<td>New Spring beans (@Component)</td>
+<td><strong>Yes</strong>, a new class carrying a direct or custom meta-annotated stereotype is registered and wired with the scanner's own bean name, and <code>*-spring.xml</code> still works for XML-defined beans</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Spring XML/YAML changes</td>
+<td>XML property edits and <a href="/docs/reference/usage/#xml-singleton-recreation">selected singleton recreation</a>; <a href="/docs/reference/usage/#yaml-and-removed-configuration-keys">loaded Boot properties/YAML</a></td>
+<td>XML removal, new complex definitions and unsupported dependency graphs require restart</td>
+</tr>
+<tr>
+<td>Property changes</td>
+<td>Rebound into <code>@ConfigurationProperties</code> beans, constructor-bound beans rebuilt, <code>@Value</code> fields re-resolved, beans taking changed direct or supported computed <code>@Value</code> constructor or native scalar <code>@Bean</code> factory arguments rebuilt, including <a href="/docs/reference/usage/#transaction-proxies-and-property-recreation">supported transaction and method-security proxies</a>; supported scalar field SpEL recomputed; <a href="/docs/reference/usage/#indirect-value-dependencies">property-value chains are followed for <code>@Value</code></a></td>
+<td>Unsupported expressions or creation policies hold the candidate. <a href="/docs/reference/usage/#value-factory-method-parameters">Factory arguments</a>, <a href="/docs/reference/usage/#computed-value-fields">fields</a> and <a href="/docs/reference/usage/#computed-value-constructor-parameters">constructors</a></td>
+</tr>
+<tr>
+<td>Log levels and logging config</td>
+<td>Yes (<code>logging.level.*</code>, <code>logback.xml</code>, <code>log4j2.xml</code>)</td>
+<td>Appenders are rebuilt, so a reconfigure resets the context</td>
+</tr>
+<tr>
+<td>Superclass changes</td>
+<td>No</td>
+<td>None</td>
+</tr>
+</tbody>
+</table></div>
+<h2 id="architecture">Architecture</h2>
+<div class="code-block"><div class="code-label">text</div><pre><code>             Build Tool (mvn/gradle/ant)
+                       |
+                       v
+               classes/*.class files
+                       |
++----------------------|---------------------------+
+|  Application JVM     |                            |
+|                      |                            |
+|  +-------------------v--+                         |
+|  |     FileWatcher      |  watches .class files   |
+|  |   (NIO WatchService) |                         |
+|  +----------+-----------+                         |
+|             | bytecode                            |
+|      +------v-------+                             |
+|      | ClassReloader |                             |
+|      | (Instrument-  |                             |
+|      |  ation API)   |                             |
+|      +------+--------+                             |
+|             |                                     |
+|   +---------+-----------+                          |
+|   |         |           |                          |
+|   v         v           v                          |
+| Spring   Spring       Spring                      |
+| Bean     MVC Re-      Cache                        |
+| Refresh  scan         Eviction  + Scheduler,       |
+|                                   AOP, Async,      |
+|                                   Events, Data,    |
+|                                   Security         |
+|                                                   |
+|   Application | Spring Context | Service Layer    |
++---------------------------------------------------+
+</code></pre></div>
+<h3 id="what-attaching-the-agent-changes-about-your-classes">What attaching the agent changes about your classes</h3>
+<p>Reclazz rewrites every watched class at load time, whether or not you ever
+reload anything. Most of that is invisible, and it is worth writing down which
+parts are not.</p>
+<p><strong>Nothing about reflection.</strong> A method keeps its annotations, its generic
+signature, its <code>throws</code> clause and its parameter names, so Spring still decides
+to proxy it and Jackson still sees <code>List&lt;Order&gt;</code> rather than a raw list. Every
+member Reclazz injects is marked synthetic, which is what keeps it out of the
+framework scans that skip synthetic members.</p>
+<p><strong>Stack traces gain a frame.</strong> A call into a watched method shows two frames:
+the dispatch under your own method name, and above it the moved body under an
+internal one.</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>at com.acme.OrderService.__reclazz$v0$place$9edc617f(OrderService.java:42)
+at com.acme.OrderService.place(OrderService.java:42)
+</code></pre></div>
+<p>Both carry the real file and line, so the trace still says where the failure
+was and your IDE can still jump from the frame you recognise. The extra line is
+the cost of the dispatch the reload engine is built on. One thing does not
+recover: a log pattern that prints the calling method name (<code>%M</code> in Log4j2)
+reads it off the moved body, so it prints the internal name. The logger name,
+the line number and the class name are all unaffected.</p>
+<p><strong><code>serialVersionUID</code> is pinned.</strong> Injecting members would change the number the
+JVM computes for a class that does not declare one. Reclazz computes the number
+your class would have had and writes it in. The <a href="/docs/reference/feature-evidence/#p1-load-serial-uid">core evidence</a>
+records UID equality and a plain-class serialization round trip; it does not
+certify arbitrary serialized object graphs or mixed-cluster deployments.</p>
+<p><strong>Fields added by a reload are runtime-only.</strong> A field that appears in a reload
+lives beside the object rather than in it. The injected store is transient;
+its stored added-field values are not serialized. Clone writes use copy-on-write
+store isolation, with the usual shallow-copy semantics for referenced values.
+Deserialization starts without that store. The interaction with first-read
+initializers needs application-specific verification; do not assume every
+deserialized or pre-existing object reads the type default. See the
+<a href="/docs/reference/feature-evidence/#p1-field-serialization">component evidence and remaining limits</a>.</p>
+<p><strong>A call into a watched class costs about 1.4 nanoseconds more.</strong> Measured with
+and without the agent on the same code: a method that only increments a field
+went from 0.3ns to 1.7ns per call, and one that concatenates two strings went
+from 19.4ns to 19.2ns, which is to say the cost disappears into anything that
+does work. It is the same whether the caller is watched, where its call site is
+rewritten, or not, where the call goes through the dispatch. After a structural
+reload, once the JIT has recompiled what the redefinition threw away, calls stay
+in the same few-nanosecond range.</p>
+<p><strong>Startup cost is below this machine's own variation.</strong> Six SAP Commerce boots
+with the agent ranged from 91 to 99 seconds; two warm boots without it were 97.4
+and 97.9. Instrumenting every watched class at load time is real work, and on a
+platform that takes a minute and a half to start it is not something you can see
+from outside.</p>
+<p><strong>What the agent itself holds is bounded and does not grow with reloading.</strong>
+Measured on a live SAP Commerce server after a full integration run, with a
+heap histogram: 95,996 objects and 2.2 MB across all of Reclazz's own classes.
+It scales with how many classes were transformed rather than with how many
+times they were reloaded, which was measured the same way, twenty-nine reloads
+apart: every count identical. The largest part is the record of each
+transformed class's method and field signatures, which is what a structural
+reload diffs against. The last-known-good bytecode cache is capped at 8 MB
+deflated and evicts by least-recently-used, and the per-class reflection state
+lives in a <code>ClassValue</code>, so it dies with the class rather than pinning its
+classloader.</p>
+<p><strong>Each reload costs metaspace that is never returned.</strong> Around 8.5 KB, measured
+over 60 reloads. This is the JVM's cost rather than Reclazz's: redefining a
+class makes the JVM keep the previous version, so that threads still running
+the old code keep working, and a bare <code>redefineClasses</code> loop with no agent at
+all measured 10.6 KB per redefinition on the same JDK. Reclazz's own companion
+classes are collected, one for one with the reloads. It is only worth thinking
+about where metaspace is capped, which on SAP Commerce it is: a day of heavy
+editing is a few MB, and Reclazz warns when the pool passes 85% full so that a
+long session ends in a restart you chose rather than an <code>OutOfMemoryError</code> you
+did not.</p>
+<p><strong><code>synchronized</code> survives.</strong> Both the dispatch and the moved body take the
+monitor, so mutual exclusion holds from startup, and a structural reload keeps
+it: the body copied into the companion is wrapped in the monitor the original
+took, the receiver for an instance method and the class for a static one, and
+released on the way out including the exceptional one. Measured with two
+threads through a method that holds for 300ms, before and after a structural
+reload: 609ms and 615ms, against 305ms when the wrapping was not there.</p>
+<h2 id="project-structure">Project Structure</h2>
+<div class="code-block"><div class="code-label">text</div><pre><code>reclazz/
+├── agent/                                    # Java agent (runs inside JVM)
+│   └── src/main/java/com/onurkat/reclazz/
+│       ├── agent/                            # Agent entry point, config, reloader
+│       ├── platform/                         # Platform abstraction layer
+│       │   ├── PlatformContext.java           # Interface for platform-specific ops
+│       │   ├── PlatformDetector.java          # Auto-detects runtime platform
+│       │   ├── SpringBootContext.java         # Spring Boot / generic Java context
+│       │   ├── HybrisPlatformContext.java     # SAP Commerce context
+│       │   ├── ApplicationContextHolder.java  # Spring context capture
+│       │   └── SpringContextInterceptTransformer.java
+│       ├── spring/                           # Generic Spring reloaders
+│       │   ├── SpringReloadOrchestrator.java  # Coordinates all reloaders
+│       │   ├── SpringBeanReloader.java        # Singleton destroy + recreate
+│       │   ├── SpringMvcReloader.java         # @RequestMapping re-scan
+│       │   ├── SpringCacheReloader.java       # Cache eviction
+│       │   ├── SpringSchedulerReloader.java   # @Scheduled re-register
+│       │   ├── SpringEventReloader.java       # @EventListener refresh
+│       │   ├── SpringAopReloader.java         # AOP cache and living proxy refresh
+│       │   ├── SpringAsyncReloader.java       # @Async re-processing
+│       │   ├── SpringDataReloader.java        # Repository refresh
+│       │   └── SpringSecurityReloader.java    # Security config notification
+│       ├── compiler/                         # Incremental compilation
+│       ├── hybris/                           # SAP Commerce specific
+│       ├── watcher/                          # File watching (NIO WatchService)
+│       ├── transform/                        # Bytecode transformation engine
+│       ├── reload/                           # Structural reload engine
+│       ├── bootstrap/                        # Bootstrap classloader classes
+│       └── ui/                               # Console output
+│
+├── src/main/                                 # IntelliJ IDEA plugin (Kotlin)
+├── docs/                                     # Documentation
+├── branding/                                 # The mark, and where it is used
+│
+├── integration-test/                         # End-to-end suite (needs a live
+│                                             #   SAP Commerce install; see its README)
+└── reclazztest/                              # The extension that suite edits
+</code></pre></div>
+<p><code>integration-test/</code> and <code>reclazztest/</code> are test scaffolding. They ship
+in no release, nothing in <code>agent/</code> or <code>src/</code> refers to them, and both
+need a licensed SAP Commerce installation to run. <code>./gradlew clean build</code> is the whole gate for everyone else. See
+<a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/CONTRIBUTING.md#testing">CONTRIBUTING.md</a> for what each layer of the
+test suite actually checks.</p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="do-i-still-need-to-restart">&quot;Do I still need to restart?&quot;</h3>
+<p><strong>Tools &gt; What Still Needs a Restart?</strong> answers it. Reclazz keeps a note of
+everything this session did that a restart would change: a static field whose
+initialiser could not be separated from the rest of the static block, an enum
+change the JVM would not take, a superclass change, a Spring bean the XML
+reload could not apply, a property the platform refused. When the list is
+empty it says so, which is the answer that saves the restart.</p>
+<h3 id="why-didnt-my-class-reload">&quot;Why didn't my class reload?&quot;</h3>
+<p>Ask the agent: <strong>Tools &gt; Why Didn't My Class Reload?</strong>, or right-click in the
+editor. It reports what it found for that class, into the reload log: whether a
+compiled file exists under a watched directory and when it was last built,
+whether the JVM has loaded it, whether the agent prepared it, and what the last
+reload attempt did and which file it took the bytes from. Most of the time the
+answer is that no reload was ever attempted, and none of those reasons produce
+an error message on their own.</p>
+<h3 id="no-class-output-directories-detected">&quot;No class output directories detected&quot;</h3>
+<p>Reclazz couldn't find <code>target/classes</code> (Maven) or <code>build/classes/java/main</code> (Gradle) on the classpath. Use <code>watchDirs=</code> to specify the directory explicitly.</p>
+<h3 id="class-redefinition-not-supported">&quot;Class redefinition not supported&quot;</h3>
+<p>Your JVM doesn't support class redefinition. This shouldn't happen with modern JDKs.</p>
+<h3 id="structural-change-fails-on-a-class">Structural change fails on a class</h3>
+<p>Structural reload works on supported JDK 17+ paths for classes the agent transformed at load time. If the message says the class &quot;was loaded before Reclazz attached&quot;, start the server with <code>-javaagent</code> (the IntelliJ plugin's Install action sets this up) instead of attaching later. Attach mode cannot retrofit the reload infrastructure into already-loaded classes on standard JVMs.</p>
+<h3 id="spring-bean-not-refreshed">Spring bean not refreshed</h3>
+<p>Reclazz destroys and recreates the singleton, cascades the refresh to dependent beans, and re-points fields that still hold the old instance to the new one (stale-reference healing). If a component still sees stale behavior, check the Reclazz tool window for a reload error on that class.</p>
+<h3 id="spring-boot-devtools-compatibility">Spring Boot DevTools compatibility</h3>
+<p>Reclazz can run alongside DevTools, but it's recommended to disable DevTools when using Reclazz. DevTools performs full context restarts which are slower and lose application state.</p>
+<h3 id="docker--containerized-environments">Docker / containerized environments</h3>
+<p>Mount the agent JAR into the container and add the <code>-javaagent</code> flag to <code>JAVA_OPTS</code>:</p>
+<div class="code-block"><div class="code-label">dockerfile</div><pre><code>COPY reclazz-agent.jar /opt/reclazz/agent.jar
+ENV JAVA_OPTS=&quot;-javaagent:/opt/reclazz/agent.jar=watchDirs=/app/target/classes&quot;
+</code></pre></div>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/product-reference.md">docs/product-reference.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/mcp-server/"><span>← Previous</span><strong>Reclazz MCP server</strong></a><a href="/docs/reference/protocol/"><span>Next →</span><strong>The Status Socket</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#why-reclazz">Why Reclazz?</a><a href="#features">Features</a><a href="#installation">Installation</a><a href="#usage">Usage</a><a href="#configuration">Configuration</a><a href="#verified-on">Verified On</a><a href="#supported-jdk-providers">Supported JDK Providers</a><a href="#what-can-be-hot-reloaded">What Can Be Hot-Reloaded?</a><a href="#architecture">Architecture</a><a href="#project-structure">Project Structure</a><a href="#troubleshooting">Troubleshooting</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

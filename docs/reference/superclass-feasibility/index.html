@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Superclass changes without a custom classloader | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: Superclass changes without a custom classloader.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/superclass-feasibility/">
+<meta property="og:type" content="article"><meta property="og:title" content="Superclass changes without a custom classloader | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: Superclass changes without a custom classloader."><meta property="og:url" content="https://reclazz.com/docs/reference/superclass-feasibility/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Superclass changes without a custom classloader", "description": "Complete configuration, behavior and scope reference: Superclass changes without a custom classloader.", "url": "https://reclazz.com/docs/reference/superclass-feasibility/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a aria-current="page" href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">◈</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a aria-current="page" href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">◈</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="superclass-changes-without-a-custom-classloader">Superclass changes without a custom classloader</h1><div class="reference-content"><h2 id="finding-and-scope">Finding and scope</h2>
+<p>A custom classloader is <strong>not necessary for the bounded delegation experiment</strong>
+below. A prewired method on an existing <code>C extends A</code> object can call behavior
+implemented by a hidden class extending <code>B</code>, defined in the same loader. That
+changes the routed method's result; it does not make the original object a <code>B</code>.</p>
+<p>Directly redefining the already loaded <code>C</code> from <code>extends A</code> to <code>extends B</code> was
+rejected on both named runtimes tested here. This is a versioned observation,
+not a claim that every JVM extension, present or future, must behave identically.
+This experiment does not add superclass replacement support to Reclazz.</p>
+<h2 id="reproduce">Reproduce</h2>
+<p>The fixture under <a href="https://github.com/onurkat/reclazz/tree/4540b01f5ec433382c0daafa71e028160950b1ff/scripts/probes/superclass">scripts/probes/superclass</a> is
+adapted from the preserved 2026-09-22 research probe. The runner uses Python 3.9+
+and explicitly selected full JDKs (17+); no third-party dependencies, downloads,
+Reclazz build or production agent are involved. Run from the repository root:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>python3 scripts/test-superclass-feasibility.py \
+  --java-home /Library/Java/JavaVirtualMachines/sapmachine-17.jdk/Contents/Home \
+  --java-home /Library/Java/JavaVirtualMachines/sapmachine-21.jdk/Contents/Home \
+  --work-dir /tmp/reclazz-superclass-research
+</code></pre></div>
+<p>Replace the example JDK paths for your machine. Repeat <code>--java-home</code> for each
+runtime being measured. Choose a <strong>new output directory</strong> each time: an existing
+one is refused without overwriting its evidence. The command uses argument arrays
+and native executable suffixes, but Windows/Linux execution was not tested in this
+research. The process environment is inherited; run without unrelated injected
+agents or custom JVM options when reproducing the baseline.</p>
+<p>For each JDK the runner copies the source, compiles the original classes and then
+the replacement <code>C</code> separately, packages a tiny premain instrumentation agent and
+launches one isolated JVM. Each subprocess has a 60-second limit. <code>evidence.json</code>
+records planned runs, completed/failed runs, exact commands, log paths, source and
+class/agent digests, runtime version and observed results. Any command/assertion
+failure returns nonzero and leaves <code>passed:false</code> evidence plus logs. Setup before
+the output directory exists, forced process termination or an unwritable disk may
+prevent a report; a missing report never means success.</p>
+<p>The assertions deliberately check the recorded refusal and delegation behavior.
+If another JVM accepts the direct change, the probe prints <code>directRedefine=accepted</code>
+and fails the recorded expectation. Inspect that result as a different capability;
+do not call it another refusal or silently expand the conclusion.</p>
+<h2 id="observed-results-2026-09-23">Observed results: 2026-09-23</h2>
+<p>Host: macOS aarch64. Both versions were compiled and run with their own JDK tools.
+The commands above completed successfully with these actual runtime versions:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th>Identical-byte redefine control</th>
+<th>Direct superclass change</th>
+<th>Prewired hidden delegation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAP OpenJDK 17.0.16+8-LTS</td>
+<td>Accepted</td>
+<td>Rejected: attempted to change superclass or interfaces</td>
+<td>Passed</td>
+</tr>
+<tr>
+<td>SAP OpenJDK 21.0.10.0.1+1-LTS</td>
+<td>Accepted</td>
+<td>Rejected: attempted to change superclass or interfaces</td>
+<td>Passed</td>
+</tr>
+</tbody>
+</table></div>
+<p>JBR, enhanced-redefinition modes, other JVM builds and other operating systems
+were <strong>not run in this reproduction</strong>. Prior repository comments about other
+runtimes are not substituted for fresh versioned results here.</p>
+<p>Each passing run demonstrates:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Observation</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Redefinition API available and target modifiable</td>
+<td>True; redefining C with its original bytes succeeds first</td>
+</tr>
+<tr>
+<td>Original routed method</td>
+<td><code>v1:A:7</code></td>
+</tr>
+<tr>
+<td>Same method after installing the prewired delegate</td>
+<td><code>v2:B:7</code></td>
+</tr>
+<tr>
+<td>Original reference, Class identity and defining loader</td>
+<td>Unchanged</td>
+</tr>
+<tr>
+<td>Hidden delegate's defining loader</td>
+<td>Same loader as original C</td>
+</tr>
+<tr>
+<td>Delegate receiver</td>
+<td>Separate object, with superclass B</td>
+</tr>
+<tr>
+<td>Original C's <code>getSuperclass()</code></td>
+<td>A</td>
+</tr>
+<tr>
+<td>Original reference <code>instanceof B</code> / <code>B.class.isInstance</code></td>
+<td>False</td>
+</tr>
+<tr>
+<td><code>B.class.cast(original)</code></td>
+<td>ClassCastException</td>
+</tr>
+<tr>
+<td>Unrouted inherited <code>original.who()</code></td>
+<td>A</td>
+</tr>
+<tr>
+<td>Change original field from 7 to 11, call routed method again</td>
+<td><code>v2:B:11</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>The positive redefine control prevents a missing agent or disabled redefinition
+capability from being mistaken for a hierarchy-specific limitation. The final
+field check shows an explicit read of the original object's field, not copying
+or migrating the new base's state.</p>
+<p>A scratch negative witness changed the delegate's <code>super.who()</code> to return <code>A</code>.
+The same runner failed its delegated-value assertion and kept <code>passed:false</code>.
+Missing-JDK and repeated-output-directory checks also failed without generating
+success or overwriting prior evidence. No product source was altered for these
+negative checks.</p>
+<h2 id="why-these-are-different-mechanisms">Why these are different mechanisms</h2>
+<p>In the direct experiment <code>Instrumentation.redefineClasses</code> receives a class file
+whose declared superclass changed. The Java 17 JVMTI contract restricts inheritance
+changes and explicitly leaves room for future changes: “These restrictions may be
+lifted in future versions.” <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/jvmti.html#RedefineClasses">JVMTI RedefineClasses</a></p>
+<p>In the delegation experiment <code>Router.target</code> is prepared in the original program.
+A hidden <code>NewBehavior extends B</code> instance receives the original C as an explicit
+argument. Its <code>super.who()</code> uses B on the <strong>delegate receiver</strong>; it is not a new
+super invocation on the original C. <code>Lookup.defineHiddenClass</code> assigns the lookup
+class's defining loader to the new hidden class. No new custom loader is created
+by this fixture. <a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/invoke/MethodHandles.Lookup.html#defineHiddenClass(byte%5B%5D,boolean,java.lang.invoke.MethodHandles.Lookup.ClassOption...)">Java 17 Lookup.defineHiddenClass</a></p>
+<h2 id="relationship-to-current-reclazz">Relationship to current Reclazz</h2>
+<p>Repository evidence at baseline <code>28e7c6f</code>:</p>
+<ul>
+<li><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/main/java/com/onurkat/reclazz/reload/StructuralAnalyzer.java">StructuralAnalyzer.StructuralDiff.isUnsupported</a>
+marks a changed superclass unsupported.</li>
+<li><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/main/java/com/onurkat/reclazz/reload/HierarchyRevert.java">HierarchyRevert.toLoadedSuperclass</a>
+keeps the loaded superclass and distinguishes unsafe bodies from class-level
+blockers. <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java">StructuralReloader</a>
+applies eligible methods or pins/refuses methods that depend on the new base.</li>
+<li>StructuralReloader already uses <code>classLookup.defineHiddenClass(..., NESTMATE)</code>
+for companions. That existing mechanism and this standalone probe are evidence
+that a new custom loader is not a prerequisite for every delegation route.
+Neither establishes automatic superclass emulation in the product.</li>
+</ul>
+<p>This runner loads only the tiny <code>ProbeAgent</code>, not Reclazz. It does not exercise
+Reclazz's actual transformer, salvage path, restart ledger or reload receipts.
+The production boundary and reporting tests below are separate from that experiment.</p>
+<h2 id="production-reload-boundary-regressions">Production reload boundary regressions</h2>
+<p><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/test/java/com/onurkat/reclazz/reload/SuperclassTypeBoundaryReloadTest.java">SuperclassTypeBoundaryReloadTest</a>
+uses Reclazz's actual transformer and <code>StructuralReloader</code>, with instrumentation
+attached to the test JVM. It compiles original and replacement classes in memory,
+warms the original methods, then observes the held receiver after reload. The
+existing test harness's shared loader isolates fixture classes; it is not a new
+product classloader or evidence of native superclass replacement.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Requested edit / observation</th>
+<th>Contract asserted</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Superclass change plus independent method edit</td>
+<td>Edited method runs on the original receiver; Class identity, defining loader, old superclass, inherited behavior and existing mutable state remain</td>
+</tr>
+<tr>
+<td>Untransformed caller tests the original object against the new base</td>
+<td>Native <code>instanceof</code> is false and native cast throws <code>ClassCastException</code>; a real new-base object succeeds as a positive control</td>
+</tr>
+<tr>
+<td>Changed method contains a new-base cast or <code>instanceof</code></td>
+<td>That method keeps its old body, including with a valid new-base argument; an independent method gets its new body</td>
+</tr>
+<tr>
+<td>Added method takes or returns the new base</td>
+<td>Entire reload is refused; warmed methods and existing state remain, and a fresh instance still has old behavior</td>
+</tr>
+<tr>
+<td>Constructor body requires a method only on the new base</td>
+<td>Entire reload is refused; old initialization still works for fresh instances</td>
+</tr>
+<tr>
+<td>New super-constructor signature does not exist on the old base</td>
+<td>Entire reload is refused without replacing old initialization or method bodies</td>
+</tr>
+</tbody>
+</table></div>
+<p>Run the focused production tests from the repository root:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>./gradlew :agent:unitTest --rerun \
+  --tests &#x27;*SuperclassTypeBoundaryReloadTest&#x27; \
+  --tests &#x27;*SuperclassSalvageReloadTest&#x27; \
+  --tests &#x27;*HierarchyRevertTest&#x27;
+</code></pre></div>
+<p>These are representative regression cases for current refusal and method salvage.
+They do not establish automatic delegation to the new base, state migration,
+framework compatibility, or results on every runtime. The standalone probe's
+named-JDK observations above remain specific to that probe.</p>
+<h2 id="production-reload-reporting">Production reload reporting</h2>
+<p>Reclazz's superclass diagnostics describe its current reload policy, not what
+every JVM extension can do. The warning states that the superclass change was
+not applied and needs a restart. Eligible method-body application is attempted
+separately; a warning emitted before that attempt is not proof that it succeeded.
+Pinned-method warnings name the retained method and reason. Class-level blockers
+refuse the save and leave its method changes unapplied.</p>
+<p><a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/agent/src/test/java/com/onurkat/reclazz/e2e/SuperclassReportingVerificationTest.java">SuperclassReportingVerificationTest</a>
+starts one real application with the packaged Reclazz agent. Across ordinary
+updates, superclass salvage, a pinned method, two refused saves and recovery, it
+checks fresh live output on the held receiver against exact-input socket receipts:</p>
+<ul>
+<li>Ordinary warning-free updates produce <code>applied</code> receipts.</li>
+<li>Superclass salvage, including pinned methods, produces <code>unverified</code>; the
+original hierarchy remains even when independent methods change.</li>
+<li>A new-base signature blocker produces <code>failed</code> and leaves previous live bodies.</li>
+<li>Each newer attempt supersedes the previous hash (<code>mismatch</code>); session identity
+stays constant and terminal receipts carry completion times.</li>
+<li><code>PENDING</code> retains the unapplied hierarchy concern. It is session history, not
+a recomputed diff: a later ordinary save can be <code>applied</code> while earlier restart
+notes remain. This test does not claim automatic resolution of those notes.</li>
+</ul>
+<p>Run <code>./gradlew :agent:e2eTest --rerun --tests '*SuperclassReportingVerificationTest'</code>
+for the scenario (the task also runs its broker-suite dependencies). This extends
+local product regression coverage; it does not expand the standalone probe's
+runtime matrix. No new receipt status, field, command or custom loader is added.</p>
+<h2 id="decision-and-remaining-limits">Decision and remaining limits</h2>
+<p>The bounded same-loader route is feasible <strong>when dispatch is prewired</strong>. It is
+not sufficient to implement transparent superclass replacement. The experiment
+has one original/delegate pair, public state explicitly passed as an argument,
+and trivial constructors. It does not establish automatic transformation,
+inherited/super-call rewriting, original-<code>this</code> callbacks, multiple-instance
+ownership, new-base field migration, constructor side effects, interface/type
+emulation or framework compatibility.</p>
+<p>The cost decision remains: do not build the excluded general dispatch and
+state/constructor engines from this result. Retain the lower-cost tests and
+truthful reporting for current refusal/method-salvage behavior. Any production
+expansion needs a separately approved scope and evidence. A custom loader would
+also be a separate design investigation; none was implemented or tested here.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/superclass-feasibility.md">docs/superclass-feasibility.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/spring-constructor-dependencies/"><span>← Previous</span><strong>Constructor dependency ownership during ordinary class refresh</strong></a><a href="/docs/reference/test-guide/"><span>Next →</span><strong>Reclazz: Test Guide for SAP Commerce (Hybris)</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#finding-and-scope">Finding and scope</a><a href="#reproduce">Reproduce</a><a href="#observed-results-2026-09-23">Observed results: 2026-09-23</a><a href="#why-these-are-different-mechanisms">Why these are different mechanisms</a><a href="#relationship-to-current-reclazz">Relationship to current Reclazz</a><a href="#production-reload-boundary-regressions">Production reload boundary regressions</a><a href="#production-reload-reporting">Production reload reporting</a><a href="#decision-and-remaining-limits">Decision and remaining limits</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

@@ -1,0 +1,213 @@
+{
+  "source_commit": "75535bd739d7eefd43523dcc63799436c472fe12",
+  "source_version": "1.4.0",
+  "reviewed": "2026-10-19",
+  "build_revision": "4540b01f5ec433382c0daafa71e028160950b1ff",
+  "pages": 33,
+  "site_pages": [
+    "compare/index.html",
+    "docs/boundaries/index.html",
+    "docs/configuration-reference/index.html",
+    "docs/configuration/index.html",
+    "docs/evidence/index.html",
+    "docs/index.html",
+    "docs/java/index.html",
+    "docs/messaging/index.html",
+    "docs/persistence/index.html",
+    "docs/quickstart/index.html",
+    "docs/reference/agentic-evaluation/index.html",
+    "docs/reference/client-matrix/index.html",
+    "docs/reference/documentation-workflow/index.html",
+    "docs/reference/feature-evidence/index.html",
+    "docs/reference/for-ai-agents/index.html",
+    "docs/reference/gradle-plugin/index.html",
+    "docs/reference/index.html",
+    "docs/reference/installation/index.html",
+    "docs/reference/maven/index.html",
+    "docs/reference/mcp-server/index.html",
+    "docs/reference/product-reference/index.html",
+    "docs/reference/protocol/index.html",
+    "docs/reference/publishing/index.html",
+    "docs/reference/reload-support/index.html",
+    "docs/reference/sap-commerce/index.html",
+    "docs/reference/spring-boot-starter/index.html",
+    "docs/reference/spring-constructor-dependencies/index.html",
+    "docs/reference/superclass-feasibility/index.html",
+    "docs/reference/test-guide/index.html",
+    "docs/reference/usage/index.html",
+    "docs/sap-commerce/index.html",
+    "docs/spring/index.html",
+    "docs/support-matrix/index.html",
+    "docs/troubleshooting/index.html",
+    "index.html",
+    "license/index.html",
+    "privacy/index.html"
+  ],
+  "curated_pages": 13,
+  "reference_pages": 20,
+  "support_entries": 81,
+  "options": 23,
+  "search_entries": 469,
+  "documents": {
+    "docs/index.md": {
+      "url": "/docs/reference/",
+      "sha256": "73663bfa5d26756abff1fd4351042f718323f6a438f849cbdf62c428365f0030"
+    },
+    "docs/agentic-evaluation.md": {
+      "url": "/docs/reference/agentic-evaluation/",
+      "sha256": "e2cf6ae5a994f82f91c5db7ac3496053001368e191178985ef6ef3240b5668af"
+    },
+    "docs/client-matrix.md": {
+      "url": "/docs/reference/client-matrix/",
+      "sha256": "e514cd10a7522f9cd021253044fc43a3a90b7edbf55153e17cde66aff8dcd2ff"
+    },
+    "docs/documentation-workflow.md": {
+      "url": "/docs/reference/documentation-workflow/",
+      "sha256": "44b31f771dd8ec09c060113753ae12afa9c172b141e5648180d897e7d71c6d8e"
+    },
+    "docs/feature-evidence.md": {
+      "url": "/docs/reference/feature-evidence/",
+      "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230"
+    },
+    "docs/for-ai-agents.md": {
+      "url": "/docs/reference/for-ai-agents/",
+      "sha256": "309b263d8793b413137db2b7523c83cc4bf185b281e47db78690398a932b206b"
+    },
+    "docs/gradle-plugin.md": {
+      "url": "/docs/reference/gradle-plugin/",
+      "sha256": "f9d90b25af37612c3ccd67eec304fa5b16bf1214145144767f8c9930391a3722"
+    },
+    "docs/installation.md": {
+      "url": "/docs/reference/installation/",
+      "sha256": "dea35d63da687ac96a365b33c58f562a9bb04a5c0edfae7e1e4d1c5eba4967bb"
+    },
+    "docs/maven.md": {
+      "url": "/docs/reference/maven/",
+      "sha256": "add2948b897fa6d3c634ce1b82f1bd29a9ab89fb5f0092605e137d85a3bde99f"
+    },
+    "docs/mcp-server.md": {
+      "url": "/docs/reference/mcp-server/",
+      "sha256": "95a3db37e97d86a2df5ba8296a73b2bee0469c039702275195eaebb0d95e5359"
+    },
+    "docs/product-reference.md": {
+      "url": "/docs/reference/product-reference/",
+      "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+    },
+    "docs/protocol.md": {
+      "url": "/docs/reference/protocol/",
+      "sha256": "5bf07c01d412c85f9c786f435d24c8c748b7a0b26432cf3b8dd241c7de1b6f9b"
+    },
+    "docs/publishing.md": {
+      "url": "/docs/reference/publishing/",
+      "sha256": "e7d78dd3cc5c8d0a8e44195d3188c4788f3d86864e2296955406c4c1b79d8a1a"
+    },
+    "docs/reload-support.md": {
+      "url": "/docs/reference/reload-support/",
+      "sha256": "96982fc4c6f98afd1663e6b3dc9cc8023df8cc93ca711c019dc94b3033faa0d4"
+    },
+    "docs/sap-commerce.md": {
+      "url": "/docs/reference/sap-commerce/",
+      "sha256": "c4c6834e0f493776da281afacdcd1d6f308e0b2fe6c6549fd533ebe6a8b365ec"
+    },
+    "docs/spring-boot-starter.md": {
+      "url": "/docs/reference/spring-boot-starter/",
+      "sha256": "e86560a730aa556033000477c27dccf7dfc202584449fa7a155da21823acc372"
+    },
+    "docs/spring-constructor-dependencies.md": {
+      "url": "/docs/reference/spring-constructor-dependencies/",
+      "sha256": "bb086b685a2ed864bae7ca267a81836489ef9d9b5cf0b2c52e4820fd38cda66f"
+    },
+    "docs/superclass-feasibility.md": {
+      "url": "/docs/reference/superclass-feasibility/",
+      "sha256": "c6d55bc0dcf25d4da95685211cd65c3a5c0148932378ba6192e2b55245c075a0"
+    },
+    "docs/test-guide.md": {
+      "url": "/docs/reference/test-guide/",
+      "sha256": "5c8b6324c4839d8a82385ca24f0b8f0fbf72a128882e5c0b3e2f13f7ad4e5c0c"
+    },
+    "docs/usage.md": {
+      "url": "/docs/reference/usage/",
+      "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+    }
+  },
+  "inputs": {
+    "README.md": "9fc35a893d11cfb122805c4c04086f0373bf33b0a41539829cbba7922bf29811",
+    "SECURITY.md": "b08bec95bf8b0adaddd4cf0ac79db4af40df8e619b16ec85d456b61ddedbeff1",
+    "docs/agentic-evaluation.md": "e2cf6ae5a994f82f91c5db7ac3496053001368e191178985ef6ef3240b5668af",
+    "docs/client-matrix.md": "e514cd10a7522f9cd021253044fc43a3a90b7edbf55153e17cde66aff8dcd2ff",
+    "docs/documentation-workflow.md": "44b31f771dd8ec09c060113753ae12afa9c172b141e5648180d897e7d71c6d8e",
+    "docs/feature-evidence/p1-core-cells.txt": "575d52ccbfc238839d45d29c04985e6c68a23e7a47b178a3e4de9033c009fe93",
+    "docs/feature-evidence/p1-core.json": "0ffcb089ea1dcfb03802847138b3c57576f439e5ee7967d3c8e3ed54fdd56d5c",
+    "docs/feature-evidence/p2-cells.txt": "7eeb6cc761d148219731b2c0792b3e482e68ea69f9050998fc3d9e54d7227718",
+    "docs/feature-evidence/p2-ordinary-spring.json": "5b35ec7cfbb3b052c18964ce0f7a9ae65e3ddfb61e883b546ec11576e196670b",
+    "docs/feature-evidence/p3a-cells.txt": "e72efab0ab839957d99433f2bf8b5729ec495738f0fd068f48af7901132e811c",
+    "docs/feature-evidence/p3a-web-hardening.json": "2a6a9f55d555e703bdcd0bd22586b26dc989046a583e03b03f8c9fab1cc1758a",
+    "docs/feature-evidence/p3b-cells.txt": "3f57dae80aaf7eb6ecf4a65fa301a978fea779048a32a036215cd88e6ebd255c",
+    "docs/feature-evidence/p3b-mvc-web.json": "5ebae2a9209f36f45bd686070bf645c2ca930e03738939dbc71f78e838ecafad",
+    "docs/feature-evidence/p3c-callbacks-data.json": "f640cfcb9a862cadefd58e32db6e33d379611c30ac4b68a2b8d6eb5a92d4be88",
+    "docs/feature-evidence/p3c-cells.txt": "3833578e21aafe8faee2a4018fe3a6f315c7bed273b26aa82e7e1ccd9797f69b",
+    "docs/feature-evidence/p4-cells.txt": "aa5d9b5768f8a88403e6497eb1f384b479b512b0de42f13659ecfcbd06b94208",
+    "docs/feature-evidence/p4-messaging.json": "f0070a3977f86959cc8632c9537630af63965248438f2b7b71bcdf96f9f9274b",
+    "docs/feature-evidence/p5-cells.txt": "4c79d2056e3ae53dbfe61f3edddd02d526090d380e9d39671bb2a4c9a334368c",
+    "docs/feature-evidence/p5-resources.json": "32ece8e9f130c78b5609570c1752a74514db7a72ce4202c27c72f29e332d7c6e",
+    "docs/feature-evidence/reflection-jackson-candidate.json": "6a98e4075c0c34199bf285fa9c8c8f94990cb9f03915820d58a560863a578331",
+    "docs/feature-evidence.md": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+    "docs/for-ai-agents.md": "309b263d8793b413137db2b7523c83cc4bf185b281e47db78690398a932b206b",
+    "docs/gradle-plugin.md": "f9d90b25af37612c3ccd67eec304fa5b16bf1214145144767f8c9930391a3722",
+    "docs/index.md": "73663bfa5d26756abff1fd4351042f718323f6a438f849cbdf62c428365f0030",
+    "docs/installation.md": "dea35d63da687ac96a365b33c58f562a9bb04a5c0edfae7e1e4d1c5eba4967bb",
+    "docs/maven.md": "add2948b897fa6d3c634ce1b82f1bd29a9ab89fb5f0092605e137d85a3bde99f",
+    "docs/mcp-server.md": "95a3db37e97d86a2df5ba8296a73b2bee0469c039702275195eaebb0d95e5359",
+    "docs/product-reference.md": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+    "docs/protocol.md": "5bf07c01d412c85f9c786f435d24c8c748b7a0b26432cf3b8dd241c7de1b6f9b",
+    "docs/publishing.md": "e7d78dd3cc5c8d0a8e44195d3188c4788f3d86864e2296955406c4c1b79d8a1a",
+    "docs/reload-support.md": "96982fc4c6f98afd1663e6b3dc9cc8023df8cc93ca711c019dc94b3033faa0d4",
+    "docs/sap-commerce.md": "c4c6834e0f493776da281afacdcd1d6f308e0b2fe6c6549fd533ebe6a8b365ec",
+    "docs/site/boundaries.html": "9ee7a573ccea480fba68f3b9d477bc693e217a2c07ed20f350a8fb787d1db658",
+    "docs/site/configuration-reference.html": "1c3b2696d15324320a0d562837572f1b95fe6b6b6fe21631fe48241a22ff058a",
+    "docs/site/configuration.html": "183373c11f7f8171e1d2170c95efaad62598973e9ce38011a586c7228b1f37ce",
+    "docs/site/evidence.html": "6e86bfd5b86de3fe1cc3ec05e999e95207d33b5f15e4d84b5518e07a96fdf9c3",
+    "docs/site/java.html": "b6a2736674e3274cf463af600397ff33fa4be1f63ac1713da5014875d90b1cc5",
+    "docs/site/manifest.json": "f1aecd020965be5365f17e2695dc036dcfc8858d09ab3fc2be3bdd44cc84fbf9",
+    "docs/site/messaging.html": "f1ff82aecc34698677a399c198b1f301ff7d01b5efe4f5c9a7c80571053a7f10",
+    "docs/site/overview.html": "b277dc8fe0c1cc212a0f2bc9a041dbf7cad7f8b334c77bbbe1a94a0d5afc4f86",
+    "docs/site/persistence.html": "f72ce073837d8623190b317c6cf3370826f8832475360c91d20c6b6b7b785610",
+    "docs/site/quickstart.html": "00f6ada4b08baf812ca943dab83fa2547a2b0076a0cb3126928b5690937e5d56",
+    "docs/site/sap-commerce.html": "186c66485017e064ace25d84278e86ce21c7fb1a7d8300b9d5d51d158ec7ca50",
+    "docs/site/spring.html": "93de90926d016c35bd10ae00ee887a4f64df64175a450bfb369fba5819b2548a",
+    "docs/site/support-matrix.html": "46c601bf0348ddab646a1e34c30d1e1dae1dc7ee5444acf04b54a2d64a0b3e72",
+    "docs/site/troubleshooting.html": "116e49dd707ea821c87c2fe8a98db1daab2dad8638c0ca8cf57f8748b393cc77",
+    "docs/spring-boot-starter.md": "e86560a730aa556033000477c27dccf7dfc202584449fa7a155da21823acc372",
+    "docs/spring-constructor-dependencies.md": "bb086b685a2ed864bae7ca267a81836489ef9d9b5cf0b2c52e4820fd38cda66f",
+    "docs/superclass-feasibility.md": "c6d55bc0dcf25d4da95685211cd65c3a5c0148932378ba6192e2b55245c075a0",
+    "docs/test-guide.md": "5c8b6324c4839d8a82385ca24f0b8f0fbf72a128882e5c0b3e2f13f7ad4e5c0c",
+    "docs/usage.md": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+    "gradle.properties": "4a84f3738f896ac252d70738a4c54134a99067555317279e89d4f0be3b907028",
+    "requirements-docs.txt": "cb5264b274f45a2b3e2e5b0227ee9b5390f8638440a4e6afcfeee71956957fb1",
+    "website/__init__.py": "cfe645b62ef93ae19a774be733a803c255af200e2ac11a5ccfdca3e73c1cb96a",
+    "website/build.py": "c7b71575337b41c006f72622fe2d1961f32852e43f0eca7894f815996db8b35e",
+    "website/check.py": "5b097f5184b6dcc8b0c6a0b6a392d7ee8f211644c091ac8863d93e339d076457",
+    "website/content.py": "051e5941d10e9eb0241d07814d2979819563839c9da0b716173084f8173824ec",
+    "website/layout.py": "98d2eefcfb3984705282afbf2fbd7758e442327b93f7cb6797db7e7566d408a7",
+    "website/markdown.py": "49ef91e2ea0d9f5965c6cf0ea3c0cbbf4aeb25bbd8911c1e5193c0a7eb1f7535",
+    "website/static/.nojekyll": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "website/static/CNAME": "57c49c024d1a0c357f44d49aa1ec13b17c9629a2027e06054ac4e4f0da8344a4",
+    "website/static/apple-touch-icon.png": "d627c45173d68d3b89c26cd88c760a23f123870a065625616dc342d48a859508",
+    "website/static/assets/home.js": "106da8ec05512cef99cede006bae4e98332c98e8776df3302f03fd5c29b1cc55",
+    "website/static/assets/marketing.css": "77c4ffdddffeaaf43696b550bca1b7e222fe536d8930b1ac2eb949b9adc07860",
+    "website/static/assets/site.css": "bf46d1bfd37d8e602f8ae751f1b470b9ff44d3ea4eaa5d2ade76d2749bf04341",
+    "website/static/assets/site.js": "cab0abf769a2f4298c7f59cf28b9211b5a307d3aa42de590857e81b0d9376100",
+    "website/static/compare/index.html": "7ffbb51363fdd15813d5c386eab7d200d0c1a274e8fe8c402ecd4e493d90568d",
+    "website/static/docs/assets/docs.css": "ac0306ffe52f8d01e231a44f889347d3921c8dfa6025e191c58d3575a2cc9592",
+    "website/static/docs/assets/docs.js": "bd702e25fabdaf6dd6e3146f784bc06ad72df334858f316628ecd7e64dbf3200",
+    "website/static/docs/assets/theme.js": "44ab3cc4ede71a386a9f29f8681878ecd3166728a0f4f73a875f4bc25385fe4f",
+    "website/static/favicon.svg": "313c0b75d93f8ef79f69c56f7ebcf784485b304fdd4456b2e4166542b3c49917",
+    "website/static/index.html": "0b2b7cd42da52591e549ba59a8fdf14bab55b7787903be61777cb0ec781b4d62",
+    "website/static/license/index.html": "54fa4f24e9266238da701779e554b0ad1bdaa54cbc4b79ba807ca5440aa59d0b",
+    "website/static/og-image.png": "c6a29a01302e81d76129a8470b7fceb147f462e77b200dde22846cc28ef3912c",
+    "website/static/privacy/index.html": "15b4df8f13717f20276aaad342ff690dc4649a018600972318be440e53b5aa77",
+    "website/static/robots.txt": "40ca653d9b2fd250a245e355c966d35aa34354f39d14bc48775bb2bde7c44360",
+    "website/static/site.webmanifest": "f6d17669b4cc935a10fc98ccb22cbc0a9be613a84a119f47c5061d1b611f2c63",
+    "website/static/sitemap.xml": "f33d0aa4872b2314985ef8d7018dbc38e1e8c622d609de0c0643d51d885a7652"
+  }
+}

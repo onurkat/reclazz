@@ -24,4 +24,37 @@
         <changefreq>yearly</changefreq>
         <priority>0.3</priority>
     </url>
+    <url><loc>https://reclazz.com/docs/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+    <url><loc>https://reclazz.com/docs/quickstart/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/support-matrix/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/java/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/spring/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/messaging/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/configuration/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/sap-commerce/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/persistence/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/boundaries/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/configuration-reference/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/troubleshooting/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/evidence/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/agentic-evaluation/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/client-matrix/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/documentation-workflow/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/feature-evidence/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/for-ai-agents/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/gradle-plugin/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/installation/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/maven/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/mcp-server/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/product-reference/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/protocol/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/publishing/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/reload-support/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/sap-commerce/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/spring-boot-starter/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/spring-constructor-dependencies/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/superclass-feasibility/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/test-guide/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+    <url><loc>https://reclazz.com/docs/reference/usage/</loc><lastmod>2026-10-19</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
 </urlset>

@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reclazz MCP server | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: Reclazz MCP server.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/mcp-server/">
+<meta property="og:type" content="article"><meta property="og:title" content="Reclazz MCP server | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: Reclazz MCP server."><meta property="og:url" content="https://reclazz.com/docs/reference/mcp-server/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=ac0306ffe52f"><link rel="stylesheet" href="/assets/site.css?v=bf46d1bfd37d">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Reclazz MCP server", "description": "Complete configuration, behavior and scope reference: Reclazz MCP server.", "url": "https://reclazz.com/docs/reference/mcp-server/", "dateModified": "2026-10-19", "version": "1.4.0"}</script>
+</head>
+<body class="">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="reclazz-mcp-server">Reclazz MCP server</h1><div class="reference-content"><p>An <a href="https://modelcontextprotocol.io">MCP</a> server that turns the running Reclazz
+agent into tools a coding agent can call: check whether Reclazz is attached,
+nudge a scan after a build, ask what still needs a restart, or diagnose why a
+class did not reload. It is a thin, loopback-only client of the agent's status
+socket and asks the agent nothing beyond its own state.</p>
+<p>It lives in <code>:mcp-server</code>, not the agent jar, because the agent's own tests
+forbid the shipped agent from opening a client socket.</p>
+<p>The <a href="/docs/reference/client-matrix/">client acceptance matrix</a> records independent SDK,
+real build-tool and OS coverage, with runnable tests and explicit untested lanes.</p>
+<h2 id="running-it">Running it</h2>
+<p>The server requires Java 17 or newer and speaks JSON-RPC over stdio. It is a
+standalone jar containing its runtime dependencies; it does not need IntelliJ,
+Gradle or a separately installed Gson at runtime.</p>
+<h3 id="build-and-install-locally">Build and install locally</h3>
+<p>From a source checkout, build matching agent/MCP jars and test the MCP package:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>./gradlew :agent:shadowJar :mcp-server:test :mcp-server:mcpRelease
+version=$(sed -n &#x27;s/^pluginVersion=//p&#x27; gradle.properties)
+install_dir=&quot;$HOME/.local/share/reclazz/$version&quot;
+mkdir -p &quot;$install_dir&quot;
+cp &quot;mcp-server/build/distributions/mcp/reclazz-mcp-$version.jar&quot; \
+   &quot;mcp-server/build/distributions/mcp/reclazz-mcp-$version.jar.sha256&quot; &quot;$install_dir/&quot;
+(cd &quot;$install_dir&quot; &amp;&amp; shasum -a 256 -c &quot;reclazz-mcp-$version.jar.sha256&quot;)
+</code></pre></div>
+<p>These are macOS/Linux shell commands; Linux can use <code>sha256sum -c</code> in place of
+<code>shasum -a 256 -c</code>. On Windows copy the same two files to a permanent directory
+and compare the SHA-256 from <a href="https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/get-filehash?view=powershell-5.1">Get-FileHash</a>
+with the first field of the sidecar (ignoring hex letter case). The sidecar names only the jar, so relocation is supported.
+Stop on a checksum mismatch. This stages/installs local files; it does not publish.</p>
+<h3 id="release-assets">Release assets</h3>
+<p>The updated tag workflow will attach <code>reclazz-mcp-X.Y.Z.jar</code> and
+<code>reclazz-mcp-X.Y.Z.jar.sha256</code> to future GitHub releases, next to the matching
+agent jar. <strong>This change is unreleased; it does not add MCP assets to existing
+releases.</strong> When a release contains these assets, download both from that same
+tag, put them together in a permanent directory and verify the checksum as above.
+Use matching agent and MCP builds for BUILD/VERIFY support. A checksum detects
+file corruption; it is not a signature or proof of publisher identity.</p>
+<h3 id="configure-a-stdio-client">Configure a stdio client</h3>
+<p>For clients using an <code>mcpServers</code> JSON configuration, merge this entry into their
+existing configuration. Replace the example paths and <code>X.Y.Z</code>; use the absolute
+path to your Java 17+ executable if the client cannot find <code>java</code> on its PATH:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;reclazz&quot;: {
+      &quot;command&quot;: &quot;/absolute/path/to/java&quot;,
+      &quot;args&quot;: [&quot;-jar&quot;, &quot;/absolute/path/to/reclazz-mcp-X.Y.Z.jar&quot;,
+               &quot;--project-dir&quot;, &quot;/absolute/path/to/project&quot;]
+    }
+  }
+}
+</code></pre></div>
+<p>Keep each argument separate, even for paths with spaces. Do not include shell
+quotes inside the JSON strings. On Windows use escaped backslashes or forward
+slashes (for example <code>C:/Tools/Reclazz/reclazz-mcp-X.Y.Z.jar</code>). Client-specific
+configuration file locations vary; this entry does not modify them automatically.
+Clients with another configuration format need the same executable and arguments.
+Restart/reconnect the MCP client after changing the entry.</p>
+<p>The application must separately run with the Reclazz agent attached. The
+<code>--project-dir</code> option makes startup independent of the client's working
+directory. Discovery checks only that directory's <code>.reclazz/agent.port</code> and
+<code>.idea/reclazz/agent.port</code>, in that order. For a custom port file, also add
+<code>&quot;--port-file&quot;, &quot;relative/or/absolute/agent.port&quot;</code> to the argument array.
+The port file may be absent at startup; the application can create it later.
+An absent, unreadable, malformed or unreachable explicit target never causes
+fallback to a different file or project.</p>
+<h3 id="target-selection-and-overrides">Target selection and overrides</h3>
+<p>Startup accepts only <code>--project-dir PATH</code>, <code>--port-file PATH</code>, or <code>--help</code>.
+Unknown/duplicate options and missing/blank/invalid values fail before stdio
+starts (exit2, stderr only). The selected project must be an existing directory.
+Help writes usage to stderr and exits0. There is no shared configuration file,
+process search, parent-directory search or machine-global default.</p>
+<p>Relative startup project paths resolve from the MCP process's startup directory.
+A relative startup port file resolves from the selected project, or that startup
+directory when no project is selected. Each server keeps its own defaults.
+Per-tool selection works as follows:</p>
+<ul>
+<li><code>projectDir</code> overrides the project for that call; relative values resolve from
+the startup project/directory. It resets the startup port-file default, so
+project-only overrides discover the new project's own files.</li>
+<li>Per-call <code>port</code>, then <code>portFile</code>, then <code>hybrisHome</code> take precedence over the
+startup port file. Relative <code>portFile</code>/<code>hybrisHome</code> paths use the effective
+project directory. An explicit <code>hybrisHome</code> uses only its <code>.reclazz/agent.port</code>;
+absence does not fall back to the project/client directory.</li>
+<li>Overrides affect only that call. Invalid input does not retry against defaults.
+A call selecting another project's port must also select its <code>projectDir</code>
+when a startup project is configured.</li>
+</ul>
+<p>An <strong>explicit project</strong> opts into a launch-directory check: on the same agent
+connection, before the requested command, MCP requires a valid correlated
+DOCTOR result whose canonical absolute <code>workingDirectory</code> equals or is below
+that project. Missing/unsupported/malformed evidence, a relative working
+directory or another project's directory fails closed. This also applies to
+status and batch verification. It prevents a stale port pointing to an agent
+launched outside the selected tree from receiving BUILD/SCAN/reload commands.</p>
+<p>Working directory is not proof of repository root, watched-output coverage or
+which of two JVMs launched in the same project is intended. Inspect DOCTOR PID,
+session and watch evidence for those distinctions. If the application launches
+outside its project tree, use explicit <code>--port-file</code> alone (or per-call <code>portFile</code>)
+without project selection; this selects an endpoint but does <strong>not</strong> validate its
+project. No-argument startup retains discovery within the startup working
+directory and has no project check. Old agents without DOCTOR cannot satisfy an
+explicit project check; use matching agent/MCP builds.</p>
+<h3 id="smoke-check-without-an-attached-application">Smoke check without an attached application</h3>
+<p>Set <code>MCP_JAR</code> to the absolute installed jar path and run in a macOS/Linux shell:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>printf &#x27;%s\n&#x27; \
+  &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:1,&quot;method&quot;:&quot;initialize&quot;,&quot;params&quot;:{&quot;protocolVersion&quot;:&quot;2024-11-05&quot;}}&#x27; \
+  &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/initialized&quot;}&#x27; \
+  &#x27;{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;id&quot;:2,&quot;method&quot;:&quot;tools/list&quot;}&#x27; \
+  | java -jar &quot;$MCP_JAR&quot;
+</code></pre></div>
+<p>Expect two JSON response lines: initialization reports <code>reclazz-mcp</code> and the
+jar's version; the tools list contains the nine tools below. The notification
+has no response. EOF closes the server. If Java cannot open the jar, check the
+absolute path; if it cannot load its classes, use the packaged jar from
+<code>build/distributions/mcp</code>, not the plain development jar. A missing attached
+application is a separate condition: <code>reclazz_status</code> reports <code>attached:false</code>.</p>
+<h2 id="tools">Tools</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reclazz_doctor</code></td>
+<td>Read correlated target JVM, session, live watch registration and capability evidence, with next checks</td>
+</tr>
+<tr>
+<td><code>reclazz_status</code></td>
+<td>Whether the agent is attached and how it is doing (reloads, failures, latency, watched directories), as JSON</td>
+</tr>
+<tr>
+<td><code>reclazz_build</code></td>
+<td>Signal <code>started</code>, <code>ok</code> or <code>failed</code>; waits for the agent to acknowledge the signal, and returns a tool error if unconfirmed</td>
+</tr>
+<tr>
+<td><code>reclazz_verify_batch</code></td>
+<td>Read 1–32 unique class/hash pairs on one connection within a total timeout; cancellable through stdio</td>
+</tr>
+<tr>
+<td><code>reclazz_verify</code></td>
+<td>Structured exact-byte reload receipt; requires <code>className</code> and lower-case <code>sha256</code>; only <code>status:applied</code> is success</td>
+</tr>
+<tr>
+<td><code>reclazz_scan</code></td>
+<td>Ask the agent to look at the watched directories now and reload changed classes, instead of waiting for its next poll</td>
+</tr>
+<tr>
+<td><code>reclazz_pending</code></td>
+<td>Restart-required changes plus manual-pause and pending counts</td>
+</tr>
+<tr>
+<td><code>reclazz_reload_control</code></td>
+<td>Pause/resume automatic reload admission or inspect its state; never releases BUILD holds</td>
+</tr>
+<tr>
+<td><code>reclazz_diagnose</code></td>
+<td>Why a given class did or did not reload last time (requires <code>className</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Each tool accepts optional <code>projectDir</code>, <code>portFile</code>, <code>port</code> and <code>hybrisHome</code> arguments to
+locate the agent; <code>reclazz_diagnose</code> also requires <code>className</code>.</p>
+<h2 id="tool-execution-errors">Tool execution errors</h2>
+<p><code>reclazz_scan</code>, <code>reclazz_pending</code> and <code>reclazz_diagnose</code> return <code>isError:true</code>
+with a text explanation when the agent cannot be reached or its handshake is
+invalid. Before sending a command, the client requires a JSON <code>CONNECTED</code> event
+with numeric status-socket <code>version:1</code> and a nonblank string <code>agent</code> release.
+Malformed or unsupported handshakes do not terminate the MCP stdio session.</p>
+<p>Pending/diagnose also return a tool error if the connection fails, a diagnostic
+response is malformed, or no <code>INFO</code> answer arrives before disconnect/timeout.
+Silence does not mean nothing needs a restart or no diagnosis exists. An explicit
+empty-ledger answer from the agent remains a successful result. Invalid tool
+arguments still return a JSON-RPC error rather than a tool execution result.</p>
+<p><code>reclazz_status</code> remains an attachment diagnostic: <code>attached:false</code> is a
+successful observation. If the handshake succeeds but health cannot be read,
+it reports <code>attached:true</code> with a <code>reason</code> describing the missing health data.</p>
+<p>SCAN has no acknowledgement in the status-socket protocol. Its <code>isError:false</code>
+means the command was written to a validated connection; acceptance and reload
+completion are unconfirmed. Use <code>reclazz_verify</code> for exact-byte reload evidence.
+The legacy pending/diagnose <code>INFO</code> stream is broadcast and has no request ID or
+end marker. Collected lines are diagnostic observations, not proof that the
+entire response was received or that every line belongs to this request.</p>
+<h2 id="protocol-version-negotiation">Protocol version negotiation</h2>
+<p>The server supports <code>2025-06-18</code> and <code>2024-11-05</code>. Send a nonblank string
+<code>params.protocolVersion</code> with <code>initialize</code>; a missing, blank or non-string version
+returns JSON-RPC <code>-32602</code>. Either supported requested version is returned unchanged.
+Any other nonblank version receives <code>2025-06-18</code> as the supported alternative;
+the server does not echo arbitrary versions. The selected version belongs to that
+stdio session. An invalid initialization request does not change it.</p>
+<p>Following the <a href="https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#version-negotiation">MCP version negotiation rule</a>,
+a client that supports the returned version sends <code>notifications/initialized</code>
+and continues. A client that cannot support it should disconnect. This server
+advertises tools only. It does not implement HTTP transport, resources, prompts,
+sampling or elicitation. Full initialization-order enforcement is not added here;
+for compatibility, direct calls before initialization retain the legacy format.</p>
+<h2 id="structured-tool-contracts">Structured tool contracts</h2>
+<p>Sessions negotiating <code>2025-06-18</code> receive <code>outputSchema</code> and <code>annotations</code> from
+<code>tools/list</code>. Every tool execution result, including <code>isError:true</code>, has a JSON
+object in <code>structuredContent</code> and the identical serialized JSON in its text
+content block. Invalid requests/arguments remain JSON-RPC errors without a tool
+result. Explicit <code>2024-11-05</code> sessions retain the existing text results and omit
+these newer fields.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Structured result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>reclazz_doctor</code></td>
+<td><code>status:observed</code> with JVM/watch/capability evidence, or <code>unavailable</code>; separate <code>clientWorkingDirectory</code>, <code>nextActions</code>, <code>reloadConfirmed:false</code></td>
+</tr>
+<tr>
+<td><code>reclazz_reload_control</code></td>
+<td><code>status:acknowledged</code> with <code>action</code>, <code>paused</code>, pending counts and <code>buildHold</code>, or <code>unavailable</code>; <code>reloadConfirmed:false</code></td>
+</tr>
+<tr>
+<td><code>reclazz_status</code></td>
+<td>Existing <code>attached</code>, optional <code>agent</code>, <code>protocol</code>, <code>port</code>, <code>health</code>, <code>reason</code> fields</td>
+</tr>
+<tr>
+<td><code>reclazz_scan</code></td>
+<td><code>status:sent</code> or <code>unavailable</code>, <code>detail</code>, <code>reloadConfirmed:false</code></td>
+</tr>
+<tr>
+<td><code>reclazz_build</code></td>
+<td><code>status:acknowledged</code> or <code>unavailable</code>, requested <code>state</code> and <code>owner</code>, <code>detail</code>, <code>reloadConfirmed:false</code></td>
+</tr>
+<tr>
+<td><code>reclazz_pending</code></td>
+<td><code>status:observed</code> or <code>unavailable</code>, <code>lines</code>, <code>detail</code>, <code>complete:false</code></td>
+</tr>
+<tr>
+<td><code>reclazz_diagnose</code></td>
+<td>Same diagnostic fields plus requested <code>className</code></td>
+</tr>
+<tr>
+<td><code>reclazz_verify_batch</code></td>
+<td><code>status:applied</code>, <code>incomplete</code> or <code>unavailable</code>; ordered <code>results</code>, <code>requestedCount</code>, <code>sessionId</code>, <code>allApplied</code>, <code>atomic:false</code>, <code>reloadConfirmed:false</code></td>
+</tr>
+<tr>
+<td><code>reclazz_verify</code></td>
+<td>Existing correlated receipt fields; <code>status:applied</code> alone is success, or the existing <code>unavailable</code> failure object</td>
+</tr>
+</tbody>
+</table></div>
+<p><code>sent</code> confirms a socket write, <code>acknowledged</code> confirms the BUILD signal, and
+<code>observed</code> describes collected diagnostic lines. None proves reload completion.
+The diagnostic <code>complete:false</code> reflects the lack of a response end marker in
+the broadcast stream. VERIFY preserves its exact-byte checks, and application
+behavior still needs its own test.</p>
+<p>Status, doctor, pending, diagnose, verify and verify-batch advertise <code>readOnlyHint:true</code> and
+<code>openWorldHint:false</code>. Scan, build and reload-control advertise <code>readOnlyHint:false</code>,
+<code>destructiveHint:true</code>, <code>idempotentHint:false</code> and <code>openWorldHint:true</code>: live
+reload can replace behavior and invoke application callbacks with external
+effects. These conservative hints are metadata, not permission or safety proof.</p>
+<p>The schemas use JSON Schema 2020-12. The contract tests export real responses to
+<code>mcp-server/build/tool-contract-fixtures</code>. An independent check can be run with
+an existing Python <code>jsonschema</code> 4.x installation after the tests:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>./gradlew :mcp-server:test --rerun
+python3 mcp-server/src/test/python/check_tool_contracts.py
+</code></pre></div>
+<p>The Python checker validates the schemas, successful and failed results, and
+rejects deliberate missing fields, wrong types, invalid statuses and invented
+completion flags. It is an optional development check, not a runtime dependency.</p>
+<h2 id="input-validation">Input validation</h2>
+<p>Each stdio line carries one JSON-RPC 2.0 object. Requests have a string method,
+a string or integer ID (not null), and optional object params. Notifications
+have no ID and receive no response. Batch arrays are not supported by this server.
+Malformed JSON returns <code>-32700</code>, invalid request envelopes return <code>-32600</code>, and
+invalid method/tool parameters return <code>-32602</code>. When an ID cannot be determined,
+the error has <code>id:null</code>. The process continues reading subsequent lines.</p>
+<p>Frames are limited to 65,536 Java characters, excluding the newline; an oversized
+line is drained and rejected before the next line is read. Known tool arguments
+must be strings, at most 4,096 Java characters, without control characters.
+<code>className</code> for diagnose/verify must be a binary Java name of at most 256
+characters (Unicode identifiers and <code>$</code> inner classes are supported).
+<code>timeoutMs</code> is an integer string in 1–60,000, with defaults of 5,000 for
+build/verify and 2,000 for other tools. Paths with spaces are supported.
+Invalid numeric ports produce tool errors for scan/pending/diagnose; status
+reports them as <code>attached:false</code>.</p>
+<p>Diagnose rejects invalid names before connecting. The socket writer additionally
+rejects commands containing control characters or exceeding 512 Java characters,
+so a supplied name cannot insert a second line command.</p>
+<h2 id="what-it-does-not-do">What it does not do</h2>
+<p>It opens one connection, to <code>127.0.0.1</code>, to the agent already running on this
+machine. It sends no telemetry and reaches nothing off the machine, the same
+promise the agent itself keeps.</p>
+<h2 id="protecting-terminal-builds">Protecting terminal builds</h2>
+<p>Build the current agent and MCP jars together from this source tree:
+<code>./gradlew :agent:shadowJar :mcp-server:shadowJar</code>. This receipt protocol is new;
+it is not a promise that an older published agent supports it. Attach the built
+agent to your development app and use the resulting MCP jar as <code>MCP_JAR</code> below.
+From the consuming project's directory, wrap the whole compile command:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>java -cp &quot;$MCP_JAR&quot; com.onurkat.reclazz.mcp.BuildMain \
+  --port-file .reclazz/agent.port -- ./gradlew classes
+
+java -cp &quot;$MCP_JAR&quot; com.onurkat.reclazz.mcp.BuildMain \
+  --port-file .reclazz/agent.port -- mvn compile
+</code></pre></div>
+<p><code>--port N</code> selects an explicit loopback port instead. With neither option, the
+usual port files are located in the current directory. <code>--timeout-ms N</code> changes
+the receipt timeout (default 5000; range 1–60000). Command arguments after <code>--</code>
+are passed directly, without a shell. Quote paths containing spaces. On Windows,
+use your command interpreter explicitly for <code>.bat</code>/<code>.cmd</code> build launchers.</p>
+<p>The wrapper generates a unique owner token and prints it to stderr before
+connecting. Retain that token: <code>--owner TOKEN</code> reuses it for recovery after a
+failed or disconnected build. Owner tokens are 1–64 ASCII letters, digits,
+underscores or hyphens. A fresh token cannot take another outstanding hold.
+The wrapper waits for an owner-correlated <code>started</code> receipt before launching the command.
+It sends <code>ok</code> only after exit zero, and <code>failed</code> after a nonzero exit, launch
+failure or interruption. A lost connection is never replaced mid-build. A
+missing agent or missing start receipt prevents compilation; an unconfirmed
+finish returns nonzero. A confirmed finish preserves the command's exit code.
+The app keeps running. Class output from a failed build stays held until a
+subsequent successful build by the same owner. If the wrapper is killed, the
+installed hold stays in place. Run another complete wrapped build with the
+printed <code>--owner TOKEN</code> to recover; do not send ok merely
+to clear the warning. A lost ok receipt leaves an uncertain result, not proof
+that no reload occurred.</p>
+<p>Different named owners and unowned IDE commands cannot change an owned hold.
+A named start cannot take an active legacy hold. Ownership releases after
+successful output capture, asynchronously after the ok receipt. Lost owner
+tokens require an application/agent restart; no timeout or force unlock exists.
+Tokens identify cooperating builds; they are not authentication and cannot
+protect output from a compiler that bypasses the hold. Use a unique token for
+each independent build and retain it until recovery is complete.
+Use compile-only commands, not long-running <code>bootRun</code>/<code>spring-boot:run</code>. Normal
+unwrapped builds retain legacy behavior. The Gradle/Maven attachment plugins
+do not install this wrapper automatically. Receipt confirms the build signal,
+not completion of live reload; exercise the endpoint/test to verify behavior.</p>
+<h2 id="protecting-a-build-through-mcp">Protecting a build through MCP</h2>
+<p>For a client that launches its own compiler, call <code>reclazz_build</code> with
+<code>{&quot;state&quot;:&quot;started&quot;,&quot;owner&quot;:&quot;build-unique-id&quot;,&quot;portFile&quot;:&quot;/absolute/path/.reclazz/agent.port&quot;}</code> and
+require <code>isError:false</code> <strong>before</strong> launching compilation. Afterwards call the
+same tool against the same running agent with the same <code>owner</code> and <code>state:&quot;ok&quot;</code> only for exit zero,
+or <code>state:&quot;failed&quot;</code> for failure/cancellation. Do not restart the app or run
+another builder between those calls. If the target changes, stop the sequence;
+the terminal wrapper is preferable when one persistent connection is required.
+<code>reclazz_scan</code> alone provides no failed-build protection and cannot release a
+hold. The MCP server signals states; it does not launch arbitrary build commands
+or place compiler output into its JSON-RPC stream. The caller must choose and
+retain a unique owner; it is required in both supported MCP protocol versions.
+Missing or malformed owner is an invalid argument. Ownership rejection or an
+old/wrong-owner receipt is a tool error. Use the retained owner for started,
+failed and successful recovery; a disconnected MCP call does not release it.</p>
+<h2 id="verifying-the-compiled-change">Verifying the compiled change</h2>
+<p>For a concrete first installation, use the <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/examples/maven-spring-boot/README.md#verify-the-installation">Maven verification recipe</a>:
+it combines DOCTOR identity, class-file hashing, this receipt and an observable
+response, with next steps for wrong targets, stale sessions and unwatched output.</p>
+<p>Build and attach matching current agent/MCP jars; older published agents may not
+support this tool's socket command. After a successful protected compilation,
+compute SHA-256 of each changed <code>.class</code> file and call <code>reclazz_verify</code> with its
+binary name (<code>com.acme.OrderService</code>, or <code>com.acme.OrderService$Nested</code>), <code>sha256</code>,
+and the same <code>portFile</code>/<code>port</code> used for the build. It returns JSON text with
+requestId, sessionId, className, expectedSha256, observedSha256, status, source,
+detail and completedAt. Request IDs are generated and checked by the MCP client.</p>
+<p>Require <code>isError:false</code> and <code>status:&quot;applied&quot;</code>, matching both hashes. All other
+states have <code>isError:true</code>: <code>running</code>, <code>not_observed</code>, <code>mismatch</code>, <code>failed</code> or
+<code>unverified</code>. Read the detail and poll with a bounded deadline for asynchronous
+completion; do not infer success from an increasing global counter. Connection,
+timeout and malformed-receipt failures return <code>status:&quot;unavailable&quot;</code> and
+<code>isError:true</code>. Bad input returns JSON-RPC invalid params. Optional string
+<code>timeoutMs</code> bounds each socket request (default 5000, range 1–60000).</p>
+<p>A fresh session ID invalidates assumptions from the earlier app. The receipt is
+bounded, latest-only evidence that the exact captured bytes finished the reload
+batch, including deferred refresh; it is not a build job ID or an atomic result
+for several classes. Warnings, ambiguous classloaders and never-loaded classes
+cannot produce a positive receipt. See <a href="/docs/reference/protocol/#verifying-exact-compiled-bytes">the receipt contract</a>.
+After verifying the relevant classes, exercise the live endpoint or test to
+prove the intended application behavior.</p>
+<h2 id="check-the-target-before-an-agentic-build">Check the target before an agentic build</h2>
+<p>Call <code>reclazz_doctor</code> using the same endpoint arguments as the other tools.
+Its default timeout is 5000 ms. The tool reads one correlated DOCTOR response and
+validates its types and bounds. Missing, old, malformed, oversized or uncorrelated
+responses produce <code>isError:true</code>, <code>status:unavailable</code>; capability support remains
+unknown. Both supported MCP versions receive JSON text; 2025-06-18 also receives
+the identical object as structured content.</p>
+<p>Compare the target <code>pid</code>, <code>workingDirectory</code> and <code>sessionId</code> against the application
+intended for the build. <code>clientWorkingDirectory</code> belongs to the MCP process;
+neither directory is an inferred repository root. <code>sessionId</code> matches VERIFY for
+this agent instance. Capability booleans reflect installed handlers; observation
+can legitimately show incomplete startup. <code>watcherState</code>, live directory count,
+refused registration count and a bounded path sample expose watcher evidence.
+<code>watchSampleTruncated:true</code> means absence from the sample proves nothing about
+coverage. The sample can include source and resource watches too.</p>
+<p>Follow <code>nextActions</code> to inspect startup, output paths or a held build. <code>buildHold</code>
+reports only the kind of hold, never its owner token, and doctor cannot release it.
+Even a successful <code>status:observed</code> reports <code>reloadConfirmed:false</code>; follow the
+owned-build, exact-byte VERIFY and application behavior checks for actual proof.</p>
+<h2 id="bounded-batch-verification-and-cancellation">Bounded batch verification and cancellation</h2>
+<p><code>reclazz_verify_batch</code> takes <code>items</code>, an array of 1–32 objects containing only
+<code>className</code> and lower-case <code>sha256</code>. Class names must be unique and follow the
+single-VERIFY rules. The complete array is validated before opening a connection.
+Endpoint arguments remain the same. <code>timeoutMs</code> is a string from 1 to 60000,
+default <code>&quot;5000&quot;</code>, covering connect, handshake and every receipt together.</p>
+<p>The tool composes existing VERIFY commands sequentially on one socket; it neither
+builds nor polls automatically. <code>results</code> preserves input order. Validated earlier
+receipts are retained when a timeout, disconnect, malformed receipt or changed
+session makes the remaining entries unavailable. It does not reconnect or combine
+proof from different agent sessions. Each socket reply is limited to 16384
+characters, with at most 32 replies. <code>sessionId</code> is empty if none was validated.</p>
+<p><code>status:applied</code> and <code>allApplied:true</code> require every individual receipt to be
+applied; <code>incomplete</code> means all receipts arrived but at least one was not applied.
+<code>unavailable</code> means one or more receipts could not be validated. Both latter cases
+return <code>isError:true</code>. Even all-applied is a sequence of point-in-time observations,
+not a transactional reload or guarantee that earlier receipts remain current.
+<code>atomic</code> and <code>reloadConfirmed</code> remain false. Test application behavior separately.
+Both supported MCP versions return JSON text; 2025-06-18 also returns the identical
+object as structured content with its output schema.</p>
+<p>The stdio server accepts one batch at a time with no queued work. While it is
+active, <code>ping</code> and <code>tools/list</code> remain responsive; other requests receive JSON-RPC
+error -32000 and can be retried after completion/cancellation. Duplicate active IDs
+are invalid. Initialization therefore cannot change a batch's negotiated output
+version while it runs. Existing non-batch tools retain synchronous behavior.</p>
+<p>For a pending batch, send a notification with the original request ID and no <code>id</code>:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;jsonrpc&quot;:&quot;2.0&quot;,&quot;method&quot;:&quot;notifications/cancelled&quot;,&quot;params&quot;:{&quot;requestId&quot;:42,&quot;reason&quot;:&quot;No longer needed&quot;}}
+</code></pre></div>
+<p>Cancellation closes the batch socket, including during handshake or reply waits,
+and suppresses its response if cancellation wins the completion race. Numeric and
+string IDs are distinct. Unknown, completed and malformed cancellations are
+ignored. Initialize and non-batch tools are not cancellable. End of stdin also
+cancels the active batch and frees its socket; keep stdin open while awaiting a
+batch result. Cancelling observation does not cancel application reload, undo
+changes, release a build hold or reclaim its owner. A result already sent may
+race with cancellation; clients should ignore such a late response, as described
+in the <a href="https://modelcontextprotocol.io/specification/2025-06-18/basic/utilities/cancellation">2025-06-18 cancellation specification</a>
+and its <a href="https://modelcontextprotocol.io/specification/2024-11-05/basic/utilities/cancellation">2024-11-05 counterpart</a>.</p>
+<h3 id="build-plugin-entrypoints">Build-plugin entrypoints</h3>
+<p>The Gradle plugin's explicit <code>reclazzSafeBuild</code> task and Maven plugin's standalone
+<code>safe-build</code> goal reuse the local MCP jar's <code>BuildMain</code> for one owned connection
+around a complete child build. See <a href="/docs/reference/gradle-plugin/#opt-in-whole-build-safety">Gradle safety</a>
+and <a href="/docs/reference/maven/#opt-in-whole-reactor-safety">Maven safety</a>. They do not change plain
+compile/build invocations, add automatic <code>ok</code> finalizers, or imply a published
+plugin release. Retain the owner for recovery and collect exact-byte VERIFY
+receipts separately after a successful build.</p>
+<p>A reproducible acceptance harness lives at <code>scripts/test-build-plugin-safety.py</code>.
+Build local agent/MCP/Gradle-plugin jars and package the Maven plugin, then run:</p>
+<div class="code-block"><div class="code-label">text</div><pre><code>python3 scripts/test-build-plugin-safety.py --work-dir /tmp/reclazz-safety-proof --gradle /absolute/path/to/gradle
+</code></pre></div>
+<p>It requires a fresh work directory, Java/Javac 17+, Gradle 8.10.2, Maven 3.9.x and
+an already populated offline Maven cache. <code>--help</code> lists explicit artifact and
+tool paths. It does not publish or install to the user's Maven repository; it
+uses a temporary cache overlay. Each tool exercises two real modules and a live
+agent: opt-out, partial failure, competing owner rejection, same-owner recovery,
+exact-byte receipts, up-to-date barriers and offline refusal before output.
+Logs and <code>evidence.json</code> stay in the work directory. A missing tool/dependency is
+a failed prerequisite, never a silently skipped success. Mac/Linux local results
+do not prove Windows compatibility.</p>
+<h2 id="pause-and-resume-automatic-reload">Pause and resume automatic reload</h2>
+<p><code>reclazz_reload_control</code> accepts <code>action: &quot;pause&quot;</code>, <code>&quot;resume&quot;</code> or <code>&quot;status&quot;</code>
+and the same <code>port</code>/<code>portFile</code> endpoint options as other tools. For example:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_reload_control&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;pause&quot;,&quot;portFile&quot;:&quot;/project/.reclazz/agent.port&quot;}}
+</code></pre></div>
+<p>Wait for <code>status: &quot;acknowledged&quot;</code>. The result reports <code>paused</code>,
+<code>pendingClasses</code>, <code>pendingActions</code>, and <code>buildHold</code> (<code>none</code>, <code>named</code>, <code>legacy</code>)
+as an admission-state snapshot. <code>reloadConfirmed</code> is always false. On
+<code>unavailable</code>, the action may have reached the agent; inspect <code>status</code> before
+retrying. Unsupported older agents time out instead of appearing successful.</p>
+<p>Pause retains observed class/source/resource changes; SCAN does not apply them.
+Resume schedules current output, but never clears an active or failed BUILD
+hold. A successful BUILD does not clear manual pause. Already admitted work
+may finish. The switch is shared by all clients of this agent, survives client
+disconnect, and is not a per-client ownership lock. Repeated pause/resume does
+not discard pending changes. See <a href="/docs/reference/protocol/#pausing-automatic-reload">the socket contract</a>
+for admission and count boundaries. No IDE control or automatic rollback is added.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/4540b01f5ec433382c0daafa71e028160950b1ff/docs/mcp-server.md">docs/mcp-server.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/maven/"><span>← Previous</span><strong>Reclazz with Maven</strong></a><a href="/docs/reference/product-reference/"><span>Next →</span><strong>Product technical reference</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#running-it">Running it</a><a href="#tools">Tools</a><a href="#tool-execution-errors">Tool execution errors</a><a href="#protocol-version-negotiation">Protocol version negotiation</a><a href="#structured-tool-contracts">Structured tool contracts</a><a href="#input-validation">Input validation</a><a href="#what-it-does-not-do">What it does not do</a><a href="#protecting-terminal-builds">Protecting terminal builds</a><a href="#protecting-a-build-through-mcp">Protecting a build through MCP</a><a href="#verifying-the-compiled-change">Verifying the compiled change</a><a href="#check-the-target-before-an-agentic-build">Check the target before an agentic build</a><a href="#bounded-batch-verification-and-cancellation">Bounded batch verification and cancellation</a><a href="#pause-and-resume-automatic-reload">Pause and resume automatic reload</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>
