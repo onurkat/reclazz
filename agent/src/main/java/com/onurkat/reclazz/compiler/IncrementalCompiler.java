@@ -155,6 +155,27 @@ public class IncrementalCompiler {
         return null;
     }
 
+    /**
+     * Where a staged class is published. A web file can make javac compile a
+     * core source of the same extension it finds on the sourcepath; that class
+     * belongs in classes/. A copy in WEB-INF/classes would be loaded by the web
+     * application before the real one from the next start on, so later edits
+     * to the core source would seem to do nothing there.
+     */
+    Path publicationDir(Path output, Path relativeClass) {
+        if (context == null || !output.endsWith(Path.of("web", "webroot", "WEB-INF", "classes"))) return output;
+        Path ext = output.getParent().getParent().getParent().getParent();
+        String file = relativeClass.toString();
+        int nested = file.indexOf('$');
+        Path source = Path.of((nested < 0 ? file.substring(0, file.length() - ".class".length())
+                : file.substring(0, nested)) + ".java");
+        if (Files.isRegularFile(ext.resolve("web/src").resolve(source))) return output;
+        for (String root : List.of("src", "gensrc")) {
+            if (Files.isRegularFile(ext.resolve(root).resolve(source))) return ext.resolve("classes");
+        }
+        return output;
+    }
+
     private Path resolveOutputDir(Path javaFile, ExtensionInfo extInfo) {
         // Check if the file is under web/src
         String filePath = javaFile.toString();

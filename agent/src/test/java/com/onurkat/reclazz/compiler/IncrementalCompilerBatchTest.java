@@ -90,6 +90,48 @@ class IncrementalCompilerBatchTest {
     }
 
     @Test
+    void aWebSourceDoesNotCopyTheCoreClassesItUsesIntoWebInfClasses() throws Exception {
+        Path core = writeCore("Shared", " public int x() { return 1; } ");
+        assertTrue(compiler.compileBatch(List.of(core), "myext").isSuccess());
+        // The core source is now newer than its class, as it is the moment an
+        // editor saves it, and only the web file that uses it is compiled.
+        writeCore("Shared", " public int x() { return 2; } ");
+        Files.setLastModifiedTime(core, java.nio.file.attribute.FileTime.fromMillis(System.currentTimeMillis() + 5_000));
+        Path web = extDir.resolve("web/src/com/example/web/UsesShared.java");
+        Files.writeString(web, "package com.example.web;\n"
+                + "public class UsesShared { public int y() { return new com.example.Shared().x(); } }\n");
+
+        IncrementalCompiler.CompileResult result = compiler.compileBatch(List.of(web), "myext");
+
+        assertTrue(result.isSuccess(), () -> "errors: " + result.getErrors());
+        Path webClasses = extDir.resolve("web/webroot/WEB-INF/classes");
+        assertTrue(Files.exists(webClasses.resolve("com/example/web/UsesShared.class")));
+        // The web application loads WEB-INF/classes before the extension's
+        // classes, so a copy there shadows the real core class from the next
+        // start on.
+        assertFalse(Files.exists(webClasses.resolve("com/example/Shared.class")),
+                "a core class must never be written into WEB-INF/classes");
+        // javac still compiled the newer core source; it is published where it belongs.
+        assertArrayEquals(result.getCompiledClasses().get("com.example.Shared"),
+                Files.readAllBytes(extDir.resolve("classes/com/example/Shared.class")));
+    }
+
+    @Test
+    void aCoreAndWebSaveTogetherKeepsEachClassInItsOwnOutputDir() throws Exception {
+        Path core = writeCore("Together", " public int x() { return 1; } ");
+        Path web = extDir.resolve("web/src/com/example/web/UsesTogether.java");
+        Files.writeString(web, "package com.example.web;\n"
+                + "public class UsesTogether { public int y() { return new com.example.Together().x(); } }\n");
+
+        IncrementalCompiler.CompileResult result = compiler.compileBatch(List.of(core, web), "myext");
+
+        assertTrue(result.isSuccess(), () -> "errors: " + result.getErrors());
+        assertTrue(Files.exists(extDir.resolve("classes/com/example/Together.class")));
+        assertFalse(Files.exists(extDir.resolve("web/webroot/WEB-INF/classes/com/example/Together.class")),
+                "the core class belongs in classes/ only");
+    }
+
+    @Test
     void singleFileBatchStillWorks() throws Exception {
         IncrementalCompiler.CompileResult result =
                 compiler.compileBatch(List.of(writeCore("Solo", " public int z() { return 9; } ")), "myext");

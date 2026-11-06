@@ -69,6 +69,10 @@ class CompileAttemptTest {
         assertTrue(result.isSuccess(), result.getErrors().toString());
         assertTrue(result.getCompiledClasses().keySet().containsAll(List.of("example.Core", "example.Helper", "example.Web")),
                 result.getCompiledClasses().keySet().toString());
+        // Helper was compiled only because Web uses it; it still belongs to the core output.
+        assertTrue(Files.isRegularFile(module("core").resolve("classes/example/Helper.class")));
+        assertFalse(Files.exists(module("core").resolve("web/webroot/WEB-INF/classes/example/Helper.class")));
+        assertFalse(Files.exists(module("core").resolve("web/webroot/WEB-INF/classes/example/Core.class")));
     }
 
     @Test void publicationFailureReportsNoSuccessAndCanBeRetried() throws Exception {

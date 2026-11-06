@@ -53,7 +53,7 @@ public final class CompileAttempt {
                             .filter(f -> f.toString().endsWith(".class")).sorted().toList()) {
                         Path relative = output.getValue().relativize(file);
                         byte[] bytes = Files.readAllBytes(file);
-                        files.put(output.getKey().resolve(relative), bytes);
+                        files.put(compiler.publicationDir(output.getKey(), relative).resolve(relative), bytes);
                         String name = relative.toString().replace(java.io.File.separatorChar, '.');
                         classes.put(name.substring(0, name.length() - 6), bytes);
                     }
