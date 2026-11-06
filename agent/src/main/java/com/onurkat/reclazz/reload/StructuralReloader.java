@@ -460,6 +460,8 @@ public class StructuralReloader {
                 .map(RemovedMethodTargets.Removal::name).toList();
         if (!throwing.isEmpty()) {
             StatusReporter.warn(Plural.word(throwing.size(), "A removed method", "Removed methods")
+                    // ledger-exempt: the restart is named to say this already
+                    // is its answer; a restart would change nothing here.
                     + " detected in " + className + ": " + throwing
                     + ". A caller that still uses " + (throwing.size() == 1 ? "it" : "them")
                     + " now gets NoSuchMethodError, as it would after a restart.");
