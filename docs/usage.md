@@ -3231,6 +3231,14 @@ doesn't allow). This has one consequence worth knowing:
 - Groovy console reflection that reaches through
   `ModelService.setAttributeValue` / `getAttributeValue`
 
+**Removed methods:** a caller that still uses a method the save removed,
+a class nobody recompiled or a framework holding its `Method`, gets what it
+would get after a restart: `NoSuchMethodError` naming the method, or the
+inherited implementation when the removed method was an override. Putting
+the method back makes it answer again. Lambda bodies and other
+compiler-generated methods keep answering for objects created before the
+save.
+
 If your workflow relies heavily on reflective access to
 newly-added members (e.g. scripted type-system exploration), use
 JBR or DCEVM for full visibility. For the typical edit-compile-run

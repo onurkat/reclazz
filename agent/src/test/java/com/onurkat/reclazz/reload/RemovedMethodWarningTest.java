@@ -15,38 +15,35 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.lang.instrument.Instrumentation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * What happens to a removed method's existing callers, which is now one thing
- * and used to be three.
+ * What a removed method's existing callers meet: what they would meet after
+ * a restart.
  *
- * <p>The JVM will not let a method leave a loaded class, so the payload
- * carries it either way and the only question is what is in it. It was
- * AddedMemberStripper's stub, which throws, and whether a caller met that stub
- * depended on history the developer cannot see: a call site retargeted to a
- * companion by an earlier reload kept the last reloaded body, a refused
- * redefinition kept everything, and a site that had never been reloaded threw
- * {@code UnsupportedOperationException} (measured on Spring Boot 3.3.4: a
- * removed getter turned its JSON endpoint into HTTP 500). One edit, three
- * outcomes, and the worst of them kills a live request on the developer's own
- * server for a change they made deliberately.
+ * <p>The JVM will not let a method leave a loaded class, and for a while the
+ * removed method's previous body went on answering every caller that still
+ * named it. Measured on a live SAP Commerce server: an endpoint whose service
+ * method was removed kept returning the old result, so the save looked as if
+ * it had done nothing, and the same caller after a restart fails with
+ * {@code NoSuchMethodError}. Before that it was three outcomes depending on
+ * history the developer cannot see (a reloaded method kept its last body, a
+ * refused redefinition kept everything, a never-reloaded one threw
+ * {@code UnsupportedOperationException}).
  *
- * <p>Now the previous implementation is spliced into the payload, so all three
- * paths end the same way and the way they end is the one the README already
- * promised: the member is hidden from reflection immediately, so every scan
- * stops acting on it, and code that already holds it keeps running. What a
- * direct call means is settled at the next restart, where the caller either
- * compiles without the method or does not compile at all.
- *
- * <p>These tests replay each of the three histories through the production
- * reload chain and hold them to the same answer.
+ * <p>Now the removed method's call site is retargeted in the same switch as
+ * the new bodies, so all three histories end in the restart answer: a
+ * {@code NoSuchMethodError} naming the method, or the inherited
+ * implementation when the method was an override. Compiler-generated methods
+ * keep their body, because a live lambda object still points at its own.
  */
 class RemovedMethodWarningTest extends TransformTestBase {
 
@@ -102,53 +99,82 @@ class RemovedMethodWarningTest extends TransformTestBase {
         StatusReporter.removeListener(rig.listener());
     }
 
+    private static void reload(Rig rig, String name, String source) {
+        ClassReloader.ReloadResult result = rig.reloader().reload(name,
+                compile(new SourceFile(name, source)).get(name));
+        assertTrue(result.isSuccess(), String.valueOf(result.getError()));
+    }
+
+    /** The removed method's call, which must fail the way a restarted JVM fails it. */
+    private static void assertGone(Rig rig, String method) {
+        InvocationTargetException call = assertThrows(InvocationTargetException.class,
+                () -> rig.gone().invoke(rig.instance()),
+                "a removed method must not keep answering with its previous body");
+        Throwable cause = call.getCause();
+        assertInstanceOf(NoSuchMethodError.class, cause,
+                "what a caller compiled against the removed method gets after a restart");
+        assertTrue(cause.getMessage().contains(rig.cls().getName() + "." + method + "()"),
+                "the error names the method: " + cause.getMessage());
+    }
+
+    private static void assertWarnsNoSuchMethod(Rig rig) {
+        String warning = String.join("\n", rig.warnings());
+        assertTrue(warning.contains("[gone]") && warning.contains("NoSuchMethodError"),
+                "the warning says what the callers meet, got: " + warning);
+        assertFalse(warning.contains("keeps the previous implementation"),
+                "a kept body that is not kept must not be claimed: " + warning);
+    }
+
     /**
-     * A method that was reloaded and then removed: its call site was
-     * retargeted to a companion, so the stub the successful redefinition
-     * installs under the renamed fallback is never reached and callers keep
-     * the last reloaded body. This is the case the SAP Commerce integration
-     * run's remove-method scenario measures live; claiming a throw here
-     * would be the original mistake mirrored.
+     * A method that was reloaded and then removed. Its call site already
+     * pointed at a companion body, which is how the previous body stayed
+     * reachable; the SAP Commerce remove-method scenario measures this case.
      */
     @Test
-    void aPreviouslyReloadedMethodsCallersKeepItsLastBodyAndTheMessageSaysSo() throws Exception {
+    void aPreviouslyReloadedMethodFailsLikeAfterARestart() throws Exception {
         Rig rig = rig("RemovedAfterReload",
                 "public class RemovedAfterReload {\n" +
                 "    public String keep() { return \"keep-v1\"; }\n" +
                 "    public String gone() { return \"gone-v1\"; }\n" +
                 "}");
         try {
-            // Body-only reload of gone(): its call site now dispatches to the
-            // companion, not to the renamed fallback.
-            ClassReloader.ReloadResult edited = rig.reloader().reload("RemovedAfterReload",
-                    compile(new SourceFile("RemovedAfterReload",
-                            "public class RemovedAfterReload {\n" +
-                            "    public String keep() { return \"keep-v1\"; }\n" +
-                            "    public String gone() { return \"gone-v2\"; }\n" +
-                            "}")).get("RemovedAfterReload"));
-            assertTrue(edited.isSuccess(), String.valueOf(edited.getError()));
+            reload(rig, "RemovedAfterReload",
+                    "public class RemovedAfterReload {\n" +
+                    "    public String keep() { return \"keep-v1\"; }\n" +
+                    "    public String gone() { return \"gone-v2\"; }\n" +
+                    "}");
             assertEquals("gone-v2", rig.gone().invoke(rig.instance()));
             rig.warnings().clear();
 
-            ClassReloader.ReloadResult removed = rig.reloader().reload("RemovedAfterReload",
-                    compile(new SourceFile("RemovedAfterReload",
-                            "public class RemovedAfterReload {\n" +
-                            "    public String keep() { return \"keep-v3\"; }\n" +
-                            "}")).get("RemovedAfterReload"));
-            assertTrue(removed.isSuccess(), String.valueOf(removed.getError()));
+            reload(rig, "RemovedAfterReload",
+                    "public class RemovedAfterReload {\n" +
+                    "    public String keep() { return \"keep-v3\"; }\n" +
+                    "}");
             assertEquals("keep-v3", rig.keep().invoke(rig.instance()));
+            assertGone(rig, "gone");
+            assertWarnsNoSuchMethod(rig);
+        } finally {
+            teardown(rig);
+        }
+    }
 
-            assertEquals("gone-v2", rig.gone().invoke(rig.instance()),
-                    "the companion body keeps serving; the stub under the renamed "
-                    + "fallback is never reached");
-
-            String warning = String.join("\n", rig.warnings());
-            assertTrue(warning.contains("keeps the previous implementation until restart"),
-                    "the warning must describe the kept case, got: " + warning);
-            assertTrue(warning.contains("hidden from reflection"),
-                    "and what removal does apply immediately: " + warning);
-            assertFalse(warning.contains("UnsupportedOperationException"),
-                    "a throw that does not happen must not be claimed: " + warning);
+    /** A method that was never reloaded before its removal. */
+    @Test
+    void aNeverReloadedMethodFailsLikeAfterARestart() throws Exception {
+        Rig rig = rig("RemovedNoExtra",
+                "public class RemovedNoExtra {\n" +
+                "    public String keep() { return \"keep-v1\"; }\n" +
+                "    public String gone() { return \"gone-v1\"; }\n" +
+                "}");
+        try {
+            reload(rig, "RemovedNoExtra",
+                    "public class RemovedNoExtra {\n" +
+                    "    public String keep() { return \"keep-v2\"; }\n" +
+                    "}");
+            assertEquals("keep-v2", rig.keep().invoke(rig.instance()),
+                    "the rest of the save still applies");
+            assertGone(rig, "gone");
+            assertWarnsNoSuchMethod(rig);
         } finally {
             teardown(rig);
         }
@@ -157,8 +183,8 @@ class RemovedMethodWarningTest extends TransformTestBase {
     /**
      * Rewrites the class's record so {@code extra()} counts as an existing
      * method. The removal payload then carries it, the loaded class does
-     * not, and the JVM refuses the redefinition: the refused branch this
-     * test is about.
+     * not, and the JVM refuses the redefinition: the refused branch the
+     * next test is about.
      */
     private static void recordExtraAsExisting(TransformContext context, String name) {
         TransformContext.ClassMetadata m = context.getMetadata(name);
@@ -174,103 +200,120 @@ class RemovedMethodWarningTest extends TransformTestBase {
     }
 
     /**
-     * A method that was never reloaded before its removal. Its call sites fall
-     * back to the renamed method, which is exactly where the throwing stub
-     * used to land, and this is the case that turned a live endpoint into an
-     * HTTP 500. The previous implementation is spliced there instead, so the
-     * call still answers what it answered before the save.
+     * When the redefinition is refused the loaded class keeps its previous
+     * bytecode entirely, and the call site is still what decides the answer.
      */
     @Test
-    void aNeverReloadedMethodsCallersKeepItsBody() throws Exception {
-        Rig rig = rig("RemovedNoExtra",
-                "public class RemovedNoExtra {\n" +
-                "    public String keep() { return \"keep-v1\"; }\n" +
-                "    public String gone() { return \"gone-v1\"; }\n" +
-                "}");
-        try {
-            ClassReloader.ReloadResult result = rig.reloader().reload("RemovedNoExtra",
-                    compile(new SourceFile("RemovedNoExtra",
-                            "public class RemovedNoExtra {\n" +
-                            "    public String keep() { return \"keep-v2\"; }\n" +
-                            "}")).get("RemovedNoExtra"));
-            assertTrue(result.isSuccess(), String.valueOf(result.getError()));
-            assertEquals("keep-v2", rig.keep().invoke(rig.instance()),
-                    "the rest of the save still applies");
-
-            assertEquals("gone-v1", rig.gone().invoke(rig.instance()),
-                    "this is the call that used to throw UnsupportedOperationException "
-                    + "on a live server for a removal the developer made on purpose");
-
-            String warning = String.join("\n", rig.warnings());
-            assertTrue(warning.contains("keeps the previous implementation until restart"),
-                    "the warning must describe the kept case, got: " + warning);
-            assertFalse(warning.contains("UnsupportedOperationException"),
-                    "nothing throws here any more: " + warning);
-        } finally {
-            teardown(rig);
-        }
-    }
-
-    /**
-     * When the redefinition is refused, the old implementation really keeps
-     * serving; this is the one case the old universal sentence described
-     * correctly, and it has to survive the split.
-     *
-     * <p>Getting the refusal takes more than adding a member first: writing
-     * this test measured that the transformer rewrites the class's metadata
-     * record during every redefinition, so a healthy record re-detects the
-     * earlier-added member as added and the payload re-strips it, and the
-     * redefinition lands again. The refusal occurs when the record still
-     * lists the added member as existing, so the payload carries a method
-     * the loaded class never gained; the live Spring Boot measurement behind
-     * this split hit exactly that. The test constructs that record state
-     * directly, because the message must be right whenever the refusal
-     * happens, however the record got there.
-     */
-    @Test
-    void whenTheRedefinitionIsRefusedCallersKeepTheOldBodyAndTheMessageSaysSo() throws Exception {
+    void whenTheRedefinitionIsRefusedTheMethodStillFailsLikeAfterARestart() throws Exception {
         Rig rig = rig("RemovedAfterAdd",
                 "public class RemovedAfterAdd {\n" +
                 "    public String keep() { return \"keep-v1\"; }\n" +
                 "    public String gone() { return \"gone-v1\"; }\n" +
                 "}");
         try {
-            // First reload adds a member, so the class carries one beyond its
-            // loaded shape.
-            ClassReloader.ReloadResult added = rig.reloader().reload("RemovedAfterAdd",
-                    compile(new SourceFile("RemovedAfterAdd",
-                            "public class RemovedAfterAdd {\n" +
-                            "    public String keep() { return \"keep-v1\"; }\n" +
-                            "    public String gone() { return \"gone-v1\"; }\n" +
-                            "    public String extra() { return \"extra\"; }\n" +
-                            "}")).get("RemovedAfterAdd"));
-            assertTrue(added.isSuccess(), String.valueOf(added.getError()));
+            reload(rig, "RemovedAfterAdd",
+                    "public class RemovedAfterAdd {\n" +
+                    "    public String keep() { return \"keep-v1\"; }\n" +
+                    "    public String gone() { return \"gone-v1\"; }\n" +
+                    "    public String extra() { return \"extra\"; }\n" +
+                    "}");
             rig.warnings().clear();
-
-            // The record state that makes the JVM refuse: extra listed as
-            // existing, so the removal payload keeps it and no longer matches
-            // the loaded shape.
             recordExtraAsExisting(rig.context(), "RemovedAfterAdd");
 
-            ClassReloader.ReloadResult removed = rig.reloader().reload("RemovedAfterAdd",
-                    compile(new SourceFile("RemovedAfterAdd",
-                            "public class RemovedAfterAdd {\n" +
-                            "    public String keep() { return \"keep-v3\"; }\n" +
-                            "    public String extra() { return \"extra\"; }\n" +
-                            "}")).get("RemovedAfterAdd"));
-            assertTrue(removed.isSuccess(), String.valueOf(removed.getError()));
+            reload(rig, "RemovedAfterAdd",
+                    "public class RemovedAfterAdd {\n" +
+                    "    public String keep() { return \"keep-v3\"; }\n" +
+                    "    public String extra() { return \"extra\"; }\n" +
+                    "}");
             assertEquals("keep-v3", rig.keep().invoke(rig.instance()));
+            assertGone(rig, "gone");
+            assertWarnsNoSuchMethod(rig);
+        } finally {
+            teardown(rig);
+        }
+    }
 
-            assertEquals("gone-v1", rig.gone().invoke(rig.instance()),
-                    "the refused redefinition leaves the old implementation serving, "
-                    + "which is what the message claims");
+    /** Putting the method back makes it answer again, with the restored body. */
+    @Test
+    void aRestoredMethodAnswersWithItsNewBody() throws Exception {
+        Rig rig = rig("RemovedThenRestored",
+                "public class RemovedThenRestored {\n" +
+                "    public String keep() { return \"keep-v1\"; }\n" +
+                "    public String gone() { return \"gone-v1\"; }\n" +
+                "}");
+        try {
+            reload(rig, "RemovedThenRestored",
+                    "public class RemovedThenRestored {\n" +
+                    "    public String keep() { return \"keep-v2\"; }\n" +
+                    "}");
+            assertGone(rig, "gone");
 
-            String warning = String.join("\n", rig.warnings());
-            assertTrue(warning.contains("keeps the previous implementation until restart"),
-                    "the warning must describe the refused case, got: " + warning);
-            assertFalse(warning.contains("Existing callers will now fail"),
-                    "claiming a throw that does not happen is the same mistake "
-                    + "mirrored: " + warning);
+            reload(rig, "RemovedThenRestored",
+                    "public class RemovedThenRestored {\n" +
+                    "    public String keep() { return \"keep-v3\"; }\n" +
+                    "    public String gone() { return \"gone-v3\"; }\n" +
+                    "}");
+            assertEquals("gone-v3", rig.gone().invoke(rig.instance()));
+            assertEquals("keep-v3", rig.keep().invoke(rig.instance()));
+        } finally {
+            teardown(rig);
+        }
+    }
+
+    /**
+     * A removed override does not fail after a restart: the call resolves to
+     * the inherited implementation. A throw here would break every
+     * {@code toString}, {@code equals} or framework callback a developer
+     * stops overriding.
+     */
+    @Test
+    void aRemovedOverrideRunsTheInheritedImplementation() throws Exception {
+        Rig rig = rig("RemovedOverride",
+                "public class RemovedOverride {\n" +
+                "    public String keep() { return \"keep-v1\"; }\n" +
+                "    public String gone() { return \"gone-v1\"; }\n" +
+                "    @Override public String toString() { return \"override-v1\"; }\n" +
+                "}");
+        try {
+            assertEquals("override-v1", rig.instance().toString());
+            reload(rig, "RemovedOverride",
+                    "public class RemovedOverride {\n" +
+                    "    public String keep() { return \"keep-v2\"; }\n" +
+                    "    public String gone() { return \"gone-v1\"; }\n" +
+                    "}");
+            assertEquals("RemovedOverride@" + Integer.toHexString(rig.instance().hashCode()),
+                    rig.instance().toString(), "Object.toString, as after a restart");
+            assertEquals("keep-v2", rig.keep().invoke(rig.instance()));
+            assertTrue(rig.warnings().stream().noneMatch(w -> w.contains("toString")),
+                    "an override falling back to its parent is not a failure: " + rig.warnings());
+        } finally {
+            teardown(rig);
+        }
+    }
+
+    /**
+     * A lambda object created before the save still points at its
+     * {@code lambda$} body, which the same save removed with the method that
+     * made it. That body is compiler-generated and keeps answering.
+     */
+    @Test
+    @SuppressWarnings("unchecked")
+    void aLiveLambdaKeepsItsBodyWhenTheMethodThatMadeItIsRemoved() throws Exception {
+        Rig rig = rig("RemovedLambdaOwner",
+                "public class RemovedLambdaOwner {\n" +
+                "    public String keep() { return \"keep-v1\"; }\n" +
+                "    public String gone() { return \"gone-v1\"; }\n" +
+                "    public java.util.function.Supplier<String> supplier() { return () -> \"lambda-v1\"; }\n" +
+                "}");
+        try {
+            Supplier<String> held = (Supplier<String>) rig.cls().getDeclaredMethod("supplier")
+                    .invoke(rig.instance());
+            reload(rig, "RemovedLambdaOwner",
+                    "public class RemovedLambdaOwner {\n" +
+                    "    public String keep() { return \"keep-v2\"; }\n" +
+                    "}");
+            assertEquals("lambda-v1", held.get());
+            assertGone(rig, "gone");
         } finally {
             teardown(rig);
         }

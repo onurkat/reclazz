@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- A caller that still uses a method a save removed, a class nobody recompiled
+  or a framework holding its `Method`, gets what it would get after a restart:
+  `NoSuchMethodError` naming the method, or the inherited implementation when
+  the removed method was an override. It used to keep running the removed
+  method's previous body until restart. Putting the method back makes it answer
+  again with the restored body.
+
+### Fixed
+
+- A lambda object created before a save keeps running its body when the same
+  save removes the method that created it; it threw
+  `UnsupportedOperationException`.
+- With `autoCompile`, a SAP Commerce core class that javac compiles only
+  because a web source uses it is written to the extension's `classes/`, not
+  to `web/webroot/WEB-INF/classes`, where the copy shadowed later edits from
+  the next server start.
+
 ## [1.4.0] - 2026-11-05
 
 ### Added

@@ -74,11 +74,13 @@ class CoreMemberReloadTest {
             probe(app, 1, "v2:extra2:7:gone2:23:gone2:23:visible=true,true:addedVisible=true:true", id);
 
             reload(app, holder(3, false, true));
-            probe(app, 2, "v3:extra3:7:gone2:23:gone2:23:visible=false,false:addedVisible=true:true", id);
+            // A removed method fails the way a restarted JVM fails a caller still
+            // naming it, for a stale class and a held Method alike.
+            probe(app, 2, "v3:extra3:7:NoSuchMethodError:NoSuchMethodError:23:visible=false,false:addedVisible=true:true", id);
             reload(app, holder(4, true, true));
             probe(app, 3, "v4:extra4:7:gone4:23:gone4:23:visible=true,true:addedVisible=true:true", id);
             reload(app, holder(5, false, true));
-            probe(app, 4, "v5:extra5:7:gone4:23:gone4:23:visible=false,false:addedVisible=true:true", id);
+            probe(app, 4, "v5:extra5:7:NoSuchMethodError:NoSuchMethodError:23:visible=false,false:addedVisible=true:true", id);
             assertEquals(1, app.output().stream().filter(s -> s.startsWith("READY=")).count());
         }
     }
@@ -131,9 +133,14 @@ class CoreMemberReloadTest {
                             boolean extra = Arrays.stream(methods).anyMatch(m -> m.getName().equals("extra"));
                             boolean added = Arrays.stream(fields).anyMatch(f -> f.getName().equals("added"));
                             System.out.println("CHECK" + stage + "=" + held.version() + ":" + Caller.call(held)
-                                + ":" + Legacy.call(held) + ":" + method.invoke(held) + ":" + field.get(held)
+                                + ":" + safely(() -> Legacy.call(held)) + ":" + safely(() -> method.invoke(held)) + ":" + field.get(held)
                                 + ":visible=" + gone + "," + legacy + ":addedVisible=" + extra + ":" + added + " id=" + id);
                         }
+                    }
+                    static Object safely(java.util.concurrent.Callable<Object> call) {
+                        try { return call.call(); }
+                        catch (InvocationTargetException e) { return e.getCause().getClass().getSimpleName(); }
+                        catch (Throwable e) { return e.getClass().getSimpleName(); }
                     }
                 }
                 """;

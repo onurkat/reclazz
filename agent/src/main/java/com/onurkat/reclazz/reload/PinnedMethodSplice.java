@@ -79,6 +79,15 @@ public final class PinnedMethodSplice {
 
             MethodNode oldBody = find(cached, renamed, descriptor);
             MethodNode oldTrampoline = find(cached, name, descriptor);
+            if (oldBody == null && oldTrampoline != null && find(payload, renamed, descriptor) == null) {
+                // Never trampolined (a lambda body, an access$ bridge): the
+                // method under its own name is the whole implementation. A
+                // lambda object made before the save still calls it.
+                if (!replace(payload, name, descriptor, oldTrampoline)) {
+                    return new Result(null, "the payload does not carry " + name + descriptor);
+                }
+                continue;
+            }
             if (oldBody == null || oldTrampoline == null) {
                 // A method the previous version did not have (or that was not
                 // trampolined there) has no implementation to pin. The caller

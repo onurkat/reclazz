@@ -401,13 +401,10 @@ public class StructuralReloader {
      * else again when the redefinition was refused. Three outcomes for one
      * edit, decided by history the developer cannot see.
      *
-     * <p>So there is one outcome now, and it is the one the documentation
-     * already promised: code that already holds the method keeps running the
-     * implementation it had. What removal means immediately is that every
-     * scan stops seeing the member, which is where removal actually matters
-     * (serialisation, mapping, injection); what it means for a direct call is
-     * settled at the next restart, when the caller either compiles without it
-     * or does not compile at all.
+     * <p>What a caller of a removed method meets is now decided at its call
+     * site (see {@link RemovedMethodTargets}), the same way for every
+     * history. The body kept here matters for methods without a call site:
+     * a lambda body that an object created before the save still calls.
      *
      * <p>Same route as the pinned-superclass payload, for the same reason:
      * the splice works on transformed bytes, so the payload is reshaped,
@@ -454,62 +451,32 @@ public class StructuralReloader {
     }
 
     /**
-     * Say what a removed method's existing callers will actually meet.
-     *
-     * <p>One sentence used to claim "existing callers will continue using
-     * the previous implementation" for every removal, and what really
-     * happens was measured to be three cases. When the constructor-body
-     * redefinition above lands, it installs AddedMemberStripper's throwing
-     * stub over the removed method's renamed fallback; a call site that was
-     * never retargeted to a companion falls back exactly there, so its
-     * callers throw (measured on Spring Boot: a removed getter turned its
-     * JSON endpoint into HTTP 500 while the message said old code was still
-     * running). A site that WAS retargeted by an earlier reload keeps
-     * dispatching to that companion body and never reaches the stub
-     * (measured on the SAP Commerce integration run: reload the method, then
-     * remove it, and callers keep the reloaded body). And when the
-     * redefinition is refused, nothing changed at all, so every caller keeps
-     * what it had. The first case fails and the other two keep serving,
-     * which is why the discriminator is the redefinition outcome plus the
-     * dispatch table, both known right here.
+     * Say what a removed method's existing callers meet now, which is what
+     * they would meet after a restart (see {@link RemovedMethodTargets}).
+     * Only the case where that answer could not be given is a restart item.
      */
-    private void reportRemovedMethods(String className, Class<?> targetClass,
-                                      StructuralAnalyzer.StructuralDiff diff,
-                                      boolean payloadApplied) {
-        java.util.List<String> failing = new java.util.ArrayList<>();
-        java.util.List<String> keeping = new java.util.ArrayList<>();
-        for (var m : diff.getRemovedMethodSigs()) {
-            if ("<init>".equals(m.name()) || "<clinit>".equals(m.name())) continue;
-            // ACC_STATIC and Modifier.STATIC share the value 0x0008.
-            String siteKey = InjectedNames.siteKey(
-                    m.name(), CallSiteAdapter.descHash(m.descriptor()),
-                    (m.access() & Modifier.STATIC) != 0);
-            boolean companionServes = DispatchTable.hasCompanionTarget(targetClass, siteKey);
-            if (payloadApplied && !companionServes) {
-                failing.add(m.name());
-            } else {
-                keeping.add(m.name());
-            }
+    private void reportRemovedMethods(String className, RemovedMethodTargets.Plan removal) {
+        java.util.List<String> throwing = removal.throwing().stream()
+                .map(RemovedMethodTargets.Removal::name).toList();
+        if (!throwing.isEmpty()) {
+            StatusReporter.warn(Plural.word(throwing.size(), "A removed method", "Removed methods")
+                    + " detected in " + className + ": " + throwing
+                    + ". A caller that still uses " + (throwing.size() == 1 ? "it" : "them")
+                    + " now gets NoSuchMethodError, as it would after a restart.");
         }
-        if (!failing.isEmpty()) {
-            StatusReporter.warn(Plural.word(failing.size(), "A removed method", "Removed methods")
-                    + " detected in " + className + ": " + failing
-                    + ". The previous implementation could not be kept for "
-                    + (failing.size() == 1 ? "it" : "them") + ", so an existing caller "
-                    + "meets an UnsupportedOperationException naming the method. Restore "
-                    + "the method or restart.");
-            RestartLedger.note(className,
-                    Plural.word(failing.size(), "removed method ", "removed methods ")
-                            + failing + " whose existing callers now throw");
+        for (var inherited : removal.inherited()) {
+            StatusReporter.info("Removed override " + className + "." + inherited.name()
+                    + ": its callers now run the inherited " + inherited.inheritedFrom()
+                    + "." + inherited.name() + ", as they would after a restart.");
         }
-        if (!keeping.isEmpty()) {
-            StatusReporter.warn(Plural.word(keeping.size(), "A removed method", "Removed methods")
-                    + " detected in " + className + ": " + keeping
-                    + Plural.word(keeping.size(), ". It is", ". They are")
-                    + " hidden from reflection now, so scans stop acting on "
-                    + (keeping.size() == 1 ? "it" : "them")
-                    + "; code that already holds " + (keeping.size() == 1 ? "it" : "them")
+        if (!removal.kept().isEmpty()) {
+            StatusReporter.warn(Plural.word(removal.kept().size(), "A removed method", "Removed methods")
+                    + " detected in " + className + ": " + removal.kept()
+                    + ". Code that already holds " + (removal.kept().size() == 1 ? "it" : "them")
                     + " keeps the previous implementation until restart.");
+            RestartLedger.note(className,
+                    Plural.word(removal.kept().size(), "removed method ", "removed methods ")
+                            + removal.kept() + " whose existing callers keep the previous implementation");
         }
     }
 
@@ -1119,6 +1086,13 @@ public class StructuralReloader {
                 }
             }
 
+            // A removed method's callers get what a restart would give them,
+            // in the same switch as the new bodies: NoSuchMethodError, or the
+            // inherited implementation when it was an override.
+            RemovedMethodTargets.Plan removal = RemovedMethodTargets.plan(
+                    targetClass, classLookup, diff.getRemovedMethodSigs());
+            removal.targets().forEach(newTargets::putIfAbsent);
+
             // Before the switch, so no read of an added field on a live object
             // can slip in between the new bodies going live and the field
             // learning its value.
@@ -1466,13 +1440,12 @@ public class StructuralReloader {
                                         diff.getRemovedMethodSigs(), diff.getRemovedFieldSigs())
                                 : newBytecode;
 
-                // A removed method's callers keep what they had. The reshape
-                // above re-adds the member the JVM will not let us delete and
-                // gives it a throwing stub, and that stub used to be what an
-                // existing caller met. This puts the previous implementation
-                // there instead, so the removal is what it is documented to
-                // be: hidden from every scan, still running for code that
-                // already holds it.
+                // The reshape above re-adds the member the JVM will not let us
+                // delete and gives it a throwing stub. This puts the previous
+                // implementation there instead. A trampolined method's callers
+                // never reach it (its call site was retargeted above); a lambda
+                // body has no call site, and an object made before the save
+                // still calls it.
                 RemovalPrep kept = null;
                 if (pinnedRedefinePayload == null && diff.isStructural()
                         && !removableMethodKeys(diff).isEmpty()) {
@@ -1544,10 +1517,7 @@ public class StructuralReloader {
                     } else {
                         StatusReporter.warn("Constructor-body refresh skipped for " + className + ": " + outcome.failure());
                     }
-                    if (!diff.getRemovedMethodSigs().isEmpty()) {
-                        reportRemovedMethods(className, targetClass, diff,
-                                outcome.applied() && !keptBodies);
-                    }
+                    if (!removal.isEmpty()) reportRemovedMethods(className, removal);
                 };
                 // Annotations reach reflection only through the redefinition, and
                 // the frameworks re-scan the class as soon as this returns, before
