@@ -127,7 +127,7 @@ dependencies {
     testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
     testImplementation("org.springframework:spring-messaging:5.3.39")
     // Real Rabbit listener regressions only; production remains reflection-only.
-    testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
+    testImplementation("org.springframework.amqp:spring-rabbit:4.1.2")
     // Real commit/rollback regressions against a local in-memory database only.
     testImplementation("org.springframework:spring-jdbc:5.3.39")
     testImplementation("com.h2database:h2:2.5.250")
@@ -335,7 +335,7 @@ dependencies {
     add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-jms:6.1.14")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka:3.2.4")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka-test:3.2.4")
-    add(modernMessagingTests.implementationConfigurationName, "org.springframework.amqp:spring-rabbit:3.1.7")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework.amqp:spring-rabbit:4.1.2")
     add(modernMessagingTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:6.1.3")
     add(modernMessagingTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
     add(modernMessagingTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
