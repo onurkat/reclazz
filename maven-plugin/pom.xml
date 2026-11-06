@@ -14,7 +14,7 @@
 
     <groupId>com.onurkat.reclazz</groupId>
     <artifactId>reclazz-maven-plugin</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <packaging>maven-plugin</packaging>
 
     <name>Reclazz Maven plugin</name>
@@ -75,7 +75,7 @@
         <dependency>
             <groupId>com.onurkat.reclazz</groupId>
             <artifactId>reclazz-agent</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
             <scope>runtime</scope>
         </dependency>
 

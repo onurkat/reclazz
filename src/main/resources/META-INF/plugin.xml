@@ -110,6 +110,12 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.4.1</h3>
+        <ul>
+            <li><b>A removed method answers as it would after a restart.</b> A caller that still uses a method a save removed, a class nobody recompiled or a framework holding its <code>Method</code>, gets what it would get after a restart: <code>NoSuchMethodError</code> naming the method, or the inherited implementation when the removed method was an override. It used to keep running the removed method's previous body until restart. Putting the method back makes it answer again with the restored body.</li>
+            <li><b>Live lambdas survive a removal.</b> A lambda object created before a save keeps running its body when the same save removes the method that created it; it threw <code>UnsupportedOperationException</code>.</li>
+            <li><b>No stale core copies in WEB-INF/classes.</b> With <code>autoCompile</code>, a SAP Commerce core class that javac compiles only because a web source uses it is written to the extension's <code>classes/</code>, not to <code>web/webroot/WEB-INF/classes</code>, where the copy shadowed later edits from the next server start.</li>
+        </ul>
         <h3>1.4.0</h3>
         <ul>
             <li><b>Members you add are visible to ordinary reflection.</b> Added methods, fields and constructors show up through Class reflection, MethodHandles and int VarHandles on JDK 17 and 21, with parameter names and type annotations, so frameworks that look for them find them. Added constructors run their real super/this delegation, Spring's ReflectionUtils sees added methods, and a removed overload stays hidden.</li>

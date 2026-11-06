@@ -19,7 +19,7 @@ Spring-native half: it tells you whether that worked and surfaces the status.
 
 ```kotlin
 dependencies {
-    developmentOnly("com.onurkat.reclazz:reclazz-spring-boot-starter:1.4.0")
+    developmentOnly("com.onurkat.reclazz:reclazz-spring-boot-starter:1.4.1")
 }
 ```
 
@@ -68,8 +68,8 @@ GET /actuator/reclazz
 ```json
 {
   "attached": true,
-  "agentFlag": "-javaagent:/.../reclazz-agent-1.4.0.jar=platform=spring",
-  "agent": "1.4.0",
+  "agentFlag": "-javaagent:/.../reclazz-agent-1.4.1.jar=platform=spring",
+  "agent": "1.4.1",
   "protocol": 1,
   "port": 52227,
   "health": ["Reloads: 3, failures: 0, median 12ms"]

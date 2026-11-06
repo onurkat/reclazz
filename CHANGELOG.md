@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-06
+
 ### Changed
 
 - A caller that still uses a method a save removed, a class nobody recompiled
