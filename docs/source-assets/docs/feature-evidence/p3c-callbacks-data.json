@@ -2989,13 +2989,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3093,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULED-TIMER"
         }
       ],
@@ -3041,13 +3041,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3117,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULED-CURRENT"
         }
       ],
@@ -3093,13 +3093,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3141,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULED-PROXY"
         }
       ],
@@ -3133,13 +3133,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3165,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULES-REPEATABLE"
         }
       ],
@@ -3173,13 +3173,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3189,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULED-ROLLBACK-PREPARATION"
         }
       ],
@@ -3213,13 +3213,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3213,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULED-REFUSAL"
         }
       ],
@@ -3253,13 +3253,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3237,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULED-PROTOTYPE"
         }
       ],
@@ -3305,13 +3305,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3261,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-DELIVERY"
         }
       ],
@@ -3357,13 +3357,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3285,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-CURRENT"
         }
       ],
@@ -3409,13 +3409,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3309,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-PROXY"
         }
       ],
@@ -3461,13 +3461,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3333,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-RESULT"
         }
       ],
@@ -3501,13 +3501,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3357,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-ORDER-NAMES"
         }
       ],
@@ -3541,13 +3541,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3381,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-DEBUG-NAMES"
         }
       ],
@@ -3581,13 +3581,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3405,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-PROTOTYPE-PROXY-REFUSAL"
         }
       ],
@@ -3621,13 +3621,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3429,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-CUSTOM-FACTORY-REFUSAL"
         }
       ],
@@ -3661,13 +3661,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3453,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-RESULT-REFUSAL"
         }
       ],
@@ -3701,13 +3701,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3477,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-ACTUAL-RESULT-REFUSAL"
         }
       ],
@@ -3753,13 +3753,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3501,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-BEFORE-COMMIT"
         }
       ],
@@ -3805,13 +3805,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3525,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-AFTER-COMMIT"
         }
       ],
@@ -3857,13 +3857,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3549,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-AFTER-ROLLBACK"
         }
       ],
@@ -3909,13 +3909,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3573,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-AFTER-COMPLETION"
         }
       ],
@@ -3961,13 +3961,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3597,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-RETIRE"
         }
       ],
@@ -4013,13 +4013,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3621,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-FALLBACK"
         }
       ],
@@ -4053,13 +4053,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3645,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-BEFORE-FAILURE"
         }
       ],
@@ -4093,13 +4093,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3669,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-AFTER-FAILURE"
         }
       ],
@@ -4133,13 +4133,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3693,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-CONTEXT-REFUSAL"
         }
       ],
@@ -4173,13 +4173,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3717,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-TXEVENT-PHASE-EDIT"
         }
       ],
@@ -4225,13 +4225,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3741,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-COMPLETABLE"
         }
       ],
@@ -4277,13 +4277,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3765,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-CANCEL-ROLLBACK"
         }
       ],
@@ -4329,13 +4329,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3789,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-REMOVE"
         }
       ],
@@ -4369,13 +4369,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3813,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-VOID"
         }
       ],
@@ -4409,13 +4409,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3837,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-FUTURE"
         }
       ],
@@ -4449,13 +4449,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3861,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-GENERICS"
         }
       ],
@@ -4489,13 +4489,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3885,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-REFUSAL"
         }
       ],
@@ -4529,13 +4529,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3909,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-EXCEPTIONAL-FUTURE"
         }
       ],
@@ -4569,13 +4569,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3933,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SERVICE-CACHE"
         }
       ],
@@ -4621,13 +4621,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3957,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-EVENT"
         }
       ],
@@ -4673,13 +4673,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 3981,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-SCHEDULED"
         }
       ],
@@ -4713,13 +4713,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4005,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-DEFAULT-EXECUTOR"
         }
       ],
@@ -4753,13 +4753,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4029,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-NAMED-DEFAULT"
         }
       ],
@@ -4793,13 +4793,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4053,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-INFRASTRUCTURE-REFUSAL"
         }
       ],
@@ -4833,13 +4833,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4077,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-ADVISOR-REFUSAL"
         }
       ],
@@ -4885,13 +4885,13 @@
         {
           "path": "docs/usage.md",
           "line": 1913,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4101,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-CALLBACK-TRANSACTIONS"
         }
       ],
@@ -4937,13 +4937,13 @@
         {
           "path": "docs/usage.md",
           "line": 1913,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4125,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-CALLBACK-CACHE"
         }
       ],
@@ -4977,13 +4977,13 @@
         {
           "path": "docs/usage.md",
           "line": 1913,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4149,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-CALLBACK-INSPECT-REFUSAL"
         }
       ],
@@ -5009,13 +5009,13 @@
         {
           "path": "docs/usage.md",
           "line": 1913,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4173,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-CALLBACK-COMPOSED"
         }
       ],
@@ -5047,13 +5047,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4197,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-NEW-ENTITY"
         }
       ],
@@ -5087,13 +5087,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4221,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-PENDING-METADATA"
         }
       ],
@@ -5127,13 +5127,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4245,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-VALIDATION-FAILURE"
         }
       ],
@@ -5167,13 +5167,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4269,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-PREPARED-SCHEMA"
         }
       ],
@@ -5207,13 +5207,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4293,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-SCHEMA-OVERRIDES"
         }
       ],
@@ -5247,13 +5247,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4317,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-OPTIN-AMBIGUITY"
         }
       ],
@@ -5287,13 +5287,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4341,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-CLOSE-REPORT"
         }
       ],
@@ -5327,13 +5327,13 @@
         {
           "path": "docs/usage.md",
           "line": 3102,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4365,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-QUERY-WATCHER"
         }
       ],
@@ -5367,13 +5367,13 @@
         {
           "path": "docs/usage.md",
           "line": 3102,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4389,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-QUERY-COMPONENT"
         }
       ],
@@ -5414,13 +5414,13 @@
         {
           "path": "docs/usage.md",
           "line": 2689,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "### Held repositories after a prepared mapping refresh"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4413,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP"
         }
       ],
@@ -5482,13 +5482,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4437,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-FIELD-DETECTION"
         }
       ],
@@ -5522,13 +5522,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4461,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-UPDATE-ADVICE"
         }
       ],
@@ -5562,13 +5562,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4485,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-VALIDATE-ADVICE"
         }
       ],
@@ -5602,13 +5602,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4509,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-FIELD-REFRESH-GATE"
         }
       ],
@@ -5642,13 +5642,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4533,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-DDL-GATE"
         }
       ],
@@ -5674,13 +5674,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4557,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-ENHANCED-FIELD"
         }
       ],
@@ -5704,13 +5704,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 56,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "| New `@Entity` class picks up a mapping"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4581,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-SPRING5"
         }
       ],
@@ -5748,7 +5748,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4605,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-HIBERNATE-L2-ENTITY"
         }
       ],
@@ -5788,7 +5788,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4629,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-HIBERNATE-L2-QUERY"
         }
       ],
@@ -5828,7 +5828,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4653,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-HIBERNATE-L2-ALIASES"
         }
       ],
@@ -5868,7 +5868,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4677,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-HIBERNATE-L2-DISABLED"
         }
       ],
@@ -5900,7 +5900,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4701,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-HIBERNATE-L2-WATCHER"
         }
       ],
@@ -5949,13 +5949,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4725,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SPRING6-NATIVE-EVENT-FAILURE"
         }
       ],
@@ -5994,13 +5994,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4749,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SPRING6-NATIVE-TXEVENT-FAILURE"
         }
       ],
@@ -6046,13 +6046,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 98,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Scheduler Reload**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4773,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-SCHEDULED-REREGISTER"
         }
       ],
@@ -6086,13 +6086,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 99,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Event Listener Refresh**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4797,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-EVENT-EXISTING-COMPONENT"
         }
       ],
@@ -6126,13 +6126,13 @@
         {
           "path": "docs/product-reference.md",
           "line": 102,
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230",
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
           "quote": "**Async Re-processing**"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4821,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-ASYNC-EXISTING-COMPONENT"
         }
       ],
@@ -6166,13 +6166,13 @@
         {
           "path": "docs/usage.md",
           "line": 3102,
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4845,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P3C-JPA-SQL-NATIVE-QUERY"
         }
       ],
@@ -6589,7 +6589,7 @@
     "agent/src/main/java/com/onurkat/reclazz/reload/AddedMvcBindingMethods.java": "ee123c9922fd43994deab59ad3fe6a22ebdf725e3400b629cd51a9abce314936",
     "agent/src/main/java/com/onurkat/reclazz/reload/StaticInitialiserSlicer.java": "2e7cacb89d5cd33f6bbd250d0da9cd59421b23d95523786d098d7ff2c180c27d",
     "agent/src/main/java/com/onurkat/reclazz/reload/JpaEntityChange.java": "b4e302002d7eab58a2c9831992f0dea1230a434a24014340b3c7b8d9ac0a19f0",
-    "agent/src/main/java/com/onurkat/reclazz/reload/PinnedMethodSplice.java": "9e14d1ffc86b0db737c5fc9a99c86d01e109c84a21fa44f8e81c1562027f1a55",
+    "agent/src/main/java/com/onurkat/reclazz/reload/PinnedMethodSplice.java": "941357ca32dcc71f9a3e7a7775c26796580f6c370301c137d32041d7f6c1b53f",
     "agent/src/main/java/com/onurkat/reclazz/reload/JpaSchemaAdvice.java": "b4572fb403897bed4b696e99f599d6fb4815703b6fd1b01e9f7873183feee5d0",
     "agent/src/main/java/com/onurkat/reclazz/reload/JacksonAddedGetters.java": "8fc3e8583596f39d1449b010375cc83d8fbb43cb7f52b97d67760ffc89f43ac5",
     "agent/src/main/java/com/onurkat/reclazz/reload/JpaPreparedSchemaRefresh.java": "811a94410e1a6d305cae5f4b877e268c893da7a52d6a4e6426dad1cfc8b7b117",
@@ -7017,7 +7017,7 @@
           {
             "path": "docs/usage.md",
             "line": 1913,
-            "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+            "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
             "quote": "### Transaction and cache advice on added callbacks"
           },
           {
@@ -7057,7 +7057,7 @@
           {
             "path": "docs/usage.md",
             "line": 1913,
-            "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88",
+            "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
             "quote": "### Transaction and cache advice on added callbacks"
           },
           {
@@ -9922,7 +9922,7 @@
       "agent/src/main/java/com/onurkat/reclazz/reload/AddedMvcBindingMethods.java": "ee123c9922fd43994deab59ad3fe6a22ebdf725e3400b629cd51a9abce314936",
       "agent/src/main/java/com/onurkat/reclazz/reload/StaticInitialiserSlicer.java": "2e7cacb89d5cd33f6bbd250d0da9cd59421b23d95523786d098d7ff2c180c27d",
       "agent/src/main/java/com/onurkat/reclazz/reload/JpaEntityChange.java": "b4e302002d7eab58a2c9831992f0dea1230a434a24014340b3c7b8d9ac0a19f0",
-      "agent/src/main/java/com/onurkat/reclazz/reload/PinnedMethodSplice.java": "9e14d1ffc86b0db737c5fc9a99c86d01e109c84a21fa44f8e81c1562027f1a55",
+      "agent/src/main/java/com/onurkat/reclazz/reload/PinnedMethodSplice.java": "941357ca32dcc71f9a3e7a7775c26796580f6c370301c137d32041d7f6c1b53f",
       "agent/src/main/java/com/onurkat/reclazz/reload/JpaSchemaAdvice.java": "b4572fb403897bed4b696e99f599d6fb4815703b6fd1b01e9f7873183feee5d0",
       "agent/src/main/java/com/onurkat/reclazz/reload/JacksonAddedGetters.java": "8fc3e8583596f39d1449b010375cc83d8fbb43cb7f52b97d67760ffc89f43ac5",
       "agent/src/main/java/com/onurkat/reclazz/reload/JpaPreparedSchemaRefresh.java": "811a94410e1a6d305cae5f4b877e268c893da7a52d6a4e6426dad1cfc8b7b117",

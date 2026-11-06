@@ -13,7 +13,7 @@
     "category": "Java",
     "title": "Add or remove a method",
     "status": "conditional",
-    "conditions": "Stock-JDK companion mode supports hot-compiled calls; new methods do not become native members of the original Class. Previously held removed members can retain their last implementation.",
+    "conditions": "Stock-JDK companion mode supports hot-compiled calls; new methods do not become native members of the original Class. A caller that still uses a removed method gets NoSuchMethodError, or the inherited implementation for a removed override, as after a restart.",
     "action": "Compile affected watched callers; use a supported framework adapter for reflection.",
     "source": "docs/usage.md#companion-class-reflective-visibility-caveat"
   },

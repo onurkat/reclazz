@@ -3480,12 +3480,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4875,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FIELD"
         }
       ],
@@ -3532,12 +3532,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4899,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FIELD-REJECT"
         }
       ],
@@ -3584,12 +3584,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4923,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FIELD-UNSAFE"
         }
       ],
@@ -3636,12 +3636,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4947,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-CONSTRUCTOR"
         }
       ],
@@ -3688,12 +3688,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4971,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-CONSTRUCTOR-REJECT"
         }
       ],
@@ -3740,12 +3740,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4995,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-CONSTRUCTOR-UNSAFE"
         }
       ],
@@ -3792,12 +3792,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5019,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-TEXT-TEMPLATE"
         }
       ],
@@ -3844,12 +3844,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5043,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-TEXT-UNSAFE"
         }
       ],
@@ -3896,12 +3896,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5067,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-COLLECTION"
         }
       ],
@@ -3948,12 +3948,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5091,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-COLLECTION-REJECT"
         }
       ],
@@ -4000,12 +4000,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5115,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-INDIRECT-CHAIN"
         }
       ],
@@ -4052,12 +4052,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5139,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-INDIRECT-INVALID"
         }
       ],
@@ -4104,12 +4104,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5163,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-INDIRECT-CYCLE"
         }
       ],
@@ -4175,12 +4175,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5187,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-FACTORY-ARGUMENT"
         }
       ],
@@ -4246,12 +4246,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5211,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-FACTORY-REJECT"
         }
       ],
@@ -4317,12 +4317,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5235,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-FACTORY-UNSAFE"
         }
       ],
@@ -4369,12 +4369,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5259,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-ADDED-FACTORY-ARGUMENT"
         }
       ],
@@ -4421,12 +4421,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5283,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-ADDED-FACTORY-LIFECYCLE"
         }
       ],
@@ -4473,12 +4473,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5307,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-ADDED-FACTORY-DEPENDENCY-EDIT"
         }
       ],
@@ -4525,12 +4525,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5331,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-ADDED-FACTORY-REJECT"
         }
       ],
@@ -4589,12 +4589,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5355,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TRANSACTION-PROXY"
         }
       ],
@@ -4653,12 +4653,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5379,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TRANSACTION-ROLLBACK"
         }
       ],
@@ -4710,12 +4710,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5403,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-SECURITY-PROXY"
         }
       ],
@@ -4750,12 +4750,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5427,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-CANDIDATE-REJECT"
         }
       ],
@@ -4790,12 +4790,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5451,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-CANDIDATE-RECOVERY"
         }
       ],
@@ -4830,12 +4830,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5475,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-KEY-REMOVAL"
         }
       ],
@@ -4870,12 +4870,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5499,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-FILE-DELETE"
         }
       ],
@@ -4910,12 +4910,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5523,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-YAML-LIST"
         }
       ],
@@ -4950,12 +4950,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5547,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-YAML-DELETE"
         }
       ],
@@ -4990,12 +4990,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5571,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-YAML-REJECT"
         }
       ],
@@ -5030,12 +5030,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5595,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-PRECEDENCE"
         }
       ],
@@ -5070,12 +5070,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5619,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-PROFILES"
         }
       ],
@@ -5110,12 +5110,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5643,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-MULTI-CONTEXT"
         }
       ],
@@ -5150,12 +5150,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5667,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-CAPTURED-CANDIDATE"
         }
       ],
@@ -5190,12 +5190,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5691,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-PARTIAL-RETRY"
         }
       ],
@@ -5230,12 +5230,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5715,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-UNOWNED"
         }
       ],
@@ -5270,12 +5270,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5739,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-OWNERSHIP-REPLACED"
         }
       ],
@@ -5310,12 +5310,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5763,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-YAML-IMPORT-REFUSAL"
         }
       ],
@@ -5350,12 +5350,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5787,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-READONLY-REMOVAL"
         }
       ],
@@ -5390,12 +5390,12 @@
           "path": "docs/usage.md",
           "line": 2229,
           "quote": "### YAML and removed configuration keys",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5811,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-MIXED-ORIGINS"
         }
       ],
@@ -5430,12 +5430,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5835,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-VALIDATION"
         }
       ],
@@ -5470,12 +5470,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5859,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-RECORD"
         }
       ],
@@ -5510,12 +5510,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5883,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-TRACKING"
         }
       ],
@@ -5550,12 +5550,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5907,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-NATIVE-HOOKS"
         }
       ],
@@ -5590,12 +5590,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5931,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-PLACEHOLDERS"
         }
       ],
@@ -5630,12 +5630,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5955,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-IGNORE-FLAGS"
         }
       ],
@@ -5670,12 +5670,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 5979,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-SCRATCH-REFUSAL"
         }
       ],
@@ -5710,12 +5710,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6003,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-BINDER-REFUSAL"
         }
       ],
@@ -5750,12 +5750,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6027,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT-APPLY-PARTIAL"
         }
       ],
@@ -5790,12 +5790,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6051,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-CONSTRUCTOR-PARTIAL"
         }
       ],
@@ -5830,12 +5830,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6075,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-CONSTRUCTOR-NOCHECK-SIDE-EFFECT"
         }
       ],
@@ -5870,12 +5870,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6099,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FACTORY-PARTIAL"
         }
       ],
@@ -5910,12 +5910,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6123,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FACTORY-DEFERRED"
         }
       ],
@@ -5950,12 +5950,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6147,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FACTORY-COLLECTION-REFUSAL"
         }
       ],
@@ -5990,12 +5990,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6171,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FACTORY-OWNER-REFUSAL"
         }
       ],
@@ -6030,12 +6030,12 @@
           "path": "docs/product-reference.md",
           "line": 61,
           "quote": "| Computed `@Value` constructor",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6195,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-VALUE-FACTORY-RESOLVER-REFUSAL"
         }
       ],
@@ -6070,12 +6070,12 @@
           "path": "docs/product-reference.md",
           "line": 60,
           "quote": "| `@Value` field picks up",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6219,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-INDIRECT-CONTEXT-ISOLATION"
         }
       ],
@@ -6122,12 +6122,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6243,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-IMPORT-OWNER"
         }
       ],
@@ -6174,12 +6174,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6267,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-IMPORT-NOOP"
         }
       ],
@@ -6226,12 +6226,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6291,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-PROTOTYPE-REFUSAL"
         }
       ],
@@ -6278,12 +6278,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6315,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-WATCHER"
         }
       ],
@@ -6330,12 +6330,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6339,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-INVALID"
         }
       ],
@@ -6382,12 +6382,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6363,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-PROPERTY-INTEGRITY"
         }
       ],
@@ -6434,12 +6434,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6387,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-METADATA-REFUSAL"
         }
       ],
@@ -6486,12 +6486,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6411,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-LAZY-FLAG-REFUSAL"
         }
       ],
@@ -6538,12 +6538,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6435,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-LAZY-EQUIVALENCE"
         }
       ],
@@ -6590,12 +6590,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6459,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-INNER-VALUES"
         }
       ],
@@ -6642,12 +6642,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6483,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-INNER-NOOP"
         }
       ],
@@ -6694,12 +6694,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6507,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-INNER-RESOURCE-REFUSAL"
         }
       ],
@@ -6746,12 +6746,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6531,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-UNSUPPORTED-NOOP"
         }
       ],
@@ -6798,12 +6798,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6555,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-UNSUPPORTED-EDIT-REFUSAL"
         }
       ],
@@ -6850,12 +6850,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6579,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-ALIAS-REFUSAL"
         }
       ],
@@ -6902,12 +6902,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6603,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-INLINE-ALIAS-REFUSAL"
         }
       ],
@@ -6954,12 +6954,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6627,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-LOOKUP-REFUSAL"
         }
       ],
@@ -7006,12 +7006,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6651,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-LOADER-LIFECYCLE-REFUSAL"
         }
       ],
@@ -7058,12 +7058,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6675,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-FACTORYBEAN-REFUSAL"
         }
       ],
@@ -7110,12 +7110,12 @@
           "path": "docs/usage.md",
           "line": 369,
           "quote": "For an existing bean in a watched Spring XML resource",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6699,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-SINGLETON-RECREATE"
         }
       ],
@@ -7162,12 +7162,12 @@
           "path": "docs/usage.md",
           "line": 369,
           "quote": "For an existing bean in a watched Spring XML resource",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6723,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-SINGLETON-NOOP"
         }
       ],
@@ -7202,12 +7202,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6747,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-TYPE"
         }
       ],
@@ -7242,12 +7242,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6771,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-MODE"
         }
       ],
@@ -7282,12 +7282,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6795,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-CODE"
         }
       ],
@@ -7322,12 +7322,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6819,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-AMOUNT"
         }
       ],
@@ -7362,12 +7362,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6843,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-LOCATION"
         }
       ],
@@ -7402,12 +7402,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6867,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-TYPES"
         }
       ],
@@ -7442,12 +7442,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6891,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-MODES"
         }
       ],
@@ -7482,12 +7482,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6915,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-MAPPINGS"
         }
       ],
@@ -7522,12 +7522,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6939,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-SELECTION"
         }
       ],
@@ -7562,12 +7562,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6963,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-INTEGERSELECTION"
         }
       ],
@@ -7602,12 +7602,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 6987,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-BIGINTEGER"
         }
       ],
@@ -7642,12 +7642,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7011,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-MODESET"
         }
       ],
@@ -7682,12 +7682,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7035,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-NATIVE-ENUMKEYS"
         }
       ],
@@ -7722,12 +7722,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7059,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-INHERITED-GENERIC"
         }
       ],
@@ -7762,12 +7762,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7083,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-INHERITED-SCALAR"
         }
       ],
@@ -7802,12 +7802,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7107,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-CUSTOM-CONVERTERS"
         }
       ],
@@ -7842,12 +7842,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7131,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-UNKNOWN-CONVERTER-REFUSAL"
         }
       ],
@@ -7882,12 +7882,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7155,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-RESOURCE-CONVERSION-REFUSAL"
         }
       ],
@@ -7922,12 +7922,12 @@
           "path": "docs/usage.md",
           "line": 189,
           "quote": "Ordinary XML property values are compared",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7179,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-MISSING-SETTER-REFUSAL"
         }
       ],
@@ -7962,12 +7962,12 @@
           "path": "docs/usage.md",
           "line": 369,
           "quote": "For an existing bean in a watched Spring XML resource",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7203,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-RECREATE-INIT-FAILURE"
         }
       ],
@@ -8002,12 +8002,12 @@
           "path": "docs/usage.md",
           "line": 369,
           "quote": "For an existing bean in a watched Spring XML resource",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7227,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-RECREATE-RESTORE-FAILURE"
         }
       ],
@@ -8042,12 +8042,12 @@
           "path": "docs/usage.md",
           "line": 369,
           "quote": "For an existing bean in a watched Spring XML resource",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7251,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-RECREATE-FINAL-HOLDER"
         }
       ],
@@ -8082,12 +8082,12 @@
           "path": "docs/usage.md",
           "line": 369,
           "quote": "For an existing bean in a watched Spring XML resource",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7275,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-RECREATE-CONTAINER-HOLDER"
         }
       ],
@@ -8122,12 +8122,12 @@
           "path": "docs/usage.md",
           "line": 369,
           "quote": "For an existing bean in a watched Spring XML resource",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7299,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-RECREATE-CONTEXTS"
         }
       ],
@@ -8162,12 +8162,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7323,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-PARTIAL-SETTER"
         }
       ],
@@ -8202,12 +8202,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7347,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-LAZY-DEFERRED-VALIDATION"
         }
       ],
@@ -8242,12 +8242,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7371,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-REMOVAL-REFUSAL"
         }
       ],
@@ -8282,12 +8282,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7395,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-FACTORYBEAN-PREFLIGHT"
         }
       ],
@@ -8322,12 +8322,12 @@
           "path": "docs/usage.md",
           "line": 178,
           "quote": "For existing ordinary XML beans",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7419,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-XML-METADATA-CONTEXTS"
         }
       ],
@@ -8374,12 +8374,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7443,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-MESSAGE-NATIVE-WATCHER"
         }
       ],
@@ -8426,12 +8426,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7467,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-MESSAGE-NATIVE-CACHE-CONTROL"
         }
       ],
@@ -8466,12 +8466,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7491,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-MESSAGE-ANCESTOR-HOOK"
         }
       ],
@@ -8506,12 +8506,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7515,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-MESSAGE-UNKNOWN-REFUSAL"
         }
       ],
@@ -8546,12 +8546,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7539,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-MESSAGE-THROWING-REFUSAL"
         }
       ],
@@ -8586,12 +8586,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7563,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BUNDLE-PARENT-CACHE"
         }
       ],
@@ -8626,12 +8626,12 @@
           "path": "docs/product-reference.md",
           "line": 68,
           "quote": "| Template reload",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7587,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TEMPLATE-NATIVE-RENDER"
         }
       ],
@@ -8666,12 +8666,12 @@
           "path": "docs/product-reference.md",
           "line": 68,
           "quote": "| Template reload",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7611,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TEMPLATE-MALFORMED-RECOVERY"
         }
       ],
@@ -8706,12 +8706,12 @@
           "path": "docs/product-reference.md",
           "line": 68,
           "quote": "| Template reload",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7635,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TEMPLATE-NATIVE-CACHE-CONTROL"
         }
       ],
@@ -8746,12 +8746,12 @@
           "path": "docs/product-reference.md",
           "line": 68,
           "quote": "| Template reload",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7659,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TEMPLATE-NO-ENGINE"
         }
       ],
@@ -8786,12 +8786,12 @@
           "path": "docs/product-reference.md",
           "line": 68,
           "quote": "| Template reload",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7683,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TEMPLATE-UNKNOWN-ENGINE"
         }
       ],
@@ -8818,12 +8818,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7707,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-BOOT3-PROPERTIES"
         }
       ],
@@ -8847,12 +8847,12 @@
           "path": "docs/product-reference.md",
           "line": 68,
           "quote": "| Template reload",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7731,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-PACKAGED-RESOURCES"
         }
       ],
@@ -8876,12 +8876,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7755,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-MESSAGE-ANCESTOR-NATIVE"
         }
       ],
@@ -8905,12 +8905,12 @@
           "path": "docs/product-reference.md",
           "line": 67,
           "quote": "| Message bundle",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7779,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-MESSAGE-CUSTOM-BASENAME"
         }
       ],
@@ -8934,12 +8934,12 @@
           "path": "docs/product-reference.md",
           "line": 68,
           "quote": "| Template reload",
-          "sha256": "fd9270aa105e6ff4d9c83616cb506fa62ed04e986989f007339a1b75dfbe2230"
+          "sha256": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7803,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-TEMPLATE-WEB-INTEGRATION"
         }
       ],
@@ -8963,12 +8963,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7827,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-SOURCE-OUTPUT-COPY"
         }
       ],
@@ -8992,12 +8992,12 @@
           "path": "docs/usage.md",
           "line": 2173,
           "quote": "### Property changes keep the last working values",
-          "sha256": "bcffbe53fb7cb64a30fcb0aff032c1d0508ef21ffa32594cd723232e86fa7b88"
+          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 7851,
-          "sha256": "595ef1ac402e5f416245961326d9d13a1a0dba287943a59ea4531b60a7aaa230",
+          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
           "quote": "### P5-SAP-CONFIGURATION"
         }
       ],
@@ -9349,7 +9349,7 @@
     "agent/src/main/java/com/onurkat/reclazz/reload/AddedMvcBindingMethods.java": "ee123c9922fd43994deab59ad3fe6a22ebdf725e3400b629cd51a9abce314936",
     "agent/src/main/java/com/onurkat/reclazz/reload/StaticInitialiserSlicer.java": "2e7cacb89d5cd33f6bbd250d0da9cd59421b23d95523786d098d7ff2c180c27d",
     "agent/src/main/java/com/onurkat/reclazz/reload/JpaEntityChange.java": "b4e302002d7eab58a2c9831992f0dea1230a434a24014340b3c7b8d9ac0a19f0",
-    "agent/src/main/java/com/onurkat/reclazz/reload/PinnedMethodSplice.java": "9e14d1ffc86b0db737c5fc9a99c86d01e109c84a21fa44f8e81c1562027f1a55",
+    "agent/src/main/java/com/onurkat/reclazz/reload/PinnedMethodSplice.java": "941357ca32dcc71f9a3e7a7775c26796580f6c370301c137d32041d7f6c1b53f",
     "agent/src/main/java/com/onurkat/reclazz/reload/JpaSchemaAdvice.java": "b4572fb403897bed4b696e99f599d6fb4815703b6fd1b01e9f7873183feee5d0",
     "agent/src/main/java/com/onurkat/reclazz/reload/JacksonAddedGetters.java": "8fc3e8583596f39d1449b010375cc83d8fbb43cb7f52b97d67760ffc89f43ac5",
     "agent/src/main/java/com/onurkat/reclazz/reload/JpaPreparedSchemaRefresh.java": "811a94410e1a6d305cae5f4b877e268c893da7a52d6a4e6426dad1cfc8b7b117",
