@@ -132,7 +132,12 @@ public class SapProcessResourceRecognitionTest {
         try {
             for (var type : ChangeEvent.Type.values()) {
                 events.clear();
-                handler.invoke(null, new ChangeEvent(process, type, "example", "resources"), null, null, null, null, null, AgentConfig.parse(null));
+                java.util.function.BiFunction<com.onurkat.reclazz.ext.Capability, ChangeEvent,
+                        com.onurkat.reclazz.ext.PlatformChangeHandler.Outcome> advice = (capability, event) ->
+                        new com.onurkat.reclazz.ext.AdviceOnlyChangeHandler().handle(
+                                new com.onurkat.reclazz.ext.PlatformChangeHandler.Change(capability, event.getPath(),
+                                        event.getType().name(), event.getModuleName(), event.getSourceRoot()));
+                handler.invoke(null, new ChangeEvent(process, type, "example", "resources"), null, null, null, null, advice, AgentConfig.parse(null));
                 assertEquals(1, events.size(), events.toString());
                 assertTrue(events.get(0).startsWith("WARN:"), events.toString());
                 assertTrue(events.get(0).contains("not applied") && events.get(0).contains("restart required"), events.toString());

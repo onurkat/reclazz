@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- Registered local SAP Commerce process XML edits can update the active
+  in-memory definition after native validation. Processes started afterwards
+  use the edited graph; already started processes retain their stored version
+  within the current JVM. The agent must observe the native initial load.
+  Late attachment, renamed or duplicate definitions, active dynamic DB
+  definitions and custom factory/cache implementations remain refused.
+  Process restart, cache eviction and cluster propagation are outside scope.
+
 ## [1.4.1] - 2026-11-06
 
 ### Changed

@@ -69,7 +69,8 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             java.util.Set<Capability> capabilities = java.util.EnumSet.of(Capability.BACKOFFICE_RELOAD);
             if (sap) {
                 capabilities.addAll(java.util.EnumSet.of(Capability.INTERCEPTOR_REFRESH, Capability.IMPEX_IMPORT,
-                        Capability.CONFIG_APPLY, Capability.LOCALIZATION_RELOAD));
+                        Capability.CONFIG_APPLY, Capability.LOCALIZATION_RELOAD, Capability.PROCESS_RELOAD));
+                handlers.put(Capability.PROCESS_RELOAD, new SapProcessDefinitionReloader());
                 handlers.put(Capability.IMPEX_IMPORT, change -> {
                     handleImpexChange(changeEvent(change), importer);
                     return PlatformChangeHandler.Outcome.HANDLED;

@@ -8,6 +8,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Local process resources referenced by existing singletons, never a filename guess. */
 public final class SapProcessResources {
@@ -21,6 +23,15 @@ public final class SapProcessResources {
     /** No retained context/classloader, lazy bean creation, parsing or remote URL access. */
     public static Set<Path> registeredFiles() {
         Set<Path> files = new HashSet<>();
+        for (Registration registration : registrations()) files.add(registration.path());
+        return files;
+    }
+
+    /** Objects live only for this discovery call; the scanner retains paths alone. */
+    public record Registration(Object context, Object resource, Path path) { }
+
+    public static List<Registration> registrations() {
+        List<Registration> registrations = new ArrayList<>();
         for (Object context : ApplicationContextHolder.getAllContexts()) {
             try {
                 if (!Boolean.TRUE.equals(context.getClass().getMethod("isActive").invoke(context))) continue;
@@ -38,7 +49,8 @@ public final class SapProcessResources {
                         URL url = (URL) resource.getClass().getMethod("getURL").invoke(resource);
                         if (!"file".equals(url.getProtocol())) continue;
                         Path path = Path.of(url.toURI()).toAbsolutePath().normalize();
-                        if (path.getFileName() != null && path.getFileName().toString().endsWith(".xml")) files.add(path);
+                        if (path.getFileName() != null && path.getFileName().toString().endsWith(".xml"))
+                            registrations.add(new Registration(context, resource, path));
                     } catch (Exception | LinkageError unavailable) {
                         // One unsupported registration must not hide the other known resources.
                     }
@@ -47,6 +59,6 @@ public final class SapProcessResources {
                 // A closed/non-SAP context grants no process-resource ownership.
             }
         }
-        return files;
+        return List.copyOf(registrations);
     }
 }

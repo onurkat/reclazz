@@ -341,6 +341,9 @@ public class ReclazzAgent {
 
             boolean isHybris = platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS;
 
+            // Install before native lazy definition loads. Already loaded classes stay unobserved.
+            instrumentation.addTransformer(new com.onurkat.reclazz.transform.SapProcessDefinitionTransformer(), false);
+
             // Register SpringContextInterceptTransformer for ALL platforms,
             // it instruments AbstractApplicationContext.refresh() to register
             // the context in ApplicationContextHolder. On Hybris this is
@@ -851,13 +854,7 @@ public class ReclazzAgent {
                     }
                 }
                 case SPRING_XML -> handleSpringXmlChange(event);
-                case SAP_PROCESS_XML -> {
-                    StatusReporter.warn("SAP process definition " + fileName
-                            + " " + event.getType().name() + ": not applied; restart required. "
-                            + "Process definition hot reload is unsupported; no running process was changed or replayed.");
-                    RestartLedger.note(fileName, "SAP process definition resource changed but was not applied; "
-                            + "validate the resource and restart to load it");
-                }
+                case SAP_PROCESS_XML -> platformChanges.apply(Capability.PROCESS_RELOAD, event);
                 case BACKOFFICE_CONFIG -> platformChanges.apply(Capability.BACKOFFICE_RELOAD, event);
                 case CODEGEN_XML -> {
                     if (platformContext instanceof HybrisPlatformContext) platformChanges.apply(Capability.CODEGEN, event);
