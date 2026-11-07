@@ -2827,6 +2827,51 @@ You do not need to edit any properties files or manage the agent JAR path.
 1. Enable the plugin: **Settings** > **Tools** > **Reclazz** > check **Enable Reclazz**
 2. That's it. Run your Hybris server from IntelliJ as usual.
 
+### Project settings and managed SAP startup
+
+**Settings > Tools > Reclazz** stores agent choices per project. Changes reach the
+next IDE launch or dynamic attach. For a server started outside the IDE, use
+**Install Reclazz Agent** or **Reinstall** to apply the current form and regenerate
+its managed startup block, then regenerate the server config and restart as the
+installation message describes.
+
+| Control | Default | Scope |
+|---|---|---|
+| Update stored Solr documents after provider reload | Off | SAP Commerce development only; bounded native updates with normal listeners/bookkeeping, no proof of field freshness |
+| Update running system after model changes | Off | SAP Commerce development only; opt-in schema additions and keyed localization writes to the live database |
+| Allow REMOVE in auto-imported ImpEx | Off | Available only when auto-import is enabled; permits live row deletion on save |
+| Reload boundary | immediate | request mode requires the agent at JVM startup; dynamic attach explicitly warns and uses immediate mode |
+| Enable structural reload (Advanced) | On | Disable for method-body reloads only |
+| Exclude classes from transformation (Advanced) | Empty | Semicolon-separated class-name globs; distinct from watched-file exclude patterns |
+
+Existing JPA refresh remains opt-in. Its scope includes new entities on stock
+JDKs with a prepared schema; existing field changes require enhanced redefinition.
+See the [JPA scope](#new-jpa-entities-with-a-prepared-schema).
+
+The installer regenerates only its marked block from Settings; manual edits
+inside it are overwritten. Unrelated JVM options outside the block are retained.
+An existing Reclazz agent outside the managed block or in another properties
+layer is refused with its file and line before writing; remove that manual
+option before installing through Settings. This also applies to normal and debug
+startup options. A failed verification restores the previous managed file rather
+than deleting a prior installation. A project without an optional config
+directory uses `local.properties` with its managed block excluded from base-value
+verification.
+
+The log retains the agent's raw INFO lines for Solr FINISHED,
+FINISHED_UNVERIFIED and FAILED outcomes. Unverified indexing outcomes receive
+bold amber warning emphasis; failed indexing outcomes use the IDE's error colour.
+Ordinary WARN lines share the visible warning style. Solr outcomes do not change
+the independent class reload counter or mean that a successful class reload was
+undone.
+
+Platform/home/watch-directory/port discovery remains automatic. Diagnostic
+`platform`, `wrapOutput`, `transformDumpDir`, `verifyTransform`, `sessionLog` and
+structured `refreshOwnersOnHelper` arguments remain manual expert options (see
+[Agent Arguments](#agent-arguments)); the IDE does not expose fields for them.
+The custom port/file controls choose which agent the IDE connects to, while its
+own launches use an automatically assigned port and project port file.
+
 ### Workflow with `ant build`
 
 This is the default and safest workflow. The IntelliJ plugin injects the agent, but compilation is still handled by `ant`:

@@ -7,14 +7,14 @@ package com.onurkat.reclazz.plugin
 import org.junit.Test
 import java.io.File
 import kotlin.test.assertTrue
+import kotlin.test.assertEquals
 
 /**
  * The plugin and the agent agree on the arguments between them by convention,
  * and nothing checks that agreement at build time: the plugin writes a string
  * and the agent parses it.
  *
- * An argument the agent does not know is not an error there. It is dropped,
- * quietly, and the setting the user switched on in the IDE simply does nothing.
+ * An argument the agent does not know is not an error there. It is ignored with a startup warning, and the setting the user switched on in the IDE simply does nothing.
  * That is the kind of failure this project keeps having to hunt down, so the
  * two lists are compared here instead.
  */
@@ -31,9 +31,25 @@ class AgentArgumentContractTest {
         val ignored = sent - understood
         assertTrue(
             ignored.isEmpty(),
-            "the agent would drop these without a word, and the setting behind them " +
+            "the agent would ignore these, and the setting behind them " +
                 "would do nothing: $ignored",
         )
+    }
+
+    @Test
+    fun everyAgentArgumentIsExposedDerivedOrDeliberatelyOmitted() {
+        val exposed = setOf("watchExtensions", "excludePatterns", "autoCompile", "autoImpex",
+            "debounceMs", "startupDelaySec", "verbose", "jpaRefresh", "autoSolrReindex",
+            "autoUpdateRunningSystem", "impexAllowRemove", "reloadBoundary", "structuralReload", "excludeClasses")
+        val derived = setOf("hybrisHome", "statusPort", "portFile", "watchDirs")
+        // Detector override, server-console formatting, bytecode diagnostics, server-log lifecycle,
+        // and structured helper/owner recreation map remain expert/manual configuration.
+        val expert = setOf("platform", "wrapOutput", "transformDumpDir", "verifyTransform", "sessionLog", "refreshOwnersOnHelper")
+        assertTrue((exposed intersect derived).isEmpty())
+        assertTrue((exposed intersect expert).isEmpty())
+        assertTrue((derived intersect expert).isEmpty())
+        assertEquals(keysTheAgentKnows(), exposed + derived + expert)
+        assertEquals(exposed + derived, keysSentByThePlugin(), "Every exposed/derived key must reach the builder")
     }
 
     /**

@@ -7,6 +7,8 @@ package com.onurkat.reclazz.plugin.settings
 import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.Configurable
+import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.dsl.builder.*
@@ -22,11 +24,23 @@ import javax.swing.JComponent
 import javax.swing.JTextField
 import javax.swing.ListSelectionModel
 
-class ReclazzConfigurable(private val project: Project) : Configurable {
+class ReclazzConfigurable internal constructor(
+    private val project: Project,
+    private val installAgent: (Project) -> HybrisAgentInstaller.Result
+) : Configurable {
+    constructor(project: Project) : this(project, HybrisAgentInstaller::install)
+
+    private var dialogPanel: DialogPanel? = null
 
     private var enabledCheckbox = true
     private var autoCompileCheckbox = false
     private var autoImpexCheckbox = false
+    private var autoSolrReindexCheckbox = false
+    private var autoUpdateRunningSystemCheckbox = false
+    private var impexAllowRemoveCheckbox = false
+    private var reloadBoundaryField = "immediate"
+    private var structuralReloadCheckbox = true
+    private var excludeClassesField = ""
     private var watchExtensionsField = ""
     private var excludePatternsField = ""
     private var debounceMsField = 500L
@@ -49,6 +63,12 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
         enabledCheckbox = settings.enabled
         autoCompileCheckbox = settings.autoCompile
         autoImpexCheckbox = settings.autoImpex
+        autoSolrReindexCheckbox = settings.autoSolrReindex
+        autoUpdateRunningSystemCheckbox = settings.autoUpdateRunningSystem
+        impexAllowRemoveCheckbox = settings.impexAllowRemove
+        reloadBoundaryField = settings.reloadBoundary
+        structuralReloadCheckbox = settings.structuralReload
+        excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns
         debounceMsField = settings.debounceMs
@@ -107,7 +127,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                         }
                         row {
                             button("Reinstall") {
-                                applyConnectionSettings()
+                                apply()
                                 installAgentIntoWrapperConf()
                             }
                             link("Remove agent") {
@@ -122,7 +142,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                         }
                         row {
                             button("Install Reclazz Agent") {
-                                applyConnectionSettings()
+                                apply()
                                 installAgentIntoWrapperConf()
                             }
                         }
@@ -132,9 +152,25 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                         checkBox("Compile Java in-process (skips ant, faster reloads)")
                             .bindSelected(::autoCompileCheckbox)
                     }
+                    lateinit var autoImpexCheckboxCell: Cell<com.intellij.ui.components.JBCheckBox>
                     row {
-                        checkBox("Auto-import ImpEx files on save")
+                        autoImpexCheckboxCell = checkBox("Auto-import ImpEx files on save")
                             .bindSelected(::autoImpexCheckbox)
+                    }
+                    row {
+                        checkBox("Allow REMOVE in auto-imported ImpEx (development only)")
+                            .bindSelected(::impexAllowRemoveCheckbox)
+                            .comment("Allows deletion of live database rows on save. Off by default.")
+                    }.enabledIf(autoImpexCheckboxCell.selected)
+                    row {
+                        checkBox("Update running system after model changes (development only)")
+                            .bindSelected(::autoUpdateRunningSystemCheckbox)
+                            .comment("Opt-in schema additions and keyed type localization writes to the live database; never drops columns.")
+                    }
+                    row {
+                        checkBox("Update stored Solr documents after provider reload (development only)")
+                            .bindSelected(::autoSolrReindexCheckbox)
+                            .comment("Bounded native updates with normal listeners and bookkeeping. Stored field freshness is not verified.")
                     }
                     row("Watch extensions:") {
                         textField()
@@ -191,14 +227,31 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                 row {
                     checkBox("Refresh JPA mapping when an entity field changes (opt-in)")
                         .bindSelected(::jpaRefreshCheckbox)
-                        .comment("Rebuilds the persistence unit so a new @Entity field is mapped, " +
-                                "on JetBrains Runtime or DCEVM with ddl-auto at update/create/create-drop. " +
-                                "In any other setup the field is named in the log instead. Open persistence " +
-                                "contexts from before the rebuild are closed.")
+                        .comment("Rebuilds the persistence unit and closes old persistence contexts. Existing field changes " +
+                                "require enhanced redefinition. New entities also work on stock JDKs, including " +
+                                "supported Hibernate validate with a prepared schema.")
                 }
             }
 
+            row("Reload boundary:") {
+                comboBox(listOf("immediate", "request"))
+                    .bindItem({ reloadBoundaryField }, { reloadBoundaryField = it ?: "immediate" })
+                    .comment("Request mode waits for supported MVC requests and requires -javaagent at JVM startup. " +
+                            "Dynamic attach uses immediate mode instead. Changes apply to the next launch or install.")
+            }
+
             collapsibleGroup("Advanced") {
+                row {
+                    checkBox("Enable structural reload (added and removed members)")
+                        .bindSelected(::structuralReloadCheckbox)
+                        .comment("On by default. Turning it off leaves method-body reloads only.")
+                }
+                row("Exclude classes from transformation:") {
+                    textField()
+                        .bindText(::excludeClassesField)
+                        .comment("Semicolon-separated class-name globs (e.g. com.example.Legacy*). Distinct from watched-file exclusions.")
+                        .columns(COLUMNS_LARGE)
+                }
                 row("Exclude patterns:") {
                     textField()
                         .bindText(::excludePatternsField)
@@ -241,7 +294,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                         testConnection()
                     }
                     button("Attach to Running Server...") {
-                        applyConnectionSettings()
+                        apply()
                         // Calls the shared flow directly. Invoking the
                         // action's actionPerformed from here would violate
                         // the platform's @ApiStatus.OverrideOnly contract.
@@ -249,11 +302,11 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                     }
                 }
             }.apply { expanded = false }
-        }
+        }.also { dialogPanel = it }
     }
 
     private fun installAgentIntoWrapperConf() {
-        when (val result = HybrisAgentInstaller.install(project)) {
+        when (val result = installAgent(project)) {
             is HybrisAgentInstaller.Result.Success ->
                 ReloadNotifications.info(project, "Reclazz", result.message)
             is HybrisAgentInstaller.Result.Error ->
@@ -271,6 +324,7 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
     }
 
     private fun applyConnectionSettings() {
+        readForm()
         val settings = ReclazzSettings.getInstance(project)
         val current = settings.state.copy()
         current.portFilePath = portFilePathField
@@ -348,9 +402,15 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
 
     override fun isModified(): Boolean {
         val settings = ReclazzSettings.getInstance(project).state
-        return enabledCheckbox != settings.enabled ||
+        return dialogPanel?.isModified() == true || enabledCheckbox != settings.enabled ||
                 autoCompileCheckbox != settings.autoCompile ||
                 autoImpexCheckbox != settings.autoImpex ||
+                autoSolrReindexCheckbox != settings.autoSolrReindex ||
+                autoUpdateRunningSystemCheckbox != settings.autoUpdateRunningSystem ||
+                impexAllowRemoveCheckbox != settings.impexAllowRemove ||
+                reloadBoundaryField != settings.reloadBoundary ||
+                structuralReloadCheckbox != settings.structuralReload ||
+                excludeClassesField != settings.excludeClasses ||
                 watchExtensionsField != settings.watchExtensions ||
                 excludePatternsField != settings.excludePatterns ||
                 debounceMsField != settings.debounceMs ||
@@ -362,13 +422,28 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
                 agentPortField != settings.agentPort
     }
 
+    private fun readForm() {
+        dialogPanel?.validateAll()?.firstOrNull()?.let { throw ConfigurationException(it.message) }
+        dialogPanel?.apply()
+        if (reloadBoundaryField !in listOf("immediate", "request")) {
+            throw ConfigurationException("Reload boundary must be immediate or request.")
+        }
+    }
+
     override fun apply() {
+        readForm()
         val settings = ReclazzSettings.getInstance(project)
         settings.loadState(
-            ReclazzSettings.State(
+            settings.state.copy(
                 enabled = enabledCheckbox,
                 autoCompile = autoCompileCheckbox,
                 autoImpex = autoImpexCheckbox,
+                autoSolrReindex = autoSolrReindexCheckbox,
+                autoUpdateRunningSystem = autoUpdateRunningSystemCheckbox,
+                impexAllowRemove = impexAllowRemoveCheckbox,
+                reloadBoundary = reloadBoundaryField,
+                structuralReload = structuralReloadCheckbox,
+                excludeClasses = excludeClassesField,
                 watchExtensions = watchExtensionsField,
                 excludePatterns = excludePatternsField,
                 debounceMs = debounceMsField,
@@ -390,6 +465,12 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
         enabledCheckbox = settings.enabled
         autoCompileCheckbox = settings.autoCompile
         autoImpexCheckbox = settings.autoImpex
+        autoSolrReindexCheckbox = settings.autoSolrReindex
+        autoUpdateRunningSystemCheckbox = settings.autoUpdateRunningSystem
+        impexAllowRemoveCheckbox = settings.impexAllowRemove
+        reloadBoundaryField = settings.reloadBoundary
+        structuralReloadCheckbox = settings.structuralReload
+        excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns
         debounceMsField = settings.debounceMs
@@ -399,5 +480,12 @@ class ReclazzConfigurable(private val project: Project) : Configurable {
         autoDetectJdkCheckbox = settings.autoDetectJdk
         portFilePathField = settings.portFilePath
         agentPortField = settings.agentPort
+        dialogPanel?.reset()
+    }
+
+    override fun disposeUIResources() {
+        dialogPanel = null
+        watchExtensionsTextField = null
+        supportRow = null
     }
 }

@@ -51,7 +51,7 @@ object HybrisPropertyFiles {
      * Read from `hybris.optional.config.dir` in local.properties, whose
      * value normally contains `${HYBRIS_CONFIG_DIR}`.
      */
-    fun optionalConfigDir(configDir: Path): Path? {
+    fun optionalConfigDir(configDir: Path, createMissing: Boolean = true): Path? {
         val localProperties = configDir.resolve("local.properties")
         if (!Files.isRegularFile(localProperties)) return null
 
@@ -63,7 +63,7 @@ object HybrisPropertyFiles {
         if (resolved.isEmpty()) return null
 
         val dir = Path.of(resolved)
-        if (Files.isDirectory(dir)) return dir
+        if (Files.isDirectory(dir) || !createMissing) return dir
 
         // The property names a directory that does not exist yet. Creating
         // it keeps Reclazz inside its own file instead of falling back to
@@ -92,20 +92,22 @@ object HybrisPropertyFiles {
     }
 
     /**
-     * Value a property resolves to WITHOUT Reclazz's own file, so an
+     * Value a property resolves to WITHOUT Reclazz's managed block, so an
      * install can append to what the user configured instead of erasing
      * it. Returns an empty string when nothing defines it.
      */
-    fun effectiveValue(platformHome: Path, configDir: Path, key: String): String {
+    fun effectiveValue(platformHome: Path, configDir: Path, key: String, excludeManagedBlock: Boolean = true): String {
         var value = ""
 
         readProperty(platformHome.resolve("project.properties"), key)?.let { value = it }
-        readProperty(configDir.resolve("local.properties"), key)?.let { value = it }
+        readProperty(configDir.resolve("local.properties"), key, excludeManagedBlock = excludeManagedBlock)?.let { value = it }
 
-        optionalConfigDir(configDir)?.let { dir ->
+        optionalConfigDir(configDir, createMissing = false)?.let { dir ->
             propertyFilesInLoadOrder(dir)
-                .filter { it.fileName.toString() != RECLAZZ_PROPERTIES }
-                .forEach { file -> readProperty(file, key)?.let { value = it } }
+                .forEach { file ->
+                    readProperty(file, key, excludeManagedBlock = excludeManagedBlock && file.fileName.toString() == RECLAZZ_PROPERTIES)
+                        ?.let { value = it }
+                }
         }
 
         return value.trim()
@@ -135,11 +137,12 @@ object HybrisPropertyFiles {
      * lines. Continuation lines are not supported here, and the values
      * Reclazz touches never use them.
      */
-    fun readProperty(file: Path, key: String): String? {
+    fun readProperty(file: Path, key: String, excludeManagedBlock: Boolean = false): String? {
         if (!Files.isRegularFile(file)) return null
         return try {
-            Files.readAllLines(file)
-                .asSequence()
+            val content = Files.readString(file)
+            (if (excludeManagedBlock) HybrisAgentInstaller.removeMarkerBlock(content) else content)
+                .lineSequence()
                 .map { it.trim() }
                 .filter { !it.startsWith("#") && !it.startsWith("!") }
                 .filter { it.startsWith("$key=") }

@@ -97,7 +97,7 @@ object JvmAttacher {
             ?: return AttachResult.Error("Agent JAR not found. Is the Reclazz plugin installed correctly?")
 
         val settings = ReclazzSettings.getInstance(project).state
-        val agentArgs = AgentJarLocator.buildAgentArgs(project, settings)
+        val agentArgs = buildAttachArgs(project, settings)
 
         // Delete stale port file before attaching so we don't connect to a dead port
         val basePath = project.basePath ?: return AttachResult.Error("Project has no base path")
@@ -155,6 +155,16 @@ object JvmAttacher {
                 else -> AttachResult.Error("Failed to attach to PID $pid: $message", e)
             }
         }
+    }
+
+    internal fun buildAttachArgs(project: Project, settings: ReclazzSettings.State): String {
+        if (settings.reloadBoundary == "request") {
+            com.onurkat.reclazz.plugin.reload.ReloadManager.getInstance(project).postLocalMessage(
+                "WARN", "Request-boundary reload requires -javaagent at JVM startup. " +
+                    "Dynamic attach uses immediate reload; restart with the agent to use request mode."
+            )
+        }
+        return AgentJarLocator.buildAgentArgs(project, settings.copy(reloadBoundary = "immediate"))
     }
 
     private fun isKnownDisplayName(displayName: String): Boolean {

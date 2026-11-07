@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- IntelliJ project settings now expose SAP Solr updates, running-system updates,
+  ImpEx REMOVE permission, request-boundary reload, structural reload and class
+  transformation exclusions. Defaults match the agent; SAP options stay scoped
+  to SAP projects and REMOVE permission requires auto-import.
+
 - Java Backoffice modules with explicit metadata can compile `backoffice/src`
   and reload `backoffice/classes`. Initial preparation requires the standard
   WidgetClassLoader, a unique selected output owner and identical startup bytes;
@@ -44,6 +49,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   converter requires `IndexedTypeFieldsValuesProvider`.
 
 ### Fixed
+
+- SAP agent installation rejects conflicting manual agent tokens before writing,
+  verifies the local.properties fallback without reading back its own block,
+  and restores the previous file on verification failure. Install/Reinstall use
+  the current Settings form; applying settings preserves the hidden support line.
+- Solr indexing failures use error colour, and unverified completion uses a bold
+  amber warning style with light/dark console defaults. Ordinary WARN lines share
+  the visible warning style. Solr outcomes retain their INFO level and independent
+  class reload count.
+  Dynamic attach explicitly falls back to immediate reload when request mode
+  requires startup instrumentation.
 
 - SCAN no longer turns an old file with no recorded timestamp into a creation
   event. Existing unseen resources establish a silent baseline instead of

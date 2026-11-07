@@ -177,7 +177,12 @@ object AgentJarLocator {
                 args.add("watchExtensions=${settings.watchExtensions}")
             }
             if (settings.autoCompile) args.add("autoCompile=true")
-            if (settings.autoImpex) args.add("autoImpex=true")
+            if (settings.autoImpex) {
+                args.add("autoImpex=true")
+                if (settings.impexAllowRemove) args.add("impexAllowRemove=true")
+            }
+            if (settings.autoSolrReindex) args.add("autoSolrReindex=true")
+            if (settings.autoUpdateRunningSystem) args.add("autoUpdateRunningSystem=true")
         } else {
             // Non-Hybris: pass IntelliJ's module compiler outputs as watchDirs
             // so the agent watches what the IDE actually compiles to, regardless
@@ -191,6 +196,9 @@ object AgentJarLocator {
         // Common settings
         if (settings.verbose) args.add("verbose=true")
         if (settings.jpaRefresh) args.add("jpaRefresh=true")
+        if (!settings.structuralReload) args.add("structuralReload=false")
+        if (settings.reloadBoundary == "request") args.add("reloadBoundary=request")
+        if (settings.excludeClasses.isNotBlank()) args.add("excludeClasses=${settings.excludeClasses}")
         args.add("debounceMs=${settings.debounceMs}")
         args.add("startupDelaySec=${settings.startupDelaySeconds}")
 

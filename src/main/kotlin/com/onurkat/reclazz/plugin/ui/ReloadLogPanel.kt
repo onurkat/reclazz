@@ -10,6 +10,11 @@ import com.intellij.execution.ui.ConsoleViewContentType
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.editor.colors.EditorColorsManager
+import com.intellij.openapi.editor.markup.TextAttributes
+import com.intellij.ui.ColorUtil
+import java.awt.Color
+import java.awt.Font
 import com.intellij.openapi.util.Disposer
 import com.onurkat.reclazz.plugin.reload.AgentEvent
 import com.onurkat.reclazz.plugin.reload.ReloadManager
@@ -49,14 +54,7 @@ class ReloadLogPanel(private val project: Project) : Disposable {
     }
 
     private fun appendEvent(event: AgentEvent) {
-        val contentType = when (event.level) {
-            "ERROR" -> ConsoleViewContentType.ERROR_OUTPUT
-            "WARN" -> ConsoleViewContentType.LOG_WARNING_OUTPUT
-            "OK", "RELOAD", "STRUCTURAL_RELOAD" -> ConsoleViewContentType.NORMAL_OUTPUT
-            "CONNECTED" -> ConsoleViewContentType.SYSTEM_OUTPUT
-            "DISCONNECTED" -> ConsoleViewContentType.ERROR_OUTPUT
-            else -> ConsoleViewContentType.NORMAL_OUTPUT
-        }
+        val contentType = contentType(event)
 
         val prefix = when (event.level) {
             "CONNECTED" -> "[CONNECTED] "
@@ -79,6 +77,31 @@ class ReloadLogPanel(private val project: Project) : Disposable {
                 reloadHistory.pollFirst()
             }
             reloadHistory.addLast(ReloadEntry(timestamp, event.level, event.message))
+        }
+    }
+
+    internal fun contentType(event: AgentEvent): ConsoleViewContentType = when {
+        event.level == "ERROR" || event.level == "DISCONNECTED" -> ConsoleViewContentType.ERROR_OUTPUT
+        event.level == "INFO" && SOLR_FAILED.matches(event.message) -> ConsoleViewContentType.ERROR_OUTPUT
+        event.level == "WARN" -> WARNING_OUTPUT
+        event.level == "INFO" && SOLR_UNVERIFIED.matches(event.message) -> WARNING_OUTPUT
+        event.level == "CONNECTED" -> ConsoleViewContentType.SYSTEM_OUTPUT
+        else -> ConsoleViewContentType.NORMAL_OUTPUT
+    }
+
+    companion object {
+        // Presentation only: the agent intentionally reports these independent indexing outcomes as INFO.
+        private val SOLR_FAILED = Regex("""SAP Solr [^\r\n]+: FAILED \([^\r\n]+\).*""")
+        private val SOLR_UNVERIFIED = Regex("""SAP Solr [^\r\n]+: FINISHED_UNVERIFIED(?: .*|;.*)?""")
+        // LOG_WARNING_OUTPUT can inherit normal foreground in bundled schemes. Supply a visible
+        // console warning and bold weight; choose by console background, independently of UI theme.
+        private val WARNING_OUTPUT = object : ConsoleViewContentType("Reclazz warning", TextAttributes()) {
+            override fun getAttributes(): TextAttributes {
+                val scheme = EditorColorsManager.getInstance().globalScheme
+                val background = scheme.getColor(ConsoleViewContentType.CONSOLE_BACKGROUND_KEY) ?: scheme.defaultBackground
+                val foreground = if (ColorUtil.isDark(background)) Color(0xE5C07B) else Color(0x8A5700)
+                return TextAttributes(foreground, null, null, null, Font.BOLD)
+            }
         }
     }
 

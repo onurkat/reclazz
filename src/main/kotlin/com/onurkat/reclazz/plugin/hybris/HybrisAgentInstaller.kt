@@ -41,7 +41,7 @@ import java.nio.file.Path
  * ## Where it writes
  *
  * Into the last properties layer Hybris reads (see
- * [HybrisPropertyFiles]), as its own `99-reclazz.properties` when an
+ * [HybrisPropertyFiles]), as its own `95-local.properties` when an
  * optional config directory exists. Existing values are read from the
  * layers below and preserved: `tomcat.debugjavaoptions` normally carries
  * the JDWP flags, and dropping those would break debugging.
@@ -96,7 +96,9 @@ object HybrisAgentInstaller {
         }
     }
 
-    fun install(project: Project): Result {
+    fun install(project: Project): Result = install(project, AgentJarLocator::stableAgentJar)
+
+    internal fun install(project: Project, stageAgent: () -> java.io.File?): Result {
         val hybrisHome = HybrisProjectDetector.findHybrisHome(project)
             ?: return Result.Error("Hybris home not found. This action only works for SAP Commerce projects.")
         val configDir = configDir(project)
@@ -104,19 +106,13 @@ object HybrisAgentInstaller {
         val platformHome = platformHome(project)
             ?: return Result.Error("bin/platform not found under $hybrisHome.")
 
+        outsideAgentConflict(platformHome, configDir)?.let { return Result.Error(it) }
+
         // The stable copy, not the bundled one: the path written here ends
         // up in properties the server starts from, and the IDE's plugin
         // directory is named after the IDE version. See stableAgentJar.
-        val pluginAgentJar = AgentJarLocator.stableAgentJar()
+        val pluginAgentJar = stageAgent()
             ?: return Result.Error("Bundled agent jar not found. Reinstall the Reclazz plugin.")
-
-        // Legacy cleanup: ≤1.0.22 copied the agent jar into the project.
-        try {
-            Files.deleteIfExists(hybrisHome.resolve(".reclazz").resolve("agent.jar"))
-        } catch (e: Exception) {
-            log.warn("Could not remove legacy agent copy: ${e.message}")
-        }
-        removeLegacyWrapperBlocks(platformHome)
 
         val settings = ReclazzSettings.getInstance(project).state
         var agentArg = agentArgument(
@@ -137,30 +133,19 @@ object HybrisAgentInstaller {
             agentArg = "$agentArg $UNSAFE_ACCESS_FLAG"
         }
 
-        // Read what the user already has, from every layer except ours, so
-        // appending never erases their JDWP flags or custom options.
-        val existingJavaOptions = HybrisPropertyFiles
-            .effectiveValue(platformHome, configDir, JAVA_OPTIONS)
-        val existingDebugOptions = HybrisPropertyFiles
-            .effectiveValue(platformHome, configDir, DEBUG_JAVA_OPTIONS)
-
-        val target = HybrisPropertyFiles.targetFile(configDir)
-        val block = buildBlock(agentArg, existingJavaOptions, existingDebugOptions)
-
         return try {
-            writeBlock(target, block)
-
-            // Prove, rather than assume, that the only thing this install
-            // changed is the agent. Everything Reclazz writes overrides a
-            // property somebody else may rely on, so a silent mistake here
-            // would change how their server starts.
-            verifyOnlyAgentAdded(platformHome, configDir, agentArg)?.let { problem ->
-                return Result.Error(
-                    "Install aborted and rolled back: $problem This is a bug, " +
-                    "please report it at https://github.com/onurkat/reclazz/issues."
-                ).also { rollback(target) }
+            val result = installConfiguration(platformHome, configDir, agentArg)
+            if (result is Result.Error) return result
+            // Migrate generated legacy files only after the properties transaction succeeds.
+            // Legacy cleanup: ≤1.0.22 copied the agent jar into the project.
+            try {
+                Files.deleteIfExists(hybrisHome.resolve(".reclazz").resolve("agent.jar"))
+            } catch (e: Exception) {
+                log.warn("Could not remove legacy agent copy: ${e.message}")
             }
+            removeLegacyWrapperBlocks(platformHome)
 
+            val target = HybrisPropertyFiles.targetFile(configDir)
             val ownFile = !HybrisPropertyFiles.writesIntoUserFile(configDir)
             // The next step is NOT just a restart. wrapper.conf is generated
             // from these properties at ant time, so a server started against
@@ -187,7 +172,7 @@ object HybrisAgentInstaller {
             } else ""
             Result.Success(note + flagNote)
         } catch (e: Exception) {
-            Result.Error("Failed to write ${target.fileName}: ${e.message}")
+            Result.Error("Failed to install Reclazz: ${e.message}")
         }
     }
 
@@ -306,7 +291,7 @@ object HybrisAgentInstaller {
         for (key in listOf(JAVA_OPTIONS, DEBUG_JAVA_OPTIONS)) {
             val base = recordedBase(target, key) ?: return "$key lost its recorded base value."
             val effective = HybrisPropertyFiles.effectiveValue(platformHome, configDir, key)
-            // effectiveValue skips our file, so it reports the user's value.
+            // The managed block is excluded, including in the local.properties fallback.
             if (effective.trim() != base.trim()) {
                 return "$key changed underneath the install (expected '${base.trim()}', found '${effective.trim()}')."
             }
@@ -315,24 +300,89 @@ object HybrisAgentInstaller {
             if (written.trim() != joinOptions(base, agentArg).trim()) {
                 return "$key would have been changed beyond adding the agent."
             }
+            if (HybrisPropertyFiles.effectiveValue(platformHome, configDir, key, excludeManagedBlock = false) != written.trim()) {
+                return "$key is overridden by another properties layer; the managed agent would not be active."
+            }
         }
         return null
     }
 
-    /** Undo a write that failed verification, leaving the project as found. */
-    private fun rollback(target: Path) {
-        try {
-            if (!Files.isRegularFile(target)) return
-            val cleaned = removeMarkerBlock(Files.readString(target))
-            if (target.fileName.toString() == HybrisPropertyFiles.RECLAZZ_PROPERTIES && cleaned.isBlank()) {
-                Files.deleteIfExists(target)
-            } else {
-                writeAtomically(target, cleaned)
+    /** The same composition/write/verification transaction used by install and synthetic tests. */
+    internal fun installConfiguration(
+        platformHome: Path,
+        configDir: Path,
+        agentArg: String,
+        verify: () -> String? = { verifyOnlyAgentAdded(platformHome, configDir, agentArg) }
+    ): Result {
+        outsideAgentConflict(platformHome, configDir, parseAgentJarPath(agentArg))
+            ?.let { return Result.Error(it) }
+        val target = HybrisPropertyFiles.targetFile(configDir)
+        val previous = if (Files.exists(target)) Files.readString(target) else null
+        return try {
+            val javaOptions = HybrisPropertyFiles.effectiveValue(platformHome, configDir, JAVA_OPTIONS)
+            val debugOptions = HybrisPropertyFiles.effectiveValue(platformHome, configDir, DEBUG_JAVA_OPTIONS)
+            writeBlock(target, buildBlock(agentArg, javaOptions, debugOptions))
+            val problem = verify()
+            if (problem == null) Result.Success("Reclazz startup options written.")
+            else {
+                restore(target, previous)
+                Result.Error("Install aborted and rolled back: $problem")
             }
-        } catch (e: Exception) {
-            log.warn("Rollback of ${target.fileName} failed: ${e.message}")
+        } catch (failure: Exception) {
+            try {
+                restore(target, previous)
+                Result.Error("Install aborted and rolled back: ${failure.message}")
+            } catch (rollbackFailure: Exception) {
+                Result.Error("Install failed: ${failure.message}. Could not restore ${target.fileName}: ${rollbackFailure.message}")
+            }
         }
     }
+
+    private fun restore(target: Path, previous: String?) {
+        if (previous == null) Files.deleteIfExists(target) else writeAtomically(target, previous)
+    }
+
+    /** Refuse explicit agent tokens, not -D values or another agent's option values. */
+    internal fun outsideAgentConflict(platformHome: Path, configDir: Path, expectedJar: String? = null): String? {
+        val files = mutableListOf(platformHome.resolve("project.properties"), configDir.resolve("local.properties"))
+        val optional = HybrisPropertyFiles.optionalConfigDir(configDir, createMissing = false)
+        optional?.let { files.addAll(HybrisPropertyFiles.propertyFilesInLoadOrder(it)) }
+        val managedFile = optional?.resolve(HybrisPropertyFiles.RECLAZZ_PROPERTIES)
+            ?: configDir.resolve("local.properties")
+        for (file in files) {
+            if (!Files.isRegularFile(file)) continue
+            val lines = Files.readAllLines(file)
+            val begins = lines.indices.filter { lines[it].startsWith(MARKER_BEGIN) }
+            val ends = lines.indices.filter { lines[it].startsWith(MARKER_END) }
+            if (file == managedFile && (begins.isNotEmpty() || ends.isNotEmpty()) &&
+                (begins.size != 1 || ends.size != 1 || begins.single() >= ends.single())) {
+                return "Malformed Reclazz managed block at $file. Repair its markers before installing; no files were changed."
+            }
+            var managed = false
+            for ((index, line) in lines.withIndex()) {
+                if (file == managedFile && line.startsWith(MARKER_BEGIN)) { managed = true; continue }
+                if (file == managedFile && line.startsWith(MARKER_END)) { managed = false; continue }
+                if (managed || line.trimStart().startsWith("#") || line.trimStart().startsWith("!")) continue
+                val key = line.substringBefore('=', "").trim()
+                if (key !in listOf(JAVA_OPTIONS, DEBUG_JAVA_OPTIONS, "tomcat.generaloptions", "tomcat.debuggeneraloptions")) continue
+                for (token in JVM_OPTION.findAll(line.substringAfter('=', ""))) {
+                    val option = token.value.trim('"', '\'')
+                    if (!option.startsWith("-javaagent:")) continue
+                    val jar = option.removePrefix("-javaagent:").substringBefore('=').trim('"', '\'')
+                    val normalized = jar.replace('\\', '/')
+                    val name = normalized.substringAfterLast('/')
+                    if (jar == expectedJar || RECLAZZ_JAR.matches(name) || normalized.endsWith("/.reclazz/agent.jar")) {
+                        return "Conflicting Reclazz -javaagent at $file:${index + 1}. " +
+                            "Remove the manual agent option before installing from Settings; no files were changed."
+                    }
+                }
+            }
+        }
+        return null
+    }
+
+    private val JVM_OPTION = Regex("""(?:"[^"]*"|'[^']*'|[^\s"'])+""")
+    private val RECLAZZ_JAR = Regex("""reclazz-agent(?:-[0-9][^/\\]*)?\.jar""")
 
     /**
      * The agent jar the installed configuration points at, when that file
