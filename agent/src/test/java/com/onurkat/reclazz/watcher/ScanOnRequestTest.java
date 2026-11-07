@@ -53,6 +53,7 @@ class ScanOnRequestTest {
         Files.setLastModifiedTime(changed, FileTime.fromMillis(past + 5_000));
         Path added = pkg.resolve("Added.class");
         Files.write(added, new byte[]{7});
+        Files.setLastModifiedTime(added, FileTime.fromMillis(System.currentTimeMillis()+1));
         Files.writeString(pkg.resolve("notes.txt"), "not a class");
 
         Map<Path, FileWatcher.PendingEvent> pending = new LinkedHashMap<>();
@@ -98,6 +99,8 @@ class ScanOnRequestTest {
         thread.start();
         Path nested = Files.createDirectories(tempDir.resolve("new/deep"));
         Path file = Files.write(nested.resolve("New.class"), new byte[]{1, 2, 3});
+        // Make post-registration creation unambiguous even within one clock millisecond.
+        Files.setLastModifiedTime(file, FileTime.fromMillis(System.currentTimeMillis()+1));
         var scan = java.util.concurrent.CompletableFuture.runAsync(watcher::scanNow);
         try {
             assertTrue(delivered.await(5, java.util.concurrent.TimeUnit.SECONDS));

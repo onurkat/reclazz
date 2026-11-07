@@ -423,6 +423,18 @@ public class FileWatcher {
     }
 
     void registerRecursive(Path root, String moduleName, String sourceRoot) throws IOException {
+        long baseline = System.currentTimeMillis();
+        // A new package can already contain build output before its own watch
+        // is registered. It inherits the original root's observation boundary.
+        for (WatchedDirectory watched : watchKeyMap.values()) {
+            if (root.startsWith(watched.directory()) && moduleName.equals(watched.moduleName())
+                    && sourceRoot.equals(watched.sourceRoot())) baseline = Math.min(baseline, watched.baselineMillis());
+        }
+        for (WatchedDirectory lost : lostDirectories.values()) {
+            if (root.startsWith(lost.directory()) && moduleName.equals(lost.moduleName())
+                    && sourceRoot.equals(lost.sourceRoot())) baseline = Math.min(baseline, lost.baselineMillis());
+        }
+        final long registeredBaseline = baseline;
         Files.walkFileTree(root, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
@@ -442,7 +454,7 @@ public class FileWatcher {
                 // having is not being told, which is what the count below is
                 // for.
                 try {
-                    registerSingle(dir, moduleName, sourceRoot);
+                    registerSingle(dir, moduleName, sourceRoot, registeredBaseline);
                 } catch (IOException cannotWatch) {
                     noteUnwatchable(dir, cannotWatch);
                 }
@@ -546,9 +558,9 @@ public class FileWatcher {
         return new WatchEvidence(watchState, paths.size(), unwatchableCount(), sample, sample.size() < paths.size());
     }
 
-    private void registerSingle(Path dir, String moduleName, String sourceRoot) throws IOException {
+    private void registerSingle(Path dir, String moduleName, String sourceRoot, long baselineMillis) throws IOException {
         WatchKey key = dir.register(watchService, ENTRY_CREATE, ENTRY_MODIFY, ENTRY_DELETE);
-        watchKeyMap.put(key, new WatchedDirectory(dir, moduleName, sourceRoot));
+        watchKeyMap.put(key, new WatchedDirectory(dir, moduleName, sourceRoot, baselineMillis));
     }
 
     /**
@@ -571,9 +583,9 @@ public class FileWatcher {
      * we used to, lost those changes permanently: the user's reload
      * simply never happened, with nothing in the log to explain it.
      *
-     * Re-scanning the directory re-enqueues everything; the content-hash
-     * baseline downstream turns unchanged files into no-ops, so the only
-     * cost is one directory walk.
+     * Re-scanning preserves hash-based recovery for known classes. Resource
+     * files are compared with their observed timestamp or the original watch
+     * baseline; merely discovering an old ImpEx must never trigger an import.
      *
      * Package-private for test access.
      */
@@ -619,8 +631,7 @@ public class FileWatcher {
                     lostDirectories.remove(lost.directory());
                     // What arrived while nothing was watching is a change that
                     // has not been seen yet, which is what these events say.
-                    enqueueExistingFiles(lost.directory(), lost.moduleName(),
-                            lost.sourceRoot(), pendingEvents);
+                    enqueueRecoveredFiles(lost, pendingEvents);
                 } catch (IOException notYet) {
                     // Half-built directories come and go during a build; the
                     // next cycle is a second away.
@@ -712,8 +723,42 @@ public class FileWatcher {
     void handleOverflow(WatchedDirectory watchedDir, Map<Path, PendingEvent> pendingEvents) {
         StatusReporter.warn("File event overflow in " + watchedDir.directory()
                 + ", re-scanning directory to recover dropped changes");
-        enqueueExistingFiles(watchedDir.directory(), watchedDir.moduleName(),
-                watchedDir.sourceRoot(), pendingEvents);
+        enqueueRecoveredFiles(watchedDir, pendingEvents);
+    }
+
+    /** Inventory is not evidence of creation. Resource actions require an observed change. */
+    private ChangeEvent.Type inventoryChange(Path file, long baselineMillis) {
+        long mtime = lastModifiedMillis(file);
+        if (mtime <= 0) return null;
+        FileState state = stateOf(file);
+        long seen = state.seenMtime;
+        if (seen != 0 && mtime <= seen) return null;
+        state.seenMtime = mtime;
+        if (seen == 0 && mtime <= baselineMillis) return null; // silent initial baseline
+        return seen == 0 ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
+    }
+
+    private void enqueueRecoveredFiles(WatchedDirectory owner, Map<Path, PendingEvent> pendingEvents) {
+        try {
+            long now = System.currentTimeMillis();
+            Files.walkFileTree(owner.directory(), new SimpleFileVisitor<>() {
+                @Override public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                    if (!isInterestingFile(file) || config.isExcluded(file.getFileName().toString()))
+                        return FileVisitResult.CONTINUE;
+                    FileState state = fileStates.get(file);
+                    // Known class files retain hash-based recovery, including a build
+                    // preserving mtimes. Resource actions have no such content baseline.
+                    ChangeEvent.Type type = file.getFileName().toString().endsWith(".class")
+                            && state != null && state.contentHash != -1L ? ChangeEvent.Type.MODIFIED
+                            : inventoryChange(file, owner.baselineMillis());
+                    if (type != null) pendingEvents.put(file, new PendingEvent(now, file, type,
+                            owner.moduleName(), owner.sourceRoot()));
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+        } catch (IOException gone) {
+            StatusReporter.warn("Failed to scan recovered directory " + owner.directory() + ": " + Failures.describe(gone));
+        }
     }
 
     void enqueueExistingFiles(Path root, String moduleName, String sourceRoot,
@@ -874,7 +919,7 @@ public class FileWatcher {
         for (WatchedDirectory root : roots) {
             Files.walkFileTree(root.directory(), new SimpleFileVisitor<>() {
                 @Override public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attrs) throws IOException {
-                    if (registered.add(directory)) registerSingle(directory, root.moduleName(), root.sourceRoot());
+                    if (registered.add(directory)) registerSingle(directory, root.moduleName(), root.sourceRoot(), root.baselineMillis());
                     return FileVisitResult.CONTINUE;
                 }
             });
@@ -905,7 +950,8 @@ public class FileWatcher {
 
     /**
      * Enqueue every watched file whose modification time is newer than the
-     * one it was last seen with, or that has not been seen at all.
+     * one it was last seen with. Unseen pre-registration files establish a
+     * silent baseline; only newer unseen files are creation candidates.
      *
      * @return how many were enqueued
      */
@@ -920,17 +966,12 @@ public class FileWatcher {
                     String fileName = file.getFileName().toString();
                     if (!isInterestingFile(file) || config.isExcluded(fileName)) continue;
                     if (!Files.isRegularFile(file)) continue;
-                    long mtime = lastModifiedMillis(file);
-                    if (mtime <= 0) continue;
-                    FileState state = fileStates.get(file);
-                    long seen = state == null ? 0 : state.seenMtime;
-                    if (seen != 0 && mtime <= seen) continue;
-                    stateOf(file).seenMtime = mtime;
+                    ChangeEvent.Type type = inventoryChange(file, watched.baselineMillis());
+                    if (type == null) continue;
                     // Due now: the timestamp is set back by the debounce, so
                     // the settle check passes on this pass.
                     pendingEvents.put(file, new PendingEvent(now - debounceMs, file,
-                            seen == 0 ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED,
-                            watched.moduleName(), watched.sourceRoot()));
+                            type, watched.moduleName(), watched.sourceRoot()));
                     found++;
                 }
             } catch (IOException gone) {
@@ -1279,7 +1320,11 @@ public class FileWatcher {
         return ChangeKind.of(file) != ChangeKind.UNKNOWN;
     }
 
-    record WatchedDirectory(Path directory, String moduleName, String sourceRoot) {}
+    record WatchedDirectory(Path directory, String moduleName, String sourceRoot, long baselineMillis) {
+        WatchedDirectory(Path directory, String moduleName, String sourceRoot) {
+            this(directory, moduleName, sourceRoot, JVM_START_MILLIS);
+        }
+    }
     record PendingEvent(long timestamp, Path path, ChangeEvent.Type type,
                         String moduleName, String sourceRoot) {}
 }

@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+
 ### Added
 
 - Opt-in `autoSolrReindex` queues bounded native updates of existing local
@@ -34,6 +35,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   converter requires `IndexedTypeFieldsValuesProvider`.
 
 ### Fixed
+
+- SCAN no longer turns an old file with no recorded timestamp into a creation
+  event. Existing unseen resources establish a silent baseline instead of
+  triggering automatic ImpEx import or other platform actions. Overflow and
+  lost-directory inventory use the same safety rule; observed edits, real
+  creation events and newly built packages retain their normal handling.
 
 - Methods added after startup no longer keep their last body after removal
   when a framework holds their reflective Method or another class holds a

@@ -116,6 +116,9 @@ class SpringXmlResourceRecognitionTest {
             watcher.registerRecursive(tmp, "example", "resources");
             pending.clear();
             watcher.scanWatchedDirectories(pending, 0);
+            assertTrue(pending.isEmpty(), "first inventory establishes a silent baseline");
+            Files.setLastModifiedTime(loaded, java.nio.file.attribute.FileTime.fromMillis(Files.getLastModifiedTime(loaded).toMillis()+5000));
+            watcher.scanWatchedDirectories(pending, 0);
             assertTrue(pending.containsKey(loaded));
             assertFalse(pending.containsKey(unrelated));
         } finally { watcher.stopWatching(); }

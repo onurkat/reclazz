@@ -80,6 +80,9 @@ public class SapProcessResourceRecognitionTest {
             assertEquals(Set.of(process), pending.keySet());
             watcher.registerRecursive(process.getParent(), "example", "resources");
             pending.clear(); watcher.scanWatchedDirectories(pending, 0);
+            assertTrue(pending.isEmpty(), "first inventory establishes a silent baseline");
+            Files.setLastModifiedTime(process, FileTime.fromMillis(Files.getLastModifiedTime(process).toMillis()+5000));
+            watcher.scanWatchedDirectories(pending, 0);
             assertTrue(pending.containsKey(process)); assertFalse(pending.containsKey(other));
             pending.clear(); watcher.scanLoadedSpringXml(pending);
             assertTrue(pending.isEmpty(), "native root must not be polled twice");

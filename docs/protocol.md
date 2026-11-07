@@ -68,7 +68,7 @@ to every client, except requested BUILD receipts, RELOAD state, DOCTOR observati
 | `VERIFY <token> <class> <sha256>` | read the latest exact-byte reload receipt for one class; requester-only structured result (below) |
 | `DOCTOR <token>` | read bounded JVM, session, watcher and capability evidence; requester-only result (below) |
 | `RELOAD <action> request=<token>` | pause/resume/status automatic reload admission; requester-only correlated state (below) |
-| `SCAN` | look at the watched directories now, instead of on the file watcher's next poll; what changed is reloaded as usual. Send it when a build has just finished |
+| `SCAN` | look at the watched directories now, instead of on the next poll. Files changed since their recorded baseline, or first seen with an mtime after the original watched-root registration, are handled as usual. Older unseen files establish a silent baseline and are not auto-applied just because they were found. Send it when a build has just finished |
 
 Nothing a client sends makes the agent load, reload or run anything it
 would not have on its own.
