@@ -242,6 +242,12 @@ the attempt, and the entire batch returned, including deferred redefinition and
 framework refresh, with no WARN/ERROR on the applying thread. A warning in any
 member conservatively prevents success for the other members too.
 
+Optional SAP `autoSolrReindex` work runs after a provider/resolver reload on a
+separate worker. Its `FINISHED`, `FINISHED_UNVERIFIED` or `FAILED` INFO line
+describes the indexing operation only. An `applied` class receipt does not
+certify stored search-field freshness, and an indexing failure does not undo
+the class reload. No new socket command or receipt field is introduced.
+
 A superclass-changing save illustrates this distinction: eligible method bodies
 may run while the original superclass remains. Its warning makes the matching
 receipt `unverified`, including when a dependent method stays pinned to its old

@@ -46,6 +46,8 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             boolean sap = platform.getPlatformId() == PlatformContext.Platform.HYBRIS;
             InterceptorReloader interceptors = sap ? new InterceptorReloader() : null;
             ImpexAutoImporter importer = sap ? new ImpexAutoImporter(config.isImpexAllowRemove()) : null;
+            SolrReindexer solr = sap && config.isAutoSolrReindex()
+                    ? new SolrReindexer(platform::getAllApplicationContexts) : null;
             CodegenReloader codegen;
             if (platform instanceof HybrisPlatformContext hybris) {
                 java.util.function.Supplier<ClassLoader> loader = () -> {
@@ -69,7 +71,8 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             java.util.Set<Capability> capabilities = java.util.EnumSet.of(Capability.BACKOFFICE_RELOAD);
             if (sap) {
                 capabilities.addAll(java.util.EnumSet.of(Capability.INTERCEPTOR_REFRESH, Capability.IMPEX_IMPORT,
-                        Capability.CONFIG_APPLY, Capability.LOCALIZATION_RELOAD, Capability.PROCESS_RELOAD));
+                        Capability.CONFIG_APPLY, Capability.LOCALIZATION_RELOAD, Capability.PROCESS_RELOAD,
+                        Capability.SOLR_REINDEX));
                 handlers.put(Capability.PROCESS_RELOAD, new SapProcessDefinitionReloader());
                 handlers.put(Capability.IMPEX_IMPORT, change -> {
                     handleImpexChange(changeEvent(change), importer);
@@ -95,6 +98,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
             return new PremiumModule() {
                 @Override public java.util.Set<Capability> capabilities() { return capabilities; }
                 @Override public java.util.Map<Capability, PlatformChangeHandler> changeHandlers() { return handlers; }
+                @Override public boolean reindex(Class<?> type) { return solr != null && solr.enqueue(type); }
                 @Override public PreparedRefresh prepareInterceptor(String name, List<Object> contexts) {
                     var refresh = interceptors == null ? null : interceptors.prepare(name, contexts);
                     return refresh == null ? null : refresh::complete;

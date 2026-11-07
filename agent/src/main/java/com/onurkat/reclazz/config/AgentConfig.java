@@ -26,7 +26,7 @@ public class AgentConfig {
 
     private static final Set<String> KNOWN_KEYS = Set.of(
             "hybrisHome", "watchExtensions", "autoCompile", "autoImpex",
-            "impexAllowRemove", "autoUpdateRunningSystem",
+            "impexAllowRemove", "autoUpdateRunningSystem", "autoSolrReindex",
             "debounceMs", "verbose", "statusPort", "portFile", "wrapOutput",
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
@@ -55,6 +55,7 @@ public class AgentConfig {
      */
     private boolean impexAllowRemove = false;
     private boolean autoUpdateRunningSystem = false;
+    private boolean autoSolrReindex = false;
     private boolean autoCompile = false;
     private long debounceMs = 500;
     private boolean verbose = false;
@@ -174,6 +175,9 @@ public class AgentConfig {
         }
         if (params.containsKey("autoUpdateRunningSystem")) {
             config.autoUpdateRunningSystem = Boolean.parseBoolean(params.get("autoUpdateRunningSystem"));
+        }
+        if (params.containsKey("autoSolrReindex")) {
+            config.autoSolrReindex = Boolean.parseBoolean(params.get("autoSolrReindex"));
         }
 
         if (params.containsKey("autoCompile")) {
@@ -381,6 +385,7 @@ public class AgentConfig {
     public boolean isAutoImpex() { return autoImpex; }
     public boolean isImpexAllowRemove() { return impexAllowRemove; }
     public boolean isAutoUpdateRunningSystem() { return autoUpdateRunningSystem; }
+    public boolean isAutoSolrReindex() { return autoSolrReindex; }
     public boolean isAutoCompile() { return autoCompile; }
     public long getDebounceMs() { return debounceMs; }
     public boolean isVerbose() { return verbose; }

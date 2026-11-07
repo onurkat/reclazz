@@ -19,7 +19,19 @@ public final class SapIndexingGuidance {
 
     /** Called only after a successful code reload. Never invokes indexing or loads an SDK class. */
     public static void afterReload(Class<?> type) {
+        afterReload(type, false, ignored -> false);
+    }
+
+    public static void afterReload(Class<?> type, boolean enabled,
+                                   java.util.function.Predicate<Class<?>> enqueue) {
         if (!isIndexingType(type)) return;
+        if (enabled) {
+            try {
+                if (enqueue.test(type)) return;
+            } catch (RuntimeException | LinkageError unavailable) {
+                // Optional automation cannot change the successful class reload receipt.
+            }
+        }
         StatusReporter.info("SAP indexing code " + type.getName() + " reloaded. "
                 + "Reclazz did not reindex stored documents. Validate a subsequent indexing operation "
                 + "and explicitly reindex affected documents if needed; affected indexes are not determined.");

@@ -15,6 +15,29 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SapIndexingGuidanceTest extends TransformTestBase {
+    @Test void optionOffKeepsAdviceAndNeverCallsIndexer() {
+        String contract = "de.hybris.platform.solrfacetsearch.provider.FieldValueProvider";
+        Class<?> type = defineAndLoad(compile(new SourceFile(contract,
+                "package de.hybris.platform.solrfacetsearch.provider; public interface FieldValueProvider {}"),
+                new SourceFile("com.example.Provider", "package com.example; public class Provider implements " + contract + " {}")),
+                "com.example.Provider");
+        List<String> events = new ArrayList<>();
+        StatusReporter.StatusListener listener = (level, message) -> events.add(level + ":" + message);
+        StatusReporter.addListener(listener);
+        try {
+            SapIndexingGuidance.afterReload(type);
+            List<String> original = List.copyOf(events); events.clear();
+            SapIndexingGuidance.afterReload(type, false, ignored -> { fail("option off called the module"); return true; });
+            assertEquals(original, events);
+            events.clear();
+            var calls = new java.util.concurrent.atomic.AtomicInteger();
+            SapIndexingGuidance.afterReload(type, true, t -> { assertSame(type, t); calls.incrementAndGet(); return true; });
+            assertEquals(1, calls.get()); assertTrue(events.isEmpty());
+            SapIndexingGuidance.afterReload(String.class, true, ignored -> { fail("ordinary type queued"); return true; });
+            SapIndexingGuidance.afterReload(type, true, ignored -> false);
+            assertEquals(original, events);
+        } finally { StatusReporter.removeListener(listener); }
+    }
     @ParameterizedTest
     @ValueSource(strings = {"FieldValueProvider", "ValueResolver", "TypeValueResolver"})
     void inheritedDiamondContractAdvisesOnceWithoutRequiringRestart(String contract) {

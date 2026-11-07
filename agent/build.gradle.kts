@@ -176,6 +176,24 @@ sourceSets.test {
     runtimeClasspath += premium.output
 }
 
+// Native Solr stand-ins must not shadow the independent SAP fixtures that
+// other tests compile into their own loaders (notably the platform Registry).
+val solrTests = sourceSets.create("solrTest") {
+    compileClasspath += premium.output + sourceSets.main.get().output
+    runtimeClasspath += premium.output + sourceSets.main.get().output
+}
+configurations[solrTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
+configurations[solrTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
+val solrUnitTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Isolated SDK-shaped Solr coordinator contracts"
+    useJUnitPlatform()
+    testClassesDirs = solrTests.output.classesDirs
+    classpath = solrTests.runtimeClasspath
+    outputs.upToDateWhen { false }
+}
+tasks.named<Test>("test") { dependsOn(solrUnitTest) }
+
 // The broker's Jackson/SLF4J versions belong to JMS tests only. Extending the
 // dependency declarations resolves a separate graph; it does not change test.
 val jmsTests = sourceSets.create("jmsTest") {
@@ -412,6 +430,7 @@ tasks.test {
 // tests, each of which starts a JVM. The other 850 tests take under twenty.
 // `unitTest` is the inner loop; `test` still runs everything and is the gate.
 val unitTest by tasks.registering(Test::class) {
+    dependsOn(solrUnitTest)
     // Evidence checks inspect isolated compiled test methods without loading Spring 6.
     dependsOn(tasks.named("springSixTestClasses"))
     // P4 provenance checks inspect broker test bytecode without starting a broker.

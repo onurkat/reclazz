@@ -92,6 +92,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `excludeClasses` | (none) | Semicolon-separated class name patterns the transform leaves alone; the way out when instrumenting one class is the problem |
 | `impexAllowRemove` | `false` | Let auto-imported ImpEx files run `REMOVE` lines |
 | `autoUpdateRunningSystem` | `false` | After an items.xml change regenerates the models, run the schema-only Update Running System (add columns, no data, never drop) so a new attribute is live without a manual HAC click. A saved `*-locales_<iso>.properties` also writes the type, attribute and enumeration names it keys onto the types, as "Localize types" would for those keys only. Writes to the live database, so opt-in and dev-only |
+| `autoSolrReindex` | `false` | After a SAP Commerce indexing provider/resolver reload, queue a bounded native update of its existing local Solr documents. Runs normal platform listeners and bookkeeping. Development only; see [targeted reindexing](#targeted-sap-solr-reindexing) |
 | `jpaRefresh` | `false` | Opt-in mapping rebuild. Existing fields require enhanced redefinition; new entities also work on stock JDKs, including supported Hibernate `validate` with a prepared schema. See [scope](#new-jpa-entities-with-a-prepared-schema) |
 | `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
 | `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |
@@ -3409,6 +3410,67 @@ The action depends on which part changed. Regeneration and reload do not update 
 | New JAR dependencies | Classpath is fixed at JVM startup | Restart |
 | `*-spring.xml` and captured local Spring XML bean definitions | Supported bean-definition changes are diffed and applied | Unsupported changes are reported; follow that diagnostic instead of assuming every XML edit needs a restart |
 
+
+### Targeted SAP Solr reindexing
+
+Provider code reload already changes subsequent indexing calls. Stored search
+documents require a separate indexing operation. With `autoSolrReindex=true`
+and the SAP automation module, recognised `FieldValueProvider`, `ValueResolver`
+and `TypeValueResolver` reloads queue that operation automatically. The default
+keeps the existing advice and does not invoke indexing.
+
+Only the indexed types/properties whose provider metadata matches the changed
+class are selected. Property providers use a native partial update; type-level
+resolvers use a whole-document UPDATE for their type. Both receive an explicit
+list of PKs read from the current physical index, capped at 10,000 stored
+documents per type. New database items are not selected by an indexing query.
+No FULL index, schema change, core reload or index switch is requested.
+
+Supported targets use the stock standalone search provider and stock indexer
+strategy, nonempty loopback HTTP(S) endpoints and no distributed indexing.
+Unknown provider metadata, factories/proxies, ambiguous physical ownership,
+missing/unavailable indexes and incomplete or excessive PK reads are refused.
+PK reads use the indexing client and a cursor sorted by the live schema's
+unique key. A switched index/config or changed provider mapping during
+preparation refuses the operation. The native strategy is bound to the index
+that supplied the PKs; a later activation of another index cannot redirect
+those PKs into it.
+
+Discovery reads provider identifiers from persisted configuration models and
+matches bean types from metadata. It does not load native configurations,
+run converters or request provider instances. After targets are known, native
+preparation runs in a fresh platform session in the owning tenant, using that
+session's default language. Native configuration loading can then construct
+providers, including configurations read for the physical-index ownership
+check. Only selected types/properties receive an indexing operation. A mismatch
+between persisted discovery and native provider mappings refuses the operation.
+
+Saves are debounced for 1.5 seconds and run on one background worker in the
+owning tenant. Native listeners, provider code and normal operation bookkeeping
+still run, including project callbacks and database writes to operation records.
+This option is intended for a local development system; it is not a cluster
+refresh or a guarantee of shorter indexing time. On one observed local data
+set, a partial update over 524 documents took about 14 seconds, comparable to
+some historical full-index runs. Those timings are observational.
+
+Native indexing recomputes values from the current application data and session;
+it does not preserve stale values previously stored in the index. A type-level
+UPDATE rebuilds the whole selected document. On the inspected SAP 2211 native
+converter, the live type fixture needed both `TypeValueResolver` and the legacy
+`IndexedTypeFieldsValuesProvider` interface; the indexer selected its legacy
+callback. The modern-only type callback has synthetic contract coverage, but
+no native acceptance is claimed for it. See the evidence record before relying
+on that path.
+
+The class reload receipt and indexing outcome are separate. `FINISHED` means
+the native operation returned without propagating errors; it does not certify
+fresh stored fields. `FINISHED_UNVERIFIED` means native `ignoreErrors` can have
+skipped provider errors. `FAILED` reports refusal or failure without copying
+native messages, customer class names, document values or paths into the
+agent's result line. Config/type tags and counts identify the operation's
+scope. Validate the served search field and consult the native indexing logs
+for application failures. See the [evidence record](feature-evidence/sap-solr-reindex.json)
+for the distinct unit, watcher, SDK and live verification status.
 
 ### SAP reload outcomes and verification
 

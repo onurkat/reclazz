@@ -1,0 +1,105 @@
+{
+  "format_version": 1,
+  "capability": "sap-solr-reindex",
+  "base_commit": "0ef222b",
+  "status": "AWAITING_INDEPENDENT_AUDIT",
+  "scope": "Opt-in local standalone native indexing after provider/resolver reload; explicit stored PKs, one physical index, 10000-document cap, normal listeners and bookkeeping.",
+  "unit_tests": {
+    "status": "PASSED",
+    "tests": 44,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "command": "./gradlew :agent:solrUnitTest --rerun",
+    "kind": "Isolated SDK-shaped contracts with real Spring metadata and actual coordinator/reflection path; native stand-ins never enter ordinary test or production classpaths",
+    "evidence": ".collab/current/research/v4/final-green/solrUnitTest"
+  },
+  "watcher_tests": {
+    "status": "PASSED",
+    "tests": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "kind": "4 synthetic native-graph watcher tests (three provider contracts and native failure) plus3 existing option-off controls; these are not a real SAP Solr server",
+    "command": "./gradlew :agent:solrUnitTest --rerun :agent:e2eTest --rerun --tests '*SapSolrReindexTest' --tests '*SapIndexingGuidanceTest' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "evidence": ".collab/current/research/v4/final-green/e2eTest"
+  },
+  "sdk_contracts": {
+    "status": "RESEARCH_ONLY",
+    "lanes": [
+      "2211-jdk21.8",
+      "2211.49"
+    ],
+    "kind": "Native bytecode, API and DTO declaration inspection; not execution of the new coordinator",
+    "portable_runner": "UNAVAILABLE: both unbuilt SDKs lack generated DTO/model classes; runner compilation failed, not a PASS"
+  },
+  "native_manual_measurement": {
+    "status": "OBSERVED_BY_CLAUDE",
+    "documents": 524,
+    "duration_ms": 14395,
+    "kind": "Manual bound-index native partial operation before implementation; provider code unchanged, not automatic reload acceptance",
+    "evidence": ".collab/current/research/STEP0-CLAUDE.md"
+  },
+  "automatic_live_acceptance": {
+    "status": "OBSERVED_WITH_NATIVE_LIMITS",
+    "documents": 524,
+    "field_marker_matches": 524,
+    "type_marker_matches": 524,
+    "same_document_ids": true,
+    "active_physical_index_unchanged": true,
+    "other_queryable_type_count_unchanged": true,
+    "field_operation": "PARTIAL_UPDATE",
+    "type_operation": "UPDATE",
+    "field_duration_ms": 2987,
+    "type_duration_ms": 17254,
+    "cleanup_operations": 2,
+    "synthetic_markers_removed": true,
+    "original_provider_mappings_restored": true,
+    "type_fixture": "Implements TypeValueResolver and IndexedTypeFieldsValuesProvider; native DefaultIndexer chooses the legacy callback first. Pure modern TypeValueResolver native callback remains UNVERIFIED.",
+    "stored_values": "Preservation is not claimed. Native operations recalculate from current data/session; existing selected and whole-document values changed. Initial control mistakenly belonged to the selected property and was corrected.",
+    "reload_receipts": "All4 synthetic class edits applied with matching SHA-256",
+    "evidence": ".collab/current/research/v4/live/"
+  },
+  "limits": [
+    "No FULL index, schema/core reload or remote/cluster target",
+    "Missing active indexes, core/query errors, unknown providers/strategies and ambiguous ownership refuse",
+    "FINISHED describes a normal native return, not verified field freshness",
+    "Native listeners and operation bookkeeping may write to the local tenant database",
+    "Phase A discovers persisted provider ids through model getters and bean type metadata; phase B native configuration loading and physical ownership preparation may construct providers. Native/persisted mapping differences refuse before strategy creation.",
+    "Modern ValueResolver has synthetic watcher coverage; actual native field acceptance used FieldValueProvider. Pure modern TypeValueResolver native callback remains unverified due the inspected converter legacy-interface cast."
+  ],
+  "ordinary_unit_gate": {
+    "status": "PASSED",
+    "tests": 2266,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 5,
+    "command": "./gradlew :agent:unitTest --rerun -x :agent:jmsUnitTest -x :agent:hibernateTest -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "duration_seconds": 178,
+    "kind": "Includes the44-test isolated Solr dependency task; the2266 count is ordinary unitTest only",
+    "evidence": ".collab/current/research/v4/full-green"
+  },
+  "native_sdk_fixture_compile": {
+    "status": "PASSED",
+    "runtime": "SapMachine21, actual built local SAP Commerce SDK",
+    "sources": 2,
+    "kind": "Synthetic dual-interface native type fixture. Compile and live callback evidence must be read separately."
+  },
+  "discovery_negative_control": {
+    "status": "EXPECTED_FAILURE",
+    "tests": 1,
+    "failures": 1,
+    "source_restored": true,
+    "kind": "Injected native cache read into phase A; metadata-only discovery guard rejected it. Restored44-test and7-test watcher gate passed.",
+    "evidence": ".collab/current/research/v4/mutation-control.json"
+  },
+  "server_restoration": {
+    "status": "VERIFIED",
+    "fixture_classes_removed": 2,
+    "original_config_hashes_unchanged": true,
+    "autoSolrReindex": false,
+    "application_ready": true,
+    "fixture_beans_absent": true,
+    "original_provider_mappings_restored": true
+  }
+}

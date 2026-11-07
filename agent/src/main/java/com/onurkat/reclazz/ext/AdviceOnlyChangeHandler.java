@@ -28,6 +28,7 @@ public final class AdviceOnlyChangeHandler implements PlatformChangeHandler {
             case LOCALIZATION_RELOAD -> "Localization text was not applied; restart required.";
             case BACKOFFICE_RELOAD -> "Backoffice configuration was not applied; restart required.";
             case SAP_MAPPER -> "SAP mapper bindings were not refreshed; restart required.";
+            case SOLR_REINDEX -> "Reclazz did not reindex stored documents; explicitly reindex affected documents if needed.";
             case PROCESS_RELOAD -> throw new AssertionError("Process diagnostic is handled above");
         };
         if (change.capability() == Capability.CODEGEN) StatusReporter.info("Codegen XML changed: " + file);

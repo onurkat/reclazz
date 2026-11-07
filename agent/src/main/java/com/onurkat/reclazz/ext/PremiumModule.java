@@ -14,6 +14,8 @@ public interface PremiumModule {
     Set<Capability> capabilities();
     default Map<Capability, PlatformChangeHandler> changeHandlers() { return Map.of(); }
     default StructuralReloadHook structuralReloadHook() { return new NoopStructuralReloadHook(); }
+    /** True means queued, never that stored search documents have been refreshed. */
+    default boolean reindex(Class<?> type) { return false; }
 
     /** Preparation precedes the Spring cascade; completion follows it, under one admission. */
     default PreparedRefresh prepareInterceptor(String className, List<Object> contexts) { return null; }

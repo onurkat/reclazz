@@ -59,6 +59,12 @@ public final class PremiumModules implements PlatformChangeHandler, StructuralRe
 
     public boolean has(Capability capability) { return registered.containsKey(capability); }
 
+    public boolean reindex(Class<?> type) {
+        Registration entry = registered.get(Capability.SOLR_REINDEX);
+        return entry != null && request(Capability.SOLR_REINDEX).granted()
+                && entry.module().reindex(type);
+    }
+
     public PremiumAdmission.Admission request(Capability capability) {
         if (!has(capability)) return new PremiumAdmission.Admission(false, "platform automation is unavailable");
         return admission.request(capability);

@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Opt-in `autoSolrReindex` queues bounded native updates of existing local
+  SAP Commerce Solr documents after provider/resolver code reloads. The default
+  stays off. Stock standalone targets, exact provider metadata and explicit
+  stored PKs are required; native listeners and bookkeeping still run.
+
 - Registered local SAP Commerce process XML edits can update the active
   in-memory definition after native validation. Processes started afterwards
   use the edited graph; already started processes retain their stored version

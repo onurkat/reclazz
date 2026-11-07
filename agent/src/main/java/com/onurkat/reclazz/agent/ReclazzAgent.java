@@ -1084,7 +1084,8 @@ public class ReclazzAgent {
             StatusReporter.reload(displayName(className), elapsed, effects);
         }
         ReloadEvents.reloaded(className, structural, elapsed, shape, source);
-        SapIndexingGuidance.afterReload(findLoadedClass(className));
+        SapIndexingGuidance.afterReload(findLoadedClass(className),
+                agentConfig != null && agentConfig.isAutoSolrReindex(), premiumModules::reindex);
     }
 
     /**
