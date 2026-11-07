@@ -2995,7 +2995,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3093,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULED-TIMER"
         }
       ],
@@ -3047,7 +3047,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3117,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULED-CURRENT"
         }
       ],
@@ -3099,7 +3099,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3141,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULED-PROXY"
         }
       ],
@@ -3139,7 +3139,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3165,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULES-REPEATABLE"
         }
       ],
@@ -3179,7 +3179,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3189,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULED-ROLLBACK-PREPARATION"
         }
       ],
@@ -3219,7 +3219,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3213,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULED-REFUSAL"
         }
       ],
@@ -3259,7 +3259,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3237,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULED-PROTOTYPE"
         }
       ],
@@ -3311,7 +3311,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3261,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-DELIVERY"
         }
       ],
@@ -3363,7 +3363,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3285,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-CURRENT"
         }
       ],
@@ -3415,7 +3415,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3309,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-PROXY"
         }
       ],
@@ -3467,7 +3467,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3333,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-RESULT"
         }
       ],
@@ -3507,7 +3507,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3357,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-ORDER-NAMES"
         }
       ],
@@ -3547,7 +3547,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3381,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-DEBUG-NAMES"
         }
       ],
@@ -3587,7 +3587,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3405,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-PROTOTYPE-PROXY-REFUSAL"
         }
       ],
@@ -3627,7 +3627,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3429,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-CUSTOM-FACTORY-REFUSAL"
         }
       ],
@@ -3667,7 +3667,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3453,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-RESULT-REFUSAL"
         }
       ],
@@ -3707,7 +3707,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3477,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-ACTUAL-RESULT-REFUSAL"
         }
       ],
@@ -3759,7 +3759,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3501,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-BEFORE-COMMIT"
         }
       ],
@@ -3811,7 +3811,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3525,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-AFTER-COMMIT"
         }
       ],
@@ -3863,7 +3863,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3549,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-AFTER-ROLLBACK"
         }
       ],
@@ -3915,7 +3915,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3573,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-AFTER-COMPLETION"
         }
       ],
@@ -3967,7 +3967,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3597,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-RETIRE"
         }
       ],
@@ -4019,7 +4019,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3621,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-FALLBACK"
         }
       ],
@@ -4059,7 +4059,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3645,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-BEFORE-FAILURE"
         }
       ],
@@ -4099,7 +4099,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3669,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-AFTER-FAILURE"
         }
       ],
@@ -4139,7 +4139,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3693,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-CONTEXT-REFUSAL"
         }
       ],
@@ -4179,7 +4179,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3717,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-TXEVENT-PHASE-EDIT"
         }
       ],
@@ -4231,7 +4231,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3741,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-COMPLETABLE"
         }
       ],
@@ -4283,7 +4283,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3765,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-CANCEL-ROLLBACK"
         }
       ],
@@ -4335,7 +4335,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3789,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-REMOVE"
         }
       ],
@@ -4375,7 +4375,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3813,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-VOID"
         }
       ],
@@ -4415,7 +4415,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3837,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-FUTURE"
         }
       ],
@@ -4455,7 +4455,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3861,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-GENERICS"
         }
       ],
@@ -4495,7 +4495,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3885,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-REFUSAL"
         }
       ],
@@ -4535,7 +4535,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3909,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-EXCEPTIONAL-FUTURE"
         }
       ],
@@ -4575,7 +4575,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3933,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SERVICE-CACHE"
         }
       ],
@@ -4627,7 +4627,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3957,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-EVENT"
         }
       ],
@@ -4679,7 +4679,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 3981,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-SCHEDULED"
         }
       ],
@@ -4719,7 +4719,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4005,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-DEFAULT-EXECUTOR"
         }
       ],
@@ -4759,7 +4759,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4029,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-NAMED-DEFAULT"
         }
       ],
@@ -4799,7 +4799,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4053,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-INFRASTRUCTURE-REFUSAL"
         }
       ],
@@ -4839,7 +4839,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4077,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-ADVISOR-REFUSAL"
         }
       ],
@@ -4885,13 +4885,13 @@
         {
           "path": "docs/usage.md",
           "line": 1914,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4101,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-CALLBACK-TRANSACTIONS"
         }
       ],
@@ -4937,13 +4937,13 @@
         {
           "path": "docs/usage.md",
           "line": 1914,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4125,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-CALLBACK-CACHE"
         }
       ],
@@ -4977,13 +4977,13 @@
         {
           "path": "docs/usage.md",
           "line": 1914,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4149,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-CALLBACK-INSPECT-REFUSAL"
         }
       ],
@@ -5009,13 +5009,13 @@
         {
           "path": "docs/usage.md",
           "line": 1914,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "### Transaction and cache advice on added callbacks"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4173,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-CALLBACK-COMPOSED"
         }
       ],
@@ -5053,7 +5053,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4197,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-NEW-ENTITY"
         }
       ],
@@ -5093,7 +5093,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4221,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-PENDING-METADATA"
         }
       ],
@@ -5133,7 +5133,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4245,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-VALIDATION-FAILURE"
         }
       ],
@@ -5173,7 +5173,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4269,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-PREPARED-SCHEMA"
         }
       ],
@@ -5213,7 +5213,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4293,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-SCHEMA-OVERRIDES"
         }
       ],
@@ -5253,7 +5253,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4317,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-OPTIN-AMBIGUITY"
         }
       ],
@@ -5293,7 +5293,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4341,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-CLOSE-REPORT"
         }
       ],
@@ -5327,13 +5327,13 @@
         {
           "path": "docs/usage.md",
           "line": 3103,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4365,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-QUERY-WATCHER"
         }
       ],
@@ -5367,13 +5367,13 @@
         {
           "path": "docs/usage.md",
           "line": 3103,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4389,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-QUERY-COMPONENT"
         }
       ],
@@ -5414,13 +5414,13 @@
         {
           "path": "docs/usage.md",
           "line": 2690,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "### Held repositories after a prepared mapping refresh"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4413,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-REPOSITORY-AFTER-EMF-SWAP"
         }
       ],
@@ -5488,7 +5488,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4437,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-FIELD-DETECTION"
         }
       ],
@@ -5528,7 +5528,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4461,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-UPDATE-ADVICE"
         }
       ],
@@ -5568,7 +5568,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4485,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-VALIDATE-ADVICE"
         }
       ],
@@ -5608,7 +5608,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4509,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-FIELD-REFRESH-GATE"
         }
       ],
@@ -5648,7 +5648,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4533,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-DDL-GATE"
         }
       ],
@@ -5680,7 +5680,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4557,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-ENHANCED-FIELD"
         }
       ],
@@ -5710,7 +5710,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4581,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-SPRING5"
         }
       ],
@@ -5748,7 +5748,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4605,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-HIBERNATE-L2-ENTITY"
         }
       ],
@@ -5788,7 +5788,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4629,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-HIBERNATE-L2-QUERY"
         }
       ],
@@ -5828,7 +5828,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4653,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-HIBERNATE-L2-ALIASES"
         }
       ],
@@ -5868,7 +5868,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4677,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-HIBERNATE-L2-DISABLED"
         }
       ],
@@ -5900,7 +5900,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4701,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-HIBERNATE-L2-WATCHER"
         }
       ],
@@ -5955,7 +5955,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4725,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SPRING6-NATIVE-EVENT-FAILURE"
         }
       ],
@@ -6000,7 +6000,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4749,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SPRING6-NATIVE-TXEVENT-FAILURE"
         }
       ],
@@ -6052,7 +6052,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4773,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-SCHEDULED-REREGISTER"
         }
       ],
@@ -6092,7 +6092,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4797,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-EVENT-EXISTING-COMPONENT"
         }
       ],
@@ -6132,7 +6132,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4821,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-ASYNC-EXISTING-COMPONENT"
         }
       ],
@@ -6166,13 +6166,13 @@
         {
           "path": "docs/usage.md",
           "line": 3103,
-          "sha256": "14a58289fcadbbc97dcad236db467911888ea7e5311b03074eb5667df75699d8",
+          "sha256": "d7b1fda24da4b8bdda1232092f13ccf955fc237a188f9756c70d9bf9966ef4bf",
           "quote": "Native query edits and repeated saves are tested"
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 4845,
-          "sha256": "7738c0e78a4497b18dbae5601d2a897d73c9432cbd5b68ce31c8d3d7c9aba137",
+          "sha256": "7252f4bd0c613b6327b9de2137e1a3888af00678ff3082b1e47559d0d740c0f0",
           "quote": "### P3C-JPA-SQL-NATIVE-QUERY"
         }
       ],

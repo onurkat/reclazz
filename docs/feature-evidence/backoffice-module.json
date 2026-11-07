@@ -1,0 +1,177 @@
+{
+  "format_version": 1,
+  "capability": "backoffice-module",
+  "base_commit": "02b53fb",
+  "status": "PROVEN_WITH_SCOPE",
+  "scope": "Explicit selected Backoffice modules; exact WidgetClassLoader, unique output owner and identical initial bytes; owner-qualified reload and module compilation.",
+  "native_sdk_lanes": {
+    "sdk17": {
+      "status": "PASS",
+      "observations": [
+        "ROOTS source=true output=true name=com.example.ModuleController compilerOutput=backoffice-classes globalCockpitClasspath=true",
+        "AUTOCOMPILE nativeCockpitType=true output=backoffice-classes",
+        "NATIVE_LOADER type=com.hybris.cockpitng.core.persistence.packaging.WidgetClassLoader codeSourceLocationNull=true modifiable=true watched=true prepared=true",
+        "BODY success=true observed=two",
+        "ADDED success=true structural=true",
+        "ADDED_CALL observed=new"
+      ],
+      "agentSha256": "2ffdaed9c1b707807b4d3a0acf0ac83e43a9d34a0f4ee3943a80196a6971b0cb",
+      "liveServerChanged": false,
+      "sdkWrites": false,
+      "scope": "Actual SDK loader and real agent transformation/redefinition, synthetic Java module; no native tenant or rendered UI",
+      "sdk_version": "2211.49"
+    },
+    "sdk21": {
+      "status": "PASS",
+      "observations": [
+        "ROOTS source=true output=true name=com.example.ModuleController compilerOutput=backoffice-classes globalCockpitClasspath=true",
+        "AUTOCOMPILE nativeCockpitType=true output=backoffice-classes",
+        "NATIVE_LOADER type=com.hybris.cockpitng.core.persistence.packaging.WidgetClassLoader codeSourceLocationNull=true modifiable=true watched=true prepared=true",
+        "BODY success=true observed=two",
+        "ADDED success=true structural=true",
+        "ADDED_CALL observed=new"
+      ],
+      "agentSha256": "2ffdaed9c1b707807b4d3a0acf0ac83e43a9d34a0f4ee3943a80196a6971b0cb",
+      "liveServerChanged": false,
+      "sdkWrites": false,
+      "scope": "Actual SDK loader and real agent transformation/redefinition, synthetic Java module; no native tenant or rendered UI",
+      "sdk_version": "2211-jdk21.8"
+    }
+  },
+  "negative_control": {
+    "command": "./gradlew :agent:unitTest --tests '*BackofficeModuleReloadTest.addedMethodOnPreparedWidgetClassReloadsOnStockJdk' --rerun -x :agent:solrUnitTest -x :agent:jmsUnitTest -x :agent:hibernateTest",
+    "result": "Baseline 02b53fb: 1 test, 1 failure at missing initial preparation assertion; performed before production edits.",
+    "evidence": ".collab/current/research/backoffice-central-red.log"
+  },
+  "live_chrome_acceptance": {
+    "status": "PROVEN_WITH_SCOPE",
+    "performed_by": "Claude independent audit",
+    "date": "2026-11-07",
+    "sdk_version": "2211-jdk21.8",
+    "runtime": "JDK 21",
+    "environment": "Owner-approved local test server, synthetic self-connected widget, default MVC controller binder",
+    "evidence": ".collab/current/AUDIT.md :: Live Chrome acceptance",
+    "agent_sha256_abbreviated_as_reported": "03a00cae...2b5a",
+    "startup": {
+      "class_prepared": true,
+      "watched_directories": 27,
+      "previous_watched_directories": 25,
+      "baseline_click": "sent 1, no handler"
+    },
+    "handler_addition": {
+      "source": "backoffice/src",
+      "auto_compile_java_files": 1,
+      "structural_reload_ms": 785,
+      "added_methods": 1,
+      "already_open_view": "sent 2, no handler",
+      "new_view_second_tab": "handled v1: ping-1"
+    },
+    "body_edit": {
+      "same_new_view": "handled v2: ping-2"
+    },
+    "handler_removal": {
+      "held_listener": "NoSuchMethodError; removed onProbe(String) was not dispatched to its stale body",
+      "held_view_label": "sent 3, no handler",
+      "view_composed_after_removal": "sent 1, no handler; no further NoSuchMethodError"
+    },
+    "limits": [
+      "One self-connected synthetic widget and the default MVC controller binder.",
+      "Arbitrary widget-definition/connection routing, MVVM, browser F5 and other reopen workflows remain unverified.",
+      "Static companion handler reload remains unverified; invalid native signatures retain their existing refusal/advice.",
+      "No rendered UI acceptance on JDK17 or other live SDK/JDK combinations is claimed."
+    ]
+  },
+  "dependencies_added": [],
+  "limitations": [
+    "Stock SapMachine17/21 macOS arm64 native loader lanes only; no other provider/OS certification.",
+    "Second same-name definitions remain unprepared; owner metadata is name-keyed but reload target is loader-qualified.",
+    "Current output/JAR mismatch at initial definition refuses preparation; restart with matching artifacts is required.",
+    "SDK probes report unrelated absent Tomcat JULI/SLF4J setup and watcher-close diagnostics on isolated JVM shutdown; no native tenant/UI boot attempted.",
+    "Rendered Chrome acceptance is limited to the local 2211-jdk21.8/JDK21 self-connected synthetic widget; broader routing and static handler reload remain unverified."
+  ],
+  "native_sdk_command": "python3 scripts/test-sap-backoffice-module-sdk.py <SDK_ROOT> --agent agent/build/libs/agent-1.4.1.jar --java-home <MATCHING_JDK> --output <RECEIPT.json>",
+  "source_sha256": {
+    "agent/src/test/java/com/onurkat/reclazz/reload/BackofficeModuleReloadTest.java": "db70812c2effa3e2fcc27af3a6de9017a268384d1a1d28bdef3af1d9bd4a28eb",
+    "agent/src/test/java/com/onurkat/reclazz/compiler/BackofficeModuleCompilationTest.java": "211dddf86189dff0377131f6982931fc4cfdd41ce7e24ce30f9c198c48a72b1d",
+    "agent/src/test/java/com/onurkat/reclazz/e2e/BackofficeModuleWatcherTest.java": "434b28f68d6cc3ea4393daf6d639eae05400538c101423986dbdd2a842824379",
+    "scripts/test-sap-backoffice-module-sdk.py": "05451bf6f4ee32e16ed3803a50f2a348177b40d8c71d46ce504b961c598388de",
+    "integration-test/src/sapSdkTest/backoffice-module/com/example/NativeModuleApp.java": "3b53b21331b8c798cb36139c0c3e098bbb20358ff715defefdc2db900119464a"
+  },
+  "additional_compiler_negative_control": {
+    "case": "Required module B under bin/modules and required transitively, absent from localextensions.xml",
+    "result": "One test failed before required-metadata closure was added to ExtensionScanner; named Required type was not available to javac.",
+    "command": "./gradlew :agent:unitTest --tests '*BackofficeModuleCompilationTest.backofficeModuleCompilesAgainstRequiredModuleBofOnlyType' --rerun -x :agent:solrUnitTest -x :agent:jmsUnitTest -x :agent:hibernateTest",
+    "evidence": ".collab/current/research/backoffice-implicit-dependency-red.log"
+  },
+  "synthetic_tests": {
+    "unit_subset": [
+      {
+        "name": "com.onurkat.reclazz.reload.BackofficeModuleReloadTest",
+        "tests": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      {
+        "name": "com.onurkat.reclazz.compiler.BackofficeModuleCompilationTest",
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    "unit_command": "./gradlew :agent:unitTest --rerun",
+    "watcher_and_ordinary_member_regressions": {
+      "tests": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "watcher_command": "./gradlew :agent:e2eTest --tests '*BackofficeModuleWatcherTest' --tests '*CoreMemberReloadTest' --rerun -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "raw_evidence": ".collab/current/research/final-unit-results and final-e2e-results"
+  },
+  "unit_gate": {
+    "unitTest": {
+      "tests": 2296,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 5
+    },
+    "solrUnitTest": {
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "jmsUnitTest": {
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "hibernateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "unit_gate_command": "./gradlew :agent:unitTest --rerun",
+  "full_agent_test": {
+    "status": "UNRUN",
+    "reason": "Owner release-only policy; this build ran unitTest and the relevant focused e2e tests."
+  },
+  "artifact_sha256": "2ffdaed9c1b707807b4d3a0acf0ac83e43a9d34a0f4ee3943a80196a6971b0cb",
+  "independent_code_review": {
+    "performed_by": "Claude",
+    "result": "PASS",
+    "evidence": ".collab/current/AUDIT.md",
+    "unit_cases": 121,
+    "e2e_cases": 7,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "admission_disabled_control": "8 of 11 BackofficeModuleReloadTest cases failed; restored",
+    "watcher_control_limit": "BackofficeModuleWatcherTest remained green without admission and proves save routing; component and live tests prove preparation."
+  }
+}

@@ -95,6 +95,10 @@ public class HybrisPlatformContext implements PlatformContext {
                 dirs.add(webClassesDir);
             }
 
+            if (ext.hasBackofficeModule()) {
+                Path backoffice = ext.getPath().resolve("backoffice/classes");
+                if (Files.isDirectory(backoffice)) dirs.add(backoffice);
+            }
             if (!dirs.isEmpty()) {
                 result.put(ext.getName(), dirs);
             }
@@ -128,6 +132,17 @@ public class HybrisPlatformContext implements PlatformContext {
         return bootstrapDirs.isEmpty() ? Map.of() : Map.of("__platform_bootstrap__", bootstrapDirs);
     }
 
+    /** Selected explicit Backoffice modules; shared by admission and compilation. */
+    public Map<String, Path> getBackofficeClassDirs() {
+        Map<String, Path> result = new LinkedHashMap<>();
+        for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
+            if (!ext.hasBackofficeModule() || !config.shouldWatchExtension(ext.getName())) continue;
+            if (config.isWatchAllExtensions() && !ext.isCustom()) continue;
+            result.put(ext.getName(), ext.getPath().resolve("backoffice/classes"));
+        }
+        return result;
+    }
+
     @Override
     public Map<String, List<Path>> getSourceDirs() {
         Map<String, List<Path>> result = new LinkedHashMap<>();
@@ -145,6 +160,10 @@ public class HybrisPlatformContext implements PlatformContext {
                 dirs.add(webSrcDir);
             }
 
+            if (ext.hasBackofficeModule()) {
+                Path backoffice = ext.getPath().resolve("backoffice/src");
+                if (Files.isDirectory(backoffice)) dirs.add(backoffice);
+            }
             if (!dirs.isEmpty()) {
                 result.put(ext.getName(), dirs);
             }
@@ -204,6 +223,11 @@ public class HybrisPlatformContext implements PlatformContext {
                 return pathToClassName(webClassesDir, classFile);
             }
 
+            Path backoffice = extPath.resolve("backoffice/classes");
+            if (ext.hasBackofficeModule() && classFile.startsWith(backoffice)) {
+                return pathToClassName(backoffice, classFile);
+            }
+
             // Check bin/ directory
             Path binDir = extPath.resolve("bin");
             if (classFile.startsWith(binDir)) {
@@ -246,6 +270,9 @@ public class HybrisPlatformContext implements PlatformContext {
             Path webClassesDir = extPath.resolve("web").resolve("webroot")
                     .resolve("WEB-INF").resolve("classes");
             if (classFile.startsWith(webClassesDir)) return webClassesDir;
+
+            Path backoffice = extPath.resolve("backoffice/classes");
+            if (ext.hasBackofficeModule() && classFile.startsWith(backoffice)) return backoffice;
 
             Path binDir = extPath.resolve("bin");
             if (classFile.startsWith(binDir)) return binDir;

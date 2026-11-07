@@ -24,8 +24,14 @@ public class IncrementalCompiler {
     private final HybrisContext context; // null for non-Hybris platforms
     private final PlatformContext platformContext; // used for non-Hybris platforms
     private final JavaCompiler compiler;
+    private final Set<String> watchedBackofficeModules;
 
     public IncrementalCompiler(String classpath, HybrisContext context) {
+        this(classpath, context, context.getExtensions().keySet());
+    }
+
+    public IncrementalCompiler(String classpath, HybrisContext context, Set<String> watchedBackofficeModules) {
+        this.watchedBackofficeModules = Set.copyOf(watchedBackofficeModules);
         this.classpath = classpath;
         this.context = context;
         this.platformContext = null;
@@ -39,6 +45,7 @@ public class IncrementalCompiler {
 
     public IncrementalCompiler(String classpath, PlatformContext platformContext) {
         this.classpath = classpath;
+        this.watchedBackofficeModules = Set.of();
         this.context = null;
         this.platformContext = platformContext;
         this.compiler = ToolProvider.getSystemJavaCompiler();
@@ -75,7 +82,8 @@ public class IncrementalCompiler {
         if (context != null && ext == null) throw new IllegalArgumentException("Unknown extension: " + module);
         // The core output is available before a web group compiles against it.
         List<Path> ordered = new ArrayList<>(sources);
-        if (ext != null) ordered.sort(Comparator.comparing(f -> f.startsWith(ext.getPath().resolve("web/src"))));
+        if (ext != null) ordered.sort(Comparator.comparingInt(f ->
+                isBackofficeSource(f, ext) ? 2 : f.startsWith(ext.getPath().resolve("web/src")) ? 1 : 0));
         for (Path source : ordered) {
             Path output = ext == null ? genericOutput() : resolveOutputDir(source, ext);
             groups.computeIfAbsent(output, p -> new ArrayList<>()).add(source);
@@ -102,7 +110,8 @@ public class IncrementalCompiler {
         Files.createDirectories(staging);
         List<String> options;
         if (context != null) {
-            options = buildCompilerOptions(context.getExtensions().get(module), staging);
+            ExtensionInfo extension = context.getExtensions().get(module);
+            options = buildCompilerOptions(extension, staging, isBackofficeSource(files.get(0), extension));
         } else {
             options = new ArrayList<>(List.of("-d", staging.toString(), "-classpath", classpath,
                     "--release", System.getProperty("java.specification.version", "17"),
@@ -163,13 +172,18 @@ public class IncrementalCompiler {
      * to the core source would seem to do nothing there.
      */
     Path publicationDir(Path output, Path relativeClass) {
-        if (context == null || !output.endsWith(Path.of("web", "webroot", "WEB-INF", "classes"))) return output;
-        Path ext = output.getParent().getParent().getParent().getParent();
+        if (context == null) return output;
+        boolean backoffice = output.endsWith(Path.of("backoffice", "classes"));
+        if (!backoffice && !output.endsWith(Path.of("web", "webroot", "WEB-INF", "classes"))) return output;
+        Path ext = backoffice ? output.getParent().getParent()
+                : output.getParent().getParent().getParent().getParent();
         String file = relativeClass.toString();
         int nested = file.indexOf('$');
         Path source = Path.of((nested < 0 ? file.substring(0, file.length() - ".class".length())
                 : file.substring(0, nested)) + ".java");
-        if (Files.isRegularFile(ext.resolve("web/src").resolve(source))) return output;
+        for (String root : backoffice ? List.of("backoffice/src", "backoffice/gensrc") : List.of("web/src")) {
+            if (Files.isRegularFile(ext.resolve(root).resolve(source))) return output;
+        }
         for (String root : List.of("src", "gensrc")) {
             if (Files.isRegularFile(ext.resolve(root).resolve(source))) return ext.resolve("classes");
         }
@@ -177,6 +191,7 @@ public class IncrementalCompiler {
     }
 
     private Path resolveOutputDir(Path javaFile, ExtensionInfo extInfo) {
+        if (isBackofficeSource(javaFile, extInfo)) return extInfo.getPath().resolve("backoffice/classes");
         // Check if the file is under web/src
         String filePath = javaFile.toString();
         String extPath = extInfo.getPath().toString();
@@ -190,7 +205,12 @@ public class IncrementalCompiler {
         return extInfo.getPath().resolve("classes");
     }
 
-    private List<String> buildCompilerOptions(ExtensionInfo extInfo, Path outputDir) {
+    private boolean isBackofficeSource(Path source, ExtensionInfo ext) {
+        return ext.hasBackofficeModule() && (source.startsWith(ext.getPath().resolve("backoffice/src"))
+                || source.startsWith(ext.getPath().resolve("backoffice/gensrc")));
+    }
+
+    private List<String> buildCompilerOptions(ExtensionInfo extInfo, Path outputDir, boolean backoffice) {
         List<String> options = new ArrayList<>();
 
         // Output directory
@@ -228,6 +248,22 @@ public class IncrementalCompiler {
             cp.append(File.pathSeparator).append(webClasses);
         }
 
+        if (backoffice) {
+            cp.append(File.pathSeparator).append(extInfo.getPath().resolve("backoffice/classes"));
+            Set<String> required = new LinkedHashSet<>();
+            collectRequiredBackoffice(extInfo.getName(), required, new HashSet<>());
+            for (String name : required) {
+                ExtensionInfo dependency = context.getExtensions().get(name);
+                if (dependency == null || !dependency.hasBackofficeModule()) continue;
+                Path classes = dependency.getPath().resolve("backoffice/classes");
+                Path packaged = dependency.getPath().resolve("resources/backoffice/" + name + "_bof.jar");
+                if (watchedBackofficeModules.contains(name) && Files.isDirectory(classes)) {
+                    cp.append(File.pathSeparator).append(classes);
+                } else if (Files.isRegularFile(packaged)) {
+                    cp.append(File.pathSeparator).append(packaged);
+                }
+            }
+        }
         options.add("-classpath");
         options.add(cp.toString());
 
@@ -257,6 +293,12 @@ public class IncrementalCompiler {
         if (Files.isDirectory(genSrcDir)) {
             sourcePaths.add(genSrcDir.toString());
         }
+        if (backoffice) {
+            for (String root : List.of("backoffice/src", "backoffice/gensrc")) {
+                Path source = extInfo.getPath().resolve(root);
+                if (Files.isDirectory(source)) sourcePaths.add(source.toString());
+            }
+        }
         // Also include platform bootstrap gensrc for model classes
         Path bootstrapGensrc = context.getPlatformHome().resolve("bootstrap").resolve("gensrc");
         if (Files.isDirectory(bootstrapGensrc)) {
@@ -269,6 +311,17 @@ public class IncrementalCompiler {
         }
 
         return options;
+    }
+
+    private void collectRequiredBackoffice(String module, Set<String> ordered, Set<String> visiting) {
+        if (!visiting.add(module)) return;
+        ExtensionInfo extension = context.getExtensions().get(module);
+        if (extension != null) {
+            for (String name : extension.getRequiredExtensions()) {
+                collectRequiredBackoffice(name, ordered, visiting);
+                ordered.add(name);
+            }
+        }
     }
 
     /**

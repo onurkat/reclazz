@@ -26,6 +26,9 @@ public class TransformContext {
     // Set of class output directories to scan for watchable classes
     private final Set<Path> watchedClassDirs = ConcurrentHashMap.newKeySet();
 
+    private final Set<Path> backofficeClassDirs = ConcurrentHashMap.newKeySet();
+    private final Set<String> backofficeClassNames = ConcurrentHashMap.newKeySet();
+
     // Metadata for each transformed class (populated after transform)
     private final ConcurrentHashMap<String, ClassMetadata> classMetadata = new ConcurrentHashMap<>();
 
@@ -34,6 +37,9 @@ public class TransformContext {
      * Scans all class output directories for .class files.
      */
     public void populateFromPlatformContext(PlatformContext platformContext) {
+        if (platformContext instanceof com.onurkat.reclazz.platform.HybrisPlatformContext hybris) {
+            backofficeClassDirs.addAll(hybris.getBackofficeClassDirs().values());
+        }
         for (var entry : platformContext.getClassOutputDirs().entrySet()) {
             for (Path dir : entry.getValue()) {
                 if (Files.isDirectory(dir)) {
@@ -56,6 +62,7 @@ public class TransformContext {
                                 .replace(".class", "")
                                 .replace(java.io.File.separatorChar, '/');
                         watchedClassNames.add(internalName);
+                        if (backofficeClassDirs.contains(classesDir)) backofficeClassNames.add(internalName);
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -135,6 +142,34 @@ public class TransformContext {
             if (classFile.startsWith(dir)) return true;
         }
         return false;
+    }
+
+    /** Also discovers newly compiled module classes, without trusting a JAR filename. */
+    public boolean isBackofficeClass(String internalName) {
+        if (backofficeClassNames.contains(internalName)) return true;
+        for (Path root : backofficeClassDirs) {
+            if (Files.isRegularFile(root.resolve(internalName + ".class"))) {
+                backofficeClassNames.add(internalName);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean matchesUniqueBackofficeOutput(String internalName, byte[] bytes) {
+        Path match = null;
+        for (Path root : backofficeClassDirs) {
+            Path file = root.resolve(internalName + ".class");
+            if (!Files.isRegularFile(file)) continue;
+            if (match != null) return false;
+            match = file;
+        }
+        try {
+            return match != null && Files.size(match) == bytes.length
+                    && Arrays.equals(Files.readAllBytes(match), bytes);
+        } catch (IOException failure) {
+            return false;
+        }
     }
 
     public int getWatchedClassCount() {

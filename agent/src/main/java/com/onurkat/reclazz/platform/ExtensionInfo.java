@@ -19,9 +19,17 @@ public class ExtensionInfo {
     private final boolean hasCoreModule;
     private final boolean hasWebModule;
     private final boolean isCustom;
+    private final boolean hasBackofficeModule;
 
     public ExtensionInfo(String name, Path path, List<String> requiredExtensions,
                          boolean hasCoreModule, boolean hasWebModule, boolean isCustom) {
+        this(name, path, requiredExtensions, hasCoreModule, hasWebModule, isCustom, false);
+    }
+
+    public ExtensionInfo(String name, Path path, List<String> requiredExtensions,
+                         boolean hasCoreModule, boolean hasWebModule, boolean isCustom,
+                         boolean hasBackofficeModule) {
+        this.hasBackofficeModule = hasBackofficeModule;
         this.name = name;
         this.path = path;
         this.requiredExtensions = requiredExtensions != null ? requiredExtensions : new ArrayList<>();
@@ -35,6 +43,7 @@ public class ExtensionInfo {
     public Path getPath() { return path; }
     public boolean hasCoreModule() { return hasCoreModule; }
     public boolean hasWebModule() { return hasWebModule; }
+    public boolean hasBackofficeModule() { return hasBackofficeModule; }
     public boolean isCustom() { return isCustom; }
 
     @Override

@@ -22,6 +22,10 @@ public final class ClassLookup {
      * via Instrumentation to cover custom classloader hierarchies.
      */
     public static Class<?> findLoadedClass(String className, Instrumentation instrumentation) {
+        String internalName = className.replace('.', '/');
+        if (com.onurkat.reclazz.util.BackofficePreparedOwners.contains(internalName)) {
+            return com.onurkat.reclazz.util.BackofficePreparedOwners.resolve(internalName, instrumentation);
+        }
         // Fast path: try context classloader
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();

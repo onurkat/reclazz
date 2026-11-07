@@ -501,7 +501,8 @@ public class ReclazzAgent {
                 String classpath = platformContext.resolveClasspath();
                 if (isHybris) {
                     compiler = new IncrementalCompiler(classpath,
-                            ((HybrisPlatformContext) platformContext).getHybrisContext());
+                            ((HybrisPlatformContext) platformContext).getHybrisContext(),
+                            ((HybrisPlatformContext) platformContext).getBackofficeClassDirs().keySet());
                 } else {
                     compiler = new IncrementalCompiler(classpath, platformContext);
                 }

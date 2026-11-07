@@ -9,6 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Java Backoffice modules with explicit metadata can compile `backoffice/src`
+  and reload `backoffice/classes`. Initial preparation requires the standard
+  WidgetClassLoader, a unique selected output owner and identical startup bytes;
+  later reloads target that prepared loader only. Required module compile inputs
+  and core output routing are preserved. Local Chrome acceptance on
+  2211-jdk21.8/JDK21 verified the self-connected synthetic widget's new-view
+  binding, body edit and removal without stale dispatch.
+
 - Opt-in `autoSolrReindex` queues bounded native updates of existing local
   SAP Commerce Solr documents after provider/resolver code reloads. The default
   stays off. Stock standalone targets, exact provider metadata and explicit
@@ -28,8 +36,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   MVC components, native-invalid signatures and unverified static reloads.
   Added public handlers already bound through generic reflection; this change
   corrects the restart advice rather than introducing that binding behavior.
-  The native evidence boundary is detached cockpitng/ZK components, not a full
-  rendered Backoffice workflow.
+  The advice checks use detached cockpitng/ZK components; the separate module
+  acceptance verifies a rendered self-connected synthetic widget on local
+  2211-jdk21.8/JDK21. Arbitrary widget routing remains unverified.
 - Document the verified stock SAP Commerce 2211 limitation: a modern-only
   `TypeValueResolver` cannot be a persisted type provider because the native
   converter requires `IndexedTypeFieldsValuesProvider`.

@@ -155,6 +155,10 @@ public class StructuralReloader {
         }
 
         try {
+            // Refuse before name-keyed metadata or companion caches can change.
+            if (com.onurkat.reclazz.util.BackofficePreparedOwners.contains(internalName)) {
+                findLoadedClass(className);
+            }
             TransformContext.ClassMetadata oldMetadata = context.getMetadata(internalName);
 
             if (oldMetadata == null) {

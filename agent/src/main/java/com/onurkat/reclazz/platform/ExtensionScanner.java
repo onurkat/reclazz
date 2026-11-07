@@ -102,6 +102,23 @@ public class ExtensionScanner {
             scanCustomExtensions(customDir, extensions, allExtensions);
         }
 
+        // Required platform modules may be implicit rather than repeated in
+        // localextensions.xml. Resolve their metadata from the index already
+        // built above, so compiler dependency inputs include those modules too.
+        Deque<ExtensionInfo> pending = new ArrayDeque<>(extensions.values());
+        Set<String> attempted = new HashSet<>(extensions.keySet());
+        while (!pending.isEmpty()) {
+            for (String required : pending.removeFirst().getRequiredExtensions()) {
+                if (!attempted.add(required)) continue;
+                Path path = allExtensions.get(required);
+                if (path == null) continue;
+                ExtensionInfo dependency = parseExtensionInfo(required, path, allExtensions);
+                if (dependency != null) {
+                    extensions.put(required, dependency);
+                    pending.addLast(dependency);
+                }
+            }
+        }
         return extensions;
     }
 
@@ -220,6 +237,7 @@ public class ExtensionScanner {
 
         boolean hasCoreModule = Files.isDirectory(extPath.resolve("src"));
         boolean hasWebModule = Files.isDirectory(extPath.resolve("web").resolve("src"));
+        boolean hasBackofficeModule = false;
         List<String> requiredExtensions = new ArrayList<>();
 
         if (Files.exists(extInfoFile)) {
@@ -235,6 +253,15 @@ public class ExtensionScanner {
                 NodeList webModules = doc.getElementsByTagName("webmodule");
                 if (webModules.getLength() > 0) {
                     hasWebModule = true;
+                }
+
+                NodeList metas = doc.getElementsByTagName("meta");
+                for (int i = 0; i < metas.getLength(); i++) {
+                    Element meta = (Element) metas.item(i);
+                    if ("backoffice-module".equals(meta.getAttribute("key"))
+                            && "true".equalsIgnoreCase(meta.getAttribute("value"))) {
+                        hasBackofficeModule = true;
+                    }
                 }
 
                 // Parse requires-extension
@@ -272,7 +299,7 @@ public class ExtensionScanner {
                        !pathStr.contains("/bin/ext/");
         }
 
-        return new ExtensionInfo(name, extPath, requiredExtensions, hasCoreModule, hasWebModule, isCustom);
+        return new ExtensionInfo(name, extPath, requiredExtensions, hasCoreModule, hasWebModule, isCustom, hasBackofficeModule);
     }
 
     private void scanCustomExtensions(Path customDir, Map<String, ExtensionInfo> extensions,

@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.transform;
 
 import com.onurkat.reclazz.config.AgentConfig;
+import com.onurkat.reclazz.util.BackofficePreparedOwners;
 import com.onurkat.reclazz.ui.StatusReporter;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -45,8 +46,34 @@ public class ReclazzTransformer implements ClassFileTransformer {
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) throws IllegalClassFormatException {
         if (className == null) return null;
+        boolean owned = BackofficePreparedOwners.contains(className);
+        boolean widgetLoader = loader != null && loader.getClass().getName().equals(
+                "com.hybris.cockpitng.core.persistence.packaging.WidgetClassLoader");
+        if (!owned && !widgetLoader && !context.isWatched(className)) return null;
+        if (owned || context.isBackofficeClass(className)) {
+            // Serialize initial admissions before any name-keyed metadata/cache writes.
+            synchronized (BackofficePreparedOwners.class) {
+                if (classBeingRedefined != null) {
+                    if (!BackofficePreparedOwners.matches(className, loader)
+                            || classBeingRedefined.getClassLoader() != loader) return null;
+                } else {
+                    if (BackofficePreparedOwners.contains(className)) {
+                        BackofficePreparedOwners.matches(className, loader); // bounded duplicate diagnostic
+                        return null;
+                    }
+                    if (!widgetLoader || !context.matchesUniqueBackofficeOutput(className, classfileBuffer)) return null;
+                }
+                context.addWatched(className);
+                byte[] result = transformWatched(loader, className, classBeingRedefined, classfileBuffer);
+                if (classBeingRedefined == null && result != null) BackofficePreparedOwners.record(className, loader);
+                return result;
+            }
+        }
+        return transformWatched(loader, className, classBeingRedefined, classfileBuffer);
+    }
 
-        // Only transform watched classes
+    private byte[] transformWatched(ClassLoader loader, String className,
+                                    Class<?> classBeingRedefined, byte[] classfileBuffer) {
         if (!context.isWatched(className)) return null;
 
         // A class that was already loaded when Reclazz attached has none of the

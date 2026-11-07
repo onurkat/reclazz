@@ -3124,14 +3124,64 @@ projection interfaces or parameter-binding variants. It does not certify an
 entity-manager-factory swap, concurrent publication, all Spring Data modules,
 versions, proxy shapes or custom factory behavior.
 
+### Backoffice Java modules
+
+For an extension with `<meta key="backoffice-module" value="true"/>` in
+`extensioninfo.xml`, Reclazz watches `backoffice/src` with `autoCompile=true`,
+or `backoffice/classes` for an IDE/platform build. Existing extension selection
+and class exclusions still apply. Incremental compilation publishes into
+`backoffice/classes`, with core sources compiled first and implicit core classes
+published into the core output. Required Backoffice module inputs are resolved
+transitively: selected modules use their existing class output; other modules
+use their packaged `resources/backoffice/<name>_bof.jar`. Publication still waits
+for every compilation group to succeed.
+
+Start the server with the agent before the widget class first loads. Standard
+Backoffice modules are loaded by
+`com.hybris.cockpitng.core.persistence.packaging.WidgetClassLoader` from copied
+module JARs with a null CodeSource location. Reclazz prepares such a class only
+when exactly one selected module owns its internal name and the bytes being
+defined exactly match that module's `backoffice/classes` file. Stale or missing
+output, duplicate module ownership, another loader type and class exclusions do
+not qualify. A later save need not match the startup JAR; Reclazz does not rewrite
+the deployed module JAR.
+
+Reload selection stays with the successfully prepared loader's existing Class,
+even when the caller's context loader has a foreign same-name class. A second
+definition is left unprepared and does not receive reloads or replace the owner's
+metadata. An unavailable/collected owner refuses reload explicitly. Attaching
+late cannot add the missing preparation; rebuild matching output/JARs and restart
+with the agent when initial preparation was missed.
+
+The synthetic full-agent tests cover source saves, IDE output saves and newly
+added helper calls on an existing widget object. Real native WidgetClassLoader
+preparation and added-method calls were executed in isolated SDK JVMs on
+2211.49/JDK17 and 2211-jdk21.8/JDK21.
+
+Claude's independent live Chrome acceptance on a local 2211-jdk21.8/JDK21 server
+used the self-connected synthetic widget and default MVC controller binder.
+The class was prepared at startup. Adding a public one-parameter SocketEvent
+handler through `backoffice/src` triggered autoCompile and reload: the already
+open view retained its no-handler binding, while a newly composed view in a
+second tab showed `handled v1: ping-1`. A handler body edit updated that view to
+`handled v2: ping-2`. After removal, the held listener raised `NoSuchMethodError`
+and did not run the stale body; a view composed afterwards had no handler.
+This acceptance does not extend to arbitrary widget definitions/connections,
+MVVM binding, static handlers or other live platform/JDK combinations. See the
+[module evidence record](feature-evidence/backoffice-module.json).
+
 ### Backoffice socket actions
 
-Existing widget action bodies use ordinary class reload. On stock JDK 17/21,
+These action rules require an agent-prepared class. Standard module preparation
+follows the [Backoffice Java module conditions](#backoffice-java-modules);
+classes loaded without it cannot gain a method on a stock JVM. Existing prepared
+widget action bodies use ordinary class reload. On stock JDK 17/21,
 Reclazz already exposes added public methods carrying the native
 `com.hybris.cockpitng.annotations.SocketEvent` annotation to cockpitng's default
 MVC controller binder. A newly composed component can bind the handler; an
 already open component keeps its old bindings. Compose a new view to use the
-addition. No particular reopen action or browser F5 is certified here.
+addition. The local Chrome acceptance used a newly composed view in a second
+tab; browser F5 and other view/cache-reset workflows remain unverified.
 
 For public non-static handlers with at most one parameter, Reclazz reports this
 binding boundary at INFO without a restart finding. One-parameter dispatch was
@@ -3150,9 +3200,11 @@ it does not remove a native listener from an open component. Re-running the whol
 native binding helper duplicates listeners and is not attempted.
 
 The native SDK tests use actual cockpitng binding/listeners and detached real ZK
-components. Rendered Backoffice UI, declared socket/connection routing, MVVM
-binding and a particular view-reopening workflow are not certified. Widget
-definitions, connections, user configuration and logged-in sessions are unchanged.
+components. The separate module acceptance verified a rendered self-connected
+synthetic widget on local 2211-jdk21.8/JDK21, including new versus open views,
+body edits and removal. Arbitrary socket/connection routing and MVVM binding
+remain unverified. Reloading Java does not rewrite widget definitions or
+connections, reset user configuration or renew logged-in sessions.
 A body edit or unrelated added helper creates no handler advice. Backoffice
 label/config cache support remains separate. See the
 [evidence record](feature-evidence/backoffice-socket.json).
