@@ -3126,12 +3126,36 @@ versions, proxy shapes or custom factory behavior.
 
 ### Backoffice socket actions
 
-Existing widget action bodies use ordinary class reload. Adding a method with
-the native `com.hybris.cockpitng.annotations.SocketEvent` annotation does not
-register that action in already-running widgets. Reclazz records a widget-specific
-restart finding in `PENDING`; it does not claim that a definition-cache refresh
-registered the action. A body edit or an unrelated added helper creates no such
-registration finding. Backoffice label/config cache support remains separate.
+Existing widget action bodies use ordinary class reload. On stock JDK 17/21,
+Reclazz already exposes added public methods carrying the native
+`com.hybris.cockpitng.annotations.SocketEvent` annotation to cockpitng's default
+MVC controller binder. A newly composed component can bind the handler; an
+already open component keeps its old bindings. Compose a new view to use the
+addition. No particular reopen action or browser F5 is certified here.
+
+For public non-static handlers with at most one parameter, Reclazz reports this
+binding boundary at INFO without a restart finding. One-parameter dispatch was
+executed on SAP Commerce 2211-jdk21.8/JDK21 and 2211.49/JDK17; zero-parameter
+binding is supported by inspected native bytecode, not an executed reload probe.
+Non-public handlers and handlers with more than one parameter receive a warning
+and a `PENDING` finding because the default binder skips them. A public static
+handler with at most one parameter is natively bindable, but its companion reload
+is unverified: INFO plus `PENDING` says to check the new view or restart, without
+claiming native rejection. Mixed additions report each handler separately.
+
+Removing an added method now retargets its held reflective and direct callers
+to `NoSuchMethodError`, or to a surviving inherited implementation. Re-adding
+the signature makes the held call use the new body. This repairs stale dispatch;
+it does not remove a native listener from an open component. Re-running the whole
+native binding helper duplicates listeners and is not attempted.
+
+The native SDK tests use actual cockpitng binding/listeners and detached real ZK
+components. Rendered Backoffice UI, declared socket/connection routing, MVVM
+binding and a particular view-reopening workflow are not certified. Widget
+definitions, connections, user configuration and logged-in sessions are unchanged.
+A body edit or unrelated added helper creates no handler advice. Backoffice
+label/config cache support remains separate. See the
+[evidence record](feature-evidence/backoffice-socket.json).
 
 ## Debugging Reloaded Code
 
@@ -3456,11 +3480,16 @@ some historical full-index runs. Those timings are observational.
 Native indexing recomputes values from the current application data and session;
 it does not preserve stale values previously stored in the index. A type-level
 UPDATE rebuilds the whole selected document. On the inspected SAP 2211 native
-converter, the live type fixture needed both `TypeValueResolver` and the legacy
-`IndexedTypeFieldsValuesProvider` interface; the indexer selected its legacy
-callback. The modern-only type callback has synthetic contract coverage, but
-no native acceptance is claimed for it. See the evidence record before relying
-on that path.
+converter, the live type fixture implemented both `TypeValueResolver` and the
+legacy `IndexedTypeFieldsValuesProvider` interface; the indexer selected its
+legacy callback. A modern-only `TypeValueResolver` cannot be the type provider
+of a persisted stock 2211 configuration: `DefaultIndexedTypePopulator` casts the
+bean to `IndexedTypeFieldsValuesProvider`, and conversion fails with
+`ConversionException` caused by `ClassCastException`. Both SDK bytecode and a
+local rollback-only native probe verified this limitation; Reclazz phase B
+refuses with `native-operation-failed`. A custom populator or programmatically
+built `IndexedType` is outside that stock configuration proof. Synthetic modern
+contract coverage does not certify a native modern type callback.
 
 The class reload receipt and indexing outcome are separate. `FINISHED` means
 the native operation returned without propagating errors; it does not certify

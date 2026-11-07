@@ -8,4 +8,10 @@ package com.onurkat.reclazz.ext;
 @FunctionalInterface
 public interface StructuralReloadHook {
     void afterReload(Class<?> type);
+
+    /** Existing custom hooks retain their single-class callback. */
+    default void afterReload(Class<?> type,
+            java.util.List<com.onurkat.reclazz.platform.BackofficeSocketEventDetector.Handler> handlers) {
+        afterReload(type);
+    }
 }

@@ -21,6 +21,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   definitions and custom factory/cache implementations remain refused.
   Process restart, cache eviction and cluster propagation are outside scope.
 
+### Changed
+
+- Backoffice socket-handler advice now distinguishes newly composed default
+  MVC components, native-invalid signatures and unverified static reloads.
+  Added public handlers already bound through generic reflection; this change
+  corrects the restart advice rather than introducing that binding behavior.
+  The native evidence boundary is detached cockpitng/ZK components, not a full
+  rendered Backoffice workflow.
+- Document the verified stock SAP Commerce 2211 limitation: a modern-only
+  `TypeValueResolver` cannot be a persisted type provider because the native
+  converter requires `IndexedTypeFieldsValuesProvider`.
+
+### Fixed
+
+- Methods added after startup no longer keep their last body after removal
+  when a framework holds their reflective Method or another class holds a
+  direct caller. They fail with `NoSuchMethodError`, or fall back to a surviving
+  inherited physical or added method; restoring the signature restores calls.
+
 ## [1.4.1] - 2026-11-06
 
 ### Changed

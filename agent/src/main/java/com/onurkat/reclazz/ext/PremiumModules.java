@@ -77,12 +77,15 @@ public final class PremiumModules implements PlatformChangeHandler, StructuralRe
         return handler.handle(change);
     }
 
-    @Override public void afterReload(Class<?> type) {
+    @Override public void afterReload(Class<?> type) { afterReload(type, null); }
+
+    @Override public void afterReload(Class<?> type,
+            List<com.onurkat.reclazz.platform.BackofficeSocketEventDetector.Handler> handlers) {
         Registration entry = registered.get(Capability.BACKOFFICE_RELOAD);
         if (entry == null || !request(Capability.BACKOFFICE_RELOAD).granted()) {
-            structuralFallback.afterReload(type);
+            structuralFallback.afterReload(type, handlers);
         } else {
-            entry.structural().afterReload(type);
+            entry.structural().afterReload(type, handlers);
         }
     }
 

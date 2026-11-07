@@ -67,6 +67,38 @@ public class StructuralReloader {
     // diffs (incl. constructor bodies) can be applied via redefineClasses.
     private ReclazzTransformer transformer;
 
+    // The VM schema can be restored during constructor refresh. Keep the last
+    // published source shape separately so removing a companion-only method is
+    // still observed, even when logical reflection is unavailable.
+    private final ClassValue<java.util.concurrent.atomic.AtomicReference<List<TransformContext.MethodSig>>> publishedMethods =
+            new ClassValue<>() {
+                @Override protected java.util.concurrent.atomic.AtomicReference<List<TransformContext.MethodSig>> computeValue(Class<?> type) {
+                    return new java.util.concurrent.atomic.AtomicReference<>(List.of());
+                }
+            };
+
+    private List<TransformContext.MethodSig> previousPublishedMethods(Class<?> owner) {
+        List<TransformContext.MethodSig> previous = new ArrayList<>(publishedMethods.get(owner).get());
+        // Also covers a held logical Method published by another reloader instance.
+        for (var method : ReflectionBridge.addedMethods(owner)) previous.add(new TransformContext.MethodSig(
+                method.getName(), org.objectweb.asm.Type.getMethodDescriptor(method), method.getModifiers()));
+        return previous;
+    }
+
+    private static List<TransformContext.MethodSig> removedPublishedMethods(
+            List<TransformContext.MethodSig> previous, List<TransformContext.MethodSig> current,
+            List<TransformContext.MethodSig> physicalRemoved) {
+        Set<String> present = new HashSet<>();
+        for (var method : current) present.add(method.name() + method.descriptor() + (method.access() & Modifier.STATIC));
+        Map<String, TransformContext.MethodSig> removed = new LinkedHashMap<>();
+        for (var method : physicalRemoved) removed.put(method.name() + method.descriptor() + (method.access() & Modifier.STATIC), method);
+        for (var method : previous) {
+            String key = method.name() + method.descriptor() + (method.access() & Modifier.STATIC);
+            if (!present.contains(key)) removed.putIfAbsent(key, method);
+        }
+        return List.copyOf(removed.values());
+    }
+
     // Per-class version counter, thread-safe
     private final ConcurrentHashMap<String, Integer> versionCounters = new ConcurrentHashMap<>();
 
@@ -1091,8 +1123,13 @@ public class StructuralReloader {
             // A removed method's callers get what a restart would give them,
             // in the same switch as the new bodies: NoSuchMethodError, or the
             // inherited implementation when it was an override.
+            var previousMethods = previousPublishedMethods(targetClass);
+            // The physical schema still lacks added members on every later save.
+            // Only a source addition, not another body edit, deserves new-handler advice.
+            Set<String> addedHandlerMethods = new HashSet<>(diff.getAddedMethods());
+            for (var method : previousMethods) addedHandlerMethods.remove(method.name() + ":" + method.descriptor());
             RemovedMethodTargets.Plan removal = RemovedMethodTargets.plan(
-                    targetClass, classLookup, diff.getRemovedMethodSigs());
+                    targetClass, classLookup, removedPublishedMethods(previousMethods, diff.getNewMethods(), diff.getRemovedMethodSigs()));
             removal.targets().forEach(newTargets::putIfAbsent);
 
             // Before the switch, so no read of an added field on a live object
@@ -1109,6 +1146,7 @@ public class StructuralReloader {
 
             // Re-target all call sites atomically via bootstrap-CL DispatchTable
             DispatchTable.retargetAll(targetClass, companionLookup, newTargets);
+            publishedMethods.get(targetClass).set(List.copyOf(diff.getNewMethods()));
 
             // From this line the JVM serves the new bodies, and nothing below
             // can take that back. So each piece of bookkeeping that follows is
@@ -1535,11 +1573,11 @@ public class StructuralReloader {
             // Spring reload orchestration is now handled by ReclazzAgent.handleClassFileChange()
             // via SpringReloadOrchestrator.onClassReloaded()
 
-            // Existing action bodies reload normally. Only new SocketEvent
-            // registrations need a separate restart finding, read from the save.
-            if (isHybris && isStructural && BackofficeSocketEventDetector
-                    .hasAddedSocketEvent(newBytecode, diff.getAddedMethods())) {
-                structuralReloadHook.afterReload(targetClass);
+            // Advice is derived from the saved handler shape, without rebinding
+            // live components or changing widget definitions.
+            if (isHybris && isStructural) {
+                var handlers = BackofficeSocketEventDetector.addedHandlers(newBytecode, addedHandlerMethods);
+                if (!handlers.isEmpty()) structuralReloadHook.afterReload(targetClass, handlers);
             }
 
             ClassReloader.ReloadResult result = ClassReloader.ReloadResult.structuralSuccess(

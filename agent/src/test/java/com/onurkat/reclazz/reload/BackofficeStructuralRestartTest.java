@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** Real class redefinition with a synthetic annotation shape; no native SAP UI. */
 class BackofficeStructuralRestartTest extends TransformTestBase {
     @ParameterizedTest @ValueSource(strings={"body", "helper", "socket"})
-    void onlyAddedSocketRegistrationCreatesPendingRestart(String edit) throws Exception {
+    void structuralReloadOfAddedPublicOneArgHandlerReportsInfoWithoutLedger(String edit) throws Exception {
         String name="CommerceWidget"+edit;
         var context=new TransformContext();context.addWatched(name);
         var config=AgentConfig.parse(null);
@@ -29,7 +29,7 @@ class BackofficeStructuralRestartTest extends TransformTestBase {
         Class<?> type=defineAndLoad(original,name);Object instance=type.getConstructor().newInstance();
         assertEquals("before",type.getMethod("run").invoke(instance));
         String added=switch(edit) {
-            case "socket" -> "@com.hybris.cockpitng.annotations.SocketEvent public void input() {}";
+            case "socket" -> "@com.hybris.cockpitng.annotations.SocketEvent public void input(String value) {}";
             case "helper" -> "public void helper() {}";
             default -> "";
         };
@@ -43,13 +43,22 @@ class BackofficeStructuralRestartTest extends TransformTestBase {
                 });
         var inst=ByteBuddyAgent.install();
         var reloader=new StructuralReloader(inst,context,config,platform);reloader.setTransformer(transformer);
+        var messages = new java.util.ArrayList<String>();
+        com.onurkat.reclazz.ui.StatusReporter.StatusListener listener = (level, message) -> messages.add(level + ":" + message);
+        com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
         RestartLedger.clear();inst.addTransformer(transformer,true);
         try {
             var result=reloader.reload(name,saved);assertTrue(result.isSuccess(),result.getError());
             assertEquals("after",type.getMethod("run").invoke(instance),"body still applies to the original object");
-            assertEquals(edit.equals("socket")?1:0,RestartLedger.size(),RestartLedger.digest().toString());
-            if(edit.equals("socket"))assertTrue(RestartLedger.digest().stream().anyMatch(s->s.contains("SocketEvent")));
-        } finally { inst.removeTransformer(transformer);RestartLedger.clear(); }
+            assertEquals(0,RestartLedger.size(),RestartLedger.digest().toString());
+            assertEquals(edit.equals("socket"), messages.stream().anyMatch(s -> s.startsWith("INFO:") && s.contains("added @SocketEvent handler")), messages.toString());
+            messages.clear();
+            byte[] bodyEdit = compile(new SourceFile(name,source(name,"after-again",added)),annotation()).get(name);
+            var edited = reloader.reload(name,bodyEdit); assertTrue(edited.isSuccess(),edited.getError());
+            assertEquals("after-again",type.getMethod("run").invoke(instance));
+            assertFalse(messages.stream().anyMatch(s -> s.contains("added @SocketEvent handler")),
+                    "a later body-only save must not invent another handler addition: " + messages);
+        } finally { inst.removeTransformer(transformer);com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);RestartLedger.clear(); }
     }
     private static String source(String name,String value,String added) {
         return "public class "+name+" { public String run() {return \""+value+"\";} "+added+" }";

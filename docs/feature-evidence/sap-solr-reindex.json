@@ -55,7 +55,7 @@
     "cleanup_operations": 2,
     "synthetic_markers_removed": true,
     "original_provider_mappings_restored": true,
-    "type_fixture": "Implements TypeValueResolver and IndexedTypeFieldsValuesProvider; native DefaultIndexer chooses the legacy callback first. Pure modern TypeValueResolver native callback remains UNVERIFIED.",
+    "type_fixture": "Implements TypeValueResolver and IndexedTypeFieldsValuesProvider; native DefaultIndexer chooses the legacy callback first. Stock 2211 cannot load a persisted modern-only TypeValueResolver type provider: DefaultIndexedTypePopulator casts it to IndexedTypeFieldsValuesProvider; ConversionException caused by ClassCastException. Both SDKs and a local rollback-only native probe verified the limitation; Reclazz phase B refuses native-operation-failed. Custom populators/programmatic IndexedType are outside this proof.",
     "stored_values": "Preservation is not claimed. Native operations recalculate from current data/session; existing selected and whole-document values changed. Initial control mistakenly belonged to the selected property and was corrected.",
     "reload_receipts": "All4 synthetic class edits applied with matching SHA-256",
     "evidence": ".collab/current/research/v4/live/"
@@ -66,7 +66,7 @@
     "FINISHED describes a normal native return, not verified field freshness",
     "Native listeners and operation bookkeeping may write to the local tenant database",
     "Phase A discovers persisted provider ids through model getters and bean type metadata; phase B native configuration loading and physical ownership preparation may construct providers. Native/persisted mapping differences refuse before strategy creation.",
-    "Modern ValueResolver has synthetic watcher coverage; actual native field acceptance used FieldValueProvider. Pure modern TypeValueResolver native callback remains unverified due the inspected converter legacy-interface cast."
+    "Modern ValueResolver has synthetic watcher coverage; actual native field acceptance used FieldValueProvider. A persisted modern-only TypeValueResolver type provider is rejected on stock 2211 by the converter legacy-interface cast (ConversionException caused by ClassCastException), verified in both SDK bytecode and a rollback-only local native probe. Phase B refuses native-operation-failed; a custom populator/programmatic IndexedType is not certified."
   ],
   "ordinary_unit_gate": {
     "status": "PASSED",

@@ -4,14 +4,14 @@
  */
 package com.onurkat.reclazz.ext;
 
-import com.onurkat.reclazz.ui.RestartLedger;
-import com.onurkat.reclazz.ui.StatusReporter;
+import com.onurkat.reclazz.platform.BackofficeSocketEventAdvice;
+import com.onurkat.reclazz.platform.BackofficeSocketEventDetector.Handler;
+import java.util.List;
 
-/** No platform mutation; keep the existing unsupported-registration finding. */
+/** Advice only; never mutates native widget state. */
 public final class NoopStructuralReloadHook implements StructuralReloadHook {
-    @Override public void afterReload(Class<?> type) {
-        String reason = "added Backoffice @SocketEvent actions are not registered in existing widgets; restart required";
-        StatusReporter.warn(type.getName() + ": " + reason);
-        RestartLedger.note(type.getName(), reason);
+    @Override public void afterReload(Class<?> type) { BackofficeSocketEventAdvice.report(type, null); }
+    @Override public void afterReload(Class<?> type, List<Handler> handlers) {
+        BackofficeSocketEventAdvice.report(type, handlers);
     }
 }

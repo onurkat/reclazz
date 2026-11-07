@@ -12,7 +12,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PremiumWidgetAdviceTest {
-    @Test void shippedFactoryUsesTheFreeDefaultHook() {
+    private PremiumModule shippedModule() {
         var platform = (com.onurkat.reclazz.platform.PlatformContext) java.lang.reflect.Proxy.newProxyInstance(
                 getClass().getClassLoader(), new Class<?>[]{com.onurkat.reclazz.platform.PlatformContext.class},
                 (proxy, method, args) -> {
@@ -27,7 +27,29 @@ class PremiumWidgetAdviceTest {
             public int applyLoggerLevels(Map<String, String> content, Collection<String> keys) { throw new AssertionError(); }
             public boolean requestRunningSystemUpdate() { throw new AssertionError(); }
         });
-        assertInstanceOf(NoopStructuralReloadHook.class, module.structuralReloadHook());
+        return module;
+    }
+
+    @Test void shippedFactoryUsesTheFreeDefaultHook() {
+        assertInstanceOf(NoopStructuralReloadHook.class, shippedModule().structuralReloadHook());
+    }
+
+    @Test void shippedFactoryDefaultHookReportsReopenAdviceForBindableHandler() {
+        for (boolean admitted : List.of(true, false)) {
+            var modules = new PremiumModules(c -> new PremiumAdmission.Admission(admitted, "synthetic"));
+            assertTrue(modules.register(this::shippedModule));
+            var messages = new ArrayList<String>();
+            StatusReporter.StatusListener listener = (level, message) -> messages.add(level + ":" + message);
+            RestartLedger.clear(); StatusReporter.addListener(listener);
+            try {
+                modules.afterReload(getClass(), List.of(new com.onurkat.reclazz.platform.BackofficeSocketEventDetector.Handler(
+                        "input", "(Ljava/lang/String;)V", java.lang.reflect.Modifier.PUBLIC, 1)));
+                assertEquals(1, messages.size());
+                assertTrue(messages.get(0).startsWith("INFO:"), messages.toString());
+                assertTrue(messages.get(0).contains("composed after this reload"));
+                assertEquals(0, RestartLedger.size());
+            } finally { StatusReporter.removeListener(listener); RestartLedger.clear(); }
+        }
     }
 
     @Test void freeHookReportsExactlyTheExistingPremiumWidgetAdvice() {

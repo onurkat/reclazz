@@ -5,6 +5,7 @@
 package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.bootstrap.InjectedNames;
+import com.onurkat.reclazz.bootstrap.MethodForge;
 import com.onurkat.reclazz.transform.CallSiteAdapter;
 import com.onurkat.reclazz.transform.TransformContext;
 import com.onurkat.reclazz.transform.TransformExclusions;
@@ -99,7 +100,12 @@ final class RemovedMethodTargets {
                         : inheritedImplementation(owner, m.name(), type, isStatic);
                 if (parent != null) {
                     try {
-                        target = isStatic
+                        // A logical parent member has no VM slot for findSpecial.
+                        // Its forged accessor already holds the parent's live site;
+                        // special invocation avoids redispatching to this override.
+                        target = isStatic ? MethodForge.unreflect(ownerLookup, parent, null)
+                                : MethodForge.unreflectSpecial(ownerLookup, parent, owner);
+                        if (target == null) target = isStatic
                                 ? ownerLookup.findStatic(parent.getDeclaringClass(), m.name(), type)
                                 : ownerLookup.findSpecial(parent.getDeclaringClass(), m.name(), type, owner);
                         target = target.asType(siteType);

@@ -1,0 +1,145 @@
+{
+  "format_version": 1,
+  "capability": "backoffice-socket",
+  "base_commit": "0c34ce9",
+  "status": "AWAITING_INDEPENDENT_AUDIT",
+  "existing_behavior": "Generic logical reflection already lets freshly bound default MVC components discover and invoke added public one-parameter SocketEvent handlers; not a new binding feature.",
+  "repair": "Removed added methods retarget held reflective/direct call sites to NoSuchMethodError or surviving inherited physical/added implementations; re-add restores dispatch.",
+  "advice": {
+    "reload_verified": "public non-static with at most one parameter; INFO, no ledger entry; one-parameter native reload executed, zero-parameter binder bytecode only",
+    "native_invalid": "non-public or more than one parameter; WARN plus ledger, no restart cure claimed",
+    "reload_unverified": "public static at most one parameter; native acceptance observed without agent, companion reload unverified; INFO plus ledger without native rejection claim",
+    "legacy_unknown": "old Class-only hook retains existing warning/ledger advice"
+  },
+  "focused_tests": {
+    "unitTest": {
+      "tests": 39,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "e2eTest": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "solrUnitTest": {
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "sdk_lanes": [
+    {
+      "status": "PASS",
+      "observations": [
+        "RESULT visible=false physical=false old=none fresh=none held=not-created existing=existing:sample",
+        "RESULT visible=true physical=false old=none fresh=added-1:sample held=not-created existing=existing:sample",
+        "RESULT visible=true physical=false old=none fresh=added-2:sample held=added-2:sample existing=existing:sample",
+        "RESULT visible=false physical=false old=none fresh=none held=ERROR:NoSuchMethodError existing=existing:sample",
+        "RESULT visible=true physical=false old=none fresh=added-4:sample held=added-4:sample existing=existing:sample"
+      ],
+      "watchedSaves": 4,
+      "duplicateControl": "1 -> 2; whole-helper replay remains unsafe",
+      "agentSha256": "45e6e69738b82d294103ea826e4e4ac269e7cbbcf3b155fe49651af8f402c411",
+      "scope": "native default MVC binding/listener and detached real ZK components; not rendered UI/definition/connection acceptance",
+      "liveServerChanged": false,
+      "sdkVersion": "2211-jdk21.8",
+      "jdk": 21
+    },
+    {
+      "status": "PASS",
+      "observations": [
+        "RESULT visible=false physical=false old=none fresh=none held=not-created existing=existing:sample",
+        "RESULT visible=true physical=false old=none fresh=added-1:sample held=not-created existing=existing:sample",
+        "RESULT visible=true physical=false old=none fresh=added-2:sample held=added-2:sample existing=existing:sample",
+        "RESULT visible=false physical=false old=none fresh=none held=ERROR:NoSuchMethodError existing=existing:sample",
+        "RESULT visible=true physical=false old=none fresh=added-4:sample held=added-4:sample existing=existing:sample"
+      ],
+      "watchedSaves": 4,
+      "duplicateControl": "1 -> 2; whole-helper replay remains unsafe",
+      "agentSha256": "45e6e69738b82d294103ea826e4e4ac269e7cbbcf3b155fe49651af8f402c411",
+      "scope": "native default MVC binding/listener and detached real ZK components; not rendered UI/definition/connection acceptance",
+      "liveServerChanged": false,
+      "sdkVersion": "2211.49",
+      "jdk": 17
+    }
+  ],
+  "sdk_runner": "scripts/test-sap-backoffice-sdk.py",
+  "sdk_fixtures": "integration-test/src/sapSdkTest/backoffice/com/example",
+  "native_negative_control": {
+    "status": "EXPECTED_FAILURE",
+    "kind": "Withheld watched edit; probe rejects unchanged native binding result",
+    "agent_sha256": "45e6e69738b82d294103ea826e4e4ac269e7cbbcf3b155fe49651af8f402c411"
+  },
+  "core_negative_control": {
+    "status": "EXPECTED_FAILURE",
+    "tests": 3,
+    "failures": 3,
+    "kind": "Before production repair, captured added Method keeps first/child body after removal; central held-method assertion is RED"
+  },
+  "limits": [
+    "Actual native binding and listener invocation on detached real ZK Div/Event; no copied dispatcher. Not a rendered Backoffice UI test.",
+    "Definition/socket/connection routing, MVVM, static companion binding, particular reopen/F5 workflow unverified. No definition/config reload or session invalidation.",
+    "Already open pre-save component stays unbound; whole-helper replay duplicates listeners 1 -> 2 and is not attempted. Removing a method invalidates its dispatch, not the retained listener registration.",
+    "Existing direct invocation of an added override of a physical parent method still resolves the physical parent slot in the fixture before removal; this task does not claim that separate override-addition behavior was fixed. Held logical child Method and removal fallback are tested.",
+    "No live server mutation, new dependency, publication or routine full agent:test run."
+  ],
+  "final_jdk21_gate": {
+    "status": "PASSED",
+    "command": "./gradlew :agent:unitTest --rerun :agent:e2eTest --tests '*RemovedAddedMethodReloadTest' --tests '*CoreMemberReloadTest' --rerun -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "duration_seconds": 249,
+    "counts": {
+      "unitTest": {
+        "tests": 2274,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 5
+      },
+      "solrUnitTest": {
+        "tests": 44,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "jmsUnitTest": {
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hibernateTest": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "e2eTest": {
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "full_agent_test": "UNRUN; owner release-only"
+  },
+  "body_only_negative_control": {
+    "status": "EXPECTED_FAILURE",
+    "tests": 3,
+    "failures": 1,
+    "kind": "Follow-up body edit of an already added handler repeated addition advice before final source-shape filter; same assertion passes in final unit gate."
+  },
+  "final_jdk17_watcher_gate": {
+    "status": "PASSED",
+    "command": "JAVA_HOME=<JDK17_HOME> PATH=<JDK17_HOME>/bin:$PATH ./gradlew :agent:e2eTest --tests '*RemovedAddedMethodReloadTest' --tests '*CoreMemberReloadTest' --rerun -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "duration_seconds": 49,
+    "counts": {
+      "tests": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  }
+}
