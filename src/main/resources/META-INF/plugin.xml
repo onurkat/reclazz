@@ -110,6 +110,15 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.5.0</h3>
+        <ul>
+            <li><b>SAP process XML reloads.</b> Saving a registered local process definition updates the active definition after native validation: processes started afterwards use the edited graph, processes already started keep the version they started with. Renamed or duplicate definitions, active dynamic DB definitions and files loaded before the agent are refused with a reason.</li>
+            <li><b>Backoffice modules reload.</b> Widget controllers in <code>backoffice/src</code> and <code>backoffice/classes</code> are watched and compiled; body edits, added methods and added <code>@SocketEvent</code> handlers apply on a stock JDK. A newly opened view binds a new handler, an open view keeps its old bindings.</li>
+            <li><b>Opt-in Solr updates.</b> With the new <code>autoSolrReindex</code> setting, reloading a FieldValueProvider, ValueResolver or type provider updates the local Solr documents that use it, through the platform's own indexer, without a full index.</li>
+            <li><b>A removed method stays removed.</b> A method added after startup and later removed now fails with <code>NoSuchMethodError</code> for held reflective methods and callers, instead of running its last body.</li>
+            <li><b>IDE settings.</b> SAP Solr updates, running-system updates, ImpEx REMOVE permission, request-boundary reload, structural reload and class exclusions are now in Settings. The SAP installer refuses a second Reclazz agent elsewhere in the property layers and restores the previous file on failure. Failed and unverified Solr updates and warnings are coloured in the Reload Log.</li>
+            <li><b>Fixes.</b> SCAN no longer treats old, never-seen files as new, so it cannot auto-import existing ImpEx files.</li>
+        </ul>
         <h3>1.4.1</h3>
         <ul>
             <li><b>A removed method answers as it would after a restart.</b> A caller that still uses a method a save removed, a class nobody recompiled or a framework holding its <code>Method</code>, gets what it would get after a restart: <code>NoSuchMethodError</code> naming the method, or the inherited implementation when the removed method was an override. It used to keep running the removed method's previous body until restart. Putting the method back makes it answer again with the restored body.</li>

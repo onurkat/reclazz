@@ -26,7 +26,7 @@ Spring Boot project:
 plugins {
     java
     id("org.springframework.boot") version "3.3.0"
-    id("com.onurkat.reclazz") version "1.4.1"
+    id("com.onurkat.reclazz") version "1.5.0"
 }
 ```
 
@@ -73,7 +73,7 @@ wins over the coordinate, so nothing is downloaded:
 ```kotlin
 reclazz {
     // e.g. the jar from https://github.com/onurkat/reclazz/releases
-    agentJar.set(file("libs/reclazz-agent-1.4.1.jar"))
+    agentJar.set(file("libs/reclazz-agent-1.5.0.jar"))
 }
 ```
 
@@ -83,7 +83,7 @@ reclazz {
 reclazz {
     enabled.set(true)                       // turn the agent on or off
     agentJar.set(file("libs/agent.jar"))    // explicit jar; wins over agentVersion
-    agentVersion.set("1.4.1")               // coordinate version when no agentJar
+    agentVersion.set("1.5.0")               // coordinate version when no agentJar
     platform.set("spring")                  // defaults to spring under the Boot plugin
     watchDirs.set(listOf("build/classes/java/main"))  // overrides automatic main outputs
     arguments.put("debounceMs", "300")      // extra agent args as key=value
@@ -119,7 +119,7 @@ person or a coding agent to check the inner loop:
 ```
 
 ```json
-{"attached":true,"agent":"1.4.1","protocol":1,"port":54123,"health":["Reloads: 3, failures: 0, median 12ms"]}
+{"attached":true,"agent":"1.5.0","protocol":1,"port":54123,"health":["Reloads: 3, failures: 0, median 12ms"]}
 ```
 
 When nothing is attached it prints `{"attached":false,"reason":"..."}`. It reads
@@ -146,7 +146,7 @@ configure the root task:
 
 ```kotlin
 tasks.named<com.onurkat.reclazz.gradle.ReclazzSafeBuildTask>("reclazzSafeBuild") {
-    mcpJar.set(file("tools/reclazz-mcp-1.4.1.jar"))
+    mcpJar.set(file("tools/reclazz-mcp-1.5.0.jar"))
     port.set(54123) // explicit loopback agent endpoint; check its doctor identity first
     owner.set("builder-alice") // retain for recovery; do not share with concurrent builders
     timeoutMs.set(5000) // acknowledgement timeout, not a build duration limit

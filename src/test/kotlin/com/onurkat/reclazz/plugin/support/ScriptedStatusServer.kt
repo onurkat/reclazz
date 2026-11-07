@@ -92,7 +92,8 @@ class ScriptedStatusServer(private val portFile: Path) : AutoCloseable {
         private fun escape(value: String) = value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r")
         private fun event(level: String, message: String, connected: Boolean = false): String =
             "{\"level\":\"$level\",\"message\":\"${escape(message)}\",\"timestamp\":\"${Instant.now()}\"" +
-                (if (connected) ",\"version\":1,\"agent\":\"1.4.1\"" else "") + "}"
+                // No agent version, so the replay does not depend on the release number.
+                (if (connected) ",\"version\":1" else "") + "}"
 
         /** Run on a test classpath with a SYNTHETIC project's port file; HEALTH replays the table. */
         @JvmStatic fun main(args: Array<String>) {
