@@ -350,7 +350,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2375,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-VALIDATION-ADD"
         }
       ],
@@ -402,7 +402,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2391,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-VALIDATION-CHANGE"
         }
       ],
@@ -454,7 +454,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2407,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-VALIDATION-REMOVE-RESTORE"
         }
       ],
@@ -506,7 +506,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2423,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-VALIDATION-HELD"
         }
       ],
@@ -558,7 +558,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2439,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-VALIDATION-SIDE-EFFECTS"
         }
       ],
@@ -610,7 +610,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2455,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-VALIDATION-CONTROL"
         }
       ],
@@ -651,18 +651,18 @@
     },
     {
       "id": "P3A-REQUEST-COMPLETE",
-      "statement": "Completing one request cannot release a second held worker\u2019s code.",
+      "statement": "Completing one request cannot release a second held worker’s code.",
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2717,
-          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
+          "line": 2718,
+          "sha256": "6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15",
           "quote": "MVC request from crossing a class reload."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2471,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-REQUEST-COMPLETE"
         }
       ],
@@ -689,7 +689,7 @@
           }
         }
       ],
-      "observable": "Completing one request cannot release a second held worker\u2019s code.",
+      "observable": "Completing one request cannot release a second held worker’s code.",
       "control": "Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
@@ -703,18 +703,18 @@
     },
     {
       "id": "P3A-REQUEST-TIMEOUT",
-      "statement": "A timeout503 and another completed request cannot release an interrupt-ignoring worker\u2019s code.",
+      "statement": "A timeout503 and another completed request cannot release an interrupt-ignoring worker’s code.",
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2717,
-          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
+          "line": 2718,
+          "sha256": "6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15",
           "quote": "MVC request from crossing a class reload."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2487,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-REQUEST-TIMEOUT"
         }
       ],
@@ -741,7 +741,7 @@
           }
         }
       ],
-      "observable": "A timeout503 and another completed request cannot release an interrupt-ignoring worker\u2019s code.",
+      "observable": "A timeout503 and another completed request cannot release an interrupt-ignoring worker’s code.",
       "control": "Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
@@ -759,14 +759,14 @@
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
-          "line": 2717,
-          "sha256": "0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a",
+          "line": 2718,
+          "sha256": "6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15",
           "quote": "MVC request from crossing a class reload."
         },
         {
           "path": "docs/feature-evidence.md",
           "line": 2503,
-          "sha256": "1bcd072a36aad041404637e4848a58b2c7e95ad9dcbd558ee8e1843c4043dfd8",
+          "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
           "quote": "### P3A-REQUEST-LATEST"
         }
       ],

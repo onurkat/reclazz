@@ -15,7 +15,7 @@
 <script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
 <link rel="stylesheet" href="/docs/assets/docs.css?v=1a3655f79ef4"><link rel="stylesheet" href="/assets/site.css?v=ff823a0eccc6">
 <script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Core JVM feature evidence", "description": "Complete configuration, behavior and scope reference: Core JVM feature evidence.", "url": "https://reclazz.com/docs/reference/feature-evidence/", "dateModified": "2026-10-19", "version": "1.4.1"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Core JVM feature evidence", "description": "Complete configuration, behavior and scope reference: Core JVM feature evidence.", "url": "https://reclazz.com/docs/reference/feature-evidence/", "dateModified": "2026-10-19", "version": "1.5.0"}</script>
 </head>
 <body class="docs-page">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -28,7 +28,7 @@
 <details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
 </header>
 <details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a aria-current="page" href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">◈</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
-<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.4.1</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a aria-current="page" href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">◈</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.5.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a aria-current="page" href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">◈</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
 <main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="core-jvm-feature-evidence">Core JVM feature evidence</h1><div class="reference-content"><p>This is the first checkpoint of the all-advertised-features evidence program. It classifies the listed core promises; it does not certify every feature, framework, program, JDK or operating system. Other evidence packages remain separate.</p>
 <p>Records distinguish <strong>PROVEN_WITH_SCOPE</strong> (observed watcher behavior on both named lanes), <strong>PARTIAL</strong> (component observations only), <strong>EXPECTED</strong> (observed limitation/refusal), <strong>FAILED</strong> (a capability fails despite a passing characterization test) and <strong>UNVERIFIED</strong> (missing run/environment). Independent Claude review is pending until the package audit is archived.</p>
 <p>The available lanes are stock SapMachine17/21 on macOS arm64. Other provider/OS/enhanced cells remain unverified. Deferred field-initializer concurrency stays deferred. Raw logs/XML are retained locally at the paths in the JSON; the JSON contains method results and provenance, not a substitute claim that every green receipt establishes behavior.</p>
@@ -61,7 +61,7 @@
 <h3 id="p1-field-old">P1-FIELD-OLD</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Isolated added instance initializers give existing objects their own first-read values.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#anAddedFieldReadsItsInitialiserValueOnAnObjectThatAlreadyExisted</code> (watcher): New list sizes1 then2, integer retries3 and computed label HOLDER!; first-read explanation and no initializer warning.</p>
@@ -73,7 +73,7 @@
 <h3 id="p1-field-param-refusal">P1-FIELD-PARAM-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Historical constructor arguments are not reconstructed for an added field.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#aFieldSetFromAConstructorArgumentIsStillNamed</code> (watcher): Held name x survives; added upper stays null and warning names upper/constructor parameter.</p>
@@ -85,7 +85,7 @@
 <h3 id="p1-field-failure">P1-FIELD-FAILURE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>An initializer failure is isolated and may retry after a later initializer generation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.AddedFieldInitialiserTest#failureIsIsolatedAndNextReloadRepairsOnlyTheFailedObject</code> (watcher): null:1|healthy:1 becomes recovered:2|healthy:1; successful neighbor is not reinitialized.</p>
@@ -97,7 +97,7 @@
 <h3 id="p1-field-conditional">P1-FIELD-CONDITIONAL</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>An isolated conditional uses each existing receiver state.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors</code> (watcher): Four held objects produce on1/true, off1/false and explicit-null outcomes with per-object branch counts.</p>
@@ -109,7 +109,7 @@
 <h3 id="p1-field-new-routes">P1-FIELD-NEW-ROUTES</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Equivalent and delegated constructors preserve old/new initialization order.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#equivalentConstructorRoutesPreserveOldAndNewInstancesAcrossReloads</code> (watcher): Old constructor count4 stays fixed; new three constructor routes give off3/false with total7 constructors/2 delegations and one initializer call each.</p>
@@ -121,7 +121,7 @@
 <h3 id="p1-field-unread-later">P1-FIELD-UNREAD-LATER</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>A previously unread added field uses the current initializer generation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors</code> (watcher): Unread object uses on2/true after the second save, while earlier values remain unchanged.</p>
@@ -133,7 +133,7 @@
 <h3 id="p1-field-null-keep">P1-FIELD-NULL-KEEP</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Application values, including an explicit null write before read, survive later saves.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#existingObjectsUseTheirStateWithoutRerunningConstructors</code> (watcher): user/true and explicit null survive repeated saves; existing application field77 remains77.</p>
@@ -145,7 +145,7 @@
 <h3 id="p1-field-side-effect-bounds">P1-FIELD-SIDE-EFFECT-BOUNDS</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Isolated switch arms and unrelated initializer handlers do not replay old constructors/blocks.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3253</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:22</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3375</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalInstanceInitialiserReloadTest#switchAndUnrelatedHandlersAcrossConstructorRoutes</code> (watcher): Constructor count4 across edits, unrelated block count8 in each of four stages; selected arm counts and new constructor ordering verified.</p>
@@ -157,7 +157,7 @@
 <h3 id="p1-static-conditional">P1-STATIC-CONDITIONAL</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Only selected isolated conditional static initializer arms run.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3220</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3342</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode</code> (watcher): Selected condition/left/right counters progress 1:1:0 then2:1:1 across three saves.</p>
@@ -169,7 +169,7 @@
 <h3 id="p1-static-null-keep">P1-STATIC-NULL-KEEP</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>An initialized null and an application-written static value remain stored.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3220</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3342</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode</code> (watcher): NULLABLE remains null and CHOICE=user survives later saves.</p>
@@ -181,7 +181,7 @@
 <h3 id="p1-static-later-keep">P1-STATIC-LATER-KEEP</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>A newly added later static field uses the current condition without resetting older fields.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3220</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3342</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode</code> (watcher): LATER=right after the flag changes; existing77 remains77 and earlier CHOICE=user.</p>
@@ -193,7 +193,7 @@
 <h3 id="p1-static-block-no-replay">P1-STATIC-BLOCK-NO-REPLAY</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Unrelated static blocks are not replayed for isolated static initializers.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3220</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3342</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#conditionalFieldsInitializeOnceWithoutReplayingOldStaticCode</code> (watcher): Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.; <code>com.onurkat.reclazz.e2e.ConditionalStaticInitialiserReloadTest#switchAndUnrelatedHandlersDoNotReplayStaticBlocks</code> (watcher): Original block count1 or2 stays fixed across three edits, including isolated switch and unrelated handler fixture.</p>
@@ -205,7 +205,7 @@
 <h3 id="p1-method-add">P1-METHOD-ADD</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>An updated caller can invoke an added method on the existing receiver.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore</code> (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.</p>
@@ -217,7 +217,7 @@
 <h3 id="p1-method-remove-held">P1-METHOD-REMOVE-HELD</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>A held Method and an unchanged caller of a removed method get NoSuchMethodError, as after a restart; restoring the method makes both answer with the restored body, and held objects and fields survive.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore</code> (watcher): Held object/Field survive add/remove/restore/repeat; held Method and pre-existing Legacy caller get NoSuchMethodError while gone is removed and the restored body after restore; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.</p>
@@ -229,7 +229,7 @@
 <h3 id="p1-removed-reflection">P1-REMOVED-REFLECTION</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Original members removed by reload disappear from native reflection scans.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore</code> (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.</p>
@@ -241,7 +241,7 @@
 <h3 id="p1-member-restore">P1-MEMBER-RESTORE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Restoring an original removed member makes it visible and callable again.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore</code> (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.</p>
@@ -253,7 +253,7 @@
 <h3 id="p1-field-remove">P1-FIELD-REMOVE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>A removed original field is hidden while a held Field and unchanged caller retain its value.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:21</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.CoreMemberReloadTest#addedCallsAndRemovedReflectionKeepHeldMembersAcrossRestore</code> (watcher): Held object/Method/Field and pre-existing Legacy caller survive add/remove/restore/repeat; updated external Caller reaches added method/owner accessor; native meta-reflection hides/restores original gone/legacy, the added extra method is visible through meta-reflection and the added field is also visible; same PID/nonce.</p>
@@ -265,7 +265,7 @@
 <h3 id="p1-field-cross-class">P1-FIELD-CROSS-CLASS</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Direct watched cross-class instance-field reads and writes share the owning object store on the recorded declaring-type paths.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3193</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); <code>docs/product-reference.md:597</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>CHANGELOG.md:391</code> (SHA-256 <code>e9f024e69ee6be800c87c05c1285c78d05ea65beb7f84cb9c48c06b563916a33</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3315</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); <code>docs/product-reference.md:597</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>CHANGELOG.md:480</code> (SHA-256 <code>e3251f3c8fed6c48b1bf7f9a4b9ffdad45e18b2e29d7078f3ff8bdd92d1fffa5</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.CoreMemberReloadTest#directAddedFieldCallerSharesOwnerValuesAcrossSaves</code> (watcher): External direct read sees42; direct write sets91 for both caller and owner; owner initializer edit does not reset91; accessor agrees with same PID/nonce.; <code>com.onurkat.reclazz.e2e.CoreCrossClassFieldReloadTest#directFieldsShareValuesAcrossObjectsTypesSavesAndNullReceivers</code> (watcher): Two held objects independently keep int/long/double/String first-read values; direct writes and null survive owner/caller saves; original fields and unwatched Point.x retain values; null receiver reads/writes throw NPE with unchanged PID/nonce.</p>
@@ -397,7 +397,7 @@
 <h3 id="p1-superclass-refusal-salvage">P1-SUPERCLASS-REFUSAL-SALVAGE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Reclazz preserves original hierarchy, applies eligible bodies, pins dependent methods and refuses unsafe signatures.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:29</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:29</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:68</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21, macOS arm64, synthetic application in the normal application loader; existing instances and sequential edits as described by each observing test. Other loaders, providers, OS and enhanced modes are not certified.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SuperclassReportingVerificationTest#receiptsAndPendingNeverClaimChangedHierarchyAcrossRepeatedSaves</code> (watcher): Seven versions: same original Class/loader/self/state19/superclassA; safe body edits apply, dependent c pinned, typed B saves refuse, recovery works with same status-session ID.</p>
@@ -409,7 +409,7 @@
 <h3 id="p1-concurrency">P1-CONCURRENCY</h3>
 <p><strong>Verdict:</strong> UNVERIFIED.</p>
 <p>Sequential initialization evidence does not certify concurrent initializer side effects or atomic multi-class reload.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3305</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3427</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> No observing acceptance method mapped or executed for this variant. The named SapMachine lanes establish no behavior for this record; the missing environment and limitation below govern it.</p>
 <p><strong>Tests/assertions:</strong> No observing method mapped; remains unverified.</p>
@@ -421,7 +421,7 @@
 <h3 id="p1-static-constants">P1-STATIC-CONSTANTS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Compile-time constants and narrow primitive constant conversions have component evidence.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3220</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3342</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.reload.StaticInitialiserTest#constantsComeFromTheFieldItself</code> (component): Constant plan reads MAX50 and NAMEreclazz with no refusal.; <code>com.onurkat.reclazz.reload.StaticInitialiserTest#narrowConstantsComeBackAsTheirOwnType</code> (component): Boolean/char/byte/short/int constant values keep native wrapper types.</p>
@@ -445,7 +445,7 @@
 <h3 id="p1-static-lowerings">P1-STATIC-LOWERINGS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Nested conditionals, wide/decimal/object/null/source-order/short-circuit values have component observations, not universal watcher coverage.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3220</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:23</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>docs/usage.md:3342</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#aConditionalValueRunsOnlyItsSelectedBranch</code> (component): Two flag arms verify object identity, nested int, long, double, null, object constructor, short-circuit boolean and source order; existing99 and old blocks unchanged.; <code>com.onurkat.reclazz.reload.ConditionalStaticInitialiserTest#isolatedSwitchIsAccepted</code> (component): Isolated switch plan accepts VALUE:I.</p>
@@ -469,7 +469,7 @@
 <h3 id="p1-load-serial-uid">P1-LOAD-SERIAL-UID</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Original serialVersionUID and selected no-agent-to-transformed deserialization have component evidence.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:687</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:84</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/product-reference.md:687</code> (SHA-256 <code>a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb</code>); <code>src/main/resources/META-INF/plugin.xml:84</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default companion reload after explicit agent attachment and class compilation.</p>
 <p><strong>Bounds:</strong> Direct helper/bytecode-transform/component fixtures in test-defined or throwaway loaders on stock SapMachine17/21, macOS arm64. These runs do not certify a packaged live watcher or normal application-loader integration.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#theAgentDoesNotChangeWhatAClassSerializesAs</code> (component): Native computed UIDs match before/after transform.; <code>com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#anObjectWrittenWithoutTheAgentIsReadWithIt</code> (component): Object written as plain Ser reads as transformed Ser with name n and count3.; <code>com.onurkat.reclazz.transform.SerialVersionUidPreservedTest#aDeclaredUidIsNotOverwritten</code> (component): Explicit UID4242 retained.</p>
@@ -589,7 +589,7 @@
 <h3 id="p2-bean-component-lazy">P2-BEAN-COMPONENT-LAZY</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>New lazy singleton waits for first lookup.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:430</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:431</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.NewComponentScopeReloadTest#newLazyAndPrototypeComponentsKeepTheirNativeLifetime</code> (watcher): BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.</p>
@@ -600,7 +600,7 @@
 <h3 id="p2-bean-component-prototype">P2-BEAN-COMPONENT-PROTOTYPE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>New prototype lookup creates a fresh instance; native prototype cleanup belongs to caller.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:433</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:434</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.NewComponentScopeReloadTest#newLazyAndPrototypeComponentsKeepTheirNativeLifetime</code> (watcher): BEFORE=0:0; LOOKUPS=true:true:1:2; CLOSED=1:0 on normal and child loaders.</p>
@@ -611,7 +611,7 @@
 <h3 id="p2-bean-composed-stereotype">P2-BEAN-COMPOSED-STEREOTYPE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>A custom component stereotype and AliasFor bean name register through native naming.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:426</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:427</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringNewBeanRegistrarTest#customStereotypeWithAliasForNameRegistersAsABean</code> (component): Real Spring context gets ledger instance after direct registrar call.</p>
@@ -644,7 +644,7 @@
 <h3 id="p2-bean-held-caller">P2-BEAN-HELD-CALLER</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>A live manually wired singleton holder is repointed to the recreated bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:47</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:47</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.OrdinarySpringReloadEvidenceTest#editedSingletonRecreatesStateAndReachesHeldCallers</code> (watcher): AFTER body=2 state=0; old!=new, same held manual holder points to new bean, current autowired holder points to it; unrelated count=29 and identity retained, old state=41.</p>
@@ -743,7 +743,7 @@
 <h3 id="p2-bean-array-set-args">P2-BEAN-ARRAY-SET-ARGS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Factory Set/Collection/reference-array arguments use native resolution.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:562</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:563</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.AddedBeanRichArgumentsTest#containersMatchNativeFactoryOrderingAndEmptyFallbacks</code> (component): Direct adapter reload compares List/Set/Collection/Map/reference-array products to native startup for populated and empty candidates.</p>
@@ -754,7 +754,7 @@
 <h3 id="p2-bean-all-primitives">P2-BEAN-ALL-PRIMITIVES</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>All eight primitive Value conversions and reference nulls work.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:569</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:570</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.AddedBeanRichArgumentsTest#everyPrimitiveAndAnExplicitNullReachTheFactoryBody</code> (component): Direct adapter reload invokes factory once with true, byte7, charZ, short8, int9, long10, float1.25, double2.5 and an explicit null.</p>
@@ -908,7 +908,7 @@
 <h3 id="p2-bean-static">P2-BEAN-STATIC</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Static companion factories register/replace/retire products with native lifecycle.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:620</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:621</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.AddedStaticBeanReloadTest#staticCompanionFactoriesFollowEditsFailureRecoveryAndRemoval</code> (watcher): Static companion product body/alias/qualifier updates, factory failure/removal/restoration; mixed static/instance consumers use same dependency, original identity preserved, CLOSED=4.</p>
@@ -1029,7 +1029,7 @@
 <h3 id="p2-operations-self-invoke">P2-OPERATIONS-SELF-INVOKE</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Native self invocation stays outside transaction interception.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2044</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2045</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#addedOperationsUseRealTransactionsAndCachesThroughOldCglibReference</code> (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.; <code>com.onurkat.reclazz.e2e.AddedServiceOperationReloadTest#firstOperationsOnPlainSingletonUseRealTransactionsAndCaches</code> (watcher): Real H2 transaction commit active; checked exception rolls back (rows stays 1). Cached repeats execute once, put updates value, evict causes another call; saved keys/removal/restoration work; old target identity retained and self invocation stays false.</p>
@@ -1095,7 +1095,7 @@
 <h3 id="p2-security-metadata">P2-SECURITY-METADATA</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Resolved method-security cache entries are refilled from fresh Method objects.</p>
-<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:52</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:52</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Original Secured methods on a held startup native CGLIB factory-product proxy; stereotype control uses the same factory registration.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher); <code>com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher); <code>com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher); <code>com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher). Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.</p>
@@ -1106,7 +1106,7 @@
 <h3 id="p2-security-secured">P2-SECURITY-SECURED</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Edited Secured policy is enforced on real calls.</p>
-<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:52</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:52</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Original Secured methods on a held startup native CGLIB factory-product proxy; stereotype control uses the same factory registration.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher); <code>com.onurkat.reclazz.e2e.LastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher); <code>com.onurkat.reclazz.e2e.ModernSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher); <code>com.onurkat.reclazz.e2e.ModernLastSecuredMetadataReloadTest#heldOriginalSecuredPolicyMatchesNativeAfterFourSaves</code> (watcher). Held startup proxy enforces original Secured authority edits and last-annotation removal/restoration; denied calls execute zero bodies.</p>
@@ -1117,7 +1117,7 @@
 <h3 id="p2-security-filter-chain">P2-SECURITY-FILTER-CHAIN</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Edited web security configuration rebuilds a live filter chain and changes route authorization.</p>
-<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:52</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:52</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21 on macOS arm64; Spring5.3.39/Security5.7.11 and isolated Spring6.1.14/Security6.3.4; normal/child application loader, four sequential saves. Embedded Tomcat9.0.121/10.1.60 servlet with native FilterChainProxy reached through a servlet-cached DelegatingFilterProxy; ordered overlapping chains in one local servlet fixture.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.HttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves</code> (watcher); <code>com.onurkat.reclazz.e2e.ModernHttpSecurityPolicyReloadTest#realOrderedServletRulesAndIgnoredRouteFollowFourSaves</code> (watcher). Actual servlet status and body counters follow saved permit/deny rules; startup chain priority, ignored route, unrelated denial and application nonce retained.</p>
@@ -1139,7 +1139,7 @@
 <h3 id="p2-spring6-ordinary-matrix">P2-SPRING6-ORDINARY-MATRIX</h3>
 <p><strong>Verdict:</strong> UNVERIFIED.</p>
 <p>Ordinary registration/factories/injection/AOP watcher behavior is established on Spring 6 too.</p>
-<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:27</code> (SHA-256 <code>30ed709be00da3292b9d99afd7f6d32ba97c64db6d67869b50b6a42b641e1387</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>src/main/resources/META-INF/plugin.xml:27</code> (SHA-256 <code>ce19b1013776d212e490107664eda272d27455c593d1002b71f40cbc5b555809</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Stock SapMachine 17/21, macOS arm64, Spring 5.3.39. Only the named synthetic fixture shapes and loaders, not every Spring application.</p>
 <p><strong>Tests/assertions:</strong> No observing method assigned; not promoted from a located filename.</p>
@@ -1205,7 +1205,7 @@
 <h3 id="p2-spring6-bean-condition-metadata">P2-SPRING6-BEAN-CONDITION-METADATA</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Spring 6 added factory conditions match native startup and saved metadata.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:455</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>); this block (digest in JSON).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:456</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>); this block (digest in JSON).</p>
 <p><strong>Default/opt-in:</strong> Default after explicit startup agent attachment and compiled class save; no additional P2 flag.</p>
 <p><strong>Bounds:</strong> Isolated Spring 6.1.14 on stock SapMachine17/21 macOS arm64. Direct adapter invocation, not watcher.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringSixAddedBeanConditionsTest#directConditionsMatchNativeStartupAndReceiveRealMethodMetadata</code> (component): Direct reload compares off/on admission and alias presence to native startup; condition called once in registration phase.</p>
@@ -2081,7 +2081,7 @@
 <h3 id="p3c-callback-transactions">P3C-CALLBACK-TRANSACTIONS</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Added public callbacks use native transactions with real commit/checked rollback across advice removal and restoration.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1867</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1868</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent; compile watched class files; existing relevant native Spring infrastructure.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves</code> (watcher): R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly. <code>com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves</code> (watcher): R1/4 rows2 txtrue, R2 rows4 txfalse, R3 removed rows0; actual H2 writes; registered scheduled Runnable invoked explicitly.</p>
@@ -2093,7 +2093,7 @@
 <h3 id="p3c-callback-cache">P3C-CALLBACK-CACHE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Successful callback eviction, failed eviction retention and cached returned-event publication retain native cache semantics.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1867</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1868</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent; compile watched class files; existing relevant native Spring infrastructure.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64; native Spring5.3.39 or6.1.14 graph as named by each observer. Normal and child application loaders, startup javaagent and compiled watched saves. Only the exact tested singleton/callback shapes.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.AddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves</code> (watcher): R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry. <code>com.onurkat.reclazz.e2e.JakartaAddedCallbackOperationsReloadTest#callbacksUseNativeTransactionsAndCachesAcrossSaves</code> (watcher): R1/4 cacheevicted lookups1 receipts2; R2 cacheretained lookups2; failed callback leaves after-success cache entry.</p>
@@ -2105,7 +2105,7 @@
 <h3 id="p3c-callback-inspect-refusal">P3C-CALLBACK-INSPECT-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Advised private/final/generic and unsupported owner shapes are refused at callback inspection.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1867</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1868</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent; compile watched class files; existing relevant native Spring infrastructure.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring 5.3.39; direct component invocation, no file watcher.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.AddedCallbackAdviceTest#advisedPrivateFinalAndGenericCallbacksAreRefused</code> (component): Public/private/final/generic/owner inheritance/interface matrix accepted0; only metadata scanner, no watcher.</p>
@@ -2117,7 +2117,7 @@
 <h3 id="p3c-callback-composed">P3C-CALLBACK-COMPOSED</h3>
 <p><strong>Verdict:</strong> UNVERIFIED.</p>
 <p>Composed transaction/cache/security operation annotations on added callbacks behave at runtime.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1867</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:1868</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Outside advertised supported callback-operation subset; no expansion authorized.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring 5.3.39 and isolated Spring 6.1.14; synthetic standalone context; supported direct annotations and singleton shapes; no servlet/HTTP or deployed container claim.</p>
 <p><strong>Tests/assertions:</strong> No observing test mapped; UNVERIFIED.</p>
@@ -2213,7 +2213,7 @@
 <h3 id="p3c-jpa-query-watcher">P3C-JPA-QUERY-WATCHER</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>A JPQL @Query edit reaches an existing HTTP holder and current repository without restarting the app.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3056</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3102</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent; compile watched class files; existing relevant native Spring infrastructure.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring Data JPA3.3.4/Spring6.1.14/Hibernate6.5.3.Final/H2 2.5.250; JPQL, not nativeQuery=true.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringDataRepositoryReloadTest#watchedQueryEditReachesExistingHolderWithoutRestart</code> (watcher): Four annotated/normal/child combinations; same PID/nonce/holder identity; before/after alternated three saves over native local HTTP.</p>
@@ -2225,7 +2225,7 @@
 <h3 id="p3c-jpa-query-component">P3C-JPA-QUERY-COMPONENT</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Native Spring Data JPQL query caches are refreshed through wired holders and tracked dependents.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3056</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3102</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent; compile watched class files; existing relevant native Spring infrastructure.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring Data JPA3.3.4/Spring6.1.14/Hibernate6.5.3.Final/H2 2.5.250; direct redefine+orchestrator, no watcher; native framework query means JPQL, not SQL nativeQuery.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringDataNativeQueryTest#changedNativeQueryReachesExistingManuallyWiredHolderAndTrackedDependent</code> (component): Redefine alone leaves cached old query; orchestrator changes product identity, keeps holder identity, both holders get before/after.</p>
@@ -2453,7 +2453,7 @@
 <h3 id="p3c-jpa-sql-native-query">P3C-JPA-SQL-NATIVE-QUERY</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>An edited SQL @Query(nativeQuery=true) reaches existing wired repositories after watcher reload.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3056</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:3102</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent; compile watched class files; existing relevant native Spring infrastructure.</p>
 <p><strong>Bounds:</strong> Stock SapMachine17/21 on macOS arm64; isolated Spring6.1.14 / Spring Data JPA3.3.4 / Hibernate6.5.3.Final / H22.5.250; existing wired repository interface with/without Repository stereotype, normal/child application loader; retained Spring-managed ordinary singleton field and current Spring-tracked dependent.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringDataSqlNativeQueryReloadTest#currentTrackedDependentAndRetainedManualHolderMatchNative</code> (watcher). Four normal/child loader x plain/Repository interfaces; six compiled SQL-native saves: predicate, UPPER scalar expression, missing-column SQL_ERROR:42122, valid recovery, CONCAT scalar expression, revert. Exact expected result and fresh agentless native JVM per version. Retained managed manual-holder identity, current tracked owner distinct from startup holder/current injected-product identity; unrelated and other-context repository identities, both EMF identities/open state,3 rows.</p>
@@ -2744,7 +2744,7 @@
 <h3 id="p5-boot-candidate-reject">P5-BOOT-CANDIDATE-REJECT</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Invalid Boot2 configuration-properties conversion holds Environment, bound properties and direct fields together.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39 physical properties startup-agent fixture.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.PropertyChangeIsAllOrNothingTest#rejectedSaveKeepsAllValuesAndFixRetriesBothKeys</code> (watcher): All six values old10 after invalidtimeoutabc, then all new20 after fix.</p>
@@ -2756,7 +2756,7 @@
 <h3 id="p5-boot-candidate-recovery">P5-BOOT-CANDIDATE-RECOVERY</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Fixing a rejected Boot2 properties save applies both pending keys to existing consumers.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39 physical properties startup-agent fixture.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.PropertyChangeIsAllOrNothingTest#rejectedSaveKeepsAllValuesAndFixRetriesBothKeys</code> (watcher): All six values new20 after correcting pendingtimeout/address.</p>
@@ -2768,7 +2768,7 @@
 <h3 id="p5-boot-key-removal">P5-BOOT-KEY-REMOVAL</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Removing loaded properties keys reveals startup/default values on existing beans.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#removedPropertiesRevealDefaultsAndRestoreAcrossSaves</code> (watcher): HTTP10:old:[a]:10:old:10:true -&gt;5:fallback:[default]:5:fallback:5:true.</p>
@@ -2780,7 +2780,7 @@
 <h3 id="p5-boot-file-delete">P5-BOOT-FILE-DELETE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Deleting and restoring a previously loaded properties file updates existing HTTP consumers.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#removedPropertiesRevealDefaultsAndRestoreAcrossSaves</code> (watcher): Delete -&gt;default5; restoration -&gt;40:again:[q], last true proves same Settings singleton.</p>
@@ -2792,7 +2792,7 @@
 <h3 id="p5-boot-yaml-list">P5-BOOT-YAML-LIST</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Loaded nested YAML keys and indexed lists reach existing HTTP consumers.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#yamlNestedValuesListsRemovalAndSyntaxRecoveryReachExistingBeans</code> (watcher): HTTP10/old/[a] -&gt;defaults -&gt;30/restored/[z] -&gt;40/again/[q].</p>
@@ -2804,7 +2804,7 @@
 <h3 id="p5-boot-yaml-delete">P5-BOOT-YAML-DELETE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Deletion/restoration of an identified YAML file reveals defaults then restores its values.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#yamlNestedValuesListsRemovalAndSyntaxRecoveryReachExistingBeans</code> (watcher): Delete -&gt;5/fallback/[default]; recreate -&gt;40/again/[q]; Settings identitytrue.</p>
@@ -2816,7 +2816,7 @@
 <h3 id="p5-boot-yaml-reject">P5-BOOT-YAML-REJECT</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Malformed YAML and invalid bound values retain last accepted configuration and correction recovers.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Boot2.7.18/Spring5.3.39/SnakeYAML1.30; real local HTTP, no servlet-container or Boot3 claim.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.ConfigFileRemovalReloadTest#yamlNestedValuesListsRemovalAndSyntaxRecoveryReachExistingBeans</code> (watcher): Invalid timeout and svc:[broken leave default HTTP body; fixed values then30/restored/[z].</p>
@@ -2828,7 +2828,7 @@
 <h3 id="p5-boot-precedence">P5-BOOT-PRECEDENCE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Owned file replacement preserves higher/lower property-source precedence and does not stack empty sources.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#fileReplacementPreservesPrecedenceAndEmptyFileOwnership</code> (component): CommandLine99 masks20/empty; after remove -&gt;30; empty -&gt;lower7; exactly one fixture source.</p>
@@ -2840,7 +2840,7 @@
 <h3 id="p5-boot-profiles">P5-BOOT-PROFILES</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Active YAML documents keep their source order; activation topology edits are held.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#activeProfileDocumentsKeepTheirOrderAndTopologyChangesAreHeld</code> (component): dev21 accepted despite inactive invalid; changedselector UNCHECKABLE retains21; fix23.</p>
@@ -2852,7 +2852,7 @@
 <h3 id="p5-boot-multi-context">P5-BOOT-MULTI-CONTEXT</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>A conversion rejection in one owning context holds all contexts; valid retry reaches each active profile.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#rejectionInOneContextHoldsAllContextsAndFixRetries</code> (component): Profiles other/dev retain10/20 onbad; correction12/22.</p>
@@ -2864,7 +2864,7 @@
 <h3 id="p5-boot-captured-candidate">P5-BOOT-CAPTURED-CANDIDATE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>A boundary applies captured file bytes and a nonrunning boundary does not accept them.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#boundaryUsesOneReadAndANonRunningBoundaryDoesNotAccept</code> (component): NOT_RUN keeps10; laterwrite30 while captured20 queued applies20 then30 onnext.</p>
@@ -2876,7 +2876,7 @@
 <h3 id="p5-boot-partial-retry">P5-BOOT-PARTIAL-RETRY</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>A live setter failure is PARTIAL and an identical save remains pending for retry.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#partialSetterFailureRemainsPendingOnAnIdenticalSave</code> (component): Settings10 but Environment20 afterthrow; identicalretry20, samebean.</p>
@@ -2888,7 +2888,7 @@
 <h3 id="p5-boot-unowned">P5-BOOT-UNOWNED</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>An inactive/unowned file is refused before becoming an override.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#inactiveOrUnownedFilesNeverBecomeAnOverride</code> (component): UNCHECKABLE retains10 for application-prod.properties.</p>
@@ -2900,7 +2900,7 @@
 <h3 id="p5-boot-ownership-replaced">P5-BOOT-OWNERSHIP-REPLACED</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>External property-source replacement is preserved rather than overwritten by file reload.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#externalSourceReplacementIsNotOverwritten</code> (component): External88 retained, reload UNCHECKABLE.</p>
@@ -2912,7 +2912,7 @@
 <h3 id="p5-boot-yaml-import-refusal">P5-BOOT-YAML-IMPORT-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Malformed YAML or new config imports do not change live file sources.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#malformedYamlAndImportsDoNotChangeLiveSources</code> (component): Each UNCHeCKABLE retains10; fixed30 applies.</p>
@@ -2924,7 +2924,7 @@
 <h3 id="p5-boot-readonly-removal">P5-BOOT-READONLY-REMOVAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Read-only collection removal is held rather than reporting stale values as applied.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#readOnlyCollectionRemovalIsHeldInsteadOfReportingStaleStateAsApplied</code> (component): UNCHECKABLE, items[a], Environment itema.</p>
@@ -2936,7 +2936,7 @@
 <h3 id="p5-boot-mixed-origins">P5-BOOT-MIXED-ORIGINS</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>A source containing mixed resource origins cannot own a reloaded file.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2183</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2184</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.SpringPropertyFilesTest#aSourceWithMixedResourceOriginsCannotOwnAFile</code> (component): UNCHECKABLE,10 and separate other=value retained.</p>
@@ -2948,7 +2948,7 @@
 <h3 id="p5-boot-validation">P5-BOOT-VALIDATION</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Boot validation fallback rejects constraint violations without a validator bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#fallbackValidationRejectsWithoutAValidatorBean</code> (component): No Validator beans; timeout0 leaves Environment10, bean10, Value10.</p>
@@ -2960,7 +2960,7 @@
 <h3 id="p5-boot-record">P5-BOOT-RECORD</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>A self-validating constructor-bound Boot2 record rejects invalid candidates and binds a valid replacement.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#selfValidatingRecordUsesTheNewInstance</code> (component): Record0/200 REJECTED stays10;50 APPLIED andrecord50; holder/watcher not observed.</p>
@@ -2972,7 +2972,7 @@
 <h3 id="p5-boot-tracking">P5-BOOT-TRACKING</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Rejected precheck does not write Boot bound-property tracking or live values.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#rejectedCheckDoesNotWriteBootTrackingOrAnyLiveValue</code> (component): Tracking map equalsbefore; invalidrecord0 holds bothbeans/field10/addressold.</p>
@@ -2984,7 +2984,7 @@
 <h3 id="p5-boot-native-hooks">P5-BOOT-NATIVE-HOOKS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Named configuration validator and bind-handler advisor participate in candidate validation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#namedValidatorAndAdvisorAreHonoured</code> (component): Customlimit50 REJECTED, advisorcallcount grows, bean10.</p>
@@ -2996,7 +2996,7 @@
 <h3 id="p5-boot-placeholders">P5-BOOT-PLACEHOLDERS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Candidate placeholder keys are resolved against the candidate even with a live placeholder configurer.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#placeholdersUseCandidateKeysEvenWithALiveConfigurer</code> (component): bad svc.limit rejects; candidate/api applied to Bootbean and Valuefield.</p>
@@ -3008,7 +3008,7 @@
 <h3 id="p5-boot-ignore-flags">P5-BOOT-IGNORE-FLAGS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Boot strict/lenient binding ignore flags retain native semantics.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#bootIgnoreFlagsArePreserved</code> (component): Stricttypo REJECTED; lenientabc APPLIED withbean10.</p>
@@ -3020,7 +3020,7 @@
 <h3 id="p5-boot-scratch-refusal">P5-BOOT-SCRATCH-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Unsupported scratch constructor or inaccessible native binder prevents candidate application.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#unsupportedScratchConstructorHoldsTheChange</code> (component): UNCHECKABLE, Env10, unsupportedbean10.</p>
@@ -3032,7 +3032,7 @@
 <h3 id="p5-boot-binder-refusal">P5-BOOT-BINDER-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Missing internal Boot binder holds the candidate rather than guessing its behavior.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#missingInternalBinderHoldsTheChange</code> (component): Classloader hides ConfigurationPropertiesBinder, UNCHECKABLE andEnv10.</p>
@@ -3044,7 +3044,7 @@
 <h3 id="p5-boot-apply-partial">P5-BOOT-APPLY-PARTIAL</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Failure only on live application is PARTIAL and is not accepted as an applied candidate.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.PropertyChangeCheckTest#postCheckFailureIsPartialAndNeverAccepted</code> (component): Partial, acceptedfalse, namedfinding, Environment20; no all-or-nothing live rollback.</p>
@@ -3152,7 +3152,7 @@
 <h3 id="p5-xml-import-owner">P5-XML-IMPORT-OWNER</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Loaded local XML imports outside configured roots update their owner without altering an unrelated context.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext</code> (watcher): PROBE1 after:2:root-before:other; rootedit -&gt;root-after; isolatedotherunchanged. <code>com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext</code> (watcher): PROBE1 after:2:root-before:other; rootedit -&gt;root-after; isolatedotherunchanged.</p>
@@ -3164,7 +3164,7 @@
 <h3 id="p5-xml-import-noop">P5-XML-IMPORT-NOOP</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>An identical imported XML save does not call its setter again.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext</code> (watcher): PROBE2 still after:2, not extra setter invocation. <code>com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext</code> (watcher): PROBE2 still after:2, not extra setter invocation.</p>
@@ -3176,7 +3176,7 @@
 <h3 id="p5-xml-prototype-refusal">P5-XML-PROTOTYPE-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>A scope change to prototype is refused while preserving prior live values.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext</code> (watcher): scope=prototype warning; PROBE4 still after:2/root-after/other. <code>com.onurkat.reclazz.e2e.ModernSpringXmlResourceReloadTest#loadedImportsReloadOutsideWatchedRootsWithoutChangingAnotherContext</code> (watcher): scope=prototype warning; PROBE4 still after:2/root-after/other.</p>
@@ -3188,7 +3188,7 @@
 <h3 id="p5-xml-native-watcher">P5-XML-NATIVE-WATCHER</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Repeated XML saves use native scalar/generic conversion and an overloaded String setter.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata</code> (watcher): Class,enum,char,BigDecimal,URI,typed lists/maps andwriterSTRING; repeatednext/before exactprobes. <code>com.onurkat.reclazz.e2e.ModernSpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata</code> (watcher): Class,enum,char,BigDecimal,URI,typed lists/maps andwriterSTRING; repeatednext/before exactprobes.</p>
@@ -3200,7 +3200,7 @@
 <h3 id="p5-xml-native-invalid">P5-XML-NATIVE-INVALID</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Invalid XML conversion retains the failed property value/raw metadata while a supported sibling still changes.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata</code> (watcher): Fourth INVALIDmode probe remainsbefore:A:1.0:urn:old:OLD:STRING andmetadataOLD; other4 applies. <code>com.onurkat.reclazz.e2e.ModernSpringXmlNativePropertyBindingReloadTest#nativeTypesSurviveRepeatedWatchedEditsAndInvalidValuesKeepMetadata</code> (watcher): Fourth INVALIDmode probe remainsbefore:A:1.0:urn:old:OLD:STRING andmetadataOLD; other4 applies.</p>
@@ -3212,7 +3212,7 @@
 <h3 id="p5-xml-property-integrity">P5-XML-PROPERTY-INTEGRITY</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Missing references/invalid primitives keep failed raw definitions and valid correction can be natively recreated.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlPropertyFailureReloadTest#failedEditsPreserveRawValuesAndAllowCorrection</code> (watcher): PROBE1..3 old1/a;4 new2/b;5 keptvaliddefinition; RECREATED=true:new:2. <code>com.onurkat.reclazz.e2e.ModernSpringXmlPropertyFailureReloadTest#failedEditsPreserveRawValuesAndAllowCorrection</code> (watcher): PROBE1..3 old1/a;4 new2/b;5 keptvaliddefinition; RECREATED=true:new:2.</p>
@@ -3224,7 +3224,7 @@
 <h3 id="p5-xml-metadata-refusal">P5-XML-METADATA-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Existing depends-on/primary/autowire/candidate edits are named and refused before owner property mutation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe</code> (watcher): Three warnings, raw/mergedidentitytrue, beforelabel while siblingsother2..4; metadatarevert permitscorrected. <code>com.onurkat.reclazz.e2e.ModernSpringXmlDefinitionMetadataReloadTest#metadataEditsWarnBeforePropertiesAndRepeatedSavesRemainSafe</code> (watcher): Three warnings, raw/mergedidentitytrue, beforelabel while siblingsother2..4; metadatarevert permitscorrected.</p>
@@ -3236,7 +3236,7 @@
 <h3 id="p5-xml-lazy-flag-refusal">P5-XML-LAZY-FLAG-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Changed effective lazy-init metadata retains old creation state and values.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent</code> (watcher): Warm/coldflags edits produceexactwarnings2; coldcount1 until nativecreation -&gt;2. <code>com.onurkat.reclazz.e2e.ModernSpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent</code> (watcher): Warm/coldflags edits produceexactwarnings2; coldcount1 until nativecreation -&gt;2.</p>
@@ -3248,7 +3248,7 @@
 <h3 id="p5-xml-lazy-equivalence">P5-XML-LAZY-EQUIVALENCE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Equivalent explicit/default lazy flags permit subsequent supported properties without eager creation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent</code> (watcher): Six saves exactidentityflags/count1 and correctedlabels; CREATED=true:corrected:2 onlyatend. <code>com.onurkat.reclazz.e2e.ModernSpringXmlLazyInitReloadTest#watchedLazyMetadataPreservesCreationStateAndDefaultsRemainEquivalent</code> (watcher): Six saves exactidentityflags/count1 and correctedlabels; CREATED=true:corrected:2 onlyatend.</p>
@@ -3260,7 +3260,7 @@
 <h3 id="p5-xml-inner-values">P5-XML-INNER-VALUES</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Changed plain inner bean values use native value resolution and preserve the outer singleton.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher</code> (watcher): PROBE2 true:true:new:after:after:1:1:0; changedplain stage new while resourcekept. <code>com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher</code> (watcher): PROBE2 true:true:new:after:after:1:1:0; changedplain stage new while resourcekept.</p>
@@ -3272,7 +3272,7 @@
 <h3 id="p5-xml-inner-noop">P5-XML-INNER-NOOP</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Unchanged inner declarations do not reconstruct their cached live object.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher</code> (watcher): PROBE1 and3 same resource construction/init counters1/1, closeonlyoriginal. <code>com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher</code> (watcher): PROBE1 and3 same resource construction/init counters1/1, closeonlyoriginal.</p>
@@ -3284,7 +3284,7 @@
 <h3 id="p5-xml-inner-resource-refusal">P5-XML-INNER-RESOURCE-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Inner resource/lifecycle edits are refused before updating that owner; independent beans still apply.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher</code> (watcher): PROBE4/5 resourceafter kept, siblingother4/5; warnings2, CLOSED1:1:1. <code>com.onurkat.reclazz.e2e.ModernSpringXmlInnerBeanReloadTest#innerNoOpsEditsAndResourceRefusalsFollowWatcher</code> (watcher): PROBE4/5 resourceafter kept, siblingother4/5; warnings2, CLOSED1:1:1.</p>
@@ -3296,7 +3296,7 @@
 <h3 id="p5-xml-unsupported-noop">P5-XML-UNSUPPORTED-NOOP</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Proven unchanged abstract/prototype/resource XML definitions stay quiet during no-op/sibling saves.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn</code> (watcher): First3 saves no warnings, identitytrue, labelsbefore, made1/init0/count3, siblingschange. <code>com.onurkat.reclazz.e2e.ModernSpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn</code> (watcher): First3 saves no warnings, identitytrue, labelsbefore, made1/init0/count3, siblingschange.</p>
@@ -3308,7 +3308,7 @@
 <h3 id="p5-xml-unsupported-edit-refusal">P5-XML-UNSUPPORTED-EDIT-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Real edits to unsupported XML shapes retain original values and name restart.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn</code> (watcher): Saves4/5 restartheaders1/2 and3require; labelsbefore, closeoriginalonce. <code>com.onurkat.reclazz.e2e.ModernSpringXmlUnsupportedNoOpReloadTest#unchangedShapesStayQuietAndRealEditsStillWarn</code> (watcher): Saves4/5 restartheaders1/2 and3require; labelsbefore, closeoriginalonce.</p>
@@ -3320,7 +3320,7 @@
 <h3 id="p5-xml-alias-refusal">P5-XML-ALIAS-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Alias retarget/removal/addition is refused, keeping already-resolved alias lookups.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup</code> (watcher): chosen staysa; newaliasabsent; newbean c present; original listener count1 unchanged. <code>com.onurkat.reclazz.e2e.ModernSpringXmlAliasReloadTest#aliasOnlyEditsReportRestartAndPreserveEveryLookup</code> (watcher): chosen staysa; newaliasabsent; newbean c present; original listener count1 unchanged.</p>
@@ -3332,7 +3332,7 @@
 <h3 id="p5-xml-inline-alias-refusal">P5-XML-INLINE-ALIAS-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Inline alias removal is captured without replacing the application reader listener.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlAliasReloadTest#inlineAliasEventsAreCapturedWithoutReplacingApplicationListener</code> (watcher): Removedchosen warning, actual lookup stilla andlistenercount0. <code>com.onurkat.reclazz.e2e.ModernSpringXmlAliasReloadTest#inlineAliasEventsAreCapturedWithoutReplacingApplicationListener</code> (watcher): Removedchosen warning, actual lookup stilla andlistenercount0.</p>
@@ -3344,7 +3344,7 @@
 <h3 id="p5-xml-lookup-refusal">P5-XML-LOOKUP-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Lookup-method edits preserve the native factory and require restart; restoring the original lookup allows simple properties.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlLookupMethodReloadTest#lookupChangesPreserveFactoryAndReportRestart</code> (watcher): Three warnings, identitiestrue, beforelabel despite targetb/removal; revertedmetadata final/final. <code>com.onurkat.reclazz.e2e.ModernSpringXmlLookupMethodReloadTest#lookupChangesPreserveFactoryAndReportRestart</code> (watcher): Three warnings, identitiestrue, beforelabel despite targetb/removal; revertedmetadata final/final.</p>
@@ -3356,7 +3356,7 @@
 <h3 id="p5-xml-loader-lifecycle-refusal">P5-XML-LOADER-LIFECYCLE-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Lifecycle/infrastructure definitions are retained in ordinary/child loaders without side-effect creation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlLoaderLifecycleReloadTest#lifecycleEditsRefuseInNormalAndChildLoadersWhileSiblingsReload</code> (watcher): Eachsave5refusals; original raw/mergedidentitytrue, counter0; siblingsother2/3; COLD=before:before. <code>com.onurkat.reclazz.e2e.ModernSpringXmlLoaderLifecycleReloadTest#lifecycleEditsRefuseInNormalAndChildLoadersWhileSiblingsReload</code> (watcher): Eachsave5refusals; original raw/mergedidentitytrue, counter0; siblingsother2/3; COLD=before:before.</p>
@@ -3368,7 +3368,7 @@
 <h3 id="p5-xml-factorybean-refusal">P5-XML-FACTORYBEAN-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Existing XML FactoryBean definitions are not mutated to pretend their products refreshed.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.SpringXmlFactoryBeanProductReloadTest#factoryEditsWarnBeforeStateChangesAndNoOpStaysQuiet</code> (watcher): Warm/cold/nonsingleton products before and samecachedidentities;3refusals peredit; coldnativecreationbefore. <code>com.onurkat.reclazz.e2e.ModernSpringXmlFactoryBeanProductReloadTest#factoryEditsWarnBeforeStateChangesAndNoOpStaysQuiet</code> (watcher): Warm/cold/nonsingleton products before and samecachedidentities;3refusals peredit; coldnativecreationbefore.</p>
@@ -3380,7 +3380,7 @@
 <h3 id="p5-xml-singleton-recreate">P5-XML-SINGLETON-RECREATE</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>Constructor and explicit static/instance factory XML edits recreate supported products and heal held consumers.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:369</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:370</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.XmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer</code> (watcher): XML1=2:2:2:6:3 thenXML2=3:13:13:36:6; constructor/static/instance values and lifecycle counts. <code>com.onurkat.reclazz.e2e.ModernXmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer</code> (watcher): XML1=2:2:2:6:3 thenXML2=3:13:13:36:6; constructor/static/instance values and lifecycle counts.</p>
@@ -3392,7 +3392,7 @@
 <h3 id="p5-xml-singleton-noop">P5-XML-SINGLETON-NOOP</h3>
 <p><strong>Verdict:</strong> PROVEN_WITH_SCOPE.</p>
 <p>An identical rich XML save does not recreate products or repeat lifecycle effects.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:369</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:370</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39 and isolated Spring6.1.14; ordinary/child application loader only when the named parameterized observer includes both; standalone synthetic local context.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.e2e.XmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer</code> (watcher): XML3 equals2 includinginit36/destroy6; CLOSED36 nativecurrentcallbacks. <code>com.onurkat.reclazz.e2e.ModernXmlSingletonLifecycleReloadTest#xmlRecreatesConstructorAndFactoryProductsAndRepairsHeldConsumer</code> (watcher): XML3 equals2 includinginit36/destroy6; CLOSED36 nativecurrentcallbacks.</p>
@@ -3404,7 +3404,7 @@
 <h3 id="p5-xml-native-type">P5-XML-NATIVE-TYPE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML type conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized type snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3416,7 +3416,7 @@
 <h3 id="p5-xml-native-mode">P5-XML-NATIVE-MODE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML mode conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized mode snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3428,7 +3428,7 @@
 <h3 id="p5-xml-native-code">P5-XML-NATIVE-CODE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML code conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized code snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3440,7 +3440,7 @@
 <h3 id="p5-xml-native-amount">P5-XML-NATIVE-AMOUNT</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML amount conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized amount snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3452,7 +3452,7 @@
 <h3 id="p5-xml-native-location">P5-XML-NATIVE-LOCATION</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML location conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized location snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3464,7 +3464,7 @@
 <h3 id="p5-xml-native-types">P5-XML-NATIVE-TYPES</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML types conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized types snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3476,7 +3476,7 @@
 <h3 id="p5-xml-native-modes">P5-XML-NATIVE-MODES</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML modes conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized modes snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3488,7 +3488,7 @@
 <h3 id="p5-xml-native-mappings">P5-XML-NATIVE-MAPPINGS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML mappings conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized mappings snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3500,7 +3500,7 @@
 <h3 id="p5-xml-native-selection">P5-XML-NATIVE-SELECTION</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML selection conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized selection snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3512,7 +3512,7 @@
 <h3 id="p5-xml-native-integerselection">P5-XML-NATIVE-INTEGERSELECTION</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML integerSelection conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized integerSelection snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3524,7 +3524,7 @@
 <h3 id="p5-xml-native-biginteger">P5-XML-NATIVE-BIGINTEGER</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML bigInteger conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized bigInteger snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3536,7 +3536,7 @@
 <h3 id="p5-xml-native-modeset">P5-XML-NATIVE-MODESET</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML modeSet conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized modeSet snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3548,7 +3548,7 @@
 <h3 id="p5-xml-native-enumkeys">P5-XML-NATIVE-ENUMKEYS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>XML enumKeys conversion matches a freshly initialized native Spring bean.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#matchesNativeFreshForScalarGenericAndOverloadedProperties</code> (component): Parameterized enumKeys snapshot equals native fresh; live singleton/raw definition same; siblingafter.</p>
@@ -3560,7 +3560,7 @@
 <h3 id="p5-xml-inherited-generic">P5-XML-INHERITED-GENERIC</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Inherited generic collection type resolves against its actual containing class.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#inheritedGenericParameterUsesActualContainingClass</code> (component): Derived Mode.NEXT actual element.</p>
@@ -3572,7 +3572,7 @@
 <h3 id="p5-xml-inherited-scalar">P5-XML-INHERITED-SCALAR</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Inherited scalar type variable uses its resolved target rather than Object erasure.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#inheritedScalarTypeVariableUsesResolvedTargetRatherThanObjectErasure</code> (component): Actual item identity Mode.NEXT matches nativefresh.</p>
@@ -3584,7 +3584,7 @@
 <h3 id="p5-xml-custom-converters">P5-XML-CUSTOM-CONVERTERS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Admitted registered editor/conversion service participates in native XML binding.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#admittedCustomEditorAndConversionServiceMatchNativeFactoryBehavior</code> (component): RegisteredcharBEGIN -&gt;B; customURI -&gt;urn:custom:NEXT.</p>
@@ -3596,7 +3596,7 @@
 <h3 id="p5-xml-unknown-converter-refusal">P5-XML-UNKNOWN-CONVERTER-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Unknown type converter is refused before the new route invokes it.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#unknownTypeConverterIsNotInvokedByTheNewBindingRoute</code> (component): Number1 remains, unknownconvertercalls0, restartwarning.</p>
@@ -3608,7 +3608,7 @@
 <h3 id="p5-xml-resource-conversion-refusal">P5-XML-RESOURCE-CONVERSION-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Resource target/explicit resource value is refused before editor value resolution.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#resourceTargetAndExplicitResourceValueRefuseBeforeValueResolution</code> (component): Stream/value null, StreamEditorcalls0.</p>
@@ -3620,7 +3620,7 @@
 <h3 id="p5-xml-missing-setter-refusal">P5-XML-MISSING-SETTER-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Absent or ambiguous physical setters do not acquire fake committed XML values.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:189</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:190</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlNativePropertyBindingTest#absentAndAmbiguousPhysicalSettersRequireRestart</code> (component): Virtual/hiddenrawvaluesnull, virtualfieldnull; warning.</p>
@@ -3632,7 +3632,7 @@
 <h3 id="p5-xml-recreate-init-failure">P5-XML-RECREATE-INIT-FAILURE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>A failing new init callback restores the prior XML definition and permits a later correction.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:369</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:370</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#initFailureReportsSideEffectsAndRestoresThePreviousDefinition</code> (component): Holdervalue1/nativeidentity retained, initdefinition restored, namedinitrefused; next3.</p>
@@ -3644,7 +3644,7 @@
 <h3 id="p5-xml-recreate-restore-failure">P5-XML-RECREATE-RESTORE-FAILURE</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Failed restoration is reported explicitly without claiming success or a retained live singleton.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:369</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:370</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#failedRestorationIsExplicitAndDoesNotReportSuccess</code> (component): Nosingletontarget, restorationfailed ledger.</p>
@@ -3656,7 +3656,7 @@
 <h3 id="p5-xml-recreate-final-holder">P5-XML-RECREATE-FINAL-HOLDER</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>A final direct holder prevents destruction before rich XML recreation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:369</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:370</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#finalDirectHolderFieldIsRefusedBeforeDestruction</code> (component): Sameoldtarget, destroyed0, finalholderreason.</p>
@@ -3668,7 +3668,7 @@
 <h3 id="p5-xml-recreate-container-holder">P5-XML-RECREATE-CONTAINER-HOLDER</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>A collection holder prevents destruction before rich XML recreation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:369</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:370</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#containerHolderIsRefusedBeforeDestruction</code> (component): Sameoldtarget, destroyed0, collectionholderreason.</p>
@@ -3680,7 +3680,7 @@
 <h3 id="p5-xml-recreate-contexts">P5-XML-RECREATE-CONTEXTS</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Each owning context resolves the same placeholder using its own live factory.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:369</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:370</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlBeanRecreationTest#contextsResolveTheSamePlaceholderIndependently</code> (component): Contextoneproduct2/contexttwoproduct3.</p>
@@ -3692,7 +3692,7 @@
 <h3 id="p5-xml-partial-setter">P5-XML-PARTIAL-SETTER</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>A setter that mutates then throws leaves its application effect but preserves raw XML metadata; correction can recover.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlPropertyFailureIntegrityTest#mutatingThrowingSetterPreservesMetadataOnly</code> (component): Live labelpartial, rawsameold, failure; nextcorrected nofailure.</p>
@@ -3704,7 +3704,7 @@
 <h3 id="p5-xml-lazy-deferred-validation">P5-XML-LAZY-DEFERRED-VALIDATION</h3>
 <p><strong>Verdict:</strong> PARTIAL.</p>
 <p>Invalid values on an uncreated lazy XML bean remain deferred until native creation.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlPropertyFailureIntegrityTest#lazyInvalidValueRetainsDeferredValidation</code> (component): Colduncreated, rawinvalid, noreloadfailure; nativegetBean throws BeansException.</p>
@@ -3716,7 +3716,7 @@
 <h3 id="p5-xml-removal-refusal">P5-XML-REMOVAL-REFUSAL</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Removing an XML property retains the old value/raw definition and requires restart while a sibling edit applies.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlPropertyRemovalDiagnosticsTest#removalWithEditWarnsAndKeepsRemovedValue</code> (component): Retainedold notdefault, rawsameretained, editedafter, namedrestart.</p>
@@ -3728,7 +3728,7 @@
 <h3 id="p5-xml-factorybean-preflight">P5-XML-FACTORYBEAN-PREFLIGHT</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Native FactoryBean refusal does not query/create the product or call factory setters during classification.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlFactoryBeanProductDiagnosticsTest#warmedAndUnwarmedProductsRefuseBeforeMutatingFactory</code> (component): Four warm/cold+singleton/nonsingleton cases: countersunchanged before explicitgetBean, raw/mergedidentity preserved.</p>
@@ -3740,7 +3740,7 @@
 <h3 id="p5-xml-metadata-contexts">P5-XML-METADATA-CONTEXTS</h3>
 <p><strong>Verdict:</strong> EXPECTED.</p>
 <p>Changed XML definition metadata protects both owning contexts while unrelated same-named context remains untouched.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:178</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:179</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. Spring5.3.39/Boot2.7.18 where used; direct component invocation, not a watched save.</p>
 <p><strong>Tests/assertions:</strong> <code>com.onurkat.reclazz.spring.xml.XmlDefinitionMetadataDiagnosticsTest#bothOwningContextsAreGuardedAndUnrelatedContextIsUntouched</code> (component): Bothsettingsbefore/sameidentity, bothsiblingsafter, isolatedsame/isolated; primaryfalse.</p>
@@ -3884,7 +3884,7 @@
 <h3 id="p5-boot3-properties">P5-BOOT3-PROPERTIES</h3>
 <p><strong>Verdict:</strong> UNVERIFIED.</p>
 <p>The complete properties/YAML/binding package works on native Boot3.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. No current observing method in this bounded package.</p>
 <p><strong>Tests/assertions:</strong> No observing test mapped; UNVERIFIED.</p>
@@ -3944,7 +3944,7 @@
 <h3 id="p5-source-output-copy">P5-SOURCE-OUTPUT-COPY</h3>
 <p><strong>Verdict:</strong> UNVERIFIED.</p>
 <p>Editing source resources automatically copies every resource to the runtime location.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. No current observing method in this bounded package.</p>
 <p><strong>Tests/assertions:</strong> No observing test mapped; UNVERIFIED.</p>
@@ -3956,7 +3956,7 @@
 <h3 id="p5-sap-configuration">P5-SAP-CONFIGURATION</h3>
 <p><strong>Verdict:</strong> UNVERIFIED.</p>
 <p>P5 native Spring resource proofs certify SAP tenant behavior.</p>
-<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2127</code> (SHA-256 <code>0cb5a74c717029d1aa7ad98eddb7356e254094c3248eb9938cd62d8ebf2ecf0a</code>).</p>
+<p><strong>Shipped surfaces:</strong> <code>docs/usage.md:2128</code> (SHA-256 <code>6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15</code>).</p>
 <p><strong>Default/opt-in:</strong> Startup agent and actual physical resources in watched directories, or captured loaded local XML/Boot sources; documented supported singleton subset.</p>
 <p><strong>Bounds:</strong> SapMachine17/21, macOS arm64. No current observing method in this bounded package.</p>
 <p><strong>Tests/assertions:</strong> No observing test mapped; UNVERIFIED.</p>
@@ -4900,7 +4900,7 @@
 <p><strong>Observation:</strong> <code>com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#lateStartupAndIdGroupMatchNativeControls</code> (watcher): Eight boolean combinations autoStartup/idIsGroup/alwaysStartAfterRefresh. Added and ordinary late native control have matching running/auto properties and group semantics (own literal ID vs factory group); stopped additions do not deliver for300ms, then native start delivers queued message; both partitions deliver edited callbacks across three additions/saves, removal and native context close. <code>com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#nullAndDefaultGroupExpressionsMatchNativeControls</code> (watcher): Four null-expression/explicit override x idIsGroup cases: native control and added group equality to each own ID/factory/override; both partitions deliver after three watched saves, routes move, removal and stopped old containers. <code>com.onurkat.reclazz.e2e.AddedKafkaListenerOptionsReloadTest#explicitEmptyGroupMatchesNativeAcrossBrokerReloads</code> (watcher): Two idIsGroup cases: exact empty literal matches native own-ID/factory fallback, both partitions consume generation-specific output after three watched saves, topic moves leave no old-route output in300ms, retired containers stop, removal prevents callback output, native control identity/delivery remains and context closes all stopped.</p>
 <p><strong>Limit:</strong> Only the named fixture shape and assertions. A component test is never file-watcher evidence; no atomic reload or arbitrary advice/provider guarantee. Whitespace-only group literals, other expressions/framework versions/loaders/OS/JVMs are outside this proof. No universal exactly-once or atomic reload guarantee.</p>
 <p><strong>Execution/control:</strong> Both required lanes observed; actual invocations/raw XML/source and artifact hashes in the machine record. Normal native control consumes real messages; actual file edits observe generation-specific callback output. Bounded200ms duplicates/300ms no-delivery windows do not prove exactly-once. Git-free scratch controls separately corrupt delegation/options. Independent Claude audit pending.</p>
-</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/987638b61dc9d1ae51d8a599ccb81210969babd5/docs/feature-evidence.md">docs/feature-evidence.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/documentation-workflow/"><span>← Previous</span><strong>Documentation workflow</strong></a><a href="/docs/reference/for-ai-agents/"><span>Next →</span><strong>For AI agents</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#p2-ordinary-spring">P2: Ordinary Spring</a><a href="#p3a-adversarial-http-validation-and-overlapping-requests">P3a: Adversarial HTTP validation and overlapping requests</a><a href="#p3b-remaining-mvc-requestresponse-evidence">P3b: Remaining MVC request/response evidence</a><a href="#p3c-callbacks-and-data">P3c: Callbacks and data</a><a href="#p5-properties-xml-messages-and-templates">P5: Properties, XML, messages and templates</a><a href="#p4-messaging">P4: Messaging</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/main/docs/feature-evidence.md">docs/feature-evidence.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/documentation-workflow/"><span>← Previous</span><strong>Documentation workflow</strong></a><a href="/docs/reference/for-ai-agents/"><span>Next →</span><strong>For AI agents</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#p2-ordinary-spring">P2: Ordinary Spring</a><a href="#p3a-adversarial-http-validation-and-overlapping-requests">P3a: Adversarial HTTP validation and overlapping requests</a><a href="#p3b-remaining-mvc-requestresponse-evidence">P3b: Remaining MVC request/response evidence</a><a href="#p3c-callbacks-and-data">P3c: Callbacks and data</a><a href="#p5-properties-xml-messages-and-templates">P5: Properties, XML, messages and templates</a><a href="#p4-messaging">P4: Messaging</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>

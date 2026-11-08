@@ -7,7 +7,7 @@ Edit, compile and see supported changes in the running JVM.
 
 ## Documentation scope
 
-Source version 1.4.1; evidence baseline 75535bd739d7eefd43523dcc63799436c472fe12; reviewed 2026-10-19.
+Source version 1.5.0; evidence baseline 75535bd739d7eefd43523dcc63799436c472fe12; reviewed 2026-10-19.
 Source presence does not establish release availability or acceptance on every runtime.
 Read each support condition and verify the running application.
 

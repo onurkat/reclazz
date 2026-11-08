@@ -1,0 +1,203 @@
+{
+  "format_version": 1,
+  "capability": "sap-process-reload",
+  "base_commit": "987638b",
+  "status": "PASSED",
+  "scope": "Observed initial native resource load, standard factory/cache/reader, modified registered local XML, same process name, no active DynamicProcessDefinition; one JVM.",
+  "startup_observer": "Native cache loadInitialDefinitions -> provider getInitialActiveDefinitions -> reader from(Resource). Captures path/name/version plus weak cache/provider/context identity. Never infers provenance from hashes.",
+  "guards": [
+    "Missing startup observation",
+    "Custom factory/cache/reader",
+    "Renamed or duplicate process names",
+    "Active dynamic DB definition or provider failure",
+    "Context/cache/factory replacement during validation",
+    "Created/deleted resources"
+  ],
+  "unit_tests": {
+    "status": "PASSED",
+    "command": "./gradlew :agent:unitTest --rerun --tests '*SapProcess*' --tests '*PremiumModule*' --tests '*RegistryCompletenessTest' --tests '*ProtocolContractTest' --tests '*AdviceOnly*' :agent:e2eTest --rerun --tests '*SapProcessDefinition*Test' -x :agent:jmsUnitTest -x :agent:hibernateTest -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "counts": {
+      "tests": 112,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "new_guard_class": "com.onurkat.reclazz.hybris.SapProcessDefinitionReloadTest",
+    "new_guard_tests": 26,
+    "kind": "Related fix gate: process, module, registry, protocol and fallback tests; full inner gate retained separately",
+    "evidence": ".collab/current/research/fix-r1/unitTest"
+  },
+  "watcher_tests": {
+    "status": "PASSED",
+    "tests": 3,
+    "failures": 0,
+    "skipped": 0,
+    "command": "./gradlew :agent:unitTest --rerun --tests '*SapProcess*' --tests '*PremiumModule*' --tests '*RegistryCompletenessTest' --tests '*ProtocolContractTest' --tests '*AdviceOnly*' :agent:e2eTest --rerun --tests '*SapProcessDefinition*Test' -x :agent:jmsUnitTest -x :agent:hibernateTest -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "kind": "real agent/watcher/module; synthetic native contracts",
+    "success_symbol": "com.onurkat.reclazz.e2e.SapProcessDefinitionReloadTest#watcherPublishesNewGraphPreservesOldVersionAndRecoversAfterBrokenSave",
+    "evidence": ".collab/current/research/fix-r1/e2eTest"
+  },
+  "native_sdk_tests": [
+    {
+      "version": "2211-jdk21.8",
+      "java": 21,
+      "status": "PASSED",
+      "observed_checks": 22,
+      "late_attach_checks": 7,
+      "kind": "real transformed native initial resource enumeration/parser/cache; synthetic getLatestDefinitionIdFor override; no tenant/task execution; reloader executes with a caller loader unable to load JAXB and restores that loader",
+      "log": ".collab/current/research/fix-r1/sdk21.log"
+    },
+    {
+      "version": "2211.49",
+      "java": 17,
+      "status": "PASSED",
+      "observed_checks": 22,
+      "late_attach_checks": 7,
+      "kind": "real transformed native initial resource enumeration/parser/cache; synthetic getLatestDefinitionIdFor override; no tenant/task execution; reloader executes with a caller loader unable to load JAXB and restores that loader",
+      "log": ".collab/current/research/fix-r1/sdk17.log"
+    }
+  ],
+  "causal_control": {
+    "status": "EXPECTED_RED_BOTH_SDKS",
+    "change": "Remove only native publication in a scratch reloader class; production source unchanged",
+    "witness": "AssertionError: new lookup follows v2",
+    "evidence": ".collab/current/research/fix-r1/causal-no-publication/results.json"
+  },
+  "live_stage2": {
+    "status": "PASSED",
+    "kind": "Real local SAP Commerce tenant; native startup observation, actual production watcher and synthetic counting action",
+    "version": "2211-jdk21.8",
+    "java": 21,
+    "manual_cache_publication": false,
+    "existing_process": {
+      "definition": "v1",
+      "state": "SUCCEEDED",
+      "action_count": 1,
+      "pending_tasks": 0,
+      "pending_event_conditions": 0
+    },
+    "new_process": {
+      "definition": "v2",
+      "state": "SUCCEEDED",
+      "action_count": 1,
+      "pending_tasks": 0,
+      "pending_event_conditions": 0
+    },
+    "after_malformed_save": {
+      "definition": "v2",
+      "state": "SUCCEEDED",
+      "action_count": 1,
+      "pending_tasks": 0,
+      "pending_event_conditions": 0
+    },
+    "v1_sha256": "a7976786b483313f88e1b00eba2988479873f0240aedb75983aa726c194c009d",
+    "v2_sha256": "3a4596a1c8d995f414cdeedde6f6b65ea759e494fd4a6cd846a8f9adc79c4861",
+    "cleanup": "Synthetic cache keys/observation/beans/resource removed; original server configs restored; completed synthetic rows retained",
+    "prior_attempts": "First fixture watched no eligible resource directories. Corrected fixture exposed JAXB caller-loader failure. Each prior P completed normally; neither prior attempt is counted as acceptance. Loader correction reproduced red and passed fresh gates before final restart.",
+    "evidence": ".collab/current/research/live-stage2/LIVE-TRANSCRIPT.md",
+    "watcher_events": [
+      ".collab/current/research/live-stage2/final-watcher-v2.jsonl",
+      ".collab/current/research/live-stage2/final-watcher-malformed.jsonl"
+    ],
+    "live_assertions": ".collab/current/research/live-stage2/final-verified.ax.txt",
+    "cleanup_assertions": ".collab/current/research/live-stage2/final-cleanup.ax.txt",
+    "artifact_sha256": "c0f4c5fb8af4e4d6c6fdd7f71e2a070b03a6853b709ba0088efaa4660626f516",
+    "source_scope": "Live acceptance predates bounded audit F1 sibling-isolation fix; no new live run claimed for that fix. Current fix passes related unit/e2e and both real SDK regression checks."
+  },
+  "limits": [
+    "No process migration/replay/restart",
+    "No cache eviction/server restart retention guarantee",
+    "No cluster propagation",
+    "Created-but-not-started processes choose the active definition when started",
+    "Live tenant acceptance covers one synthetic process and one JVM on 2211-jdk21.8; second SDK coverage is the parser/cache probe"
+  ],
+  "full_agent_test": "NOT_RUN: owner release-only gate",
+  "test_source_sha256": {
+    "agent/src/test/java/com/onurkat/reclazz/hybris/SapProcessDefinitionReloadTest.java": "9c975ea79c06bd630d80fd19cc9203000d6f5af4243adae117f36d92557e99e0",
+    "agent/src/test/java/com/onurkat/reclazz/e2e/SapProcessDefinitionReloadTest.java": "6d37b5f576f00584022c5b92cb15ff4a5413ea84bf073680ce59654d82f26573",
+    "integration-test/src/sapSdkTest/java/com/example/ProcessReloadSdkProbe.java": "a0550f4883109d3afea30d0668816509fa3820f8f9a5d7b5aaee5bcea9592ed8"
+  },
+  "artifact_sha256": {
+    "agent/build/libs/agent-1.4.1.jar": "d0b2d348ca40565ebca62448c02e5fb980f093246c7f75b217e453ef56804f90",
+    "agent/build/libs/agent-1.4.1-core.jar": "5cce1a7493f3663e1f6bcb63b008dab06f0afb9d58cd238c6c2fe9a8858e307a"
+  },
+  "parser_lock_control": {
+    "status": "EXPECTED_RED_THEN_GREEN",
+    "red": "One test failed with parsing under the cache write lock",
+    "green": "23 process guard tests passed after moving parsing outside cache locks",
+    "evidence": ".collab/current/research/build-v4/causal-parser-lock"
+  },
+  "docs_tests": {
+    "status": "PASSED",
+    "command": ".venv-docs/bin/python scripts/test-docs-site.py",
+    "tests": 34,
+    "failures": 0
+  },
+  "registry_checks": {
+    "status": "PASSED",
+    "counts": {
+      "tests": 59,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "command": "./gradlew :agent:unitTest --rerun --tests '*RegistryCompletenessTest' -x :agent:jmsUnitTest -x :agent:hibernateTest",
+    "evidence": ".collab/current/research/fix-r1/registry"
+  },
+  "docs_site_checks": {
+    "status": "PASSED",
+    "checks": 12112,
+    "pages": 37,
+    "command": ".venv-docs/bin/python scripts/check-docs-site.py"
+  },
+  "context_loader_control": {
+    "status": "EXPECTED_RED_THEN_GREEN",
+    "red": "Native watcher and SDK21 fail to locate JAXB ContextFactory with the caller loader; unit regression fails before correction",
+    "green": "25 process guards and 25 native checks per SDK pass with owner-loader scope and caller restoration",
+    "evidence": ".collab/current/research/live-stage2/loader-fix-evidence.json"
+  },
+  "status_reason": "Required scoped unit/e2e, native SDK probes and bounded local native watcher/action acceptance passed under the documented conditions and limits; the sibling-isolation fix is covered by a failing-before/passing-after regression and both SDKs.",
+  "prior_full_inner_gate": {
+    "status": "PASSED",
+    "command": "./gradlew :agent:unitTest --rerun :agent:e2eTest --rerun --tests '*SapProcessDefinition*Test' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "counts": {
+      "tests": 2264,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 5
+    },
+    "required_dependency_counts": {
+      "jmsUnitTest": {
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hibernateTest": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "new_guard_class": "com.onurkat.reclazz.hybris.SapProcessDefinitionReloadTest",
+    "new_guard_tests": 25,
+    "kind": "inner gate including synthetic native contracts",
+    "evidence": ".collab/current/research/live-stage2/loader-final-gates/unitTest",
+    "skipped": [
+      "com.onurkat.reclazz.reload.ReloadPhasesBench#measure()",
+      "com.onurkat.reclazz.transform.ReflectionInterceptBench#measure()",
+      "com.onurkat.reclazz.transform.TransformThroughputBench#measure()",
+      "com.onurkat.reclazz.transform.FootprintBench#measure()",
+      "com.onurkat.reclazz.watcher.WatcherFootprintBench#measure()"
+    ],
+    "scope": "Pre-audit-F1 artifact; historical full inner gate, not the current bounded-fix gate"
+  },
+  "sibling_isolation_control": {
+    "status": "EXPECTED_RED_THEN_GREEN",
+    "red": "malformedSiblingDoesNotBlockValidSave: 1 test, 1 failure; expected HANDLED but was ADVICE",
+    "green": "26 process guards pass; only edited resource is parsed, malformed sibling active object stays identical, observed duplicate names still refuse",
+    "evidence": ".collab/current/research/fix-r1/red-unit",
+    "native_sdk_regression": "Observed distinct resources with malformed sibling reload independently; two observed duplicate-name paths refuse on both SDKs"
+  }
+}
