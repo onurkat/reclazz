@@ -197,6 +197,7 @@ object AgentJarLocator {
         if (settings.verbose) args.add("verbose=true")
         if (settings.jpaRefresh) args.add("jpaRefresh=true")
         if (!settings.structuralReload) args.add("structuralReload=false")
+        if (settings.resetStatics) args.add("resetStatics=true")
         if (settings.reloadBoundary == "request") args.add("reloadBoundary=request")
         if (settings.excludeClasses.isNotBlank()) args.add("excludeClasses=${settings.excludeClasses}")
         args.add("debounceMs=${settings.debounceMs}")

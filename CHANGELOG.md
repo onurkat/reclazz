@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Opt-in `resetStatics` re-runs changed, isolated pure initializers of existing
+  prepared static fields. First-load preparation makes eligible static finals
+  non-final for warmed readers; constants, captured aliases and refused shapes
+  retain documented restart limits. Available in IDE Settings; off by default.
+
 - SAP process registration and edits evaluate proven native owners independently
   in their own tenant/session scope, preserving other owners on a refusal.
 

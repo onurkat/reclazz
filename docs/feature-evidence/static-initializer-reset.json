@@ -1,0 +1,442 @@
+{
+  "format_version": 1,
+  "capability": "static-initializer-reset",
+  "base_commit": "2ef724b",
+  "status": "PROVEN_WITH_SCOPE",
+  "default": "resetStatics=false",
+  "scope": "Existing physical statics with isolated pure initializer edits; frozen first-load final mask per weak defining-loader identity; native setter after successful owner redefinition. Added fields retain existing FieldStore behavior. Restart advice requires change evidence; option-off pointers are limited to newly observed admissible expressions.",
+  "central_control": {
+    "status": "EXPECTED_FAILURE",
+    "base": "Read-only git archive of 2ef724b; new central watcher test only; no production edits in baseline",
+    "runtimes": [
+      "SapMachine 17.0.16",
+      "SapMachine 21.0.10.0.1"
+    ],
+    "jvm_flags": [
+      "-Xbatch"
+    ],
+    "observation": "Both lanes: READERS=old:old:old:1; expected new:new:new:1. Native direct reader is excluded from transformation; other readers are MethodHandle and actual Reclazz field bootstrap.",
+    "raw_evidence": [
+      ".collab/current/research/reset-build/native-central-red-17.log",
+      ".collab/current/research/reset-build/native-central-red-21.log"
+    ],
+    "agent_sha256": "cd4365cf64f5ebfa99ced2e52de1be5d04e737eb0282cf8665111f7e4b314078"
+  },
+  "live_sap_acceptance": {
+    "status": "PASSED",
+    "performed_by": "Claude independent audit",
+    "date": "2026-11-08",
+    "environment": "Local SAP Commerce 2211-jdk21.8 server, JDK 21, synthetic probe classes in the reclazztestbackoffice core module (removed after the run)",
+    "agent_sha256": "45651f7faf689301b446903ab08ecafbd6bc3241a9c786524916ddd800d74faf",
+    "boot_comparison": {
+      "option_off": {
+        "startup_ms": 230085,
+        "error_lines": 35,
+        "reclazz_warnings": 2
+      },
+      "option_on": {
+        "startup_ms": 242577,
+        "error_lines": 35,
+        "reclazz_warnings": 2
+      },
+      "note": "All ERROR lines in both boots are the absent local Azure storage emulator; HAC and Backoffice login pages return 200 with the option on."
+    },
+    "observations": [
+      "Option on: Modifier.isFinal(CODES)=false and Modifier.isFinal(REFUSED)=false after startup preparation.",
+      "Reader in a separate class warmed with 3 x 2,000,000 reads of ProbeTable.CODES: v1.",
+      "Edit Map.of(\"k\",\"v1\") to \"v2\", System.getProperty default r1 to r2, and a method body in one save: 'Reset static ...ProbeTable.CODES (initializer changed)', 'REFUSED initializer changed, not reset: unapproved-call; restart to apply', class reloaded.",
+      "Same warmed reader afterwards: v2 (twice); REFUSED still r1; method returns the new body.",
+      "A later method-only save repeats the REFUSED notice (its running value is still stale) and does not touch CODES."
+    ]
+  },
+  "limitations": [
+    "Captured aliases keep the old object.",
+    "Reflection observes eligible static finals as non-final with opt-in startup preparation.",
+    "Compile-time constants and fields loaded before preparation are not reset.",
+    "Missing per-field comparisons never claim a field-level change. Non-isolated advice requires opt-in, changed normalized clinit and a current write; missing first-definition evidence is informational once per exact owner with opt-in and silent otherwise.",
+    "No whole clinit replay, application methods, GETSTATIC dependencies, mutable factories or general concurrent reset guarantee.",
+    "Fresh varargs arrays are limited to 65535 elements and admitted bootstrap component types."
+  ],
+  "dependencies_added": [],
+  "source_sha256": {
+    "agent/src/main/java/com/onurkat/reclazz/reload/StaticInitializerReset.java": "0838d434d66e057ab843ec9da056a4a03ccb6a57bc5c38b202466630ab97287f",
+    "agent/src/main/java/com/onurkat/reclazz/transform/StaticFieldPreparation.java": "033d0376c2c5166df011a04bd742f573ce5021589befdae6170680a40ad0f921",
+    "agent/src/test/java/com/onurkat/reclazz/e2e/StaticInitializerResetReloadTest.java": "45c160d7d9cb86971aa7bbceda3cf309765bf32d8a00064353870aaa08ac5f29",
+    "agent/src/test/java/com/onurkat/reclazz/reload/StaticInitializerResetTest.java": "eb0d29c866081e07af3dbf61b08acf78b092070e39d992f678ab17e13cae5d54",
+    "agent/src/main/java/com/onurkat/reclazz/agent/ClassReloader.java": "dbe39f267f56c8190152d610c812b2bb53d9fca8fccca5bd8c079d2b2451877c",
+    "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "874c573e9788237b53cc570f2bcfd8af36c1bb904c018d05a8f32963ca25e7e9",
+    "agent/src/main/java/com/onurkat/reclazz/config/AgentConfig.java": "9a04f376a7752af3c37abef49424dc157a34c1fefc792ffdd89b508b770b7f39",
+    "agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java": "51d541346cdef5ce50f4a0a23e85b1daf5b1a521eb1b73b8d47d4ca9b80fcc07",
+    "agent/src/main/java/com/onurkat/reclazz/transform/ReclazzTransformer.java": "6feb81f6babc92c1994db5c21e616f4baeb02575684f49bf3ff7d3916ce7d8e5",
+    "src/main/kotlin/com/onurkat/reclazz/plugin/agent/AgentJarLocator.kt": "978d6e75b2121a29a0a42dc3035a4e266b6f514815873bbef397f7a2bd7aa046",
+    "src/main/kotlin/com/onurkat/reclazz/plugin/settings/ReclazzConfigurable.kt": "a9af959b830934fa7631a51efd8bbe1e1933b48c9d4b0295fdd7612a5aea7f37",
+    "src/main/kotlin/com/onurkat/reclazz/plugin/settings/ReclazzSettings.kt": "f9669c62e6ed3f5f7a1774233e052454434527601413e8c6c57076fc053cd2a3",
+    "src/test/kotlin/com/onurkat/reclazz/plugin/AgentArgumentContractTest.kt": "c518e90e225b63c0d32dc9e94878ec8cc3ed7ef3c9d206912e674870ccac1eac",
+    "src/test/kotlin/com/onurkat/reclazz/plugin/NewAgentSettingsRoundTripTest.kt": "06b0d4c3d126afa14b14ee74e5a8c0da6997bac45149cfa6c1a0a8cbc9e8516f",
+    "src/test/kotlin/com/onurkat/reclazz/plugin/ReclazzConfigurableApplyTest.kt": "50fdf74a3201c833d4733d7272d73ee520df98ad7daf2817e3b549b3fd361afc",
+    "src/test/kotlin/com/onurkat/reclazz/plugin/SettingsContractTest.kt": "63e9e3b0529aa7a530a978ee342c61b6d754505ccc6f01b7ea3d811b7907a24a"
+  },
+  "review": "Claude independent re-audit PASS after FIX1, including live SAP acceptance.",
+  "agent_sha256": "fe7029dca1e14b1b2c50bc9ef2b4dd633d1c1d400d97d9033750e8d1fe76ebcb",
+  "validated_utc": "2026-11-08T13:36:36.043035+00:00",
+  "lanes": {
+    "fix-all-unit-17": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 2393,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 9
+      },
+      "command": [
+        "./gradlew",
+        ":agent:unitTest",
+        "--rerun",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 17",
+      "raw_evidence": ".collab/current/research/fix-1/fix-all-unit-17.log",
+      "xml_evidence": ".collab/current/research/fix-1/fix-all-unit-17-xml",
+      "agent_sha256": "fe7029dca1e14b1b2c50bc9ef2b4dd633d1c1d400d97d9033750e8d1fe76ebcb"
+    },
+    "fix-e2e-17": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "command": [
+        "./gradlew",
+        ":agent:e2eTest",
+        "--rerun",
+        "--tests",
+        "*StaticInitializerResetReloadTest",
+        "--tests",
+        "*ConditionalStaticInitialiserReloadTest",
+        "--tests",
+        "*CoreMemberReloadTest",
+        "-x",
+        ":agent:rabbitTest",
+        "-x",
+        ":agent:jmsE2eTest",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 17",
+      "raw_evidence": ".collab/current/research/fix-1/fix-e2e-17.log",
+      "xml_evidence": ".collab/current/research/fix-1/fix-e2e-17-xml",
+      "agent_sha256": "fe7029dca1e14b1b2c50bc9ef2b4dd633d1c1d400d97d9033750e8d1fe76ebcb"
+    },
+    "fix-focused-21": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 201,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "command": [
+        "./gradlew",
+        "-I",
+        "/Users/onurkat/Projects/reclazz/.collab/current/research/reset-build/stock21.gradle",
+        ":agent:unitTest",
+        "--rerun",
+        "--tests",
+        "*StaticInitializerResetTest",
+        "--tests",
+        "*PackageDependenciesTest",
+        "--tests",
+        "*RestartLedgerCoverageTest",
+        "--tests",
+        "*RegistryCompletenessTest",
+        "--tests",
+        "*ProtocolContractTest",
+        "--tests",
+        "*AgentArgumentsAreDocumentedTest",
+        "--tests",
+        "*StaticInitialiserTest",
+        "--tests",
+        "*ConditionalStaticInitialiserTest",
+        "--tests",
+        "*RicherInitialiserTest",
+        "--tests",
+        "*FieldStoreStaticRetentionTest",
+        "--tests",
+        "*UnsafeDenialTest",
+        "-x",
+        ":agent:solrUnitTest",
+        "-x",
+        ":agent:jmsUnitTest",
+        "-x",
+        ":agent:hibernateTest",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 21",
+      "raw_evidence": ".collab/current/research/fix-1/fix-focused-21.log",
+      "xml_evidence": ".collab/current/research/fix-1/fix-focused-21-xml",
+      "agent_sha256": "fe7029dca1e14b1b2c50bc9ef2b4dd633d1c1d400d97d9033750e8d1fe76ebcb"
+    },
+    "fix-e2e-21": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "command": [
+        "./gradlew",
+        "-I",
+        "/Users/onurkat/Projects/reclazz/.collab/current/research/reset-build/stock21.gradle",
+        ":agent:e2eTest",
+        "--rerun",
+        "--tests",
+        "*StaticInitializerResetReloadTest",
+        "--tests",
+        "*ConditionalStaticInitialiserReloadTest",
+        "--tests",
+        "*CoreMemberReloadTest",
+        "-x",
+        ":agent:rabbitTest",
+        "-x",
+        ":agent:jmsE2eTest",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 21",
+      "raw_evidence": ".collab/current/research/fix-1/fix-e2e-21.log",
+      "xml_evidence": ".collab/current/research/fix-1/fix-e2e-21-xml",
+      "agent_sha256": "fe7029dca1e14b1b2c50bc9ef2b4dd633d1c1d400d97d9033750e8d1fe76ebcb"
+    }
+  },
+  "additional_unit_tasks": {
+    "solrUnitTest": {
+      "tests": 44,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "jmsUnitTest": {
+      "tests": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "hibernateTest": {
+      "tests": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "docs_validation": {
+    "status": "PASSED",
+    "build": "BUILT: 33 pages (20 full source references), 83 support entries, 25 derived options",
+    "check": "PASS: 12183 checks; 37 total site pages; 33 pages; 20 complete Markdown references; 83 support entries; 479 search destinations",
+    "raw_evidence": [
+      ".collab/current/research/fix-1/docs-refreshed-build.log",
+      ".collab/current/research/fix-1/docs-refreshed-check.log"
+    ]
+  },
+  "full_agent_test": "UNRUN: release-only by owner direction; relevant unit/e2e/plugin gates executed.",
+  "implementation_notes": [
+    "Pure symbolic expression evaluator returns candidate values; the existing companion initializer vehicle ends in PUTSTATIC and is kept unchanged for added fields. Only exact bootstrap JDK factory/boxing signatures and literal constructors execute.",
+    "Frozen schema and compact first-definition initializer evidence live in transform.StaticFieldPreparation to respect package layering; exact Class reset baselines use ClassValue in reload.StaticInitializerReset.",
+    "Logical re-added FieldStore fields are excluded from reclaiming old physical slots; original serialization UID is computed before definalization."
+  ],
+  "diagnostic_fix": {
+    "findings": [
+      "F1: false restart advice and ledger entries on unchanged non-isolated saves and missing attach baselines",
+      "F2: misleading option-off pointers for constants and refused expressions"
+    ],
+    "before_fix_red": {
+      "tests": 59,
+      "failures": 14,
+      "errors": 0,
+      "skipped": 0,
+      "raw_evidence": ".collab/current/research/fix-1/red.log",
+      "xml_evidence": ".collab/current/research/fix-1/red-xml",
+      "command_evidence": ".collab/current/research/fix-1/red-command.json"
+    },
+    "first_focused_green": {
+      "tests": 68,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "raw_evidence": ".collab/current/research/fix-1/first-green.log",
+      "xml_evidence": ".collab/current/research/fix-1/first-green-xml",
+      "command_evidence": ".collab/current/research/fix-1/first-green-command-receipt.json"
+    },
+    "observation_baseline": "Exact-Class last successful native-save observations are separate from last successfully applied per-field reset baselines. Failures never promote an applied baseline.",
+    "normalization": "Instruction-relative label positions, branch/switch targets and try/catch coverage; line/frame/debug labels ignored.",
+    "live_scope": "Unchanged: Claude audit performs live on/off boot counts, startup-cost observation and synthetic endpoint acceptance.",
+    "intermediate_digest_failure": {
+      "status": "FAILED_THEN_CORRECTED",
+      "tests": 2393,
+      "failures": 18,
+      "errors": 0,
+      "skipped": 9,
+      "cause": "All failures name docs/usage.md surface digest drift after documentation clarification. Source digests refreshed, no assertions weakened; complete unit rerun passed.",
+      "raw_evidence": ".collab/current/research/fix-1/digest-drift-all-unit-17.log",
+      "xml_evidence": ".collab/current/research/fix-1/digest-drift-all-unit-17-xml"
+    }
+  },
+  "previous_build_lanes": {
+    "pinned-all-unit-17": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 2377,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 9
+      },
+      "command": [
+        "./gradlew",
+        ":agent:unitTest",
+        "--rerun",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 17",
+      "raw_evidence": ".collab/current/research/reset-build/pinned-all-unit-17.log",
+      "xml_evidence": ".collab/current/research/reset-build/pinned-all-unit-17-xml",
+      "agent_sha256": "17986a87f88d36175572120a28fc984d64b2438e584b85967681e093b4c5e0ea"
+    },
+    "pinned-e2e-17": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "command": [
+        "./gradlew",
+        ":agent:e2eTest",
+        "--rerun",
+        "--tests",
+        "*StaticInitializerResetReloadTest",
+        "--tests",
+        "*ConditionalStaticInitialiserReloadTest",
+        "--tests",
+        "*CoreMemberReloadTest",
+        "-x",
+        ":agent:rabbitTest",
+        "-x",
+        ":agent:jmsE2eTest",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 17",
+      "raw_evidence": ".collab/current/research/reset-build/pinned-e2e-17.log",
+      "xml_evidence": ".collab/current/research/reset-build/pinned-e2e-17-xml",
+      "agent_sha256": "17986a87f88d36175572120a28fc984d64b2438e584b85967681e093b4c5e0ea"
+    },
+    "pinned-focused-21": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 185,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "command": [
+        "./gradlew",
+        "-I",
+        "/Users/onurkat/Projects/reclazz/.collab/current/research/reset-build/stock21.gradle",
+        ":agent:unitTest",
+        "--rerun",
+        "--tests",
+        "*StaticInitializerResetTest",
+        "--tests",
+        "*PackageDependenciesTest",
+        "--tests",
+        "*RestartLedgerCoverageTest",
+        "--tests",
+        "*RegistryCompletenessTest",
+        "--tests",
+        "*ProtocolContractTest",
+        "--tests",
+        "*AgentArgumentsAreDocumentedTest",
+        "--tests",
+        "*StaticInitialiserTest",
+        "--tests",
+        "*ConditionalStaticInitialiserTest",
+        "--tests",
+        "*RicherInitialiserTest",
+        "--tests",
+        "*FieldStoreStaticRetentionTest",
+        "--tests",
+        "*UnsafeDenialTest",
+        "-x",
+        ":agent:solrUnitTest",
+        "-x",
+        ":agent:jmsUnitTest",
+        "-x",
+        ":agent:hibernateTest",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 21",
+      "raw_evidence": ".collab/current/research/reset-build/pinned-focused-21.log",
+      "xml_evidence": ".collab/current/research/reset-build/pinned-focused-21-xml",
+      "agent_sha256": "17986a87f88d36175572120a28fc984d64b2438e584b85967681e093b4c5e0ea"
+    },
+    "pinned-e2e-21": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "command": [
+        "./gradlew",
+        "-I",
+        "/Users/onurkat/Projects/reclazz/.collab/current/research/reset-build/stock21.gradle",
+        ":agent:e2eTest",
+        "--rerun",
+        "--tests",
+        "*StaticInitializerResetReloadTest",
+        "--tests",
+        "*ConditionalStaticInitialiserReloadTest",
+        "--tests",
+        "*CoreMemberReloadTest",
+        "-x",
+        ":agent:rabbitTest",
+        "-x",
+        ":agent:jmsE2eTest",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "SapMachine 21",
+      "raw_evidence": ".collab/current/research/reset-build/pinned-e2e-21.log",
+      "xml_evidence": ".collab/current/research/reset-build/pinned-e2e-21-xml",
+      "agent_sha256": "17986a87f88d36175572120a28fc984d64b2438e584b85967681e093b4c5e0ea"
+    },
+    "verified-plugin": {
+      "status": "PASSED",
+      "counts": {
+        "tests": 108,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "command": [
+        "./gradlew",
+        ":test",
+        "--rerun",
+        "--console=plain"
+      ],
+      "exit_code": 0,
+      "test_jvm": "IDE framework default, not separately pinned; invocation JAVA_HOME is SapMachine 17",
+      "raw_evidence": ".collab/current/research/reset-build/verified-plugin.log",
+      "xml_evidence": ".collab/current/research/reset-build/verified-plugin-xml"
+    }
+  },
+  "plugin_validation_note": "Prior build plugin lane: 108 passing tests. No IDE source changed in this FIX; not rerun by Astra for FIX1. Independent Claude plugin audit remains required."
+}

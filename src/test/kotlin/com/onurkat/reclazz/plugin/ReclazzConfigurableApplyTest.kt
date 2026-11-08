@@ -26,6 +26,7 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
             val form = configurable.createComponent()
             val controls = descendants(form)
             controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Enable structural reload") }.isSelected = false
+            controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Re-run changed static") }.isSelected = true
             controls.filterIsInstance<JComboBox<*>>().single().selectedItem = "request"
             val exclusion = controls.filterIsInstance<JLabel>().single { it.text.startsWith("Exclude classes from transformation") }.labelFor as JTextField
             exclusion.text = "com.example.Legacy*"
@@ -33,6 +34,7 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
             configurable.apply()
             expectTrue(settings.state.supportLineDismissed)
             expectFalse(settings.state.structuralReload)
+            expectTrue(settings.state.resetStatics)
             expectEquals("request", settings.state.reloadBoundary)
             expectEquals("com.example.Legacy*", settings.state.excludeClasses)
             expectFalse(configurable.isModified)

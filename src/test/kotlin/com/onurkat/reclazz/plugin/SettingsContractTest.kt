@@ -27,6 +27,7 @@ class SettingsContractTest {
         "impexAllowRemove" to false,
         "reloadBoundary" to "immediate",
         "structuralReload" to true,
+        "resetStatics" to false,
         "excludeClasses" to "",
         "watchExtensions" to "",
         "excludePatterns" to "",

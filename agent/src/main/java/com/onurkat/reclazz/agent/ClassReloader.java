@@ -42,13 +42,19 @@ public class ClassReloader {
     private final Instrumentation instrumentation;
     private final JvmCapabilityProbe.CapabilityLevel capabilityLevel;
     private final String vmDescription;
+    private final boolean resetStatics;
 
     // Cache reflection lookups, classes rarely change their annotations at runtime
     private final Map<String, Boolean> springBeanCache = new ConcurrentHashMap<>();
     private final Map<String, Boolean> interceptorCache = new ConcurrentHashMap<>();
 
     public ClassReloader(Instrumentation instrumentation) {
+        this(instrumentation, null);
+    }
+
+    public ClassReloader(Instrumentation instrumentation, com.onurkat.reclazz.config.AgentConfig config) {
         this.instrumentation = instrumentation;
+        this.resetStatics = config != null && config.isResetStatics();
 
         JvmCapabilityProbe.ProbeResult probe = ReclazzAgent.getProbeResult();
         if (probe != null) {
@@ -89,6 +95,7 @@ public class ClassReloader {
             // Redefine the existing class
             ClassDefinition definition = new ClassDefinition(existingClass, newBytecode);
             instrumentation.redefineClasses(definition);
+            com.onurkat.reclazz.reload.StaticInitializerReset.afterReload(existingClass, newBytecode, resetStatics);
 
             // A mapped class that gained a persistent field reloads cleanly and
             // is still not persisted, because Hibernate's mapping was built

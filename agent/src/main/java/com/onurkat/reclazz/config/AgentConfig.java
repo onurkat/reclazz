@@ -31,7 +31,7 @@ public class AgentConfig {
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
             "platform", "watchDirs", "jpaRefresh", "sessionLog", "reloadBoundary",
-            "refreshOwnersOnHelper"
+            "refreshOwnersOnHelper", "resetStatics"
     );
 
     // Split on comma followed by a known key= pattern
@@ -99,6 +99,7 @@ public class AgentConfig {
     private List<Pattern> compiledExcludePatterns = new ArrayList<>();
     private int startupDelaySec = 30;
     private boolean structuralReload = true;
+    private boolean resetStatics = false;
     private Path transformDumpDir;
     private boolean verifyTransform = false;
     private String platform = "auto";
@@ -255,6 +256,9 @@ public class AgentConfig {
         if (params.containsKey("structuralReload")) {
             config.structuralReload = Boolean.parseBoolean(params.get("structuralReload"));
         }
+        if (params.containsKey("resetStatics")) {
+            config.resetStatics = Boolean.parseBoolean(params.get("resetStatics"));
+        }
 
         if (params.containsKey("transformDumpDir")) {
             config.transformDumpDir = Paths.get(params.get("transformDumpDir"));
@@ -397,6 +401,7 @@ public class AgentConfig {
     public List<String> getExcludePatterns() { return Collections.unmodifiableList(excludePatterns); }
     public int getStartupDelaySec() { return startupDelaySec; }
     public boolean isStructuralReload() { return structuralReload; }
+    public boolean isResetStatics() { return resetStatics; }
     public Path getTransformDumpDir() { return transformDumpDir; }
     public boolean isVerifyTransform() { return verifyTransform; }
     public String getPlatform() { return platform; }

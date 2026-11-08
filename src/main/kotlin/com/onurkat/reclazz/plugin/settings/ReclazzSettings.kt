@@ -30,6 +30,7 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
         var impexAllowRemove: Boolean = false,
         var reloadBoundary: String = "immediate",
         var structuralReload: Boolean = true,
+        var resetStatics: Boolean = false,
         var excludeClasses: String = "",
         var watchExtensions: String = "",
         var excludePatterns: String = "",

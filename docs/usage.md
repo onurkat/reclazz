@@ -94,6 +94,7 @@ Arguments are passed as a comma-separated string after the `=` sign:
 | `autoUpdateRunningSystem` | `false` | After an items.xml change regenerates the models, run the schema-only Update Running System (add columns, no data, never drop) so a new attribute is live without a manual HAC click. A saved `*-locales_<iso>.properties` also writes the type, attribute and enumeration names it keys onto the types, as "Localize types" would for those keys only. Writes to the live database, so opt-in and dev-only |
 | `autoSolrReindex` | `false` | After a SAP Commerce indexing provider/resolver reload, queue a bounded native update of its existing local Solr documents. Runs normal platform listeners and bookkeeping. Development only; see [targeted reindexing](#targeted-sap-solr-reindexing) |
 | `jpaRefresh` | `false` | Opt-in mapping rebuild. Existing fields require enhanced redefinition; new entities also work on stock JDKs, including supported Hibernate `validate` with a prepared schema. See [scope](#new-jpa-entities-with-a-prepared-schema) |
+| `resetStatics` | `false` | Opt-in reset of changed, isolated pure initializers of existing static fields; eligible static finals are made non-final at first load. Requires startup preparation; aliases keep the old object. See [Changed static initializers](#changed-static-initializers) |
 | `structuralReload` | `true` | The companion engine that adds and removes members on a stock JDK; `false` leaves method-body reloads only |
 | `platform` | `auto` | Skip detection and name the platform (`hybris`, `spring`, `generic`) |
 | `wrapOutput` | `auto` | Wrap console lines to the terminal width: `auto`, `true`, `false` |
@@ -2842,6 +2843,7 @@ installation message describes.
 | Allow REMOVE in auto-imported ImpEx | Off | Available only when auto-import is enabled; permits live row deletion on save |
 | Reload boundary | immediate | request mode requires the agent at JVM startup; dynamic attach explicitly warns and uses immediate mode |
 | Enable structural reload (Advanced) | On | Disable for method-body reloads only |
+| Re-run changed static field initializers (Advanced) | Off | Applies on the next launch; eligible static finals become non-final. Existing captured copies retain the old object |
 | Exclude classes from transformation (Advanced) | Empty | Semicolon-separated class-name globs; distinct from watched-file exclude patterns |
 
 Existing JPA refresh remains opt-in. Its scope includes new entities on stock
@@ -3393,6 +3395,85 @@ members visible on the original class. See the [versioned core evidence](feature
 
 ## Known Limitations
 
+### Changed Static Initializers
+
+Start the JVM with `resetStatics=true`, or enable **Re-run changed static field
+initializers** in IDE Settings before the next launch. The default is off.
+Keep `structuralReload=true` so first-load preparation is enabled.
+For example, editing an existing `static final Map<String,String> CODES =
+Map.of("key", "new")` can update the value read by subsequent field readers
+without restarting. The current recorded watcher lanes are stock SapMachine
+17/21 on macOS arm64; live SAP boot/endpoint acceptance is a separate audit gate.
+
+Only a changed initializer belonging to an existing, prepared physical field is
+considered. An unchanged initializer leaves runtime writes and null alone. A
+field added after startup keeps the existing execute-once FieldStore behavior;
+this option does not reset it on later saves. No whole `<clinit>` or unrelated
+static block is replayed. A straight-line static-block assignment is equivalent
+to a declaration when their bytecode is identical.
+
+Admission requires one isolated, straight-line write, no branches/loops/handlers,
+no static reads (including enum constants or the owner's own fields), no ambient
+or application calls, and no application receivers. Allowed expressions consist
+recursively of string/number literals, the eight primitive wrapper `valueOf`
+methods, `new BigDecimal(String)` / `new BigInteger(String)` with literal strings,
+and `List.of`, `Set.of`, `Map.of`, `Map.ofEntries`, `Map.entry`. Fixed arities and
+fresh varargs arrays (up to 65,535 elements) are supported. Null factory inputs or duplicate keys can
+throw; the old value and its baseline then remain. Mutable collections, lambdas,
+streams, arbitrary constructors and side effects are refused. Unsupported shapes
+retain the current value and name the reason.
+
+With the option on, first-load preparation removes `final` from non-synthetic
+static final fields that have no ConstantValue attribute, excluding all interface
+and enum owners and `serialVersionUID`. **Reflection sees these fields as
+non-final.** This frozen per-loader decision is reapplied to every redefine and
+retransform, including spliced payloads. It prevents trusted-final folding by
+warmed readers. Values are produced before a typed static setter writes them;
+volatile modifiers are preserved and no Unsafe store is used.
+
+A field edited into a compile-time constant stays physically non-final but is
+not reset: callers may inline the new constant. A field that was a compile-time
+constant at first load stays final and cannot be reset after changing to a
+nonconstant initializer. The existing inlined-constant warning/rebuild advice
+still applies. Missing baselines and classes loaded before the agent fail closed;
+dynamic attach cannot prepare their final fields. These field refusals do not
+block unrelated admitted Map or method changes in the same owner.
+
+A bean or other object that copied the old value into another field keeps its
+old object. Restart when those captured aliases need rebuilding. A reference or
+primitive assignment is not a general transaction or concurrency guarantee; no
+ordering with arbitrary application writes is provided.
+
+Reports say `Reset static Owner.FIELD (initializer changed)` or
+`Static Owner.FIELD initializer changed, not reset: REASON; restart to apply`.
+The reason vocabulary is `option-off (enable resetStatics=true)`,
+`became-constant (callers inline it)`,
+`not-prepared (constant at first load or late attach)`, `compile-time-constant`,
+`non-isolated-write`, `excluded-owner`, `static-dependency`, `control-flow`,
+`multiple-writes`, `unapproved-call`, `unsupported-expression`,
+`unsupported-literal`, `unsupported-array`, `evaluation-failed`,
+`setter-access-or-type`. Method-only reloads with unchanged applied initializers
+are silent. Inseparable writes also stay silent when normalized static code has
+not changed since the last successful class redefinition. For an inseparable field write,
+`non-isolated-write` advice requires both changed normalized `<clinit>` code and
+a write to that field in the current `<clinit>`, with the option on. The report
+says `static initialization changed; initializer comparison unavailable`;
+it does not claim that the field's own initializer was compared. No old
+initializer or unrelated static block is executed to compare values.
+
+An owner with no recorded first definition gets at most one informational
+`missing-baseline` line per session with the option on. An analysis failure
+gets an informational `analysis-failed` line with the option on. Neither is
+recorded as evidence that a restart is required. With the option off these
+cases are silent.
+
+With the option off, a newly observed initializer change points to
+`resetStatics=true` only when its expression is admitted and the field could
+have been prepared at startup. Constants, fields that were constants at first
+load, and refused expressions do not produce this pointer. Constant changes
+retain the existing inlined-constant warning. Repeated saves of unchanged
+static initialization do not repeat the option-off pointer.
+
 ### Added Static Field Values
 
 On a stock JDK, a static field added after startup gets its compile-time constant
@@ -3407,8 +3488,8 @@ private static final String MODE =
 Reclazz runs only the new field's initializer, including its condition and the
 selected branch. Nested conditions, short-circuit boolean expressions, object
 construction and primitive/reference results are supported when the expression
-can be separated. Other static blocks and existing static field values are not
-reset. Initializers for newly added fields run in source order. Later saves keep
+can be separated. Other static blocks are not replayed. Existing physical
+fields have a separate opt-in [changed initializer](#changed-static-initializers) path. Initializers for newly added fields run in source order. Later saves keep
 an initialized field's current value, including null or a value the application
 wrote; changing the initializer does not reinitialize that field.
 

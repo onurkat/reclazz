@@ -101,8 +101,9 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // pass-through is also recorded as the latest emitted bytecode,
         // because from the JVM's point of view it is.
         if (isAlreadyTransformed(classfileBuffer)) {
-            TransformedClassCache.put(className, classfileBuffer);
-            return null;
+            byte[] stable = StaticFieldPreparation.stableSchema(loader, className, classfileBuffer);
+            TransformedClassCache.put(className, stable);
+            return stable == classfileBuffer ? null : stable;
         }
 
         // Recorded whatever happens below, including the paths that decline to
@@ -144,7 +145,11 @@ public class ReclazzTransformer implements ClassFileTransformer {
                 return null;
             }
 
-            byte[] transformed = doTransform(className, classfileBuffer, loader);
+            byte[] schema = classBeingRedefined == null
+                    ? StaticFieldPreparation.firstDefinition(classfileBuffer, config.isResetStatics())
+                    : classfileBuffer;
+            byte[] transformed = doTransform(className, schema, loader,
+                    SerialVersionUid.forInjection(classfileBuffer));
 
             // Always validate transformed bytecode before handing it to the JVM.
             // If our generated frames are inconsistent (which would crash class
@@ -180,6 +185,9 @@ public class ReclazzTransformer implements ClassFileTransformer {
             // a call site generated later has to know whether this class really
             // carries the renamed bodies, and "it did once" is not an answer.
             context.markTransformed(className);
+
+            if (classBeingRedefined == null)
+                StaticFieldPreparation.recordDefinition(loader, className, classfileBuffer, config.isResetStatics());
 
             return transformed;
         } catch (Exception e) {
@@ -222,6 +230,11 @@ public class ReclazzTransformer implements ClassFileTransformer {
      * Apply the transformation pipeline to a class.
      */
     public byte[] doTransform(String className, byte[] classfileBuffer, ClassLoader loader) {
+        return doTransform(className, classfileBuffer, loader, SerialVersionUid.forInjection(classfileBuffer));
+    }
+
+    private byte[] doTransform(String className, byte[] classfileBuffer, ClassLoader loader, Long originalUid) {
+        classfileBuffer = StaticFieldPreparation.stableSchema(loader, className, classfileBuffer);
         ClassReader reader = new ClassReader(classfileBuffer);
 
         // Custom ClassWriter that walks class hierarchies via ClassReader rather
@@ -236,8 +249,6 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // annotation, which the structural diff cannot see.
         // Computed from the ORIGINAL bytes, before anything is added to them,
         // and only when the class does not already say what its UID is.
-        Long originalUid = SerialVersionUid.forInjection(classfileBuffer);
-
         MethodTrampolineAdapter adapter = new MethodTrampolineAdapter(
                 writer, context, AnnotationSignatures.of(classfileBuffer), originalUid, loader);
 

@@ -996,6 +996,7 @@ public class StructuralReloader {
 
             var definition = new java.lang.instrument.ClassDefinition(existingClass, newBytecode);
             instrumentation.redefineClasses(definition);
+            StaticInitializerReset.afterReload(existingClass, newBytecode, config.isResetStatics());
             // Repository interfaces deliberately have no companion metadata.
             // A successful shape-preserving JVM redefinition must still reach
             // the Data step, or a changed @Query remains cached in its proxy.
@@ -1512,6 +1513,7 @@ public class StructuralReloader {
                 // the batch it is part of. See redefine().
                 RedefineOutcome.Handler afterRedefine = outcome -> {
                     if (outcome.applied()) {
+                        StaticInitializerReset.afterReload(targetClass, newBytecode, config.isResetStatics(), diff.getAddedFields());
                         // The loaded class now holds what the payload holds,
                         // removed methods included, and the record has to say so
                         // or the next save reads restoring one as adding one.

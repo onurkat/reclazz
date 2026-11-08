@@ -26,7 +26,7 @@ import kotlin.test.assertFalse as expectFalse
 class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
     private fun nonDefaults() = ReclazzSettings.State(enabled = true, autoDetectJdk = false,
         autoImpex = true, autoSolrReindex = true, autoUpdateRunningSystem = true, impexAllowRemove = true,
-        reloadBoundary = "request", structuralReload = false, excludeClasses = "com.example.Legacy*;com.example.Old")
+        reloadBoundary = "request", structuralReload = false, resetStatics = true, excludeClasses = "com.example.Legacy*;com.example.Old")
 
     fun testNewSettingsRoundTripAndReachAllThreeLaunchPaths() {
         SyntheticProject(project, sap = true).use { layout ->
@@ -36,7 +36,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
             val settings = ReclazzSettings.getInstance(project)
             settings.loadState(restored)
             val expected = setOf("autoSolrReindex=true", "autoUpdateRunningSystem=true", "impexAllowRemove=true",
-                "reloadBoundary=request", "structuralReload=false", "excludeClasses=com.example.Legacy*;com.example.Old")
+                "reloadBoundary=request", "structuralReload=false", "resetStatics=true", "excludeClasses=com.example.Legacy*;com.example.Old")
             val args = AgentJarLocator.buildAgentArgs(layout.project, settings.state)
             expectTrue(args.split(',').containsAll(expected), args)
             val jar = File("/synthetic tools/reclazz-agent.jar")
@@ -73,7 +73,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
         SyntheticProject(project, sap = true).use { layout ->
             expectFalse(AgentJarLocator.buildAgentArgs(layout.project, nonDefaults().copy(autoImpex = false)).contains("impexAllowRemove="))
             val defaults = AgentJarLocator.buildAgentArgs(layout.project, ReclazzSettings.State())
-            for (key in listOf("autoSolrReindex", "autoUpdateRunningSystem", "impexAllowRemove", "reloadBoundary", "structuralReload", "excludeClasses")) {
+            for (key in listOf("autoSolrReindex", "autoUpdateRunningSystem", "impexAllowRemove", "reloadBoundary", "structuralReload", "resetStatics", "excludeClasses")) {
                 expectFalse(defaults.contains("$key="), defaults)
             }
         }

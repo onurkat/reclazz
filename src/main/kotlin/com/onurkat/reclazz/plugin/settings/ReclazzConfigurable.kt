@@ -40,6 +40,7 @@ class ReclazzConfigurable internal constructor(
     private var impexAllowRemoveCheckbox = false
     private var reloadBoundaryField = "immediate"
     private var structuralReloadCheckbox = true
+    private var resetStaticsCheckbox = false
     private var excludeClassesField = ""
     private var watchExtensionsField = ""
     private var excludePatternsField = ""
@@ -68,6 +69,7 @@ class ReclazzConfigurable internal constructor(
         impexAllowRemoveCheckbox = settings.impexAllowRemove
         reloadBoundaryField = settings.reloadBoundary
         structuralReloadCheckbox = settings.structuralReload
+        resetStaticsCheckbox = settings.resetStatics
         excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns
@@ -246,6 +248,11 @@ class ReclazzConfigurable internal constructor(
                         .bindSelected(::structuralReloadCheckbox)
                         .comment("On by default. Turning it off leaves method-body reloads only.")
                 }
+                row {
+                    checkBox("Re-run changed static field initializers")
+                        .bindSelected(::resetStaticsCheckbox)
+                        .comment("Off by default. Applies at next launch; eligible static finals become non-final. Captured copies keep their old value.")
+                }
                 row("Exclude classes from transformation:") {
                     textField()
                         .bindText(::excludeClassesField)
@@ -410,6 +417,7 @@ class ReclazzConfigurable internal constructor(
                 impexAllowRemoveCheckbox != settings.impexAllowRemove ||
                 reloadBoundaryField != settings.reloadBoundary ||
                 structuralReloadCheckbox != settings.structuralReload ||
+                resetStaticsCheckbox != settings.resetStatics ||
                 excludeClassesField != settings.excludeClasses ||
                 watchExtensionsField != settings.watchExtensions ||
                 excludePatternsField != settings.excludePatterns ||
@@ -443,6 +451,7 @@ class ReclazzConfigurable internal constructor(
                 impexAllowRemove = impexAllowRemoveCheckbox,
                 reloadBoundary = reloadBoundaryField,
                 structuralReload = structuralReloadCheckbox,
+                resetStatics = resetStaticsCheckbox,
                 excludeClasses = excludeClassesField,
                 watchExtensions = watchExtensionsField,
                 excludePatterns = excludePatternsField,
@@ -470,6 +479,7 @@ class ReclazzConfigurable internal constructor(
         impexAllowRemoveCheckbox = settings.impexAllowRemove
         reloadBoundaryField = settings.reloadBoundary
         structuralReloadCheckbox = settings.structuralReload
+        resetStaticsCheckbox = settings.resetStatics
         excludeClassesField = settings.excludeClasses
         watchExtensionsField = settings.watchExtensions
         excludePatternsField = settings.excludePatterns

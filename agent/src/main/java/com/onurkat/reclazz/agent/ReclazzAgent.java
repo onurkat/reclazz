@@ -513,7 +513,7 @@ public class ReclazzAgent {
             }
 
             // Set up class reloader
-            ClassReloader reloader = new ClassReloader(instrumentation);
+            ClassReloader reloader = new ClassReloader(instrumentation, config);
 
             // Set up Spring reload orchestrator (works for all platforms)
             SpringReloadOrchestrator springOrchestrator = new SpringReloadOrchestrator(platformContext);
