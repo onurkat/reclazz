@@ -59,9 +59,17 @@ import com.onurkat.reclazz.util.Reflect;
 public final class SpringXmlReloader {
 
     private final PlatformContext platformContext;
+    private final java.util.function.Consumer<java.util.Set<Path>> processRegistrations;
 
     public SpringXmlReloader(PlatformContext platformContext) {
+        this(platformContext, paths -> { });
+    }
+
+    /** Publication remains behind the caller's optional-module admission. */
+    public SpringXmlReloader(PlatformContext platformContext,
+                            java.util.function.Consumer<java.util.Set<Path>> processRegistrations) {
         this.platformContext = platformContext;
+        this.processRegistrations = java.util.Objects.requireNonNull(processRegistrations);
     }
 
     /** Entry for filenames recognized by captured resource identity, never by bean names. */
@@ -84,11 +92,13 @@ public final class SpringXmlReloader {
                 if (documentReader != null) PlatformTenant.ensureActive(loader);
                 if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader, environment,
                         documentReader))
-                    applyToSingleContext(xmlPath, temporary, context, factory, "");
+                    applyToSingleContext(xmlPath, temporary, context, factory, "", true);
             } catch (ReflectiveOperationException failure) {
                 StatusReporter.warn("Spring XML: application bean classloader unavailable");
             }
         }
+        // Every owner and added singleton is visible before evaluating sibling names.
+        processRegistrations.accept(com.onurkat.reclazz.platform.SapProcessDefinitions.registeredFrom(xmlPath));
     }
 
     public void reload(Path xmlPath) {
@@ -162,13 +172,15 @@ public final class SpringXmlReloader {
             if (liveFactory == null) continue;
             String ctxLabel = owningContexts.size() == 1 ? ""
                     : " [context " + (i + 1) + "/" + owningContexts.size() + "]";
-            applyToSingleContext(xmlPath, tempFactory, appContext, liveFactory, ctxLabel);
+            applyToSingleContext(xmlPath, tempFactory, appContext, liveFactory, ctxLabel, false);
         }
     }
 
     /** Run classify + apply + report against a single ApplicationContext. */
     private void applyToSingleContext(Path xmlPath, Object tempFactory,
-                                       Object appContext, Object liveFactory, String ctxLabel) {
+                                       Object appContext, Object liveFactory, String ctxLabel, boolean observedSource) {
+        if (observedSource) com.onurkat.reclazz.platform.SapProcessDefinitions.reconcile(xmlPath, appContext,
+                new java.util.HashSet<>(java.util.Arrays.asList(SpringReflection.getBeanDefinitionNames(tempFactory))));
         BeanDefinitionDiff diff = new BeanDefinitionDiff();
         XmlSafetyClassifier.classify(liveFactory, tempFactory, xmlPath, diff);
         XmlAliasDiagnostics.classify(appContext, liveFactory, tempFactory, xmlPath, diff);
@@ -212,6 +224,7 @@ public final class SpringXmlReloader {
         for (BeanDefinitionDiff.NewBean add : diff.added) {
             try {
                 applyNewBean(appContext, liveFactory, add);
+                if (observedSource) com.onurkat.reclazz.platform.SapProcessDefinitions.registered(xmlPath, appContext, add.beanName);
                 applied++;
             } catch (Exception e) {
                 diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(

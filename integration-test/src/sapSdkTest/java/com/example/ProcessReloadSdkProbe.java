@@ -6,6 +6,7 @@ package com.example;
 
 import com.onurkat.reclazz.ext.*;
 import com.onurkat.reclazz.hybris.SapProcessDefinitionReloader;
+import com.onurkat.reclazz.hybris.ProcessTenantFixture;
 import com.onurkat.reclazz.platform.*;
 import de.hybris.platform.processengine.definition.*;
 import de.hybris.platform.scripting.engine.ScriptingLanguagesService;
@@ -53,7 +54,7 @@ public final class ProcessReloadSdkProbe {
             context.getBeanFactory().registerSingleton("factory", factory);
             var holder = new ProcessDefinitionResource(); holder.setResource(new FileSystemResource(file));
             context.getBeanFactory().registerSingleton("resource", holder);
-            context.refresh(); ApplicationContextHolder.register(context);
+            context.refresh(); ApplicationContextHolder.register(context); ProcessTenantFixture.reset(); ProcessTenantFixture.attach(context);
         }
         PlatformChangeHandler.Outcome apply() {
             Thread thread = Thread.currentThread();
@@ -164,6 +165,6 @@ public final class ProcessReloadSdkProbe {
                     "observed duplicate native names still refuse publication");
         }
         System.out.println("SDK_RELOAD_CHECKS=" + checks + " MODE=" + (late ? "late" : "observed"));
-        System.out.println("SCOPE=real transformed native parser/cache/provider startup; synthetic latest-id override; no tenant/tasks/live watcher");
+        System.out.println("SCOPE=real transformed native parser/cache/provider startup; synthetic latest-id and tenant/session binding seams; no native tenant/tasks/live watcher");
     }
 }

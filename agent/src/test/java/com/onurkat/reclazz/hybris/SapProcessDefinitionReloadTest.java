@@ -29,7 +29,7 @@ class SapProcessDefinitionReloadTest {
     final StatusReporter.StatusListener listener = (level, message) -> messages.add(level + ":" + message);
 
     @BeforeEach void setup() throws Exception {
-        ApplicationContextHolder.clear(); RestartLedger.clear(); StatusReporter.addListener(listener);
+        ApplicationContextHolder.clear(); ProcessTenantFixture.reset(); RestartLedger.clear(); StatusReporter.addListener(listener);
         file = temporary.resolve("flow.xml"); save("exampleA", "v1");
         context = new GenericApplicationContext();
         reader = new XMLProcessDefinitionsReader(); provider = new ProcessDefinitionsProvider();
@@ -37,7 +37,7 @@ class SapProcessDefinitionReloadTest {
         cache = new ProcessDefinitionsCache(); cache.processDefinitionsProvider = provider;
         factory = new DefaultProcessDefinitionFactory(); factory.definitionsCache = cache; factory.xmlDefinitionsReader = reader;
         context.getBeanFactory().registerSingleton("factory", factory);
-        register(file, "resource"); context.refresh(); ApplicationContextHolder.register(context);
+        register(file, "resource"); context.refresh(); ApplicationContextHolder.register(context); ProcessTenantFixture.attach(context);
     }
     void register(Path path, String name) {
         var holder = new ProcessDefinitionResource(); holder.setResource(new FileSystemResource(path));
@@ -55,7 +55,7 @@ class SapProcessDefinitionReloadTest {
     void loaded() throws Exception { cache.initialise(true); messages.clear(); }
     @AfterEach void cleanup() {
         context.close(); ApplicationContextHolder.clear(); SapProcessDefinitions.discard(cache);
-        StatusReporter.removeListener(listener); RestartLedger.clear();
+        StatusReporter.removeListener(listener); RestartLedger.clear(); ProcessTenantFixture.reset();
     }
 
     @Test void newProcessFollowsEditedGraph() throws Exception {
@@ -108,6 +108,13 @@ class SapProcessDefinitionReloadTest {
         context.getDefaultListableBeanFactory().destroySingleton("factory");
         context.getBeanFactory().registerSingleton("factory", new DefaultProcessDefinitionFactory() { });
         assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply()); assertEquals(0, reader.parses);
+    }
+    @Test void observedEditRetainsExistingNativeProviderSubclassContract() throws Exception {
+        var custom=new ProcessDefinitionsProvider() { };custom.applicationContext=context;custom.reader=reader;
+        provider=custom;cache.processDefinitionsProvider=custom;
+        loaded();var old=active("exampleA");save("exampleA","v2");
+        assertEquals(PlatformChangeHandler.Outcome.HANDLED,apply());assertEquals("v2",active("exampleA").graph());
+        assertSame(old,cache.definitions.get(old.getId()));assertTrue(custom.latestCalls>0);
     }
     @Test void unchangedContentIsNotRepublished() throws Exception {
         loaded(); int publications = cache.publications;
@@ -162,7 +169,7 @@ class SapProcessDefinitionReloadTest {
         loaded(); context.close(); context = new GenericApplicationContext();
         provider.applicationContext = context;
         context.getBeanFactory().registerSingleton("factory", factory); register(file, "resource");
-        context.refresh(); ApplicationContextHolder.register(context); save("exampleA", "v2");
+        context.refresh(); ApplicationContextHolder.register(context); ProcessTenantFixture.attach(context); save("exampleA", "v2");
         assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply());
         cache.initialise(true); save("exampleA", "v3");
         assertEquals(PlatformChangeHandler.Outcome.HANDLED, apply()); assertEquals("v3", active("exampleA").graph());

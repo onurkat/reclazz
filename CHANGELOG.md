@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- SAP process registration and edits evaluate proven native owners independently
+  in their own tenant/session scope, preserving other owners on a refusal.
+
+- New SAP Commerce process names can be registered without a restart when their
+  resource singleton is added through an observed, watched Spring source and
+  the standard native cache is warm. Both file-save orders work; exact resource
+  ownership and batch collision checks fail closed. Cold caches retain native
+  lazy loading, later edits retain version history, and deletion remains a
+  restart diagnostic.
+
 ## [1.5.0] - 2026-11-08
 
 

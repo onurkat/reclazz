@@ -44,6 +44,9 @@ with tempfile.TemporaryDirectory(prefix='reclazz-process-reload-sdk-') as tempor
     out = Path(temporary)
     sources = repo / 'integration-test/src/sapSdkTest/java/com/example'
     run([str(args.java_home / 'bin/javac'), '-proc:none', '-cp', classpath, '-d', temporary,
+         str(repo / 'agent/src/test/java/com/onurkat/reclazz/hybris/ProcessTenantFixture.java'),
+         str(repo / 'agent/src/processTestFixtures/java/de/hybris/platform/core/Registry.java'),
+         str(repo / 'agent/src/processTestFixtures/java/de/hybris/platform/jalo/JaloSession.java'),
          str(sources / 'ProcessObserverAgent.java'), str(sources / 'ProcessReloadSdkProbe.java')])
     observer = out / 'observer.jar'
     with zipfile.ZipFile(observer, 'w') as jar:

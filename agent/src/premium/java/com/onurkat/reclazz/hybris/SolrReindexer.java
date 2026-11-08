@@ -57,7 +57,7 @@ public final class SolrReindexer implements AutoCloseable {
                     if (!seen.add(service)) continue;
                     Object owner = c;
                     int tag = ++ownerNumber;
-                    try { inTenant(owner, () -> { inSession(owner, () -> { process(owner, service, changed, tag); return null; }); return null; }); }
+                    try { SapOwnerScope.execute(owner, () -> { process(owner, service, changed, tag); return null; }); }
                     catch (Throwable unavailable) { refused("owner" + tag, unavailable); }
                 }
             }
@@ -398,53 +398,7 @@ public final class SolrReindexer implements AutoCloseable {
     }
 
     private static Object singleton(Object ctx, String id) throws Exception {
-        for (Object c = ctx; c != null; c = call(c, "getParent")) {
-            Object bf = call(c, "getBeanFactory");
-            String name = text(call(bf, "canonicalName", id));
-            if (yes(call(bf, "containsSingleton", name))) return call(bf, "getSingleton", name);
-            require(!yes(call(bf, "containsBeanDefinition", name)), "infrastructure-not-initialized");
-        }
-        throw new Refusal("infrastructure-unavailable");
-    }
-
-    private static Object inTenant(Object ctx, Callable<Object> action) throws Exception {
-        ClassLoader loader = loader(ctx);
-        Class<?> registry = Class.forName("de.hybris.platform.core.Registry", false, loader);
-        List<Object> tenants = new ArrayList<>();
-        tenants.add(call(registry, "getMasterTenant"));
-        tenants.addAll(map(call(registry, "getSlaveTenants")).values());
-        Object owner = null;
-        for (Object tenant : tenants) {
-            if (tenant == null) continue;
-            Object app = call(tenant, "getApplicationContext");
-            for (Object c = ctx; c != null; c = call(c, "getParent")) {
-                if (c != app) continue;
-                require(owner == null || owner == tenant, "ambiguous-tenant");
-                owner = tenant;
-            }
-        }
-        require(owner != null, "owning-tenant-unavailable");
-        Thread thread = Thread.currentThread();
-        ClassLoader before = thread.getContextClassLoader();
-        try { thread.setContextClassLoader(loader); return call(registry, "runAsTenant", owner, action); }
-        finally { thread.setContextClassLoader(before); }
-    }
-
-    private static Object inSession(Object ctx, Callable<Object> action) throws Exception {
-        Object service = singleton(ctx, "sessionService");
-        Object before = yes(call(service, "hasCurrentSession")) ? call(service, "getCurrentSession") : null;
-        Object rawBefore = before == null ? null : call(service, "getRawSession", before);
-        Object fresh = null;
-        try {
-            fresh = call(service, "createNewSession");
-            return action.call();
-        } finally {
-            try { if (fresh != null) call(service, "closeSession", fresh); }
-            finally {
-                if (rawBefore != null) call(rawBefore, "activate");
-                else call(Class.forName("de.hybris.platform.jalo.JaloSession", false, loader(ctx)), "deactivate");
-            }
-        }
+        return SapOwnerScope.singleton(ctx, id);
     }
 
     private static ClassLoader loader(Object ctx) throws Exception {
@@ -472,7 +426,7 @@ public final class SolrReindexer implements AutoCloseable {
     private static void refused(String tag, Throwable error) {
         Throwable cause = root(error);
         // No native messages or class names: both can contain customer identifiers or indexed values.
-        String reason = cause instanceof Refusal ? cause.getMessage() : "native-operation-failed";
+        String reason = (cause instanceof Refusal || cause instanceof SapOwnerScope.Refusal) ? cause.getMessage() : "native-operation-failed";
         StatusReporter.info("SAP Solr " + tag + ": FAILED (" + reason + "). Reclazz did not confirm "
                 + "a reindex of stored documents; validate and explicitly reindex affected documents if needed.");
     }

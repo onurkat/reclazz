@@ -524,7 +524,20 @@ public class ReclazzAgent {
             // applies safe changes (property mutations + new-bean adds) in
             // place without destroy+recreate. Unsafe changes become a single
             // "restart required" warning, live context stays untouched.
-            springXmlReloader = new SpringXmlReloader(platformContext);
+            springXmlReloader = new SpringXmlReloader(platformContext, paths -> {
+                java.util.Set<java.nio.file.Path> admitted = new java.util.LinkedHashSet<>();
+                for (var path : paths) {
+                    String module = platformContext.resolveModuleName(path);
+                    if (platformContext.shouldWatch(module) && !config.isExcluded(path.getFileName().toString())
+                            && (!isHybris || platformContext.getResourceDirs().containsKey(module))) admitted.add(path);
+                    else com.onurkat.reclazz.platform.SapProcessDefinitions.forget(path);
+                }
+                for (var path : admitted) {
+                    String module = platformContext.resolveModuleName(path);
+                    modules.handle(new PlatformChangeHandler.Change(Capability.PROCESS_RELOAD, path,
+                            "CREATED", module, "sap-process-registration"));
+                }
+            });
 
             // The registry owns optional automation; discovery and the reload engine do not.
             if (suppliedModules == null) registerPremiumAutomation(modules, config, platformContext);

@@ -3532,6 +3532,39 @@ The action depends on which part changed. Regeneration and reload do not update 
 | `*-spring.xml` and captured local Spring XML bean definitions | Supported bean-definition changes are diffed and applied | Unsupported changes are reported; follow that diagnostic instead of assuming every XML edit needs a restart |
 
 
+### New SAP process definitions
+
+With the SAP automation module, add a local process XML and its ordinary
+`ProcessDefinitionResource` singleton to an existing watched Spring XML that
+Reclazz observed loading. Either save order works: the resource registration
+checks an already present file, and a later process file save retries a pending
+registration. A filename or a preexisting resource bean alone grants no access.
+
+If the standard native process cache is already warm, Reclazz validates the
+complete relevant registration batch, rejects duplicate/existing names and
+active `DynamicProcessDefinition` rows, then publishes through the native
+factory. A cold cache is left for SAP's existing lazy load. Each supported provider-owner context is evaluated independently, with its own
+cache, collision checks and tenant database guard. Native work runs in the proven
+owning tenant with a fresh session, and restores the caller state afterwards.
+An unproven or refused owner does not block another valid owner. Exact
+bean/resource identities are checked
+again before publication. Custom native shapes, unproven sibling resources,
+replaced owners and invalid XML produce an explanation instead of publication.
+A valid later save can recover a parse failure; it cannot revive a replaced
+resource's permission. New resources outside the watched module/file scope
+remain excluded.
+
+After a successful registration, new processes can use the name immediately.
+Later edits to that proven resource retain the existing version-history rules:
+new starts use the edited definition, while already started processes keep their
+stored version in this JVM. Removing the resource keeps a restart diagnostic;
+it does not delete a definition used by an existing process. No process is
+migrated, replayed or restarted. Cache eviction, server restart and cluster
+propagation are outside this guarantee.
+
+[Creation verification scope](feature-evidence/sap-process-create.json) separates
+unit/watcher and native SDK checks from live tenant acceptance.
+
 ### Targeted SAP Solr reindexing
 
 Provider code reload already changes subsequent indexing calls. Stored search

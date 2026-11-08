@@ -28,7 +28,8 @@ public final class SapProcessResources {
     }
 
     /** Objects live only for this discovery call; the scanner retains paths alone. */
-    public record Registration(Object context, Object resource, Path path) { }
+    public record Registration(Object context, Object beanFactory, String beanName,
+                               Object bean, Object resource, Path path) { }
 
     public static List<Registration> registrations() {
         List<Registration> registrations = new ArrayList<>();
@@ -50,7 +51,7 @@ public final class SapProcessResources {
                         if (!"file".equals(url.getProtocol())) continue;
                         Path path = Path.of(url.toURI()).toAbsolutePath().normalize();
                         if (path.getFileName() != null && path.getFileName().toString().endsWith(".xml"))
-                            registrations.add(new Registration(context, resource, path));
+                            registrations.add(new Registration(context, factory, name, bean, resource, path));
                     } catch (Exception | LinkageError unavailable) {
                         // One unsupported registration must not hide the other known resources.
                     }

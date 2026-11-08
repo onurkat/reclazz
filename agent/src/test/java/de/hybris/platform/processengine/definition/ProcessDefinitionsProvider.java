@@ -13,6 +13,7 @@ public class ProcessDefinitionsProvider {
     public XMLProcessDefinitionsReader reader;
     public boolean dynamic, failProvider;
     public int initialCalls, latestCalls;
+    public Runnable beforeLatest = () -> { };
     public List<ProcessDefinition> getInitialActiveDefinitions() throws Exception {
         initialCalls++;
         var result = new ArrayList<ProcessDefinition>();
@@ -28,6 +29,7 @@ public class ProcessDefinitionsProvider {
     }
     public ProcessDefinitionId getLatestDefinitionIdFor(ProcessDefinitionId id) {
         latestCalls++;
+        beforeLatest.run();
         if (failProvider) throw new IllegalStateException("example provider failure");
         return dynamic ? new ProcessDefinitionId(id.name(), "db") : null;
     }

@@ -37,6 +37,8 @@ class SapProcessDefinitionReloadTest {
                     "com.onurkat.reclazz.platform.SapProcessDefinitions.parsed(holder.getResource(), parsed);", "");
             builder.with(name, source);
         }
+        for (String path : List.of("com/onurkat/reclazz/hybris/ProcessTenantFixture.java", "de/hybris/platform/core/Registry.java", "de/hybris/platform/jalo/JaloSession.java"))
+            builder.with(Path.of(path).getFileName().toString().replace(".java", ""), Files.readString(Path.of((path.startsWith("de/") ? "src/processTestFixtures/java/" : "src/test/java/") + path)));
         try (var app = builder.with("App", APP).start()) {
             app.awaitOrFail("PROCESS_READY", "native fixture did not load");
             app.awaitOrFail("] Watching ", "watcher missing");
@@ -66,7 +68,7 @@ class SapProcessDefinitionReloadTest {
                     var factory = new DefaultProcessDefinitionFactory(); factory.xmlDefinitionsReader = reader; factory.definitionsCache = cache;
                     context.getBeanFactory().registerSingleton("resource", resource);
                     context.getBeanFactory().registerSingleton("factory", factory);
-                    context.refresh(); cache.initialise(true);
+                    context.refresh(); com.onurkat.reclazz.hybris.ProcessTenantFixture.attach(context); cache.initialise(true);
                     var original = cache.definitions.get(new ProcessDefinitionId("exampleA"));
                     System.out.println("PROCESS_READY"); boolean v2 = false;
                     for (int i = 0; i < 2400; i++) {
