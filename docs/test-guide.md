@@ -512,3 +512,24 @@ The search root must contain the owner's installed SDK directories. The exact me
 Fresh native controls use10/20/30/40. Watcher cases cover direct Owner saves followed by helper-only saves, parent-child helper-only cascade, same-factory recursive destruction, and a withheld-save negative control. Accepted save receipts alone do not pass: exact session/input hashes, current constructor value, current held receiver, native dependency edges and unrelated identity are asserted. The HTTP observer never looks up or recreates a bean to repair the fixture. Exit0 requires all desired/control cases to pass; baseline desired failures remain exit1.
 
 The fixture uses @Component to select actual ordinary Spring recreation. A plain programmatic registration without a stereotype can use the agent's helper-body route, so a stale result from that different route is not constructor-transaction causal proof. SDK-derived native graph acceptance must not be labelled live SAP application/tenant acceptance. Ordinary sibling/shadow/refusal/failure/batch controls also live in the inherited `ConstructorDependencyContract`; the standard Spring5 and isolated Spring6 test wrappers remain their normal Gradle entry points. SDK execution uses existing test-only JUnit artifacts and keeps them out of runtime distributions.
+
+
+### Live SAP runner determinism
+
+`./gradlew :integration-test:harnessContractTest --rerun` checks thirteen runner
+ordering/polling/restoration cases without SAP, using fake socket events, actual
+runner child JVMs and loopback HTTP. `:integration-test:sapProofTest --rerun`
+retains eight model-save acceptance checks. Both are wired into this module's
+`check`; a green portable target is not a live SAP result.
+
+Live runs read committed fixture baselines from HEAD, wait for each changed
+source's own COMPILE then exact-owner RELOAD, poll expected HTTP status and body,
+and verify final byte-identical restoration. ImpEx must transition from a visible
+v1 baseline to v2 and back to v1, with terminal import outcomes; stale v2 data
+cannot establish success. The single nonce-based model-save POST is not retried.
+Record five identical full runs on one boot plus a fresh-boot run, the exact agent
+artifact/server identity and the fixture/ImpEx restoration checks. The existing
+Hibernate ORM scenario remains SKIP when the SAP fixture has no ORM L2 provider.
+See [the runner guide](../integration-test/README.md#runner-ordering-and-restoration)
+for scope and prerequisites. Broader SAP capability coverage remains a separate
+staged task; these synchronization changes do not certify those capabilities.

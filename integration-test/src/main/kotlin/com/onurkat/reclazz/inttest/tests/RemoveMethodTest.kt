@@ -19,40 +19,21 @@ class RemoveMethodTest(
     override fun run(): TestResult {
         val start = System.currentTimeMillis()
         return try {
-            agentClient.clearEvents()
-
-            writeTemplate(
+            // A direct source call cannot be recompiled after deleting its target.
+            // This probe still invokes the original runtime method, and must work
+            // before removal; its reflection path remains compilable in later batches.
+            reloadTemplate("${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java", "TestController_removeMethodProbe.java.txt")
+            pollGet("${config.testEndpointBase}/removable", expectedBody = "removable-v1")
+            reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/TestService.java",
                 "TestService_removeMethod.java.txt"
             )
 
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs)
-            if (compileEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            }
-
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs, "TestService")
-            if (reloadEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
-            }
-
-            Thread.sleep(config.settleDelayMs)
-
-            val httpResult = httpVerifier.get("${config.testEndpointBase}/removable")
-            if (!config.enhancedMode) {
-                // Companion mode: existing callers keep the previous
-                // implementation of removed methods (documented), the
-                // endpoint must still answer with the old body.
-                return if (httpResult.statusCode == 200 && httpResult.body == "removable-v1") {
-                    result(start, TestStatus.PASS,
-                        "companion mode: removed method keeps old impl for existing callers (documented)")
-                } else {
-                    result(start, TestStatus.FAIL,
-                        "companion expectation violated: got ${httpResult.statusCode}: ${httpResult.body}")
-                }
-            }
-
-            // Enhanced mode: calling removed method should result in error/404
+            // Enhanced mode cannot find the removed method. Companion mode invokes
+            // the existing physical entry, which must throw NoSuchMethodError.
+            // Both must fail the endpoint instead of serving the old body.
+            val httpResult = httpVerifier.poll(config.eventTimeoutMs, "Removed method endpoint",
+                { httpVerifier.get("${config.testEndpointBase}/removable", budgetMs = it) }) { it.statusCode == 404 || it.statusCode == 500 }
             if (httpResult.statusCode == 404 || httpResult.statusCode == 500) {
                 result(start, TestStatus.PASS)
             } else {

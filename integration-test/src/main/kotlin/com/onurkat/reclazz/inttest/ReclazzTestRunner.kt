@@ -35,8 +35,8 @@ fun main() {
 
     println("Config:")
     println("  Base URL:   ${config.baseUrl}")
-    println("  Ext path:   ${config.extPath}")
-    println("  Port file:  ${config.portFile}")
+    println("  Fixture:    reclazztest")
+    println("  Port file:  ${java.nio.file.Path.of(config.portFile).fileName}")
     println()
 
     // Connect to agent
@@ -85,75 +85,65 @@ fun main() {
         exitProcess(1)
     }
 
-    // V1 template restore mappings
-    val v1Templates = mapOf(
-        "${config.srcDir}/com/onurkat/reclazztest/services/TestService.java"
-                to "TestService_v1.java.txt",
-        "${config.srcDir}/com/onurkat/reclazztest/services/HelperService.java"
-                to "HelperService_v1.java.txt",
-        "${config.srcDir}/com/onurkat/reclazztest/services/CacheTestService.java"
-                to "CacheTestService_v1.java.txt",
-        "${config.srcDir}/com/onurkat/reclazztest/services/SchedulerTestService.java"
-                to "SchedulerTestService_v1.java.txt",
-        "${config.srcDir}/com/onurkat/reclazztest/services/EventTestService.java"
-                to "EventTestService_v1.java.txt",
-        "${config.srcDir}/com/onurkat/reclazztest/services/TestDao.java"
-                to "TestDao_v1.java.txt",
-        "${config.srcDir}/com/onurkat/reclazztest/services/TestStatus.java"
-                to "TestStatus_v1.java.txt",
-        "${config.srcDir}/com/onurkat/reclazztest/interceptors/TestValidateInterceptor.java"
-                to "TestValidateInterceptor_v1.java.txt",
-        "${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java"
-                to "TestController_v1.java.txt",
-        "${config.impexDir}/test-data.impex"
-                to "test-data_v1.impex.txt",
-    )
-
-    for ((index, test) in tests.withIndex()) {
-        println()
-        println("[${index + 1}/${tests.size}] Running: ${test.name}")
-
-        // Restore v1 baseline
-        println("  Restoring v1 baseline...")
-        for ((path, template) in v1Templates) {
-            test.writeTemplate(path, template)
+    val baseline = FixtureBaseline(config, agentClient, httpVerifier)
+    try {
+        for ((index, test) in tests.withIndex()) {
+            println("\n[${index + 1}/${tests.size}] Running: ${test.name}")
+            var restored = false
+            val result = try {
+                baseline.restore()
+                restored = true
+                test.run()
+            } catch (e: Exception) {
+                TestResult(test.name, TestStatus.ERROR, 0, e.message ?: e.toString())
+            }
+            report.add(result)
+            println("  Result: ${result.status} ${result.notes}")
+            if (!restored) break // subsequent scenarios have no acknowledged baseline
         }
-
-        // Wait for the baseline compile/reload storm to finish completely,
-        // 10 files each take ~0.5s to compile, so a fixed 2s sleep left
-        // in-flight events that tests then mistook for their own.
-        agentClient.waitForQuiet(quietMs = 3_000, maxWaitMs = 90_000)
-        agentClient.clearEvents()
-
-        // Run test
-        val result: TestResult = try {
-            test.run()
-        } catch (e: Exception) {
-            TestResult(test.name, TestStatus.ERROR, 0, e.message ?: e.toString())
-        }
-
-        report.add(result)
-        val statusLabel = when (result.status) {
-            TestStatus.PASS -> "\u001B[32mPASS\u001B[0m"
-            TestStatus.FAIL -> "\u001B[31mFAIL\u001B[0m"
-            TestStatus.ERROR -> "\u001B[31mERROR\u001B[0m"
-            TestStatus.SKIP -> "\u001B[33mSKIP\u001B[0m"
-        }
-        println("  Result: $statusLabel ${if (result.notes.isNotEmpty()) "- ${result.notes}" else ""}")
+    } finally {
+        try { baseline.restore() }
+        catch (e: Exception) { report.add(TestResult("Final restoration", TestStatus.ERROR, 0, e.message ?: e.toString())) }
+        try { baseline.checkBytes() }
+        catch (e: Exception) { report.add(TestResult("Fixture bytes", TestStatus.ERROR, 0, e.message ?: e.toString())) }
+        agentClient.disconnect()
+        report.print()
     }
-
-    // Restore v1 baseline after all tests
-    println()
-    println("Restoring v1 baseline...")
-    for ((path, template) in v1Templates) {
-        val templateStream = object {}.javaClass.classLoader.getResourceAsStream("templates/$template")
-        if (templateStream != null) {
-            java.nio.file.Files.writeString(java.nio.file.Path.of(path), templateStream.bufferedReader().readText())
-        }
-    }
-
-    agentClient.disconnect()
-    report.print()
 
     exitProcess(if (report.hasFailures()) 1 else 0)
+}
+
+
+/** Always read committed fixture bytes, never snapshot live-edited working files. */
+fun committedFixture(relative: String): ByteArray {
+    require(!relative.startsWith("/") && relative.split('/').none { it == ".." })
+    val process = ProcessBuilder("git", "--no-optional-locks", "show", "HEAD:reclazztest/$relative").start()
+    val bytes = process.inputStream.readBytes()
+    check(process.waitFor() == 0) { "Cannot read HEAD fixture $relative; run from the repository root" }
+    return bytes
+}
+
+class FixtureBaseline(private val config: TestConfig, private val client: AgentEventClient, private val http: HttpVerifier) {
+    private val relative = listOf("TestService", "HelperService", "CacheTestService", "SchedulerTestService", "EventTestService", "TestDao", "TestStatus")
+        .map { "src/com/onurkat/reclazztest/services/$it.java" } + listOf(
+            "src/com/onurkat/reclazztest/interceptors/TestValidateInterceptor.java",
+            "web/src/com/onurkat/reclazztest/controllers/TestController.java", "resources/impex/test-data.impex")
+    private val originals = relative.associate { java.nio.file.Path.of(config.extPath, it) to committedFixture(it) }
+    fun restore() {
+        val since = client.cursor()
+        val changed = originals.filterKeys { it.toString().endsWith(".java") }.mapNotNull { (path, bytes) ->
+            if (writeChanged(path, bytes)) path else null
+        }
+        val failures = mutableListOf<String>()
+        try { awaitSources(client, changed, since, config.eventTimeoutMs) }
+        catch (e: Exception) { failures.add(e.message ?: e.toString()) }
+        try { ImpexBarrier(config, client, http, originals.getValue(java.nio.file.Path.of(config.impexDir, "test-data.impex"))).baseline() }
+        catch (e: Exception) { failures.add(e.message ?: e.toString()) }
+        check(failures.isEmpty()) { "Baseline restore failed: ${failures.joinToString("; ")}" }
+    }
+    fun checkBytes() {
+        for ((path, bytes) in originals) check(java.nio.file.Files.readAllBytes(path).contentEquals(bytes)) {
+            "Fixture was not restored byte-identical to HEAD: ${java.nio.file.Path.of(config.extPath).relativize(path)}"
+        }
+    }
 }

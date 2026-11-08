@@ -19,26 +19,15 @@ class InterceptorReloadTest(
     override fun run(): TestResult {
         val start = System.currentTimeMillis()
         return try {
-            agentClient.clearEvents()
-            writeTemplate(
+            reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/interceptors/TestValidateInterceptor.java",
                 "TestValidateInterceptor_v2.java.txt"
             )
 
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs, "TestValidateInterceptor.java")
-            if (compileEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            }
-
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs, "TestValidateInterceptor")
-            if (reloadEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
-            }
-
-            Thread.sleep(config.settleDelayMs)
-
             val nonce = java.util.UUID.randomUUID().toString()
-            val httpResult = httpVerifier.post("${config.testEndpointBase}/interceptor-save", mapOf("nonce" to nonce))
+            // Exactly one actual model save per nonce; rollback cannot undo external side effects.
+            // The class's correlated reload is the readiness barrier for this single shot.
+            val httpResult = httpVerifier.post("${config.testEndpointBase}/interceptor-save", mapOf("nonce" to nonce), config.eventTimeoutMs)
             val failure = interceptorSaveFailure(httpResult, nonce)
             if (failure == null) {
                 result(start, TestStatus.PASS, "modelService.save validated once; test transaction rolled back")

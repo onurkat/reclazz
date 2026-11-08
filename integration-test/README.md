@@ -58,7 +58,7 @@ export RECLAZZ_TEST_PORT_FILE=/path/to/project/.idea/reclazz/agent.port
 | `RECLAZZ_TEST_BASE_URL` | `https://localhost:9002` | |
 | `RECLAZZ_TEST_MODE` | `companion` | `enhanced` on JetBrains Runtime or DCEVM |
 | `RECLAZZ_TEST_EVENT_TIMEOUT` | `30000` | ms to wait for a reload event |
-| `RECLAZZ_TEST_SETTLE_DELAY` | `2000` | ms to let a reload settle before asserting |
+| `RECLAZZ_TEST_SETTLE_DELAY` | ignored | legacy compatibility only; waits use event ordering and HTTP deadlines |
 | `RECLAZZ_TEST_ONLY` | all | comma-separated scenario class names, e.g. `ConstructorChangeTest`, to re-run one alone |
 
 ## Why `RECLAZZ_TEST_MODE` matters
@@ -147,3 +147,59 @@ Existing OCC/converter coverage is reused through `test-sap-occ-sdk.py`,
 refresh, list-directive restart diagnostics and bounded request mapping selection
 respectively; they do not establish automatic converter-list reconstruction or
 support for synthetic added OCC endpoints. See [the test guide](../docs/test-guide.md).
+
+
+## Runner ordering and restoration
+
+Run from this repository's root. Before the first scenario the runner reads the
+ten committed `reclazztest` baseline files from HEAD. It writes only files whose
+bytes differ. Each changed Java source requires its own COMPILE followed by its
+exact fully qualified owner's RELOAD or STRUCTURAL_RELOAD after the write cursor.
+All sources in a multi-class edit must finish. Events for another class, its
+inner classes, or text in framework effects cannot satisfy the wait. Clearing
+the event list does not reset its sequence. A quiet period is not a completion
+signal.
+
+HTTP checks poll to the event-timeout deadline and require both the expected
+status and body (or the scenario's existing body predicate). The failure includes
+the last status/body; each request shares the remaining deadline. Cache-condition
+checks still require two different responses with caching disabled. The interceptor
+model-save proof remains a single POST with a fresh nonce after its correlated
+reload: rollback does not undo arbitrary external side effects, so that POST is
+not retried.
+
+ImpEx additionally establishes HTTP 200 and the v1 test title before requesting
+v2. A stale v2 database value cannot pass. If the file is already at baseline but
+the database is not, a comment-only variant requests the v1 data again; the runner
+waits for the file's existing terminal import outcome and actual v1 visibility,
+then restores committed bytes and waits again. Each subsequent save has its own
+cursor and terminal outcome; refusal/error outcomes fail explicitly. After the
+scenario it restores and verifies v1. This uses the existing socket protocol,
+not a new operation receipt; it serializes this runner's own resource writes and
+does not coordinate arbitrary external editors.
+
+A final block restores all touched baseline files even after a scenario failure
+or exception. Byte differences from HEAD or failed reload/import restoration fail
+the run. Do not edit the fixture concurrently with a live run. The fixture's
+synthetic Title row is changed during ImpEx testing and restored to v1; record its
+initial value when running against an existing local test installation. The
+runner must not be used against customer data or a production server.
+
+### Portable harness contract
+
+```bash
+./gradlew :integration-test:harnessContractTest --rerun
+./gradlew :integration-test:sapProofTest --rerun
+./gradlew :integration-test:build
+```
+
+The harness target executes thirteen named checks (the twelve planned cases plus a batch-message regression) against a fake agent socket and
+real loopback HTTP. It starts actual runner child JVMs over temporary synthetic
+fixture copies for restoration, split batches, stale responses, ImpEx and failure
+cleanup; it never starts SAP or edits the deployed extension. Its baseline
+compatibility adapter calls the old client's actual methods when cursor-aware
+methods are absent, allowing the same tests to demonstrate the original defects.
+The eight existing model-save HTTP proof checks remain separate. Neither target
+establishes live SAP determinism: record five identical full runs on one boot and
+one after a fresh boot separately. New SAP scenario families require their own
+coverage/feasibility review.

@@ -20,39 +20,29 @@ class SyntaxErrorRecoveryTest(
         val start = System.currentTimeMillis()
         return try {
             // Step 1: Write broken code
-            agentClient.clearEvents()
+            val brokenSince = agentClient.cursor()
             writeTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/TestService.java",
                 "TestService_syntaxError.java.txt"
             )
 
             // Wait for compile ERROR
-            val errorEvent = agentClient.waitForError(config.eventTimeoutMs)
+            val errorEvent = agentClient.waitForError(config.eventTimeoutMs, brokenSince)
             if (errorEvent == null) {
                 return result(start, TestStatus.FAIL, "Expected ERROR event for syntax error")
             }
             println("    Got expected compile error")
 
             // Step 2: Fix the code
-            agentClient.clearEvents()
+            val fixedSince = agentClient.cursor()
             writeTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/TestService.java",
                 "TestService_ping_v2.java.txt"
             )
 
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs)
-            if (compileEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE after fix")
-            }
+            awaitSources(agentClient, listOf(java.nio.file.Path.of("${config.srcDir}/com/onurkat/reclazztest/services/TestService.java")), fixedSince, config.eventTimeoutMs)
 
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs)
-            if (reloadEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD after fix")
-            }
-
-            Thread.sleep(config.settleDelayMs)
-
-            val httpResult = httpVerifier.get("${config.testEndpointBase}/ping")
+            val httpResult = pollGet("${config.testEndpointBase}/ping", expectedBody = "pong-v2")
             if (httpResult.body == "pong-v2") {
                 result(start, TestStatus.PASS)
             } else {

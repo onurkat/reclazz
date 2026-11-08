@@ -28,27 +28,22 @@ class EnumTailRemoveTest(
     override fun run(): TestResult {
         val start = System.currentTimeMillis()
         return try {
+            // The committed controller has no enum probe; install this scenario's
+            // existing probe explicitly instead of hiding it in baseline restore.
+            reloadTemplate("${config.webSrcDir}/com/onurkat/reclazztest/controllers/TestController.java", "TestController_enumStatus.java.txt")
             // The full enum answers first, so a stale cache cannot fake a pass.
-            val before = httpVerifier.get("${config.testEndpointBase}/enum-status")
+            val before = pollGet("${config.testEndpointBase}/enum-status", expectedBody = "OPEN:0,CLOSED:1,ARCHIVED:2,ARCHIVED=OK")
             if (before.body != "OPEN:0,CLOSED:1,ARCHIVED:2,ARCHIVED=OK") {
                 return result(start, TestStatus.FAIL,
                     "Baseline enum is not in its expected state: '${before.body}'")
             }
 
-            agentClient.clearEvents()
-            writeTemplate(
+            reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/TestStatus.java",
                 "TestStatus_tailremoved.java.txt"
             )
 
-            agentClient.waitForCompile(config.eventTimeoutMs, "TestStatus.java")
-                ?: return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            agentClient.waitForReload(config.eventTimeoutMs, "TestStatus")
-                ?: return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
-
-            Thread.sleep(config.settleDelayMs)
-
-            val after = httpVerifier.get("${config.testEndpointBase}/enum-status")
+            val after = pollGet("${config.testEndpointBase}/enum-status", expectedBody = "OPEN:0,CLOSED:1,ARCHIVED=GONE")
             if (after.body == "OPEN:0,CLOSED:1,ARCHIVED=GONE") {
                 result(start, TestStatus.PASS)
             } else {

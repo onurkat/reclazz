@@ -1,3 +1,7 @@
+/*
+ * Copyright 2026 Onur Kat
+ * SPDX-License-Identifier: Apache-2.0
+ */
 package com.onurkat.reclazztest.controllers;
 
 import com.onurkat.reclazztest.services.CacheTestService;
@@ -111,21 +115,5 @@ public class TestController {
     @RequestMapping(value = "/dao", method = RequestMethod.GET)
     public String dao() {
         return testDao.query();
-    }
-
-    @RequestMapping(value = "/enum-status", method = RequestMethod.GET)
-    public String enumStatus() {
-        final StringBuilder sb = new StringBuilder();
-        for (final com.onurkat.reclazztest.services.TestStatus s
-                : com.onurkat.reclazztest.services.TestStatus.values()) {
-            sb.append(s.name()).append(":").append(s.ordinal()).append(",");
-        }
-        try {
-            com.onurkat.reclazztest.services.TestStatus.valueOf("ARCHIVED");
-            sb.append("ARCHIVED=OK");
-        } catch (IllegalArgumentException e) {
-            sb.append("ARCHIVED=GONE");
-        }
-        return sb.toString();
     }
 }

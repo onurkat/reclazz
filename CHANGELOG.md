@@ -23,6 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   lazy loading, later edits retain version history, and deletion remains a
   restart diagnostic.
 
+### Fixed
+
+- The live SAP regression runner correlates each source's compile and reload,
+  waits for all changed classes, polls HTTP status and behavior, and restores
+  committed fixture bytes and the synthetic ImpEx baseline after each run.
+  Portable contract checks reject stale events, stale data and incomplete restores.
+
 ## [1.5.0] - 2026-11-08
 
 

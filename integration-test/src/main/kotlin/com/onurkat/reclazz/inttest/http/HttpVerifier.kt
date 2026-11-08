@@ -42,17 +42,19 @@ class HttpVerifier(private val baseUrl: String, timeoutMs: Long) {
             .build()
     }
 
-    fun post(path: String, parameters: Map<String, String> = emptyMap()): HttpResult {
+    fun post(path: String, parameters: Map<String, String> = emptyMap(), budgetMs: Long? = null): HttpResult {
         val absolute = if (path.startsWith("http")) path else "$baseUrl$path"
         val form = FormBody.Builder()
         parameters.forEach { (key, value) -> form.add(key, value) }
         val request = Request.Builder().url(absolute).post(form.build()).build()
-        return client.newCall(request).execute().use { response ->
+        val call = client.newCall(request)
+        if (budgetMs != null) call.timeout().timeout(budgetMs.coerceAtLeast(1), TimeUnit.MILLISECONDS)
+        return call.execute().use { response ->
             HttpResult(response.code, response.body?.string() ?: "")
         }
     }
 
-    fun get(path: String, queryParams: Map<String, String> = emptyMap()): HttpResult {
+    fun get(path: String, queryParams: Map<String, String> = emptyMap(), budgetMs: Long? = null): HttpResult {
         // Callers pass either an absolute URL (config.testEndpointBase already
         // contains baseUrl) or a bare path, only prefix the latter.
         val absolute = if (path.startsWith("http")) path else "$baseUrl$path"
@@ -67,8 +69,28 @@ class HttpVerifier(private val baseUrl: String, timeoutMs: Long) {
             .get()
             .build()
 
-        return client.newCall(request).execute().use { response ->
+        val call = client.newCall(request)
+        if (budgetMs != null) call.timeout().timeout(budgetMs.coerceAtLeast(1), TimeUnit.MILLISECONDS)
+        return call.execute().use { response ->
             HttpResult(response.code, response.body?.string() ?: "")
         }
     }
+
+    /** The remaining call budget is shared with the poll deadline, not added to it. */
+    fun poll(timeoutMs: Long, description: String, request: (Long) -> HttpResult, accepts: (HttpResult) -> Boolean): HttpResult {
+        val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs)
+        var last: HttpResult? = null
+        var lastError: String? = null
+        while (true) {
+            val remaining = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime())
+            if (remaining <= 0) error("$description timed out; last HTTP ${last?.statusCode}: ${last?.body}; last error: $lastError")
+            try {
+                last = request(remaining)
+                if (accepts(last)) return last
+            } catch (e: Exception) { lastError = e.message ?: e.javaClass.simpleName }
+            val pause = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime()).coerceIn(0, 100)
+            if (pause > 0) Thread.sleep(pause)
+        }
+    }
+
 }

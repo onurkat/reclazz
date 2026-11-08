@@ -31,21 +31,20 @@ class CacheableConditionTest(
             // Warm the cache so stale metadata would definitely serve from it.
             httpVerifier.get("${config.testEndpointBase}/cache", mapOf("key" to "cond"))
 
-            agentClient.clearEvents()
-            writeTemplate(
+            reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/CacheTestService.java",
                 "CacheTestService_condition.java.txt"
             )
 
-            agentClient.waitForCompile(config.eventTimeoutMs)
-                ?: return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            agentClient.waitForReload(config.eventTimeoutMs)
-                ?: return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
+            var second = com.onurkat.reclazz.inttest.http.HttpResult(0, "")
+            val first = httpVerifier.poll(config.eventTimeoutMs, "Cache condition pair", { budget ->
+                val began = System.nanoTime()
+                val value = httpVerifier.get("${config.testEndpointBase}/cache", mapOf("key" to "cond"), budget)
+                val remaining = budget - java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - began)
+                second = httpVerifier.get("${config.testEndpointBase}/cache", mapOf("key" to "cond"), remaining.coerceAtLeast(1))
+                value
+            }) { it.statusCode == 200 && second.statusCode == 200 && it.body.startsWith("nocache-") && it.body != second.body }
 
-            Thread.sleep(config.settleDelayMs)
-
-            val first = httpVerifier.get("${config.testEndpointBase}/cache", mapOf("key" to "cond"))
-            val second = httpVerifier.get("${config.testEndpointBase}/cache", mapOf("key" to "cond"))
             when {
                 !first.body.startsWith("nocache-") ->
                     result(start, TestStatus.FAIL,

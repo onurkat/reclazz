@@ -29,3 +29,13 @@ val sapProofTest by tasks.registering(JavaExec::class) {
     mainClass.set("com.onurkat.reclazz.inttest.tests.SapProofContractTestKt")
 }
 tasks.check { dependsOn(sapProofTest) }
+
+// Independent portable runner contract: fake event stream and real loopback HTTP.
+val harnessContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    description = "Exercise live runner ordering, polling and restoration without SAP"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.HarnessContractTestKt")
+}
+tasks.check { dependsOn(harnessContractTest) }

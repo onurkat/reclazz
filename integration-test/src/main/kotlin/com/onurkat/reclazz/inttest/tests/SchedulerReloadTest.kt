@@ -19,26 +19,12 @@ class SchedulerReloadTest(
     override fun run(): TestResult {
         val start = System.currentTimeMillis()
         return try {
-            agentClient.clearEvents()
-            writeTemplate(
+            reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/SchedulerTestService.java",
                 "SchedulerTestService_v2.java.txt"
             )
 
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs)
-            if (compileEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            }
-
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs)
-            if (reloadEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
-            }
-
-            // Wait longer for scheduler to tick (fixedRate=2000)
-            Thread.sleep(5000)
-
-            val httpResult = httpVerifier.get("${config.testEndpointBase}/scheduler")
+            val httpResult = pollGet("${config.testEndpointBase}/scheduler", bodyCheck = { it.startsWith("v2:") })
             if (httpResult.body.startsWith("v2:")) {
                 result(start, TestStatus.PASS)
             } else {

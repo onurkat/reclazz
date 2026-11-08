@@ -19,26 +19,13 @@ class EventListenerTest(
     override fun run(): TestResult {
         val start = System.currentTimeMillis()
         return try {
-            agentClient.clearEvents()
-            writeTemplate(
+            reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/EventTestService.java",
                 "EventTestService_v2.java.txt"
             )
 
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs)
-            if (compileEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            }
-
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs)
-            if (reloadEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
-            }
-
-            Thread.sleep(config.settleDelayMs)
-
             // Trigger event and check result
-            val httpResult = httpVerifier.get("${config.testEndpointBase}/event")
+            val httpResult = pollGet("${config.testEndpointBase}/event", bodyCheck = { it.startsWith("handled-v2:") })
             if (httpResult.body.startsWith("handled-v2:")) {
                 result(start, TestStatus.PASS)
             } else {

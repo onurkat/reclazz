@@ -23,25 +23,12 @@ class CacheEvictionTest(
             httpVerifier.get("${config.testEndpointBase}/cache", mapOf("key" to "abc"))
 
             // Now change the service
-            agentClient.clearEvents()
-            writeTemplate(
+            reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/services/CacheTestService.java",
                 "CacheTestService_v2.java.txt"
             )
 
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs)
-            if (compileEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            }
-
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs)
-            if (reloadEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
-            }
-
-            Thread.sleep(config.settleDelayMs)
-
-            val httpResult = httpVerifier.get("${config.testEndpointBase}/cache", mapOf("key" to "abc"))
+            val httpResult = pollGet("${config.testEndpointBase}/cache", expectedBody = "cached-v2:abc", queryParams = mapOf("key" to "abc"))
             if (httpResult.body == "cached-v2:abc") {
                 result(start, TestStatus.PASS)
             } else {

@@ -12,6 +12,7 @@ data class TestConfig(
         ?: error("RECLAZZ_TEST_PORT_FILE must be set (path to agent port file)"),
     val httpTimeoutMs: Long = System.getenv("RECLAZZ_TEST_HTTP_TIMEOUT")?.toLongOrNull() ?: 10_000L,
     val eventTimeoutMs: Long = System.getenv("RECLAZZ_TEST_EVENT_TIMEOUT")?.toLongOrNull() ?: 30_000L,
+    @Deprecated("Use bounded status/body polling")
     val settleDelayMs: Long = System.getenv("RECLAZZ_TEST_SETTLE_DELAY")?.toLongOrNull() ?: 2_000L,
     /**
      * Reload mode of the target JVM. "companion" (default, standard JVMs:

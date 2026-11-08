@@ -9,149 +9,117 @@ import java.io.InputStreamReader
 import java.net.Socket
 import java.nio.file.Files
 import java.nio.file.Path
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
 
-data class AgentEvent(
-    val level: String,
-    val message: String,
-    val timestamp: String
-)
+data class AgentEvent(val level: String, val message: String, val timestamp: String, val sequence: Long = 0)
 
 class AgentEventClient(portFile: String) {
-
-    private val port: Int
+    private val port = Files.readString(Path.of(portFile)).trim().toInt()
     private var socket: Socket? = null
     private var reader: BufferedReader? = null
     private val running = AtomicBoolean(false)
-    private val events = CopyOnWriteArrayList<AgentEvent>()
-    /** Monotonic event counter, survives clearEvents(), used by waitForQuiet. */
+    private val events = mutableListOf<AgentEvent>()
+    private val monitor = java.lang.Object()
     private val totalReceived = AtomicLong()
-
-    init {
-        val portPath = Path.of(portFile)
-        require(Files.exists(portPath)) { "Port file not found: $portFile" }
-        port = Files.readString(portPath).trim().toInt()
-    }
 
     fun connect() {
         socket = Socket("127.0.0.1", port)
         reader = BufferedReader(InputStreamReader(socket!!.getInputStream()))
         running.set(true)
-
         Thread({
             try {
                 while (running.get()) {
                     val line = reader?.readLine() ?: break
                     val event = parseEvent(line) ?: continue
                     if (event.level == "HEARTBEAT") continue
-                    events.add(event)
-                    totalReceived.incrementAndGet()
+                    synchronized(monitor) {
+                        events.add(event.copy(sequence = totalReceived.incrementAndGet()))
+                        monitor.notifyAll()
+                    }
                 }
             } catch (e: Exception) {
-                if (running.get()) {
-                    System.err.println("AgentEventClient read error: ${e.message}")
-                }
+                if (running.get()) System.err.println("AgentEventClient read error: ${e.message}")
             }
-        }, "AgentEventClient-reader").apply {
-            isDaemon = true
-            start()
-        }
-
-        // Wait for CONNECTED event
-        waitForEvent("CONNECTED", 5000)
+        }, "AgentEventClient-reader").apply { isDaemon = true; start() }
+        check(waitForEvent("CONNECTED", 5000) != null) { "Agent did not acknowledge connection" }
         println("  Connected to agent on port $port")
     }
 
     fun disconnect() {
         running.set(false)
-        try { reader?.close() } catch (_: Exception) {}
-        try { socket?.close() } catch (_: Exception) {}
+        try { socket?.close() } catch (_: Exception) { }
+        try { reader?.close() } catch (_: Exception) { }
     }
+    fun cursor(): Long = synchronized(monitor) { totalReceived.get() }
+    fun clearEvents() = synchronized(monitor) { events.clear() }
+    fun getEvents(): List<AgentEvent> = synchronized(monitor) { events.toList() }
 
-    fun clearEvents() {
-        events.clear()
-    }
-
-    /**
-     * Wait for an event whose level starts with [levelPrefix] and (when
-     * given) whose message contains [messageContains]. The filter matters:
-     * a baseline-restore storm emits COMPILE/RELOAD events for OTHER files,
-     * and consuming one of those as "our" event verifies stale state.
-     */
-    fun waitForEvent(levelPrefix: String, timeoutMs: Long, messageContains: String? = null): AgentEvent? {
-        fun matches(e: AgentEvent) = e.level.startsWith(levelPrefix) &&
-                (messageContains == null || e.message.contains(messageContains))
-
-        val deadline = System.currentTimeMillis() + timeoutMs
-        while (true) {
-            events.find(::matches)?.let { return it }
-            if (System.currentTimeMillis() >= deadline) return null
-            Thread.sleep(100)
-        }
-    }
-
-    fun waitForCompile(timeoutMs: Long, fileName: String? = null): AgentEvent? =
-        waitForEvent("COMPILE", timeoutMs, fileName)
-
-    /** Waits for RELOAD or STRUCTURAL_RELOAD concurrently (not sequentially). */
-    fun waitForReload(timeoutMs: Long, classNamePart: String? = null): AgentEvent? {
-        fun matches(e: AgentEvent) = (e.level.startsWith("RELOAD") || e.level.startsWith("STRUCTURAL_RELOAD")) &&
-                (classNamePart == null || e.message.contains(classNamePart))
-
-        val deadline = System.currentTimeMillis() + timeoutMs
-        while (true) {
-            events.find(::matches)?.let { return it }
-            if (System.currentTimeMillis() >= deadline) return null
-            Thread.sleep(100)
-        }
-    }
-
-    fun waitForError(timeoutMs: Long): AgentEvent? = waitForEvent("ERROR", timeoutMs)
-
-    /**
-     * Block until the agent has been quiet (no new events) for [quietMs],
-     * or [maxWaitMs] elapses. Used to drain the baseline-restore compile
-     * storm before starting a test.
-     */
-    fun waitForQuiet(quietMs: Long, maxWaitMs: Long) {
-        val deadline = System.currentTimeMillis() + maxWaitMs
-        var lastCount = totalReceived.get()
-        var lastChange = System.currentTimeMillis()
-        while (System.currentTimeMillis() < deadline) {
-            Thread.sleep(250)
-            val now = totalReceived.get()
-            if (now != lastCount) {
-                lastCount = now
-                lastChange = System.currentTimeMillis()
-            } else if (System.currentTimeMillis() - lastChange >= quietMs) {
-                return
+    private fun await(timeoutMs: Long, since: Long, matches: (AgentEvent) -> Boolean): AgentEvent? {
+        val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs.coerceAtLeast(0))
+        synchronized(monitor) {
+            while (true) {
+                events.find { it.sequence > since && matches(it) }?.let { return it }
+                val remaining = deadline - System.nanoTime()
+                if (remaining <= 0) return null
+                monitor.wait(TimeUnit.NANOSECONDS.toMillis(remaining).coerceIn(1, 100))
             }
         }
     }
+    fun waitForEvent(levelPrefix: String, timeoutMs: Long, messageContains: String? = null, since: Long = 0): AgentEvent? =
+        await(timeoutMs, since) { it.level.startsWith(levelPrefix) && (messageContains == null || it.message.contains(messageContains)) }
 
-    fun getEvents(): List<AgentEvent> = events.toList()
+    fun waitForCompile(timeoutMs: Long, fileName: String? = null, since: Long = 0): AgentEvent? =
+        await(timeoutMs, since) { it.level == "COMPILE" && (fileName == null ||
+                it.message == "Compiled $fileName" || it.message.startsWith("Compiled $fileName (")) }
 
-    private fun parseEvent(json: String): AgentEvent? {
-        return try {
-            val level = extractJsonString(json, "level") ?: return null
-            val message = extractJsonString(json, "message") ?: ""
-            val timestamp = extractJsonString(json, "timestamp") ?: ""
-            AgentEvent(level, message, timestamp)
-        } catch (e: Exception) {
-            null
+    fun waitForReload(timeoutMs: Long, classNamePart: String? = null, since: Long = 0): AgentEvent? =
+        await(timeoutMs, since) {
+            val prefix = when (it.level) { "RELOAD" -> "Reloaded "; "STRUCTURAL_RELOAD" -> "Structural reload: "; else -> return@await false }
+            if (!it.message.startsWith(prefix)) false
+            else {
+                val owner = it.message.removePrefix(prefix)
+                (classNamePart == null || owner.takeWhile { char -> char != ' ' && char != ':' } == classNamePart) &&
+                        !owner.substringAfter(' ', "").startsWith("(inner class)")
+            }
         }
+
+    fun waitForSourceReload(timeoutMs: Long, fileName: String, owner: String, since: Long): AgentEvent? {
+        val start = System.nanoTime()
+        val compiled = waitForCompile(timeoutMs, fileName, since) ?: return null
+        val remaining = timeoutMs - TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start)
+        return waitForReload(remaining.coerceAtLeast(0), owner, compiled.sequence)
+    }
+    fun waitForError(timeoutMs: Long, since: Long = 0): AgentEvent? = waitForEvent("ERROR", timeoutMs, since = since)
+
+    fun waitForImpex(timeoutMs: Long, fileName: String, since: Long): AgentEvent? = await(timeoutMs, since) {
+        (it.level == "OK" && it.message == "ImpEx imported: $fileName") ||
+            (it.level in setOf("WARN", "ERROR") &&
+                (it.message.startsWith("ImpEx not imported: $fileName ") ||
+                 it.message.startsWith("Failed to import ImpEx $fileName:") ||
+                 (it.message.startsWith("ImpEx import had errors:") && it.message.contains(" in $fileName.")) ||
+                 it.message.startsWith("ImpEx not imported: platform tenant unavailable")))
     }
 
+    private fun parseEvent(json: String): AgentEvent? = runCatching {
+        AgentEvent(extractJsonString(json, "level") ?: return null,
+            extractJsonString(json, "message") ?: "", extractJsonString(json, "timestamp") ?: "")
+    }.getOrNull()
+
     private fun extractJsonString(json: String, key: String): String? {
-        val pattern = "\"$key\":\"([^\"]*)\""
-        val match = Regex(pattern).find(json) ?: return null
-        return match.groupValues[1]
-            .replace("\\n", "\n")
-            .replace("\\r", "\r")
-            .replace("\\t", "\t")
-            .replace("\\\\", "\\")
+        val raw = Regex("\"$key\":\\s*\"((?:\\\\.|[^\"\\\\])*)\"").find(json)?.groupValues?.get(1) ?: return null
+        val out = StringBuilder(); var index = 0
+        while (index < raw.length) {
+            val char = raw[index++]
+            if (char != '\\') out.append(char)
+            else when (val escaped = raw[index++]) {
+                'n' -> out.append('\n'); 'r' -> out.append('\r'); 't' -> out.append('\t')
+                'b' -> out.append('\b'); 'f' -> out.append('\u000C')
+                'u' -> { out.append(raw.substring(index, index + 4).toInt(16).toChar()); index += 4 }
+                else -> out.append(escaped)
+            }
+        }
+        return out.toString()
     }
 }

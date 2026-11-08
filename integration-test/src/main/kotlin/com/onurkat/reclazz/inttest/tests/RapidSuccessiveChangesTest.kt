@@ -19,7 +19,7 @@ class RapidSuccessiveChangesTest(
     override fun run(): TestResult {
         val start = System.currentTimeMillis()
         return try {
-            agentClient.clearEvents()
+            val since = agentClient.cursor()
 
             // Write v2 then v3 in rapid succession (200ms apart)
             writeTemplate(
@@ -32,20 +32,9 @@ class RapidSuccessiveChangesTest(
                 "TestService_ping_v3.java.txt"
             )
 
-            // Wait for compile and reload
-            val compileEvent = agentClient.waitForCompile(config.eventTimeoutMs)
-            if (compileEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for COMPILE event")
-            }
+            awaitSources(agentClient, listOf(java.nio.file.Path.of("${config.srcDir}/com/onurkat/reclazztest/services/TestService.java")), since, config.eventTimeoutMs)
 
-            val reloadEvent = agentClient.waitForReload(config.eventTimeoutMs)
-            if (reloadEvent == null) {
-                return result(start, TestStatus.FAIL, "Timeout waiting for RELOAD event")
-            }
-
-            Thread.sleep(config.settleDelayMs)
-
-            val httpResult = httpVerifier.get("${config.testEndpointBase}/ping")
+            val httpResult = pollGet("${config.testEndpointBase}/ping", expectedBody = "pong-v3")
             if (httpResult.body == "pong-v3") {
                 result(start, TestStatus.PASS)
             } else {
