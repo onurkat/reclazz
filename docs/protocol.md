@@ -239,8 +239,12 @@ these string fields:
 Only **applied** is positive evidence. It means the expected input bytes matched,
 a successful reload outcome was recorded, the class was uniquely loaded before
 the attempt, and the entire batch returned, including deferred redefinition and
-framework refresh, with no WARN/ERROR on the applying thread. A warning in any
-member conservatively prevents success for the other members too.
+framework refresh, with no verification warning/error on the applying thread.
+A warning in any member conservatively prevents success for the other members
+too. The explicit notice that removed-method callers now get NoSuchMethodError
+as after a restart is informational for verification; it still appears as WARN.
+A removal that keeps a previous implementation until restart remains
+`unverified`, including in a batch that also has a restart-equivalent notice.
 
 Optional SAP `autoSolrReindex` work runs after a provider/resolver reload on a
 separate worker. Its `FINISHED`, `FINISHED_UNVERIFIED` or `FAILED` INFO line

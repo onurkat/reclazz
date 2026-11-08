@@ -19,7 +19,27 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 /** Exact input-byte receipts, published only after the whole reload bracket returns. */
-final class ReloadVerification {
+public final class ReloadVerification {
+    // Identity, not message text: only this exact synchronous WARN is exempt.
+    // A listener emitting a different WARN/ERROR during delivery must still fail closed.
+    private static final ThreadLocal<String> restartEquivalentNotice = new ThreadLocal<>();
+
+    /** Publish a restart-equivalent removal notice without invalidating byte receipts. */
+    public static void restartEquivalentNotice(String message) {
+        String parent = restartEquivalentNotice.get();
+        restartEquivalentNotice.set(message);
+        try {
+            StatusReporter.warn(
+                    // ledger-exempt: this notice already describes the restart-equivalent
+                    // result; a restart would not change what the removed method's callers get.
+                    message);
+        }
+        finally {
+            if (parent == null) restartEquivalentNotice.remove();
+            else restartEquivalentNotice.set(parent);
+        }
+    }
+
     static final int CAPACITY = 512;
     private final String session = UUID.randomUUID().toString();
     private final Supplier<Map<String, Integer>> loadedCounts;
@@ -89,6 +109,7 @@ final class ReloadVerification {
         Thread applyingThread = Thread.currentThread();
         StatusReporter.StatusListener listener = (level, message) -> {
             if (Thread.currentThread() == applyingThread && (level.equals("WARN") || level.equals("ERROR"))) {
+                if (level.equals("WARN") && message != null && message == restartEquivalentNotice.get()) return;
                 if (batch.warning == null) batch.warning = shortText(level + ": " + message);
             }
         };

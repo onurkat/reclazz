@@ -9,6 +9,7 @@ import com.onurkat.reclazz.ext.NoopStructuralReloadHook;
 import com.onurkat.reclazz.ext.StructuralReloadHook;
 import com.onurkat.reclazz.platform.BackofficeSocketEventDetector;
 import com.onurkat.reclazz.agent.ClassReloader;
+import com.onurkat.reclazz.agent.ReloadVerification;
 import com.onurkat.reclazz.bootstrap.DispatchTable;
 import com.onurkat.reclazz.bootstrap.FieldStore;
 import com.onurkat.reclazz.bootstrap.MethodForge;
@@ -495,7 +496,7 @@ public class StructuralReloader {
         java.util.List<String> throwing = removal.throwing().stream()
                 .map(RemovedMethodTargets.Removal::name).toList();
         if (!throwing.isEmpty()) {
-            StatusReporter.warn(Plural.word(throwing.size(), "A removed method", "Removed methods")
+            ReloadVerification.restartEquivalentNotice(Plural.word(throwing.size(), "A removed method", "Removed methods")
                     // ledger-exempt: the restart is named to say this already
                     // is its answer; a restart would change nothing here.
                     + " detected in " + className + ": " + throwing

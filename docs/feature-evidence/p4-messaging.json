@@ -3949,7 +3949,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7885,
           "quote": "### P4-KAFKA-FIRST-ADD",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4025,7 +4025,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7897,
           "quote": "### P4-KAFKA-EXISTING-PRESERVED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4108,7 +4108,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7909,
           "quote": "### P4-KAFKA-BODY-EDIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4191,7 +4191,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7921,
           "quote": "### P4-KAFKA-ROUTE-EDIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4274,7 +4274,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7933,
           "quote": "### P4-KAFKA-METHOD-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4357,7 +4357,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7945,
           "quote": "### P4-KAFKA-PRIVATE-RESTORE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4440,7 +4440,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7957,
           "quote": "### P4-KAFKA-ANNOTATION-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4523,7 +4523,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7969,
           "quote": "### P4-KAFKA-BOUNDED-DUPLICATES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4606,7 +4606,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7981,
           "quote": "### P4-KAFKA-RETIRED-CONSUMERS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4689,7 +4689,7 @@
           "path": "docs/feature-evidence.md",
           "line": 7993,
           "quote": "### P4-KAFKA-UNRELATED-IDENTITY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4772,7 +4772,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8005,
           "quote": "### P4-KAFKA-CONTEXT-CLOSE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4855,7 +4855,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8017,
           "quote": "### P4-KAFKA-PAYLOAD-HEADER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -4931,7 +4931,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8029,
           "quote": "### P4-JMS-FIRST-ADD",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5007,7 +5007,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8041,
           "quote": "### P4-JMS-EXISTING-PRESERVED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5090,7 +5090,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8053,
           "quote": "### P4-JMS-BODY-EDIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5173,7 +5173,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8065,
           "quote": "### P4-JMS-ROUTE-EDIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5256,7 +5256,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8077,
           "quote": "### P4-JMS-METHOD-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5339,7 +5339,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8089,
           "quote": "### P4-JMS-PRIVATE-RESTORE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5422,7 +5422,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8101,
           "quote": "### P4-JMS-ANNOTATION-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5505,7 +5505,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8113,
           "quote": "### P4-JMS-BOUNDED-DUPLICATES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5588,7 +5588,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8125,
           "quote": "### P4-JMS-RETIRED-CONSUMERS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5671,7 +5671,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8137,
           "quote": "### P4-JMS-UNRELATED-IDENTITY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5754,7 +5754,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8149,
           "quote": "### P4-JMS-CONTEXT-CLOSE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5837,7 +5837,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8161,
           "quote": "### P4-JMS-PAYLOAD-HEADER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5920,7 +5920,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8173,
           "quote": "### P4-JMS-LOCAL-ROLLBACK",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -5996,7 +5996,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8185,
           "quote": "### P4-RABBIT-FIRST-ADD",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6072,7 +6072,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8197,
           "quote": "### P4-RABBIT-EXISTING-PRESERVED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6155,7 +6155,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8209,
           "quote": "### P4-RABBIT-BODY-EDIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6238,7 +6238,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8221,
           "quote": "### P4-RABBIT-ROUTE-EDIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6321,7 +6321,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8233,
           "quote": "### P4-RABBIT-METHOD-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6404,7 +6404,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8245,
           "quote": "### P4-RABBIT-PRIVATE-RESTORE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6487,7 +6487,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8257,
           "quote": "### P4-RABBIT-ANNOTATION-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6570,7 +6570,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8269,
           "quote": "### P4-RABBIT-BOUNDED-DUPLICATES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6653,7 +6653,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8281,
           "quote": "### P4-RABBIT-RETIRED-CONSUMERS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6736,7 +6736,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8293,
           "quote": "### P4-RABBIT-UNRELATED-IDENTITY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6819,7 +6819,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8305,
           "quote": "### P4-RABBIT-CONTEXT-CLOSE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6902,7 +6902,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8317,
           "quote": "### P4-RABBIT-PAYLOAD-HEADER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -6985,7 +6985,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8329,
           "quote": "### P4-RABBIT-LOCAL-ROLLBACK",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7061,7 +7061,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8341,
           "quote": "### P4-RABBIT-IDLESS-ORIGINAL",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7137,7 +7137,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8353,
           "quote": "### P4-KAFKA-PLACEHOLDER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7213,7 +7213,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8365,
           "quote": "### P4-JMS-PLACEHOLDER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7289,7 +7289,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8377,
           "quote": "### P4-JMS-WATCHED-SELECTOR",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7365,7 +7365,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8389,
           "quote": "### P4-RABBIT-PLACEHOLDER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7441,7 +7441,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8401,
           "quote": "### P4-KAFKA-SELF-EXPRESSIONS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7517,7 +7517,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8413,
           "quote": "### P4-KAFKA-PROPERTY-ONLY-LIMIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7593,7 +7593,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8425,
           "quote": "### P4-KAFKA-EXPRESSION-FAILURE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7669,7 +7669,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8437,
           "quote": "### P4-KAFKA-MULTITOPIC-RECOVERY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7745,7 +7745,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8449,
           "quote": "### P4-KAFKA-GROUP-REPLAY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7821,7 +7821,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8461,
           "quote": "### P4-KAFKA-EXPRESSION-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7897,7 +7897,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8473,
           "quote": "### P4-KAFKA-HIDDEN-DELEGATE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -7973,7 +7973,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8485,
           "quote": "### P4-RABBIT-BEAN-EXPRESSIONS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8049,7 +8049,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8497,
           "quote": "### P4-RABBIT-PROPERTY-ONLY-LIMIT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8125,7 +8125,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8509,
           "quote": "### P4-RABBIT-EXPRESSION-FAILURE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8201,7 +8201,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8521,
           "quote": "### P4-RABBIT-MULTIQUEUE-RECOVERY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8277,7 +8277,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8533,
           "quote": "### P4-RABBIT-EXPRESSION-REMOVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8353,7 +8353,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8545,
           "quote": "### P4-RABBIT-HIDDEN-DELEGATE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8429,7 +8429,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8557,
           "quote": "### P4-JMS-WATCHED-REPLY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8505,7 +8505,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8569,
           "quote": "### P4-JMS-WATCHED-CORRELATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8581,7 +8581,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8581,
           "quote": "### P4-JMS-WATCHED-REPLYTO",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8657,7 +8657,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8593,
           "quote": "### P4-JMS-WATCHED-REPLY-ROUTE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8733,7 +8733,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8605,
           "quote": "### P4-JMS-WATCHED-REPLY-RESTORE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8809,7 +8809,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8617,
           "quote": "### P4-JMS-WATCHED-REPLY-ROLLBACK",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8885,7 +8885,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8629,
           "quote": "### P4-JMS-WATCHED-REPLY-REFLECTION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -8961,7 +8961,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8641,
           "quote": "### P4-KAFKA-COMPONENT-STANDARD-PROCESSOR-CONVERTS-MESSAGES-AND-PRIVATE-DELEGATE-USES-CURRENT-SINGLETON",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9037,7 +9037,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8653,
           "quote": "### P4-KAFKA-COMPONENT-ORIGINAL-AND-ADDED-CONTAINERS-ARE-REMOVED-BEFORE-RECREATION-AND-UNRELATED-ONE-SURVIVES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9113,7 +9113,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8665,
           "quote": "### P4-KAFKA-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9189,7 +9189,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8677,
           "quote": "### P4-KAFKA-COMPONENT-INVALID-DECLARATIONS-DO-NOT-START-APARTIAL-REGISTRATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9265,7 +9265,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8689,
           "quote": "### P4-KAFKA-COMPONENT-ACTUAL-SECOND-REGISTRATION-FAILURE-REMOVES-THE-FIRST-AND-KEEPS-UNRELATED-CONTAINER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9341,7 +9341,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8701,
           "quote": "### P4-KAFKA-COMPONENT-PROXY-IS-REFUSED-AND-NO-ADVICE-IS-BYPASSED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9417,7 +9417,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8713,
           "quote": "### P4-KAFKA-COMPONENT-FILTERED-FACTORIES-ARE-REFUSED-BEFORE-CREATING-ANY-CONTAINER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9493,7 +9493,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8725,
           "quote": "### P4-KAFKA-COMPONENT-A-WRAPPED-EXISTING-LISTENER-IS-REFUSED-BEFORE-UNREGISTERING-IT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9569,7 +9569,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8737,
           "quote": "### P4-KAFKA-COMPONENT-CONCRETE-CONSUMER-RECORD-GENERIC-METADATA-REACHES-THE-REAL-KAFKA-ADAPTER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9645,7 +9645,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8749,
           "quote": "### P4-KAFKA-COMPONENT-UNSUPPORTED-KAFKA-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN-RELOAD",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9721,7 +9721,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8761,
           "quote": "### P4-KAFKA-COMPONENT-INTERRUPTED-STOP-RETAINS-REGISTRY-OWNERSHIP-AND-CAN-BE-RETRIED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9797,7 +9797,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8773,
           "quote": "### P4-KAFKA-COMPONENT-TOPIC-AND-GROUP-EXPRESSIONS-MATCH-NATIVE-STARTUP",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9873,7 +9873,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8785,
           "quote": "### P4-KAFKA-COMPONENT-EXPRESSION-SCOPE-RESTORES-ITS-PREVIOUS-BINDING-AFTER-SUCCESS-AND-FAILURE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -9949,7 +9949,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8797,
           "quote": "### P4-KAFKA-COMPONENT-EXPRESSION-ROUTING-BELONGS-TO-EACH-CONTEXT-AND-REEVALUATES-ON-SAVE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10025,7 +10025,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8809,
           "quote": "### P4-KAFKA-COMPONENT-EXPRESSION-FAILURES-CLEAN-PARTIAL-REGISTRATIONS-AND-SCOPE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10101,7 +10101,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8821,
           "quote": "### P4-KAFKA-COMPONENT-UNSUPPORTED-OPTIONS-SHAPES-AND-EXTRA-ADVICE-ARE-EXPLICITLY-REJECTED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10177,7 +10177,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8833,
           "quote": "### P4-JMS-COMPONENT-ACTUAL-SPRING-ADAPTER-USES-PRIVATE-METHOD-AND-CURRENT-SINGLETON",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10253,7 +10253,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8845,
           "quote": "### P4-JMS-COMPONENT-OWNED-CONTAINERS-ARE-DESTROYED-AND-UNRELATED-IDENTITY-SURVIVES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10329,7 +10329,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8857,
           "quote": "### P4-JMS-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10405,7 +10405,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8869,
           "quote": "### P4-JMS-COMPONENT-SECOND-REAL-REGISTRATION-FAILURE-CLEANS-ONLY-THIS-ATTEMPT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10481,7 +10481,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8881,
           "quote": "### P4-JMS-COMPONENT-PROXY-RECEIVER-IS-REFUSED-WITHOUT-BYPASSING-ADVICE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10557,7 +10557,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8893,
           "quote": "### P4-JMS-COMPONENT-UNSUPPORTED-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10633,7 +10633,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8905,
           "quote": "### P4-JMS-COMPONENT-MIXED-BROKER-REFUSAL-PRECEDES-ANY-JMS-OR-KAFKA-RETIREMENT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10709,7 +10709,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8917,
           "quote": "### P4-JMS-COMPONENT-MIXED-RABBIT-JMS-OWNER-WITH-REMOVED-ANNOTATIONS-IS-REFUSED-BEFORE-EITHER-RETIRES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10785,7 +10785,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8929,
           "quote": "### P4-JMS-COMPONENT-UNFINISHED-SHUTDOWN-AND-REPEATED-WAIT-KEEP-REGISTRY-OWNERSHIP",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10861,7 +10861,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8941,
           "quote": "### P4-JMS-COMPONENT-UNSUPPORTED-FACTORIES-ARE-REFUSED-BEFORE-REGISTRATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -10937,7 +10937,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8953,
           "quote": "### P4-JMS-COMPONENT-SELECTOR-AND-CONCURRENCY-USE-THE-ACTUAL-FACTORY-AND-BROKER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11013,7 +11013,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8965,
           "quote": "### P4-JMS-COMPONENT-CUSTOM-EXISTING-ADAPTER-IS-REFUSED-BEFORE-CONTAINER-SHUTDOWN",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11089,7 +11089,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8977,
           "quote": "### P4-JMS-COMPONENT-INVALID-METADATA-CANNOT-CREATE-PARTIAL-REGISTRATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11165,7 +11165,7 @@
           "path": "docs/feature-evidence.md",
           "line": 8989,
           "quote": "### P4-JMS-COMPONENT-UNSUPPORTED-SHAPES-AND-METHOD-ADVICE-ARE-EXPLICITLY-REFUSED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11241,7 +11241,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9001,
           "quote": "### P4-JMS-REPLY-COMPONENT-DEFAULT-DESTINATION-REPLY-TO-AND-CORRELATION-MATCH-NATIVE-SPRING",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11317,7 +11317,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9013,
           "quote": "### P4-JMS-REPLY-COMPONENT-REPLY-TO-NEEDS-NO-SEND-TO-ANNOTATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11393,7 +11393,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9025,
           "quote": "### P4-JMS-REPLY-COMPONENT-CONVERTER-PRESERVES-BYTES-MAP-AND-NATIVE-AND-SPRING-MESSAGES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11469,7 +11469,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9037,
           "quote": "### P4-JMS-REPLY-COMPONENT-NULL-RESULT-SENDS-NOTHING-AFTER-THE-BODY-RUNS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11545,7 +11545,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9049,
           "quote": "### P4-JMS-REPLY-COMPONENT-FAILED-TRANSACTED-ATTEMPT-PRODUCES-ONE-REPLY-ONLY-AFTER-REDELIVERY",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11621,7 +11621,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9061,
           "quote": "### P4-JMS-REPLY-COMPONENT-INVALID-SEND-TO-LEAVES-NO-CONTAINER-AND-NEXT-CORRECTED-SAVE-RECOVERS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11697,7 +11697,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9073,
           "quote": "### P4-JMS-REPLY-COMPONENT-UNSUPPORTED-RESULTS-AND-ADVICE-STAY-REFUSED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11773,7 +11773,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9085,
           "quote": "### P4-RABBIT-COMPONENT-EXISTING-LISTENER-METADATA-DOES-NOT-BLOCK-ORDINARY-RECREATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11849,7 +11849,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9097,
           "quote": "### P4-RABBIT-COMPONENT-ACTUAL-SPRING-ADAPTER-USES-PRIVATE-METHOD-AND-CURRENT-SINGLETON",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -11925,7 +11925,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9109,
           "quote": "### P4-RABBIT-COMPONENT-OWNED-CONTAINERS-ARE-DESTROYED-AND-UNRELATED-IDENTITY-SURVIVES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12001,7 +12001,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9121,
           "quote": "### P4-RABBIT-COMPONENT-DUPLICATE-ID-CANNOT-STEAL-ANOTHER-BEANS-CONTAINER",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12077,7 +12077,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9133,
           "quote": "### P4-RABBIT-COMPONENT-SECOND-REAL-REGISTRATION-FAILURE-CLEANS-ONLY-THIS-ATTEMPT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12153,7 +12153,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9145,
           "quote": "### P4-RABBIT-COMPONENT-PROXY-RECEIVER-IS-REFUSED-WITHOUT-BYPASSING-ADVICE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12229,7 +12229,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9157,
           "quote": "### P4-RABBIT-COMPONENT-UNSUPPORTED-INFRASTRUCTURE-DOES-NOT-BLOCK-AN-UNRELATED-BEAN",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12305,7 +12305,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9169,
           "quote": "### P4-RABBIT-COMPONENT-MIXED-BROKER-REFUSAL-PRECEDES-ANY-RABBIT-OR-KAFKA-RETIREMENT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12381,7 +12381,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9181,
           "quote": "### P4-RABBIT-COMPONENT-UNSUPPORTED-FACTORIES-ARE-REFUSED-BEFORE-REGISTRATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12457,7 +12457,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9193,
           "quote": "### P4-RABBIT-COMPONENT-QUEUE-EXPRESSIONS-MATCH-NATIVE-ANNOTATION-PROCESSING",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12533,7 +12533,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9205,
           "quote": "### P4-RABBIT-COMPONENT-QUEUE-EXPRESSIONS-REEVALUATE-ON-SAVE-AND-RECOVER-AFTER-RESOLUTION-FAILURE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12609,7 +12609,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9217,
           "quote": "### P4-RABBIT-COMPONENT-QUEUE-EXPRESSION-FAILURES-REMOVE-PARTIAL-REGISTRATIONS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12685,7 +12685,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9229,
           "quote": "### P4-RABBIT-COMPONENT-INVALID-METADATA-CANNOT-CREATE-PARTIAL-REGISTRATION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12761,7 +12761,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9241,
           "quote": "### P4-RABBIT-COMPONENT-UNSUPPORTED-SHAPES-AND-METHOD-ADVICE-ARE-EXPLICITLY-REFUSED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12837,7 +12837,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9253,
           "quote": "### P4-RABBIT-COMPONENT-REFUSED-SAVE-DOES-NOT-RETIRE-EXISTING-CONSUMERS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12913,7 +12913,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9265,
           "quote": "### P4-RABBIT-COMPONENT-CUSTOM-EXISTING-ADAPTER-IS-REFUSED-BEFORE-RETIREMENT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -12989,7 +12989,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9277,
           "quote": "### P4-RABBIT-COMPONENT-EXISTING-CONTAINER-ADVICE-IS-REFUSED-BEFORE-RETIREMENT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13065,7 +13065,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9289,
           "quote": "### P4-RABBIT-COMPONENT-EXPLICIT-FACTORY-AND-CONCURRENCY-USE-SPRING-SETTINGS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13141,7 +13141,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9301,
           "quote": "### P4-RABBIT-COMPONENT-SHUTDOWN-DOES-NOT-MEAN-BLOCKED-ORIGINAL-CALLBACK-HAS-FINISHED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13217,7 +13217,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9313,
           "quote": "### P4-RABBIT-WORKER-COMPONENT-QUEUED-WORKER-AND-NORMAL-OR-EXCEPTIONAL-EXIT-STAY-TRACKED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13293,7 +13293,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9325,
           "quote": "### P4-RABBIT-WORKER-COMPONENT-EXACT-SPRING-BYTES-VERIFY-AND-UNKNOWN-SHAPES-OR-LATE-ATTACH-ARE-REFUSED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13376,7 +13376,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9337,
           "quote": "### P4-KAFKA-MODERN",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13441,7 +13441,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9361,
           "quote": "### P4-KAFKA-OTHER-ENVIRONMENTS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13506,7 +13506,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9373,
           "quote": "### P4-KAFKA-HOSTED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13571,7 +13571,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9385,
           "quote": "### P4-KAFKA-LATE-ATTACH",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13664,7 +13664,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9397,
           "quote": "### P4-KAFKA-CASCADE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13761,7 +13761,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9409,
           "quote": "### P4-JMS-MODERN",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13826,7 +13826,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9433,
           "quote": "### P4-JMS-OTHER-ENVIRONMENTS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13891,7 +13891,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9445,
           "quote": "### P4-JMS-HOSTED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -13956,7 +13956,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9457,
           "quote": "### P4-JMS-LATE-ATTACH",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14049,7 +14049,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9469,
           "quote": "### P4-JMS-CASCADE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14139,7 +14139,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9481,
           "quote": "### P4-RABBIT-MODERN",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14204,7 +14204,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9505,
           "quote": "### P4-RABBIT-OTHER-ENVIRONMENTS",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14269,7 +14269,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9517,
           "quote": "### P4-RABBIT-HOSTED",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14334,7 +14334,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9529,
           "quote": "### P4-RABBIT-LATE-ATTACH",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14427,7 +14427,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9541,
           "quote": "### P4-RABBIT-CASCADE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14492,7 +14492,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9553,
           "quote": "### P4-KAFKA-TRANSACTION-REBALANCE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14557,7 +14557,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9565,
           "quote": "### P4-JMS-XA-JAKARTA-DURABLE",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14622,7 +14622,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9577,
           "quote": "### P4-RABBIT-REPLY-ASYNC",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14705,7 +14705,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9589,
           "quote": "### P4-KAFKA-STEREOTYPES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14770,7 +14770,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9601,
           "quote": "### P4-KAFKA-HEADERS-MAP",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14835,7 +14835,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9613,
           "quote": "### P4-KAFKA-PRODUCTION-TIMEOUT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14918,7 +14918,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9625,
           "quote": "### P4-JMS-STEREOTYPES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -14983,7 +14983,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9637,
           "quote": "### P4-JMS-HEADERS-MAP",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15048,7 +15048,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9649,
           "quote": "### P4-JMS-PRODUCTION-TIMEOUT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15131,7 +15131,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9661,
           "quote": "### P4-RABBIT-STEREOTYPES",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15196,7 +15196,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9673,
           "quote": "### P4-RABBIT-HEADERS-MAP",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15261,7 +15261,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9685,
           "quote": "### P4-RABBIT-PRODUCTION-TIMEOUT",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15337,7 +15337,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9697,
           "quote": "### P4-KAFKA-FACTORY-OPTION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15413,7 +15413,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9709,
           "quote": "### P4-KAFKA-CONCURRENCY-OPTION",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15489,7 +15489,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9721,
           "quote": "### P4-KAFKA-AUTOSTART-IDGROUP",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15579,7 +15579,7 @@
           "path": "docs/feature-evidence.md",
           "line": 9733,
           "quote": "### P4-KAFKA-NULL-GROUP",
-          "sha256": "bddd96a319370c8fc36d4b96cd89d02a9b9c7e37c1f03dd826112a0c4cb1ce4c"
+          "sha256": "0bbd30b976244d5deab337d0e59b5b5e42eb7aa1e9fd005d5222a9a43b983c64"
         }
       ],
       "opt_in": "Startup -javaagent for watcher records; configured native listener processor/factory and documented plain singleton subset.",
@@ -15668,7 +15668,7 @@
     "agent/src/main/java/com/onurkat/reclazz/hybris/interceptor/InterceptorReloader.java": "daf563cdd605588e730e6fe4e416b6772f0dbe92486412dcfedf207089916527",
     "agent/src/main/java/com/onurkat/reclazz/agent/JvmCapabilityProbe.java": "1e0b13a6af91a96a92acb5a5ca9699b303bcf21a5a62ee19fbc60e03dc034dab",
     "agent/src/main/java/com/onurkat/reclazz/agent/SessionReport.java": "3d42508921772c02c4b65b20faf6c8106cbca02ce45b5f26089af39a13d63e3b",
-    "agent/src/main/java/com/onurkat/reclazz/agent/ReloadVerification.java": "5ecd346a55d75f1e6ceb688e44e44c1adb35445a5c96bca15f3f4c6b883eefb4",
+    "agent/src/main/java/com/onurkat/reclazz/agent/ReloadVerification.java": "7dcafa50ec2712c60ac8c80ef6611fc5a98a89f1aeab1c95447d501c6aed1708",
     "agent/src/main/java/com/onurkat/reclazz/agent/RequestReloadBoundary.java": "71a2eecdc61e41283e4cbdb9e39fe66d5de0e9c4b084ba15f6931639f004b329",
     "agent/src/main/java/com/onurkat/reclazz/agent/ReloadDiagnostics.java": "f21dc2e76ff1e92c4a1023c9447ab9cdcebefa9146610c5c78372042b795d29d",
     "agent/src/main/java/com/onurkat/reclazz/agent/AgentVersion.java": "34b9bc830c4dc47a32c09c2aeac5e675c8dee0df5e332e30915eb40c35a22276",
@@ -15679,7 +15679,7 @@
     "agent/src/main/java/com/onurkat/reclazz/agent/ReloadQueue.java": "d81117fc880dd99c6dda4d098a708413e7852adcd21a897ea91c0d1c2e4ade1e",
     "agent/src/main/java/com/onurkat/reclazz/agent/StatusServer.java": "e02ba0dc4109508cedb63a5304501443eb698839f1a5f5ca488647eba9bee410",
     "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "874c573e9788237b53cc570f2bcfd8af36c1bb904c018d05a8f32963ca25e7e9",
-    "agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java": "51d541346cdef5ce50f4a0a23e85b1daf5b1a521eb1b73b8d47d4ca9b80fcc07",
+    "agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java": "2a6a06c5bc15a4346ff21f55e8bd295b8564fc2fb7d7470f8aff8b2fe4d22d77",
     "agent/src/main/java/com/onurkat/reclazz/reload/CompanionGenerator.java": "28b0f4420d27e046025329972c8e06d65845f4562e59f0659bb4000aa452bd57",
     "agent/src/main/java/com/onurkat/reclazz/reload/SynchronizedBodyAdapter.java": "0340e35581c61f4a5d3fe3422c41fdaa5403bcbcddd680e747cfc4a31043f89f",
     "agent/src/main/java/com/onurkat/reclazz/reload/HierarchyRevert.java": "69548829b689ec0f9488a9f5ad7f5b8cdcf3fb16d45d7d77f7a00ca22dcbf1ab",

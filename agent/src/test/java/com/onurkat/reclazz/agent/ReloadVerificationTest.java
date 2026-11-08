@@ -36,6 +36,92 @@ class ReloadVerificationTest {
         v.apply(Map.of(name, bytes), Map.of(name, name + ".class"), () -> v.outcome(name, true, "body reloaded"));
     }
 
+    // Run the actual baseline warning when the new entry point is absent, so the
+    // pre-fix tree fails on the receipt, not because a new symbol will not compile.
+    private static void notice(String message) {
+        try {
+            ReloadVerification.class.getDeclaredMethod("restartEquivalentNotice", String.class)
+                    .invoke(null, message);
+        } catch (NoSuchMethodException baseline) {
+            StatusReporter.warn(message);
+        } catch (ReflectiveOperationException e) { throw new AssertionError(e); }
+    }
+
+    @Test void ordinaryNullWarningStillDowngrades() {
+        ReloadVerification v = ledger(); byte[] a = bytes("A", 1);
+        v.apply(Map.of("A", a), Map.of(), () -> {
+            v.outcome("A", true, "body"); StatusReporter.warn(null);
+        });
+        assertEquals("unverified", state(v, "A", a));
+    }
+
+    @Test void restartEquivalentNoticeKeepsApplied() {
+        ReloadVerification v = ledger(); byte[] a = bytes("A", 1);
+        v.apply(Map.of("A", a), Map.of(), () -> {
+            v.outcome("A", true, "removed method retargeted");
+            notice("restart-equivalent removal");
+        });
+        assertEquals("applied", state(v, "A", a));
+    }
+
+    @Test void otherWarningAfterRestartEquivalentNoticeStillDowngrades() {
+        ReloadVerification v = ledger(); byte[] a = bytes("A", 1);
+        v.apply(Map.of("A", a), Map.of(), () -> {
+            v.outcome("A", true, "body"); notice("restart-equivalent removal");
+            StatusReporter.warn("deferred refresh failed");
+        });
+        assertEquals("unverified", state(v, "A", a));
+        assertTrue(result(v, "A", a).path("detail").asText().contains("deferred refresh failed"));
+    }
+
+    @Test void exemptionDoesNotLeakToAnotherThread() throws Exception {
+        ReloadVerification other = ledger(); byte[] b = bytes("B", 1);
+        Thread owner = Thread.currentThread();
+        String sharedMessage = new String("outer notice");
+        StatusReporter.StatusListener listener = (level, message) -> {
+            if (Thread.currentThread() != owner || message != sharedMessage) return;
+            Thread thread = new Thread(() -> other.apply(Map.of("B", b), Map.of(), () -> {
+                other.outcome("B", true, "body"); StatusReporter.warn(sharedMessage);
+            }));
+            thread.start();
+            try { thread.join(2000); } catch (InterruptedException e) { throw new AssertionError(e); }
+            assertFalse(thread.isAlive());
+        };
+        StatusReporter.addListener(listener);
+        try { notice(sharedMessage); } finally { StatusReporter.removeListener(listener); }
+        assertEquals("unverified", state(other, "B", b));
+    }
+
+    @Test void exemptionEndsEvenWhenNoticeDeliveryThrows() {
+        String message = new String("throwing notice");
+        StatusReporter.StatusListener listener = (level, text) -> {
+            if (text == message) throw new AssertionError("observer failed");
+        };
+        StatusReporter.addListener(listener);
+        try { assertThrows(AssertionError.class, () -> notice(message)); }
+        finally { StatusReporter.removeListener(listener); }
+        ReloadVerification v = ledger(); byte[] a = bytes("A", 1);
+        v.apply(Map.of("A", a), Map.of(), () -> {
+            v.outcome("A", true, "body"); StatusReporter.warn(message);
+        });
+        assertEquals("unverified", state(v, "A", a));
+    }
+
+    @Test void unrelatedWarningInsideNoticeDeliveryStillDowngrades() {
+        ReloadVerification v = ledger(); byte[] a = bytes("A", 1);
+        StatusReporter.StatusListener listener = (level, message) -> {
+            if (message.equals("outer notice")) StatusReporter.warn("nested real failure");
+        };
+        StatusReporter.addListener(listener);
+        try {
+            v.apply(Map.of("A", a), Map.of(), () -> {
+                v.outcome("A", true, "body"); notice("outer notice");
+            });
+        } finally { StatusReporter.removeListener(listener); }
+        assertEquals("unverified", state(v, "A", a));
+        assertTrue(result(v, "A", a).path("detail").asText().contains("nested real failure"));
+    }
+
     @Test void resultWaitsForDeferredBatchEndAndUsesCapturedBytes() {
         for (boolean warn : List.of(false, true)) {
             ReloadVerification v = ledger();

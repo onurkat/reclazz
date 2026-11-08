@@ -25,6 +25,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Reload receipts remain `applied` when a removed method now fails exactly as
+  after a restart. Removal fallbacks that retain an old body and other reload
+  warnings still prevent verification.
+
 - The live SAP regression runner correlates each source's compile and reload,
   waits for all changed classes, polls HTTP status and behavior, and restores
   committed fixture bytes and the synthetic ImpEx baseline after each run.

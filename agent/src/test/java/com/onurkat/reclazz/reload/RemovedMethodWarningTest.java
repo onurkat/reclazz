@@ -105,6 +105,71 @@ class RemovedMethodWarningTest extends TransformTestBase {
         assertTrue(result.isSuccess(), String.valueOf(result.getError()));
     }
 
+    // The receipt ledger stays package-private apart from its diagnostic entry
+    // point. Exercise its real apply/outcome/query without widening those APIs.
+    private static Object ledger(String name) throws Exception {
+        Class<?> type = Class.forName("com.onurkat.reclazz.agent.ReloadVerification");
+        var constructor = type.getDeclaredConstructor(Supplier.class);
+        constructor.setAccessible(true);
+        return constructor.newInstance((Supplier<Map<String, Integer>>) () -> Map.of(name, 1));
+    }
+
+    private static Object call(Object ledger, String method, Class<?>[] types, Object... args) {
+        try {
+            Method m = ledger.getClass().getDeclaredMethod(method, types); m.setAccessible(true);
+            return m.invoke(ledger, args);
+        } catch (ReflectiveOperationException e) { throw new AssertionError(e); }
+    }
+
+    private static String receipt(String name, byte[] bytes, Runnable work) throws Exception {
+        Object ledger = ledger(name);
+        call(ledger, "apply", new Class<?>[]{Map.class, Map.class, Runnable.class},
+                Map.of(name, bytes), Map.of(), (Runnable) () -> {
+                    work.run();
+                    call(ledger, "outcome", new Class<?>[]{String.class, boolean.class, String.class},
+                            name, true, "body applied");
+                });
+        String hash = java.util.HexFormat.of().formatHex(java.security.MessageDigest.getInstance("SHA-256").digest(bytes));
+        String json = (String) call(ledger, "query", new Class<?>[]{String.class, String.class, String.class}, "test", name, hash);
+        return new com.fasterxml.jackson.databind.ObjectMapper().readTree(json).path("status").asText();
+    }
+
+    private static void keptNotice(Rig rig) {
+        // A type no longer resolvable by the live loader makes the real planner
+        // retain the old target. Run its actual reporter; do not fake a WARN.
+        RemovedMethodTargets.Plan kept = RemovedMethodTargets.plan(rig.cls(), java.lang.invoke.MethodHandles.publicLookup(),
+                List.of(new TransformContext.MethodSig("unresolved", "()Lmissing/ReturnType;", java.lang.reflect.Modifier.PUBLIC)));
+        assertEquals(List.of("unresolved"), kept.kept());
+        try {
+            Method report = StructuralReloader.class.getDeclaredMethod("reportRemovedMethods", String.class, RemovedMethodTargets.Plan.class);
+            report.setAccessible(true); report.invoke(rig.reloader(), rig.cls().getName(), kept);
+        } catch (ReflectiveOperationException e) { throw new AssertionError(e); }
+    }
+
+    private void removalReceipt(String suffix, boolean kept, boolean first) throws Exception {
+        String name = "RemovalReceipt" + suffix;
+        Rig rig = rig(name, "public class " + name + " { public String keep() { return \"keep-v1\"; } public String gone() { return \"gone-v1\"; } }");
+        try {
+            byte[] bytes = compile(new SourceFile(name, "public class " + name + " { public String keep() { return \"keep-v2\"; } }")).get(name);
+            String status = receipt(name, bytes, () -> {
+                if (kept && first) keptNotice(rig);
+                if (!suffix.equals("Kept")) {
+                    assertTrue(rig.reloader().reload(name, bytes).isSuccess());
+                }
+                if (kept && !first) keptNotice(rig);
+            });
+            assertEquals(kept ? "unverified" : "applied", status);
+            if (!suffix.equals("Kept")) { assertGone(rig, "gone"); }
+            if (!kept) assertWarnsNoSuchMethod(rig);
+            else assertTrue(rig.warnings().stream().anyMatch(w -> w.contains("keeps the previous implementation")));
+        } finally { teardown(rig); }
+    }
+
+    @Test void throwingOnlyRemovalReceiptIsApplied() throws Exception { removalReceipt("Throwing", false, false); }
+    @Test void keptOnlyRemovalReceiptIsUnverified() throws Exception { removalReceipt("Kept", true, false); }
+    @Test void throwingThenKeptInOneBatchIsUnverified() throws Exception { removalReceipt("ThrowingKept", true, false); }
+    @Test void keptThenThrowingInOneBatchIsUnverified() throws Exception { removalReceipt("KeptThrowing", true, true); }
+
     /** The removed method's call, which must fail the way a restarted JVM fails it. */
     private static void assertGone(Rig rig, String method) {
         InvocationTargetException call = assertThrows(InvocationTargetException.class,
