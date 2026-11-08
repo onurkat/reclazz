@@ -104,10 +104,10 @@ class ReloadPauseResumeTest {
                 send(socket, "SCAN");
                 assertFalse(app.awaits("VALUE=2", 2), app::tail);
                 assertArrayEquals(before, Files.readAllBytes(app.classesDir().resolve("app/A.class")));
-                // Source watching has no initial file-state baseline: the first SCAN
-                // discovers both A.java and App.java, and both must remain queued.
+                // The first SCAN records unchanged sources (App.java) as a silent
+                // baseline; only the edited A.java is queued while paused.
                 String pending = control(socket, in, "status", "s", true);
-                assertTrue(pending.contains("pendingActions=2"), pending);
+                assertTrue(pending.contains("pendingActions=1"), pending);
                 control(socket, in, "resume", "r", false);
                 app.awaitOrFail("VALUE=2", "source compiled and applied after resume");
             }
