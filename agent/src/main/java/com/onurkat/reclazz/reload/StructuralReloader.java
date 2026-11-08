@@ -20,6 +20,7 @@ import com.onurkat.reclazz.transform.TransformContext;
 
 import com.onurkat.reclazz.ui.Plural;
 import com.onurkat.reclazz.ui.StatusReporter;
+import com.onurkat.reclazz.ui.ReloadEffects;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -1569,7 +1570,7 @@ public class StructuralReloader {
                 // Annotations reach reflection only through the redefinition, and
                 // the frameworks re-scan the class as soon as this returns, before
                 // the batch ends: deferred, an MVC re-scan mapped the old path.
-                if (diff.isAnnotationsChanged()) handleOutcome(afterRedefine, redefineOne(targetClass, payloadToApply));
+                if (diff.isAnnotationsChanged()) publishOutcome(targetClass, afterRedefine, redefineOne(targetClass, payloadToApply));
                 else redefine(targetClass, payloadToApply, afterRedefine);
             }
 
@@ -1677,6 +1678,19 @@ public class StructuralReloader {
     private record PendingRedefinition(Class<?> target, byte[] payload, RedefineOutcome.Handler then) {
     }
 
+    /** Terminal native result, distinct from the provisional companion reload result. */
+    public enum NativeOutcome { APPLIED, BENIGN_REFUSAL, FAILED }
+    private final Map<Class<?>, NativeOutcome> nativeOutcomes = new LinkedHashMap<>();
+    private boolean collectingNativeOutcomes;
+
+    public NativeOutcome nativeOutcome(Class<?> type) {
+        // A successful reload that needed no deferred native mutation is ready already.
+        return nativeOutcomes.getOrDefault(type, NativeOutcome.APPLIED);
+    }
+
+    /** The coordinator has consumed these results; release their class/loader references. */
+    public void clearNativeOutcomes() { nativeOutcomes.clear(); }
+
     private int redefineBatchDepth;
     private final List<PendingRedefinition> pendingRedefinitions = new ArrayList<>();
 
@@ -1698,14 +1712,18 @@ public class StructuralReloader {
      * framework re-scans that follow it inside the batch.
      */
     public void beginBatch() {
-        redefineBatchDepth++;
+        if (redefineBatchDepth++ == 0) {
+            nativeOutcomes.clear();
+            collectingNativeOutcomes = true;
+        }
     }
 
     /** Apply the deferred redefinitions, in one call where the JVM lets us. */
     public void endBatch() {
         if (redefineBatchDepth == 0) return;
         if (--redefineBatchDepth > 0) return;
-        flushRedefinitions();
+        try { flushRedefinitions(); }
+        finally { collectingNativeOutcomes = false; }
     }
 
     /** Redefine now, or at the end of the batch this reload is part of. */
@@ -1714,7 +1732,7 @@ public class StructuralReloader {
             pendingRedefinitions.add(new PendingRedefinition(target, payload, then));
             return;
         }
-        handleOutcome(then, redefineOne(target, payload));
+        publishOutcome(target, then, redefineOne(target, payload));
     }
 
     private RedefineOutcome redefineOne(Class<?> target, byte[] payload) {
@@ -1748,7 +1766,7 @@ public class StructuralReloader {
             try {
                 instrumentation.redefineClasses(definitions);
                 for (PendingRedefinition each : pending) {
-                    handleOutcome(each.then(), RedefineOutcome.ok());
+                    publishOutcome(each.target(), each.then(), RedefineOutcome.ok());
                 }
                 return;
             } catch (Throwable oneOfThemWasRefused) {
@@ -1759,8 +1777,14 @@ public class StructuralReloader {
             }
         }
         for (PendingRedefinition each : pending) {
-            handleOutcome(each.then(), redefineOne(each.target(), each.payload()));
+            publishOutcome(each.target(), each.then(), redefineOne(each.target(), each.payload()));
         }
+    }
+
+    private void publishOutcome(Class<?> target, RedefineOutcome.Handler then, RedefineOutcome outcome) {
+        if (collectingNativeOutcomes) nativeOutcomes.put(target, outcome.applied() ? NativeOutcome.APPLIED
+                : outcome.refused() ? NativeOutcome.BENIGN_REFUSAL : NativeOutcome.FAILED);
+        ReloadEffects.forClass(target.getName(), () -> handleOutcome(then, outcome));
     }
 
     private static void handleOutcome(RedefineOutcome.Handler then, RedefineOutcome outcome) {

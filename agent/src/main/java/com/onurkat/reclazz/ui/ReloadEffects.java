@@ -19,46 +19,102 @@ import java.util.List;
  * bean orderService re-created, mappings re-scanned, caches evicted}. The
  * step's own sentence is still printed under verbose.
  *
- * <p>One reload at a time: the queue serialises them (ReloadsAreSerialisedTest),
- * so a single current list is enough, and a note made outside a reload is
- * simply dropped rather than attributed to the next one.
+ * <p>The queue serialises reloads. A batch retains a record per class across
+ * structural work, native callbacks and framework work; selecting a sibling
+ * never attributes its effects to the previous class. A note outside an active
+ * class is dropped, and batch end discards every retained record.
  */
 public final class ReloadEffects {
 
-    private static final List<String> current = new ArrayList<>();
-    private static boolean open;
-    private static int restartsBefore;
+    private static final class Effects {
+        final List<String> notes = new ArrayList<>();
+        int newRestarts;
+        int selectedAt;
+    }
+    private static Effects current;
+    private static int batchDepth;
+    private static java.util.Map<String, Effects> batch;
 
-    private ReloadEffects() {
+    private ReloadEffects() { }
+
+    /** Start independent effect records for one serialized reload batch. */
+    public static synchronized void beginBatch() {
+        if (batchDepth++ == 0) {
+            current = null;
+            batch = new java.util.LinkedHashMap<>();
+        }
+    }
+
+    /** Clear even records belonging to a failed or abandoned class. */
+    public static synchronized void endBatch() {
+        if (batchDepth == 0 || --batchDepth > 0) return;
+        current = null;
+        batch = null;
+    }
+
+    private static void account() {
+        if (current != null) {
+            current.newRestarts += Math.max(0, RestartLedger.size() - current.selectedAt);
+            current.selectedAt = RestartLedger.size();
+        }
     }
 
     /** A reload is starting; forget what the previous one left, if anything. */
     public static synchronized void begin() {
-        current.clear();
-        open = true;
-        restartsBefore = RestartLedger.size();
+        current = new Effects();
+        current.selectedAt = RestartLedger.size();
     }
 
-    /**
-     * @param effect a few words in the developer's terms, such as
-     *               {@code bean orderService re-created}
-     */
+    /** Resume this class's structural/native/framework effects inside a batch. */
+    public static synchronized void begin(String owner) {
+        account();
+        current = batch == null ? new Effects() : batch.computeIfAbsent(owner, ignored -> new Effects());
+        current.selectedAt = RestartLedger.size();
+    }
+
+    /** Detach without discarding the class record while native redefinition waits. */
+    public static synchronized void suspend() {
+        account();
+        current = null;
+    }
+
+    /** Attribute a deferred native callback to its own class, then restore the caller. */
+    public static void forClass(String owner, Runnable work) {
+        Effects previous;
+        synchronized (ReloadEffects.class) {
+            if (batch == null) { previous = null; }
+            else {
+                account();
+                previous = current;
+                current = batch.computeIfAbsent(owner, ignored -> new Effects());
+                current.selectedAt = RestartLedger.size();
+            }
+        }
+        try { work.run(); }
+        finally {
+            synchronized (ReloadEffects.class) {
+                if (batch != null) {
+                    account();
+                    current = previous;
+                    if (current != null) current.selectedAt = RestartLedger.size();
+                }
+            }
+        }
+    }
+
+    /** A note outside a reload is intentionally ignored. */
     public static synchronized void note(String effect) {
-        if (!open || effect == null || effect.isBlank()) return;
-        if (!current.contains(effect)) current.add(effect);
+        if (current == null || effect == null || effect.isBlank()) return;
+        if (!current.notes.contains(effect)) current.notes.add(effect);
     }
 
-    /**
-     * What the reload touched, as the tail of its line, and close the
-     * collection. Empty when nothing was noted and nothing new waits on a
-     * restart, so a reload of a plain class reads as it always did.
-     */
+    /** Publish this class's tail, closing its active collection. */
     public static synchronized String end() {
-        List<String> effects = new ArrayList<>(current);
-        int newRestarts = Math.max(0, RestartLedger.size() - restartsBefore);
-        current.clear();
-        open = false;
-        return digest(effects, newRestarts);
+        if (current == null) return "";
+        account();
+        String result = digest(current.notes, current.newRestarts);
+        current = null;
+        return result;
     }
 
     /** The tail without the leading separator; package-visible for its test. */

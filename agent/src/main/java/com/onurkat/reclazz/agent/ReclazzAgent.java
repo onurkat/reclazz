@@ -576,19 +576,12 @@ public class ReclazzAgent {
             ReloadQueue.Bracket batchBracket = new ReloadQueue.Bracket() {
                 @Override
                 public void begin() {
-                    StructuralReloader structural = structuralReloader;
-                    if (structural != null) structural.beginBatch();
-                    springOrchestrator.beginBatch();
+                    beginReloadBatch(springOrchestrator);
                 }
 
                 @Override
                 public void end() {
-                    try {
-                        StructuralReloader structural = structuralReloader;
-                        if (structural != null) structural.endBatch();
-                    } finally {
-                        springOrchestrator.endBatch();
-                    }
+                    endReloadBatch(springOrchestrator);
                 }
             };
             reloadQueue = ReloadQueue.start(
@@ -962,7 +955,7 @@ public class ReclazzAgent {
             }
 
             long startTime = System.currentTimeMillis();
-            ReloadEffects.begin();
+            ReloadEffects.begin(className);
 
             chaseChangedConstants(internalName, className, bytecode);
 
@@ -990,38 +983,8 @@ public class ReclazzAgent {
                     reloadResult.isSuccess() ? kindOf(reloadResult) : reloadResult.getError(), source);
 
             if (reloadResult.isSuccess()) {
-                // Mapping reads reflection: first restore/reload the class's annotations.
-                if (wasLoaded) JpaMappingRefresh.retryPendingEntity(className, bytecode);
-                // The framework steps first, the line last, so that the line
-                // can say what the steps did.
-                var interceptorRefresh = reloadResult.isInterceptor() && modules != null
-                        && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
-                        ? modules.prepareInterceptor(className, platformContext.getAllApplicationContexts()) : null;
-                if (reloadResult.isSpringBean()) {
-                    Class<?> reloadedClass = findLoadedClass(className);
-                    springOrchestrator.onClassReloaded(className, reloadedClass,
-                            reloadResult.isStructuralReload(),
-                            reloadResult.isAnnotationsChanged(),
-                            reloadResult.isMethodsAdded(),
-                            reloadResult.getAddedMethodSigs(),
-                            reloadResult.getNewBytecode());
-                } else {
-                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className),
-                            reloadResult.isStructuralReload(),
-                            reloadResult.isAnnotationsChanged(),
-                            reloadResult.isMethodsAdded(),
-                            reloadResult.getAddedMethodSigs(),
-                            reloadResult.getNewBytecode());
-                }
-
-                // Hybris-specific: interceptor reload
-                if (interceptorRefresh != null && interceptorRefresh.complete()) {
-                    ReloadEffects.note("interceptor re-registered");
-                    StatusReporter.detail("Interceptor reloaded: " + displayName);
-                }
-
-                reloadLanded(className, reloadResult.isStructuralReload(), elapsed,
-                        reloadResult.getShape(), source, ReloadEffects.end());
+                deferOrComplete(new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
+                        source, startTime, true, springOrchestrator, modules));
             } else {
                 ReloadEffects.end();
                 SessionReport.failed();
@@ -1215,6 +1178,117 @@ public class ReclazzAgent {
         else apply.run();
     }
 
+    private static final class FrameworkReload {
+        final String className;
+        final ClassReloader.ReloadResult result;
+        final byte[] bytes;
+        final boolean wasLoaded;
+        final String source;
+        final long started;
+        final boolean timed;
+        final SpringReloadOrchestrator spring;
+        final PremiumModules modules;
+        boolean success = true;
+
+        FrameworkReload(String className, ClassReloader.ReloadResult result, byte[] bytes,
+                        boolean wasLoaded, String source, long started, boolean timed,
+                        SpringReloadOrchestrator spring, PremiumModules modules) {
+            this.className = className; this.result = result; this.bytes = bytes;
+            this.wasLoaded = wasLoaded; this.source = source; this.started = started;
+            this.timed = timed; this.spring = spring; this.modules = modules;
+        }
+    }
+
+    private static int frameworkBatchDepth;
+    private static final java.util.List<FrameworkReload> pendingFramework = new java.util.ArrayList<>();
+
+    private static void beginReloadBatch(SpringReloadOrchestrator spring) {
+        if (frameworkBatchDepth++ == 0) pendingFramework.clear();
+        ReloadEffects.beginBatch();
+        StructuralReloader structural = structuralReloader;
+        if (structural != null) structural.beginBatch();
+        spring.beginBatch();
+    }
+
+    private static void endReloadBatch(SpringReloadOrchestrator spring) {
+        try {
+            StructuralReloader structural = structuralReloader;
+            if (structural != null) structural.endBatch();
+        } finally {
+            try {
+                if (--frameworkBatchDepth == 0) {
+                    var ready = java.util.List.copyOf(pendingFramework);
+                    pendingFramework.clear();
+                    for (FrameworkReload work : ready) completeFramework(work, true);
+                }
+            } finally {
+                try { spring.endBatch(); }
+                finally {
+                    if (frameworkBatchDepth == 0) {
+                        pendingFramework.clear();
+                        StructuralReloader structural = structuralReloader;
+                        if (structural != null) structural.clearNativeOutcomes();
+                    }
+                    ReloadEffects.endBatch();
+                }
+            }
+        }
+    }
+
+    private static void deferOrComplete(FrameworkReload work) {
+        if (frameworkBatchDepth > 0) {
+            pendingFramework.add(work);
+            ReloadEffects.suspend();
+        } else completeFramework(work, false);
+    }
+
+    private static void completeFramework(FrameworkReload work, boolean deferred) {
+        if (deferred) ReloadEffects.begin(work.className);
+        try {
+            Class<?> type = findLoadedClass(work.className);
+            StructuralReloader structural = structuralReloader;
+            if (deferred && structural != null
+                    && structural.nativeOutcome(type) == StructuralReloader.NativeOutcome.FAILED) {
+                work.success = false;
+                String why = "native redefinition failed; framework refresh was not run";
+                recordOutcome(work.className, false, why, work.source);
+                SessionReport.failed();
+                StatusReporter.error("Reload of " + work.className + ": " + why);
+                ReloadEvents.failed(work.className, why, work.source);
+                return;
+            }
+            if (work.wasLoaded) JpaMappingRefresh.retryPendingEntity(work.className, work.bytes);
+            var interceptor = work.result.isInterceptor() && work.modules != null
+                    && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
+                    ? work.modules.prepareInterceptor(work.className, platformContext.getAllApplicationContexts()) : null;
+            if (work.result.isSpringBean()) {
+                work.spring.onClassReloaded(work.className, type, work.result.isStructuralReload(),
+                        work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
+                        work.result.getAddedMethodSigs(), work.result.getNewBytecode());
+            } else {
+                work.spring.onHelperReloaded(work.className, type, work.result.isStructuralReload(),
+                        work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
+                        work.result.getAddedMethodSigs(), work.result.getNewBytecode());
+            }
+            if (interceptor != null && interceptor.complete()) {
+                ReloadEffects.note("interceptor re-registered");
+                StatusReporter.detail("Interceptor reloaded: " + work.className);
+            }
+            String effects = ReloadEffects.end();
+            reloadLanded(work.className, work.result.isStructuralReload(),
+                    work.timed ? System.currentTimeMillis() - work.started : -1,
+                    work.result.getShape(), work.source, effects);
+        } catch (Throwable t) {
+            work.success = false;
+            String why = Failures.describe(t);
+            StatusReporter.error("Reload of " + work.className + " did not finish: " + why);
+            recordOutcome(work.className, true, kindOf(work.result)
+                    + "; the framework refresh after it did not finish: " + why, work.source);
+        } finally {
+            ReloadEffects.end();
+        }
+    }
+
     private static ClassReloader.ReloadResult reloadWithCacheBoundary(String className, String internalName,
                                                                      byte[] bytecode, ClassReloader reloader) {
         ReloadVerification v = verification;
@@ -1238,22 +1312,12 @@ public class ReclazzAgent {
         long startTime = System.currentTimeMillis();
         int successCount = 0;
         int failCount = 0;
-        // class name -> was it a structural reload (drives event level below)
-        java.util.LinkedHashMap<String, Boolean> swappedClasses = new java.util.LinkedHashMap<>();
-        // What each structural change was, in the words the reload line prints.
-        // The batch path is the one autoCompile uses, so it reports most of the
-        // reloads a hybris developer ever sees; leaving the shape behind here
-        // dropped it from every one of them.
-        java.util.LinkedHashMap<String, String> swappedShapes = new java.util.LinkedHashMap<>();
-        java.util.LinkedHashMap<String, String> swappedEffects = new java.util.LinkedHashMap<>();
-        java.util.List<String> pendingJpaRetries = new java.util.ArrayList<>();
+        java.util.List<FrameworkReload> frameworkResults = new java.util.ArrayList<>();
 
         // Dependent cascade + stale-reference healing sweep every singleton
         // in every context, so run them once for the whole batch; the JVM
         // redefinitions likewise go in one call at the end.
-        StructuralReloader structuralForBatch = structuralReloader;
-        if (structuralForBatch != null) structuralForBatch.beginBatch();
-        springOrchestrator.beginBatch();
+        beginReloadBatch(springOrchestrator);
         try {
         for (var entry : compiledClasses.entrySet()) {
             String className = entry.getKey();
@@ -1285,7 +1349,7 @@ public class ReclazzAgent {
             }
 
             ClassReloader.ReloadResult reloadResult;
-            ReloadEffects.begin();
+            ReloadEffects.begin(className);
             try {
                 reloadResult = reloadWithCacheBoundary(className, internalName, bytecode, reloader);
             } catch (Throwable t) {
@@ -1298,38 +1362,11 @@ public class ReclazzAgent {
                     sources.get(className));
 
             if (reloadResult.isSuccess()) {
-                if (wasLoaded) pendingJpaRetries.add(className);
                 successCount++;
-                swappedClasses.put(className, reloadResult.isStructuralReload());
-                if (reloadResult.getShape() != null) {
-                    swappedShapes.put(className, reloadResult.getShape());
-                }
-
-                var interceptorRefresh = reloadResult.isInterceptor() && modules != null
-                        && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
-                        ? modules.prepareInterceptor(className, platformContext.getAllApplicationContexts()) : null;
-                if (reloadResult.isSpringBean()) {
-                    Class<?> reloadedClass = findLoadedClass(className);
-                    springOrchestrator.onClassReloaded(className, reloadedClass,
-                            reloadResult.isStructuralReload(),
-                            reloadResult.isAnnotationsChanged(),
-                            reloadResult.isMethodsAdded(),
-                            reloadResult.getAddedMethodSigs(),
-                            reloadResult.getNewBytecode());
-                } else {
-                    springOrchestrator.onHelperReloaded(className, findLoadedClass(className),
-                            reloadResult.isStructuralReload(),
-                            reloadResult.isAnnotationsChanged(),
-                            reloadResult.isMethodsAdded(),
-                            reloadResult.getAddedMethodSigs(),
-                            reloadResult.getNewBytecode());
-                }
-
-                if (interceptorRefresh != null && interceptorRefresh.complete()) {
-                    ReloadEffects.note("interceptor re-registered");
-                    StatusReporter.detail("Interceptor reloaded: " + className);
-                }
-                swappedEffects.put(className, ReloadEffects.end());
+                FrameworkReload work = new FrameworkReload(className, reloadResult, bytecode, wasLoaded,
+                        sources.get(className), startTime, compiledClasses.size() == 1, springOrchestrator, modules);
+                frameworkResults.add(work);
+                deferOrComplete(work);
             } else {
                 ReloadEffects.end();
                 failCount++;
@@ -1346,33 +1383,15 @@ public class ReclazzAgent {
             }
         }
         } finally {
-            try {
-                if (structuralForBatch != null) structuralForBatch.endBatch();
-            } finally {
-                springOrchestrator.endBatch();
-            }
+            endReloadBatch(springOrchestrator);
         }
 
-        // AutoCompile defers native annotation redefinition until endBatch above.
-        for (String name : pendingJpaRetries) {
-            JpaMappingRefresh.retryPendingEntity(name, compiledClasses.get(name));
+        for (FrameworkReload work : frameworkResults) {
+            if (!work.success) { successCount--; failCount++; }
         }
         long elapsed = System.currentTimeMillis() - startTime;
 
-        // Emit STRUCTURAL_RELOAD vs RELOAD per class. The autoCompile path
-        // used to always emit plain RELOAD, so STRUCTURAL_RELOAD events (and
-        // the IDE widget's structural counter) never fired in this mode.
-        if (compiledClasses.size() == 1 && swappedClasses.size() == 1) {
-            var only = swappedClasses.entrySet().iterator().next();
-            reloadLanded(only.getKey(), only.getValue(), elapsed,
-                    swappedShapes.get(only.getKey()), sources.get(only.getKey()),
-                    swappedEffects.get(only.getKey()));
-        } else if (compiledClasses.size() > 1) {
-            for (var entry : swappedClasses.entrySet()) {
-                reloadLanded(entry.getKey(), entry.getValue(), -1,
-                        swappedShapes.get(entry.getKey()), sources.get(entry.getKey()),
-                        swappedEffects.get(entry.getKey()));
-            }
+        if (compiledClasses.size() > 1) {
             String summary = String.format("Batch summary: %d/%d classes hot-swapped in %dms",
                     successCount, compiledClasses.size(), elapsed);
             if (failCount > 0) {

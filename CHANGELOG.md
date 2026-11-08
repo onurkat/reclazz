@@ -25,6 +25,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Batched reloads install native constructor updates before recreating Spring
+  singletons. Framework work and reload effects stay scoped to each class;
+  failed native updates skip that class's framework refresh.
+
 - Reload receipts remain `applied` when a removed method now fails exactly as
   after a restart. Removal fallbacks that retain an old body and other reload
   warnings still prevent verification.
