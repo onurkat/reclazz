@@ -41,6 +41,9 @@ Test scaffolding, which ships in no release:
   See [integration-test/README.md](integration-test/README.md).
 - `reclazztest/` - the SAP Commerce extension the suite edits.
   See [reclazztest/README.md](reclazztest/README.md).
+- `reclazztestbackoffice/` - the Backoffice module for the rendered
+  Backoffice acceptance test.
+  See [reclazztestbackoffice/README.md](reclazztestbackoffice/README.md).
 
 ## Testing
 

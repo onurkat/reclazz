@@ -65,3 +65,15 @@ docs/release-notes-archive/
 # Isolated documentation build environment
 .venv-docs/
 __pycache__/
+
+# Hybris ant build artifacts inside the reclazztestbackoffice extension
+reclazztestbackoffice/build.xml
+reclazztestbackoffice/extensioninfo.xsd
+reclazztestbackoffice/platformhome.properties
+reclazztestbackoffice/classes/
+reclazztestbackoffice/gensrc/
+reclazztestbackoffice/backoffice/classes/
+reclazztestbackoffice/resources/backoffice/
+reclazztestbackoffice/resources/items.xsd
+reclazztestbackoffice/resources/reclazztestbackoffice.build.number
+reclazztestbackoffice/resources/reclazztestbackoffice/

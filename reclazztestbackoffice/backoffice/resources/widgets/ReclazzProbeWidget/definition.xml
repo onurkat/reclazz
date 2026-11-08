@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<widget-definition xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="http://www.hybris.com/schema/cockpitng/widget-definition.xsd"
+	id="com.onurkat.reclazztestbackoffice.widgets.reclazzprobewidget">
+	<name>Reclazz socket probe</name>
+	<description>Synthetic widget for the Reclazz @SocketEvent acceptance test</description>
+	<defaultTitle>Reclazz socket probe</defaultTitle>
+	<author>Reclazz</author>
+	<version>1.0</version>
+	<sockets>
+		<input id="probeInput" type="java.lang.String"/>
+		<output id="probeOutput" type="java.lang.String"/>
+	</sockets>
+	<view src="reclazzprobewidget.zul" />
+	<keywords>
+		<keyword>reclazzprobe</keyword>
+	</keywords>
+	<controller class="com.onurkat.reclazztestbackoffice.widgets.ReclazzProbeController" />
+</widget-definition>
