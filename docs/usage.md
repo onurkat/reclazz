@@ -241,7 +241,10 @@ the class as it was at startup, before the directory the regen writes. The JAXB
 or for a response type that maps it, are dropped and built again on the next
 response, JSON and XML alike. `?fields=` and field-set levels can then name the
 property. Removing it again makes `?fields=` that name it answer as they would on a
-fresh server.
+fresh server. Retained default plans also drop the implicit mapping when the
+last added property is removed, so ordinary responses work again after rollback.
+Application-defined mappings are preserved; if they still name a removed accessor,
+Reclazz warns and records that the mapping configuration needs updating.
 
 ### OCC request mappings and overrides
 

@@ -25,6 +25,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Removing a previously added DTO property drops its implicit Orika mapping
+  from retained plans, including the final added property. Application-defined
+  mappings remain intact and report removed accessors with a restart-ledger note.
+
 - SAP Commerce extension-root project.properties edits are watched and baselined
   without recursively watching extension roots. Registered process resources use
   the same physical identity through installed symlinks, including both new-file

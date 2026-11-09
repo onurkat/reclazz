@@ -1,6 +1,8 @@
 package com.onurkat.reclazztest.occ;
 
 import com.onurkat.reclazztest.data.ReclazzProbeData;
+import com.onurkat.reclazztest.batch.OrikaRollbackData;
+import com.onurkat.reclazztest.batch.OrikaRollbackWsDTO;
 import com.onurkat.reclazztest.dto.ReclazzProbeWsDTO;
 import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
 import de.hybris.platform.webservicescommons.mapping.DataMapper;
@@ -19,6 +21,12 @@ public class ReclazzProbeOccController {
 
     @Resource(name = "dataMapper")
     private DataMapper dataMapper;
+
+    @GetMapping("/orika-rollback")
+    @ResponseBody
+    public OrikaRollbackWsDTO rollback(@RequestParam(defaultValue = "code") final String fields) {
+        return dataMapper.map(new OrikaRollbackData(), OrikaRollbackWsDTO.class, fields);
+    }
 
     @GetMapping
     @ResponseBody

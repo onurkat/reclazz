@@ -1,6 +1,15 @@
 package com.onurkat.reclazz.inttest
 
 import com.onurkat.reclazz.inttest.client.AgentEventClient
+import com.onurkat.reclazz.inttest.http.HttpVerifier
+import com.onurkat.reclazz.inttest.tests.afterVersionConverges
+import com.onurkat.reclazz.inttest.tests.latestVerificationSample
+import com.onurkat.reclazz.inttest.tests.BatchLiveTest
+import com.onurkat.reclazz.inttest.tests.saveResourceBytes
+import com.onurkat.reclazz.inttest.tests.localizationChangeOutcome
+import com.onurkat.reclazz.inttest.tests.localizationNoChangeOutcome
+import com.onurkat.reclazz.inttest.config.TestConfig
+import com.onurkat.reclazz.inttest.report.TestStatus
 import com.sun.net.httpserver.HttpServer
 import java.net.InetSocketAddress
 import java.net.ServerSocket
@@ -396,6 +405,135 @@ fun main() {
             val result = it.run(); check(result.first != 0) { result.second }; it.assertClean()
         }
     }
+    fun versionCase(mode: String) {
+        val server=HttpServer.create(InetSocketAddress("127.0.0.1",0),0)
+        val reads=AtomicInteger(); val jobs=AtomicInteger(); val current=AtomicReference("job-v1")
+        val logs=mutableListOf<String>()
+        server.createContext("/version") { exchange ->
+            val n=reads.incrementAndGet()
+            current.set(if(mode!="permanent" && n>=3) "job-v2" else "job-v1")
+            val body="{\"version\":\"${current.get()}\"}".toByteArray()
+            exchange.sendResponseHeaders(200,body.size.toLong());exchange.responseBody.use {it.write(body)}
+        }
+        server.start()
+        try {
+            val http=HttpVerifier("http://127.0.0.1:${server.address.port}",500)
+            val result=runCatching {
+                afterVersionConverges(http,if(mode=="permanent") 300 else 1500,"job-v2",
+                    {http.get("/version",budgetMs=it)},
+                    {if(mode=="pre-write") "applied receipt captured before write, completed after it" else "latest receipt sample"},
+                    {check(current.get()=="job-v2");jobs.incrementAndGet();if(mode=="native-failure") error("native-execution-failed");"executed"},
+                    {logs.add(it)})
+            }
+            if(mode=="permanent") {
+                check(result.isFailure && jobs.get()==0)
+                val message=result.exceptionOrNull()!!.message.orEmpty()
+                check("job-v1" in message && "cause=UNVERIFIED" in message) {message}
+            } else if(mode=="native-failure") {
+                check(result.isFailure && jobs.get()==1 && result.exceptionOrNull()!!.message=="native-execution-failed")
+            } else check(result.getOrThrow()=="executed" && jobs.get()==1 && reads.get()>=3)
+            check(logs.all {"cause=UNVERIFIED" in it})
+            if(mode=="pre-write") check(logs.any {"captured before write" in it && "job-v1" in it})
+        } finally {server.stop(0)}
+    }
+    case("cronJobStaleThenCurrentReadRunsNativeJobOnlyOnce") {versionCase("converges")}
+    case("cronJobPermanentlyStaleReadFailsWithLastValueAndNoNativeJob") {versionCase("permanent")}
+    case("cronJobPreWriteCaptureCompletingAfterWriteDoesNotProveConvergence") {versionCase("pre-write")}
+    case("cronJobNativeExecutionFailureIsNeverRetriedOrHiddenByPolling") {versionCase("native-failure")}
+    case("cronJobInterleavedReceiptsRemainLatestOnlyUnverifiedSamples") {
+        ServerSocket(0,1,java.net.InetAddress.getLoopbackAddress()).use { socket ->
+            val file=Files.createTempFile("cron-latest-contract-",".port")
+            Files.writeString(file,socket.localPort.toString())
+            val worker=java.util.concurrent.CompletableFuture.runAsync {
+                socket.accept().use { connection ->
+                    val line=connection.getInputStream().bufferedReader().readLine().split(' ')
+                    check(line.size==4 && line[0]=="VERIFY")
+                    val mapper=com.fasterxml.jackson.databind.ObjectMapper()
+                    val out=java.io.PrintWriter(connection.getOutputStream(),true)
+                    fun event(message:String) {out.println(mapper.writeValueAsString(mapOf("level" to "INFO","message" to message,"timestamp" to "contract")))}
+                    // Both events predate the query answer. Only B is retained; no A receipt is invented.
+                    event("Reloaded com.example.Job (A)");event("Reloaded com.example.Job (B)")
+                    event("VERIFY_RESULT ${line[1]} "+mapper.writeValueAsString(mapOf("requestId" to line[1],"className" to line[2],
+                        "expectedSha256" to line[3],"observedSha256" to "b".repeat(64),"status" to "mismatch","completedAt" to "contract-B")))
+                }
+            }
+            try {
+                val sample=latestVerificationSample(file.toString(),"com.example.Job",1000)
+                check("b".repeat(64) in sample && "contract-B" in sample) {sample}
+                val logs=mutableListOf<String>();var executed=0
+                afterVersionConverges(HttpVerifier("http://127.0.0.1:1",100),100,"job-v2",
+                    {com.onurkat.reclazz.inttest.http.HttpResult(200,"{\"version\":\"job-v2\"}")},
+                    {sample},{executed++},{logs.add(it)})
+                check(executed==1 && logs.single().contains("cause=UNVERIFIED") && logs.single().contains("latest-only"))
+                check(!logs.single().contains("stale content compiled after write"))
+                worker.get(2,TimeUnit.SECONDS)
+            } finally {Files.deleteIfExists(file)}
+        }
+    }
+    case("resourceForceIdenticalSaveWritesExactlyOnce") {
+        val path=Files.createTempFile("force-save-contract-",".properties");val bytes="greeting=hello\n".toByteArray()
+        try {
+            Files.write(path,bytes);var writes=0
+            check(saveResourceBytes(path,bytes,true) {p,b->writes++;Files.write(p,b)})
+            check(writes==1 && Files.readAllBytes(path).contentEquals(bytes))
+        } finally {Files.deleteIfExists(path)}
+    }
+    fun resourceSaveCase(mode:String, action:(EventServer,AgentEventClient,java.util.concurrent.CompletableFuture<com.onurkat.reclazz.inttest.report.TestResult>)->Unit) {
+        val root=Files.createTempDirectory("resource-save-contract-");val path=root.resolve("labels_en.properties")
+        val initial="greeting=hello\n".toByteArray();val commented=initial+"# same value, different bytes\n".toByteArray()
+        Files.write(path,initial);Files.setLastModifiedTime(path,java.nio.file.attribute.FileTime.fromMillis(1))
+        try {EventServer().use {server->
+            val client=AgentEventClient(server.portFile.toString());client.connect();client.clearEvents()
+            try {
+                val old=java.util.Properties().also {it.load(initial.inputStream())}
+                val next=java.util.Properties().also {it.load(commented.inputStream())}
+                check(old==next && !initial.contentEquals(commented))
+                server.emit("INFO","Localization file saved with no text changes: labels_en.properties");receive(client,1)
+                val scenario=object:BatchLiveTest("resource-save-contract",TestConfig("http://127.0.0.1:1",root.toString(),server.portFile.toString(),eventTimeoutMs=900),client,HttpVerifier("http://127.0.0.1:1",100)) {
+                    override fun scenario() {
+                        val change=mode=="comment"
+                        resourceWrite(path,if(change) commented else initial,listOf("labels_en.properties"),
+                            {e->if(change) e.level=="OK" && e.message=="Type and enum names re-read from labels_en.properties." else
+                                e.level=="INFO" && e.message=="Localization file saved with no text changes: labels_en.properties"},
+                            forceWrite=mode=="force" || mode=="forbidden",acceptEvents={events->if(change) localizationChangeOutcome(events,"labels_en.properties") else localizationNoChangeOutcome(events,"labels_en.properties")})
+                    }
+                }
+                val future=java.util.concurrent.CompletableFuture.supplyAsync {scenario.run()}
+                if(mode!="default") {
+                    val end=System.nanoTime()+TimeUnit.SECONDS.toNanos(2)
+                    while(Files.getLastModifiedTime(path).toMillis()==1L && System.nanoTime()<end) Thread.sleep(5)
+                    check(Files.getLastModifiedTime(path).toMillis()!=1L) {"The explicit save was not performed"}
+                    check(Files.readAllBytes(path).contentEquals(if(mode=="comment") commented else initial))
+                }
+                action(server,client,future)
+                val result=future.get(2,TimeUnit.SECONDS)
+                check(result.status==if(mode=="forbidden") TestStatus.FAIL else TestStatus.PASS) {result.toString()}
+                if(mode=="forbidden") check("Byte-change path appeared" in result.notes) {result.toString()}
+                if(mode=="default") check(Files.getLastModifiedTime(path).toMillis()==1L && Files.readAllBytes(path).contentEquals(initial)) {"Default identical save was performed"}
+            } finally {client.disconnect()}
+        }} finally {root.toFile().deleteRecursively()}
+    }
+    case("resourceForceIdenticalSaveWaitsForFreshExactNoChangeTerminal") {
+        resourceSaveCase("force") {s,_,future->
+            stillWaiting(future) // the old pre-write terminal must not pass
+            s.emit("INFO","Localization file saved with no text changes: other_en.properties");stillWaiting(future)
+            s.emit("INFO","Localization file saved with no text changes: labels_en.properties")
+        }
+    }
+    case("resourceCommentWithEqualValuesRequiresOrderedChangePath") {
+        resourceSaveCase("comment") {s,_,future->
+            s.emit("OK","Type and enum names re-read from labels_en.properties.");stillWaiting(future)
+            s.emit("INFO","Localization file changed: labels_en.properties");stillWaiting(future)
+            s.emit("OK","Type and enum names re-read from labels_en.properties.")
+        }
+    }
+    case("resourceIdenticalSaveRejectsInterveningChangePath") {
+        resourceSaveCase("forbidden") {s,_,_->
+            s.emit("INFO","Localization file changed: labels_en.properties")
+            s.emit("INFO","Localization file saved with no text changes: labels_en.properties")
+        }
+    }
+    case("resourceDefaultIdenticalSaveSkipsWriteAndTerminalWait") {resourceSaveCase("default") {_,_,_->}}
     cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }

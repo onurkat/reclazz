@@ -13,12 +13,21 @@ class LocalizationLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifier):Batch
         val file="reclazztest-locales_en.properties";val relative="resources/localization/$file"
         pollGet("$endpoint/localization",expectedBody="localized-v1")
         val changed=replaceOnce(original(relative).toString(Charsets.UTF_8),"localized-v1","localized-v2")
-        fixtureEdit(relative,changed.toByteArray(),{p,b->resourceWrite(p,b,listOf(file),
-            {it.level=="OK" && it.message=="Type and enum names re-read from $file."})},
+        fun changedWrite(path:java.nio.file.Path,bytes:ByteArray) = resourceWrite(path,bytes,listOf(file),
+            {it.level=="OK" && it.message=="Type and enum names re-read from $file."},
+            acceptEvents={localizationChangeOutcome(it,file)})
+        fixtureEdit(relative,changed.toByteArray(),{p,b->changedWrite(p,b)},
             {pollGet("$endpoint/localization",expectedBody="localized-v1")}) {
             pollGet("$endpoint/localization",expectedBody="localized-v2")
-            resourceWrite(java.nio.file.Path.of(config.extPath,relative),(changed+"# unchanged text control\n").toByteArray(),listOf(file),
-                {it.level=="INFO" && it.message=="Localization file saved with no text changes: $file"})
+            val path=java.nio.file.Path.of(config.extPath,relative)
+            // Equal property values still have changed raw bytes when a comment is added.
+            val commented=(changed+"# byte-change control\n").toByteArray()
+            changedWrite(path,commented)
+            pollGet("$endpoint/localization",expectedBody="localized-v2")
+            // Deliberate identical save, not an append; ordinary no-op writes remain skipped.
+            resourceWrite(path,commented,listOf(file),
+                {it.level=="INFO" && it.message=="Localization file saved with no text changes: $file"},
+                forceWrite=true,acceptEvents={localizationNoChangeOutcome(it,file)})
             pollGet("$endpoint/localization",expectedBody="localized-v2")
         }
     }

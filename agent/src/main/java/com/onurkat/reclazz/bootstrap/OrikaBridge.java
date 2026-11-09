@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.function.BiConsumer;
 
 /** Orika property metadata for added bean accessors. No Orika runtime dependency. */
 public final class OrikaBridge {
@@ -63,11 +64,30 @@ public final class OrikaBridge {
         else reloadedBytes.put(owner, bytes.clone());
     }
 
-    // Values contain weak class references only, never a path back to the weak factory key.
+    public static final String REMOVED_MAPPING = "application-defined Orika mapping refers to a removed accessor; update the mapping configuration";
+    private static volatile BiConsumer<String, Boolean> reporter;
+
+    /** The composition root supplies diagnostics without a bootstrap dependency on the agent. */
+    public static void reporter(BiConsumer<String, Boolean> sink) { reporter = sink; }
+    private static void report(String subject, boolean active) {
+        try { var sink = reporter; if (sink != null) sink.accept(subject, active); }
+        catch (Throwable ignored) { /* Diagnostics must not change mapping execution. */ }
+    }
+
+    // Only strings and weak references: a value cannot retain a weak factory's loader.
     private record Stamp(WeakReference<Class<?>> a, WeakReference<Class<?>> b,
-                         WeakReference<Class<?>> schemaA, WeakReference<Class<?>> schemaB) {
-        boolean pair(Class<?> x, Class<?> y) { return a.get() == x && b.get() == y; }
-        boolean current(Class<?> x, Class<?> y) { return schemaA.get() == x && schemaB.get() == y; }
+                         WeakReference<Class<?>> schemaA, WeakReference<Class<?>> schemaB,
+                         WeakReference<Object> plan, Set<String> implicit, Set<String> warnings) {
+        boolean pair(Class<?> x, Class<?> y) { return a.get() == x && b.get() == y || a.get() == y && b.get() == x; }
+        boolean current(Class<?> x, Class<?> sx, Class<?> sy) {
+            return a.get() == x ? sameSchema(schemaA, sx) && sameSchema(schemaB, sy)
+                    : sameSchema(schemaB, sx) && sameSchema(schemaA, sy);
+        }
+    }
+    private record Refreshed(Object plan, Set<String> implicit, Set<String> warnings) { }
+    private static boolean sameSchema(WeakReference<Class<?>> previous, Class<?> current) {
+        // A collected old schema is not the same state as a pair that never had one.
+        return previous == null ? current == null : current != null && previous.get() == current;
     }
 
     /** Refresh a cached ordinary mapping plan before the facade consults its strategy cache. */
@@ -76,26 +96,38 @@ public final class OrikaBridge {
         Class<?> a = raw(sourceType == null ? source.getClass() : sourceType), b = raw(destinationType);
         if (a == null || b == null) return;
         Class<?> schemaA = JacksonBridge.schema(a), schemaB = JacksonBridge.schema(b);
-        if (schemaA == null && schemaB == null) return;
+        if (schemaA == null && schemaB == null && refreshed.isEmpty()) return;
         try {
             ClassLoader loader = facade.getClass().getClassLoader();
             Class<?> facadeType = Class.forName("ma.glasnost.orika.impl.MapperFacadeImpl", false, loader);
             var field = facadeType.getDeclaredField("mapperFactory");
             field.setAccessible(true);
             Object factory = field.get(facade);
-            if (!factory.getClass().getName().equals("ma.glasnost.orika.impl.DefaultMapperFactory"))
-                return;
+            if (!factory.getClass().getName().equals("ma.glasnost.orika.impl.DefaultMapperFactory")) return;
             List<Stamp> stamps;
-            synchronized (refreshed) { stamps = refreshed.computeIfAbsent(factory, ignored -> new ArrayList<>()); }
+            synchronized (refreshed) { stamps = refreshed.get(factory); }
+            if (stamps == null) {
+                if (schemaA == null && schemaB == null) return;
+                synchronized (refreshed) { stamps = refreshed.computeIfAbsent(factory, ignored -> new ArrayList<>()); }
+            }
             synchronized (factory) {
                 stamps.removeIf(s -> s.a().get() == null || s.b().get() == null);
-                for (Stamp stamp : stamps) if (stamp.pair(a, b) && stamp.current(schemaA, schemaB)) return;
+                Stamp previous = null;
+                for (Stamp stamp : stamps) if (stamp.pair(a, b)) { previous = stamp; break; }
+                if (previous == null && schemaA == null && schemaB == null) return;
+                if (previous != null && previous.current(a, schemaA, schemaB)) return;
                 rebuilding.set(true);
                 try {
-                    refreshPlan(factory, sourceType == null ? source.getClass() : sourceType, destinationType, loader);
+                    Refreshed result = refreshPlan(factory, sourceType == null ? source.getClass() : sourceType,
+                            destinationType, loader, previous);
+                    if (previous != null) for (String warning : previous.warnings())
+                        if (!result.warnings().contains(warning)) report(warning, false);
+                    for (String warning : result.warnings())
+                        if (previous == null || !previous.warnings().contains(warning)) report(warning, true);
                     stamps.removeIf(s -> s.pair(a, b));
                     stamps.add(new Stamp(new WeakReference<>(a), new WeakReference<>(b),
-                            new WeakReference<>(schemaA), new WeakReference<>(schemaB)));
+                            schemaA == null ? null : new WeakReference<>(schemaA), schemaB == null ? null : new WeakReference<>(schemaB),
+                            new WeakReference<>(result.plan()), result.implicit(), result.warnings()));
                 } finally { rebuilding.remove(); }
             }
         } catch (ReflectiveOperationException failure) {
@@ -132,7 +164,7 @@ public final class OrikaBridge {
                 : type instanceof ParameterizedType p && p.getRawType() instanceof Class<?> c ? c : null;
     }
 
-    private static void refreshPlan(Object factory, Type source, Type destination, ClassLoader loader)
+    private static Refreshed refreshPlan(Object factory, Type source, Type destination, ClassLoader loader, Stamp previous)
             throws ReflectiveOperationException {
         Class<?> typeFactory = Class.forName("ma.glasnost.orika.metadata.TypeFactory", false, loader);
         Class<?> type = Class.forName("ma.glasnost.orika.metadata.Type", false, loader);
@@ -142,48 +174,92 @@ public final class OrikaBridge {
         Object a = valueOf.invoke(null, source), b = valueOf.invoke(null, destination);
         Object key = keyType.getConstructor(type, type).newInstance(a, b);
         Object old = factory.getClass().getMethod("getClassMap", keyType).invoke(factory, key);
-        // A fresh mapper will discover the current metadata normally.
-        if (old == null || !defaultPlan(old)) return;
+        if (old == null) return new Refreshed(null, Set.of(), Set.of());
+        // A new application plan owns its whole mapping set, even if it copied our last one.
+        Set<String> owned = previous != null && previous.plan().get() == old ? previous.implicit() : Set.of();
         Object oldA = classMapType.getMethod("getAType").invoke(old);
         Object oldB = classMapType.getMethod("getBType").invoke(old);
-        Object builder = factory.getClass().getMethod("classMap", type, type).invoke(factory, oldA, oldB);
-        Class<?> hint = Class.forName("ma.glasnost.orika.DefaultFieldMapper", false, loader);
-        Object hints = java.lang.reflect.Array.newInstance(hint, 0);
-        builder.getClass().getMethod("byDefault", hints.getClass()).invoke(builder, hints);
-        Object defaults = builder.getClass().getMethod("toClassMap").invoke(builder);
+        Class<?> ownerA = (Class<?>) type.getMethod("getRawType").invoke(oldA);
+        Class<?> ownerB = (Class<?>) type.getMethod("getRawType").invoke(oldB);
         Method mappings = classMapType.getMethod("getFieldsMapping");
         Set<?> existing = (Set<?>) mappings.invoke(old);
-        Set<Object> merged = new LinkedHashSet<>(existing);
-        Set<String> usedA = new HashSet<>(), usedB = new HashSet<>();
+        Set<Object> merged = new LinkedHashSet<>();
+        Set<String> implicit = new LinkedHashSet<>(), warnings = new LinkedHashSet<>();
         Class<?> fieldMap = Class.forName("ma.glasnost.orika.metadata.FieldMap", false, loader);
         Method sourceExpression = fieldMap.getMethod("getSourceExpression");
         Method destinationExpression = fieldMap.getMethod("getDestinationExpression");
+        Method getSource = fieldMap.getMethod("getSource"), getDestination = fieldMap.getMethod("getDestination");
+        Method excluded = fieldMap.getMethod("isExcluded");
+        Class<?> property = Class.forName("ma.glasnost.orika.metadata.Property", false, loader);
+        Method getter = property.getMethod("getGetter"), setter = property.getMethod("getSetter");
         for (Object map : existing) {
-            usedA.add(root((String) sourceExpression.invoke(map)));
-            usedB.add(root((String) destinationExpression.invoke(map)));
+            String from = (String) sourceExpression.invoke(map), to = (String) destinationExpression.invoke(map);
+            String id = from + "\0" + to;
+            // Default additions are flat properties. Nested application expressions remain native policy.
+            boolean simple = from.equals(root(from)) && to.equals(root(to));
+            boolean missing = simple && !Boolean.TRUE.equals(excluded.invoke(map))
+                    && (missingAccessor(getSource.invoke(map), ownerA, getter)
+                    || missingAccessor(getDestination.invoke(map), ownerB, setter));
+            if (missing && owned.contains(id)) continue;
+            merged.add(map);
+            if (owned.contains(id)) implicit.add(id);
+            if (missing) warnings.add(ownerA.getName() + "." + from + " -> " + ownerB.getName() + "." + to);
         }
-        for (Object map : (Set<?>) mappings.invoke(defaults)) {
-            String from = root((String) sourceExpression.invoke(map));
-            String to = root((String) destinationExpression.invoke(map));
-            if (!usedA.contains(from) && !usedB.contains(to)) merged.add(map);
+        if (defaultPlan(old)) {
+            Object builder = factory.getClass().getMethod("classMap", type, type).invoke(factory, oldA, oldB);
+            Class<?> hint = Class.forName("ma.glasnost.orika.DefaultFieldMapper", false, loader);
+            Object hints = java.lang.reflect.Array.newInstance(hint, 0);
+            builder.getClass().getMethod("byDefault", hints.getClass()).invoke(builder, hints);
+            Object defaults = builder.getClass().getMethod("toClassMap").invoke(builder);
+            Set<String> usedA = new HashSet<>(), usedB = new HashSet<>();
+            for (Object map : merged) {
+                usedA.add(root((String) sourceExpression.invoke(map)));
+                usedB.add(root((String) destinationExpression.invoke(map)));
+            }
+            for (Object map : (Set<?>) mappings.invoke(defaults)) {
+                String from = (String) sourceExpression.invoke(map), to = (String) destinationExpression.invoke(map);
+                if (!usedA.contains(root(from)) && !usedB.contains(root(to))
+                        && !missingAccessor(getSource.invoke(map), ownerA, getter)
+                        && !missingAccessor(getDestination.invoke(map), ownerB, setter)) {
+                    merged.add(map); implicit.add(from + "\0" + to);
+                    usedA.add(root(from)); usedB.add(root(to));
+                }
+            }
         }
-        if (merged.size() == existing.size()) return;
-        // copy(Set) preserves custom mapper, converters on old fields, exclusions,
-        // used mappings, constructors and null policies; only new default fields are added.
+        if (merged.equals(existing)) return new Refreshed(old, Set.copyOf(implicit), Set.copyOf(warnings));
         Object replacement = classMapType.getMethod("copy", Set.class).invoke(old, merged);
-        refreshCompiler(factory, raw(source), raw(destination), loader);
-        rememberPlan(replacement);
+        refreshCompiler(factory, ownerA, ownerB, loader);
+        if (defaultPlan(old)) rememberPlan(replacement);
         var lookup = factory.getClass().getDeclaredMethod("getRegisteredMapper", keyType);
         lookup.setAccessible(true);
         Object previousMapper = lookup.invoke(factory, key);
         factory.getClass().getMethod("registerClassMap", classMapType).invoke(factory, replacement);
-        // This SDK's generated mapper uses identity equality; registerClassMap's
-        // remove(newMapper) does not remove the previous instance for the pair.
         if (previousMapper != null) {
             var registryField = factory.getClass().getDeclaredField("mappersRegistry");
             registryField.setAccessible(true);
             ((java.util.Collection<?>) registryField.get(factory)).remove(previousMapper);
         }
+        Object registered = factory.getClass().getMethod("getClassMap", keyType).invoke(factory, key);
+        return new Refreshed(registered, Set.copyOf(implicit), Set.copyOf(warnings));
+    }
+
+    private static boolean missingAccessor(Object property, Class<?> owner, Method accessor) throws ReflectiveOperationException {
+        String expression = (String) accessor.invoke(property);
+        if (expression == null) return false;
+        // Orika's resolver cache can itself retain an added property after rollback.
+        // Test the current member view, not that cached Property object's existence.
+        int arguments = expression.indexOf('(');
+        String name = arguments < 0 ? expression : expression.substring(0, arguments);
+        if (name.isEmpty() || !Character.isJavaIdentifierStart(name.codePointAt(0))
+                || !name.codePoints().allMatch(Character::isJavaIdentifierPart)) return false; // native complex expression policy
+        if (arguments >= 0) {
+            int arity = expression.substring(arguments).equals("()") ? 0 : 1;
+            for (Method member : ReflectionBridge.getMethods(owner))
+                if (member.getName().equals(name) && member.getParameterCount() == arity) return false;
+        } else {
+            for (var member : ReflectionBridge.getFields(owner)) if (member.getName().equals(name)) return false;
+        }
+        return true;
     }
 
     private static void refreshCompiler(Object factory, Class<?> a, Class<?> b, ClassLoader loader)
@@ -203,14 +279,14 @@ public final class OrikaBridge {
             Map<String, Object> inserted;
             synchronized (insertedPaths) { inserted = insertedPaths.computeIfAbsent(pool, ignored -> new HashMap<>()); }
             for (Class<?> owner : new Class<?>[]{a, b}) {
-                if (owner == null || JacksonBridge.schema(owner) == null) continue;
+                if (owner == null) continue;
                 Object ct = poolType.getMethod("getOrNull", String.class).invoke(pool, owner.getName());
                 if (ct != null) ctType.getMethod("detach").invoke(ct);
-                byte[] bytes = reloadedBytes.get(owner);
-                if (bytes == null) continue;
-                // Ahead of the loader's entries, replacing the one a previous reload put there.
+                // A final schema removal must detach and remove the last added-bytecode view too.
                 Object previous = inserted.remove(owner.getName());
                 if (previous != null) poolType.getMethod("removeClassPath", pathType).invoke(pool, previous);
+                byte[] bytes = reloadedBytes.get(owner);
+                if (bytes == null) continue;
                 Object path = bytesPathType.getConstructor(String.class, byte[].class).newInstance(owner.getName(), bytes);
                 poolType.getMethod("insertClassPath", pathType).invoke(pool, path);
                 inserted.put(owner.getName(), path);

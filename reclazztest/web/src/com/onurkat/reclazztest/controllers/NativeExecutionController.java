@@ -1,6 +1,8 @@
 package com.onurkat.reclazztest.controllers;
 
 import com.onurkat.reclazztest.batch.ExecutionProbe;
+import com.onurkat.reclazztest.batch.NativeProbeJob;
+import de.hybris.platform.core.Registry;
 import com.onurkat.reclazztest.batch.NativeProbeEvent;
 import de.hybris.platform.core.model.ItemModel;
 import de.hybris.platform.cronjob.model.CronJobModel;
@@ -63,6 +65,12 @@ public class NativeExecutionController {
     @PostMapping("/event-cleanup")
     public Map<String, Object> eventCleanup(@RequestParam("nonce") String nonce) {
         String code = code(nonce); ExecutionProbe.clear(code); return execution(code);
+    }
+    @GetMapping("/cronjob-version")
+    public Map<String, String> cronJobVersion(@RequestParam("nonce") String nonce) {
+        code(nonce); // Validate ownership only; this read creates no records or probe entries.
+        return Map.of("nonce", nonce, "version", Registry.getApplicationContext()
+                .getBean("reclazzNativeProbeJob", NativeProbeJob.class).version());
     }
     @PostMapping("/cronjob")
     public Map<String, Object> cronJob(@RequestParam("nonce") String nonce) {

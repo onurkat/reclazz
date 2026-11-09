@@ -9,8 +9,9 @@ import org.springframework.stereotype.Component;
 
 @Component("reclazzNativeProbeJob")
 public class NativeProbeJob extends AbstractJobPerformable<CronJobModel> {
+    public String version() { return "job-v1"; }
     @Override public PerformResult perform(CronJobModel cronJob) {
-        ExecutionProbe.record(cronJob.getCode(), "job-v1");
+        ExecutionProbe.record(cronJob.getCode(), version());
         return new PerformResult(CronJobResult.SUCCESS, CronJobStatus.FINISHED);
     }
 }

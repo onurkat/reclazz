@@ -296,6 +296,13 @@ public class ReclazzAgent {
             }
 
             if (bootstrapInstalled) {
+                com.onurkat.reclazz.bootstrap.OrikaBridge.reporter((subject, active) -> {
+                    String reason = com.onurkat.reclazz.bootstrap.OrikaBridge.REMOVED_MAPPING;
+                    if (active) {
+                        StatusReporter.warn(reason + ": " + subject);
+                        RestartLedger.note(subject, reason);
+                    } else RestartLedger.resolve(subject, reason);
+                });
                 CacheDependencyLedger.reporter(message -> {
                     if (message.contains("failed")) StatusReporter.warn(message);
                     else StatusReporter.detail(message);

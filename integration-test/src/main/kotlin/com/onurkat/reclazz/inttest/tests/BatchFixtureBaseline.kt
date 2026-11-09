@@ -10,8 +10,9 @@ class BatchFixtureBaseline(private val config:TestConfig) {
         "resources/reclazztest-process-resources-spring.xml","resources/process/reclazz-process-existing.xml",
         "resources/impex/reclazz-batch-refusal.impex","resources/localization/reclazztest-locales_en.properties",
         "resources/occ/v2/reclazztestocc/web/spring/reclazztestocc-web-spring.xml",
-        "src/com/onurkat/reclazztest/occ/ReclazzProbeOccController.java")+
-        listOf("ProbePopulator","NativeProbeJob","NativeProbeListener","ProbeValidator","ValidatedPayload")
+        "src/com/onurkat/reclazztest/occ/ReclazzProbeOccController.java",
+        "web/src/com/onurkat/reclazztest/controllers/NativeExecutionController.java")+
+        listOf("ProbePopulator","NativeProbeJob","NativeProbeListener","ProbeValidator","ValidatedPayload","OrikaRollbackData","OrikaRollbackWsDTO")
             .map {"src/com/onurkat/reclazztest/batch/$it.java"}
     fun checkBytes() {
         for(rel in relative) {

@@ -42,6 +42,78 @@ internal fun requireOwnedCleanup(response: HttpResult, field: String = "ownedRem
     check(count!=null && count.isIntegralNumber && count.asLong()==0L) {"Owned cleanup did not prove zero $field: $proof"}
 }
 
+/** Samples of the latest receipt are diagnostic only, never an event or source-revision history. */
+internal fun latestVerificationSample(portFile: String, owner: String, budgetMs: Long): String {
+    if (budgetMs <= 0) return "VERIFY unavailable: no remaining budget"
+    val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(budgetMs)
+    fun remaining() = TimeUnit.NANOSECONDS.toMillis(deadline - System.nanoTime()).coerceIn(1, Int.MAX_VALUE.toLong()).toInt()
+    val token = "cron-" + java.util.UUID.randomUUID()
+    return runCatching {
+        java.net.Socket().use { socket ->
+            socket.connect(java.net.InetSocketAddress("127.0.0.1", Files.readString(Path.of(portFile)).trim().toInt()), remaining())
+            val writer = socket.getOutputStream().bufferedWriter(Charsets.UTF_8)
+            writer.write("VERIFY $token $owner ${"0".repeat(64)}\n"); writer.flush()
+            val reader = socket.getInputStream().bufferedReader(Charsets.UTF_8)
+            while (System.nanoTime() < deadline) {
+                socket.soTimeout = remaining()
+                val line = reader.readLine() ?: error("VERIFY connection closed")
+                val message = batchJson.readTree(line).path("message").asText()
+                val prefix = "VERIFY_RESULT $token "
+                if (message.startsWith(prefix)) {
+                    val receipt = batchJson.readTree(message.removePrefix(prefix))
+                    check(receipt.path("requestId").asText() == token && receipt.path("className").asText() == owner)
+                    return@runCatching receipt.toString()
+                }
+            }
+            error("VERIFY sample deadline")
+        }
+    }.getOrElse { "VERIFY unavailable: ${it.message}" }
+}
+
+/** Poll pure reads; the side effect remains outside the polling loop and runs once. */
+internal fun <T> afterVersionConverges(http: HttpVerifier, timeoutMs: Long, expected: String,
+    read: (Long) -> HttpResult, diagnostics: (Long) -> String, execute: () -> T,
+    log: (String) -> Unit = { println(it) }): T {
+    val samples = java.util.ArrayDeque<String>()
+    try {
+        http.poll(timeoutMs, "Pure version $expected", { budget ->
+            val start = System.nanoTime()
+            val response = read(budget)
+            val left = (budget - TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start)).coerceIn(0, 500)
+            val diagnostic = runCatching { diagnostics(left) }.getOrElse { "sample unavailable: ${it.message}" }
+            val sample = "cause=UNVERIFIED latest-only sample HTTP=${response.statusCode} body=${response.body} $diagnostic"
+            samples.addLast(sample); if (samples.size > 12) samples.removeFirst()
+            log(sample)
+            response
+        }) { response ->
+            response.statusCode == 200 && runCatching { json(response).path("version").asText() == expected }.getOrDefault(false)
+        }
+    } catch (failure: Exception) {
+        error("Version did not converge; cause=UNVERIFIED; ${failure.message}; samples=$samples")
+    }
+    return execute()
+}
+
+/** A force-save is explicit; ordinary identical writes keep the shared no-op behavior. */
+internal fun saveResourceBytes(path: Path, bytes: ByteArray, forceWrite: Boolean,
+    forceSave: (Path, ByteArray) -> Unit = { p,b -> Files.createDirectories(p.parent); Files.write(p,b) }): Boolean {
+    if (!forceWrite) return writeChanged(path, bytes)
+    forceSave(path, bytes)
+    return true
+}
+
+internal fun localizationChangeOutcome(events: List<AgentEvent>, file: String): Boolean = events.any { done ->
+    done.level == "OK" && done.message == "Type and enum names re-read from $file." &&
+        events.any { it.sequence < done.sequence && it.level == "INFO" && it.message == "Localization file changed: $file" }
+}
+internal fun localizationNoChangeOutcome(events: List<AgentEvent>, file: String): Boolean {
+    val done = events.firstOrNull { it.level == "INFO" && it.message == "Localization file saved with no text changes: $file" }
+    check(events.none { it.sequence <= (done?.sequence ?: Long.MAX_VALUE) && it.level == "INFO" && it.message == "Localization file changed: $file" }) {
+        "Byte-change path appeared during identical save of $file; observed $events"
+    }
+    return done != null
+}
+
 /** Candidate baselines are versioned templates, never snapshots of possibly dirty live sources. */
 abstract class BatchLiveTest(name: String, config: TestConfig, client: AgentEventClient, http: HttpVerifier)
     : BaseTest(name, config, client, http) {
@@ -73,14 +145,15 @@ abstract class BatchLiveTest(name: String, config: TestConfig, client: AgentEven
         }?.let { error(it) }
     }
     protected fun resourceWrite(path: Path, bytes: ByteArray, scopes: List<String>,
-        terminal: (AgentEvent) -> Boolean, allowed: (AgentEvent) -> Boolean = { false }, expectedOutcomes: Int = 1) {
+        terminal: (AgentEvent) -> Boolean, allowed: (AgentEvent) -> Boolean = { false }, expectedOutcomes: Int = 1,
+        forceWrite: Boolean = false, acceptEvents: (List<AgentEvent>) -> Boolean = { true }) {
         val mark = agentClient.cursor()
-        if (!writeChanged(path, bytes)) return
+        if (!saveResourceBytes(path, bytes, forceWrite)) return
         val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(config.eventTimeoutMs)
         while (true) {
             val events = agentClient.getEvents().filter { it.sequence > mark }
             resourceFailure(events, scopes, allowed)?.let { error(it) }
-            if (events.count(terminal) >= expectedOutcomes) return
+            if (acceptEvents(events) && events.count(terminal) >= expectedOutcomes) return
             check(System.nanoTime() < deadline) { "No terminal outcome for $scopes; observed ${events.takeLast(12)}" }
             Thread.sleep(20)
         }
@@ -95,9 +168,9 @@ abstract class BatchLiveTest(name: String, config: TestConfig, client: AgentEven
             })
         }
     }
-    protected fun javaEdit(relative: String, changed: String, afterRestore: () -> Unit, action: () -> Unit) =
+    protected fun javaEdit(relative: String, changed: String, afterRestore: () -> Unit, beforeWrite: (Long) -> Unit = {}, action: () -> Unit) =
         fixtureEdit(relative, changed.toByteArray(), { path, bytes ->
-            val mark = agentClient.cursor()
+            val mark = agentClient.cursor(); beforeWrite(mark)
             if (writeChanged(path, bytes)) awaitSources(agentClient, listOf(path), mark, config.eventTimeoutMs)
         }, afterRestore, action = action)
     protected abstract fun scenario()

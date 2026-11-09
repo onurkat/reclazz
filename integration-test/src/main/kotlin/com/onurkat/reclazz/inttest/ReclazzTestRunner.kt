@@ -83,6 +83,7 @@ fun main() {
         SpringXmlRecreateLiveTest(config, agentClient, httpVerifier),
         SpringXmlNewBeanLiveTest(config, agentClient, httpVerifier),
         OccFieldSetLiveTest(config, agentClient, httpVerifier),
+        OrikaPropertyRollbackLiveTest(config, agentClient, httpVerifier),
         OccRequestMappingLiveTest(config, agentClient, httpVerifier),
         OccPriorityLiveTest(config, agentClient, httpVerifier),
         PlatformConfigLiveTest(config, agentClient, httpVerifier),
