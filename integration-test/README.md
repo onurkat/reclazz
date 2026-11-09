@@ -241,3 +241,67 @@ repository. Run three consecutive profile passes, then unset the profile and
 verify the normal 44-case suite (43 PASS plus the known Hibernate-provider SKIP).
 Items schema, static reset, Solr, CMS and Chrome remain separate profiles and are
 not covered by the beans profile.
+
+### Items schema profile (disposable clean HSQLDB only)
+
+The serialized entry point is `python3 scripts/test-sap-items-live.py`. It runs
+three complete schema attempts and recoveries, followed by the unchanged
+44-case default suite. Add `--failure-control` to exercise an additional
+intentional failure after a real schema update and persisted round trip.
+`--runs 1` selects one full cycle for diagnosis. An inner `items-attempt` result
+alone is **not** a completed profile: only `ITEMS_PROFILE PASS` from the outer
+driver includes database recovery and normal-boot acceptance.
+
+This profile is pinned to the separate `reclazz-sap/hybris` installation beside
+the repository, HTTPS9102, file HSQLDB, and the repository fixture symlink.
+It refuses any foreign tenant database. Normal agent options must have
+`autoCompile=true`, `autoUpdateRunningSystem=false`, `resetStatics=false`,
+`autoSolrReindex=false`, and `impexAllowRemove=false`. Missing or mismatched
+running-server gates SKIP before fixture/config/database writes.
+
+Before first use, deploy the fixture's new **synthetic** `ReclazzSchemaProbe`
+baseline (nonce only, table `ReclazzSchemaProbes`, type code 31991). Check native
+loaded types for code/name/table collisions first and take a complete stopped
+HSQLDB backup. Build the fixture and apply the platform's schema-only running
+system update on this disposable installation, with all data/localization/drop
+steps off. No initialization is needed. The driver SKIPs until this baseline
+exists with zero rows and without `batchValue`; it never bootstraps an unknown
+installation itself. The normal master and junit tenants must already be
+initialized for the default suite.
+
+Each cycle stops the server, waits for the JVM/native ant writers and DB lock
+to disappear, copies the **entire** HSQLDB directory (all tenant prefixes), and
+verifies every file's size/hash. It also snapshots generated model/source
+outputs and saves the original configuration and agent hash. The schema boot
+adds only `autoUpdateRunningSystem=true` to the exact owned agent entry in
+the temporary launcher wrapper; local.properties remains unchanged. The
+original launcher bytes are restored before the normal boot. A responding
+server with mismatched options fails immediately. The attempt adds one persistent
+String attribute, requires exact items-file/codegen/generated-owner/schema
+outcomes, and verifies the descriptor, distinct detached model instances, and
+an independent-request FlexibleSearch value from the saved PK.
+
+Every exit after capture stops the server, restores the original fixture,
+configuration, generated outputs and full DB directory, removes extra DB
+files, verifies hashes **before** opening it, then checks a fresh normal JVM,
+baseline metadata/zero rows, both tenant health queries and fixture bytes.
+There is no inverse DDL. Failed recovery fails the whole profile; an open DB
+or invalid snapshot is never replaced. The recovery folder also retains `state.json`: original configuration and
+items source bytes as hex, their SHA-256 checksums, the ordered generated
+output targets, and the original agent hash. These survive loss of the test
+process. For manual recovery, stop and prove the writer/lock checks first;
+restore the recorded configuration/source bytes, restore each numbered
+generated snapshot to its recorded target, then restore the entire verified
+`db` snapshot with `sap_items_snapshot.restore`. Verify hashes before starting
+the normal server, then verify baseline metadata, zero rows, tenant health
+and the default suite. Never restore an open database.
+
+Recovery folders and logs remain under
+`/private/tmp/reclazz-items-*`, including on failure, for diagnosis and manual
+recovery. Do not delete the recovery folder until acceptance is complete.
+
+Budgets: native build/startup 600s each, stop 90s followed by a bounded 330s writer
+drain, inner schema attempt 600s, runner 900s. A native command exceeding its
+budget is preserved and recovery refuses to proceed while its writer remains.
+Portable checks: `python3 scripts/test-sap-items-snapshot.py`,
+`python3 scripts/test-sap-items-driver.py`, and the Gradle harness contracts.

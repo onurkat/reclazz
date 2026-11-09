@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<items xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="items.xsd">
+    <itemtypes>
+        <!-- Synthetic, isolated persistence fixture; collision checked before baseline deployment. -->
+        <itemtype code="ReclazzSchemaProbe" extends="GenericItem" autocreate="true" generate="false" jaloclass="de.hybris.platform.jalo.GenericItem">
+            <deployment table="ReclazzSchemaProbes" typecode="31991"/>
+            <attributes>
+                <attribute qualifier="nonce" type="java.lang.String">
+                    <modifiers read="true" write="true" optional="false" unique="true"/>
+                    <persistence type="property"/>
+                </attribute>
+            </attributes>
+        </itemtype>
+    </itemtypes>
+</items>

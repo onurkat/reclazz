@@ -12,7 +12,8 @@ class BatchFixtureBaseline(private val config:TestConfig) {
         "resources/occ/v2/reclazztestocc/web/spring/reclazztestocc-web-spring.xml",
         "src/com/onurkat/reclazztest/occ/ReclazzProbeOccController.java",
         "web/src/com/onurkat/reclazztest/controllers/NativeExecutionController.java",
-        "web/src/com/onurkat/reclazztest/controllers/BatchVerificationController.java","resources/reclazztest-beans.xml")+
+        "web/src/com/onurkat/reclazztest/controllers/BatchVerificationController.java","resources/reclazztest-beans.xml",
+        "web/src/com/onurkat/reclazztest/controllers/ItemsSchemaController.java","resources/reclazztest-items.xml")+
         listOf("ProbePopulator","NativeProbeJob","NativeProbeListener","ProbeValidator","ValidatedPayload","OrikaRollbackData","OrikaRollbackWsDTO")
             .map {"src/com/onurkat/reclazztest/batch/$it.java"}
     fun checkBytes() {

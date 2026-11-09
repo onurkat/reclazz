@@ -115,7 +115,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
         for ((relative, bytes) in originals) {
             val path = root.resolve(relative); Files.createDirectories(path.parent); Files.write(path, bytes)
         }
-        if (mode in setOf("delayed-first","profile-skip")) {
+        if (mode in setOf("delayed-first","profile-skip","items-profile-skip")) {
             val path = root.resolve(fixturePaths.first())
             Files.writeString(path, Files.readString(path).replace("pong-v1", "pong-v3"))
         }
@@ -125,7 +125,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
             val n = requests.incrementAndGet(); val path = exchange.requestURI.path
             if (path.endsWith("/multi") || path.endsWith("/ping")) firstRequest.compareAndSet(0, System.nanoTime())
             val pair = when {
-                mode == "profile-skip" && path.endsWith("/batch/gates") -> 200 to "{\"agentArgsFound\":false}"
+                mode.endsWith("profile-skip") && path.endsWith("/batch/gates") -> 200 to "{\"agentArgsFound\":false}"
                 path.endsWith("/impex-title") -> 200 to db.get()
                 path.endsWith("/multi") -> 200 to "helper-v2:service-v2"
                 mode == "poll-stale" -> 503 to "last-stale-body"
@@ -194,9 +194,9 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
         builder.environment().putAll(mapOf("RECLAZZ_TEST_EXT_PATH" to root.toString(), "RECLAZZ_TEST_PORT_FILE" to eventServer.portFile.toString(),
             "RECLAZZ_TEST_BASE_URL" to "http://127.0.0.1:${http.address.port}", "RECLAZZ_TEST_ONLY" to scenario,
             "RECLAZZ_TEST_EVENT_TIMEOUT" to timeout.toString(), "RECLAZZ_TEST_SETTLE_DELAY" to "0", "RECLAZZ_TEST_HTTP_TIMEOUT" to "500"))
-        if(mode=="profile-skip") {
+        if(mode.endsWith("profile-skip")) {
             builder.environment().remove("RECLAZZ_TEST_ONLY")
-            builder.environment()["RECLAZZ_TEST_PROFILE"]="codegen"
+            builder.environment()["RECLAZZ_TEST_PROFILE"]=if(mode=="items-profile-skip") "items-attempt" else "codegen"
         } else builder.environment().remove("RECLAZZ_TEST_PROFILE")
         val process = builder.redirectErrorStream(true).redirectOutput(output).start()
         check(process.waitFor(35, TimeUnit.SECONDS)) { process.destroyForcibly(); "Runner child exceeded contract deadline" }
@@ -563,6 +563,14 @@ fun main() {
             for((path,bytes) in before) check(Files.readAllBytes(child.root.resolve(path)).contentEquals(bytes)) {"Preflight wrote $path"}
         }
     }
+    case("itemsMainSkipDoesNotRestoreDirtyFixtureBeforePreflight") {
+        ChildRun("items-profile-skip","unused").use {child ->
+            val before=fixturePaths.associateWith {Files.readAllBytes(child.root.resolve(it))}
+            val result=child.run()
+            check(result.first==0 && "SKIP" in result.second && "agentArgsFound=false" in result.second) {result.second}
+            for((path,bytes) in before) check(Files.readAllBytes(child.root.resolve(path)).contentEquals(bytes)) {"Items preflight wrote $path"}
+        }
+    }
     case("profileEnabledAttemptsOnce") {gateCase("{\"flag\":true}",mapOf("flag" to true),TestStatus.PASS)}
     case("profileDisabledSkipsWithoutWrite") {gateCase("{\"flag\":false}",mapOf("flag" to true),TestStatus.SKIP,"flag=false")}
     case("profileMissingFieldSkipsWithoutWrite") {gateCase("{}",mapOf("flag" to true),TestStatus.SKIP,"flag missing")}
@@ -588,6 +596,23 @@ fun main() {
     case("codegenBothAsyncAppliesAndAntPass") {check(codegenReceipt(listOf(codegenStart,codegenOk)+codegenApplies,1,generatedOwners)?.applies?.size==2)}
     case("codegenWrongExtensionDoesNotPass") {check(codegenReceipt(listOf(codegenStart.copy(message="Beans XML changed: other-beans.xml [other]"),codegenOk)+codegenApplies,1,generatedOwners)==null)}
     case("codegenErrorCannotBeHiddenBySuccess") {check(runCatching {codegenReceipt(listOf(codegenStart,codegenOk,event("ERROR","Codegen: ant exit code 1",6))+codegenApplies,1,generatedOwners)}.isFailure)}
+    val itemsStart=event("INFO","Items XML changed: reclazztest-items.xml [reclazztest]",2)
+    val itemsAnt=event("OK","Codegen regen+compile done for reclazztest, model classes ready (3s). Structural reloader is applying new bytecode now.",4)
+    val itemsApply=event("STRUCTURAL_RELOAD","Structural reload: com.example.Model (v1)",3)
+    val itemsSchema=event("OK","items.xml changed, ran Update Running System (schema only); the new attributes and enum values are live. No restart, no HAC click.",5)
+    val itemsEvents=listOf(itemsStart,itemsAnt,itemsApply,itemsSchema)
+    case("itemsAntAndApplyWithoutSchemaDoNotPass") {check(!itemsReceipt(itemsEvents-itemsSchema,1,"com.example.Model"))}
+    case("itemsSchemaAndAntWithoutApplyDoNotPass") {check(!itemsReceipt(itemsEvents-itemsApply,1,"com.example.Model"))}
+    case("itemsSchemaAndApplyWithoutAntDoNotPass") {check(!itemsReceipt(itemsEvents-itemsAnt,1,"com.example.Model"))}
+    case("itemsStaleAndWrongFileDoNotPass") {
+        check(!itemsReceipt(itemsEvents,5,"com.example.Model"))
+        check(!itemsReceipt(itemsEvents.map{if(it==itemsStart) it.copy(message="Items XML changed: other-items.xml [other]") else it},1,"com.example.Model"))
+    }
+    case("itemsWrongOwnerDoesNotPass") {check(!itemsReceipt(itemsEvents,1,"other.Model"))}
+    case("itemsAsyncApplySchemaAndAntPass") {check(itemsReceipt(itemsEvents,1,"com.example.Model"))}
+    case("itemsFailedSchemaWarnCannotPass") {check(runCatching {itemsReceipt(itemsEvents+event("WARN","Automatic Update Running System could not run",6),1,"com.example.Model")}.isFailure)}
+    case("itemsInnerOnlyApplyDoesNotPass") {check(!itemsReceipt(itemsEvents.map{if(it==itemsApply) it.copy(message="Structural reload: com.example.Model (inner class)") else it},1,"com.example.Model"))}
+    case("itemsUnscopedErrorCannotPass") {check(runCatching {itemsReceipt(itemsEvents+event("ERROR","unscoped compile failure",6),1,"com.example.Model")}.isFailure)}
     cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }

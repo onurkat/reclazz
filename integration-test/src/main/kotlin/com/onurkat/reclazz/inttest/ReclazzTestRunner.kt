@@ -102,12 +102,13 @@ fun main() {
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
     val profile = System.getenv("RECLAZZ_TEST_PROFILE") ?: "default"
     if (profile != "default") {
-        if (profile != "codegen" || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
+        if (profile !in setOf("codegen", "items-attempt") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
             agentClient.disconnect()
             error("Unknown profile or RECLAZZ_TEST_ONLY combined with a profile: $profile")
         }
         // Profile preflight precedes ALL default baseline restoration writes.
-        try { report.add(BeansCodegenLiveTest(config,agentClient,httpVerifier).run()) }
+        try { report.add(if(profile == "codegen") BeansCodegenLiveTest(config,agentClient,httpVerifier).run()
+            else ItemsSchemaLiveTest(config,agentClient,httpVerifier).run()) }
         finally { agentClient.disconnect(); report.print() }
         exitProcess(if(report.hasFailures()) 1 else 0)
     }
