@@ -305,3 +305,48 @@ drain, inner schema attempt 600s, runner 900s. A native command exceeding its
 budget is preserved and recovery refuses to proceed while its writer remains.
 Portable checks: `python3 scripts/test-sap-items-snapshot.py`,
 `python3 scripts/test-sap-items-driver.py`, and the Gradle harness contracts.
+
+### Serialized static-initializer boot profile
+
+Run `python3 scripts/test-sap-statics-live.py` on the same clean installation.
+It runs three complete cycles; each has a fresh normal-option boot and a fresh
+`resetStatics=true` boot, followed by stopped recovery to the normal option.
+`--failure-control` prepends a cycle whose enabled attempt deliberately fails
+after the reload/refusal checks and runtime mutation; recovery must still pass.
+`--runs 1` is a diagnostic full cycle. Only `STATICS_PROFILE PASS` includes both
+lanes, recovery and the final default suite (44 registered, 43 PASS + Hibernate
+SKIP). Internal `statics-on`/`statics-off` results alone are not acceptance.
+
+Read-only preflight uses the running JVM's typed gates and effective config,
+requires the owned clean fixture and its immutable source baselines, and
+SKIPs before any test write if unavailable/mismatched. After the outer driver
+has written recovery files or changed the server, a failed/skipped attempt is
+a failure. The driver builds the fixture while stopped before each fresh JVM;
+it adds only `resetStatics=true` to the exact owned wrapper agent argument.
+No late attachment or option change on an already-loaded holder is used.
+
+`StaticProbe` exposes a supported static final Map literal, a nonconstant-to-
+constant refusal, an application-call refusal, an initializer invocation count,
+and unchanged runtime nonce/identity state. A controller warms both an ordinary
+Java read and a retained MethodHandle getter before each edit. The lane requires
+the exact source COMPILE/owner reload plus fresh exact per-field reset/advice
+outcomes, checks both readers and body convergence, and verifies that unrelated
+state and refused values stay unchanged. It restores the live baseline source
+and observes the rollback; the outer driver still recovers on every exit.
+
+The outer recovery folder `/private/tmp/reclazz-statics-*` retains original
+source/config bytes as hex, fixture hashes, agent hash, native logs and per-lane
+results. Recovery refuses while an inner runner survives, stops/drains native
+writers, restores the saved source and launcher/config bytes, rebuilds, verifies
+all fixture/config hashes and the unchanged agent, then proves a fresh normal
+JVM with startup values and master/junit health. This profile changes no database
+records/schema and needs no inverse DDL/database restoration. If manual recovery
+is needed, prove writers stopped first, restore the `recovery.json` originals,
+run native `ant build`, verify originals/hashes, boot with the original normal
+wrapper, then verify baseline/health/default44. Keep the private recovery folder
+until independent acceptance is complete. Timeouts: 600s build/start, 90s stop
+plus 330s writer drain, 180s inner lane, 900s runner. Timed-out writers are
+preserved and recovery refuses to race them.
+
+Portable checks: `python3 scripts/test-sap-statics-driver.py` and the Gradle
+harness contracts. Deferred field-initializer concurrency is outside this profile.

@@ -115,7 +115,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
         for ((relative, bytes) in originals) {
             val path = root.resolve(relative); Files.createDirectories(path.parent); Files.write(path, bytes)
         }
-        if (mode in setOf("delayed-first","profile-skip","items-profile-skip")) {
+        if (mode in setOf("delayed-first","profile-skip","items-profile-skip","statics-profile-skip")) {
             val path = root.resolve(fixturePaths.first())
             Files.writeString(path, Files.readString(path).replace("pong-v1", "pong-v3"))
         }
@@ -196,7 +196,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
             "RECLAZZ_TEST_EVENT_TIMEOUT" to timeout.toString(), "RECLAZZ_TEST_SETTLE_DELAY" to "0", "RECLAZZ_TEST_HTTP_TIMEOUT" to "500"))
         if(mode.endsWith("profile-skip")) {
             builder.environment().remove("RECLAZZ_TEST_ONLY")
-            builder.environment()["RECLAZZ_TEST_PROFILE"]=if(mode=="items-profile-skip") "items-attempt" else "codegen"
+            builder.environment()["RECLAZZ_TEST_PROFILE"]=when(mode) {"items-profile-skip" -> "items-attempt"; "statics-profile-skip" -> "statics-on"; else -> "codegen"}
         } else builder.environment().remove("RECLAZZ_TEST_PROFILE")
         val process = builder.redirectErrorStream(true).redirectOutput(output).start()
         check(process.waitFor(35, TimeUnit.SECONDS)) { process.destroyForcibly(); "Runner child exceeded contract deadline" }
@@ -571,6 +571,14 @@ fun main() {
             for((path,bytes) in before) check(Files.readAllBytes(child.root.resolve(path)).contentEquals(bytes)) {"Items preflight wrote $path"}
         }
     }
+    case("staticsMainSkipDoesNotRestoreDirtyFixtureBeforePreflight") {
+        ChildRun("statics-profile-skip","unused").use {child ->
+            val before=fixturePaths.associateWith {Files.readAllBytes(child.root.resolve(it))}
+            val result=child.run()
+            check(result.first==0 && "SKIP" in result.second && "agentArgsFound=false" in result.second) {result.second}
+            for((path,bytes) in before) check(Files.readAllBytes(child.root.resolve(path)).contentEquals(bytes)) {"Static preflight wrote $path"}
+        }
+    }
     case("profileEnabledAttemptsOnce") {gateCase("{\"flag\":true}",mapOf("flag" to true),TestStatus.PASS)}
     case("profileDisabledSkipsWithoutWrite") {gateCase("{\"flag\":false}",mapOf("flag" to true),TestStatus.SKIP,"flag=false")}
     case("profileMissingFieldSkipsWithoutWrite") {gateCase("{}",mapOf("flag" to true),TestStatus.SKIP,"flag missing")}
@@ -613,6 +621,31 @@ fun main() {
     case("itemsFailedSchemaWarnCannotPass") {check(runCatching {itemsReceipt(itemsEvents+event("WARN","Automatic Update Running System could not run",6),1,"com.example.Model")}.isFailure)}
     case("itemsInnerOnlyApplyDoesNotPass") {check(!itemsReceipt(itemsEvents.map{if(it==itemsApply) it.copy(message="Structural reload: com.example.Model (inner class)") else it},1,"com.example.Model"))}
     case("itemsUnscopedErrorCannotPass") {check(runCatching {itemsReceipt(itemsEvents+event("ERROR","unscoped compile failure",6),1,"com.example.Model")}.isFailure)}
+    val staticsOwner="com.example.StaticProbe"
+    val staticReset=event("INFO","Reset static $staticsOwner.CODES (initializer changed)",2)
+    val staticOff=event("WARN","Static $staticsOwner.CODES initializer changed, not reset: option-off (enable resetStatics=true); restart to apply",2)
+    val countRefusal=event("WARN","Static $staticsOwner.COUNT initializer changed, not reset: became-constant (callers inline it); restart to apply",2)
+    val callRefusal=event("WARN","Static $staticsOwner.REFUSED initializer changed, not reset: unapproved-call; restart to apply",3)
+    case("staticOnRequiresExactFreshFieldOutcome") {
+        check(staticResetReceipt(listOf(staticReset),1,staticsOwner,true,false))
+        check(!staticResetReceipt(listOf(staticReset),2,staticsOwner,true,false))
+        check(!staticResetReceipt(listOf(staticReset),1,"other.Owner",true,false))
+        check(!staticResetReceipt(listOf(staticReset.copy(message=staticReset.message.replace("CODES","OTHER"))),1,staticsOwner,true,false))
+    }
+    case("staticOffRequiresAdviceAndNeverAcceptsReset") {
+        check(staticResetReceipt(listOf(staticOff),1,staticsOwner,false,false))
+        check(!staticResetReceipt(listOf(staticReset),1,staticsOwner,false,false))
+        check(runCatching {staticResetReceipt(listOf(staticOff),1,staticsOwner,true,false)}.isFailure)
+    }
+    case("staticBothRefusalsRequired") {
+        check(staticResetReceipt(listOf(countRefusal,callRefusal),1,staticsOwner,true,true))
+        check(!staticResetReceipt(listOf(countRefusal),1,staticsOwner,true,true))
+        check(!staticResetReceipt(listOf(callRefusal),1,staticsOwner,true,true))
+    }
+    case("staticUnexpectedWarningOrErrorCannotPass") {
+        for(extra in listOf(event("WARN","Static $staticsOwner.CODES initializer changed, not reset: missing-baseline; restart to apply",3),event("ERROR","Compile failed",3)))
+            check(runCatching {staticResetReceipt(listOf(staticReset,extra),1,staticsOwner,true,false)}.isFailure)
+    }
     cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }
