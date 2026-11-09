@@ -78,6 +78,24 @@ fun main() {
         EnumTailRemoveTest(config, agentClient, httpVerifier),         // 23
         InterceptorMappingAddLiveTest(config, agentClient, httpVerifier),
         InterceptorMappingEditLiveTest(config, agentClient, httpVerifier), // Batch A discovery; never a known-failure allowance
+        SpringXmlPropertyLiveTest(config, agentClient, httpVerifier),
+        SpringXmlRefLiveTest(config, agentClient, httpVerifier),
+        SpringXmlRecreateLiveTest(config, agentClient, httpVerifier),
+        SpringXmlNewBeanLiveTest(config, agentClient, httpVerifier),
+        OccFieldSetLiveTest(config, agentClient, httpVerifier),
+        OccRequestMappingLiveTest(config, agentClient, httpVerifier),
+        OccPriorityLiveTest(config, agentClient, httpVerifier),
+        PlatformConfigLiveTest(config, agentClient, httpVerifier),
+        LocalizationLiveTest(config, agentClient, httpVerifier),
+        ProcessXmlLiveTest(config, agentClient, httpVerifier),
+        NewProcessFileFirstLiveTest(config, agentClient, httpVerifier),
+        NewProcessBeanFirstLiveTest(config, agentClient, httpVerifier),
+        CronJobLiveTest(config, agentClient, httpVerifier),
+        SapEventLiveTest(config, agentClient, httpVerifier),
+        ImpexRemoveRefusalLiveTest(config, agentClient, httpVerifier),
+        PopulatorOccLiveTest(config, agentClient, httpVerifier),
+        ValidatorBodyLiveTest(config, agentClient, httpVerifier),
+        ValidatorParameterLiveTest(config, agentClient, httpVerifier),
     )
     // RECLAZZ_TEST_ONLY=ConstructorChangeTest,CacheableConditionTest re-runs named scenarios on a fresh server.
     val only = System.getenv("RECLAZZ_TEST_ONLY")?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
@@ -88,11 +106,13 @@ fun main() {
     }
 
     val baseline = FixtureBaseline(config, agentClient, httpVerifier)
+    val batchBaseline = if(tests.any {it is BatchLiveTest}) BatchFixtureBaseline(config) else null
     try {
         for ((index, test) in tests.withIndex()) {
             println("\n[${index + 1}/${tests.size}] Running: ${test.name}")
             var restored = false
             val result = try {
+                batchBaseline?.checkBytes()
                 baseline.restore()
                 restored = true
                 test.run()
@@ -108,6 +128,8 @@ fun main() {
         catch (e: Exception) { report.add(TestResult("Final restoration", TestStatus.ERROR, 0, e.message ?: e.toString())) }
         try { baseline.checkBytes() }
         catch (e: Exception) { report.add(TestResult("Fixture bytes", TestStatus.ERROR, 0, e.message ?: e.toString())) }
+        try { batchBaseline?.checkBytes() }
+        catch (e: Exception) { report.add(TestResult("Batch A fixture bytes", TestStatus.ERROR, 0, e.message ?: e.toString())) }
         agentClient.disconnect()
         report.print()
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <bean id="reclazzBatchA" class="com.onurkat.reclazztest.batch.XmlProbe"><constructor-arg value="A"/></bean>
+    <bean id="reclazzBatchB" class="com.onurkat.reclazztest.batch.XmlProbe"><constructor-arg value="B"/></bean>
+    <bean id="reclazzBatchStable" class="com.onurkat.reclazztest.batch.XmlProbe"><constructor-arg value="stable"/></bean>
+    <bean id="reclazzBatchProperty" class="com.onurkat.reclazztest.batch.XmlProbe">
+        <constructor-arg value="property"/>
+        <property name="value" value="v1"/>
+        <property name="reference" ref="reclazzBatchA"/>
+    </bean>
+    <bean id="reclazzBatchConstructed" class="com.onurkat.reclazztest.batch.XmlProbe"><constructor-arg value="constructor-v1"/></bean>
+    <bean id="reclazzBatchHolder" class="com.onurkat.reclazztest.batch.XmlHolder"><property name="probe" ref="reclazzBatchConstructed"/></bean>
+</beans>

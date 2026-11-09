@@ -19,7 +19,7 @@ public class ProcessResourceSdkProbe {
     private static int checks;
     private static void check(boolean condition) { checks++; if (!condition) throw new AssertionError("Check " + checks); }
     public static void main(String[] args) throws Exception {
-        Path root = Path.of(args[0]);
+        Path root = Path.of(args[0]).toRealPath();
         Path known = root.resolve("flow.xml"), unrelated = root.resolve("other.xml");
         Files.writeString(known, "<process name='example'/>");
         Files.writeString(unrelated, "<process name='example'/>");
@@ -34,10 +34,15 @@ public class ProcessResourceSdkProbe {
             context.refresh(); ApplicationContextHolder.register(context);
             check(SapProcessResources.registeredFiles().equals(Set.of(known)));
             check(ChangeKind.of(known).name().equals("SAP_PROCESS_XML"));
+            Path alias = root.resolve("installed");
+            Files.createSymbolicLink(alias, root);
+            check(ChangeKind.of(alias.resolve("flow.xml")).name().equals("SAP_PROCESS_XML"));
+            check(ChangeKind.of(alias.resolve("other.xml")) == ChangeKind.UNKNOWN);
             check(ChangeKind.of(unrelated) == ChangeKind.UNKNOWN);
             check(ChangeKind.of(known.getFileName().toString()) == ChangeKind.UNKNOWN);
             Files.delete(known);
             check(ChangeKind.of(known).name().equals("SAP_PROCESS_XML"));
+            check(ChangeKind.of(alias.resolve("flow.xml")).name().equals("SAP_PROCESS_XML"));
             check(!context.getBeanFactory().containsSingleton("lazy"));
             context.close();
             check(SapProcessResources.registeredFiles().isEmpty());

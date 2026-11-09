@@ -50,7 +50,7 @@ public final class SapProcessDefinitions {
                         || bf.getClass().getMethod("getSingleton", String.class).invoke(bf, beanName) != value
                         || value.getClass().getMethod("getResource").invoke(value) != r) return null;
                 URL url = (URL) r.getClass().getMethod("getURL").invoke(r);
-                if (!"file".equals(url.getProtocol()) || !Path.of(url.toURI()).toAbsolutePath().normalize().equals(path)) return null;
+                if (!"file".equals(url.getProtocol()) || !SapProcessResources.canonical(Path.of(url.toURI())).equals(path)) return null;
                 if (springSource != null && SpringXmlResources.owners(springSource, List.of(ctx)).isEmpty()) return null;
                 return new SapProcessResources.Registration(ctx, bf, beanName, value, r, path);
             } catch (Exception | LinkageError unavailable) { return null; }
@@ -166,7 +166,9 @@ public final class SapProcessDefinitions {
     }
     private SapProcessDefinitions() { }
 
-    public record Definition(Path path, String name, String version) { }
+    public record Definition(Path path, String name, String version) {
+        public Definition { path = SapProcessResources.canonical(path); }
+    }
     private record Observed(WeakReference<Object> cache, WeakReference<Object> provider,
                             WeakReference<Object> context, Definition definition, Source source) { }
     private static final class Load {

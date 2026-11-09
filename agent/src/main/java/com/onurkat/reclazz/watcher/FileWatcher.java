@@ -402,6 +402,7 @@ public class FileWatcher {
             }
         }
 
+        scanConfigurationFiles(new LinkedHashMap<>());
         scanLoadedSpringXml(new LinkedHashMap<>());
 
         String mode = config.isAutoCompile() ? "autoCompile (watching sources)" : "default (watching classes)";
@@ -788,6 +789,7 @@ public class FileWatcher {
         long nextXmlScan = 0;
         while (active) {
             if (System.currentTimeMillis() >= nextXmlScan) {
+                scanConfigurationFiles(pendingEvents);
                 scanLoadedSpringXml(pendingEvents);
                 nextXmlScan = System.currentTimeMillis() + 1000;
             }
@@ -979,10 +981,40 @@ public class FileWatcher {
                 // handling picks it up.
             }
         }
+        found += scanConfigurationFiles(pendingEvents);
         found += scanLoadedSpringXml(pendingEvents);
         if (found > 0 && config.isVerbose()) {
             StatusReporter.info("Scan on request found " + Plural.of(found, "changed file"));
         }
+        return found;
+    }
+
+    private final Map<Path, Long> configurationMtimes = new HashMap<>();
+
+    /** Poll exact files only; never register or traverse their extension-root neighbours. */
+    int scanConfigurationFiles(Map<Path, PendingEvent> pending) {
+        Set<Path> live = new HashSet<>();
+        int found = 0;
+        for (var entry : platformContext.getConfigurationFiles().entrySet()) {
+            if (!platformContext.shouldWatch(entry.getKey())) continue;
+            for (Path file : entry.getValue()) {
+                if (config.isExcluded(file.getFileName().toString())) continue;
+                if (!live.add(file)) continue;
+                long modified = modifiedAt(file);
+                Long previous = configurationMtimes.put(file, modified);
+                if (previous == null) {
+                    if (Files.isRegularFile(file)) propertyFileBaseline.accept(file);
+                    continue;
+                }
+                if (previous == modified) continue;
+                ChangeEvent.Type type = modified == 0 ? ChangeEvent.Type.DELETED
+                        : previous == 0 ? ChangeEvent.Type.CREATED : ChangeEvent.Type.MODIFIED;
+                pending.put(file, new PendingEvent(System.currentTimeMillis(), file, type,
+                        entry.getKey(), "resources"));
+                found++;
+            }
+        }
+        configurationMtimes.keySet().retainAll(live);
         return found;
     }
 

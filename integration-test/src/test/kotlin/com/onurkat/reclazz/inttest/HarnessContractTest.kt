@@ -396,6 +396,7 @@ fun main() {
             val result = it.run(); check(result.first != 0) { result.second }; it.assertClean()
         }
     }
+    cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }
 }

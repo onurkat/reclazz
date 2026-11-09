@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class SapProcessResourceRecognitionTest {
     @TempDir Path tmp;
     private final List<GenericApplicationContext> contexts = new ArrayList<>();
-    @BeforeEach void reset() { ApplicationContextHolder.clear(); RestartLedger.clear(); }
+    @BeforeEach void reset() throws Exception { tmp = tmp.toRealPath(); ApplicationContextHolder.clear(); RestartLedger.clear(); }
     @AfterEach void close() { contexts.forEach(GenericApplicationContext::close); ApplicationContextHolder.clear(); RestartLedger.clear(); }
 
     private Path file(String name) throws Exception {
@@ -45,6 +45,29 @@ public class SapProcessResourceRecognitionTest {
         assertEquals(ChangeKind.UNKNOWN, ChangeKind.of("flow.xml"));
         assertEquals(ChangeKind.UNKNOWN, ChangeKind.of(unrelated));
         assertEquals(ChangeKind.UNKNOWN, ChangeKind.of(file("unregistered-process.xml")));
+    }
+
+    @Test void installedSymlinkRecognizesOnlyRegisteredPhysicalSourceEvenWhenMissing() throws Exception {
+        Path real=file("checkout/resources/flow.xml");
+        Path installed=tmp.resolve("installed");Files.createSymbolicLink(installed,real.getParent().getParent());
+        Path link=installed.resolve("resources");
+        register(real);
+        assertEquals(ChangeKind.SAP_PROCESS_XML,ChangeKind.of(link.resolve("flow.xml")));
+        assertEquals(ChangeKind.UNKNOWN,ChangeKind.of(link.resolve("neighbour.xml")));
+        Files.delete(real);
+        assertEquals(ChangeKind.SAP_PROCESS_XML,ChangeKind.of(link.resolve("flow.xml")));
+        Files.writeString(real,"<process/>");
+        assertEquals(ChangeKind.SAP_PROCESS_XML,ChangeKind.of(link.resolve("flow.xml")));
+        var watcher=new FileWatcher(new TestPlatform(),AgentConfig.parse(null));
+        try {
+            watcher.registerRecursive(link,"example","resources");
+            var pending=new LinkedHashMap<Path,FileWatcher.PendingEvent>();
+            watcher.scanWatchedDirectories(pending,0);assertTrue(pending.isEmpty());
+            Files.setLastModifiedTime(real,FileTime.fromMillis(Files.getLastModifiedTime(real).toMillis()+5000));
+            watcher.scanWatchedDirectories(pending,0);
+            assertEquals(Set.of(link.resolve("flow.xml")),pending.keySet());
+            pending.clear();watcher.scanLoadedSpringXml(pending);assertTrue(pending.isEmpty());
+        } finally {watcher.stopWatching();}
     }
 
     @Test void closedLazyRemoteAndNonResourceBeansAreNotClaimed() throws Exception {

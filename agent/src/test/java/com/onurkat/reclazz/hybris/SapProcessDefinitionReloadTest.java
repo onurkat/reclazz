@@ -29,6 +29,7 @@ class SapProcessDefinitionReloadTest {
     final StatusReporter.StatusListener listener = (level, message) -> messages.add(level + ":" + message);
 
     @BeforeEach void setup() throws Exception {
+        temporary = temporary.toRealPath();
         ApplicationContextHolder.clear(); ProcessTenantFixture.reset(); RestartLedger.clear(); StatusReporter.addListener(listener);
         file = temporary.resolve("flow.xml"); save("exampleA", "v1");
         context = new GenericApplicationContext();

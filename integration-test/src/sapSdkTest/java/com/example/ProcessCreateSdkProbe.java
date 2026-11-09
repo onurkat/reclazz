@@ -44,7 +44,8 @@ public final class ProcessCreateSdkProbe {
         SpringXmlResources.record(reader,new FileSystemResource(file));context.refresh();ApplicationContextHolder.register(context);return context;
     }
     static void scenario(Path directory,boolean cold) throws Exception {
-        Files.createDirectories(directory);Path source=directory.resolve("example-spring.xml"),a=directory.resolve("first-process.xml"),b=directory.resolve("second-process.xml");
+        Files.createDirectories(directory);directory=directory.toRealPath();
+        Path source=directory.resolve("example-spring.xml"),a=directory.resolve("first-process.xml"),b=directory.resolve("second-process.xml");
         Files.writeString(source,beans(""));ProcessTenantFixture.reset();var context=observed(source);var second=observed(source);
         ProcessTenantFixture.attach(context);ProcessTenantFixture.attach(second);
         var scripting=(ScriptingLanguagesService)Proxy.newProxyInstance(ProcessCreateSdkProbe.class.getClassLoader(),new Class<?>[]{ScriptingLanguagesService.class},(p,m,v)->{throw new AssertionError("No script");});

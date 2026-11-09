@@ -198,6 +198,17 @@ public class HybrisPlatformContext implements PlatformContext {
     }
 
     @Override
+    public Map<String, List<Path>> getConfigurationFiles() {
+        Map<String, List<Path>> result = new LinkedHashMap<>();
+        for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
+            if (!config.shouldWatchExtension(ext.getName())) continue;
+            if (config.isWatchAllExtensions() && !ext.isCustom()) continue;
+            result.put(ext.getName(), List.of(ext.getPath().resolve("project.properties")));
+        }
+        return result;
+    }
+
+    @Override
     public String resolveClasspath() {
         if (classpathResolver == null) {
             classpathResolver = new ClasspathResolver(hybrisContext);
@@ -342,12 +353,16 @@ public class HybrisPlatformContext implements PlatformContext {
 
     @Override
     public String resolveModuleName(Path filePath) {
+        Path physical = SapProcessResources.canonical(filePath);
+        String owner = "unknown";
         for (ExtensionInfo ext : hybrisContext.getExtensions().values()) {
-            if (filePath.startsWith(ext.getPath())) {
-                return ext.getName();
+            if (physical.startsWith(SapProcessResources.canonical(ext.getPath()))) {
+                // Two extension aliases must not bypass the selected owner's filters.
+                if (!owner.equals("unknown") && !owner.equals(ext.getName())) return "unknown";
+                owner = ext.getName();
             }
         }
-        return "unknown";
+        return owner;
     }
 
     @Override

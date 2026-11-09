@@ -1,0 +1,7 @@
+# Reserved synthetic OCC site, store and currency. No sample/customer catalogs.
+INSERT_UPDATE Currency;isocode[unique=true];symbol;active
+;RCL;R;true
+INSERT_UPDATE BaseStore;uid[unique=true];currencies(isocode);defaultCurrency(isocode);languages(isocode);defaultLanguage(isocode);net
+;reclazz-fixture;RCL;RCL;en;en;true
+INSERT_UPDATE BaseSite;uid[unique=true];stores(uid);defaultLanguage(isocode);channel(code)
+;reclazz-fixture;reclazz-fixture;en;B2C

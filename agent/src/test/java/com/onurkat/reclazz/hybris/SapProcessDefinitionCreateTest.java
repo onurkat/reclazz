@@ -33,6 +33,7 @@ class SapProcessDefinitionCreateTest {
     PlatformContext platform;
 
     @BeforeEach void setup() throws Exception {
+        temporary = temporary.toRealPath();
         ApplicationContextHolder.clear(); ProcessTenantFixture.reset(); RestartLedger.clear(); StatusReporter.addListener(listener);
         spring = temporary.resolve("example-spring.xml"); file = temporary.resolve("new-process.xml");
         Files.writeString(spring, beans(""));
@@ -76,6 +77,24 @@ class SapProcessDefinitionCreateTest {
         SapProcessDefinitions.discard(cache); StatusReporter.removeListener(listener); RestartLedger.clear();
         ProcessTenantFixture.reset();
     }
+    @Test void aliasRegistrationAndRealEditShareOneHistory() throws Exception {
+        Path alias=temporary.resolve("installed");Files.createSymbolicLink(alias,temporary);
+        xml(file,"exampleNew","v1");reload(resource("newResource",alias.resolve(file.getFileName())));
+        var first=active("exampleNew");assertNotNull(first);
+        xml(file,"exampleNew","v2");
+        assertEquals(PlatformChangeHandler.Outcome.HANDLED,apply(file,"MODIFIED"));
+        assertEquals("v2",active("exampleNew").graph());assertEquals("v1",first.graph());
+    }
+    @Test void missingAliasSourceRecoversAfterMalformedRealWrite() throws Exception {
+        Path alias=temporary.resolve("installed");Files.createSymbolicLink(alias,temporary);
+        reload(resource("newResource",alias.resolve(file.getFileName())));absent("exampleNew");
+        Files.writeString(file,"<process>");
+        assertEquals(PlatformChangeHandler.Outcome.ADVICE,apply(file,"CREATED"));absent("exampleNew");
+        xml(file,"exampleNew","v1");
+        assertEquals(PlatformChangeHandler.Outcome.HANDLED,apply(file,"MODIFIED"));
+        assertEquals("v1",active("exampleNew").graph());
+    }
+
     @Test void warmCacheXmlThenBeanRegistersAndStarts() throws Exception {
         xml(file,"exampleNew","v1"); reload(resource("newResource",file));
         assertNotNull(active("exampleNew"),"New native name must resolve after the save");

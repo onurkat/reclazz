@@ -25,6 +25,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- SAP Commerce extension-root project.properties edits are watched and baselined
+  without recursively watching extension roots. Registered process resources use
+  the same physical identity through installed symlinks, including both new-file
+  save orders; module filters and exact native resource ownership still apply.
+
 - SAP interceptor reloads retain each owner's native registry and mapping identities,
   including the registry cached by ModelService. Watched XML mapping additions and
   setter-based ref/type edits update those registries in place. Mapping definitions

@@ -17,7 +17,18 @@ public final class SapProcessResources {
     private SapProcessResources() { }
 
     public static boolean isRegistered(Path file) {
-        return registeredFiles().contains(file.toAbsolutePath().normalize());
+        return registeredFiles().contains(canonical(file));
+    }
+
+    /** Physical identity also before file-first/bean-first creation and after deletion. */
+    public static Path canonical(Path file) {
+        Path absolute = file.toAbsolutePath().normalize();
+        try {
+            return absolute.toRealPath();
+        } catch (java.io.IOException | SecurityException missing) {
+            Path parent = absolute.getParent();
+            return parent == null ? absolute : canonical(parent).resolve(absolute.getFileName());
+        }
     }
 
     /** No retained context/classloader, lazy bean creation, parsing or remote URL access. */
@@ -49,7 +60,7 @@ public final class SapProcessResources {
                         if (resource == null) continue;
                         URL url = (URL) resource.getClass().getMethod("getURL").invoke(resource);
                         if (!"file".equals(url.getProtocol())) continue;
-                        Path path = Path.of(url.toURI()).toAbsolutePath().normalize();
+                        Path path = canonical(Path.of(url.toURI()));
                         if (path.getFileName() != null && path.getFileName().toString().endsWith(".xml"))
                             registrations.add(new Registration(context, factory, name, bean, resource, path));
                     } catch (Exception | LinkageError unavailable) {

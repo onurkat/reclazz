@@ -14,6 +14,8 @@ repositories {
 dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
+    // Test runner only; same parsed-JSON version already used by the agent tests.
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.3")
 }
 
 application {

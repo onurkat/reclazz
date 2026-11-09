@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.hybris.de/xsd/processdefinition" name="reclazz-process-existing" start="v1"
+         processClass="de.hybris.platform.processengine.model.BusinessProcessModel">
+    <wait id="v1" then="end-v1" prependProcessCode="true"><event>reclazzBatchContinue</event></wait>
+    <wait id="v2" then="end-v2" prependProcessCode="true"><event>reclazzBatchContinue</event></wait>
+    <end id="end-v1" state="SUCCEEDED">process-v1</end>
+    <end id="end-v2" state="SUCCEEDED">process-v2</end>
+</process>

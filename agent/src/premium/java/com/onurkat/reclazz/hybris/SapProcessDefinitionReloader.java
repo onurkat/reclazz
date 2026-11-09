@@ -20,7 +20,7 @@ public final class SapProcessDefinitionReloader implements PlatformChangeHandler
     private static final String PREFIX = "de.hybris.platform.processengine.definition.";
 
     @Override public Outcome handle(Change change) {
-        Path path = change.path().toAbsolutePath().normalize();
+        Path path = SapProcessResources.canonical(change.path());
         if ("DELETED".equals(change.eventType())) {
             SapProcessDefinitions.forget(path);
             return new AdviceOnlyChangeHandler().handle(change);

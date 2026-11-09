@@ -59,6 +59,11 @@ public interface PlatformContext {
      */
     Map<String, List<Path>> getResourceDirs();
 
+    /** Exact configuration files outside recursive resource roots. */
+    default Map<String, List<Path>> getConfigurationFiles() {
+        return Map.of();
+    }
+
     /**
      * Resolve the full classpath for incremental compilation.
      */

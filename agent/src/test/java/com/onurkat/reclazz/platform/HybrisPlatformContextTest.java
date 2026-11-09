@@ -192,6 +192,33 @@ class HybrisPlatformContextTest {
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
+    @Test
+    void realAndInstalledPathsResolveSameModuleIncludingMissingSource() throws Exception {
+        Path real = Files.createDirectories(tempDir.resolve("checkout/resources/process"));
+        Path link = tempDir.resolve("bin/custom/example"); Files.createDirectories(link.getParent());
+        Files.createSymbolicLink(link, real.getParent().getParent());
+        setField(hybrisContext,"extensions",Map.of("example", new ExtensionInfo("example",link,List.of(),true,false,true)));
+        Path source = real.resolve("new.xml");
+        assertEquals("example",ctx.resolveModuleName(source));
+        Files.writeString(source,"<process/>");
+        assertEquals("example",ctx.resolveModuleName(source));
+        assertEquals("example",ctx.resolveModuleName(link.resolve("resources/process/new.xml")));
+        assertEquals("unknown",ctx.resolveModuleName(tempDir.resolve("neighbour/new.xml")));
+        Path outside = Files.createDirectories(tempDir.resolve("outside"));
+        Files.createSymbolicLink(real.resolve("escape"),outside);
+        assertEquals("unknown",ctx.resolveModuleName(real.resolve("escape/unregistered.xml")));
+    }
+
+    @Test
+    void ambiguousPhysicalExtensionOwnerIsNotAdmitted() throws Exception {
+        Path real=Files.createDirectories(tempDir.resolve("checkout"));
+        Path a=tempDir.resolve("alias-a"),b=tempDir.resolve("alias-b");
+        Files.createSymbolicLink(a,real);Files.createSymbolicLink(b,real);
+        setField(hybrisContext,"extensions",Map.of("a",new ExtensionInfo("a",a,List.of(),true,false,true),
+                "b",new ExtensionInfo("b",b,List.of(),true,false,true)));
+        assertEquals("unknown",ctx.resolveModuleName(real.resolve("new.xml")));
+    }
+
     private static void setField(Object target, String fieldName, Object value) throws Exception {
         Field f = findField(target.getClass(), fieldName);
         f.setAccessible(true);
