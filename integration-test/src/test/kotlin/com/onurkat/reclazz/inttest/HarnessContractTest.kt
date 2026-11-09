@@ -2,6 +2,8 @@ package com.onurkat.reclazz.inttest
 
 import com.onurkat.reclazz.inttest.client.AgentEventClient
 import com.onurkat.reclazz.inttest.http.HttpVerifier
+import com.onurkat.reclazz.inttest.tests.*
+import com.onurkat.reclazz.inttest.client.AgentEvent
 import com.onurkat.reclazz.inttest.tests.afterVersionConverges
 import com.onurkat.reclazz.inttest.tests.latestVerificationSample
 import com.onurkat.reclazz.inttest.tests.BatchLiveTest
@@ -113,7 +115,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
         for ((relative, bytes) in originals) {
             val path = root.resolve(relative); Files.createDirectories(path.parent); Files.write(path, bytes)
         }
-        if (mode == "delayed-first") {
+        if (mode in setOf("delayed-first","profile-skip")) {
             val path = root.resolve(fixturePaths.first())
             Files.writeString(path, Files.readString(path).replace("pong-v1", "pong-v3"))
         }
@@ -123,6 +125,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
             val n = requests.incrementAndGet(); val path = exchange.requestURI.path
             if (path.endsWith("/multi") || path.endsWith("/ping")) firstRequest.compareAndSet(0, System.nanoTime())
             val pair = when {
+                mode == "profile-skip" && path.endsWith("/batch/gates") -> 200 to "{\"agentArgsFound\":false}"
                 path.endsWith("/impex-title") -> 200 to db.get()
                 path.endsWith("/multi") -> 200 to "helper-v2:service-v2"
                 mode == "poll-stale" -> 503 to "last-stale-body"
@@ -191,6 +194,10 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
         builder.environment().putAll(mapOf("RECLAZZ_TEST_EXT_PATH" to root.toString(), "RECLAZZ_TEST_PORT_FILE" to eventServer.portFile.toString(),
             "RECLAZZ_TEST_BASE_URL" to "http://127.0.0.1:${http.address.port}", "RECLAZZ_TEST_ONLY" to scenario,
             "RECLAZZ_TEST_EVENT_TIMEOUT" to timeout.toString(), "RECLAZZ_TEST_SETTLE_DELAY" to "0", "RECLAZZ_TEST_HTTP_TIMEOUT" to "500"))
+        if(mode=="profile-skip") {
+            builder.environment().remove("RECLAZZ_TEST_ONLY")
+            builder.environment()["RECLAZZ_TEST_PROFILE"]="codegen"
+        } else builder.environment().remove("RECLAZZ_TEST_PROFILE")
         val process = builder.redirectErrorStream(true).redirectOutput(output).start()
         check(process.waitFor(35, TimeUnit.SECONDS)) { process.destroyForcibly(); "Runner child exceeded contract deadline" }
         return process.exitValue() to output.readText()
@@ -534,6 +541,53 @@ fun main() {
         }
     }
     case("resourceDefaultIdenticalSaveSkipsWriteAndTerminalWait") {resourceSaveCase("default") {_,_,_->}}
+    fun gateCase(body:String,required:Map<String,Boolean>,expected:TestStatus,reason:String?=null,breakAfterWrite:Boolean=false) {
+        val root=Files.createTempDirectory("profile-gate-contract-");val target=root.resolve("owned");Files.writeString(target,"baseline")
+        var attempts=0
+        try {
+            val result=runGatedProfile("profile-contract",{profileGateReason(batchJson.readTree(body),required)}) {
+                attempts++
+                withRestore({Files.writeString(target,"changed");if(breakAfterWrite) error("after-write failure")}) {Files.writeString(target,"baseline")}
+            }
+            check(result.status==expected) {result.toString()}
+            check(attempts==if(expected==TestStatus.SKIP) 0 else 1)
+            check(Files.readString(target)=="baseline")
+            if(reason!=null) check(reason in result.notes) {result.toString()}
+        } finally {root.toFile().deleteRecursively()}
+    }
+    case("profileMainSkipDoesNotRestoreDirtyFixtureBeforePreflight") {
+        ChildRun("profile-skip","unused").use {child ->
+            val before=fixturePaths.associateWith {Files.readAllBytes(child.root.resolve(it))}
+            val result=child.run()
+            check(result.first==0 && "SKIP" in result.second && "agentArgsFound=false" in result.second) {result.second}
+            for((path,bytes) in before) check(Files.readAllBytes(child.root.resolve(path)).contentEquals(bytes)) {"Preflight wrote $path"}
+        }
+    }
+    case("profileEnabledAttemptsOnce") {gateCase("{\"flag\":true}",mapOf("flag" to true),TestStatus.PASS)}
+    case("profileDisabledSkipsWithoutWrite") {gateCase("{\"flag\":false}",mapOf("flag" to true),TestStatus.SKIP,"flag=false")}
+    case("profileMissingFieldSkipsWithoutWrite") {gateCase("{}",mapOf("flag" to true),TestStatus.SKIP,"flag missing")}
+    case("profileMissingAgentArgumentSkipsWithoutWrite") {gateCase("{\"agentArgsFound\":false}",mapOf("agentArgsFound" to true),TestStatus.SKIP,"agentArgsFound=false")}
+    case("profileWrongTypeIsNotFalseBoolean") {gateCase("{\"flag\":\"false\"}",mapOf("flag" to false),TestStatus.SKIP,"not boolean")}
+    case("profileMismatchedOnValueSkipsOffProfile") {gateCase("{\"flag\":true}",mapOf("flag" to false),TestStatus.SKIP,"requires false")}
+    case("profileFailureAfterWriteIsFailAndRestores") {gateCase("{\"flag\":true}",mapOf("flag" to true),TestStatus.FAIL,"after-write failure",true)}
+    case("profileRestoreFailureIsFail") {
+        val result=runGatedProfile("restore-contract",{null}) {withRestore({Unit}) {error("restore failure")}}
+        check(result.status==TestStatus.FAIL && "restore failure" in result.notes)
+    }
+    case("defaultMembershipRetainsCommitted44") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==44)}
+    case("defaultMembershipRejectsMissingOrika") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OrikaPropertyRollbackLiveTest").toList())}.isFailure)}
+    case("defaultMembershipRejectsSameCountReplacement") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OrikaPropertyRollbackLiveTest"+"FakeTest").toList())}.isFailure)}
+    val generatedOwners=setOf("com.example.Data","com.example.Dto")
+    fun event(level:String,message:String,n:Long)=AgentEvent(level,message,"contract",n)
+    val codegenStart=event("INFO","Beans XML changed: reclazztest-beans.xml [reclazztest]",2)
+    val codegenOk=event("OK","Codegen regen+compile done for reclazztest, DTOs ready (3s). Structural reloader is applying new bytecode now.",4)
+    val codegenApplies=listOf(event("STRUCTURAL_RELOAD","Structural reload: com.example.Data (v1)",3),event("STRUCTURAL_RELOAD","Structural reload: com.example.Dto (v1)",5))
+    case("codegenAntSuccessAloneDoesNotPass") {check(codegenReceipt(listOf(codegenStart,codegenOk),1,generatedOwners)==null)}
+    case("codegenPartialOrWrongOwnerDoesNotPass") {check(codegenReceipt(listOf(codegenStart,codegenOk,codegenApplies[0],event("RELOAD","Reloaded other.Dto",6)),1,generatedOwners)==null)}
+    case("codegenStaleReceiptsDoNotPass") {check(codegenReceipt(listOf(codegenStart,codegenOk)+codegenApplies,5,generatedOwners)==null)}
+    case("codegenBothAsyncAppliesAndAntPass") {check(codegenReceipt(listOf(codegenStart,codegenOk)+codegenApplies,1,generatedOwners)?.applies?.size==2)}
+    case("codegenWrongExtensionDoesNotPass") {check(codegenReceipt(listOf(codegenStart.copy(message="Beans XML changed: other-beans.xml [other]"),codegenOk)+codegenApplies,1,generatedOwners)==null)}
+    case("codegenErrorCannotBeHiddenBySuccess") {check(runCatching {codegenReceipt(listOf(codegenStart,codegenOk,event("ERROR","Codegen: ant exit code 1",6))+codegenApplies,1,generatedOwners)}.isFailure)}
     cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }

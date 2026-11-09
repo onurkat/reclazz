@@ -135,10 +135,11 @@ abstract class BatchLiveTest(name: String, config: TestConfig, client: AgentEven
         check(rows.isArray && rows.size() > 0 && rows.map { it["owner"].asInt() }.toSet() == (1..rows.size()).toSet())
         return rows
     }
-    protected fun xmlWrite(path: Path, bytes: ByteArray, ownerCount: Int, scopes: List<String> = listOf(path.fileName.toString())) {
+    protected fun xmlWrite(path: Path, bytes: ByteArray, ownerCount: Int, scopes: List<String> = listOf(path.fileName.toString()),
+        timeoutMs: Long = config.eventTimeoutMs) {
         val mark = agentClient.cursor()
         if (!writeChanged(path, bytes)) return
-        val outcomes = agentClient.waitForSpringXmlOutcomes(config.eventTimeoutMs, path.fileName.toString(), mark, ownerCount)
+        val outcomes = agentClient.waitForSpringXmlOutcomes(timeoutMs, path.fileName.toString(), mark, ownerCount)
         check(outcomes.none { "require restart" in it.message }) { "XML requires restart: $outcomes" }
         resourceFailure(agentClient.getEvents().filter { it.sequence > mark && it.sequence <= outcomes.last().sequence }, scopes) {
             it.level == "WARN" && it.message.startsWith("Note: existing @Autowired consumers won't see 'reclazzBatch")

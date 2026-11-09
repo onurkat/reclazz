@@ -28,8 +28,38 @@ public class BatchVerificationController {
     public Map<String, Boolean> gates() throws ReflectiveOperationException {
         Class<?> agent = Class.forName("com.onurkat.reclazz.agent.ReclazzAgent", false, ClassLoader.getSystemClassLoader());
         Object config = agent.getMethod("getConfig").invoke(null);
-        return Map.of("autoUpdateRunningSystem", (Boolean) config.getClass().getMethod("isAutoUpdateRunningSystem").invoke(config),
-                "impexAllowRemove", (Boolean) config.getClass().getMethod("isImpexAllowRemove").invoke(config));
+        var result = new LinkedHashMap<String, Boolean>();
+        result.put("autoUpdateRunningSystem", (Boolean) config.getClass().getMethod("isAutoUpdateRunningSystem").invoke(config));
+        result.put("impexAllowRemove", (Boolean) config.getClass().getMethod("isImpexAllowRemove").invoke(config));
+        // Identify this agent's exact code source; never expose command-line arguments.
+        String prefix;
+        try { prefix = "-javaagent:" + java.nio.file.Path.of(agent.getProtectionDomain().getCodeSource().getLocation().toURI()); }
+        catch (java.net.URISyntaxException e) { throw new IllegalStateException(e); }
+        final String expected = prefix;
+        var arguments = java.lang.management.ManagementFactory.getRuntimeMXBean().getInputArguments().stream()
+                .filter(value -> value.equals(expected) || value.startsWith(expected + "=")).toList();
+        boolean found = arguments.size() == 1;
+        result.put("agentArgsFound", found);
+        Object launched = found ? config.getClass().getMethod("parse", String.class).invoke(null,
+                arguments.get(0).length() == expected.length() ? "" : arguments.get(0).substring(expected.length() + 1)) : null;
+        boolean matches = found;
+        for (String option : List.of("resetStatics", "autoSolrReindex", "impexAllowRemove", "autoUpdateRunningSystem", "autoCompile")) {
+            String getter = "is" + Character.toUpperCase(option.charAt(0)) + option.substring(1);
+            boolean liveValue = (Boolean) config.getClass().getMethod(getter).invoke(config);
+            boolean launchedValue = found && (Boolean) config.getClass().getMethod(getter).invoke(launched);
+            result.put(option.equals("autoUpdateRunningSystem") ? "launchedAutoUpdateRunningSystem" :
+                    option.equals("impexAllowRemove") ? "launchedImpexAllowRemove" : option, launchedValue);
+            matches &= found && liveValue == launchedValue;
+        }
+        result.put("agentOptionsMatchConfig", matches);
+        var field = agent.getDeclaredField("platformContext"); field.setAccessible(true);
+        Object platform = field.get(null);
+        var resources = (Map<?, ?>) platform.getClass().getMethod("getResourceDirs").invoke(platform);
+        var generated = (Map<?, ?>) platform.getClass().getMethod("getGeneratedClassDirs").invoke(platform);
+        result.put("codegenExtensionLoaded", resources.containsKey("reclazztest"));
+        Object roots = generated.get("__platform_bootstrap__");
+        result.put("codegenGeneratedRoots", roots instanceof List<?> && !((List<?>) roots).isEmpty());
+        return result;
     }
     @GetMapping("/resource-owners")
     public List<Map<String, Object>> resourceOwners(@RequestParam("file") String filename) {

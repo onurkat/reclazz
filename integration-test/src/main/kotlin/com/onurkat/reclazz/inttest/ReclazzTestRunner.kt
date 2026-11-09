@@ -98,6 +98,19 @@ fun main() {
         ValidatorBodyLiveTest(config, agentClient, httpVerifier),
         ValidatorParameterLiveTest(config, agentClient, httpVerifier),
     )
+    requireDefaultMembership(allTests.map { it::class.simpleName!! })
+    println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
+    val profile = System.getenv("RECLAZZ_TEST_PROFILE") ?: "default"
+    if (profile != "default") {
+        if (profile != "codegen" || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
+            agentClient.disconnect()
+            error("Unknown profile or RECLAZZ_TEST_ONLY combined with a profile: $profile")
+        }
+        // Profile preflight precedes ALL default baseline restoration writes.
+        try { report.add(BeansCodegenLiveTest(config,agentClient,httpVerifier).run()) }
+        finally { agentClient.disconnect(); report.print() }
+        exitProcess(if(report.hasFailures()) 1 else 0)
+    }
     // RECLAZZ_TEST_ONLY=ConstructorChangeTest,CacheableConditionTest re-runs named scenarios on a fresh server.
     val only = System.getenv("RECLAZZ_TEST_ONLY")?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()
     val tests = if (only.isEmpty()) allTests else allTests.filter { it::class.simpleName in only }
