@@ -39,6 +39,11 @@ final class XmlSafetyClassifier {
     private XmlSafetyClassifier() {}
 
     static void classify(Object liveFactory, Object tempFactory, Path xmlPath, BeanDefinitionDiff out) {
+        classify(liveFactory, tempFactory, xmlPath, out, java.util.Map.of());
+    }
+
+    static void classify(Object liveFactory, Object tempFactory, Path xmlPath, BeanDefinitionDiff out,
+                         Map<Object, Object[]> rawProperties) {
         String[] newNames = SpringReflection.getBeanDefinitionNames(tempFactory);
         Set<String> newNameSet = new HashSet<>();
 
@@ -87,7 +92,7 @@ final class XmlSafetyClassifier {
                 continue;
             }
 
-            collectPropertyChanges(liveFactory, beanName, liveBd, newBd, out);
+            collectPropertyChanges(liveFactory, beanName, liveBd, newBd, out, rawProperties);
         }
 
         detectRemovals(liveFactory, xmlPath, newNameSet, out);
@@ -215,9 +220,10 @@ final class XmlSafetyClassifier {
     }
 
     private static void collectPropertyChanges(Object liveFactory, String beanName, Object liveBd, Object newBd,
-                                                BeanDefinitionDiff out) {
+                                                BeanDefinitionDiff out, Map<Object, Object[]> rawProperties) {
         Object[] newPvs = SpringReflection.getPropertyValueArray(SpringReflection.getPropertyValues(newBd));
-        Object[] livePvs = SpringReflection.getPropertyValueArray(SpringReflection.getPropertyValues(liveBd));
+        Object[] livePvs = rawProperties.get(liveBd);
+        if (livePvs == null) livePvs = SpringReflection.getPropertyValueArray(SpringReflection.getPropertyValues(liveBd));
 
         Map<String, Object> liveByName = new HashMap<>();
         for (Object pv : livePvs) {

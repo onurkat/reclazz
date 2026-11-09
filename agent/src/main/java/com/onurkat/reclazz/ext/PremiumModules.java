@@ -89,6 +89,14 @@ public final class PremiumModules implements PlatformChangeHandler, StructuralRe
         }
     }
 
+    public com.onurkat.reclazz.platform.XmlBeanLifecycle.Pending beforeXmlBean(
+            Object context, String name, Object previous) {
+        Registration entry = registered.get(Capability.INTERCEPTOR_REFRESH);
+        if (entry != null && request(Capability.INTERCEPTOR_REFRESH).granted())
+            return entry.module().xmlBeanLifecycle().before(context, name, previous);
+        return com.onurkat.reclazz.platform.XmlBeanLifecycle.NONE.before(context, name, previous);
+    }
+
     public PremiumModule.PreparedRefresh prepareInterceptor(String className, List<Object> contexts) {
         Registration entry = registered.get(Capability.INTERCEPTOR_REFRESH);
         if (entry != null && request(Capability.INTERCEPTOR_REFRESH).granted()) {
@@ -98,5 +106,11 @@ public final class PremiumModules implements PlatformChangeHandler, StructuralRe
         StatusReporter.warn(className + ": " + reason);
         RestartLedger.note(className, reason);
         return null;
+    }
+
+    public Set<String> preservedSingletons(Object owner) throws Exception {
+        Registration entry = registered.get(Capability.INTERCEPTOR_REFRESH);
+        return entry != null && request(Capability.INTERCEPTOR_REFRESH).granted()
+                ? entry.module().preservedSingletons().names(owner) : Set.of();
     }
 }

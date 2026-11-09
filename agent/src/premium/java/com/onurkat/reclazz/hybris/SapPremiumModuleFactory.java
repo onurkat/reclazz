@@ -99,11 +99,74 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                 @Override public java.util.Set<Capability> capabilities() { return capabilities; }
                 @Override public java.util.Map<Capability, PlatformChangeHandler> changeHandlers() { return handlers; }
                 @Override public boolean reindex(Class<?> type) { return solr != null && solr.enqueue(type); }
-                @Override public PreparedRefresh prepareInterceptor(String name, List<Object> contexts) {
-                    var refresh = interceptors == null ? null : interceptors.prepare(name, contexts);
-                    return refresh == null ? null : refresh::complete;
+                @Override public com.onurkat.reclazz.platform.XmlBeanLifecycle xmlBeanLifecycle() {
+                    if (!sap) return com.onurkat.reclazz.platform.XmlBeanLifecycle.NONE;
+                    var mappings = new com.onurkat.reclazz.hybris.interceptor.XmlInterceptorMappings();
+                    return (owner, name, previous) -> {
+                        if (previous != null && !com.onurkat.reclazz.hybris.interceptor.XmlInterceptorMappings.isMapping(previous))
+                            return com.onurkat.reclazz.platform.XmlBeanLifecycle.NONE.before(owner, name, previous);
+                        // New beans need no pre-state; avoid touching native infrastructure for ordinary beans.
+                        if (previous == null) return (current, applied) -> {
+                            if (!com.onurkat.reclazz.hybris.interceptor.XmlInterceptorMappings.isMapping(current)) return;
+                            try { SapOwnerScope.execute(owner, () -> {
+                                mappings.before(owner, name, null).complete(current, applied); return null;
+                            }); } catch (Exception failure) { xmlMappingFailure(name, failure); }
+                        };
+                        // Scope each half to its real owner, never the caller's current/master tenant.
+                        try {
+                            var pending = (com.onurkat.reclazz.platform.XmlBeanLifecycle.Pending)
+                                    SapOwnerScope.execute(owner, () -> mappings.before(owner, name, previous));
+                            return (current, applied) -> {
+                                if (previous == null && !com.onurkat.reclazz.hybris.interceptor.XmlInterceptorMappings.isMapping(current)) return;
+                                try { SapOwnerScope.execute(owner, () -> { pending.complete(current, applied); return null; }); }
+                                catch (Exception failure) { xmlMappingFailure(name, failure); }
+                            };
+                        } catch (Exception failure) {
+                            if (previous != null) xmlMappingFailure(name, failure);
+                            return (current, applied) -> {
+                                if (com.onurkat.reclazz.hybris.interceptor.XmlInterceptorMappings.isMapping(current))
+                                    xmlMappingFailure(name, failure);
+                            };
+                        }
+                    };
                 }
+                @Override public com.onurkat.reclazz.platform.PreservedSingletons preservedSingletons() {
+                    return sap ? com.onurkat.reclazz.hybris.interceptor.InterceptorSingletons::preserved
+                            : com.onurkat.reclazz.platform.PreservedSingletons.NONE;
+                }
+                @Override public PreparedRefresh prepareInterceptor(String name, List<Object> contexts) {
+                    if (interceptors == null) return null;
+                    var pending = new java.util.ArrayList<PreparedRefresh>();
+                    var seen = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
+                    for (Object owner : contexts) {
+                        try {
+                            Object factory = owner.getClass().getMethod("getBeanFactory").invoke(owner);
+                            if (!seen.add(factory)) continue;
+                            ClassLoader loader = (ClassLoader) owner.getClass().getMethod("getClassLoader").invoke(owner);
+                            Class<?> type = Class.forName(name, false, loader);
+                            String[] beans = (String[]) owner.getClass().getMethod("getBeanNamesForType", Class.class).invoke(owner, type);
+                            boolean local = false;
+                            for (String bean : beans) if (Boolean.TRUE.equals(factory.getClass().getMethod("containsBeanDefinition", String.class).invoke(factory, bean))) local = true;
+                            if (!local) continue;
+                            var refresh = (InterceptorReloader.Refresh) SapOwnerScope.execute(owner,
+                                    () -> interceptors.prepareInContext(name, owner, loader));
+                            pending.add(() -> {
+                                try { return (Boolean) SapOwnerScope.execute(owner, refresh::complete); }
+                                catch (Exception failure) { xmlMappingFailure(name, failure); return false; }
+                            });
+                        } catch (Exception failure) { xmlMappingFailure(name, failure); pending.add(() -> false); }
+                    }
+                    return () -> { boolean success = !pending.isEmpty(); for (var refresh : pending) success &= refresh.complete(); return success; };
+                }
+
             };
+        }
+
+        private static void xmlMappingFailure(String name, Exception failure) {
+            String reason = "interceptor mapping registration failed; restart required: "
+                    + com.onurkat.reclazz.ui.Failures.describe(failure);
+            StatusReporter.warn("Spring bean " + name + ": " + reason);
+            RestartLedger.note(name, reason);
         }
 
         private static ChangeEvent changeEvent(PlatformChangeHandler.Change change) {

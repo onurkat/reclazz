@@ -19,11 +19,18 @@ class InterceptorReloadTest(
     override fun run(): TestResult {
         val start = System.currentTimeMillis()
         return try {
+            fun identity() {
+                val proof = httpVerifier.get("${config.testEndpointBase}/mapping-probe/registry-proof", budgetMs=config.eventTimeoutMs)
+                println("    Registry identity proof: HTTP ${proof.statusCode}: ${proof.body}")
+                registryIdentityFailure(proof)?.let { error(it) }
+            }
+            identity()
             reloadTemplate(
                 "${config.srcDir}/com/onurkat/reclazztest/interceptors/TestValidateInterceptor.java",
                 "TestValidateInterceptor_v2.java.txt"
             )
 
+            identity()
             val nonce = java.util.UUID.randomUUID().toString()
             // Exactly one actual model save per nonce; rollback cannot undo external side effects.
             // The class's correlated reload is the readiness barrier for this single shot.

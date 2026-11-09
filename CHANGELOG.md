@@ -25,6 +25,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- SAP interceptor reloads retain each owner's native registry and mapping identities,
+  including the registry cached by ModelService. Watched XML mapping additions and
+  setter-based ref/type edits update those registries in place. Mapping definitions
+  requiring recreation still need a restart; registration failures retain restart advice.
+  Preservation discovery uses initialized owner-local native types, so contexts without
+  SDK visibility still refresh ordinary beans; a discovery failure leaves that owner's
+  singleton intact and does not block the remaining owners.
+  XML property edits reach every owner even when definitions are shared; failed
+  owners remain retryable, and existing and new consumers see updated lazy definitions.
+  Same-save property refs follow edited dependencies; failed prerequisites defer
+  their consumers for retry while independent changes continue. Cyclic edits
+  retain XML order and advise a restart.
+
 - Batched reloads install native constructor updates before recreating Spring
   singletons. Framework work and reload effects stay scoped to each class;
   failed native updates skip that class's framework refresh.
@@ -36,7 +49,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - The live SAP regression runner correlates each source's compile and reload,
   waits for all changed classes, polls HTTP status and behavior, and restores
   committed fixture bytes and the synthetic ImpEx baseline after each run.
-  Portable contract checks reject stale events, stale data and incomplete restores.
+  A source's own Spring bean refresh failure fails its scenario even if class reload
+  succeeds. Portable contract checks reject stale events, stale data and incomplete restores.
 
 ## [1.5.0] - 2026-11-08
 

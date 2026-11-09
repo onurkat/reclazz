@@ -76,6 +76,8 @@ fun main() {
         LambdaReloadTest(config, agentClient, httpVerifier),           // 21
         CacheableConditionTest(config, agentClient, httpVerifier),     // 22
         EnumTailRemoveTest(config, agentClient, httpVerifier),         // 23
+        InterceptorMappingAddLiveTest(config, agentClient, httpVerifier),
+        InterceptorMappingEditLiveTest(config, agentClient, httpVerifier), // Batch A discovery; never a known-failure allowance
     )
     // RECLAZZ_TEST_ONLY=ConstructorChangeTest,CacheableConditionTest re-runs named scenarios on a fresh server.
     val only = System.getenv("RECLAZZ_TEST_ONLY")?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }.orEmpty()

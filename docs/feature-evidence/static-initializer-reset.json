@@ -64,7 +64,7 @@
     "agent/src/test/java/com/onurkat/reclazz/e2e/StaticInitializerResetReloadTest.java": "45c160d7d9cb86971aa7bbceda3cf309765bf32d8a00064353870aaa08ac5f29",
     "agent/src/test/java/com/onurkat/reclazz/reload/StaticInitializerResetTest.java": "eb0d29c866081e07af3dbf61b08acf78b092070e39d992f678ab17e13cae5d54",
     "agent/src/main/java/com/onurkat/reclazz/agent/ClassReloader.java": "dbe39f267f56c8190152d610c812b2bb53d9fca8fccca5bd8c079d2b2451877c",
-    "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "874c573e9788237b53cc570f2bcfd8af36c1bb904c018d05a8f32963ca25e7e9",
+    "agent/src/main/java/com/onurkat/reclazz/agent/ReclazzAgent.java": "e87bb1d50dfff403cbf2ce70fc55fcf7028a94c9132f5460d4ff673f438dde49",
     "agent/src/main/java/com/onurkat/reclazz/config/AgentConfig.java": "9a04f376a7752af3c37abef49424dc157a34c1fefc792ffdd89b508b770b7f39",
     "agent/src/main/java/com/onurkat/reclazz/reload/StructuralReloader.java": "51d541346cdef5ce50f4a0a23e85b1daf5b1a521eb1b73b8d47d4ca9b80fcc07",
     "agent/src/main/java/com/onurkat/reclazz/transform/ReclazzTransformer.java": "6feb81f6babc92c1994db5c21e616f4baeb02575684f49bf3ff7d3916ce7d8e5",

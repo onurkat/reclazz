@@ -34,16 +34,14 @@ public class InterceptorReloader {
     }
 
     // Exercises the actual SAP registry SPI without starting a database in SDK contract tests.
-    Refresh prepareInContext(String className, Object context, ClassLoader loader) {
+    public Refresh prepareInContext(String className, Object context, ClassLoader loader) {
         List<MappingChange> changes = new ArrayList<>();
         try {
             Class<?> type = Class.forName(className, false, loader);
             Class<?> mappingType = Class.forName(MAPPING, false, loader);
             Method getBean = context.getClass().getMethod("getBean", String.class);
             Method names = context.getClass().getMethod("getBeanNamesForType", Class.class);
-            Object registry = getBean.invoke(context, "interceptorRegistry");
-            Method register = registry.getClass().getMethod("registerInterceptor", mappingType);
-            Method unregister = registry.getClass().getMethod("unregisterInterceptor", mappingType);
+            List<Object> registries = InterceptorRegistries.resolve(context);
             String[] beanNames = (String[]) names.invoke(context, type);
             for (String name : (String[]) names.invoke(context, mappingType)) {
                 Object mapping = getBean.invoke(context, name);
@@ -52,22 +50,21 @@ public class InterceptorReloader {
                     if (target == getBean.invoke(context, beanName)
                             || (beanNames.length == 1 && type.isInstance(target))) {
                         changes.add(new MappingChange(context, getBean, name, beanName,
-                                mapping, target, registry, register, unregister, mappingType));
+                                mapping, target, registries, mappingType));
                         break;
                     }
                 }
             }
             if (changes.isEmpty()) StatusReporter.warn("No registered Spring mapping found for interceptor: " + className);
             return new Refresh(changes, !changes.isEmpty());
-        } catch (ReflectiveOperationException | LinkageError | RuntimeException e) {
+        } catch (Exception | LinkageError e) {
             StatusReporter.warn("Interceptor mapping capture failed: " + className);
             return new Refresh(List.of(), false);
         }
     }
 
     private record MappingChange(Object context, Method getBean, String mappingName, String beanName,
-                                 Object oldMapping, Object oldTarget, Object registry,
-                                 Method register, Method unregister, Class<?> mappingType) {}
+                                 Object oldMapping, Object oldTarget, List<Object> registries, Class<?> mappingType) {}
 
     public static final class Refresh {
         private final List<MappingChange> changes;
@@ -108,31 +105,30 @@ public class InterceptorReloader {
                     Object target = change.getBean.invoke(change.context, change.beanName);
                     Method setter = change.mappingType.getMethod("setInterceptor",
                             change.mappingType.getMethod("getInterceptor").getReturnType());
-                    Object currentRegistry = change.getBean.invoke(change.context, "interceptorRegistry");
-                    if (currentRegistry != change.registry) {
-                        // Spring may recreate the dependent registry as well. Its
-                        // configured mappings are loaded lazily: never add a duplicate.
-                        verifyTarget(currentRegistry, change.mappingType, next, target);
-                        continue;
+                    // Capture precedes generic destruction: never instantiate a replacement registry here.
+                    for (Object registry : change.registries) {
+                        registry.getClass().getMethod("unregisterInterceptor", change.mappingType).invoke(registry, change.oldMapping);
+                        removed = true;
                     }
-                    // SAP unregister removes the original mapping by identity, not bean name.
-                    change.unregister.invoke(change.registry, change.oldMapping);
-                    removed = true;
                     setter.invoke(next, target);
-                    change.register.invoke(change.registry, next);
-                    verifyTarget(change.registry, change.mappingType, next, target);
+                    for (Object registry : change.registries) {
+                        registry.getClass().getMethod("registerInterceptor", change.mappingType).invoke(registry, next);
+                        verifyTarget(registry, change.mappingType, next, target);
+                    }
                 } catch (ReflectiveOperationException | RuntimeException e) {
                     success = false;
                     if (removed) {
                         try {
-                            if (next != null) change.unregister.invoke(change.registry, next);
+                            for (Object registry : change.registries) if (next != null)
+                                registry.getClass().getMethod("unregisterInterceptor", change.mappingType).invoke(registry, next);
                             // Keep the registry and Spring on the same mapping
                             // identity so a later save can retry the failed target.
                             Object restored = next != null ? next : change.oldMapping;
                             change.mappingType.getMethod("setInterceptor",
                                     change.mappingType.getMethod("getInterceptor").getReturnType())
                                     .invoke(restored, change.oldTarget);
-                            change.register.invoke(change.registry, restored);
+                            for (Object registry : change.registries)
+                                registry.getClass().getMethod("registerInterceptor", change.mappingType).invoke(registry, restored);
                         } catch (ReflectiveOperationException rollback) {
                             StatusReporter.error("Interceptor mapping restoration failed; restart required: " + change.mappingName);
                         }

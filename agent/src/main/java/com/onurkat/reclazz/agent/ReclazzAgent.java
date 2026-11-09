@@ -517,6 +517,7 @@ public class ReclazzAgent {
 
             // Set up Spring reload orchestrator (works for all platforms)
             SpringReloadOrchestrator springOrchestrator = new SpringReloadOrchestrator(platformContext);
+            springOrchestrator.setPreservedSingletons(modules::preservedSingletons);
             springOrchestrator.setRefreshOwnersOnHelper(config.getRefreshOwnersOnHelper());
 
             // Set up XML reloader, parses *-spring.xml changes into a
@@ -537,7 +538,7 @@ public class ReclazzAgent {
                     modules.handle(new PlatformChangeHandler.Change(Capability.PROCESS_RELOAD, path,
                             "CREATED", module, "sap-process-registration"));
                 }
-            });
+            }, modules::beforeXmlBean);
 
             // The registry owns optional automation; discovery and the reload engine do not.
             if (suppliedModules == null) registerPremiumAutomation(modules, config, platformContext);

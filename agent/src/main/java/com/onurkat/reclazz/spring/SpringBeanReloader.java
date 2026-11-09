@@ -23,6 +23,20 @@ import com.onurkat.reclazz.util.Reflect;
 public class SpringBeanReloader {
 
     private final PlatformContext platformContext;
+    private com.onurkat.reclazz.platform.PreservedSingletons preservedSingletons =
+            com.onurkat.reclazz.platform.PreservedSingletons.NONE;
+
+    public void setPreservedSingletons(com.onurkat.reclazz.platform.PreservedSingletons hook) {
+        preservedSingletons = java.util.Objects.requireNonNull(hook);
+    }
+
+    private Object[] refreshPreserving(Object context, String name) throws Exception {
+        Object factory = SpringBeans.getBeanFactory(context);
+        var names = preservedSingletons.names(context);
+        try (var edges = SpringSingletonPreservation.detach(factory, name, names)) {
+            return destroyAndRefreshBean(context, name);
+        }
+    }
 
     public SpringBeanReloader(PlatformContext platformContext) {
         this.platformContext = platformContext;
@@ -60,40 +74,47 @@ public class SpringBeanReloader {
             int totalRefreshed = 0;
             SpringMvcSingletons mvcBefore = batchDepth > 0 ? batchMvcBefore : null;
             var seenFactories = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
+            int ownerIndex = 0;
             for (Object appContext : contexts) {
-                Object localFactory = SpringBeans.getBeanFactory(appContext);
-                if (localFactory != null && !seenFactories.add(localFactory)) continue;
-                String[] beanNames = (reloadedClass != null)
-                        ? findBeanNamesByType(appContext, reloadedClass)
-                        : findBeanNamesByClass(appContext, className);
-                for (String beanName : beanNames) {
-                    if (mvcBefore == null) {
-                        mvcBefore = SpringMvcSingletons.capture(contexts);
-                        if (batchDepth > 0) batchMvcBefore = mvcBefore;
-                    }
-                    var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
-                    var kafka = jms == null ? SpringKafkaReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
-                    var rabbit = jms == null && kafka == null ? SpringRabbitReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
-                    var ordinary = jms == null && kafka == null && rabbit == null
-                            ? SpringConstructorDependencies.prepareOrdinary(contexts, appContext, beanName) : null;
-                    if (ordinary != null) {
-                        if (batchDepth > 0) queueOrdinary(ordinary);
-                        else ordinary.recreate(platformContext.getAllApplicationContexts(), replacements);
-                        ReloadEffects.note("ordinary constructor owner prepared: " + beanName);
+                ownerIndex++;
+                try {
+                    Object localFactory = SpringBeans.getBeanFactory(appContext);
+                    if (localFactory != null && !seenFactories.add(localFactory)) continue;
+                    String[] beanNames = (reloadedClass != null)
+                            ? findBeanNamesByType(appContext, reloadedClass)
+                            : findBeanNamesByClass(appContext, className);
+                    for (String beanName : beanNames) {
+                        if (mvcBefore == null) {
+                            mvcBefore = SpringMvcSingletons.capture(contexts);
+                            if (batchDepth > 0) batchMvcBefore = mvcBefore;
+                        }
+                        var jms = SpringJmsReloader.prepareDependencyRefresh(contexts, appContext, beanName);
+                        var kafka = jms == null ? SpringKafkaReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
+                        var rabbit = jms == null && kafka == null ? SpringRabbitReloader.prepareDependencyRefresh(contexts, appContext, beanName) : null;
+                        var ordinary = jms == null && kafka == null && rabbit == null
+                                ? SpringConstructorDependencies.prepareOrdinary(contexts, appContext, beanName) : null;
+                        if (ordinary != null) {
+                            if (batchDepth > 0) queueOrdinary(ordinary);
+                            else ordinary.recreate(platformContext.getAllApplicationContexts(), replacements);
+                            ReloadEffects.note("ordinary constructor owner prepared: " + beanName);
+                            totalRefreshed++;
+                            continue; // This snapshot owns its exact leaf; name-only legacy cascade must not rediscover it.
+                        }
+                        var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
+                        if (constructor != null) constructor.apply();
+                        Object[] pair = jms != null ? jms.recreate() : kafka != null ? kafka.recreate() : rabbit != null ? rabbit.recreate() : refreshPreserving(appContext, beanName);
+                        if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
+                            replacements.put(pair[0], pair[1]);
+                        }
+                        // This transaction already rebuilt all leaf owners. Do not destroy them again in phase 2.
+                        if (jms == null && kafka == null && rabbit == null) refreshedNames.add(beanName);
+                        ReloadEffects.note("bean " + beanName + " re-created");
+                        StatusReporter.detail("Spring bean refreshed: " + beanName);
                         totalRefreshed++;
-                        continue; // This snapshot owns its exact leaf; name-only legacy cascade must not rediscover it.
                     }
-                    var constructor = SpringConstructorDependencies.prepare(contexts, appContext, beanName);
-                    if (constructor != null) constructor.apply();
-                    Object[] pair = jms != null ? jms.recreate() : kafka != null ? kafka.recreate() : rabbit != null ? rabbit.recreate() : destroyAndRefreshBean(appContext, beanName);
-                    if (pair != null && pair[0] != null && pair[1] != null && pair[0] != pair[1]) {
-                        replacements.put(pair[0], pair[1]);
-                    }
-                    // This transaction already rebuilt all leaf owners. Do not destroy them again in phase 2.
-                    if (jms == null && kafka == null && rabbit == null) refreshedNames.add(beanName);
-                    ReloadEffects.note("bean " + beanName + " re-created");
-                    StatusReporter.detail("Spring bean refreshed: " + beanName);
-                    totalRefreshed++;
+                } catch (Exception | LinkageError e) {
+                    StatusReporter.error("Failed to refresh Spring bean for " + className + ": owner "
+                            + ownerIndex + "/" + contexts.size() + ": " + Failures.describe(e));
                 }
             }
 
@@ -404,14 +425,16 @@ public class SpringBeanReloader {
                             "getDependentBeans", String.class);
                     if (getDependentBeans == null) continue;
 
+                    var preserved = preservedSingletons.names(appContext);
                     for (String name : java.util.List.copyOf(refreshedNames)) {
                         String[] dependents = (String[]) getDependentBeans.invoke(beanFactory, name);
                         if (dependents == null) continue;
                         for (String dep : dependents) {
+                            if (!preserved.isEmpty() && preserved.contains(SpringSingletonPreservation.canonical(beanFactory, dep))) continue;
                             String key = System.identityHashCode(appContext) + "@" + dep;
                             if (!done.add(key)) continue;
                             try {
-                                destroyAndRefreshBean(appContext, dep);
+                                refreshPreserving(appContext, dep);
                                 refreshedNames.add(dep);
                                 progress = true;
                                 StatusReporter.info("Dependent bean re-wired: " + dep);

@@ -93,6 +93,10 @@ public class SpringReloadOrchestrator {
 
     private final SpringNewBeanRegistrar newBeanRegistrar;
 
+    public void setPreservedSingletons(com.onurkat.reclazz.platform.PreservedSingletons hook) {
+        beanReloader.setPreservedSingletons(hook);
+    }
+
     /**
      * A brand-new class file whose class the JVM has never loaded: register it
      * as a bean when it carries a stereotype.

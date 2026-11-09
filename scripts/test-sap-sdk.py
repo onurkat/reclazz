@@ -22,7 +22,7 @@ classpath = os.pathsep.join(map(str, [repo / 'agent/build/classes/java/main',
                                       repo / 'agent/build/classes/java/premium', *jars]))
 source = repo / 'integration-test/src/sapSdkTest/java/com/onurkat/reclazz/hybris/interceptor/InterceptorRegistrySdkProbe.java'
 with tempfile.TemporaryDirectory(prefix='reclazz-sap-sdk-') as out:
-    subprocess.run(['javac', '-proc:none', '-cp', classpath, '-d', out, str(source),
+    subprocess.run(['javac', '-proc:none', '-cp', classpath, '-d', out, str(source), str(source.with_name('XmlInterceptorMappingsSdkProbe.java')), str(source.with_name('RegistryPreservationSdkProbe.java')), str(source.with_name('PreservationDiscoverySdkProbe.java')), str(source.with_name('XmlDependencySdkProbe.java')),
                     str(repo / 'reclazztest/src/com/onurkat/reclazztest/interceptors/ValidationProbe.java'),
                     str(repo / 'reclazztest/src/com/onurkat/reclazztest/interceptors/TestValidateInterceptor.java'),
                     str(repo / 'reclazztest/web/src/com/onurkat/reclazztest/controllers/SapVerificationController.java')], check=True, timeout=60)
@@ -37,3 +37,18 @@ with tempfile.TemporaryDirectory(prefix='reclazz-sap-sdk-') as out:
                     '-Dlog4j.configurationFile=' + str(logging_config), '-Dprobe.tenantClasses=' + str(tenant), '-Dprobe.disableRefresh=' + str(args.disable_refresh).lower(),
                     '-cp', os.pathsep.join([out, classpath]),
                     'com.onurkat.reclazz.hybris.interceptor.InterceptorRegistrySdkProbe'], check=True, timeout=60)
+
+    subprocess.run(['java', '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
+                    '-Dlog4j.configurationFile=' + str(logging_config),
+                    '-cp', os.pathsep.join([out, classpath]),
+                    'com.onurkat.reclazz.hybris.interceptor.XmlInterceptorMappingsSdkProbe'], check=True, timeout=60)
+    subprocess.run(['java', '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
+                    '-Dlog4j.configurationFile=' + str(logging_config), '-cp', os.pathsep.join([out, classpath]),
+                    'com.onurkat.reclazz.hybris.interceptor.RegistryPreservationSdkProbe'], check=True, timeout=60)
+    subprocess.run(['java', '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
+                    '-Dlog4j.configurationFile=' + str(logging_config), '-cp', os.pathsep.join([out, classpath]),
+                    'com.onurkat.reclazz.hybris.interceptor.PreservationDiscoverySdkProbe'], check=True, timeout=60)
+    subprocess.run(['java', '-Dlog4j.configurationFactory=org.apache.logging.log4j.core.config.xml.XmlConfigurationFactory',
+                    '-Dlog4j.configurationFile=' + str(logging_config),
+                    '-cp', os.pathsep.join([out, classpath]),
+                    'com.onurkat.reclazz.hybris.interceptor.XmlDependencySdkProbe'], check=True, timeout=60)

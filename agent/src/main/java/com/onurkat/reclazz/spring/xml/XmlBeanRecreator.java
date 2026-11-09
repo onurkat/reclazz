@@ -166,6 +166,11 @@ final class XmlBeanRecreator {
     }
 
     static int apply(Object context,Object factory,List<Replacement> changes) throws Exception {
+        return apply(context, factory, changes, com.onurkat.reclazz.platform.XmlBeanLifecycle.NONE);
+    }
+
+    static int apply(Object context, Object factory, List<Replacement> changes,
+                     com.onurkat.reclazz.platform.XmlBeanLifecycle lifecycle) throws Exception {
         if(changes.isEmpty()) return 0;
         Map<String,Object> oldInstances=new LinkedHashMap<>();
         Map<String,Object> oldDefinitions=new LinkedHashMap<>();
@@ -186,9 +191,14 @@ final class XmlBeanRecreator {
                 retired.add(new java.lang.ref.WeakReference<>(entry.getValue()));
         }
         for(var r:changes) require(SpringReflection.getBeanDefinition(factory,r.name)==r.previous, "definition ownership changed");
+        Map<String, com.onurkat.reclazz.platform.XmlBeanLifecycle.Pending> pending = new LinkedHashMap<>();
+        for (var entry : oldInstances.entrySet()) if (entry.getValue() != null)
+            pending.put(entry.getKey(), lifecycle.before(context, entry.getKey(), entry.getValue()));
+        boolean applied = false;
         try {
             for(var r:changes) SpringReflection.registerBeanDefinition(factory,r.name,r.candidate);
             recreate(context,factory,oldInstances,links);
+            applied = true;
         } catch(Exception failure) {
             try {
                 for(var r:changes) SpringReflection.registerBeanDefinition(factory,r.name,r.previous);
@@ -200,6 +210,9 @@ final class XmlBeanRecreator {
             }
             throw new IllegalStateException("XML recreation failed; previous definitions restored and instances recreated (callback effects are not rolled back): "
                     +SpringReflection.rootCause(failure),failure);
+        } finally {
+            for (var entry : pending.entrySet())
+                entry.getValue().complete(SpringReflection.getExistingSingleton(factory, entry.getKey()), applied);
         }
         return changes.size();
     }

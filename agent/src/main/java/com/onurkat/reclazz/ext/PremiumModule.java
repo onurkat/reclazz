@@ -14,6 +14,12 @@ public interface PremiumModule {
     Set<Capability> capabilities();
     default Map<Capability, PlatformChangeHandler> changeHandlers() { return Map.of(); }
     default StructuralReloadHook structuralReloadHook() { return new NoopStructuralReloadHook(); }
+    default com.onurkat.reclazz.platform.XmlBeanLifecycle xmlBeanLifecycle() {
+        return com.onurkat.reclazz.platform.XmlBeanLifecycle.NONE;
+    }
+    default com.onurkat.reclazz.platform.PreservedSingletons preservedSingletons() {
+        return com.onurkat.reclazz.platform.PreservedSingletons.NONE;
+    }
     /** True means queued, never that stored search documents have been refreshed. */
     default boolean reindex(Class<?> type) { return false; }
 

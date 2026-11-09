@@ -89,9 +89,41 @@ class AgentEventClient(portFile: String) {
         val start = System.nanoTime()
         val compiled = waitForCompile(timeoutMs, fileName, since) ?: return null
         val remaining = timeoutMs - TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start)
-        return waitForReload(remaining.coerceAtLeast(0), owner, compiled.sequence)
+        val reloaded = waitForReload(remaining.coerceAtLeast(0), owner, compiled.sequence) ?: return null
+        val failure = synchronized(monitor) {
+            events.firstOrNull { it.sequence > compiled.sequence && it.sequence < reloaded.sequence &&
+                it.level == "ERROR" && it.message.startsWith("Failed to refresh Spring bean for $owner:") }
+        }
+        check(failure == null) { failure!!.message }
+        return reloaded
     }
     fun waitForError(timeoutMs: Long, since: Long = 0): AgentEvent? = waitForEvent("ERROR", timeoutMs, since = since)
+
+    fun waitForSpringXml(timeoutMs: Long, fileName: String, since: Long, allowNoChanges: Boolean = false): AgentEvent? = await(timeoutMs, since) {
+        val prefix = "Spring XML " + Regex.escape(fileName) + "(?: \\[context \\d+/\\d+\\])?"
+        it.level == "INFO" && (Regex("$prefix reloaded: \\d+ changes? applied.*").matches(it.message) ||
+            (allowNoChanges && Regex("$prefix, parsed OK, no live-applicable changes detected").matches(it.message)))
+    }
+
+    /** Serialized fixture writes drain one canonical final outcome per known XML owner. */
+    fun waitForSpringXmlOutcomes(timeoutMs: Long, fileName: String, since: Long, expectedOwners: Int): List<AgentEvent> {
+        require(expectedOwners > 0) { "XML owner count must be positive" }
+        val prefix = "Spring XML " + Regex.escape(fileName) + "(?: \\[context \\d+/\\d+\\])?"
+        val terminal = Regex("(?:$prefix reloaded: \\d+ changes? applied(?:, \\d+ require restart)?|$prefix, parsed OK, no live-applicable changes detected)")
+        val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs.coerceAtLeast(0))
+        synchronized(monitor) {
+            while (true) {
+                val seen = events.filter { it.sequence > since && it.level == "INFO" && terminal.matches(it.message) }
+                if (seen.size >= expectedOwners) return seen.take(expectedOwners)
+                val remaining = deadline - System.nanoTime()
+                check(remaining > 0) {
+                    "Spring XML $fileName timed out after event $since: ${seen.size}/$expectedOwners owner outcomes; seen: " +
+                        seen.joinToString { "${it.sequence}:${it.message}" }
+                }
+                monitor.wait(TimeUnit.NANOSECONDS.toMillis(remaining).coerceIn(1, 100))
+            }
+        }
+    }
 
     fun waitForImpex(timeoutMs: Long, fileName: String, since: Long): AgentEvent? = await(timeoutMs, since) {
         (it.level == "OK" && it.message == "ImpEx imported: $fileName") ||
