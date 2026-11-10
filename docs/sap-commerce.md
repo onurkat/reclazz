@@ -8,6 +8,10 @@ human setup and every agent argument, see the manual setup in
 [usage.md](usage.md#option-1-manual-setup); this page is the agent-oriented
 recipe on top of it.
 
+For application-level proof, see [what we test live on SAP Commerce](sap-commerce-live-tests.md):
+45 default scenarios, separate opt-in profiles, their repeatability and the
+areas that still need live acceptance.
+
 ## Why Hybris is different from Spring Boot
 
 A Spring Boot app is one JVM you start yourself, so a build plugin or a plain

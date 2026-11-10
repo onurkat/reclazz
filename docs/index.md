@@ -19,6 +19,7 @@ complete references for configuration, APIs and lifecycle details.
 | [Product technical reference](product-reference.md) | Open guide → |
 | [The Status Socket](protocol.md) | Open guide → |
 | [Reclazz on SAP Commerce, for a coding agent](sap-commerce.md) | Open guide → |
+| [SAP Commerce: what we test live](sap-commerce-live-tests.md) | Open guide → |
 | [Reclazz Spring Boot starter](spring-boot-starter.md) | Open guide → |
 | [Constructor dependency ownership during ordinary class refresh](spring-constructor-dependencies.md) | Open guide → |
 | [Superclass changes without a custom classloader](superclass-feasibility.md) | Open guide → |

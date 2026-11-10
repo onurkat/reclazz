@@ -91,6 +91,7 @@
       "eyebrow": "SAP Commerce / Hybris",
       "sources": [
         "docs/sap-commerce.md",
+        "docs/sap-commerce-live-tests.md",
         "docs/usage.md#what-cannot-be-hot-reloaded",
         "docs/usage.md#sap-reload-outcomes-and-verification"
       ],
