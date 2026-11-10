@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+    <extension classprefix="reclazztestsolr" name="reclazztestsolr" usemaven="false">
+        <requires-extension name="solrfacetsearch"/>
+        <requires-extension name="reclazztest"/>
+        <coremodule generated="true" manager="de.hybris.platform.jalo.extension.GenericManager" packageroot="de.hybris.platform.reclazztestsolr"/>
+        <webmodule jspcompile="false" webroot="/reclazztestsolr"/>
+    </extension>
+</extensioninfo>

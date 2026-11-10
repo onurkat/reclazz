@@ -77,3 +77,16 @@ reclazztestbackoffice/resources/backoffice/
 reclazztestbackoffice/resources/items.xsd
 reclazztestbackoffice/resources/reclazztestbackoffice.build.number
 reclazztestbackoffice/resources/reclazztestbackoffice/
+
+# Profile-only SAP Solr fixture native build artifacts
+reclazztestsolr/build.xml
+reclazztestsolr/extensioninfo.xsd
+reclazztestsolr/platformhome.properties
+reclazztestsolr/gensrc/
+reclazztestsolr/classes/
+reclazztestsolr/testclasses/
+reclazztestsolr/resources/reclazztestsolr/
+reclazztestsolr/resources/*.xsd
+reclazztestsolr/resources/reclazztestsolr.build.number
+reclazztestsolr/src/de/hybris/platform/reclazztestsolr/constants/
+reclazztestsolr/web/webroot/WEB-INF/classes/

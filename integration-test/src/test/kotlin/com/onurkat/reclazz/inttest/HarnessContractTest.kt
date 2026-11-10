@@ -115,7 +115,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
         for ((relative, bytes) in originals) {
             val path = root.resolve(relative); Files.createDirectories(path.parent); Files.write(path, bytes)
         }
-        if (mode in setOf("delayed-first","profile-skip","items-profile-skip","statics-profile-skip")) {
+        if (mode in setOf("delayed-first","profile-skip","items-profile-skip","statics-profile-skip","solr-profile-skip")) {
             val path = root.resolve(fixturePaths.first())
             Files.writeString(path, Files.readString(path).replace("pong-v1", "pong-v3"))
         }
@@ -125,7 +125,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
             val n = requests.incrementAndGet(); val path = exchange.requestURI.path
             if (path.endsWith("/multi") || path.endsWith("/ping")) firstRequest.compareAndSet(0, System.nanoTime())
             val pair = when {
-                mode.endsWith("profile-skip") && path.endsWith("/batch/gates") -> 200 to "{\"agentArgsFound\":false}"
+                mode.endsWith("profile-skip") && (path.endsWith("/batch/gates") || path.endsWith("/solr/gates")) -> 200 to "{\"agentArgsFound\":false}"
                 path.endsWith("/impex-title") -> 200 to db.get()
                 path.endsWith("/multi") -> 200 to "helper-v2:service-v2"
                 mode == "poll-stale" -> 503 to "last-stale-body"
@@ -196,7 +196,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
             "RECLAZZ_TEST_EVENT_TIMEOUT" to timeout.toString(), "RECLAZZ_TEST_SETTLE_DELAY" to "0", "RECLAZZ_TEST_HTTP_TIMEOUT" to "500"))
         if(mode.endsWith("profile-skip")) {
             builder.environment().remove("RECLAZZ_TEST_ONLY")
-            builder.environment()["RECLAZZ_TEST_PROFILE"]=when(mode) {"items-profile-skip" -> "items-attempt"; "statics-profile-skip" -> "statics-on"; else -> "codegen"}
+            builder.environment()["RECLAZZ_TEST_PROFILE"]=when(mode) {"items-profile-skip" -> "items-attempt"; "statics-profile-skip" -> "statics-on"; "solr-profile-skip" -> "solr-attempt"; else -> "codegen"}
         } else builder.environment().remove("RECLAZZ_TEST_PROFILE")
         val process = builder.redirectErrorStream(true).redirectOutput(output).start()
         check(process.waitFor(35, TimeUnit.SECONDS)) { process.destroyForcibly(); "Runner child exceeded contract deadline" }
@@ -645,6 +645,63 @@ fun main() {
     case("staticUnexpectedWarningOrErrorCannotPass") {
         for(extra in listOf(event("WARN","Static $staticsOwner.CODES initializer changed, not reset: missing-baseline; restart to apply",3),event("ERROR","Compile failed",3)))
             check(runCatching {staticResetReceipt(listOf(staticReset,extra),1,staticsOwner,true,false)}.isFailure)
+    }
+    case("solrMainSkipLeavesDirtyDefaultFixtureUntouched") {
+        ChildRun("solr-profile-skip","unused").use {child ->
+            val before=fixturePaths.associateWith {Files.readAllBytes(child.root.resolve(it))}
+            val result=child.run()
+            check(result.first==0 && "SKIP" in result.second && "agentArgsFound=false" in result.second) {result.second}
+            for((path,bytes) in before) check(Files.readAllBytes(child.root.resolve(path)).contentEquals(bytes))
+        }
+    }
+    val solrTag="owner1/config1/type1"
+    val solrDone=event("INFO","SAP Solr $solrTag: FINISHED partial properties=1 documents=1 durationMs=9; finished without native errors.",4)
+    case("solrRequiresFreshExactOwnerConfigAndType") {
+        check(solrReindexReceipt(listOf(solrDone),3,solrTag))
+        check(!solrReindexReceipt(listOf(solrDone),4,solrTag))
+        for(tag in listOf("owner2/config1/type1","owner1/config2/type1","owner1/config1/type2"))
+            check(!solrReindexReceipt(listOf(solrDone),3,tag))
+    }
+    case("solrRequiresPartialSinglePropertyAndDocument") {
+        for(message in listOf(solrDone.message.replace("documents=1","documents=0"),solrDone.message.replace("properties=1","properties=2"),solrDone.message.replace("partial properties=1","whole-type")))
+            check(!solrReindexReceipt(listOf(solrDone.copy(message=message)),3,solrTag))
+    }
+    case("solrUnverifiedFailedAndNoDocumentsCannotPass") {
+        for(message in listOf("FINISHED_UNVERIFIED partial properties=1 documents=1 durationMs=1", "FAILED (native-operation-failed)","no stored documents; no indexing call."))
+            check(runCatching {solrReindexReceipt(listOf(solrDone.copy(message="SAP Solr $solrTag: $message")),3,solrTag)}.isFailure)
+    }
+    case("solrUnscopedErrorsCannotHideBehindFinished") {
+        check(runCatching {solrReindexReceipt(listOf(solrDone,event("ERROR","native compile failed",5)),3,solrTag)}.isFailure)
+    }
+    val solrNonce="reclazz-solr-00000000-0000-0000-0000-000000000001"
+    fun proof(value:String)=batchJson.readTree("""{"nonce":"$solrNonce","pk":"12345","tag":"$solrTag",
+        "target":{"core":"$solrNonce-target","qualifier":"default","uniqueKey":"id","documentId":"target-id","pk":"12345",
+        "fields":{"changedValue":"changedValue_string","stableValue":"stableValue_string"},"values":{"changedValue":"$value","stableValue":"stable-v1"},
+        "document":{"id":"target-id","pk":12345,"changedValue_string":"$value","stableValue_string":"stable-v1"}},
+        "control":{"core":"$solrNonce-control","qualifier":"default","uniqueKey":"id","documentId":"control-id","pk":"12345",
+        "fields":{"controlValue":"controlValue_string"},"values":{"controlValue":"control-v1"},"document":{"id":"control-id","pk":12345,"controlValue_string":"control-v1","_version_":7}}}""")
+    case("solrAcceptsRealStoredFieldShapeAndStableControl") {requireSolrStored(proof("v1"),solrNonce,"v1");requireSolrStored(proof("v2"),solrNonce,"v2",proof("v1"))}
+    case("solrStaleMissingOrWrongPkStoredDataIsRejected") {
+        val good=proof("v2").toString()
+        for(text in listOf(proof("v1").toString(),good.replace("\"pk\":12345","\"pk\":999"),good.replace("\"changedValue\":\"v2\"","\"changedValue\":null")))
+            check(runCatching {requireSolrStored(batchJson.readTree(text),solrNonce,"v2",proof("v1"))}.isFailure)
+    }
+    case("solrChangedStableFieldOrControlDocumentIsRejected") {
+        for(text in listOf(proof("v2").toString().replace("stable-v1","stable-v2"),proof("v2").toString().replace("\"_version_\":7","\"_version_\":8")))
+            check(runCatching {requireSolrStored(batchJson.readTree(text),solrNonce,"v2",proof("v1"))}.isFailure)
+    }
+    case("solrPhysicalFieldMappingCannotChangeDuringReload") {
+        val changed=proof("v2").toString().replace("changedValue_string","other_string")
+        check(runCatching {requireSolrStored(batchJson.readTree(changed),solrNonce,"v2",proof("v1"))}.isFailure)
+    }
+    case("solrFixtureTemplatesAreImmutable") {
+        val root=Files.createTempDirectory("reclazz-solr-contract-")
+        try {
+            for(rel in SolrFixtureBaseline.relatives) {val path=root.resolve(rel);Files.createDirectories(path.parent);Files.write(path,SolrFixtureBaseline.original(rel))}
+            val baseline=SolrFixtureBaseline(root);baseline.checkBytes()
+            Files.writeString(root.resolve("project.properties"),"dirty")
+            check(runCatching {baseline.checkBytes()}.isFailure)
+        } finally {root.toFile().deleteRecursively()}
     }
     cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")

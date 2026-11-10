@@ -350,3 +350,72 @@ preserved and recovery refuses to race them.
 
 Portable checks: `python3 scripts/test-sap-statics-driver.py` and the Gradle
 harness contracts. Deferred field-initializer concurrency is outside this profile.
+
+### Serialized native Solr profile
+
+`python3 scripts/test-sap-solr-live.py` runs three complete native Solr cycles
+on the clean sibling SAP installation, then the normal default44 suite.
+`--failure-control` adds an expected-failure cycle after a real targeted v2
+reindex and stored-field read; it must still recover fully. `--runs 1` is a
+full diagnostic cycle. Only `SOLR_PROFILE PASS` includes native results,
+complete stopped recovery and the final43 PASS + Hibernate SKIP. Internal
+`solr-attempt` is not acceptance by itself.
+
+The normal installation must have no running Solr, Solr facet configuration,
+indexed type/index or `ReclazzSchemaProbe` rows; both normal fixtures and the
+nonce-only synthetic type must already be deployed. Actual launched/config
+options must match, with autoCompile on and Solr/resetStatics/schema/REMOVE
+off. Native tenant database URLs must all identify the owned file HSQLDB.
+Preflight SKIPs before test writes for missing/unavailable/mismatched gates.
+After provisioning starts, any missing service, inner SKIP or cleanup failure
+is FAIL/ERROR, never a successful or retroactively skipped profile.
+
+The profile-only `reclazztestsolr` extension contains synthetic providers and
+native Solr facts/setup endpoints. It is added with `solrserver` only during
+the stopped profile boot; the normal fixture's dependencies do not change.
+Native default Solr auth/SSL are retained, credentials stay in native memory,
+loopback8983 is pinned and proven through lsof and the JVM's owned directory
+arguments. A foreign existing service/custom symlink is refused.
+
+Setup creates one nonce-owned `ReclazzSchemaProbe` row and one native search
+config with distinct target/control physical cores. Initial full indexing is
+restricted to these owned types. The test edits only the changed provider's
+body, requires exact file/owner reload then a fresh exact native discovery tag
+FINISHED with one partial property and one document, and reads the actual
+uniqueKey, PK, physical field and v2 through native SolrJ. Stable field and
+full control document must be unchanged. FINISHED_UNVERIFIED, FAILED, no docs,
+stale value or a missing terminal cannot pass. Rollback requires its own
+reload/FINISHED and stored v1 read.
+
+Before the first configuration/data mutation the driver stops native writers
+and captures full `hybris/config`, `hybris/data`, generated outputs and the
+SDK's Solr distribution directory, and the full Tomcat conf directory. A
+temporary native Context is derived from the existing owned fixture Context
+to deploy the new profile webapp; ant build alone does not add it. All
+unrelated server XML bytes and the original configuration are restored. The
+distribution snapshot is necessary because native
+Solr installation callbacks can remove previous distribution versions.
+Original launcher bytes, profile source bytes, custom listing, fixture/agent
+hashes and ordered snapshot targets are retained in a private recovery folder.
+Recovery first proves inner runner exit, stops only the owned Tomcat/Solr,
+then requires every native writer, HSQLDB lock and Solr listener gone. It removes
+only its own symlink, restores full trees (including deleting extra core/data
+files), rebuilds normally and verifies snapshots again before normal boot.
+No live deleteIndex/deleteAll or inverse DDL is used. Fresh normal JVM, original
+gates, both normal fixtures, absence of profile extensions/service/records,
+all source/config/agent hashes and tenant health are required.
+
+Recovery folders `/private/tmp/reclazz-solr-*` remain for diagnosis/manual use.
+`state.json` contains original wrapper/source bytes and snapshot targets;
+private snapshots retain all original files and hashes. For manual recovery,
+prove every writer stopped first, remove only the recorded owned symlink,
+restore source/wrapper and each verified snapshot, run native normal ant build,
+restore any build-touched snapshot again, verify before boot, then check normal
+runtime/empty Solr facts/default44. Never restore under a live writer or stop an
+unknown listener. Budgets:600s native build/start,90s stop +330s writer drain,
+300s owned bootstrap index,180s inner edit and180s live rollback,900s runner.
+Timed-out writers are preserved and recovery refuses to race them.
+
+Portable checks: `python3 scripts/test-sap-solr-driver.py`, existing snapshot
+tests and the Gradle harness/HTTP contracts. The normal44 suite does not deploy
+or run this optional extension. CMS and Backoffice remain separate profiles.

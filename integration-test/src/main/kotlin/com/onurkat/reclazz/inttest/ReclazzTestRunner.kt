@@ -102,13 +102,14 @@ fun main() {
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
     val profile = System.getenv("RECLAZZ_TEST_PROFILE") ?: "default"
     if (profile != "default") {
-        if (profile !in setOf("codegen", "items-attempt", "statics-on", "statics-off") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
+        if (profile !in setOf("codegen", "items-attempt", "statics-on", "statics-off", "solr-attempt") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
             agentClient.disconnect()
             error("Unknown profile or RECLAZZ_TEST_ONLY combined with a profile: $profile")
         }
         // Profile preflight precedes ALL default baseline restoration writes.
         try { report.add(if(profile == "codegen") BeansCodegenLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "items-attempt") ItemsSchemaLiveTest(config,agentClient,httpVerifier).run()
+            else if(profile == "solr-attempt") SolrTargetedReindexLiveTest(config,agentClient,httpVerifier).run()
             else ResetStaticsLiveTest(config,agentClient,httpVerifier,profile == "statics-on").run()) }
         finally { agentClient.disconnect(); report.print() }
         exitProcess(if(report.hasFailures()) 1 else 0)

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <bean id="reclazzSolrChangedProvider" class="com.onurkat.reclazztestsolr.ReclazzChangedValueProvider">
+        <property name="fieldNameProvider" ref="solrFieldNameProvider"/>
+    </bean>
+    <bean id="reclazzSolrStableProvider" class="com.onurkat.reclazztestsolr.ReclazzStableValueProvider">
+        <property name="fieldNameProvider" ref="solrFieldNameProvider"/>
+    </bean>
+    <bean id="reclazzSolrControlProvider" class="com.onurkat.reclazztestsolr.ReclazzControlValueProvider">
+        <property name="fieldNameProvider" ref="solrFieldNameProvider"/>
+    </bean>
+</beans>
