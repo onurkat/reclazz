@@ -318,6 +318,48 @@ own conditions. SAP events in this tool are not a dedicated SAP operation
 receipt API. See [live SAP scope](sap-commerce-live-tests.md) and
 [reload limits](usage.md#known-limitations).
 
+## Read SAP operation outcomes with their limits
+
+A coding agent investigating a resource edit can read a stable operation and
+outcome instead of interpreting every log sentence. Event pages and the event
+resource classify recognized ImpEx, codegen, items schema, Backoffice reset
+and Solr messages. Java await also includes a bounded list of recent SAP
+observations, so the agent can see related activity while checking Java bytes.
+
+This selected field projection comes from a recorded live ImpEx event:
+
+```json
+{
+  "type": "sap_operation",
+  "sap": {
+    "operation": "impex_import",
+    "reportedOutcome": "applied",
+    "reasonCode": "imported",
+    "evidenceScope": "agent_message",
+    "applicationBehaviorConfirmed": false,
+    "resourceBasename": "test-data.impex"
+  }
+}
+```
+
+It is an **agent message, not a request receipt**. The row does not identify
+which edit caused it or confirm application behavior. Follow it with a native
+data or endpoint check. In particular, codegen `generated` precedes the need
+to verify applied classes, and Solr completion still carries
+`fieldFreshnessConfirmed:false`.
+
+Recorded live acceptance observed ImpEx applied/refused/skipped, codegen
+generated, items schema applied, Backoffice reset applied, and Solr
+finished/failed. Native data, generated classes/OCC, schema, stored documents
+and configuration media supplied separate behavioral checks. Other recognized
+outcomes have unit/fake-agent coverage only. Backoffice media checks do not
+establish browser rendering or widget/socket behavior.
+
+**Limit:** SAP observations cannot turn a Java await into success. Await keeps
+at most 16 SAP rows and reports truncation; invalid observation history clears
+them. Read [the full typed contract and live coverage](mcp-server.md#typed-sap-operation-observations)
+for outcome meanings and recovery boundaries.
+
 ## Connect the coding client you use
 
 Claude Code and Codex CLI each discovered all eleven tools and made one real
@@ -437,6 +479,7 @@ follow the [matching-build instructions](mcp-server.md#build-and-install-locally
 | Await reload | Received-event correlation, exact-owner receipts and negative outcomes | [Await tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/AwaitReloadTest.java) |
 | Event pages | Ordered pagination, exact filters, gaps and honest observation limits | [Event tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/RecentEventsTest.java) |
 | Resources and verification prompt | Packaged resource/prompt contracts and SDK reads; installed Claude Code listing with explicit limits | [Resource and prompt reference](mcp-server.md#read-only-resources) |
+| Typed SAP observations | Parsed messages from all five families, with separate native oracles and explicit unit-only outcomes | [Typed SAP contract](mcp-server.md#typed-sap-operation-observations) |
 | Real coding clients | Eleven-tool discovery and read-only status in Claude Code and Codex CLI | [Dated client acceptance](client-matrix.md#installed-coding-clients) |
 
 The bridge provides tools, read-only resources and a verification prompt.

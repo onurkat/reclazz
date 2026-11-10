@@ -882,11 +882,11 @@ that event explicitly admits them. An inner-class display folded to
 `Outer (inner class)` cannot identify an exact binary owner.
 
 Types are `compile`, `reload`, `structural_reload`, `compile_error`,
-`compiler_diagnostic`, `refused`, `framework_failure`, `restart_required` and
+`compiler_diagnostic`, `refused`, `framework_failure`, `restart_required`, `sap_operation` and
 `unknown`. These describe emitted text; even `reload` confirms no completed
 receipt. A compiler diagnostic identifies a basename, not a full source path
-or a reconstructed compile batch. Unknown events remain visible. SAP resource
-messages are not yet exhaustively classified. Use `await_reload`/`verify` and
+or a reconstructed compile batch. Unknown events remain visible. Known SAP producer messages have the typed observations described below;
+unrecognized messages remain `unknown`. Use `await_reload`/`verify` and
 an endpoint or application test to confirm a change.
 
 The two-target registry and each 2048-event/1,048,576-character ring are shared
@@ -900,3 +900,60 @@ unavailable result is a tool error, not a healthy empty page. Cancellation
 closes the shared stream, invalidating its await cursors too; ping and tools/list
 remain available during a blocked read. No BUILD, SCAN, pause, resume,
 compilation or restart command is sent by event listing.
+
+
+## Typed SAP operation observations
+
+`reclazz_events` and the event resource expose recognized SAP messages as
+`type:sap_operation` with a nested `sap` object. Each row is an **agent message,
+not a request receipt**. Matching uses the complete received message and its
+level before display clipping. Unknown or malformed formats remain `unknown`.
+
+The nested fields `operation`, `reportedOutcome` and `reasonCode` describe that
+single message. Every SAP observation has `evidenceScope:"agent_message"` and
+`applicationBehaviorConfirmed:false`. Explicit resource basenames, counts or
+anonymous Solr target tags appear only where the message supplies them. Rows
+carry no operation request ID, edit revision or inferred link to adjacent events.
+
+| Operation | Recognized reported outcomes | Observed live in recorded acceptance |
+|---|---|---|
+| `impex_import` | applied, refused, error, skipped, unavailable, warning | applied, refused, skipped |
+| `codegen` | generated, error | generated |
+| `items_schema` | applied, manual_required, unavailable, error | applied |
+| `backoffice_reset` | applied, disabled, error | applied |
+| `solr_reindex` | finished, finished_unverified, failed, skipped | finished, failed |
+
+The remaining outcomes have unit/fake-agent evidence only. Live acceptance used
+synthetic fixtures on a clean SAP Commerce installation: real ImpEx data checks,
+generated accessors and OCC responses, persisted schema/model checks, stored
+Solr document checks, and Backoffice configuration media changes. Profile
+restoration checks passed, followed by five default-suite runs on one boot and
+one on a fresh boot, each 46/46 with no failures or skips. These are recorded
+local acceptance results, not a claim that CI runs the native suite.
+
+Interpret the families separately:
+
+- Codegen `generated` reports regeneration/compilation. Verify the generated
+  owners' applied bytes and then exercise the application.
+- Items warnings can report manual work or an unavailable automatic update;
+  the shared warning cannot distinguish every underlying disabled/error cause.
+- ImpEx `warning/remove_allowed` means importing with REMOVE allowed, not a
+  refusal. Check the import result separately.
+- Backoffice `applied` includes `uiConfigurationReset:true`; it reports an F4
+  configuration reset. Browser rendering and widget/socket behavior require
+  their own checks.
+- Solr keeps `finished_unverified` distinct from `finished`. Every Solr row
+  has `fieldFreshnessConfirmed:false`; inspect actual stored documents. Mixed
+  owner results remain separate observations, without an aggregate success.
+
+`reclazz_await_reload` adds `sapOutcomes` containing the latest at most 16 SAP
+rows after the supplied cursor, with `sapOutcomesTruncated` when older matching
+rows are omitted. The returned cursor comes from the same checked snapshot.
+Checkpoint results start empty; invalid history, session, target or transport
+clears the annotations. These rows do not select a SAP wait target or change
+Java await status: a SAP `applied` row alone cannot yield top-level `applied`
+or `reloadConfirmed:true`. Use event pages to inspect retained observations
+and the application's own tests to establish behavior.
+
+See the [SAP observation benefit](mcp-for-coding-agents.md#read-sap-operation-outcomes-with-their-limits)
+and the [parser contract tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/SapOperationObservationTest.java).
