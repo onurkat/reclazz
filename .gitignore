@@ -105,3 +105,16 @@ reclazztestcms/src/com/onurkat/reclazztestcms/constants/
 reclazztestcms/web/commonwebsrc/
 reclazztestcms/web/webroot/WEB-INF/classes/
 reclazztestcms/web/webroot/WEB-INF/lib/
+
+# Profile-only Backoffice config module native build outputs
+reclazztestbackofficecfg/build.xml
+reclazztestbackofficecfg/extensioninfo.xsd
+reclazztestbackofficecfg/platformhome.properties
+reclazztestbackofficecfg/gensrc/
+reclazztestbackofficecfg/classes/
+reclazztestbackofficecfg/testclasses/
+reclazztestbackofficecfg/resources/*.xsd
+reclazztestbackofficecfg/resources/reclazztestbackofficecfg/
+reclazztestbackofficecfg/resources/reclazztestbackofficecfg.build.number
+reclazztestbackofficecfg/resources/backoffice/
+reclazztestbackofficecfg/src/com/onurkat/reclazztestbackofficecfg/constants/

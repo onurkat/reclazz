@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+    <extension name="reclazztestbackofficecfg" classprefix="Reclazztestbackofficecfg" usemaven="false">
+        <requires-extension name="backoffice"/>
+        <requires-extension name="reclazztest"/>
+        <coremodule generated="true" manager="de.hybris.platform.jalo.extension.GenericManager" packageroot="com.onurkat.reclazztestbackofficecfg"/>
+        <meta key="backoffice-module" value="true"/>
+    </extension>
+</extensioninfo>

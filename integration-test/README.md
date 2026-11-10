@@ -473,3 +473,90 @@ an unowned link. Native setup/update budget900s, boot600s, stop90s plus330s drai
 edit/render180s and a separate180s rollback, runner900s. Timed-out writers remain
 preserved. Portable checks: `python3 scripts/test-sap-cms-driver.py`, the snapshot
 checks and Gradle harness/HTTP contracts. Full :agent:test remains release-only.
+
+
+### Backoffice Chrome profile (reviewed temporary setup)
+
+`python3 -B scripts/test-sap-backoffice-live.py prepare` performs the native setup
+and prints a private recovery directory. It never drives Chrome and never prints
+a rendered PASS. Claude runs the browser acceptance during independent audit.
+Keep the printed directory as `RECLAZZ_BO_STATE`; pass it with `--state` to every
+subsequent command. Do not start a second profile or edit these fixtures by hand.
+
+The config node/labels live in the profile-only `reclazztestbackofficecfg`
+extension. Its three sources are checked against immutable templates. It is never
+in normal localextensions. The 13 normal Backoffice sources and Solr80/CMS89
+memberships stay unchanged. The normal controller is edited only during the socket
+experiment and restored exactly afterwards. Default registered membership stays44.
+
+Before provisioning the driver requires the physical clean installation, launched
+safe options, both normal fixtures/tenants, exact custom symlinks, no inner/native
+competing writer and no reset overrides. Preflight failure is SKIP with zero
+writes. A durable private lease blocks another preparation even between commands;
+only the owning state may edit or restore. After capture any failure is FAIL with
+recovery attempted. Nine complete stopped roots cover config,data,Tomcat,bootstrap,
+native temp,both normal fixtures,the new profile,and native Backoffice SDK outputs.
+Immutable inventories are verified before deletion. Recovery removes the owned
+profile link and localextensions entry BEFORE restoring and booting original data,
+rebuilds normally, restores again, checks inventories, and boots a fresh normal JVM.
+Original media checksum and owned v1/v2 absence must match exactly. Snapshots remain
+in the private state directory. Never reuse a state marked restored.
+
+Setup first boots the added module with normal settings. If its v1 node is absent
+from persisted media, one stopped setup boot may append exactly
+`backoffice.cockpitng.reset.triggers=start` and
+`backoffice.cockpitng.reset.scope=cockpitConfig`, then stop, remove exactly those
+lines, and boot normally again. **That optional setup invokes native
+resetToDefaults for the complete cockpitConfig.** It is the reviewed snapshotted
+clean-DB setup exception; no reset/defaults/media purge or rebuild may force a
+source-only edit to pass. The chosen setup path,checksums,timings,events and native
+bean-refresh failure count are stored in state.json. Count starts before setup;
+zero is required through recovery and the default suite. Missing/truncated logs
+cannot prove zero. A genuine native prepare->restore smoke must pass before Claude
+starts Chrome acceptance, then prepare a NEW state for the experiment.
+
+Claude's exact assertions, three complete socket cycles:
+
+1. Open `https://localhost:9102/backoffice` in Chrome with the clean installation's
+   local credentials. Capture only the synthetic UI after login. Locate the actual
+   **Reclazz regression v1** explorer node and **Reclazz probe** widget. Record
+   screenshots and time. Keep an already composed view open; its first **Send probe**
+   must show `sent 1, no handler`. Missing readiness after setup is FAIL.
+2. Run `python3 -B scripts/test-sap-backoffice-live.py config-v2 --state "$RECLAZZ_BO_STATE"`.
+   The helper records a fresh connection cursor, exact config change and nonzero
+   cache-reset outcome, plus unchanged media checksum. Compose a genuinely new view
+   and capture the actual label. Outcome A: **Reclazz regression v2** visible.
+   Outcome B: **Reclazz regression v1** remains and media checksum unchanged: record
+   a reproduced config defect, never PASS/SKIP. Do not force v2 with a global reset.
+   Run the corresponding `config-v1` command to restore the source with its own
+   receipt. Record the restored baseline UI and checksum.
+3. Run `socket-add` with the same `--state`. It adds exactly one public String
+   `@SocketEvent(socketId="probeInput")` handler and waits for exact controller
+   COMPILE/STRUCTURAL_RELOAD. Open a newly composed widget; first **Send probe** must
+   show `handled v1: ping-1`. Record the native added-handler advice and screenshot.
+   The particular reopen action is verified in Chrome, not assumed by the helper.
+4. Run `socket-edit`; await its exact COMPILE/reload. Click the same composed view;
+   require `handled v2: ping-2` (record the actual counter if additional clicks).
+5. Run `socket-remove`; await exact RELOAD or STRUCTURAL_RELOAD for the owner. Held old listeners may give
+   the documented NoSuchMethodError. A fresh composed widget must show `sent 1,
+   no handler`. Old views are not required to rebind. Never replay the whole native
+   binding helper: the SDK duplicate control shows existing listeners would double.
+6. Repeat the socket add/edit/remove cycle three times, with fresh view proof each
+   time. If config outcome A, repeat its v1/v2/restore cycle three times too.
+   If B, retain screenshots/events/checksum as a product defect and keep the socket
+   acceptance separate. No product fix is included in this round.
+7. Close the experiment's Chrome views and run `restore --state "$RECLAZZ_BO_STATE"`.
+   The driver refuses unowned fixture differences or surviving writers. It restores
+   the original persisted media checksum, all snapshots and source hashes, then
+   starts a fresh normal JVM with the original extension set and safe options.
+   Run the normal44 suite (43 PASS + existing Hibernate SKIP) after recovery and
+   count native bean-refresh failures through the suite's end: zero required.
+
+Every edit waits at most120s. Native build900s, boot600s, stop90s plus330s writer
+drain. Timed-out native writers are preserved; never restore while one survives.
+A failed edit remains FAIL; use the full restore command and retain recovery files.
+`status --state ...` reports metadata/media only, never rendered acceptance.
+Record actual elapsed times and screenshot paths in AUDIT.md; no credentials.
+Portable contracts: `python3 -B scripts/test-sap-backoffice-driver.py`, plus the
+unchanged Solr/CMS driver tests and snapshot integrity tests. Full :agent:test
+remains release-only. Outcome B requires a separate reviewed product fix plan.

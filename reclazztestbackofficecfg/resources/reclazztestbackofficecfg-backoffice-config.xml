@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<config xmlns="http://www.hybris.com/cockpit/config">
+    <context merge-by="module" parent="auto" component="explorer-tree">
+        <explorer:explorer-tree xmlns:explorer="http://www.hybris.com/cockpitng/config/explorertree">
+            <explorer:navigation-node id="reclazz_regression_v1">
+                <explorer:type-node id="reclazz_regression_probe" code="ReclazzSchemaProbe"/>
+            </explorer:navigation-node>
+        </explorer:explorer-tree>
+    </context>
+</config>
