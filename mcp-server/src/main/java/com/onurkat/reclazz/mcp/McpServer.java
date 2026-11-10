@@ -34,6 +34,7 @@ public final class McpServer implements AutoCloseable {
     private final ObservationRegistry observations = new ObservationRegistry();
     private final AwaitReload awaitReload = new AwaitReload(observations);
     private final RecentEvents recentEvents = new RecentEvents(observations);
+    private final ReadOnlyQueries queries = new ReadOnlyQueries(recentEvents);
 
     @Override public void close() { awaitReload.close(); }
 
@@ -72,6 +73,8 @@ public final class McpServer implements AutoCloseable {
                 return success(request, toolsList());
             case "tools/call":
                 return toolsCall(request, cancellation);
+            case "resources/list", "resources/templates/list", "resources/read", "prompts/list", "prompts/get":
+                return contextRequest(request, cancellation);
             default:
                 return error(request, -32601, "Method not found: " + method);
         }
@@ -85,6 +88,8 @@ public final class McpServer implements AutoCloseable {
         result.addProperty("protocolVersion", protocolVersion);
         JsonObject capabilities = new JsonObject();
         capabilities.add("tools", new JsonObject());
+        capabilities.add("resources", new JsonObject());
+        capabilities.add("prompts", new JsonObject());
         result.add("capabilities", capabilities);
         JsonObject serverInfo = new JsonObject();
         serverInfo.addProperty("name", SERVER_NAME);
@@ -311,10 +316,9 @@ public final class McpServer implements AutoCloseable {
         JsonObject data;
         boolean isError = false;
         switch (name) {
-            case "reclazz_events": {
-                data = recentEvents.run(opts, cancellation);
-                isError = !data.get("status").getAsString().equals("observed");
-                text = data.toString();
+            case "reclazz_events", "reclazz_status", "reclazz_pending": {
+                ReadOnlyQueries.Result query = queries.run(name, opts, cancellation);
+                data = query.data(); text = query.legacyText(); isError = query.isError();
                 break;
             }
             case "reclazz_await_reload": {
@@ -399,23 +403,12 @@ public final class McpServer implements AutoCloseable {
                 data.addProperty("owner", opts.get("owner"));
                 break;
             }
-            case "reclazz_status":
-                data = statusJson(AgentSocket.run(opts, "HEALTH"));
-                text = data.toString();
-                break;
             case "reclazz_scan": {
                 AgentSocket.Result r = AgentSocket.run(opts, "SCAN");
                 isError = r.reason != null;
                 text = isError ? "Scan request failed: " + r.reason
                         : "Sent SCAN to the agent. Acceptance and reload completion are not confirmed.";
                 data = ToolContracts.operation(isError ? "unavailable" : "sent", text);
-                break;
-            }
-            case "reclazz_pending": {
-                AgentSocket.Result r = AgentSocket.run(opts, "PENDING");
-                isError = r.reason != null;
-                text = isError ? "Pending query failed: " + r.reason : String.join("\n", r.lines);
-                data = ToolContracts.diagnostic(r.lines, text, isError);
                 break;
             }
             case "reclazz_diagnose": {
@@ -446,22 +439,29 @@ public final class McpServer implements AutoCloseable {
         return success(request, result);
     }
 
-    private JsonObject statusJson(AgentSocket.Result r) {
-        JsonObject o = new JsonObject();
-        o.addProperty("attached", r.connected);
-        if (r.connected) {
-            if (r.reason != null) o.addProperty("reason", r.reason);
-            o.addProperty("agent", r.agent);
-            o.addProperty("protocol", r.protocol);
-            o.addProperty("port", r.port);
-            JsonArray health = new JsonArray();
-            for (String line : r.lines) health.add(line);
-            o.add("health", health);
-        } else {
-            o.addProperty("reason", r.reason);
-            if (r.port != 0) o.addProperty("port", r.port);
+    private JsonObject contextRequest(JsonObject request, RequestCancellation cancellation) {
+        try {
+            JsonObject result;
+            switch (request.get("method").getAsString()) {
+                case "resources/list" -> result = McpResources.list(request, false);
+                case "resources/templates/list" -> result = McpResources.list(request, true);
+                case "prompts/list" -> result = McpPrompts.list(request);
+                case "prompts/get" -> result = McpPrompts.get(request);
+                case "resources/read" -> {
+                    McpResources.Selection selected = McpResources.select(request);
+                    JsonObject data = queries.run(selected.tool(), target.options(selected.options()), cancellation).data();
+                    result = McpResources.contents(selected.uri(), data);
+                }
+                default -> throw new IllegalArgumentException("Unknown context method");
+            }
+            return success(request, result);
+        } catch (McpResources.Failure missing) {
+            return error(request, missing.code, missing.getMessage());
+        } catch (IllegalArgumentException invalid) {
+            return error(request, -32602, invalid.getMessage());
+        } catch (RuntimeException failure) {
+            return error(request, -32603, "Context request failed");
         }
-        return o;
     }
 
     private JsonObject success(JsonObject request, JsonObject result) {

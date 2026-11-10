@@ -35,7 +35,7 @@ final class BatchDispatcher implements AutoCloseable {
         }
         if (active != null) {
             if (sameId(active.id(), request.get("id"))) { emit(McpServer.error(request, -32600, "Request ID is already active")); return; }
-            if (!method.equals("ping") && !method.equals("tools/list")) {
+            if (!java.util.Set.of("ping", "tools/list", "resources/list", "resources/templates/list", "prompts/list", "prompts/get").contains(method)) {
                 emit(McpServer.error(request, -32000, "Verification batch or reload observation active; retry after completion or cancellation")); return;
             }
         }
@@ -43,7 +43,7 @@ final class BatchDispatcher implements AutoCloseable {
         boolean batch = method.equals("tools/call") && params != null && params.isJsonObject()
                 && McpServer.isString(params.getAsJsonObject().get("name"))
                 && java.util.Set.of("reclazz_verify_batch", "reclazz_await_reload", "reclazz_events").contains(params.getAsJsonObject().get("name").getAsString());
-        if (!batch) { emit(server.handle(request)); return; }
+        if (!batch && !McpResources.isEventRead(request)) { emit(server.handle(request)); return; }
         RequestCancellation cancel = new RequestCancellation();
         Thread worker = new Thread(() -> {
             JsonObject response;

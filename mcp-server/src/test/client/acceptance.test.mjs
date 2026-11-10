@@ -127,6 +127,35 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   const { tools } = await client.listTools(); // Official SDK compiles/caches the advertised output schemas.
   assert.deepEqual(tools.map(tool => tool.name).sort(), expectedTools);
   for (const tool of tools) assert.ok(tool.outputSchema, `${tool.name} must expose outputSchema`);
+  const capabilities = client.getServerCapabilities();
+  assert.deepEqual(capabilities.resources, {}); assert.deepEqual(capabilities.prompts, {});
+  const resources = await client.listResources();
+  assert.deepEqual(resources.resources.map(row => row.uri), ['reclazz://status', 'reclazz://pending']);
+  assert.equal(resources.nextCursor, undefined);
+  const templates = await client.listResourceTemplates();
+  assert.equal(templates.resourceTemplates.length, 1);
+  assert.equal(templates.resourceTemplates[0].uriTemplate, 'reclazz://events/{session}/{subscription}?since={since}{&limit}');
+  const prompts = await client.listPrompts();
+  assert.deepEqual(prompts.prompts.map(row => row.name), ['verify_my_last_change']);
+  const prompt = await client.getPrompt({ name: 'verify_my_last_change' });
+  assert.equal(prompt.messages.length, 1); assert.equal(prompt.messages[0].role, 'user');
+  assert.equal(prompt.messages[0].content.type, 'text');
+  assert.match(prompt.messages[0].content.text, /Never send BUILD ok just to/);
+  const resourceResults = [];
+  async function resource(uri, tool) {
+    const reply = await client.readResource({ uri });
+    assert.equal(reply.contents.length, 1);
+    const content = reply.contents[0]; assert.equal(content.uri, uri);
+    assert.equal(content.mimeType, 'application/json');
+    const data = JSON.parse(content.text);
+    const validator = client.getToolOutputValidator(`reclazz_${tool}`);
+    assert.equal(validator(data).valid, true, JSON.stringify(validator(data)));
+    resourceResults.push({ uri, reply, data }); return data;
+  }
+  await assert.rejects(client.readResource({ uri: 'reclazz://unknown' }), error => error.code === -32002);
+  await assert.rejects(client.readResource({ uri: 'reclazz://status?port=123' }), error => error.code === -32602);
+  await assert.rejects(client.getPrompt({ name: 'missing' }), error => error.code === -32602);
+
   const results = [], called = new Set();
   let negativeWitnesses = 0;
   const invoke = (request, ...options) => evaluation.toolCall(request.name,
@@ -157,6 +186,11 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   }
   const status = await call('status');
   assert.equal(status.attached, true);
+  const resourceStatus = await resource('reclazz://status', 'status');
+  for (const key of ['attached', 'agent', 'protocol', 'port']) assert.equal(resourceStatus[key], status[key]);
+  const resourcePending = await resource('reclazz://pending', 'pending');
+  assert.equal(resourcePending.complete, false);
+  assert.deepEqual(resourcePending, await call('pending'));
   const doctor = await call('doctor');
   assert.equal(doctor.status, 'observed');
   assert.equal(doctor.pid, String(app.pid));
@@ -252,6 +286,8 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     const eventIdentity = { sessionId: checkpoint.sessionId, subscriptionId: checkpoint.subscriptionId };
     const listed = await call('events', { ...eventIdentity, sinceCursor: checkpoint.cursor, limit: '100' });
     assert.equal(listed.status, 'observed'); assert.equal(listed.reloadConfirmed, false);
+    const eventUri = `reclazz://events/${checkpoint.sessionId}/${checkpoint.subscriptionId}?since=${checkpoint.cursor}&limit=100`;
+    assert.deepEqual(await resource(eventUri, 'events'), listed);
     assert.ok(listed.events.some(row => row.ownerClassName === 'Service' && ['reload', 'structural_reload'].includes(row.type)));
     const traversal = [];
     let eventCursor = checkpoint.cursor;
@@ -265,6 +301,10 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     assert.equal(new Set(traversal.map(row => row.sequence)).size, traversal.length);
     const ownerRows = await call('events', { ...eventIdentity, sinceCursor: checkpoint.cursor, ownerClassName: 'Service' });
     assert.ok(ownerRows.events.every(row => row.ownerClassName === 'Service'));
+    const unavailableResource = await resource(`reclazz://events/${checkpoint.sessionId}/foreign?since=0`, 'events');
+    assert.equal(unavailableResource.status, 'unavailable');
+    assert.equal(unavailableResource.reloadConfirmed, false);
+
 
     await probe(2, awaited.receipt, secondHash);
     await probe(2, await applied(secondHash), secondHash);
@@ -346,7 +386,7 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   await fs.writeFile(path.join(dir, 'evidence.json'), JSON.stringify({
     passed: true, platform: process.platform, arch: process.arch, node: process.version,
     sdk: '1.30.0', jdk: jdk.stderr.trim(), version, pid: app.pid, sessionId: doctor.sessionId,
-    tools: [...called].sort(), negativeWitnesses, results
+    tools: [...called].sort(), negativeWitnesses, resources, templates, prompts, prompt, resourceResults, results
   }, null, 2) + '\n');
   evaluation.finish();
   t.diagnostic(`11 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);

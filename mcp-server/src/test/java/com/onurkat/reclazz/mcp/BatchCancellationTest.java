@@ -94,6 +94,57 @@ class BatchCancellationTest {
         }
     }
 
+    @Test void packagedResourceEventsRemainCancellableAndMetadataNeverQueuesWork() throws Exception {
+        for (boolean eof : List.of(false, true)) {
+            CountDownLatch blocked = new CountDownLatch(1);
+            try (var agent = new BuildSafetyTest.FakeAgent((in, out) -> {
+                for (int i = 0; i < 2; i++) {
+                    String c = in.readLine(); JsonObject d = DoctorTest.evidence(c);
+                    d.addProperty("sessionId", "session-test"); DoctorTest.send(out, c, d);
+                }
+                assertTrue(in.readLine().startsWith("DOCTOR ")); blocked.countDown();
+                assertNull(in.readLine(), "resource cancellation/EOF must close the shared stream");
+            })) {
+                Path port = Files.writeString(dir.resolve("resource.port"), Integer.toString(agent.server.getLocalPort()));
+                try (var child = new Child("--port-file", port.toString())) {
+                    child.initialize("2025-06-18");
+                    child.send(AwaitReloadTest.request(agent.server.getLocalPort(), "checkpoint"));
+                    JsonObject cp = ReloadVerificationTest.text(child.read().getAsJsonObject("result"));
+                    JsonObject page = McpResourcesTest.rpc("resources/read", McpResourcesTest.params("uri", McpResourcesTest.uri(cp, "0")));
+                    page.addProperty("id", 42); child.send(page); assertTrue(blocked.await(3, TimeUnit.SECONDS));
+                    child.send(cancel("\"42\"")); // Wrong ID type must not cancel numeric42.
+                    for (String method : List.of("ping", "tools/list", "resources/list", "resources/templates/list", "prompts/list", "prompts/get")) {
+                        JsonObject pure = rpc("43", method);
+                        if (method.equals("prompts/get")) pure.add("params", McpResourcesTest.params("name", "verify_my_last_change"));
+                        child.send(pure); JsonObject answer = child.read();
+                        assertEquals(43, answer.get("id").getAsInt()); assertTrue(answer.has("result"), answer.toString());
+                    }
+                    child.send(page); assertEquals(-32600, child.read().getAsJsonObject("error").get("code").getAsInt());
+                    for (JsonObject other : List.of(page.deepCopy(), McpResourcesTest.rpc("resources/read", McpResourcesTest.params("uri", "reclazz://status")),
+                            BatchVerificationTest.request(agent.server.getLocalPort(), BatchVerificationTest.items("A")))) {
+                        other.addProperty("id", 45); child.send(other);
+                        assertEquals(-32000, child.read().getAsJsonObject("error").get("code").getAsInt());
+                    }
+                    if (eof) child.input.close(); else child.send(cancel("42"));
+                    agent.verify();
+                    if (eof) { assertTrue(child.process.waitFor(3, TimeUnit.SECONDS)); assertEquals(0, child.process.exitValue()); }
+                    else {
+                        for (int i = 0; i < 30; i++) {
+                            page.addProperty("id", 100 + i); child.send(page); JsonObject answer = child.read();
+                            assertEquals(100 + i, answer.get("id").getAsInt());
+                            if (answer.has("result")) {
+                                JsonObject data = JsonParser.parseString(answer.getAsJsonObject("result").getAsJsonArray("contents").get(0).getAsJsonObject().get("text").getAsString()).getAsJsonObject();
+                                assertEquals("unavailable", data.get("status").getAsString()); break;
+                            }
+                            assertTrue(i < 29, "resource worker slot never released"); Thread.sleep(10);
+                        }
+                    }
+                    assertNull(child.lines.poll(100, TimeUnit.MILLISECONDS), "cancelled resource must not emit a late answer");
+                }
+            }
+        }
+    }
+
     @ParameterizedTest @ValueSource(strings={"2024-11-05","2025-06-18"})
     void cancellationClosesHandshakeAndReceiptWaitWhilePingStaysResponsive(String version) throws Exception {
         for (boolean handshake : List.of(true,false)) {
@@ -197,9 +248,10 @@ class BatchCancellationTest {
         final LinkedBlockingQueue<String> lines=new LinkedBlockingQueue<>();
         final Thread reader;
         final Path stderr;
-        Child() throws Exception {
+        Child(String... startup) throws Exception {
             stderr=Files.createTempFile(dir,"mcp-", ".stderr");
             ProcessBuilder b=new ProcessBuilder(Path.of(System.getProperty("java.home"),"bin","java").toString(),"-jar",System.getProperty("reclazz.mcp.releaseJar"));
+            b.command().addAll(List.of(startup));
             b.redirectError(stderr.toFile());
             for(String key:List.of("CLASSPATH","JAVA_TOOL_OPTIONS","JDK_JAVA_OPTIONS","_JAVA_OPTIONS"))b.environment().remove(key);
             process=b.start();input=new PrintWriter(process.getOutputStream(),true,StandardCharsets.UTF_8);
