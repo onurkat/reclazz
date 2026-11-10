@@ -528,8 +528,9 @@ and verify final byte-identical restoration. ImpEx must transition from a visibl
 v1 baseline to v2 and back to v1, with terminal import outcomes; stale v2 data
 cannot establish success. The single nonce-based model-save POST is not retried.
 Record five identical full runs on one boot plus a fresh-boot run, the exact agent
-artifact/server identity and the fixture/ImpEx restoration checks. The existing
-Hibernate ORM scenario remains SKIP when the SAP fixture has no ORM L2 provider.
+artifact/server identity and the fixture/ImpEx restoration checks. The SAP
+default suite has 45 scenarios and requires all 45 to PASS; any SKIP is rejected. It contains no Hibernate ORM scenario. The real Hibernate L2
+provider regression remains separate in `:agent:hibernateTest`.
 See [the runner guide](../integration-test/README.md#runner-ordering-and-restoration)
 for scope and prerequisites. Broader SAP capability coverage remains a separate
 staged task; these synchronization changes do not certify those capabilities.

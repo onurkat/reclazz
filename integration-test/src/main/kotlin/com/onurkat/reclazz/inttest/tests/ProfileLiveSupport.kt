@@ -39,7 +39,6 @@ internal val committedDefaultMembership = setOf(
     "EventListenerTest",
     "InterceptorReloadTest",
     "ImpexAutoImportTest",
-    "HibernateL2CacheTest",
     "RapidSuccessiveChangesTest",
     "SyntaxErrorRecoveryTest",
     "LargeClassReloadTest",
@@ -72,7 +71,7 @@ internal val committedDefaultMembership = setOf(
     "DynamicAttributeLiveTest",
 )
 internal fun requireDefaultMembership(actual: List<String>) {
-    check(actual.size == actual.toSet().size && actual.toSet().containsAll(committedDefaultMembership)) {
+    check(actual.size == actual.toSet().size && actual.toSet() == committedDefaultMembership) {
         "Default suite lost committed membership: " + (committedDefaultMembership-actual.toSet())
     }
 }

@@ -1,8 +1,8 @@
 """Shared exact default-suite and normal-fixture contract for native drivers."""
 import re
 
-DEFAULT_CASES = 46
-DEFAULT_OUTCOME = {'PASS': 45, 'FAIL': 0, 'ERROR': 0, 'SKIP': 1}
+DEFAULT_CASES = 45
+DEFAULT_OUTCOME = {'PASS': 45, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
 NORMAL_FIXTURE_FILES = 74
 # Report labels from the committed Kotlin scenario constructors; replacements cannot pass by count.
 DEFAULT_TEST_NAMES = (
@@ -21,7 +21,6 @@ DEFAULT_TEST_NAMES = (
     'Event listener',
     'Interceptor reload',
     'ImpEx auto-import',
-    'Hibernate L2 cache',
     'Rapid successive changes',
     'Syntax error recovery',
     'Large class reload',
@@ -63,5 +62,5 @@ def default_result(text):
     headers = re.findall(r'^\s*Default committed membership: (\d+) cases(?: \(Orika rollback included\))?\s*$', plain, re.M)
     accepted = (headers == [str(DEFAULT_CASES)] and len(names) == DEFAULT_CASES and
                 set(names) == set(DEFAULT_TEST_NAMES) and counts == DEFAULT_OUTCOME and
-                [(name.strip(), status) for name, status in rows if status == 'SKIP'] == [('Hibernate L2 cache', 'SKIP')])
+                not any(status == 'SKIP' for _, status in rows))
     return {'counts': counts, 'defaultSuite': accepted}

@@ -166,15 +166,20 @@ class CmsDriverTest(unittest.TestCase):
 
     def test_default_report_requires_exact_membership_and_outcome(self):
         runner = driver
-        rows = [(name, 'SKIP' if name == 'Hibernate L2 cache' else 'PASS') for name in DEFAULT_TEST_NAMES]
-        def log(selected, membership=DEFAULT_CASES):
+        rows = [(name, 'PASS') for name in DEFAULT_TEST_NAMES]
+        def log(selected, membership=45):
             return f'  Default committed membership: {membership} cases (Orika rollback included)\n' + ''.join(
                 f'{name} | \x1b[32m{status}\x1b[0m | 1s |\n' for name, status in selected)
         valid = log(rows)
-        invalid = [log(rows[:-1], DEFAULT_CASES-1), log(rows[:-1]),
-                   log([(name, 'PASS') for name, _ in rows if name != 'Hibernate L2 cache']),
-                   log([('replacement scenario', rows[0][1])] + rows[1:]),
-                   log([(name, 'SKIP' if i == 0 else 'PASS') for i, (name, _) in enumerate(rows)])]
+        invalid = [log(rows[:-1], 44), log(rows[:-1]),
+                   log(rows + [('Hibernate L2 cache', 'SKIP')], 46),
+                   log(rows + [('Hibernate L2 cache', 'PASS')], 46),
+                   log(rows, 46),
+                   log([('replacement scenario', 'PASS')] + rows[1:]),
+                   log([('Hibernate L2 cache', 'SKIP')] + rows[1:]),
+                   log([(name, 'SKIP' if i == 0 else 'PASS') for i, (name, _) in enumerate(rows)]),
+                   log([(name, 'FAIL' if i == 0 else 'PASS') for i, (name, _) in enumerate(rows)]),
+                   log([(name, 'ERROR' if i == 0 else 'PASS') for i, (name, _) in enumerate(rows)])]
         for text, expected in [(valid, True)] + [(text, False) for text in invalid]:
             with tempfile.TemporaryDirectory() as temporary:
                 def process(*args, **kwargs):

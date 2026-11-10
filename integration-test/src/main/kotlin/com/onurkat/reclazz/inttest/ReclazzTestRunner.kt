@@ -68,14 +68,13 @@ fun main() {
         EventListenerTest(config, agentClient, httpVerifier),          // 13
         InterceptorReloadTest(config, agentClient, httpVerifier),      // 14
         ImpexAutoImportTest(config, agentClient, httpVerifier),        // 15
-        HibernateL2CacheTest(config, agentClient, httpVerifier),       // 16
-        RapidSuccessiveChangesTest(config, agentClient, httpVerifier), // 17
-        SyntaxErrorRecoveryTest(config, agentClient, httpVerifier),    // 18
-        LargeClassReloadTest(config, agentClient, httpVerifier),       // 19
-        AnnotationChangeTest(config, agentClient, httpVerifier),       // 20
-        LambdaReloadTest(config, agentClient, httpVerifier),           // 21
-        CacheableConditionTest(config, agentClient, httpVerifier),     // 22
-        EnumTailRemoveTest(config, agentClient, httpVerifier),         // 23
+        RapidSuccessiveChangesTest(config, agentClient, httpVerifier), // 16
+        SyntaxErrorRecoveryTest(config, agentClient, httpVerifier),    // 17
+        LargeClassReloadTest(config, agentClient, httpVerifier),       // 18
+        AnnotationChangeTest(config, agentClient, httpVerifier),       // 19
+        LambdaReloadTest(config, agentClient, httpVerifier),           // 20
+        CacheableConditionTest(config, agentClient, httpVerifier),     // 21
+        EnumTailRemoveTest(config, agentClient, httpVerifier),         // 22
         InterceptorMappingAddLiveTest(config, agentClient, httpVerifier),
         InterceptorMappingEditLiveTest(config, agentClient, httpVerifier), // Batch A discovery; never a known-failure allowance
         SpringXmlPropertyLiveTest(config, agentClient, httpVerifier),

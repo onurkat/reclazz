@@ -590,7 +590,9 @@ fun main() {
         val result=runGatedProfile("restore-contract",{null}) {withRestore({Unit}) {error("restore failure")}}
         check(result.status==TestStatus.FAIL && "restore failure" in result.notes)
     }
-    case("defaultMembershipRetainsCommitted46") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==46)}
+    case("defaultMembershipRetainsCommitted45") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==45)}
+    case("defaultMembershipRejectsExtraHibernate") {check(runCatching {requireDefaultMembership((committedDefaultMembership+"HibernateL2CacheTest").toList())}.isFailure)}
+    case("defaultMembershipRejectsDuplicate") {check(runCatching {requireDefaultMembership(committedDefaultMembership.toList()+"MethodBodyChangeTest")}.isFailure)}
     case("defaultMembershipRejectsMissingOrika") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OrikaPropertyRollbackLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsSameCountReplacement") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OrikaPropertyRollbackLiveTest"+"FakeTest").toList())}.isFailure)}
     val generatedOwners=setOf("com.example.Data","com.example.Dto")
