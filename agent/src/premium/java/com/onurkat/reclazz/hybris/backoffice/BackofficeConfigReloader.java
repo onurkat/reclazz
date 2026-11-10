@@ -4,89 +4,91 @@
  */
 package com.onurkat.reclazz.hybris.backoffice;
 
-import com.onurkat.reclazz.ui.StatusReporter;
-
-import java.lang.reflect.Method;
-import java.util.List;
+import com.onurkat.reclazz.ui.Failures;
 import com.onurkat.reclazz.ui.Plural;
+import com.onurkat.reclazz.ui.StatusReporter;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
 
 /**
- * Applies a saved {@code *-backoffice-config.xml} to the running backoffice.
- *
- * <p>cockpitng reads the view configuration once and answers every later
- * question from the caches inside {@code DefaultCockpitConfigurationService},
- * so editing the file changed nothing until the next full backoffice
- * redeploy. That service implements cockpitng's own {@code Resettable}
- * contract, whose {@code reset()} drops exactly those caches, and that is
- * what is called here: the framework's own reset, on the framework's own
- * bean, in whichever web contexts carry one. {@code resetToDefaults()} is
- * deliberately never called; it erases the customisations users made in the
- * running backoffice, which is not what saving a file means.
- *
- * <p>What the next read actually sees depends on where the running backoffice
- * loads configuration from. With cockpitng's classpath resource loading it is
- * the extension's file, and the save is live on the next view open; where the
- * configuration was packaged into the module archive at build time, the
- * packaged copy answers until the next build, and the message says so rather
- * than claiming the save arrived.
- *
- * <p>All reflective, no backoffice dependency; a server without cockpitng has
- * no such bean and nothing here runs.
+ * Runs the native F4 cockpit-configuration reset after a module XML save.
+ * This rebuilds persisted configuration from the modules and resets UI-made
+ * configuration too. It does not reset widgets or delete media directly.
  */
 public final class BackofficeConfigReloader {
+    private static final String SERVICE_TYPE = "com.hybris.cockpitng.core.config.CockpitConfigurationService";
+    private BackofficeConfigReloader() { }
 
-    private BackofficeConfigReloader() {
+    /** The factory supplies the existing verified owner tenant/session boundary. */
+    @FunctionalInterface
+    public interface OwnerScope {
+        Object execute(Object context, Callable<Object> action) throws Exception;
     }
 
-    private static final String RESETTABLE = "com.hybris.cockpitng.core.util.Resettable";
-    private static final String SERVICE_TYPE =
-            "com.hybris.cockpitng.core.config.CockpitConfigurationService";
+    /** Distinguishes absence, failure, opt-out and a completed native operation. */
+    public record Result(int contexts, int services, int failures, boolean disabled) { }
 
-    /**
-     * Reset the cockpit configuration caches in every context that has them.
-     *
-     * @return how many configuration services were reset
-     */
-    public static int reload(String fileName, List<Object> applicationContexts) {
-        int reset = 0;
-        for (Object appContext : applicationContexts) {
+    public static Result reload(String fileName, List<Object> contexts, boolean enabled, OwnerScope scope) {
+        if (!enabled) {
+            StatusReporter.warn(fileName + " saved, not applied; press F4 and reset cockpit configuration in Backoffice"
+                    + " (backofficeConfigReset=false).");
+            return new Result(0, 0, 0, true);
+        }
+        int found = 0, reset = 0, failures = 0;
+        Set<Object> completed = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (Object context : contexts) {
+            Class<?> type;
             try {
-                ClassLoader loader = appContext.getClass().getClassLoader();
-                Class<?> serviceType;
-                Class<?> resettable;
+                ClassLoader loader = context.getClass().getClassLoader();
                 try {
-                    serviceType = Class.forName(SERVICE_TYPE, false, loader);
-                    resettable = Class.forName(RESETTABLE, false, loader);
-                } catch (ClassNotFoundException notBackoffice) {
-                    continue;                       // this context is not a backoffice
-                }
-
-                Method getBeanNames = appContext.getClass()
-                        .getMethod("getBeanNamesForType", Class.class);
-                String[] names = (String[]) getBeanNames.invoke(appContext, serviceType);
-                if (names == null) continue;
-
-                Method getBean = appContext.getClass().getMethod("getBean", String.class);
-                for (String name : names) {
-                    Object service = getBean.invoke(appContext, name);
-                    if (service == null || !resettable.isInstance(service)) continue;
-                    resettable.getMethod("reset").invoke(service);
+                    Object actual = context.getClass().getMethod("getClassLoader").invoke(context);
+                    if (actual instanceof ClassLoader contextLoader) loader = contextLoader;
+                } catch (NoSuchMethodException ignored) { /* An opaque context may expose only its implementation loader. */ }
+                type = Class.forName(SERVICE_TYPE, false, loader);
+            } catch (ClassNotFoundException absent) {
+                continue;
+            } catch (Throwable failure) {
+                failures++;
+                failed(fileName, context, failure);
+                continue;
+            }
+            found++;
+            try {
+                Object result = scope.execute(context, () -> {
+                    // F4 addresses the active alias, not its unused lazy parent definitions.
+                    Object service = context.getClass().getMethod("getBean", String.class)
+                            .invoke(context, "cockpitConfigurationService");
+                    if (service == null || !type.isInstance(service)) {
+                        throw new IllegalStateException("cockpitConfigurationService has an incompatible type");
+                    }
+                    if (completed.contains(service)) return null;
+                    type.getMethod("resetToDefaults").invoke(service);
+                    return service;
+                });
+                if (result != null) {
+                    completed.add(result);
                     reset++;
                 }
-            } catch (Throwable oneContext) {
-                // A context that cannot be asked keeps its cache; the report
-                // below counts only what was actually reset.
+            } catch (Throwable failure) {
+                failures++;
+                failed(fileName, context, failure);
             }
         }
-
         if (reset > 0) {
-            StatusReporter.success("Backoffice configuration cache reset ("
-                    + Plural.of(reset, "service") + ") for " + fileName + ": the next view open re-reads "
-                    + "the configuration.");
-            StatusReporter.info("If the running backoffice reads this configuration from "
-                    + "the packaged module archive rather than the extension folder, the "
-                    + "packaged copy still answers until the next build.");
+            StatusReporter.success("Backoffice configuration reset as with F4 (" + Plural.of(reset, "service")
+                    + ") for " + fileName + ": open a new view to see it. Configuration changed in the UI was reset too.");
         }
-        return reset;
+        return new Result(found, reset, failures, false);
+    }
+
+    private static void failed(String fileName, Object context, Throwable failure) {
+        String display = context == null ? "null" : context.getClass().getName();
+        try { if (context != null) display = String.valueOf(context.getClass().getMethod("getDisplayName").invoke(context)); }
+        catch (ReflectiveOperationException ignored) { /* Class name remains useful for an unavailable context. */ }
+        StatusReporter.warn(fileName + ": Backoffice configuration reset failed in " + display + ": "
+                + Failures.describe(failure));
     }
 }

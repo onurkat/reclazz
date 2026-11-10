@@ -25,6 +25,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Backoffice module configuration saves run the native F4 cockpit-config reset
+  in their owning tenant/session without a restart. This resets UI-made
+  configuration too; `backofficeConfigReset=false` leaves it manual. Reset
+  failures report their cause instead of claiming Backoffice is absent.
+
 - Removing a previously added DTO property drops its implicit Orika mapping
   from retained plans, including the final added property. Application-defined
   mappings remain intact and report removed accessors with a restart-ledger note.

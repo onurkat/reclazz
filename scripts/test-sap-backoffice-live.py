@@ -202,7 +202,7 @@ def receipt(events, kind):
                        e.get('message') == 'Backoffice config changed: ' + CONFIG.name + ' [reclazztestbackofficecfg]'), None)
         if change is None:
             return None
-        pattern = r'^Backoffice configuration cache reset \(([1-9][0-9]*) services?\) for ' + re.escape(CONFIG.name) + r': the next view open re-reads the configuration\.$'
+        pattern = r'^Backoffice configuration reset as with F4 \(([1-9][0-9]*) services?\) for ' + re.escape(CONFIG.name) + r': open a new view to see it\. Configuration changed in the UI was reset too\.$'
         return next((e for e in events[change + 1:] if e.get('level') == 'OK' and re.fullmatch(pattern, e.get('message', ''))), None)
     compiled = next((i for i,e in enumerate(events) if e.get('level') == 'COMPILE' and
                      (e.get('message') == 'Compiled ' + CONTROLLER.name or e.get('message','').startswith('Compiled ' + CONTROLLER.name + ' ('))), None)
@@ -232,11 +232,20 @@ def socket_shape(original, marker=None):
     return (text[:-2] + method + '}\n').encode()
 
 
+def verify_edit_media(before, after, data, kind):
+    if kind == 'config':
+        expected_v2 = b'reclazz_regression_v2' in data
+        if after['v2'] != expected_v2 or after['v1'] == expected_v2 or after['sha256'] == before['sha256']:
+            raise RuntimeError('Native F4 reset did not apply the owned config ID to media')
+    elif after != before:
+        raise RuntimeError('Socket edit unexpectedly changed persisted config media')
+
+
 def write_and_wait(folder, state, path, data, kind):
     if data == path.read_bytes():
         raise RuntimeError('Expected distinct owned edit')
     before = media()
-    if before['sha256'] != state['setupMedia']['sha256']:
+    if before != state.get('expectedMedia',state['setupMedia']):
         raise RuntimeError('Media changed outside experiment')
     doctor = support.doctor()
     if doctor['sessionId'] != state['experimentDoctor']['sessionId']:
@@ -260,8 +269,9 @@ def write_and_wait(folder, state, path, data, kind):
                 events.append(event)
             outcome = receipt(events, kind)
     after = media()
-    if after['sha256'] != before['sha256']:
-        raise RuntimeError('Source edit changed persisted media during experiment')
+    verify_edit_media(before, after, data, kind)
+    if kind == 'config':
+        state['expectedMedia'] = after
     result = {'kind': kind, 'cursor': cursor, 'sessionId': doctor['sessionId'],
               'sourceSha256': hashlib.sha256(data).hexdigest(), 'events': events,
               'receipt': outcome, 'media': after, 'rendered': 'UNRUN; Claude Chrome evidence required'}

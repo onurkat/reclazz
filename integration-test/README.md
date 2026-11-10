@@ -508,14 +508,15 @@ from persisted media, one stopped setup boot may append exactly
 `backoffice.cockpitng.reset.scope=cockpitConfig`, then stop, remove exactly those
 lines, and boot normally again. **That optional setup invokes native
 resetToDefaults for the complete cockpitConfig.** It is the reviewed snapshotted
-clean-DB setup exception; no reset/defaults/media purge or rebuild may force a
-source-only edit to pass. The chosen setup path,checksums,timings,events and native
+clean-DB setup exception. During edits the owner-approved agent F4 cockpit-config
+reset is the operation under test; no additional manual reset, media purge or
+rebuild may force an edit to pass. The chosen setup path,checksums,timings,events and native
 bean-refresh failure count are stored in state.json. Count starts before setup;
 zero is required through recovery and the default suite. Missing/truncated logs
 cannot prove zero. A genuine native prepare->restore smoke must pass before Claude
 starts Chrome acceptance, then prepare a NEW state for the experiment.
 
-Claude's exact assertions, three complete socket cycles:
+Claude's exact assertions, three config cycles and one socket cycle:
 
 1. Open `https://localhost:9102/backoffice` in Chrome with the clean installation's
    local credentials. Capture only the synthetic UI after login. Locate the actual
@@ -524,10 +525,11 @@ Claude's exact assertions, three complete socket cycles:
    must show `sent 1, no handler`. Missing readiness after setup is FAIL.
 2. Run `python3 -B scripts/test-sap-backoffice-live.py config-v2 --state "$RECLAZZ_BO_STATE"`.
    The helper records a fresh connection cursor, exact config change and nonzero
-   cache-reset outcome, plus unchanged media checksum. Compose a genuinely new view
-   and capture the actual label. Outcome A: **Reclazz regression v2** visible.
-   Outcome B: **Reclazz regression v1** remains and media checksum unchanged: record
-   a reproduced config defect, never PASS/SKIP. Do not force v2 with a global reset.
+   native F4 cockpit-config reset, then requires v2 in changed persisted media.
+   Compose a genuinely new view and capture **Reclazz regression v2**. A receipt
+   or media probe is not rendered proof. The owner-directed agent reset rebuilds
+   cockpit configuration and resets UI-made configuration too, without resetting
+   widgets. Do not manually force v2 with an extra global reset.
    Run the corresponding `config-v1` command to restore the source with its own
    receipt. Record the restored baseline UI and checksum.
 3. Run `socket-add` with the same `--state`. It adds exactly one public String
@@ -541,10 +543,9 @@ Claude's exact assertions, three complete socket cycles:
    the documented NoSuchMethodError. A fresh composed widget must show `sent 1,
    no handler`. Old views are not required to rebind. Never replay the whole native
    binding helper: the SDK duplicate control shows existing listeners would double.
-6. Repeat the socket add/edit/remove cycle three times, with fresh view proof each
-   time. If config outcome A, repeat its v1/v2/restore cycle three times too.
-   If B, retain screenshots/events/checksum as a product defect and keep the socket
-   acceptance separate. No product fix is included in this round.
+6. Complete three config v1/v2/restore cycles, with fresh view proof each time,
+   and one socket add/edit/remove cycle. Retain screenshots/events/media
+   for every failure; a stale view or media value is FAIL, never PASS/SKIP.
 7. Close the experiment's Chrome views and run `restore --state "$RECLAZZ_BO_STATE"`.
    The driver refuses unowned fixture differences or surviving writers. It restores
    the original persisted media checksum, all snapshots and source hashes, then
@@ -559,4 +560,4 @@ A failed edit remains FAIL; use the full restore command and retain recovery fil
 Record actual elapsed times and screenshot paths in AUDIT.md; no credentials.
 Portable contracts: `python3 -B scripts/test-sap-backoffice-driver.py`, plus the
 unchanged Solr/CMS driver tests and snapshot integrity tests. Full :agent:test
-remains release-only. Outcome B requires a separate reviewed product fix plan.
+remains release-only.

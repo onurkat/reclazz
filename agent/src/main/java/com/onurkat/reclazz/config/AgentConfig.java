@@ -31,7 +31,7 @@ public class AgentConfig {
             "excludePatterns", "excludeClasses", "startupDelaySec",
             "structuralReload", "transformDumpDir", "verifyTransform",
             "platform", "watchDirs", "jpaRefresh", "sessionLog", "reloadBoundary",
-            "refreshOwnersOnHelper", "resetStatics"
+            "refreshOwnersOnHelper", "resetStatics", "backofficeConfigReset"
     );
 
     // Split on comma followed by a known key= pattern
@@ -56,6 +56,8 @@ public class AgentConfig {
     private boolean impexAllowRemove = false;
     private boolean autoUpdateRunningSystem = false;
     private boolean autoSolrReindex = false;
+    /** F4-equivalent cockpit-config reset; also resets UI-made configuration. */
+    private boolean backofficeConfigReset = true;
     private boolean autoCompile = false;
     private long debounceMs = 500;
     private boolean verbose = false;
@@ -176,6 +178,9 @@ public class AgentConfig {
         }
         if (params.containsKey("autoUpdateRunningSystem")) {
             config.autoUpdateRunningSystem = Boolean.parseBoolean(params.get("autoUpdateRunningSystem"));
+        }
+        if (params.containsKey("backofficeConfigReset")) {
+            config.backofficeConfigReset = Boolean.parseBoolean(params.get("backofficeConfigReset"));
         }
         if (params.containsKey("autoSolrReindex")) {
             config.autoSolrReindex = Boolean.parseBoolean(params.get("autoSolrReindex"));
@@ -389,6 +394,7 @@ public class AgentConfig {
     public boolean isAutoImpex() { return autoImpex; }
     public boolean isImpexAllowRemove() { return impexAllowRemove; }
     public boolean isAutoUpdateRunningSystem() { return autoUpdateRunningSystem; }
+    public boolean isBackofficeConfigReset() { return backofficeConfigReset; }
     public boolean isAutoSolrReindex() { return autoSolrReindex; }
     public boolean isAutoCompile() { return autoCompile; }
     public long getDebounceMs() { return debounceMs; }

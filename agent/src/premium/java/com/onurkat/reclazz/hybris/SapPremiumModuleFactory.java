@@ -177,10 +177,11 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
         private void handleBackofficeConfigChange(ChangeEvent event) {
             StatusReporter.info("Backoffice config changed: "
                     + event.getPath().getFileName() + " [" + event.getModuleName() + "]");
-            int reset = BackofficeConfigReloader
+            var result = BackofficeConfigReloader
                     .reload(event.getPath().getFileName().toString(),
-                            platformContext.getAllApplicationContexts());
-            if (reset == 0) {
+                            platformContext.getAllApplicationContexts(), context.config().isBackofficeConfigReset(),
+                            SapOwnerScope::execute);
+            if (!result.disabled() && result.contexts() == 0 && result.failures() == 0) {
                 StatusReporter.info("No running backoffice holds this configuration "
                         + "(the backoffice web context is not up, or this is not a "
                         + "backoffice server). Nothing to reset.");

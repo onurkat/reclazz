@@ -37,7 +37,7 @@ class BackofficeDriverTest(unittest.TestCase):
 
     def test_config_needs_exact_change_then_nonzero_reset_for_exact_file(self):
         change=event('INFO','Backoffice config changed: '+d.CONFIG.name+' [reclazztestbackofficecfg]')
-        reset=event('OK','Backoffice configuration cache reset (4 services) for '+d.CONFIG.name+': the next view open re-reads the configuration.')
+        reset=event('OK','Backoffice configuration reset as with F4 (4 services) for '+d.CONFIG.name+': open a new view to see it. Configuration changed in the UI was reset too.')
         self.assertEqual(reset,d.receipt([change,reset],'config'))
         for events in [[reset],[reset,change],[change,event('OK',reset['message'].replace('(4 services)','(0 services)'))],[change,event('OK',reset['message'].replace(d.CONFIG.name,'other-backoffice-config.xml'))],[event('INFO',change['message'].replace('[reclazztestbackofficecfg]','[other]')),reset]]:
             self.assertIsNone(d.receipt(events,'config'))
@@ -48,6 +48,25 @@ class BackofficeDriverTest(unittest.TestCase):
         self.assertEqual(reload,d.receipt([compile,reload],'socket-add'))
         for events in [[reload,compile],[reload],[event('COMPILE','Compiled Other.java'),reload],[compile,event('STRUCTURAL_RELOAD',reload['message'].replace(d.OWNER,d.OWNER+'Other'))],[compile,event('RELOAD','Reloaded '+d.OWNER+' (inner class)')],[compile,event('RELOAD','Reloaded '+d.OWNER+' (2ms)')]]:
             self.assertIsNone(d.receipt(events,'socket-add'))
+
+    def test_cache_only_or_manual_warn_receipt_cannot_prove_config_apply(self):
+        change=event('INFO','Backoffice config changed: '+d.CONFIG.name+' [reclazztestbackofficecfg]')
+        for message in ['Backoffice configuration cache reset (1 service) for '+d.CONFIG.name+': the next view open re-reads the configuration.',
+                        d.CONFIG.name+' saved, not applied; press F4 and reset cockpit configuration in Backoffice (backofficeConfigReset=false).']:
+            for level in ['OK','WARN']:
+                self.assertIsNone(d.receipt([change,event(level,message)],'config'))
+
+    def test_native_media_must_replace_id_and_change_hash_in_both_directions(self):
+        v1={'sha256':'one','size':10,'v1':True,'v2':False}
+        v2={'sha256':'two','size':10,'v1':False,'v2':True}
+        d.verify_edit_media(v1,v2,b'reclazz_regression_v2','config')
+        d.verify_edit_media(v2,v1,b'reclazz_regression_v1','config')
+        for before,after,data in [(v1,v1,b'reclazz_regression_v2'),(v2,v2,b'reclazz_regression_v1'),
+                                  (v1,dict(v2,v1=True),b'reclazz_regression_v2'),
+                                  (v1,dict(v2,sha256='one'),b'reclazz_regression_v2')]:
+            with self.assertRaises(RuntimeError):d.verify_edit_media(before,after,data,'config')
+        d.verify_edit_media(v1,v1,b'java','socket-add')
+        with self.assertRaises(RuntimeError):d.verify_edit_media(v1,v2,b'java','socket-add')
 
     def test_error_cannot_be_hidden_by_success(self):
         with self.assertRaises(RuntimeError):d.receipt([event('ERROR','failed')],'config')
