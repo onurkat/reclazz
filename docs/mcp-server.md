@@ -12,6 +12,10 @@ forbid the shipped agent from opening a client socket.
 The [client acceptance matrix](client-matrix.md) records independent SDK,
 real build-tool and OS coverage, with runnable tests and explicit untested lanes.
 
+For the developer workflow, read
+[MCP for coding agents: close the loop](mcp-for-coding-agents.md): each benefit
+has a recorded example and a limit, from target discovery to byte receipts.
+
 ## Running it
 
 The server requires Java 17 or newer and speaks JSON-RPC over stdio. It is a

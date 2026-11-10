@@ -16,6 +16,7 @@ complete references for configuration, APIs and lifecycle details.
 | [Installation](installation.md) | Open guide → |
 | [Reclazz with Maven](maven.md) | Open guide → |
 | [Reclazz MCP server](mcp-server.md) | Open guide → |
+| [MCP for coding agents: close the loop](mcp-for-coding-agents.md) | Open guide → |
 | [Product technical reference](product-reference.md) | Open guide → |
 | [The Status Socket](protocol.md) | Open guide → |
 | [Reclazz on SAP Commerce, for a coding agent](sap-commerce.md) | Open guide → |
