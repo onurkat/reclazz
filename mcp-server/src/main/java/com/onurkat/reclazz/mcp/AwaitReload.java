@@ -13,14 +13,8 @@ import java.util.regex.Pattern;
 
 /** Received-event correlation followed by an exact-byte receipt, never source-revision proof. */
 final class AwaitReload implements AutoCloseable {
-    private final LinkedHashMap<String, Entry> subscriptions = new LinkedHashMap<>(4, .75f, true);
-    private final Set<RequestCancellation> active = java.util.concurrent.ConcurrentHashMap.newKeySet();
-    private volatile boolean closed;
-    private static final class Entry {
-        final EventSubscription stream;
-        boolean busy;
-        Entry(EventSubscription stream) { this.stream = stream; }
-    }
+    private final ObservationRegistry registry;
+    AwaitReload(ObservationRegistry registry) { this.registry = registry; }
     record Selection(String status, long sequence, String detail) { }
 
     static boolean valid(JsonObject args, Map<String, String> opts) {
@@ -47,11 +41,10 @@ final class AwaitReload implements AutoCloseable {
     JsonObject run(Map<String, String> opts, RequestCancellation cancel) {
         long until = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(Integer.parseInt(opts.getOrDefault("timeoutMs", "5000")));
         JsonObject out = base(opts);
-        Entry entry = null;
-        active.add(cancel);
+        ObservationRegistry.Entry entry = null;
         try {
-            if (closed) throw new EventSubscription.Failure("session_changed", "MCP observation registry is closed");
-            entry = acquire(opts, cancel, until);
+            registry.begin(cancel);
+            entry = registry.acquire(opts, cancel, until);
             EventSubscription stream = entry.stream;
             cancel.attach(stream.socket);
             stream.doctor(opts, until);
@@ -121,39 +114,7 @@ final class AwaitReload implements AutoCloseable {
                 return outcome(out, "timeout", "deadline", "Total observation deadline exceeded; no reload completion confirmed");
             return outcome(out, "unavailable", code, failure.getMessage());
         } finally {
-            active.remove(cancel);
-            if (entry != null) {
-                cancel.detach(entry.stream.socket);
-                synchronized (this) { entry.busy = false; }
-            }
-        }
-    }
-
-    private Entry acquire(Map<String, String> opts, RequestCancellation cancel, long until) throws IOException {
-        AgentSocket.Result address = new AgentSocket.Result(); AgentSocket.resolvePort(opts, address);
-        if (address.reason != null) throw new EventSubscription.Failure("target_unavailable", "Cannot resolve the selected agent endpoint");
-        String key = address.port + "\n" + opts.getOrDefault("baseDir", "") + "\n" + opts.getOrDefault("projectDir", "");
-        synchronized (this) {
-            Entry e = subscriptions.get(key);
-            if (e != null && e.stream.alive()) {
-                if (e.busy) throw new EventSubscription.Failure("busy", "Observation subscription already has an active request");
-                e.busy = true; return e;
-            }
-            if (!opts.get("action").equals("checkpoint"))
-                throw new EventSubscription.Failure("session_changed", "No live subscription for this cursor; checkpoint again");
-            if (e != null) { e.stream.close(); subscriptions.remove(key); }
-            if (subscriptions.size() >= 2) {
-                var idle = subscriptions.entrySet().stream().filter(x -> !x.getValue().busy).findFirst();
-                if (idle.isEmpty()) throw new EventSubscription.Failure("busy", "All bounded observation subscriptions are active");
-                idle.get().getValue().stream.close(); subscriptions.remove(idle.get().getKey());
-            }
-        }
-        EventSubscription created = new EventSubscription(opts, address.port, cancel, until);
-        synchronized (this) {
-            if (closed || subscriptions.containsKey(key) || subscriptions.size() >= 2) {
-                created.close(); throw new EventSubscription.Failure("busy", "Registry changed while opening the subscription");
-            }
-            Entry e = new Entry(created); e.busy = true; subscriptions.put(key, e); return e;
+            registry.finish(entry, cancel);
         }
     }
 
@@ -231,8 +192,5 @@ final class AwaitReload implements AutoCloseable {
         }
         out.add("diagnostics", a); out.addProperty("diagnosticsTruncated", truncated);
     }
-    @Override public void close() {
-        closed = true; active.forEach(RequestCancellation::cancel);
-        synchronized (this) { subscriptions.values().forEach(e -> e.stream.close()); subscriptions.clear(); }
-    }
+    @Override public void close() { registry.close(); }
 }

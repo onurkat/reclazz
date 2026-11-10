@@ -21,7 +21,7 @@ const executable = name => path.join(process.env.JAVA_HOME ?? assert.fail('Set J
   'bin', name + (process.platform === 'win32' ? '.exe' : ''));
 const java = executable('java');
 const javac = executable('javac');
-const expectedTools = ['status', 'doctor', 'scan', 'pending', 'diagnose', 'build', 'verify', 'verify_batch', 'reload_control', 'await_reload']
+const expectedTools = ['status', 'doctor', 'scan', 'pending', 'diagnose', 'build', 'verify', 'verify_batch', 'reload_control', 'await_reload', 'events']
   .map(name => `reclazz_${name}`).sort();
 
 async function until(operation, accepts, label, millis = 15000) {
@@ -249,6 +249,23 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     assert.equal(awaited.sourcePathConfirmed, false);
     assert.equal(awaited.editRevisionConfirmed, false);
     assert.equal(awaited.receipt.sessionId, doctor.sessionId);
+    const eventIdentity = { sessionId: checkpoint.sessionId, subscriptionId: checkpoint.subscriptionId };
+    const listed = await call('events', { ...eventIdentity, sinceCursor: checkpoint.cursor, limit: '100' });
+    assert.equal(listed.status, 'observed'); assert.equal(listed.reloadConfirmed, false);
+    assert.ok(listed.events.some(row => row.ownerClassName === 'Service' && ['reload', 'structural_reload'].includes(row.type)));
+    const traversal = [];
+    let eventCursor = checkpoint.cursor;
+    while (BigInt(eventCursor) < BigInt(listed.snapshotHead)) {
+      const page = await call('events', { ...eventIdentity, sinceCursor: eventCursor, limit: '1' });
+      assert.ok(BigInt(page.nextCursor) > BigInt(eventCursor));
+      traversal.push(...page.events.filter(row => BigInt(row.sequence) <= BigInt(listed.snapshotHead)));
+      eventCursor = page.nextCursor;
+    }
+    assert.deepEqual(traversal, listed.events);
+    assert.equal(new Set(traversal.map(row => row.sequence)).size, traversal.length);
+    const ownerRows = await call('events', { ...eventIdentity, sinceCursor: checkpoint.cursor, ownerClassName: 'Service' });
+    assert.ok(ownerRows.events.every(row => row.ownerClassName === 'Service'));
+
     await probe(2, awaited.receipt, secondHash);
     await probe(2, await applied(secondHash), secondHash);
   });
@@ -332,5 +349,5 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     tools: [...called].sort(), negativeWitnesses, results
   }, null, 2) + '\n');
   evaluation.finish();
-  t.diagnostic(`10 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);
+  t.diagnostic(`11 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);
 });

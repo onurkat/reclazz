@@ -31,7 +31,9 @@ public final class McpServer implements AutoCloseable {
     private String protocolVersion = LEGACY_PROTOCOL;
     private static final String SERVER_NAME = "reclazz-mcp";
     private final McpTarget target;
-    private final AwaitReload awaitReload = new AwaitReload();
+    private final ObservationRegistry observations = new ObservationRegistry();
+    private final AwaitReload awaitReload = new AwaitReload(observations);
+    private final RecentEvents recentEvents = new RecentEvents(observations);
 
     @Override public void close() { awaitReload.close(); }
 
@@ -195,6 +197,32 @@ public final class McpServer implements AutoCloseable {
                        {"required":["className"],"not":{"anyOf":[{"required":["filePath"]},{"required":["ownerClassName"]}]}}]}]
             """).getAsJsonArray());
         tools.add(await);
+        JsonObject events = tool("reclazz_events",
+                "List bounded received-event pages from an await_reload checkpoint. Reuse nextCursor as sinceCursor. "
+                        + "Exact filters are AND on one event; event types confirm no reload, source revision or behavior. "
+                        + "No implicit reconnect; cancellation closes the shared observation subscription.", false);
+        JsonObject ep = events.getAsJsonObject("inputSchema").getAsJsonObject("properties");
+        for (String key : List.of("sessionId", "subscriptionId", "sinceCursor", "limit", "level", "ownerClassName", "fileBasename"))
+            ep.add(key, stringProp(switch (key) {
+                case "sinceCursor" -> "Checkpoint cursor initially, then previous nextCursor; decimal sequence string";
+                case "limit" -> "Maximum matching events, integer string 1..100, default 50";
+                case "fileBasename" -> "Literal .java basename, not a path or a source attribution claim";
+                default -> "Exact per-event filter or identity from await_reload checkpoint";
+            }));
+        for (String key : List.of("sessionId", "subscriptionId")) {
+            ep.getAsJsonObject(key).addProperty("pattern", "^[A-Za-z0-9_-]{1,64}$");
+            ep.getAsJsonObject(key).addProperty("maxLength", 64);
+        }
+        ep.getAsJsonObject("sinceCursor").addProperty("pattern", "^(0|[1-9][0-9]{0,18})$");
+        ep.getAsJsonObject("limit").addProperty("pattern", "^([1-9]|[1-9][0-9]|100)$");
+        ep.getAsJsonObject("ownerClassName").addProperty("maxLength", 256);
+        ep.getAsJsonObject("fileBasename").addProperty("maxLength", 255);
+        JsonArray levels = new JsonArray(); RecentEvents.LEVELS.stream().sorted().forEach(levels::add);
+        ep.getAsJsonObject("level").add("enum", levels);
+        JsonObject es = events.getAsJsonObject("inputSchema"); es.addProperty("additionalProperties", false);
+        for (String key : List.of("sessionId", "subscriptionId", "sinceCursor")) es.getAsJsonArray("required").add(key);
+        tools.add(events);
+
         if (STRUCTURED_PROTOCOL.equals(protocolVersion)) {
             for (JsonElement tool : tools) ToolContracts.describe(tool.getAsJsonObject());
         }
@@ -216,7 +244,7 @@ public final class McpServer implements AutoCloseable {
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
         props.add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default "
                 + (name.equals("reclazz_build") || name.equals("reclazz_verify") || name.equals("reclazz_doctor")
-                || name.equals("reclazz_reload_control") || name.equals("reclazz_await_reload") ? "5000." : "2000.")));
+                || name.equals("reclazz_reload_control") || name.equals("reclazz_await_reload") || name.equals("reclazz_events") ? "5000." : "2000.")));
         JsonArray required = new JsonArray();
         if (needsClassName) {
             JsonObject className = stringProp("Binary Java class name, at most 256 characters.");
@@ -248,7 +276,7 @@ public final class McpServer implements AutoCloseable {
         JsonObject arguments = params.has("arguments") ? params.getAsJsonObject("arguments") : new JsonObject();
 
         Map<String, String> opts = new LinkedHashMap<>();
-        for (String key : List.of("projectDir", "portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner", "action", "sessionId", "subscriptionId", "afterCursor", "filePath", "ownerClassName")) {
+        for (String key : List.of("projectDir", "portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner", "action", "sessionId", "subscriptionId", "afterCursor", "filePath", "ownerClassName", "sinceCursor", "limit", "level", "fileBasename")) {
             if (!arguments.has(key)) continue;
             if (!isString(arguments.get(key))) return error(request, -32602, key + " must be a string");
             String value = arguments.get(key).getAsString();
@@ -273,6 +301,9 @@ public final class McpServer implements AutoCloseable {
         if (name.equals("reclazz_await_reload") && !AwaitReload.valid(arguments, opts))
             return error(request, -32602, "Invalid await_reload action, cursor, selector or arguments");
 
+        if (name.equals("reclazz_events") && !RecentEvents.valid(arguments, opts))
+            return error(request, -32602, "Invalid events identity, cursor, limit, filters or arguments");
+
         try { opts = target.options(opts); }
         catch (IllegalArgumentException invalid) { return error(request, -32602, invalid.getMessage()); }
 
@@ -280,6 +311,12 @@ public final class McpServer implements AutoCloseable {
         JsonObject data;
         boolean isError = false;
         switch (name) {
+            case "reclazz_events": {
+                data = recentEvents.run(opts, cancellation);
+                isError = !data.get("status").getAsString().equals("observed");
+                text = data.toString();
+                break;
+            }
             case "reclazz_await_reload": {
                 data = awaitReload.run(opts, cancellation);
                 isError = !List.of("ready", "applied").contains(data.get("status").getAsString());

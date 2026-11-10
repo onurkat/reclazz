@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- MCP `reclazz_events` lists bounded, filtered event pages from a shared reload
+  checkpoint, with explicit cursor eviction, timestamp and attribution limits.
+  Listed events do not confirm applied bytes or application behavior.
+
 - MCP `reclazz_await_reload` checkpoints received events and waits for an
   exact-owner reload plus a same-session byte receipt, with bounded diagnostics,
   cancellation and explicit source-path/source-revision correlation limits.

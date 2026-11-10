@@ -31,6 +31,10 @@ class AwaitEventPatternsTest {
             } finally { reporter.getMethod("removeListener", listener).invoke(null, capture); }
         }
         assertEquals(3, events.size());
+        for (var emitted : events) {
+            var observed = EventObservation.describe(new EventSubscription.Event(1, emitted.get(0), emitted.get(1), null));
+            assertNotEquals("unknown", observed.get("type").getAsString(), observed.toString());
+        }
         assertEquals(List.of("COMPILE", "Compiled Service.java (2ms)"), events.get(0));
         assertTrue(AwaitReload.compile(events.get(0).get(1), "Service.java"));
         for (var e : events.subList(1, 3)) assertTrue(AwaitReload.reload(e.get(0), e.get(1), AwaitReloadTest.OWNER), e.toString());

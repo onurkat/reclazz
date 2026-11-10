@@ -117,6 +117,72 @@ class AgenticEndToEndTest {
         }
     }
 
+    @Test void packagedEventsListMultipleSourceEditsAndCompilerRecoveryWithoutClaimingCompletion() throws Exception {
+        protocolVersion = "2025-06-18";
+        project = Files.createDirectories(dir.resolve("events consumer"));
+        source = Files.createDirectories(project.resolve("src/main/java/consumer"));
+        classes = Files.createDirectories(project.resolve("target/classes")); port = project.resolve("agent.port");
+        mcpJar = Path.of(System.getProperty("reclazz.mcp.releaseJar"));
+        writeService(1); String original = Files.readString(source.resolve("Service.java"));
+        Files.writeString(source.resolve("App.java"), """
+                package consumer;
+                public class App {
+                    public static void main(String[] args) throws Exception {
+                        Service service = new Service(); String nonce = java.util.UUID.randomUUID().toString();
+                        var in = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+                        while (in.readLine() != null) {
+                            System.out.println("PROBE " + ProcessHandle.current().pid() + " " + nonce
+                                + " " + service.next() + " " + service.value()); System.out.flush();
+                        }
+                    }
+                }
+                """);
+        assertEquals(0, run(compiler(source.resolve("Service.java"), source.resolve("App.java")), "events-initial"));
+        try (Child app = new Child(List.of(java(), "-javaagent:" + System.getProperty("reclazz.agent.jar")
+                + "=watchDirs=" + classes + ",autoCompile=true,startupDelaySec=1,debounceMs=100,portFile=" + port,
+                "-cp", classes.toString(), "consumer.App"), "events-app");
+             Child mcp = new Child(List.of(java(), "-jar", mcpJar.toString()), "events-mcp")) {
+            app.await(line -> line.contains("] Watching "));
+            JsonObject init = new JsonObject(); init.addProperty("protocolVersion", protocolVersion); rpc(mcp,"initialize",init);
+            probe(app,1); JsonObject start = checkpoint(mcp);
+            for (int value : List.of(2,3)) {
+                JsonObject cp = checkpoint(mcp); writeService(value); sourceOutcome(mcp,cp,"applied"); probe(app,value);
+            }
+            byte[] prior = Files.readAllBytes(classes.resolve("consumer/Service.class"));
+            JsonObject cp = checkpoint(mcp);
+            Files.writeString(source.resolve("Service.java"), Files.readString(source.resolve("Service.java")).replace("return 3;","return missingSymbol;"));
+            sourceOutcome(mcp,cp,"compile_error"); probe(app,3);
+            assertArrayEquals(prior,Files.readAllBytes(classes.resolve("consumer/Service.class")));
+            cp = checkpoint(mcp); writeService(1); sourceOutcome(mcp,cp,"applied"); probe(app,1);
+            assertEquals(original,Files.readString(source.resolve("Service.java")));
+            JsonObject all = events(mcp,start,"100",null);
+            var rows = all.getAsJsonArray("events"); assertFalse(rows.isEmpty());
+            assertTrue(rows.asList().stream().anyMatch(r -> r.getAsJsonObject().get("type").getAsString().equals("compiler_diagnostic")));
+            assertTrue(rows.asList().stream().filter(r -> r.getAsJsonObject().get("type").getAsString().equals("compile")).count() >= 3);
+            assertTrue(rows.asList().stream().filter(r -> r.getAsJsonObject().has("ownerClassName") && r.getAsJsonObject().get("ownerClassName").getAsString().equals("consumer.Service")).count() >= 3);
+            List<String> sequences = new ArrayList<>(); JsonObject position = start.deepCopy();
+            while (Long.parseLong(position.get("cursor").getAsString()) < Long.parseLong(all.get("snapshotHead").getAsString())) {
+                JsonObject page = events(mcp,position,"1",null);
+                assertEquals(1,page.getAsJsonArray("events").size());
+                var row = page.getAsJsonArray("events").get(0).getAsJsonObject(); assertFalse(row.get("timestamp").isJsonNull());
+                sequences.add(row.get("sequence").getAsString()); position.add("cursor",page.get("nextCursor"));
+            }
+            assertEquals(rows.asList().stream().map(r -> r.getAsJsonObject().get("sequence").getAsString()).toList(),sequences);
+            assertEquals(sequences.size(),new java.util.HashSet<>(sequences).size());
+            assertTrue(events(mcp,position,"100",null).getAsJsonArray("events").isEmpty());
+            assertTrue(events(mcp,start,"100","consumer.Service").getAsJsonArray("events").asList().stream()
+                    .allMatch(r -> r.getAsJsonObject().get("ownerClassName").getAsString().equals("consumer.Service")));
+        }
+    }
+
+    private JsonObject events(Child mcp, JsonObject checkpoint, String limit, String owner) throws Exception {
+        JsonObject a = new JsonObject(); for (String k : List.of("sessionId","subscriptionId")) a.add(k,checkpoint.get(k));
+        a.add("sinceCursor",checkpoint.get("cursor")); a.addProperty("limit",limit);
+        if (owner != null) a.addProperty("ownerClassName",owner);
+        JsonObject r = text(tool(mcp,"reclazz_events",a)); assertEquals("observed",r.get("status").getAsString(),r.toString());
+        assertFalse(r.get("reloadConfirmed").getAsBoolean()); return r;
+    }
+
     private static String hierarchyService(int value, boolean blocked) {
         return "package consumer; public class Service extends java.util.ArrayList<Object> {"
                 + " private int calls; public int next() { return ++calls; } public int value() { return " + value + "; }"

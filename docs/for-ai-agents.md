@@ -92,6 +92,14 @@ this is not proof of a particular full source path or source revision. Check
 the endpoint/test after `applied`. See the
 [checkpoint and wait recipe](mcp-server.md#waiting-for-a-reload).
 
+To inspect several edits, reuse that checkpoint with `reclazz_events`, passing
+its cursor as `sinceCursor`, then each page's `nextCursor`. Exact level, owner
+and filename filters apply to one event at a time; query file and owner views
+separately from the same checkpoint. Event rows always have
+`reloadConfirmed:false`, including rows typed `reload`. An evicted cursor is
+unavailable and requires a new checkpoint, not a silent history reset. See
+[event pagination and limits](mcp-server.md#inspecting-a-batch-of-events).
+
 For failed-build protection, use the [terminal build wrapper or acknowledged
 MCP build sequence](mcp-server.md#protecting-terminal-builds) with matching jars
 that support build receipts. Plain compile commands do not provide that barrier.

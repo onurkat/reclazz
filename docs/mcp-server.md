@@ -136,7 +136,7 @@ printf '%s\n' \
 ```
 
 Expect two JSON response lines: initialization reports `reclazz-mcp` and the
-jar's version; the tools list contains the ten tools below. The notification
+jar's version; the tools list contains the eleven tools below. The notification
 has no response. EOF closes the server. If Java cannot open the jar, check the
 absolute path; if it cannot load its classes, use the packaged jar from
 `build/distributions/mcp`, not the plain development jar. A missing attached
@@ -156,6 +156,7 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | `reclazz_reload_control` | Pause/resume automatic reload admission or inspect its state; never releases BUILD holds |
 | `reclazz_diagnose` | Why a given class did or did not reload last time (requires `className`) |
 | `reclazz_await_reload` | Checkpoint received events before saving, then wait for an exact-owner event and same-session byte receipt; reports errors, holds and bounded timeouts |
+| `reclazz_events` | List bounded received-event pages from that checkpoint with exact filters; observations never confirm a reload |
 
 Each tool accepts optional `projectDir`, `portFile`, `port` and `hybrisHome` arguments to
 locate the agent; `reclazz_diagnose` also requires `className`.
@@ -222,6 +223,7 @@ these newer fields.
 | `reclazz_verify_batch` | `status:applied`, `incomplete` or `unavailable`; ordered `results`, `requestedCount`, `sessionId`, `allApplied`, `atomic:false`, `reloadConfirmed:false` |
 | `reclazz_verify` | Existing correlated receipt fields; `status:applied` alone is success, or the existing `unavailable` failure object |
 | `reclazz_await_reload` | `ready`, `applied`, `compile_error`, `refused`, `restart_required`, `held`, `timeout` or `unavailable`; explicit received-event correlation limits and a byte receipt for `applied` |
+| `reclazz_events` | `observed` with ordered event pages, `nextCursor`, `snapshotHead` and `hasMore`, or `unavailable`; always `reloadConfirmed:false` |
 
 `sent` confirms a socket write, `acknowledged` confirms the BUILD signal, and
 `observed` describes collected diagnostic lines. None proves reload completion.
@@ -229,7 +231,7 @@ The diagnostic `complete:false` reflects the lack of a response end marker in
 the broadcast stream. VERIFY preserves its exact-byte checks, and application
 behavior still needs its own test.
 
-Status, doctor, pending, diagnose, verify, verify-batch and await-reload advertise `readOnlyHint:true` and
+Status, doctor, pending, diagnose, verify, verify-batch, await-reload and events advertise `readOnlyHint:true` and
 `openWorldHint:false`. Scan, build and reload-control advertise `readOnlyHint:false`,
 `destructiveHint:true`, `idempotentHint:false` and `openWorldHint:true`: live
 reload can replace behavior and invoke application callbacks with external
@@ -263,7 +265,7 @@ must be strings, at most 4,096 Java characters, without control characters.
 `className` for diagnose/verify must be a binary Java name of at most 256
 characters (Unicode identifiers and `$` inner classes are supported).
 `timeoutMs` is an integer string in 1–60,000, with defaults of 5,000 for build,
-verify, doctor, reload_control, verify_batch and await_reload, and 2,000 for status, scan,
+verify, doctor, reload_control, verify_batch, await_reload and events, and 2,000 for status, scan,
 pending and diagnose. Paths with spaces are supported.
 Invalid numeric ports produce tool errors for scan/pending/diagnose; status
 reports them as `attached:false`.
@@ -564,8 +566,86 @@ return unavailable. A new connection has a new subscription identity even if
 the application session is unchanged; obtain a new checkpoint instead of
 silently reusing the old cursor.
 
-Await uses the same bounded worker slot as verify-batch. Ping and tools/list
+Await and events use the same bounded worker slot as verify-batch. Ping and tools/list
 remain available during a wait. Cancellation closes the observation socket,
 invalidates its cursor and suppresses a late response; it does not undo an
 application reload. A later checkpoint can connect again. EOF closes all MCP
 subscriptions, and idle target eviction never discards an active wait.
+
+
+## Inspecting a batch of events
+
+Call `reclazz_await_reload` with `action:checkpoint` before editing. Keep that
+response's `sessionId`, `subscriptionId` and `cursor`. The read-only
+`reclazz_events` tool lists received observations from this same persistent
+subscription; it has no separate checkpoint action.
+
+```json
+{"name":"reclazz_events","arguments":{"sessionId":"COPY_SESSION","subscriptionId":"COPY_SUBSCRIPTION","sinceCursor":"0","limit":"50"}}
+```
+
+Replace `sinceCursor` with the checkpoint's cursor on the first call, then use
+each page's `nextCursor`. Reuse the same target arguments. Pages contain at most
+`limit` matching events, an integer string from `1` to `100`, default `50`.
+An empty healthy page returns immediately. `timeoutMs` is the total call budget,
+including target and session checks, default `5000`, maximum `60000`.
+
+| Page field | Meaning |
+|---|---|
+| `events` | Received events in ascending local sequence order |
+| `nextCursor` | Last inspected event, including excluded events; feed it into the next `sinceCursor` |
+| `snapshotHead` | Head captured together with this page's input history; later arrivals belong to subsequent queries |
+| `hasMore` | Uninspected events remain through that head; they may not match your filters |
+| `correlationScope:received_events` | Local receive order, not a durable agent history or attempt identifier |
+| `sourcePathConfirmed:false`, `editRevisionConfirmed:false` | No full source path or source revision attribution |
+| `reloadConfirmed:false` | Listing an event never validates an applied byte receipt or application behavior |
+
+For example, if events `2`, `4` and `6` match and `limit` is `2`, page one
+returns `2` and `4`, with `nextCursor:"4"`. The next page can return `6`.
+A page with no matches still advances through its inspected snapshot. Reading
+the same input cursor again deliberately replays retained history; only
+traversal through `nextCursor` avoids duplicates. If you change filters after
+advancing, previously excluded events are not replayed. Keep an earlier valid
+cursor for another view.
+
+Optional filters are exact `level`, binary `ownerClassName`, and literal Java
+`fileBasename`, for example `Service.java`. Levels are INFO, OK, WARN, ERROR,
+COMPILE, RELOAD and STRUCTURAL_RELOAD. Filenames have no directory separators and are matched literally,
+without glob or regular-expression matching. Filters combine with AND on **one event**. A COMPILE
+usually has a filename but no owner; a RELOAD has an owner but no filename.
+Combining these filters does not link adjacent events. Query them separately
+from the same checkpoint when inspecting both kinds of evidence:
+
+```json
+{"name":"reclazz_events","arguments":{"sessionId":"COPY_SESSION","subscriptionId":"COPY_SUBSCRIPTION","sinceCursor":"0","fileBasename":"Service.java"}}
+{"name":"reclazz_events","arguments":{"sessionId":"COPY_SESSION","subscriptionId":"COPY_SUBSCRIPTION","sinceCursor":"0","ownerClassName":"com.example.Service"}}
+```
+
+Each row carries `sequence`, `level`, `timestamp`, `message`, `messageTruncated`
+and a parsed `type`. The timestamp comes from the agent's broadcast; missing
+or invalid timestamps are explicit `null`. Sequence orders rows even when
+clock times repeat or move backwards. Messages retain at most 512 Java
+characters, with `messageTruncated:true` when clipped. Parsing uses the full
+bounded received message, and optional filename/owner fields appear only when
+that event explicitly admits them. An inner-class display folded to
+`Outer (inner class)` cannot identify an exact binary owner.
+
+Types are `compile`, `reload`, `structural_reload`, `compile_error`,
+`compiler_diagnostic`, `refused`, `framework_failure`, `restart_required` and
+`unknown`. These describe emitted text; even `reload` confirms no completed
+receipt. A compiler diagnostic identifies a basename, not a full source path
+or a reconstructed compile batch. Unknown events remain visible. SAP resource
+messages are not yet exhaustively classified. Use `await_reload`/`verify` and
+an endpoint or application test to confirm a change.
+
+The two-target registry and each 2048-event/1,048,576-character ring are shared
+with await. Timestamp characters count toward retention. Evicted input cursors
+return `unavailable/cursor_evicted`; future cursors return `invalid_cursor`.
+Disconnect, changed target/session, idle eviction or cancellation invalidates
+the subscription. The tool returns no partial page or advanced cursor on
+failure and never reconnects silently. Obtain an explicit new checkpoint;
+it cannot recover history lost before connection or after eviction. An
+unavailable result is a tool error, not a healthy empty page. Cancellation
+closes the shared stream, invalidating its await cursors too; ping and tools/list
+remain available during a blocked read. No BUILD, SCAN, pause, resume,
+compilation or restart command is sent by event listing.

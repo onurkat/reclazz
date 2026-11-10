@@ -42,7 +42,7 @@ final class BatchDispatcher implements AutoCloseable {
         JsonElement params = request.get("params");
         boolean batch = method.equals("tools/call") && params != null && params.isJsonObject()
                 && McpServer.isString(params.getAsJsonObject().get("name"))
-                && java.util.Set.of("reclazz_verify_batch", "reclazz_await_reload").contains(params.getAsJsonObject().get("name").getAsString());
+                && java.util.Set.of("reclazz_verify_batch", "reclazz_await_reload", "reclazz_events").contains(params.getAsJsonObject().get("name").getAsString());
         if (!batch) { emit(server.handle(request)); return; }
         RequestCancellation cancel = new RequestCancellation();
         Thread worker = new Thread(() -> {

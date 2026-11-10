@@ -21,7 +21,7 @@ class McpToolContractsTest {
     private static final String MODERN = "2025-06-18";
     private static final String LEGACY = "2024-11-05";
     private static final List<String> TOOLS = List.of("reclazz_status", "reclazz_scan", "reclazz_pending",
-            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch", "reclazz_reload_control", "reclazz_await_reload");
+            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch", "reclazz_reload_control", "reclazz_await_reload", "reclazz_events");
     @TempDir Path dir;
 
     private static JsonObject rpc(String method, JsonObject params) {
@@ -68,6 +68,19 @@ class McpToolContractsTest {
         return data;
     }
 
+    @Test void eventsLegacyAndModernReturnTheSameBoundedJsonWithoutInventedCompletion() {
+        JsonObject cp = JsonParser.parseString("{\"sessionId\":\"session\",\"subscriptionId\":\"subscription\",\"cursor\":\"0\"}").getAsJsonObject();
+        for (String version : List.of(MODERN, LEGACY)) {
+            try (var server = client(version)) {
+                JsonObject r = server.handle(RecentEventsTest.request(1, cp)).getAsJsonObject("result");
+                JsonObject d = ReloadVerificationTest.text(r);
+                assertEquals("unavailable", d.get("status").getAsString()); assertFalse(d.get("reloadConfirmed").getAsBoolean());
+                assertEquals(version.equals(MODERN), r.has("structuredContent"));
+                if (version.equals(MODERN)) assertEquals(d, r.getAsJsonObject("structuredContent"));
+            }
+        }
+    }
+
     @Test void negotiatesSupportedVersionsAndKeepsSessionsIndependent() {
         McpServer modern = client(MODERN), legacy = client(LEGACY);
         assertEquals(MODERN, modern.handle(init(MODERN)).getAsJsonObject("result").get("protocolVersion").getAsString());
@@ -80,7 +93,7 @@ class McpToolContractsTest {
         assertTrue(tools(modern).get("reclazz_status").has("outputSchema"));
     }
 
-    @Test void tenToolsAdvertiseTypedOutputsAndConservativeHints() {
+    @Test void elevenToolsAdvertiseTypedOutputsAndConservativeHints() {
         Map<String, JsonObject> t = tools(client(MODERN)); assertEquals(new HashSet<>(TOOLS), t.keySet());
         for (String name : TOOLS) {
             JsonObject tool = t.get(name);

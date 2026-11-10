@@ -79,6 +79,25 @@ class McpTargetTest {
         }
     }
 
+    @Test void eventsRevalidatesTheCheckpointTargetOnItsSameSocket() throws Exception {
+        Path a = Files.createDirectory(dir.resolve("A")), b = Files.createDirectory(dir.resolve("B"));
+        var selected = new java.util.concurrent.atomic.AtomicReference<>(a);
+        try (var agent = new BuildSafetyTest.FakeAgent((in, out) -> {
+            String c;
+            while ((c = in.readLine()) != null) {
+                assertTrue(c.startsWith("DOCTOR "));
+                JsonObject d = DoctorTest.evidence(c); d.addProperty("workingDirectory", selected.get().toString());
+                d.addProperty("sessionId", "session-test"); DoctorTest.send(out, c, d);
+            }
+        }); var client = new McpServer(McpTarget.parse(new String[]{"--project-dir", a.toString()}, dir))) {
+            JsonObject cp = AwaitReloadTest.data(client, AwaitReloadTest.request(agent.server.getLocalPort(), "checkpoint"));
+            selected.set(b);
+            JsonObject d = RecentEventsTest.data(client, RecentEventsTest.request(agent.server.getLocalPort(), cp));
+            assertEquals("unavailable", d.get("status").getAsString()); assertEquals("target_mismatch", d.get("reasonCode").getAsString());
+            assertTrue(d.getAsJsonArray("events").isEmpty());
+        }
+    }
+
     @Test void explicitProjectChecksEveryToolBeforeItsCommandOnTheSameSocket() throws Exception {
         Path a = Files.createDirectory(dir.resolve("A")), b = Files.createDirectory(dir.resolve("AB"));
         var target = McpTarget.parse(new String[]{"--project-dir", a.toString()}, dir);

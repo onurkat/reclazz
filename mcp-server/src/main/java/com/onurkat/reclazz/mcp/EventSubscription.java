@@ -17,7 +17,8 @@ final class EventSubscription implements AutoCloseable {
     static final int MAX_EVENTS = 2048;
     static final int MAX_CHARS = 1024 * 1024;
     private static final Gson JSON = new GsonBuilder().setStrictness(Strictness.STRICT).create();
-    record Event(long sequence, String level, String message) { }
+    record Event(long sequence, String level, String message, String timestamp) { }
+    record Snapshot(long head, List<Event> events) { }
     static final class Failure extends IOException {
         final String code;
         Failure(String code, String detail) { super(detail); this.code = code; }
@@ -109,11 +110,22 @@ final class EventSubscription implements AutoCloseable {
     long cursor() throws IOException { synchronized (monitor) { check(); return sequence; } }
 
     List<Event> since(long after) throws IOException {
+        return snapshot(after).events();
+    }
+
+    Snapshot snapshot(long after) throws IOException {
         synchronized (monitor) {
             check();
             if (after < dropped) throw new Failure("cursor_gap", "Events after this cursor were evicted; checkpoint again");
             if (after > sequence) throw new Failure("invalid_cursor", "Cursor is newer than this subscription");
-            return events.stream().filter(e -> e.sequence() > after).toList();
+            return new Snapshot(sequence, events.stream().filter(e -> e.sequence() > after).toList());
+        }
+    }
+
+    void recheck(long after) throws IOException {
+        synchronized (monitor) {
+            check();
+            if (after < dropped) throw new Failure("cursor_gap", "Events after this cursor were evicted; checkpoint again");
         }
     }
 
@@ -170,11 +182,13 @@ final class EventSubscription implements AutoCloseable {
                         response = message.substring(responsePrefix.length());
                     } else if (!level.equals("HEARTBEAT") && !isReceipt(level, message)) {
                         if (sequence == Long.MAX_VALUE) throw new Failure("cursor_overflow", "Observation cursor exhausted");
-                        events.addLast(new Event(++sequence, level, message));
-                        retainedChars += level.length() + message.length();
+                        String timestamp = timestamp(frame.get("timestamp"));
+                        Event event = new Event(++sequence, level, message, timestamp);
+                        events.addLast(event);
+                        retainedChars += chars(event);
                         while (events.size() > MAX_EVENTS || retainedChars > MAX_CHARS) {
                             Event old = events.removeFirst(); dropped = old.sequence();
-                            retainedChars -= old.level().length() + old.message().length();
+                            retainedChars -= chars(old);
                         }
                     }
                     monitor.notifyAll();
@@ -192,6 +206,16 @@ final class EventSubscription implements AutoCloseable {
     private static boolean isReceipt(String level, String message) {
         return level.equals("INFO") && (message.startsWith("DOCTOR_RESULT ") || message.startsWith("VERIFY_RESULT ")
                 || message.startsWith("RELOAD_STATE ") || message.startsWith("BUILD_ACK ") || message.startsWith("BUILD_REJECTED "));
+    }
+    private static int chars(Event event) {
+        return event.level().length() + event.message().length() + (event.timestamp() == null ? 0 : event.timestamp().length());
+    }
+    static String timestamp(JsonElement value) {
+        if (!McpServer.isString(value)) return null;
+        String text = value.getAsString();
+        if (text.length() > 64 || !text.matches("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?(Z|[+-][0-9]{2}:[0-9]{2})")) return null;
+        try { java.time.Instant.parse(text); return text; }
+        catch (java.time.format.DateTimeParseException invalid) { return null; }
     }
     private void check() throws IOException {
         if (failure != null) throw failure;

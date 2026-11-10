@@ -50,7 +50,7 @@ class BatchCancellationTest {
                 child.send(wait); assertTrue(waiting.await(3, TimeUnit.SECONDS));
                 child.send(cancel("41")); child.send(rpc("43", "ping"));
                 assertEquals(43, child.read().get("id").getAsInt());
-                child.send(rpc("44", "tools/list")); assertEquals(10, child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
+                child.send(rpc("44", "tools/list")); assertEquals(11, child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
                 JsonObject other = BatchVerificationTest.request(agent.server.getLocalPort(), BatchVerificationTest.items("A")); other.addProperty("id", 45);
                 child.send(other); assertEquals(-32000, child.read().getAsJsonObject("error").get("code").getAsInt());
                 if (eof) child.input.close(); else child.send(cancel("42"));
@@ -58,6 +58,38 @@ class BatchCancellationTest {
                 if (eof) { assertTrue(child.process.waitFor(3, TimeUnit.SECONDS)); assertEquals(0, child.process.exitValue()); }
                 else { child.send(rpc("46", "ping")); assertEquals(46, child.read().get("id").getAsInt()); }
                 assertNull(child.lines.poll(100, TimeUnit.MILLISECONDS), "cancelled await cannot emit a late response");
+            }
+        }
+    }
+
+    @Test void packagedEventsDoctorWaitIsCancellableWithoutBlockingPingOrQueuingOtherWork() throws Exception {
+        for (boolean eof : List.of(false, true)) {
+            CountDownLatch blocked = new CountDownLatch(1);
+            try (var agent = new BuildSafetyTest.FakeAgent((in, out) -> {
+                for (int i = 0; i < 2; i++) {
+                    String c = in.readLine(); JsonObject d = DoctorTest.evidence(c);
+                    d.addProperty("sessionId", "session-test"); DoctorTest.send(out, c, d);
+                }
+                assertTrue(in.readLine().startsWith("DOCTOR ")); blocked.countDown();
+                assertNull(in.readLine(), "cancel/EOF closes the shared stream without mutating");
+            }); var child = new Child()) {
+                child.initialize("2025-06-18");
+                child.send(AwaitReloadTest.request(agent.server.getLocalPort(), "checkpoint"));
+                JsonObject cp = ReloadVerificationTest.text(child.read().getAsJsonObject("result"));
+                JsonObject page = RecentEventsTest.request(agent.server.getLocalPort(), cp, "timeoutMs", "60000"); page.addProperty("id", 42);
+                child.send(page); assertTrue(blocked.await(3, TimeUnit.SECONDS));
+                child.send(rpc("43", "ping")); assertEquals(43, child.read().get("id").getAsInt());
+                child.send(rpc("44", "tools/list")); assertEquals(11, child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
+                for (JsonObject other : List.of(RecentEventsTest.request(agent.server.getLocalPort(), cp), AwaitReloadTest.waitRequest(agent.server.getLocalPort(), cp),
+                        BatchVerificationTest.request(agent.server.getLocalPort(), BatchVerificationTest.items("A")))) {
+                    other.addProperty("id", 45); child.send(other);
+                    assertEquals(-32000, child.read().getAsJsonObject("error").get("code").getAsInt());
+                }
+                if (eof) child.input.close(); else child.send(cancel("42"));
+                agent.verify();
+                if (eof) { assertTrue(child.process.waitFor(3, TimeUnit.SECONDS)); assertEquals(0, child.process.exitValue()); }
+                else { child.send(rpc("46", "ping")); assertEquals(46, child.read().get("id").getAsInt()); }
+                assertNull(child.lines.poll(100, TimeUnit.MILLISECONDS), "cancelled page cannot emit a late response");
             }
         }
     }
@@ -90,7 +122,7 @@ class BatchCancellationTest {
                 malformed=cancel("1");malformed.addProperty("id",31);child.send(malformed);
                 assertEquals(-32000,child.read().getAsJsonObject("error").get("code").getAsInt());
                 child.send(rpc("2","ping"));assertEquals(2,child.read().get("id").getAsInt());assertFalse(peer.isDone());
-                child.send(rpc("3","tools/list"));assertEquals(10,child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
+                child.send(rpc("3","tools/list"));assertEquals(11,child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
                 JsonObject other=BatchVerificationTest.request(listener.getLocalPort(),BatchVerificationTest.items("C"));other.addProperty("id",4);
                 child.send(other);assertEquals(-32000,child.read().getAsJsonObject("error").get("code").getAsInt());
                 child.send(cancel("1.0")); // Numeric ID equivalence; string "1" above was distinct.
