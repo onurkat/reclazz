@@ -6,8 +6,8 @@ actually returns: an HTTP response, persisted query result, rendered component
 or Backoffice view. A reload notification alone cannot pass them. Refusal cases
 must also prove that the last working behavior and protected data stay intact.
 
-This is the tested scope at commit `6c81aa2`, with evidence recorded through
-10 November 2026.
+Evidence is recorded through 10 November 2026. PrepareInterceptor acceptance
+extends the earlier documentation baseline at commit `f0ee45f`.
 It describes existing acceptance evidence, not a new run performed by building
 this documentation. See the [setup guide](sap-commerce.md) to attach Reclazz,
 and [reload conditions](usage.md#sap-reload-outcomes-and-verification) before
@@ -17,9 +17,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite currently has **45 scenarios, all required to PASS, with zero
-SKIPs**. Its latest independent acceptance ran five times on one server boot
-and once after a fresh boot: **six runs of 45/45 PASS**, with zero bean-refresh
+The default suite currently has **46 scenarios, all required to PASS, with zero
+SKIPs**. Its latest recorded acceptance ran five times on one server boot
+and once after a fresh boot: **six runs of 46/46 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the
 agent regression suite; it is not a SAP live scenario.
 
@@ -89,16 +89,22 @@ and [override priority](../integration-test/src/main/kotlin/com/onurkat/reclazz/
 
 ## Interceptors and mappings
 
-**You edit:** A ValidateInterceptor body, add an XML interceptor mapping, or
-change its interceptor reference and type code.
+**You edit:** A ValidateInterceptor or PrepareInterceptor body, add an XML
+interceptor mapping, or change its interceptor reference and type code.
 
 **Reclazz does:** Refreshes the interceptor and updates SAP's actual interceptor
 registry, preserving its native registry implementation.
 
 **The test proves:** Native model saves observe the changed validation behavior
-and the intended mapping, including retargeting a mapping. Prepare,
+and the intended mapping, including retargeting a mapping. The prepare case
+commits a changed field through ModelService.save: v1, edited v2, then restored
+v1. Independent detached reads require the same PK, one callback per save and
+an unchanged control row. The permanent mapping also leaves DAO-, dynamic- and
+schema-shaped nonces unchanged; cleanup proves zero remaining synthetic rows
+and recorder entries.
 InitDefaults, Load and Remove interceptors still need their own live acceptance.
-See [mapping addition](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingAddLiveTest.kt)
+See [prepare saves](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PrepareInterceptorLiveTest.kt),
+[mapping addition](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingAddLiveTest.kt)
 and [mapping edits](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingEditLiveTest.kt).
 
 ## Bean Validation
@@ -304,45 +310,44 @@ support claim. Each scope needs a concrete plan, native baseline, application
 oracle, cleanup and independent review before it can move into the tested list.
 If SAP already handles an edit, its test records that existing behavior.
 
-1. PrepareInterceptor
-2. InitDefaultsInterceptor
-3. LoadInterceptor
-4. RemoveInterceptor
-5. Platform logger properties
-6. Custom ImpEx translator/decorator
-7. Stored validation constraint engine
-8. OCC timestamp formatter consumer
-9. Duplicate Backoffice F4 dispatch
-10. Native SAP Trigger firing
-11. Spring scheduled metadata lifecycle
-12. Process action/in-flight version
-13. Stored script/executable cache
-14. Velocity RendererTemplate
-15. SCAN wire completion
-16. CMS UID/persisted catalogs
-17. CMS page/slot selection
-18. Deployed JSP/resource edit
-19. Search restriction/session visibility
-20. Facade consumer chain
-21. Nested/list DTO conversion slice
-22. New OCC controller enrollment
-23. OCC native error response/serialization
-24. ImpEx UPDATE/macros/malformed recovery
-25. Locale/fallback missing slice
-26. Backoffice label bundles
-27. Native SAP region cache
-28. ZUL/widget/VM definition slice
-29. Workflow action/decision
-30. TaskRunner retry/condition lifecycle
-31. Spring Integration handler/channel
-32. Hot-folder ingestion
-33. Solr config/facet slice
-34. One additive metadata shape
-35. Native event listener lifecycle
-36. Local SAP security/filter rule
-37. Stored AdvancedSavedQuery parameters
-38. Legacy AddOn source staging
-39. One commerce service, then bounded remaining domains
+1. InitDefaultsInterceptor
+2. LoadInterceptor
+3. RemoveInterceptor
+4. Platform logger properties
+5. Custom ImpEx translator/decorator
+6. Stored validation constraint engine
+7. OCC timestamp formatter consumer
+8. Duplicate Backoffice F4 dispatch
+9. Native SAP Trigger firing
+10. Spring scheduled metadata lifecycle
+11. Process action/in-flight version
+12. Stored script/executable cache
+13. Velocity RendererTemplate
+14. SCAN wire completion
+15. CMS UID/persisted catalogs
+16. CMS page/slot selection
+17. Deployed JSP/resource edit
+18. Search restriction/session visibility
+19. Facade consumer chain
+20. Nested/list DTO conversion slice
+21. New OCC controller enrollment
+22. OCC native error response/serialization
+23. ImpEx UPDATE/macros/malformed recovery
+24. Locale/fallback missing slice
+25. Backoffice label bundles
+26. Native SAP region cache
+27. ZUL/widget/VM definition slice
+28. Workflow action/decision
+29. TaskRunner retry/condition lifecycle
+30. Spring Integration handler/channel
+31. Hot-folder ingestion
+32. Solr config/facet slice
+33. One additive metadata shape
+34. Native event listener lifecycle
+35. Local SAP security/filter rule
+36. Stored AdvancedSavedQuery parameters
+37. Legacy AddOn source staging
+38. One commerce service, then bounded remaining domains
 
 Later refinements include B2B approval, Adaptive Search, personalization,
 rule compilation and Integration API virtual attributes. They do not bypass

@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Live SAP Commerce acceptance covers PrepareInterceptor body reload through
+  persisted model saves, exact callback counts, retained native registry and
+  unchanged DAO/dynamic/schema fixture controls.
+
 - Opt-in `resetStatics` re-runs changed, isolated pure initializers of existing
   prepared static fields. First-load preparation makes eligible static finals
   non-final for warmed readers; constants, captured aliases and refused shapes

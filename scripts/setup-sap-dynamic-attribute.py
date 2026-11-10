@@ -16,6 +16,7 @@ import shutil
 import subprocess
 import tempfile
 from sap_items_snapshot import capture, inventory, verify, restore
+from sap_suite_contract import NORMAL_FIXTURE_FILES
 
 spec = importlib.util.spec_from_file_location('dynamic_cms_support', Path(__file__).with_name('test-sap-cms-live.py'))
 cms = importlib.util.module_from_spec(spec); spec.loader.exec_module(cms)
@@ -77,9 +78,9 @@ def check_sources(hashes):
     Never overwrite a same-count local edit. The latter mode makes setup usable
     after this change is committed, before an older DB has the new descriptor.
     """
-    if len(hashes) not in (72, 74):
-        raise RuntimeError('Expected old72 or reviewed74 fixture membership')
-    staged = len(hashes) == 74
+    if len(hashes) not in (72, 74, NORMAL_FIXTURE_FILES):
+        raise RuntimeError('Expected old72, reviewed74 or current reviewed fixture membership')
+    staged = len(hashes) in (74, NORMAL_FIXTURE_FILES)
     owned = {'reclazztest/' + relative for relative in OWNED}
     for relative in OWNED[2:]:
         if (REPO / 'reclazztest' / relative).exists() != staged:

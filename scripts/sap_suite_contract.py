@@ -1,9 +1,9 @@
 """Shared exact default-suite and normal-fixture contract for native drivers."""
 import re
 
-DEFAULT_CASES = 45
-DEFAULT_OUTCOME = {'PASS': 45, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
-NORMAL_FIXTURE_FILES = 74
+DEFAULT_CASES = 46
+DEFAULT_OUTCOME = {'PASS': 46, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
+NORMAL_FIXTURE_FILES = 77
 # Report labels from the committed Kotlin scenario constructors; replacements cannot pass by count.
 DEFAULT_TEST_NAMES = (
     'Method body change',
@@ -51,6 +51,7 @@ DEFAULT_TEST_NAMES = (
     'Validator constraint parameter',
     'DAO FlexibleSearch query body',
     'Dynamic attribute handler',
+    'Native PrepareInterceptor save',
 )
 
 
