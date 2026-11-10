@@ -21,7 +21,7 @@ class McpToolContractsTest {
     private static final String MODERN = "2025-06-18";
     private static final String LEGACY = "2024-11-05";
     private static final List<String> TOOLS = List.of("reclazz_status", "reclazz_scan", "reclazz_pending",
-            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch", "reclazz_reload_control");
+            "reclazz_diagnose", "reclazz_build", "reclazz_verify", "reclazz_doctor", "reclazz_verify_batch", "reclazz_reload_control", "reclazz_await_reload");
     @TempDir Path dir;
 
     private static JsonObject rpc(String method, JsonObject params) {
@@ -80,7 +80,7 @@ class McpToolContractsTest {
         assertTrue(tools(modern).get("reclazz_status").has("outputSchema"));
     }
 
-    @Test void nineToolsAdvertiseTypedOutputsAndConservativeHints() {
+    @Test void tenToolsAdvertiseTypedOutputsAndConservativeHints() {
         Map<String, JsonObject> t = tools(client(MODERN)); assertEquals(new HashSet<>(TOOLS), t.keySet());
         for (String name : TOOLS) {
             JsonObject tool = t.get(name);

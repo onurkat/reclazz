@@ -183,25 +183,29 @@ final class BuildSession implements AutoCloseable {
                 JsonObject event = read(until);
                 String message = text(event, "message");
                 if (!"INFO".equals(text(event, "level")) || !message.startsWith(prefix)) continue;
-                JsonObject result = JsonParser.parseString(message.substring(prefix.length())).getAsJsonObject();
-                for (String field : Set.of("requestId", "sessionId", "className", "expectedSha256",
-                        "observedSha256", "status", "source", "detail", "completedAt")) {
-                    if (!result.has(field) || !result.get(field).isJsonPrimitive()
-                            || !result.getAsJsonPrimitive(field).isString()) throw new IOException("Invalid VERIFY field: " + field);
-                }
-                String status = text(result, "status");
-                if (!token.equals(text(result, "requestId")) || !name.equals(text(result, "className"))
-                        || !hash.equals(text(result, "expectedSha256")) || text(result, "sessionId").isBlank()
-                        || !Set.of("applied", "failed", "unverified", "running", "mismatch", "not_observed").contains(status)) {
-                    throw new IOException("Uncorrelated VERIFY result");
-                }
-                if (status.equals("applied") && (!hash.equals(text(result, "observedSha256"))
-                        || text(result, "completedAt").isBlank())) throw new IOException("Incomplete applied receipt");
-                return result;
+                return verificationResult(message.substring(prefix.length()), token, name, hash);
             }
         } catch (IOException | RuntimeException e) {
             throw new IOException("Reload not verified: no valid correlated receipt", e);
         }
+    }
+
+    static JsonObject verificationResult(String json, String token, String name, String hash) throws IOException {
+        JsonObject result = JsonParser.parseString(json).getAsJsonObject();
+        for (String field : Set.of("requestId", "sessionId", "className", "expectedSha256",
+                "observedSha256", "status", "source", "detail", "completedAt")) {
+            if (!result.has(field) || !result.get(field).isJsonPrimitive()
+                    || !result.getAsJsonPrimitive(field).isString()) throw new IOException("Invalid VERIFY field: " + field);
+        }
+        String status = text(result, "status");
+        if (!token.equals(text(result, "requestId")) || !name.equals(text(result, "className"))
+                || !hash.equals(text(result, "expectedSha256")) || text(result, "sessionId").isBlank()
+                || !Set.of("applied", "failed", "unverified", "running", "mismatch", "not_observed").contains(status)) {
+            throw new IOException("Uncorrelated VERIFY result");
+        }
+        if (status.equals("applied") && (!hash.equals(text(result, "observedSha256"))
+                || text(result, "completedAt").isBlank())) throw new IOException("Incomplete applied receipt");
+        return result;
     }
 
     private static int remainingMillis(long until) throws IOException {

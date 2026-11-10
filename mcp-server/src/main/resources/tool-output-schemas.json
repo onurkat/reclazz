@@ -666,5 +666,603 @@
         }
       }
     ]
+  },
+  "reclazz_await_reload": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "action": {
+        "type": "string",
+        "maxLength": 16,
+        "enum": [
+          "checkpoint",
+          "wait"
+        ]
+      },
+      "sessionId": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "subscriptionId": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "cursor": {
+        "type": "string",
+        "maxLength": 19,
+        "pattern": "^(0|[1-9][0-9]{0,18})$"
+      },
+      "reasonCode": {
+        "type": "string",
+        "maxLength": 64
+      },
+      "detail": {
+        "type": "string",
+        "maxLength": 512
+      },
+      "filePath": {
+        "type": "string",
+        "maxLength": 4096
+      },
+      "className": {
+        "type": "string",
+        "maxLength": 256
+      },
+      "ownerClassName": {
+        "type": "string",
+        "maxLength": 256
+      },
+      "observedSha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "sha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "hashSource": {
+        "type": "string",
+        "maxLength": 16,
+        "enum": [
+          "caller",
+          "receipt"
+        ]
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "ready",
+          "applied",
+          "compile_error",
+          "refused",
+          "restart_required",
+          "held",
+          "timeout",
+          "unavailable"
+        ]
+      },
+      "correlationScope": {
+        "const": "received_events",
+        "type": "string"
+      },
+      "sourcePathConfirmed": {
+        "const": false,
+        "type": "boolean"
+      },
+      "editRevisionConfirmed": {
+        "const": false,
+        "type": "boolean"
+      },
+      "reloadConfirmed": {
+        "type": "boolean"
+      },
+      "diagnostics": {
+        "type": "array",
+        "maxItems": 16,
+        "items": {
+          "type": "string",
+          "maxLength": 512
+        }
+      },
+      "diagnosticsTruncated": {
+        "type": "boolean"
+      },
+      "receipt": {
+        "type": "object",
+        "properties": {
+          "requestId": {
+            "type": "string"
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "className": {
+            "type": "string"
+          },
+          "expectedSha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "observedSha256": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "applied",
+              "failed",
+              "unverified",
+              "running",
+              "mismatch",
+              "not_observed",
+              "unavailable"
+            ]
+          },
+          "source": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "completedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "className",
+          "expectedSha256",
+          "detail"
+        ],
+        "anyOf": [
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "unavailable"
+                ]
+              }
+            }
+          },
+          {
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "applied",
+                  "failed",
+                  "unverified",
+                  "running",
+                  "mismatch",
+                  "not_observed"
+                ]
+              }
+            },
+            "required": [
+              "requestId",
+              "sessionId",
+              "className",
+              "expectedSha256",
+              "observedSha256",
+              "status",
+              "source",
+              "detail",
+              "completedAt"
+            ]
+          }
+        ],
+        "$schema": "https://json-schema.org/draft/2020-12/schema"
+      },
+      "admission": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "paused",
+          "pendingClasses",
+          "pendingActions",
+          "buildHold"
+        ],
+        "properties": {
+          "paused": {
+            "type": "boolean"
+          },
+          "pendingClasses": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 999999999
+          },
+          "pendingActions": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 999999999
+          },
+          "buildHold": {
+            "type": "string",
+            "enum": [
+              "none",
+              "named",
+              "legacy"
+            ]
+          }
+        },
+        "anyOf": [
+          {
+            "properties": {
+              "paused": {
+                "const": true
+              }
+            }
+          },
+          {
+            "properties": {
+              "buildHold": {
+                "enum": [
+                  "named",
+                  "legacy"
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    "required": [
+      "action",
+      "sessionId",
+      "subscriptionId",
+      "cursor",
+      "status",
+      "reasonCode",
+      "detail",
+      "correlationScope",
+      "sourcePathConfirmed",
+      "editRevisionConfirmed",
+      "reloadConfirmed",
+      "diagnostics",
+      "diagnosticsTruncated"
+    ],
+    "oneOf": [
+      {
+        "properties": {
+          "status": {
+            "const": "ready"
+          },
+          "reloadConfirmed": {
+            "const": false
+          },
+          "sessionId": {
+            "minLength": 1
+          },
+          "subscriptionId": {
+            "minLength": 1
+          },
+          "action": {
+            "const": "checkpoint"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "observedSha256"
+              ]
+            },
+            {
+              "required": [
+                "hashSource"
+              ]
+            },
+            {
+              "required": [
+                "receipt"
+              ]
+            },
+            {
+              "required": [
+                "admission"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "const": "applied"
+          },
+          "reloadConfirmed": {
+            "const": true
+          },
+          "sessionId": {
+            "minLength": 1
+          },
+          "subscriptionId": {
+            "minLength": 1
+          },
+          "action": {
+            "const": "wait"
+          },
+          "receipt": {
+            "required": [
+              "completedAt",
+              "observedSha256",
+              "sessionId"
+            ],
+            "properties": {
+              "status": {
+                "const": "applied"
+              },
+              "completedAt": {
+                "minLength": 1
+              },
+              "observedSha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              }
+            }
+          }
+        },
+        "required": [
+          "receipt",
+          "ownerClassName",
+          "observedSha256",
+          "hashSource"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "admission"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "const": "compile_error"
+          },
+          "reloadConfirmed": {
+            "const": false
+          },
+          "action": {
+            "const": "wait"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "observedSha256"
+              ]
+            },
+            {
+              "required": [
+                "hashSource"
+              ]
+            },
+            {
+              "required": [
+                "receipt"
+              ]
+            },
+            {
+              "required": [
+                "admission"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "const": "refused"
+          },
+          "reloadConfirmed": {
+            "const": false
+          },
+          "sessionId": {
+            "minLength": 1
+          },
+          "subscriptionId": {
+            "minLength": 1
+          },
+          "action": {
+            "const": "wait"
+          },
+          "receipt": {
+            "properties": {
+              "status": {
+                "const": "failed"
+              }
+            }
+          }
+        },
+        "required": [
+          "receipt"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "observedSha256"
+              ]
+            },
+            {
+              "required": [
+                "hashSource"
+              ]
+            },
+            {
+              "required": [
+                "admission"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "const": "restart_required"
+          },
+          "reloadConfirmed": {
+            "const": false
+          },
+          "sessionId": {
+            "minLength": 1
+          },
+          "subscriptionId": {
+            "minLength": 1
+          },
+          "action": {
+            "const": "wait"
+          },
+          "receipt": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "failed",
+                  "unverified"
+                ]
+              }
+            }
+          }
+        },
+        "required": [
+          "receipt"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "observedSha256"
+              ]
+            },
+            {
+              "required": [
+                "hashSource"
+              ]
+            },
+            {
+              "required": [
+                "admission"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "const": "held"
+          },
+          "reloadConfirmed": {
+            "const": false
+          },
+          "sessionId": {
+            "minLength": 1
+          },
+          "subscriptionId": {
+            "minLength": 1
+          },
+          "action": {
+            "const": "wait"
+          }
+        },
+        "required": [
+          "admission"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "observedSha256"
+              ]
+            },
+            {
+              "required": [
+                "hashSource"
+              ]
+            },
+            {
+              "required": [
+                "receipt"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "const": "timeout"
+          },
+          "reloadConfirmed": {
+            "const": false
+          },
+          "action": {
+            "const": "wait"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "observedSha256"
+              ]
+            },
+            {
+              "required": [
+                "hashSource"
+              ]
+            },
+            {
+              "required": [
+                "receipt"
+              ]
+            },
+            {
+              "required": [
+                "admission"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "properties": {
+          "status": {
+            "const": "unavailable"
+          },
+          "reloadConfirmed": {
+            "const": false
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "observedSha256"
+              ]
+            },
+            {
+              "required": [
+                "hashSource"
+              ]
+            },
+            {
+              "required": [
+                "admission"
+              ]
+            }
+          ]
+        }
+      }
+    ]
   }
 }

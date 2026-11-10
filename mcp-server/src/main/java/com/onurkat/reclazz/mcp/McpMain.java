@@ -51,7 +51,7 @@ public final class McpMain {
                 out.print(gson.toJson(response)); out.print('\n'); out.flush();
             }
         };
-        try (BatchDispatcher dispatcher = new BatchDispatcher(server, output)) {
+        try (server; BatchDispatcher dispatcher = new BatchDispatcher(server, output)) {
             while (true) {
                 // Drain an oversized frame without retaining it, then resume at the next newline.
                 StringBuilder line = new StringBuilder();

@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,6 +54,92 @@ class AgenticEndToEndTest {
     private long lastCounter;
     private String identity;
     private String protocolVersion;
+
+    @Test void packagedSourceAwaitReportsActualCompilerHierarchyAndRefusalOutcomes() throws Exception {
+        protocolVersion = "2025-06-18";
+        project = Files.createDirectories(dir.resolve("source consumer"));
+        source = Files.createDirectories(project.resolve("src/main/java/consumer"));
+        classes = Files.createDirectories(project.resolve("target/classes"));
+        port = project.resolve("agent.port");
+        mcpJar = Path.of(System.getProperty("reclazz.mcp.releaseJar"));
+        Path agent = Path.of(System.getProperty("reclazz.agent.jar"));
+        writeService(1);
+        Files.writeString(source.resolve("App.java"), """
+                package consumer;
+                public class App {
+                    public static void main(String[] args) throws Exception {
+                        Service service = new Service(); String nonce = java.util.UUID.randomUUID().toString();
+                        var in = new java.io.BufferedReader(new java.io.InputStreamReader(System.in));
+                        while (in.readLine() != null) {
+                            System.out.println("PROBE " + ProcessHandle.current().pid() + " " + nonce
+                                + " " + service.next() + " " + service.value()); System.out.flush();
+                        }
+                    }
+                }
+                """);
+        assertEquals(0, run(compiler(source.resolve("Service.java"), source.resolve("App.java")), "source-initial"));
+        try (Child app = new Child(List.of(java(), "-javaagent:" + agent
+                + "=watchDirs=" + classes + ",autoCompile=true,startupDelaySec=1,debounceMs=100,portFile=" + port,
+                "-cp", classes.toString(), "consumer.App"), "source-app");
+             Child mcp = new Child(List.of(java(), "-jar", mcpJar.toString()), "source-mcp")) {
+            app.await(line -> line.contains("] Watching "));
+            JsonObject init = new JsonObject(); init.addProperty("protocolVersion", protocolVersion); rpc(mcp, "initialize", init);
+            probe(app, 1);
+            JsonObject cp = checkpoint(mcp); writeService(2);
+            JsonObject applied = sourceOutcome(mcp, cp, "applied");
+            assertEquals("receipt", applied.get("hashSource").getAsString());
+            probe(app, 2);
+            byte[] beforeFailure = Files.readAllBytes(classes.resolve("consumer/Service.class"));
+
+            cp = checkpoint(mcp);
+            String valid = Files.readString(source.resolve("Service.java"));
+            assertTrue(valid.contains("return 2;"));
+            Files.writeString(source.resolve("Service.java"), valid.replace("return 2;", "return missingSymbol;"));
+            JsonObject broken = sourceOutcome(mcp, cp, "compile_error");
+            assertTrue(broken.getAsJsonArray("diagnostics").toString().contains("missingSymbol"));
+            assertArrayEquals(beforeFailure, Files.readAllBytes(classes.resolve("consumer/Service.class")));
+            probe(app, 2);
+
+            cp = checkpoint(mcp); writeService(3); sourceOutcome(mcp, cp, "applied"); probe(app, 3);
+            cp = checkpoint(mcp);
+            Files.writeString(source.resolve("Service.java"), hierarchyService(4, false));
+            JsonObject restart = sourceOutcome(mcp, cp, "restart_required");
+            assertFalse(restart.get("reloadConfirmed").getAsBoolean());
+            probe(app, 4);
+
+            cp = checkpoint(mcp);
+            Files.writeString(source.resolve("Service.java"), hierarchyService(5, true));
+            JsonObject refused = sourceOutcome(mcp, cp, "refused");
+            assertTrue(refused.get("detail").getAsString().contains("Hot-swap failed"));
+            probe(app, 4);
+
+            cp = checkpoint(mcp); writeService(1); sourceOutcome(mcp, cp, "applied"); probe(app, 1);
+        }
+    }
+
+    private static String hierarchyService(int value, boolean blocked) {
+        return "package consumer; public class Service extends java.util.ArrayList<Object> {"
+                + " private int calls; public int next() { return ++calls; } public int value() { return " + value + "; }"
+                + (blocked ? " public java.util.ArrayList<Object> typed() { return null; }" : "") + " }";
+    }
+
+    private JsonObject checkpoint(Child mcp) throws Exception {
+        JsonObject a = new JsonObject(); a.addProperty("action", "checkpoint");
+        JsonObject cp = text(tool(mcp, "reclazz_await_reload", a));
+        assertEquals("ready", cp.get("status").getAsString(), cp.toString()); return cp;
+    }
+
+    private JsonObject sourceOutcome(Child mcp, JsonObject cp, String expected) throws Exception {
+        JsonObject a = new JsonObject(); a.addProperty("action", "wait");
+        for (String key : List.of("sessionId", "subscriptionId")) a.add(key, cp.get(key));
+        a.add("afterCursor", cp.get("cursor")); a.addProperty("filePath", source.resolve("Service.java").toAbsolutePath().toString());
+        a.addProperty("ownerClassName", "consumer.Service");
+        JsonObject result = text(tool(mcp, "reclazz_await_reload", a));
+        assertEquals(expected, result.get("status").getAsString(), result.toString());
+        assertEquals(cp.get("sessionId"), result.get("sessionId"));
+        assertFalse(result.get("editRevisionConfirmed").getAsBoolean());
+        return result;
+    }
 
     @ParameterizedTest
     @ValueSource(strings = {"2024-11-05", "2025-06-18"})
@@ -108,10 +195,28 @@ class AgenticEndToEndTest {
             String initialHash = hash();
 
             // The documented terminal entry point runs a real compiler from the clean project.
+            JsonObject checkpointArgs = new JsonObject(); checkpointArgs.addProperty("action", "checkpoint");
+            JsonObject checkpoint = text(tool(mcp, "reclazz_await_reload", checkpointArgs));
+            assertEquals("ready", checkpoint.get("status").getAsString());
             writeService(2);
             assertEquals(0, wrappedCompile(compile, "successful-build"));
             String appliedHash = hash();
             assertNotEquals(initialHash, appliedHash);
+            JsonObject waitArgs = new JsonObject(); waitArgs.addProperty("action", "wait");
+            for (String key : List.of("sessionId", "subscriptionId")) waitArgs.add(key, checkpoint.get(key));
+            waitArgs.add("afterCursor", checkpoint.get("cursor")); waitArgs.addProperty("className", "consumer.Service");
+            waitArgs.addProperty("sha256", appliedHash);
+            JsonObject awaited;
+            long waitDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(15);
+            do {
+                awaited = text(tool(mcp, "reclazz_await_reload", waitArgs));
+                if (!awaited.get("status").getAsString().equals("held")) break;
+                Thread.sleep(50);
+            } while (System.nanoTime() < waitDeadline);
+            assertEquals("applied", awaited.get("status").getAsString(), awaited.toString());
+            assertEquals(doctor.get("sessionId"), awaited.get("sessionId"));
+            assertFalse(awaited.get("sourcePathConfirmed").getAsBoolean());
+            assertFalse(awaited.get("editRevisionConfirmed").getAsBoolean());
             JsonObject applied = awaitApplied(mcp, appliedHash);
             String session = applied.get("sessionId").getAsString();
             assertFalse(session.isBlank());

@@ -21,7 +21,7 @@ const executable = name => path.join(process.env.JAVA_HOME ?? assert.fail('Set J
   'bin', name + (process.platform === 'win32' ? '.exe' : ''));
 const java = executable('java');
 const javac = executable('javac');
-const expectedTools = ['status', 'doctor', 'scan', 'pending', 'diagnose', 'build', 'verify', 'verify_batch', 'reload_control']
+const expectedTools = ['status', 'doctor', 'scan', 'pending', 'diagnose', 'build', 'verify', 'verify_batch', 'reload_control', 'await_reload']
   .map(name => `reclazz_${name}`).sort();
 
 async function until(operation, accepts, label, millis = 15000) {
@@ -229,11 +229,27 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
   await probe(1);
   let secondHash, failedHash, broken;
   await evaluation.scenario('successful-reload', async () => {
+    const checkpoint = await call('await_reload', { action: 'checkpoint' });
+    assert.equal(checkpoint.status, 'ready');
     await build('started');
     await writeService(2);
     await compile([service], 'successful');
     await build('ok');
     secondHash = await hash(serviceClass);
+    const waitArguments = { action: 'wait', sessionId: checkpoint.sessionId,
+      subscriptionId: checkpoint.subscriptionId, afterCursor: checkpoint.cursor,
+      className: 'Service', sha256: secondHash };
+    // BUILD ok acknowledges scheduling; a truthful intermediate held result is not success.
+    await until(() => invoke({ name: 'reclazz_await_reload', arguments: { timeoutMs: '3000', ...waitArguments } }),
+      result => result.structuredContent?.status === 'applied', 'await exact owner after BUILD scheduling');
+    const awaited = await call('await_reload', waitArguments);
+    assert.equal(awaited.status, 'applied');
+    assert.equal(awaited.hashSource, 'caller');
+    assert.equal(awaited.correlationScope, 'received_events');
+    assert.equal(awaited.sourcePathConfirmed, false);
+    assert.equal(awaited.editRevisionConfirmed, false);
+    assert.equal(awaited.receipt.sessionId, doctor.sessionId);
+    await probe(2, awaited.receipt, secondHash);
     await probe(2, await applied(secondHash), secondHash);
   });
   await evaluation.scenario('mixed-batch', async () => {
@@ -316,5 +332,5 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     tools: [...called].sort(), negativeWitnesses, results
   }, null, 2) + '\n');
   evaluation.finish();
-  t.diagnostic(`9 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);
+  t.diagnostic(`10 tools; ${negativeWitnesses} invalid output mutations rejected; same JVM and object state preserved`);
 });

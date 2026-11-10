@@ -136,7 +136,7 @@ printf '%s\n' \
 ```
 
 Expect two JSON response lines: initialization reports `reclazz-mcp` and the
-jar's version; the tools list contains the nine tools below. The notification
+jar's version; the tools list contains the ten tools below. The notification
 has no response. EOF closes the server. If Java cannot open the jar, check the
 absolute path; if it cannot load its classes, use the packaged jar from
 `build/distributions/mcp`, not the plain development jar. A missing attached
@@ -155,6 +155,7 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | `reclazz_pending` | Restart-required changes plus manual-pause and pending counts |
 | `reclazz_reload_control` | Pause/resume automatic reload admission or inspect its state; never releases BUILD holds |
 | `reclazz_diagnose` | Why a given class did or did not reload last time (requires `className`) |
+| `reclazz_await_reload` | Checkpoint received events before saving, then wait for an exact-owner event and same-session byte receipt; reports errors, holds and bounded timeouts |
 
 Each tool accepts optional `projectDir`, `portFile`, `port` and `hybrisHome` arguments to
 locate the agent; `reclazz_diagnose` also requires `className`.
@@ -220,6 +221,7 @@ these newer fields.
 | `reclazz_diagnose` | Same diagnostic fields plus requested `className` |
 | `reclazz_verify_batch` | `status:applied`, `incomplete` or `unavailable`; ordered `results`, `requestedCount`, `sessionId`, `allApplied`, `atomic:false`, `reloadConfirmed:false` |
 | `reclazz_verify` | Existing correlated receipt fields; `status:applied` alone is success, or the existing `unavailable` failure object |
+| `reclazz_await_reload` | `ready`, `applied`, `compile_error`, `refused`, `restart_required`, `held`, `timeout` or `unavailable`; explicit received-event correlation limits and a byte receipt for `applied` |
 
 `sent` confirms a socket write, `acknowledged` confirms the BUILD signal, and
 `observed` describes collected diagnostic lines. None proves reload completion.
@@ -227,7 +229,7 @@ The diagnostic `complete:false` reflects the lack of a response end marker in
 the broadcast stream. VERIFY preserves its exact-byte checks, and application
 behavior still needs its own test.
 
-Status, doctor, pending, diagnose, verify and verify-batch advertise `readOnlyHint:true` and
+Status, doctor, pending, diagnose, verify, verify-batch and await-reload advertise `readOnlyHint:true` and
 `openWorldHint:false`. Scan, build and reload-control advertise `readOnlyHint:false`,
 `destructiveHint:true`, `idempotentHint:false` and `openWorldHint:true`: live
 reload can replace behavior and invoke application callbacks with external
@@ -261,7 +263,7 @@ must be strings, at most 4,096 Java characters, without control characters.
 `className` for diagnose/verify must be a binary Java name of at most 256
 characters (Unicode identifiers and `$` inner classes are supported).
 `timeoutMs` is an integer string in 1–60,000, with defaults of 5,000 for build,
-verify, doctor, reload_control and verify_batch, and 2,000 for status, scan,
+verify, doctor, reload_control, verify_batch and await_reload, and 2,000 for status, scan,
 pending and diagnose. Paths with spaces are supported.
 Invalid numeric ports produce tool errors for scan/pending/diagnose; status
 reports them as `attached:false`.
@@ -435,7 +437,8 @@ For a pending batch, send a notification with the original request ID and no `id
 Cancellation closes the batch socket, including during handshake or reply waits,
 and suppresses its response if cancellation wins the completion race. Numeric and
 string IDs are distinct. Unknown, completed and malformed cancellations are
-ignored. Initialize and non-batch tools are not cancellable. End of stdin also
+ignored. Await-reload uses this same worker and cancellation mechanism;
+initialize and other tools are not cancellable. End of stdin also
 cancels the active batch and frees its socket; keep stdin open while awaiting a
 batch result. Cancelling observation does not cancel application reload, undo
 changes, release a build hold or reclaim its owner. A result already sent may
@@ -492,3 +495,77 @@ may finish. The switch is shared by all clients of this agent, survives client
 disconnect, and is not a per-client ownership lock. Repeated pause/resume does
 not discard pending changes. See [the socket contract](protocol.md#pausing-automatic-reload)
 for admission and count boundaries. No IDE control or automatic rollback is added.
+
+## Waiting for a reload
+
+`reclazz_await_reload` keeps a bounded event subscription in this MCP process.
+Take a checkpoint **before** editing or compiling, retain the returned
+`sessionId`, `subscriptionId` and `cursor`, then wait on that same target:
+
+```json
+{"name":"reclazz_await_reload","arguments":{"action":"checkpoint","timeoutMs":"5000"}}
+```
+
+After saving, copy the returned identities into the wait call. The following
+identities are placeholders, not a receipt from a running application:
+
+```json
+{"name":"reclazz_await_reload","arguments":{"action":"wait","sessionId":"returned-session","subscriptionId":"returned-subscription","afterCursor":"0","filePath":"/project/src/main/java/com/example/Service.java","ownerClassName":"com.example.Service","timeoutMs":"10000"}}
+```
+
+Source mode accepts an absolute normalized `.java` path and requires an explicit
+`ownerClassName` to produce a useful result. Without the owner it returns
+`unavailable` with `reasonCode:owner_required`. It observes `Compiled <basename>`
+followed by an exact-owner reload, excluding inner-class-only events. The agent
+does not include the full source path in that compile event. Visible ambiguous
+same-basename sequences fail closed; this does not detect every path collision.
+
+Alternatively, select `className` instead of `filePath`/`ownerClassName` for
+externally compiled output. Class mode requires a new exact binary-owner reload
+event after the checkpoint, without inventing a COMPILE event. Both modes accept
+optional lower-case compiled-owner `sha256`. Pass the expected compiled hash
+when available. Without it, the tool discovers the latest observed hash with
+one VERIFY query and checks that hash again; discovery alone never confirms a
+reload. `hashSource:caller` distinguishes supplied bytes from `hashSource:receipt`.
+
+| Field or result | Meaning |
+|---|---|
+| `correlationScope:received_events` | The cursor orders events received on this unbroken MCP subscription, not agent attempt starts |
+| `sourcePathConfirmed:false` | The compile event cannot prove a full source path |
+| `editRevisionConfirmed:false` | A previous in-flight attempt can finish after checkpoint; the tool does not prove an arbitrary source revision was compiled |
+| `ready` | Checkpoint established; no reload is confirmed |
+| `applied` | Exact-owner reload observed and a completed exact-byte VERIFY receipt validated in the same JVM session; `reloadConfirmed:true` |
+| `compile_error` | A new compiler-error block names that source basename and line; bounded diagnostic lines retained |
+| `refused` | Exact-owner hot-swap failure with a compatible failed byte receipt |
+| `restart_required` | The observed owner reports a superclass change that was not applied; independently salvageable bodies may have changed |
+| `held` | Agent-wide pause or BUILD hold observed; it does not prove this target was pending, and admitted work may finish |
+| `timeout` | No qualifying evidence within the total deadline; never success |
+| `unavailable` | Missing owner, lost/foreign cursor, changed session/target, malformed or contradictory receipt, or unavailable connection; inspect `reasonCode` |
+
+Only `ready` and `applied` return `isError:false`. All outcomes carry the three
+correlation-limit fields above. `applied` proves a point-in-time completed byte
+receipt, not application behavior, source revision, atomic reload or retained
+bean state. Exercise the live endpoint/test afterward. Typed restart diagnosis
+currently recognizes the agent's superclass-change warning; unknown failures
+cannot become success through an unverified receipt. This is not an exhaustive
+classifier for SAP resource operations.
+
+BUILD ok acknowledges scheduling. A subsequent await can still report `held`
+before the agent accepts the queued build output. Reuse the same checkpoint
+and recheck after the caller's successful BUILD sequence; await never sends
+BUILD, SCAN, pause, resume, compilation or restart commands.
+
+Timeout covers the entire call, including connection, handshake, target checks
+and receipt queries, with the usual 5000ms default and 60000ms maximum. This MCP
+process retains at most two target subscriptions, each with at most 2,048 events
+and 1,048,576 retained Java characters. Returned diagnostics contain at most 16 lines of
+512 characters, with `diagnosticsTruncated` when clipped. Old or evicted cursors
+return unavailable. A new connection has a new subscription identity even if
+the application session is unchanged; obtain a new checkpoint instead of
+silently reusing the old cursor.
+
+Await uses the same bounded worker slot as verify-batch. Ping and tools/list
+remain available during a wait. Cancellation closes the observation socket,
+invalidates its cursor and suppresses a late response; it does not undo an
+application reload. A later checkpoint can connect again. EOF closes all MCP
+subscriptions, and idle target eviction never discards an active wait.

@@ -24,13 +24,16 @@ import java.util.Map;
  * JSON-RPC request and returns one response, or {@code null} for a notification.
  * {@link McpMain} wraps it in a stdio loop.
  */
-public final class McpServer {
+public final class McpServer implements AutoCloseable {
 
     private static final String LEGACY_PROTOCOL = "2024-11-05";
     private static final String STRUCTURED_PROTOCOL = "2025-06-18";
     private String protocolVersion = LEGACY_PROTOCOL;
     private static final String SERVER_NAME = "reclazz-mcp";
     private final McpTarget target;
+    private final AwaitReload awaitReload = new AwaitReload();
+
+    @Override public void close() { awaitReload.close(); }
 
     public McpServer() { this(McpTarget.parse(new String[0], Path.of(System.getProperty("user.dir")))); }
     McpServer(McpTarget target) { this.target = target; }
@@ -160,6 +163,38 @@ public final class McpServer {
         batch.getAsJsonObject("inputSchema").getAsJsonObject("properties").add("timeoutMs", stringProp("Total batch budget including connect/handshake/all receipts, 1–60000 ms; default 5000."));
         batch.getAsJsonObject("inputSchema").getAsJsonArray("required").add("items");
         tools.add(batch);
+        JsonObject await = tool("reclazz_await_reload",
+                "Checkpoint a persistent received-event stream before saving, then wait for exact-owner events and a same-session byte receipt. "
+                        + "Source mode requires ownerClassName; basename correlation proves no full source path, source revision or application behavior. "
+                        + "Read-only; cancellation closes the subscription. Total timeout default 5000, max 60000 ms.", false);
+        JsonObject ap = await.getAsJsonObject("inputSchema").getAsJsonObject("properties");
+        for (String key : List.of("action", "sessionId", "subscriptionId", "afterCursor", "filePath", "className", "ownerClassName", "sha256"))
+            ap.add(key, stringProp(switch (key) {
+                case "action" -> "checkpoint before editing; wait with the returned session, subscription and cursor";
+                case "filePath" -> "Absolute normalized .java path; only basename is present in agent compile events";
+                case "ownerClassName" -> "Exact binary source owner; required for a successful source-mode observation";
+                case "sha256" -> "Optional expected compiled-owner SHA-256; otherwise discover and reverify receipt bytes";
+                default -> "Observation identity returned by checkpoint, or an exact binary class selector";
+            }));
+        JsonArray aa = new JsonArray(); aa.add("checkpoint"); aa.add("wait"); ap.getAsJsonObject("action").add("enum", aa);
+        ap.getAsJsonObject("afterCursor").addProperty("pattern", "^(0|[1-9][0-9]{0,18})$");
+        ap.getAsJsonObject("sha256").addProperty("pattern", "^[0-9a-f]{64}$");
+        for (String key : List.of("className", "ownerClassName")) ap.getAsJsonObject(key).addProperty("maxLength", 256);
+        for (String key : List.of("sessionId", "subscriptionId")) {
+            ap.getAsJsonObject(key).addProperty("pattern", "^[A-Za-z0-9_-]{1,64}$");
+            ap.getAsJsonObject(key).addProperty("maxLength", 64);
+        }
+        JsonObject as = await.getAsJsonObject("inputSchema"); as.addProperty("additionalProperties", false);
+        as.getAsJsonArray("required").add("action");
+        as.add("oneOf", com.google.gson.JsonParser.parseString("""
+            [{"properties":{"action":{"const":"checkpoint"}},"not":{"anyOf":[
+              {"required":["filePath"]},{"required":["className"]},{"required":["ownerClassName"]},
+              {"required":["sha256"]},{"required":["sessionId"]},{"required":["subscriptionId"]},{"required":["afterCursor"]}]}},
+             {"properties":{"action":{"const":"wait"}},"required":["sessionId","subscriptionId","afterCursor"],
+              "oneOf":[{"required":["filePath"],"not":{"required":["className"]}},
+                       {"required":["className"],"not":{"anyOf":[{"required":["filePath"]},{"required":["ownerClassName"]}]}}]}]
+            """).getAsJsonArray());
+        tools.add(await);
         if (STRUCTURED_PROTOCOL.equals(protocolVersion)) {
             for (JsonElement tool : tools) ToolContracts.describe(tool.getAsJsonObject());
         }
@@ -181,7 +216,7 @@ public final class McpServer {
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
         props.add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default "
                 + (name.equals("reclazz_build") || name.equals("reclazz_verify") || name.equals("reclazz_doctor")
-                || name.equals("reclazz_reload_control") ? "5000." : "2000.")));
+                || name.equals("reclazz_reload_control") || name.equals("reclazz_await_reload") ? "5000." : "2000.")));
         JsonArray required = new JsonArray();
         if (needsClassName) {
             JsonObject className = stringProp("Binary Java class name, at most 256 characters.");
@@ -213,7 +248,7 @@ public final class McpServer {
         JsonObject arguments = params.has("arguments") ? params.getAsJsonObject("arguments") : new JsonObject();
 
         Map<String, String> opts = new LinkedHashMap<>();
-        for (String key : List.of("projectDir", "portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner", "action")) {
+        for (String key : List.of("projectDir", "portFile", "port", "hybrisHome", "timeoutMs", "className", "sha256", "state", "owner", "action", "sessionId", "subscriptionId", "afterCursor", "filePath", "ownerClassName")) {
             if (!arguments.has(key)) continue;
             if (!isString(arguments.get(key))) return error(request, -32602, key + " must be a string");
             String value = arguments.get(key).getAsString();
@@ -235,6 +270,9 @@ public final class McpServer {
             }
         }
 
+        if (name.equals("reclazz_await_reload") && !AwaitReload.valid(arguments, opts))
+            return error(request, -32602, "Invalid await_reload action, cursor, selector or arguments");
+
         try { opts = target.options(opts); }
         catch (IllegalArgumentException invalid) { return error(request, -32602, invalid.getMessage()); }
 
@@ -242,6 +280,12 @@ public final class McpServer {
         JsonObject data;
         boolean isError = false;
         switch (name) {
+            case "reclazz_await_reload": {
+                data = awaitReload.run(opts, cancellation);
+                isError = !List.of("ready", "applied").contains(data.get("status").getAsString());
+                text = data.toString();
+                break;
+            }
             case "reclazz_verify_batch": {
                 if (!BatchVerification.valid(arguments.get("items")))
                     return error(request, -32602, "items must contain 1–32 unique className/lower-case sha256 pairs, with no extra fields");

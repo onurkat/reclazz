@@ -82,15 +82,22 @@ class McpTargetTest {
     @Test void explicitProjectChecksEveryToolBeforeItsCommandOnTheSameSocket() throws Exception {
         Path a = Files.createDirectory(dir.resolve("A")), b = Files.createDirectory(dir.resolve("AB"));
         var target = McpTarget.parse(new String[]{"--project-dir", a.toString()}, dir);
-        for (String tool : List.of("status", "scan", "pending", "diagnose", "doctor", "verify", "verify_batch", "build", "reload_control")) {
+        for (String tool : List.of("status", "scan", "pending", "diagnose", "doctor", "verify", "verify_batch", "build", "reload_control", "await_reload")) {
             try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
                 String c = in.readLine(); assertTrue(c.startsWith("DOCTOR "), c);
                 JsonObject d = DoctorTest.evidence(c); d.addProperty("workingDirectory", b.toString());
                 DoctorTest.send(out, c, d);
                 assertNull(in.readLine(), "Must not send the requested " + tool + " after mismatched evidence");
             })) {
-                JsonObject r = new McpServer(target).handle(request(tool, Map.of("port", agent.opts().get("port"),
-                        "className", "app.A", "sha256", "a".repeat(64), "owner", "test", "state", "started", "action", "pause", "timeoutMs", "300")));
+                JsonObject requested = request(tool, Map.of("port", agent.opts().get("port"),
+                        "className", "app.A", "sha256", "a".repeat(64), "owner", "test", "state", "started", "action", "pause", "timeoutMs", "300"));
+                if (tool.equals("await_reload")) {
+                    JsonObject awaitArgs = new JsonObject(); awaitArgs.addProperty("port", agent.opts().get("port"));
+                    awaitArgs.addProperty("action", "checkpoint"); awaitArgs.addProperty("timeoutMs", "300");
+                    requested.getAsJsonObject("params").add("arguments", awaitArgs);
+                }
+                JsonObject r;
+                try (var client = new McpServer(target)) { r = client.handle(requested); }
                 var result = r.getAsJsonObject("result");
                 if (tool.equals("status")) assertFalse(DoctorTest.data(result).get("attached").getAsBoolean());
                 else assertTrue(result.get("isError").getAsBoolean(), r.toString());

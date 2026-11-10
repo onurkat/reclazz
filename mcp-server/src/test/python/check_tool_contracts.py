@@ -12,7 +12,7 @@ from jsonschema import Draft202012Validator
 
 fixtures = Path('mcp-server/build/tool-contract-fixtures')
 files = sorted(fixtures.glob('*.json'))
-assert len(files) == 32, f'Expected 32 current contract fixtures, found {len(files)}'
+assert len(files) == 40, f'Expected 40 current contract fixtures, found {len(files)}'
 negative = 0
 for file in files:
     fixture = json.loads(file.read_text())
@@ -37,8 +37,24 @@ for file in files:
     for field in ('reloadConfirmed', 'complete', 'atomic'):
         if field in data:
             bad = deepcopy(data)
-            bad[field] = True
+            bad[field] = not data[field]
             assert not validator.is_valid(bad), (file, 'invented completion')
+            negative += 1
+    if 'correlationScope' in data:
+        for field in ('sourcePathConfirmed', 'editRevisionConfirmed'):
+            bad = deepcopy(data)
+            bad[field] = True
+            assert not validator.is_valid(bad), (file, 'invented source proof', field)
+            negative += 1
+        if data['status'] == 'applied':
+            for field in ('receipt', 'observedSha256', 'hashSource'):
+                bad = deepcopy(data)
+                del bad[field]
+                assert not validator.is_valid(bad), (file, 'missing applied proof', field)
+                negative += 1
+            bad = deepcopy(data)
+            bad['receipt']['status'] = 'unverified'
+            assert not validator.is_valid(bad), (file, 'unverified receipt called applied')
             negative += 1
     if 'allApplied' in data:
         bad = deepcopy(data)

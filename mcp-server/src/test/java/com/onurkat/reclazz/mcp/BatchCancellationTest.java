@@ -26,6 +26,42 @@ class BatchCancellationTest {
         return JsonParser.parseString("{\"jsonrpc\":\"2.0\",\"method\":\"notifications/cancelled\",\"params\":{\"requestId\":"+id+"}}").getAsJsonObject();
     }
 
+    @Test void packagedAwaitKeepsPingResponsiveAndClosesItsPersistentStreamOnCancelOrEof() throws Exception {
+        for (boolean eof : List.of(false, true)) {
+            CountDownLatch waiting = new CountDownLatch(1);
+            try (var agent = new BuildSafetyTest.FakeAgent((in, out) -> {
+                String c;
+                while ((c = in.readLine()) != null) {
+                    if (c.startsWith("DOCTOR ")) {
+                        JsonObject d = DoctorTest.evidence(c); d.addProperty("sessionId", "session-test"); DoctorTest.send(out, c, d);
+                    } else {
+                        assertTrue(c.startsWith("RELOAD status request="), c);
+                        waiting.countDown(); assertNull(in.readLine(), "cancel/EOF must close the subscription, not issue a mutation");
+                        return;
+                    }
+                }
+            }); var child = new Child()) {
+                child.initialize("2025-06-18");
+                child.send(AwaitReloadTest.request(agent.server.getLocalPort(), "checkpoint"));
+                JsonObject cp = ReloadVerificationTest.text(child.read().getAsJsonObject("result"));
+                assertEquals("ready", cp.get("status").getAsString());
+                JsonObject wait = AwaitReloadTest.waitRequest(agent.server.getLocalPort(), cp); wait.addProperty("id", 42);
+                wait.getAsJsonObject("params").getAsJsonObject("arguments").addProperty("timeoutMs", "60000");
+                child.send(wait); assertTrue(waiting.await(3, TimeUnit.SECONDS));
+                child.send(cancel("41")); child.send(rpc("43", "ping"));
+                assertEquals(43, child.read().get("id").getAsInt());
+                child.send(rpc("44", "tools/list")); assertEquals(10, child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
+                JsonObject other = BatchVerificationTest.request(agent.server.getLocalPort(), BatchVerificationTest.items("A")); other.addProperty("id", 45);
+                child.send(other); assertEquals(-32000, child.read().getAsJsonObject("error").get("code").getAsInt());
+                if (eof) child.input.close(); else child.send(cancel("42"));
+                agent.verify();
+                if (eof) { assertTrue(child.process.waitFor(3, TimeUnit.SECONDS)); assertEquals(0, child.process.exitValue()); }
+                else { child.send(rpc("46", "ping")); assertEquals(46, child.read().get("id").getAsInt()); }
+                assertNull(child.lines.poll(100, TimeUnit.MILLISECONDS), "cancelled await cannot emit a late response");
+            }
+        }
+    }
+
     @ParameterizedTest @ValueSource(strings={"2024-11-05","2025-06-18"})
     void cancellationClosesHandshakeAndReceiptWaitWhilePingStaysResponsive(String version) throws Exception {
         for (boolean handshake : List.of(true,false)) {
@@ -54,7 +90,7 @@ class BatchCancellationTest {
                 malformed=cancel("1");malformed.addProperty("id",31);child.send(malformed);
                 assertEquals(-32000,child.read().getAsJsonObject("error").get("code").getAsInt());
                 child.send(rpc("2","ping"));assertEquals(2,child.read().get("id").getAsInt());assertFalse(peer.isDone());
-                child.send(rpc("3","tools/list"));assertEquals(9,child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
+                child.send(rpc("3","tools/list"));assertEquals(10,child.read().getAsJsonObject("result").getAsJsonArray("tools").size());
                 JsonObject other=BatchVerificationTest.request(listener.getLocalPort(),BatchVerificationTest.items("C"));other.addProperty("id",4);
                 child.send(other);assertEquals(-32000,child.read().getAsJsonObject("error").get("code").getAsInt());
                 child.send(cancel("1.0")); // Numeric ID equivalence; string "1" above was distinct.

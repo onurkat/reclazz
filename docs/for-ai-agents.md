@@ -80,6 +80,18 @@ below supply different evidence; an attachment check is not a reload receipt.
   Setup and the tool table:
   [mcp-server.md](mcp-server.md).
 
+To wait through MCP, call `reclazz_await_reload` with `action:checkpoint`
+before saving, then `action:wait` with its session/subscription/cursor and
+either the compiled binary `className`, or `filePath` plus exact
+`ownerClassName`. Pass the expected compiled `sha256` when available. The tool
+combines a received owner event with same-session byte verification; it reports
+compile errors, reload refusal, restart-needed hierarchy changes, holds and
+timeouts without treating them as success. `correlationScope:received_events`,
+`sourcePathConfirmed:false` and `editRevisionConfirmed:false` are explicit:
+this is not proof of a particular full source path or source revision. Check
+the endpoint/test after `applied`. See the
+[checkpoint and wait recipe](mcp-server.md#waiting-for-a-reload).
+
 For failed-build protection, use the [terminal build wrapper or acknowledged
 MCP build sequence](mcp-server.md#protecting-terminal-builds) with matching jars
 that support build receipts. Plain compile commands do not provide that barrier.
@@ -133,8 +145,9 @@ consult the documented reload support and tested SAP scenarios for scope.
 - Zero config: the flag alone works, no config file required.
 - No telemetry, open source: nothing phones home, so a safety layer around the
   agent has nothing to block.
-- Loopback only: the status socket and the MCP server open one connection to
-  `127.0.0.1` and reach nothing off the machine. The shipped agent jar opens no
+- Loopback only: MCP connects to the status socket on `127.0.0.1` and reaches
+  nothing off the machine. Await retains bounded subscriptions to selected
+  local targets. The shipped agent jar opens no
   client socket at all; its own tests enforce that.
 
 ## Reproducing the packaged consumer workflow

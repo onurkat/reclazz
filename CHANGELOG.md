@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- MCP `reclazz_await_reload` checkpoints received events and waits for an
+  exact-owner reload plus a same-session byte receipt, with bounded diagnostics,
+  cancellation and explicit source-path/source-revision correlation limits.
+
 - Live SAP Commerce acceptance covers PrepareInterceptor body reload through
   persisted model saves, exact callback counts, retained native registry and
   unchanged DAO/dynamic/schema fixture controls.
