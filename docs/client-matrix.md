@@ -20,7 +20,7 @@ It covers:
 - MCP startup from an unrelated client directory with explicit project and relative
   port-file defaults; all tools check same-connection target-directory evidence.
 
-- All nine tools and their advertised output schemas, including error results;
+- All eleven tools and their advertised output schemas, including error results;
   JSON text must match structured output. Missing required result fields are
   rejected by the SDK's own schema validator.
 - DOCTOR target PID, working directory, session and capabilities. Observation
@@ -135,3 +135,40 @@ SDK1.30.0 / Node22.20.0 / SAP JDK17.0.16 acceptance: MCP ran from the jar instal
 directory while the app ran from the selected consumer project. All nine tools
 worked with startup defaults; seven evaluation scenarios passed with zero false
 completions or restarts. Hosted and Windows runs for this extension remain unrun.
+
+## Installed coding clients
+
+Observed locally on **2026-11-10**, macOS arm64, Java 21, matching locally built
+Reclazz agent/MCP 1.5.0, against an isolated copy of the Spring Boot 3.3.5 Maven
+sample. These checks establish discovery and read-only attachment status, not
+reload correctness or every tool's execution. See
+[client setup](mcp-server.md#claude-code) for configuration examples.
+
+| Client / version | Observed result | Exercised route and limits |
+| --- | --- | --- |
+| Claude Code 2.1.321 | PASS: eleven tools discovered; one `reclazz_status({})` returned `attached:true` with health | Project registration in the temporary sample; print mode with explicit JSON config and strict MCP selection |
+| Codex CLI 0.162.0-alpha.17.2 | PASS: eleven tools discovered; one `reclazz_status({})` returned `attached:true` with health | Ephemeral CLI run, user config ignored, per-run `mcp_servers` overrides; persistent TOML entry parsed separately |
+| Cursor desktop 3.26.13 | Documented, not verified | Desktop installed; separate Agent CLI absent; no installed non-GUI tool-call route was established; no GUI acceptance or installation performed |
+| Cursor Agent CLI | Documented, not verified | Not installed; desktop presence does not imply CLI presence |
+| Claude Desktop, Inspector GUI, other operating systems/client versions | Not verified by this check | No result is inferred from the two CLI checks |
+
+Each successful client performed its own initialization, actual `tools/list`
+and one `tools/call` against the packaged jar. A temporary transparent stdio
+recorder forwarded bytes unchanged and captured the exchanged MCP messages;
+the server executable in those probes was instrumented, rather than a second
+uninstrumented model run. The MCP jar path contained spaces. Both clients
+selected the same Spring endpoint; its HTTP value, PID and startup identity
+were unchanged after the calls. Neither client called a mutating tool.
+
+Claude's project registration added an empty `env` object along with the
+documented executable and arguments. Acceptance compared that generated entry
+with the intended configuration. The persistent Codex TOML recipe was parsed
+and compared with the JSON/shell recipes; the actual Codex call used CLI
+overrides, not an edited `~/.codex/config.toml`.
+
+Existing client config files were protected from writes during invocation and
+their before/after hashes and absence checks matched. Only temporary project
+configuration was created and removed. The owned Spring process and temporary
+MCP children exited. These model-assisted client checks used existing client
+authentication; unlike the independent SDK lane, they are not an offline or
+account-free test. No login or credentials were added.

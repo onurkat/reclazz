@@ -82,6 +82,103 @@ The port file may be absent at startup; the application can create it later.
 An absent, unreadable, malformed or unreachable explicit target never causes
 fallback to a different file or project.
 
+### Claude Code
+
+From the project whose application will run with Reclazz, register the packaged
+server with [Claude Code's project scope](https://code.claude.com/docs/en/mcp):
+
+```sh
+claude mcp add --scope project --transport stdio reclazz -- \
+  "/absolute/path/to/java" -jar "/absolute/path/to/reclazz-mcp-X.Y.Z.jar" \
+  --project-dir "/absolute/path/to/project"
+```
+
+Replace all three paths first. This creates or updates the project's
+`.mcp.json`. Inspect the existing file before merging an entry named `reclazz`;
+do not overwrite other servers. The default `local` scope and the `user` scope
+instead store entries in `~/.claude.json`. Project scope is not an installation
+of the Java agent; start the application separately.
+
+Reconnect Claude Code and approve the project MCP server if the client asks.
+Use `/mcp` to inspect the connection, then ask it to call `reclazz_status` with
+`{}` using only this server. For an isolated print-mode check, the installed
+CLI also supports `--mcp-config /path/to/mcp.json --strict-mcp-config`; see the
+[CLI reference](https://code.claude.com/docs/en/cli-reference). A configured
+server or a model's description of it is not proof that the call ran.
+
+### Codex
+
+Merge this table into `~/.codex/config.toml`, preserving existing tables. Codex
+uses [TOML MCP configuration](https://developers.openai.com/codex/mcp), so the
+JSON `mcpServers` wrapper above is not a Codex configuration entry:
+
+```toml
+[mcp_servers.reclazz]
+command = "/absolute/path/to/java"
+args = ["-jar", "/absolute/path/to/reclazz-mcp-X.Y.Z.jar", "--project-dir", "/absolute/path/to/project"]
+```
+
+Replace the executable, jar and project paths. Keep each argument as one TOML
+string, including paths with spaces. Do not add a second table with the same
+name. This local stdio server needs no API key, HTTP URL or MCP OAuth login.
+The Codex client can separately require its own provider authentication.
+
+Restart/reconnect Codex, inspect `/mcp`, and request one `reclazz_status` call
+with `{}`. `codex mcp list` lists configuration; it does not prove tool
+discovery or execution. A temporary CLI verification can use explicit `-c`
+overrides and `exec --ignore-user-config` where the installed version supports
+them, without editing the user's persistent config. The matrix identifies
+which route was actually exercised.
+
+### Cursor
+
+Create or merge the `reclazz` entry in the project's `.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "reclazz": {
+      "type": "stdio",
+      "command": "/absolute/path/to/java",
+      "args": ["-jar", "/absolute/path/to/reclazz-mcp-X.Y.Z.jar",
+               "--project-dir", "/absolute/path/to/project"]
+    }
+  }
+}
+```
+
+[Cursor's MCP guide](https://cursor.com/docs/mcp) also documents
+`~/.cursor/mcp.json` for global configuration. Use the project file when this
+server should target only that project. Reconnect the server in Cursor's MCP
+settings, inspect its available tools and ask Agent to call `reclazz_status`
+with `{}`. Do not count a registered entry as a completed call.
+
+The separate Cursor Agent CLI has its own installation. If it is already
+installed, its documented `agent mcp list-tools reclazz` command lists tools;
+see [Cursor CLI MCP](https://cursor.com/docs/cli/mcp). A desktop installation
+alone does not establish that CLI's availability. Some Cursor launchers
+automatically install or update it when `cursor agent` is invoked. Inspect
+availability before invoking that route during a no-install check.
+
+### Check the connection and target
+
+The current server exposes eleven tools, including `reclazz_await_reload` and
+`reclazz_events`. Compare the client's discovered tools with the table below.
+Then inspect the actual `reclazz_status` tool result, rather than the model's
+paraphrase. With a running, healthy target expect `attached:true` and health
+data. `attached:false` is an explicit diagnostic result, not a successful
+attachment. Even `attached:true` does not prove a reload or changed application
+behavior; use DOCTOR, exact-byte verification and an application check for that.
+
+If the client cannot start the server, check the absolute Java executable,
+Java version, readable packaged jar and its checksum. If it starts but cannot
+reach the application, check the selected project, the application's actual
+port file, and whether its launch directory satisfies the project check below.
+Client permission denial, missing provider authentication and an unreachable
+provider are separate from a server or target failure. Preserve the error and
+do not report an unexecuted tool call as verified. The
+[client matrix](client-matrix.md) records observed versions and unverified lanes.
+
 ### Target selection and overrides
 
 Startup accepts only `--project-dir PATH`, `--port-file PATH`, or `--help`.
