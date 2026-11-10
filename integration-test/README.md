@@ -419,3 +419,57 @@ Timed-out writers are preserved and recovery refuses to race them.
 Portable checks: `python3 scripts/test-sap-solr-driver.py`, existing snapshot
 tests and the Gradle harness/HTTP contracts. The normal44 suite does not deploy
 or run this optional extension. CMS and Backoffice remain separate profiles.
+
+### Native CMS request-component/JSP profile
+
+`python3 scripts/test-sap-cms-live.py --failure-control` adds an expected failure
+only after a real rendered v2, then requires three complete positive cycles and
+the restored normal44 suite (43 PASS + Hibernate SKIP). `--runs 1` is a complete
+diagnostic. `--setup-probe` only builds the native SDK/commonweb classes, records
+their API and restores everything; `CMS_SETUP_PROBE PASS` is **not** render
+acceptance. Only `CMS_PROFILE PASS` includes the full attempt and normal suite.
+
+This profile covers the real inherited `AbstractCMSComponentController`
+request-attribute `component` branch and a Spring MVC/JSP render. It does not
+cover UID lookup, persisted content catalogs, page-slot routing or full
+storefront composition; those remain OPEN. The normal install and default44
+membership do not acquire CMS dependencies.
+
+The temporary `reclazztestcms` extension depends on the native accelerator/CMS
+modules. Its native commonweb callback copies/compiles vendor files into ignored
+build outputs; no vendor source/jars belong in templates or Git. The outer driver
+compares copied source to installed SDK source and records the compiled native
+superclass hash. The inner attempt verifies that provenance, the actual inherited
+handler, runtime beans/options/tenant, watched fixture and recovery snapshots.
+Each request creates an unsaved native paragraph, sets an owned nonce/content
+and forwards to the inherited handler. The JSP must return HTTP200 text/html,
+that nonce, the exact marker, stable content and unsaved=true. JSON200, stale HTML
+or a changed native paragraph count fails. Only fillModel's marker body changes;
+each direction requires its own exact COMPILE/owner reload and rendered proof.
+
+Before provisioning, all native/inner writers stop and the HSQLDB lock must be
+gone.17 full roots are captured: config, data, Tomcat, bootstrap, both normal
+fixtures, the owned CMS fixture, native temp and9 new SDK dependency directories. This covers
+commonweb source/lib/classes, generated models and Ant server/JSP outputs.
+After capture, only the profile dependency build markers are invalidated so
+restored model/classes cannot be hidden by stale native item/source markers.
+The complete temp tree is restored with the other roots.
+The standalone update is master-only: `ant updatesystem -Dtenant=master
+-DtypeSystemOnly=true -DdryRun=false -DconfigFile=<private schema-only JSON>`.
+Essential/project data, HMC clearing, localization and Lucene rebuilding are off;
+`droptables` is deliberately absent (the native legacy API checks its presence).
+No junit update/initialize or inverse DDL is used. Missing types after
+provisioning are FAIL, never retroactive SKIP. Agent unsafe options stay off;
+autoCompile stays on.
+
+Every exit after capture stops/drains writers, removes only the recorded owned
+symlink, validates all snapshots before deleting any target, restores complete
+trees, rebuilds normally, restores build-touched trees again and verifies hashes
+before a fresh normal boot. Both normal fixtures, original extension set/options,
+absence of CMS types/classes/services,89 fixture hashes and tenant health must
+return. Backups and durable state stay in private `/private/tmp/reclazz-cms-*`.
+Manual recovery follows that same order; never restore under a writer or remove
+an unowned link. Native setup/update budget900s, boot600s, stop90s plus330s drain,
+edit/render180s and a separate180s rollback, runner900s. Timed-out writers remain
+preserved. Portable checks: `python3 scripts/test-sap-cms-driver.py`, the snapshot
+checks and Gradle harness/HTTP contracts. Full :agent:test remains release-only.

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extensioninfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="extensioninfo.xsd">
+    <extension classprefix="reclazztestcms" name="reclazztestcms" usemaven="false">
+        <requires-extension name="acceleratorstorefrontcommons"/>
+        <requires-extension name="acceleratorcms"/>
+        <requires-extension name="cms2"/>
+        <requires-extension name="reclazztest"/>
+        <coremodule generated="true" manager="de.hybris.platform.jalo.extension.GenericManager" packageroot="com.onurkat.reclazztestcms"/>
+        <webmodule jspcompile="false" webroot="/reclazztestcms"/>
+    </extension>
+</extensioninfo>

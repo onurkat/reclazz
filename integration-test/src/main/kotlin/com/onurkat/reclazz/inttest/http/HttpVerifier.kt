@@ -76,6 +76,17 @@ class HttpVerifier(private val baseUrl: String, timeoutMs: Long) {
         }
     }
 
+    /** CMS render proof needs the actual MIME header from the same response. */
+    fun getWithContentType(path: String, queryParams: Map<String, String> = emptyMap(), budgetMs: Long? = null): Pair<HttpResult, String?> {
+        val absolute = if (path.startsWith("http")) path else "$baseUrl$path"
+        val query = if (queryParams.isEmpty()) "" else "?" + queryParams.entries.joinToString("&") { "${it.key}=${it.value}" }
+        val call = client.newCall(Request.Builder().url(absolute + query).get().build())
+        if (budgetMs != null) call.timeout().timeout(budgetMs.coerceAtLeast(1), TimeUnit.MILLISECONDS)
+        return call.execute().use { response ->
+            HttpResult(response.code, response.body?.string() ?: "") to response.header("Content-Type")
+        }
+    }
+
     /** The remaining call budget is shared with the poll deadline, not added to it. */
     fun poll(timeoutMs: Long, description: String, request: (Long) -> HttpResult, accepts: (HttpResult) -> Boolean): HttpResult {
         val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs)

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="reclazztestcms_buildcallbacks">
+    <macrodef name="reclazztestcms_before_build">
+        <sequential>
+            <copyCommonWebToExtension commonwebextension="acceleratorstorefrontcommons" commonwebresource="/src" target="reclazztestcms"/>
+        </sequential>
+    </macrodef>
+</project>

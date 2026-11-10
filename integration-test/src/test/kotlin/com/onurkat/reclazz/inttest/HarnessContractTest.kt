@@ -115,7 +115,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
         for ((relative, bytes) in originals) {
             val path = root.resolve(relative); Files.createDirectories(path.parent); Files.write(path, bytes)
         }
-        if (mode in setOf("delayed-first","profile-skip","items-profile-skip","statics-profile-skip","solr-profile-skip")) {
+        if (mode in setOf("delayed-first","profile-skip","items-profile-skip","statics-profile-skip","solr-profile-skip","cms-profile-skip")) {
             val path = root.resolve(fixturePaths.first())
             Files.writeString(path, Files.readString(path).replace("pong-v1", "pong-v3"))
         }
@@ -125,7 +125,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
             val n = requests.incrementAndGet(); val path = exchange.requestURI.path
             if (path.endsWith("/multi") || path.endsWith("/ping")) firstRequest.compareAndSet(0, System.nanoTime())
             val pair = when {
-                mode.endsWith("profile-skip") && (path.endsWith("/batch/gates") || path.endsWith("/solr/gates")) -> 200 to "{\"agentArgsFound\":false}"
+                mode.endsWith("profile-skip") && (path.endsWith("/batch/gates") || path.endsWith("/solr/gates") || path.endsWith("/cms/gates")) -> 200 to "{\"agentArgsFound\":false}"
                 path.endsWith("/impex-title") -> 200 to db.get()
                 path.endsWith("/multi") -> 200 to "helper-v2:service-v2"
                 mode == "poll-stale" -> 503 to "last-stale-body"
@@ -196,7 +196,7 @@ private class ChildRun(val mode: String, val scenario: String, val timeout: Long
             "RECLAZZ_TEST_EVENT_TIMEOUT" to timeout.toString(), "RECLAZZ_TEST_SETTLE_DELAY" to "0", "RECLAZZ_TEST_HTTP_TIMEOUT" to "500"))
         if(mode.endsWith("profile-skip")) {
             builder.environment().remove("RECLAZZ_TEST_ONLY")
-            builder.environment()["RECLAZZ_TEST_PROFILE"]=when(mode) {"items-profile-skip" -> "items-attempt"; "statics-profile-skip" -> "statics-on"; "solr-profile-skip" -> "solr-attempt"; else -> "codegen"}
+            builder.environment()["RECLAZZ_TEST_PROFILE"]=when(mode) {"items-profile-skip" -> "items-attempt"; "statics-profile-skip" -> "statics-on"; "solr-profile-skip" -> "solr-attempt"; "cms-profile-skip" -> "cms-attempt"; else -> "codegen"}
         } else builder.environment().remove("RECLAZZ_TEST_PROFILE")
         val process = builder.redirectErrorStream(true).redirectOutput(output).start()
         check(process.waitFor(35, TimeUnit.SECONDS)) { process.destroyForcibly(); "Runner child exceeded contract deadline" }
@@ -702,6 +702,86 @@ fun main() {
             Files.writeString(root.resolve("project.properties"),"dirty")
             check(runCatching {baseline.checkBytes()}.isFailure)
         } finally {root.toFile().deleteRecursively()}
+    }
+    case("cmsMainSkipLeavesDirtyDefaultFixtureUntouched") {
+        ChildRun("cms-profile-skip","unused").use { child ->
+            val before=fixturePaths.associateWith { Files.readAllBytes(child.root.resolve(it)) }
+            val result=child.run()
+            check(result.first==0 && "SKIP" in result.second && "agentArgsFound=false" in result.second) { result.second }
+            for((path,bytes) in before) check(Files.readAllBytes(child.root.resolve(path)).contentEquals(bytes))
+        }
+    }
+    val cmsNonce="reclazz-cms-00000000-0000-0000-0000-000000000001"
+    fun cmsHtml(marker:String)="""<!doctype html><html><body><div id="reclazz-cms-proof" data-nonce="$cmsNonce" data-marker="$marker" data-unsaved="true"><span class="content">reclazz-cms-content</span></div></body></html>"""
+    case("cmsReadsRealMimeAndRejectsJsonPlainAndStaleHtml") {
+        val body=AtomicReference(cmsHtml("cms-v2"));val mime=AtomicReference("text/html;charset=UTF-8");val status=AtomicInteger(200)
+        val server=HttpServer.create(InetSocketAddress("127.0.0.1",0),0)
+        server.createContext("/") { exchange ->
+            val bytes=body.get().toByteArray();exchange.responseHeaders.set("Content-Type",mime.get())
+            exchange.sendResponseHeaders(status.get(),bytes.size.toLong());exchange.responseBody.use { it.write(bytes) }
+        };server.start()
+        try {
+            val verifier=HttpVerifier("http://127.0.0.1:${server.address.port}",1000)
+            fun verify() { val (response,type)=verifier.getWithContentType("/");requireCmsHtml(response,type,cmsNonce,"cms-v2") }
+            verify()
+            for(type in listOf("application/json","text/plain")) { mime.set(type);check(runCatching { verify() }.isFailure) }
+            mime.set("text/html");body.set(cmsHtml("cms-v1"));check(runCatching { verify() }.isFailure)
+            body.set(cmsHtml("cms-v2"));status.set(500);check(runCatching { verify() }.isFailure)
+        } finally { server.stop(0) }
+    }
+    case("cmsWrongNonceContentPersistedAndDuplicateProofFail") {
+        val good=cmsHtml("cms-v2")
+        for(body in listOf(good.replace(cmsNonce,"foreign"),good.replace("reclazz-cms-content","other"),good.replace("data-unsaved=\"true\"","data-unsaved=\"false\""),good+good))
+            check(runCatching { requireCmsHtml(com.onurkat.reclazz.inttest.http.HttpResult(200,body),"text/html",cmsNonce,"cms-v2") }.isFailure)
+    }
+    val cmsOwner="com.onurkat.reclazztestcms.controllers.ReclazzParagraphComponentController"
+    val cmsFile="ReclazzParagraphComponentController.java"
+    val cmsCompile=event("COMPILE","Compiled $cmsFile (9ms)",2)
+    val cmsReload=event("RELOAD","Reloaded $cmsOwner (v1)",3)
+    case("cmsReceiptRequiresFreshCompileThenExactOwner") {
+        check(cmsReloadReceipt(listOf(cmsCompile,cmsReload),1,cmsFile,cmsOwner)==cmsReload)
+        check(cmsReloadReceipt(listOf(cmsCompile,cmsReload),3,cmsFile,cmsOwner)==null)
+        check(cmsReloadReceipt(listOf(cmsCompile,cmsReload.copy(sequence=1)),0,cmsFile,cmsOwner)==null)
+        for(owner in listOf(cmsOwner+"Other",cmsOwner+"$"+"Inner"))
+            check(cmsReloadReceipt(listOf(cmsCompile,cmsReload.copy(message="Reloaded $owner (v1)")),1,cmsFile,cmsOwner)==null)
+    }
+    case("cmsWrongFileInnerOnlyAndErrorsCannotPass") {
+        check(cmsReloadReceipt(listOf(cmsCompile.copy(message="Compiled Other.java"),cmsReload),1,cmsFile,cmsOwner)==null)
+        check(cmsReloadReceipt(listOf(cmsCompile,cmsReload.copy(message="Reloaded $cmsOwner (inner class)")),1,cmsFile,cmsOwner)==null)
+        check(runCatching { cmsReloadReceipt(listOf(cmsCompile,cmsReload,event("ERROR","native failure",4)),1,cmsFile,cmsOwner) }.isFailure)
+    }
+    case("cmsNativeFactsRejectChangedOrMissingComponentCount") {
+        val good=batchJson.readTree("""{"paragraphCount":0,"modelType":"CMSParagraphComponent","tenant":"master"}""")
+        requireCmsFacts(good,0)
+        for(body in listOf("""{"paragraphCount":1,"modelType":"CMSParagraphComponent","tenant":"master"}""","""{"modelType":"CMSParagraphComponent","tenant":"master"}""","""{"paragraphCount":0,"modelType":"CMSParagraphComponent","tenant":"junit"}"""))
+            check(runCatching { requireCmsFacts(batchJson.readTree(body),0) }.isFailure)
+    }
+    case("cmsTypedGatesSkipBeforeAnyAttemptWrite") {
+        val required=linkedMapOf("agentArgsFound" to true,"autoCompile" to true,"autoSolrReindex" to false,"cmsModelAvailable" to true,"nativeBeansPresent" to true,"nativeSuperclass" to true,"inheritedHandler" to true,"jspViewResolver" to true)
+        for(key in required.keys) {
+            val gates=batchJson.valueToTree<com.fasterxml.jackson.databind.node.ObjectNode>(required)
+            for(kind in 0..2) {
+                val candidate=gates.deepCopy()
+                when(kind) {0->candidate.remove(key);1->candidate.put(key,!required.getValue(key));else->candidate.put(key,"true")}
+                var writes=0
+                val result=runGatedProfile("cms",{profileGateReason(candidate,required)},{writes++})
+                check(result.status==TestStatus.SKIP && writes==0)
+            }
+        }
+    }
+    case("cmsFailureAfterAttemptIsFailNeverSkip") {
+        var writes=0
+        val result=runGatedProfile("cms",{null},{writes++;error("render failed after edit")})
+        check(writes==1 && result.status==TestStatus.FAIL)
+    }
+    case("cmsOwnedTemplatesExcludeNativeCommonwebBuildOutputs") {
+        val root=Files.createTempDirectory("reclazz-cms-contract-")
+        try {
+            for(relative in CmsFixtureBaseline.relatives) { val path=root.resolve(relative);Files.createDirectories(path.parent);Files.write(path,CmsFixtureBaseline.original(relative)) }
+            val baseline=CmsFixtureBaseline(root);baseline.checkBytes();check(CmsFixtureBaseline.relatives.size==9)
+            Files.writeString(root.resolve("project.properties"),"dirty");check(runCatching { baseline.checkBytes() }.isFailure)
+            check(CmsFixtureBaseline.relatives.none { "commonwebsrc" in it || it.endsWith(".jar") })
+        } finally { root.toFile().deleteRecursively() }
     }
     cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")

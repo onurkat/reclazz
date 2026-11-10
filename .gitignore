@@ -90,3 +90,18 @@ reclazztestsolr/resources/*.xsd
 reclazztestsolr/resources/reclazztestsolr.build.number
 reclazztestsolr/src/de/hybris/platform/reclazztestsolr/constants/
 reclazztestsolr/web/webroot/WEB-INF/classes/
+
+# Profile-only CMS native/commonweb outputs; never track vendor source or jars.
+reclazztestcms/build.xml
+reclazztestcms/extensioninfo.xsd
+reclazztestcms/platformhome.properties
+reclazztestcms/gensrc/
+reclazztestcms/classes/
+reclazztestcms/testclasses/
+reclazztestcms/resources/reclazztestcms/
+reclazztestcms/resources/*.xsd
+reclazztestcms/resources/reclazztestcms.build.number
+reclazztestcms/src/com/onurkat/reclazztestcms/constants/
+reclazztestcms/web/commonwebsrc/
+reclazztestcms/web/webroot/WEB-INF/classes/
+reclazztestcms/web/webroot/WEB-INF/lib/
