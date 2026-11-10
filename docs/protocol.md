@@ -101,7 +101,11 @@ Manual pause is independent of BUILD ownership. Resume cannot unlock active
 or failed builds. A successful owner's BUILD ok still validates/captures output
 and releases that build hold, while a manual pause keeps changes pending;
 unreadable output still retains ownership. A later build start/failure continues
-to block class admission. BUILD holds retain their existing class-file scope.
+to block admission. A BUILD hold blocks admission of class files and of automatic
+actions (source compilation and resource or platform callbacks). Held automatic
+actions are coalesced by key, normally the file path, and admitted in order after
+the owner's BUILD ok, unless a manual pause is still active. Work admitted before
+the hold may finish; nothing is atomic or rolled back.
 
 Work admitted before pause may finish, including captured class batches waiting
 for a request boundary and compilation/framework callbacks already running.
@@ -125,7 +129,8 @@ it does not make JVM redefinitions or framework refreshes transactional.
 A read or scan failure leaves the entire build held for another `BUILD ok`.
 
 A missing result or disconnected client never releases output. After five
-minutes there is one warning; `HEALTH` shows the held count and start time.
+minutes there is one warning; `HEALTH` shows the held class-file count, automatic
+action count and start time.
 After verifying that the output directory contains a successful build,
 `BUILD ok` can also recover a hold left by an IDE that closed mid-build.
 Unowned (legacy) commands describe one ordered build stream per agent. They

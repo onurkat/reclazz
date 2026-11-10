@@ -109,6 +109,19 @@ class ProtocolContractTest {
             assertTrue(text.contains(part),part);
     }
 
+    @Test void buildAdmissionDocumentsAutomaticActionsAndAlreadyAdmittedWork() throws IOException {
+        String text = doc().replaceAll("\\s+", " ");
+        for (String part : List.of(
+                "A BUILD hold blocks admission of class files and of automatic actions",
+                "source compilation and resource or platform callbacks",
+                "actions are coalesced by key",
+                "admitted in order after the owner's BUILD ok, unless a manual pause is still active",
+                "Work admitted before the hold may finish; nothing is atomic or rolled back",
+                "held class-file count, automatic action count and start time"))
+            assertTrue(text.contains(part), part);
+        assertFalse(text.contains("BUILD holds retain their existing class-file scope"));
+    }
+
     @Test void reloadControlRequiresValidCorrelationAndDocumentsItsReceipt() throws IOException {
         assertTrue(doc().contains("RELOAD <action> request=<token>"));
         assertTrue(doc().contains("RELOAD_STATE <token> <action>"));

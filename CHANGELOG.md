@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- BUILD holds retain automatic source, resource and platform work until a
+  successful build; held action counts remain visible alongside class files.
+
 - Backoffice module configuration saves run the native F4 cockpit-config reset
   in their owning tenant/session without a restart. This resets UI-made
   configuration too; `backofficeConfigReset=false` leaves it manual. Reset

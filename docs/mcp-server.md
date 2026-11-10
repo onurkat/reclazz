@@ -260,8 +260,9 @@ line is drained and rejected before the next line is read. Known tool arguments
 must be strings, at most 4,096 Java characters, without control characters.
 `className` for diagnose/verify must be a binary Java name of at most 256
 characters (Unicode identifiers and `$` inner classes are supported).
-`timeoutMs` is an integer string in 1–60,000, with defaults of 5,000 for
-build/verify and 2,000 for other tools. Paths with spaces are supported.
+`timeoutMs` is an integer string in 1–60,000, with defaults of 5,000 for build,
+verify, doctor, reload_control and verify_batch, and 2,000 for status, scan,
+pending and diagnose. Paths with spaces are supported.
 Invalid numeric ports produce tool errors for scan/pending/diagnose; status
 reports them as `attached:false`.
 

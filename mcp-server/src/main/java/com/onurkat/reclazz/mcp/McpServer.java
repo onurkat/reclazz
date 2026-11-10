@@ -180,7 +180,8 @@ public final class McpServer {
         props.add("port", stringProp("Connect directly to this agent status port (optional)."));
         props.add("hybrisHome", stringProp("SAP Commerce home, to find its port file (optional)."));
         props.add("timeoutMs", stringProp("Socket timeout in milliseconds, 1–60000; default "
-                + (name.equals("reclazz_build") || name.equals("reclazz_verify") || name.equals("reclazz_doctor") ? "5000." : "2000.")));
+                + (name.equals("reclazz_build") || name.equals("reclazz_verify") || name.equals("reclazz_doctor")
+                || name.equals("reclazz_reload_control") ? "5000." : "2000.")));
         JsonArray required = new JsonArray();
         if (needsClassName) {
             JsonObject className = stringProp("Binary Java class name, at most 256 characters.");

@@ -8,8 +8,11 @@ JVM without a restart, and how to confirm that they did.
 ## What Reclazz gives your edit-run loop
 
 Reclazz is a `-javaagent` that watches compiled class files and hot-swaps them
-into the running JVM in place. State is preserved, so the app keeps running
-across your edits. It is free, open source, sends no telemetry, and needs no
+into the running JVM in place. Supported edits keep the JVM running; object
+state depends on the reload route, and Spring may recreate affected beans.
+See [reload support](reload-support.md) and the
+[SAP scenarios tested live](sap-commerce-live-tests.md) for the proven scope.
+It is free, open source, sends no telemetry, and needs no
 IDE: everything below is a shell command or a build-file edit, the two things
 an agent already does.
 
@@ -120,7 +123,9 @@ Apply a code change while it runs:
 
 Restart only when Reclazz reports the change as pending (for example a changed
 superclass or a reordered enum). Check with `./gradlew reclazzStatus`, or the
-`reclazz_pending` MCP tool if configured. Everything else reloads live.
+`reclazz_pending` MCP tool if configured. An empty pending list does not prove
+an edit applied. Require the exact-byte receipt and the behavior check above;
+consult the documented reload support and tested SAP scenarios for scope.
 ```
 
 ## Why an agent can rely on this

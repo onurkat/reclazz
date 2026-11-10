@@ -112,6 +112,51 @@ class BuildSignalHoldsClassFilesTest {
         fail("Missing receipt: " + expected);
     }
 
+    @Test
+    void namedBuildHoldsAutomaticSourcesUntilItsOwnersSuccess() throws Exception {
+        Path portFile = tmp.resolve("source.port");
+        try (WatchedApp app = WatchedApp.in(tmp).mavenLayout()
+                .agentArgs("startupDelaySec=1,debounceMs=100,autoCompile=true,portFile=" + portFile)
+                .with("A", unit("A", 1)).with("App", """
+                        package app;
+                        public class App {
+                            public static void main(String[] args) throws Exception {
+                                A a = new A();
+                                while (true) { System.out.println("VALUE=" + a.value()); Thread.sleep(25); }
+                            }
+                        }
+                        """).start()) {
+            app.awaitOrFail("VALUE=1", "initial value");
+            app.awaitOrFail("] Watching ", "source watcher ready");
+            try (Socket socket = new Socket("127.0.0.1", Integer.parseInt(Files.readString(portFile).trim()))) {
+                socket.setSoTimeout(5000);
+                var in = new java.io.BufferedReader(new java.io.InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                send(socket, "BUILD started request=s1 owner=alice");
+                receipt(in, "BUILD_ACK s1 started owner=alice");
+                byte[] original = Files.readAllBytes(app.classesDir().resolve("app/A.class"));
+                Path source = tmp.resolve("src/main/java/app/A.java");
+                Files.writeString(source, unit("A", 2)); send(socket, "SCAN");
+                assertFalse(app.awaits("VALUE=2", 2), app::tail);
+                assertArrayEquals(original, Files.readAllBytes(app.classesDir().resolve("app/A.class")));
+                send(socket, "RELOAD status request=held");
+                receipt(in, "RELOAD_STATE held status paused=false pendingClasses=0 pendingActions=1 buildHold=named");
+                send(socket, "BUILD failed request=s2 owner=alice");
+                receipt(in, "BUILD_ACK s2 failed owner=alice");
+                Files.writeString(source, unit("A", 3)); send(socket, "SCAN");
+                assertFalse(app.awaits("VALUE=3", 2), app::tail);
+                assertArrayEquals(original, Files.readAllBytes(app.classesDir().resolve("app/A.class")));
+                send(socket, "BUILD ok request=other owner=bob");
+                receipt(in, "BUILD_REJECTED other ok owner=bob");
+                send(socket, "BUILD started request=s3 owner=alice");
+                receipt(in, "BUILD_ACK s3 started owner=alice");
+                send(socket, "BUILD ok request=s4 owner=alice");
+                receipt(in, "BUILD_ACK s4 ok owner=alice");
+                app.awaitOrFail("VALUE=3", "latest source compiled and applied after successful build");
+                assertFalse(app.output().stream().anyMatch(line -> line.contains("VALUE=2")));
+            }
+        }
+    }
+
     private static void send(Socket socket, String command) throws Exception {
         socket.getOutputStream().write((command + "\n").getBytes(StandardCharsets.UTF_8));
         socket.getOutputStream().flush();

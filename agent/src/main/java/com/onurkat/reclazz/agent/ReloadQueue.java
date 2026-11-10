@@ -171,10 +171,16 @@ public final class ReloadQueue {
     private void runAutomatic(String key) {
         AutomaticWork action;
         synchronized (buildLock) {
-            if (paused) return;
+            if (holding || paused) return;
             action = pendingActions.remove(key); // admission; a later pause does not cancel it
         }
         if (action != null) action.work().run();
+    }
+
+    private void submitPendingAutomatic() {
+        List<String> keys;
+        synchronized (buildLock) { keys = new ArrayList<>(pendingActions.keySet()); }
+        for (String key : keys) submit("Admitting pending change", () -> runAutomatic(key));
     }
 
     record ControlState(boolean paused, int pendingClasses, int pendingActions, String buildHold) {
@@ -198,9 +204,7 @@ public final class ReloadQueue {
         if (action.equals("resume")) submit("Resuming automatic reload", () -> {
             // Do not hold buildLock while the watcher calls back into this queue.
             scan.run();
-            List<String> keys;
-            synchronized (buildLock) { keys = new ArrayList<>(pendingActions.keySet()); }
-            for (String key : keys) submit("Resuming pending change", () -> runAutomatic(key));
+            submitPendingAutomatic();
             submitClassBatch(0); // still independently gated by BUILD and manual pause
         });
         return result;
@@ -229,7 +233,8 @@ public final class ReloadQueue {
             if (paused) reload = "Automatic reload paused; pending class files=" + pendingClassFiles.size()
                     + ", pending actions=" + pendingActions.size() + (reload == null ? "" : ". " + reload);
             if (!holding) return reload;
-            return "Build holding " + pendingClassFiles.size() + " class files since "
+            return "Build holding " + pendingClassFiles.size() + " class files and "
+                    + pendingActions.size() + " actions since "
                     + java.time.Instant.ofEpochMilli(heldSince) + "; waiting for BUILD ok"
                     + (reload == null ? "" : ". " + reload);
         }
@@ -332,7 +337,13 @@ public final class ReloadQueue {
                 return;
             }
         }
-        if (!capture.isEmpty()) classBoundary.accept(() -> applyClassBatch(capture));
+        try {
+            if (!capture.isEmpty()) classBoundary.accept(() -> applyClassBatch(capture));
+        } finally {
+            // The hold is released even if an admitted class callback fails.
+            // Each automatic action still checks for a newer hold or pause.
+            submitPendingAutomatic();
+        }
     }
 
     void reloadClassBatch() {
