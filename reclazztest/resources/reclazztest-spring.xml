@@ -13,6 +13,10 @@
     <import resource="reclazztest-batch-spring.xml"/>
     <import resource="reclazztest-process-resources-spring.xml"/>
 
+    <bean id="reclazzProbeQueryDao" class="com.onurkat.reclazztest.batch.ProbeQueryDao">
+        <constructor-arg ref="flexibleSearchService"/>
+    </bean>
+
     <!-- Services live in the web context (reclazztest-web-spring.xml); scanning them
          here too would register every listener and schedule twice. -->
     <context:component-scan base-package="com.onurkat.reclazztest.interceptors"/>

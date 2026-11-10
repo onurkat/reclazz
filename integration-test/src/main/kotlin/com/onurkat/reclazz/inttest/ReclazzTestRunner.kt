@@ -97,6 +97,7 @@ fun main() {
         PopulatorOccLiveTest(config, agentClient, httpVerifier),
         ValidatorBodyLiveTest(config, agentClient, httpVerifier),
         ValidatorParameterLiveTest(config, agentClient, httpVerifier),
+        FlexibleSearchLiveTest(config, agentClient, httpVerifier),
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

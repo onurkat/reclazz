@@ -2,6 +2,7 @@
 """Portable checks for the real outer profile's preflight and report acceptance."""
 import importlib.util
 from pathlib import Path
+from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, DEFAULT_TEST_NAMES, NORMAL_FIXTURE_FILES
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -121,7 +122,7 @@ class DriverTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             def report(*args, **kwargs):
-                kwargs['stdout'].write('  Default committed membership: 44 cases (Orika rollback included)\n'
+                kwargs['stdout'].write(f'  Default committed membership: {DEFAULT_CASES} cases (Orika rollback included)\n'
                                        'some test | \x1b[32mPASS\x1b[0m | 1s |\n'
                                        'some test | \x1b[31mFAIL\x1b[0m | 1s |\n'
                                        'some test | \x1b[33mSKIP\x1b[0m | 1s |\n')
@@ -129,7 +130,29 @@ class DriverTest(unittest.TestCase):
             with patch.object(driver.subprocess, 'run', side_effect=report):
                 result = driver.runner(root, 'fake')
             self.assertEqual({'PASS': 1, 'FAIL': 1, 'ERROR': 0, 'SKIP': 1}, result['counts'])
-            self.assertEqual(1, result['exitCode']); self.assertTrue(result['default44'])
+            self.assertEqual(1, result['exitCode']); self.assertFalse(result['defaultSuite'])
+
+
+    def test_default_report_requires_exact_membership_and_outcome(self):
+        runner = driver
+        rows = [(name, 'SKIP' if name == 'Hibernate L2 cache' else 'PASS') for name in DEFAULT_TEST_NAMES]
+        def log(selected, membership=DEFAULT_CASES):
+            return f'  Default committed membership: {membership} cases (Orika rollback included)\n' + ''.join(
+                f'{name} | \x1b[32m{status}\x1b[0m | 1s |\n' for name, status in selected)
+        valid = log(rows)
+        invalid = [log(rows[:-1], DEFAULT_CASES-1), log(rows[:-1]),
+                   log([(name, 'PASS') for name, _ in rows if name != 'Hibernate L2 cache']),
+                   log([('replacement scenario', rows[0][1])] + rows[1:]),
+                   log([(name, 'SKIP' if i == 0 else 'PASS') for i, (name, _) in enumerate(rows)])]
+        for text, expected in [(valid, True)] + [(text, False) for text in invalid]:
+            with tempfile.TemporaryDirectory() as temporary:
+                def process(*args, **kwargs):
+                    kwargs['stdout'].write(text)
+                    return type('Process', (), {'returncode': 0, 'wait': lambda self, timeout: 0})()
+                with patch.object(runner.subprocess, 'run', side_effect=process), patch.object(runner.subprocess, 'Popen', side_effect=process):
+                    result = runner.runner(Path(temporary), 'default')
+                self.assertIs(expected, result['defaultSuite'])
+                if expected: self.assertEqual(DEFAULT_OUTCOME, result['counts'])
 
 
 if __name__ == '__main__':

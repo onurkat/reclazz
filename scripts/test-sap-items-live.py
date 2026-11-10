@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Serialized items-schema profile. Native attempts count only after stopped-DB recovery."""
 from pathlib import Path
+from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, NORMAL_FIXTURE_FILES, default_result
 import argparse
 import hashlib
 import json
@@ -165,11 +166,7 @@ def runner(folder, label, profile=None, recovery=None, inject=False):
         result = subprocess.run(['./gradlew', ':integration-test:run', '--console=plain'], cwd=REPO,
                                 env=env, stdout=stream, stderr=subprocess.STDOUT, timeout=900)
     text = (folder / (label + '.log')).read_text()
-    plain = re.sub(r'\x1b\[[0-9;]*m', '', text)
-    counts = {word: len(re.findall(r'^.*\|\s*' + word + r'\s*\|', plain, re.M))
-              for word in ['PASS', 'FAIL', 'ERROR', 'SKIP']}
-    return {'exitCode': result.returncode, 'counts': counts,
-            'default44': 'Default committed membership: 44 cases' in text,
+    return {'exitCode': result.returncode, **default_result(text),
             'injectedFailure': 'Injected items failure after persisted write' in text}
 
 
@@ -322,8 +319,8 @@ def main():
             break
     if all(r['verdict'] == 'PASS' for r in results):
         baseline = runner(folder, 'normal-default')
-        if baseline['exitCode'] != 0 or baseline['counts'] != {'PASS': 43, 'FAIL': 0, 'ERROR': 0, 'SKIP': 1} or not baseline['default44']:
-            raise RuntimeError('Restored default44 failed; evidence preserved in ' + str(folder))
+        if baseline['exitCode'] != 0 or baseline['counts'] != DEFAULT_OUTCOME or not baseline['defaultSuite']:
+            raise RuntimeError('Restored default suite failed; evidence preserved in ' + str(folder))
     else:
         baseline = {'unrun': 'profile/recovery failed'}
     passed = len(results) == args.runs + int(args.failure_control) and all(r['verdict'] == 'PASS' for r in results) and 'unrun' not in baseline

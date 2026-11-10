@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Serialized native CMS request-component/JSP profile, never general CMS coverage."""
 from pathlib import Path
+from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, NORMAL_FIXTURE_FILES, default_result
 import argparse
 import http.cookiejar
 import importlib.util
@@ -98,8 +99,8 @@ def fixture_hashes():
             if source.read_bytes() != actual.read_bytes():
                 raise RuntimeError('Dirty CMS fixture: ' + str(relative))
             result[str(actual.relative_to(REPO))] = support.digest(actual)
-    if len(result) != 89:
-        raise RuntimeError('Expected80 normal/Solr +9 owned CMS fixture files')
+    if len(result) != NORMAL_FIXTURE_FILES + 10 + 9:
+        raise RuntimeError(f'Expected{NORMAL_FIXTURE_FILES + 10} normal/Solr +9 owned CMS fixture files')
     return result
 
 
@@ -236,10 +237,8 @@ def runner(folder, label, inject=False):
         except subprocess.TimeoutExpired:
             raise RuntimeError('Inner CMS writer deadline; process preserved PID=' + str(process.pid))
     text = re.sub(r'\x1b\[[0-9;]*m', '', log.read_text())
-    return {'exitCode': code, 'counts': {status: len(re.findall(r'^.*\|\s*' + status + r'\s*\|', text, re.M))
-                                       for status in ['PASS', 'FAIL', 'ERROR', 'SKIP']},
-            'injectedFailure': 'Injected CMS failure after real rendered v2' in text,
-            'default44': 'Default committed membership: 44 cases' in text}
+    return {'exitCode': code, **default_result(text),
+            'injectedFailure': 'Injected CMS failure after real rendered v2' in text}
 
 
 def setup_api_probe(folder):
@@ -399,7 +398,7 @@ def main():
     passed = len(results) == count and all(row['verdict'] == 'PASS' for row in results)
     passed &= console_intact and baseline['nativeRefreshFailures'] == 0
     if not args.setup_probe:
-        passed &= baseline.get('exitCode') == 0 and baseline.get('default44') is True and baseline.get('counts') == {'PASS': 43, 'FAIL': 0, 'ERROR': 0, 'SKIP': 1}
+        passed &= baseline.get('exitCode') == 0 and baseline.get('defaultSuite') is True and baseline.get('counts') == DEFAULT_OUTCOME
     (folder / 'summary.json').write_text(json.dumps({'verdict': 'PASS' if passed else 'FAIL', 'setupOnly': args.setup_probe, 'cycles': results, 'default': baseline}, indent=2) + '\n')
     print(('CMS_SETUP_PROBE ' if args.setup_probe else 'CMS_PROFILE ') + ('PASS' if passed else 'FAIL') + '; recovery evidence: ' + str(folder), flush=True)
     return 0 if passed else 1

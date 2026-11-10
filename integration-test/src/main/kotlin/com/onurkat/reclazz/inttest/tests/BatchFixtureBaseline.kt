@@ -6,7 +6,9 @@ import java.nio.file.Path
 
 /** Includes every baseline a Batch A scenario edits, including its exception paths. */
 class BatchFixtureBaseline(private val config:TestConfig) {
-    private val relative=listOf("project.properties","resources/reclazztest-batch-spring.xml",
+    private val relative=listOf("project.properties","resources/reclazztest-spring.xml",
+        "src/com/onurkat/reclazztest/batch/ProbeQueryDao.java",
+        "web/src/com/onurkat/reclazztest/controllers/DaoProbeController.java","resources/reclazztest-batch-spring.xml",
         "resources/reclazztest-process-resources-spring.xml","resources/process/reclazz-process-existing.xml",
         "resources/impex/reclazz-batch-refusal.impex","resources/localization/reclazztest-locales_en.properties",
         "resources/occ/v2/reclazztestocc/web/spring/reclazztestocc-web-spring.xml",

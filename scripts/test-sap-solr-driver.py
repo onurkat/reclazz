@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Portable real boundary checks for Solr boot ownership and stopped recovery."""
 from pathlib import Path
+from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, DEFAULT_TEST_NAMES, NORMAL_FIXTURE_FILES
 import importlib.util
 import tempfile
 import unittest
@@ -151,6 +152,28 @@ class DriverTest(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 driver.stop_all(Path('/unused'), 'restore', False)
             native.assert_not_called()
+
+
+    def test_default_report_requires_exact_membership_and_outcome(self):
+        runner = driver
+        rows = [(name, 'SKIP' if name == 'Hibernate L2 cache' else 'PASS') for name in DEFAULT_TEST_NAMES]
+        def log(selected, membership=DEFAULT_CASES):
+            return f'  Default committed membership: {membership} cases (Orika rollback included)\n' + ''.join(
+                f'{name} | \x1b[32m{status}\x1b[0m | 1s |\n' for name, status in selected)
+        valid = log(rows)
+        invalid = [log(rows[:-1], DEFAULT_CASES-1), log(rows[:-1]),
+                   log([(name, 'PASS') for name, _ in rows if name != 'Hibernate L2 cache']),
+                   log([('replacement scenario', rows[0][1])] + rows[1:]),
+                   log([(name, 'SKIP' if i == 0 else 'PASS') for i, (name, _) in enumerate(rows)])]
+        for text, expected in [(valid, True)] + [(text, False) for text in invalid]:
+            with tempfile.TemporaryDirectory() as temporary:
+                def process(*args, **kwargs):
+                    kwargs['stdout'].write(text)
+                    return type('Process', (), {'returncode': 0, 'wait': lambda self, timeout: 0})()
+                with patch.object(runner.subprocess, 'run', side_effect=process), patch.object(runner.subprocess, 'Popen', side_effect=process):
+                    result = runner.runner(Path(temporary), 'default')
+                self.assertIs(expected, result['defaultSuite'])
+                if expected: self.assertEqual(DEFAULT_OUTCOME, result['counts'])
 
 
 if __name__ == '__main__':

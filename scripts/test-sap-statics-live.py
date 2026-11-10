@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Full resetStatics acceptance: fresh off/on lanes, stopped recovery, normal default44."""
+"""Full resetStatics acceptance: fresh off/on lanes, stopped recovery, normal default suite."""
 from pathlib import Path
+from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, NORMAL_FIXTURE_FILES, default_result
 import argparse
 import importlib.util
 import json
@@ -104,9 +105,7 @@ def runner(folder, label, profile=None, inject=False):
             # Restoration must not race the surviving inner source writer.
             raise RuntimeError('Inner runner deadline; writer preserved PID=' + str(process.pid))
     text = re.sub(r'\x1b\[[0-9;]*m', '', log.read_text())
-    return {'exitCode': code, 'counts': {s: len(re.findall(r'^.*\|\s*' + s + r'\s*\|', text, re.M))
-                                      for s in ['PASS', 'FAIL', 'ERROR', 'SKIP']},
-            'default44': 'Default committed membership: 44 cases' in text,
+    return {'exitCode': code, **default_result(text),
             'injectedFailure': 'Injected static failure after reload and runtime mutation' in text}
 
 
@@ -217,7 +216,7 @@ def main():
     baseline = {'unrun': 'profile/recovery failed'}
     if all(r['verdict'] == 'PASS' for r in results):
         baseline = runner(folder, 'normal-default')
-    passed = len(results) == args.runs + int(args.failure_control) and all(r['verdict'] == 'PASS' for r in results) and baseline.get('exitCode') == 0 and baseline.get('counts') == {'PASS': 43, 'FAIL': 0, 'ERROR': 0, 'SKIP': 1} and baseline.get('default44') is True
+    passed = len(results) == args.runs + int(args.failure_control) and all(r['verdict'] == 'PASS' for r in results) and baseline.get('exitCode') == 0 and baseline.get('counts') == DEFAULT_OUTCOME and baseline.get('defaultSuite') is True
     (folder / 'summary.json').write_text(json.dumps({'verdict': 'PASS' if passed else 'FAIL', 'cycles': results, 'default': baseline}, indent=2) + '\n')
     print('STATICS_PROFILE ' + ('PASS' if passed else 'FAIL') + '; recovery evidence: ' + str(folder), flush=True)
     return 0 if passed else 1

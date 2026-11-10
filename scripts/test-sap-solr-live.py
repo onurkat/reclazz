@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Owned Solr boot layer; acceptance includes stopped full-tree recovery and default44."""
+"""Owned Solr boot layer; acceptance includes stopped full-tree recovery and default suite."""
 from pathlib import Path
+from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, NORMAL_FIXTURE_FILES, default_result
 import argparse
 import hashlib
 import http.cookiejar
@@ -55,8 +56,8 @@ def fixture_hashes():
             if path.read_bytes() != template.read_bytes():
                 raise RuntimeError('Dirty profile fixture: ' + str(relative))
             result[str(path.relative_to(REPO))] = support.digest(path)
-    if len(result) != 80:
-        raise RuntimeError('Expected70 normal +10 profile fixture files')
+    if len(result) != NORMAL_FIXTURE_FILES + 10:
+        raise RuntimeError(f'Expected{NORMAL_FIXTURE_FILES} normal +10 profile fixture files')
     return result
 
 
@@ -297,9 +298,8 @@ def runner(folder, label, nonce=None, inject=False):
         except subprocess.TimeoutExpired:
             raise RuntimeError('Inner writer deadline; process preserved PID=' + str(process.pid))
     text = re.sub(r'\x1b\[[0-9;]*m', '', log.read_text())
-    return {'exitCode': code, 'counts': {s: len(re.findall(r'^.*\|\s*' + s + r'\s*\|', text, re.M)) for s in ['PASS', 'FAIL', 'ERROR', 'SKIP']},
-            'injectedFailure': 'Injected Solr failure after real FINISHED and stored v2' in text,
-            'default44': 'Default committed membership: 44 cases' in text}
+    return {'exitCode': code, **default_result(text),
+            'injectedFailure': 'Injected Solr failure after real FINISHED and stored v2' in text}
 
 
 def remove_owned_link(link=LINK, target=EXT):
@@ -429,7 +429,7 @@ def main():
         if result['verdict'] != 'PASS':
             break
     baseline = runner(folder, 'normal-default') if all(r['verdict'] == 'PASS' for r in results) else {'unrun': 'profile/recovery failed'}
-    passed = len(results) == args.runs + int(args.failure_control) and all(r['verdict'] == 'PASS' for r in results) and baseline.get('exitCode') == 0 and baseline.get('default44') is True and baseline.get('counts') == {'PASS': 43, 'FAIL': 0, 'ERROR': 0, 'SKIP': 1}
+    passed = len(results) == args.runs + int(args.failure_control) and all(r['verdict'] == 'PASS' for r in results) and baseline.get('exitCode') == 0 and baseline.get('defaultSuite') is True and baseline.get('counts') == DEFAULT_OUTCOME
     (folder / 'summary.json').write_text(json.dumps({'verdict': 'PASS' if passed else 'FAIL', 'cycles': results, 'default': baseline}, indent=2) + '\n')
     print('SOLR_PROFILE ' + ('PASS' if passed else 'FAIL') + '; recovery evidence: ' + str(folder), flush=True)
     return 0 if passed else 1

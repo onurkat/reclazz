@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Portable Backoffice edit/setup/restore contracts; no native or browser writes."""
 from pathlib import Path
+from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, DEFAULT_TEST_NAMES, NORMAL_FIXTURE_FILES
 import importlib.util
 import tempfile
 import unittest
@@ -88,8 +89,8 @@ class BackofficeDriverTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):d.load(Path('/private/tmp/unowned'))
 
     def test_profile_is_separate_and_normal_memberships_unchanged(self):
-        self.assertEqual(80,len(d.solr.fixture_hashes()))
-        self.assertEqual(89,len(d.cms.fixture_hashes()))
+        self.assertEqual(NORMAL_FIXTURE_FILES+10,len(d.solr.fixture_hashes()))
+        self.assertEqual(NORMAL_FIXTURE_FILES+19,len(d.cms.fixture_hashes()))
         self.assertEqual(3,len(d.profile_hashes()))
         self.assertNotIn('reclazz_regression_v1',(d.NORMAL_EXT/'resources/reclazztestbackoffice-backoffice-config.xml').read_text())
 
@@ -146,6 +147,28 @@ class BackofficeDriverTest(unittest.TestCase):
             with patch.object(d.solr,'no_inner_writer'),patch.object(d.solr,'stopped',side_effect=RuntimeError('writer')):
                 with self.assertRaises(RuntimeError):d.cms.restore_trees(root,{'snap':live})
             self.assertEqual(b'current',(live/'base').read_bytes())
+
+
+    def test_default_report_requires_exact_membership_and_outcome(self):
+        runner = d.cms
+        rows = [(name, 'SKIP' if name == 'Hibernate L2 cache' else 'PASS') for name in DEFAULT_TEST_NAMES]
+        def log(selected, membership=DEFAULT_CASES):
+            return f'  Default committed membership: {membership} cases (Orika rollback included)\n' + ''.join(
+                f'{name} | \x1b[32m{status}\x1b[0m | 1s |\n' for name, status in selected)
+        valid = log(rows)
+        invalid = [log(rows[:-1], DEFAULT_CASES-1), log(rows[:-1]),
+                   log([(name, 'PASS') for name, _ in rows if name != 'Hibernate L2 cache']),
+                   log([('replacement scenario', rows[0][1])] + rows[1:]),
+                   log([(name, 'SKIP' if i == 0 else 'PASS') for i, (name, _) in enumerate(rows)])]
+        for text, expected in [(valid, True)] + [(text, False) for text in invalid]:
+            with tempfile.TemporaryDirectory() as temporary:
+                def process(*args, **kwargs):
+                    kwargs['stdout'].write(text)
+                    return type('Process', (), {'returncode': 0, 'wait': lambda self, timeout: 0})()
+                with patch.object(runner.subprocess, 'run', side_effect=process), patch.object(runner.subprocess, 'Popen', side_effect=process):
+                    result = runner.runner(Path(temporary), 'default')
+                self.assertIs(expected, result['defaultSuite'])
+                if expected: self.assertEqual(DEFAULT_OUTCOME, result['counts'])
 
 
 if __name__=='__main__':unittest.main()
