@@ -906,6 +906,1391 @@
             }
           }
         ]
+      },
+      "sapOutcomes": {
+        "type": "array",
+        "maxItems": 16,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "sequence": {
+              "type": "string",
+              "maxLength": 19,
+              "pattern": "^(0|[1-9][0-9]{0,18})$"
+            },
+            "level": {
+              "enum": [
+                "INFO",
+                "OK",
+                "WARN",
+                "ERROR",
+                "COMPILE",
+                "RELOAD",
+                "STRUCTURAL_RELOAD"
+              ]
+            },
+            "timestamp": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "maxLength": 64,
+                  "format": "date-time",
+                  "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{1,9})?(Z|[+-][0-9]{2}:[0-9]{2})$"
+                }
+              ]
+            },
+            "type": {
+              "const": "sap_operation"
+            },
+            "message": {
+              "type": "string",
+              "maxLength": 512
+            },
+            "messageTruncated": {
+              "type": "boolean"
+            },
+            "ownerClassName": {
+              "type": "string",
+              "maxLength": 256,
+              "minLength": 1
+            },
+            "fileBasename": {
+              "type": "string",
+              "maxLength": 255,
+              "minLength": 6,
+              "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f]+\\.java$"
+            },
+            "sap": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "applied"
+                    },
+                    "reasonCode": {
+                      "const": "imported"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "refused"
+                    },
+                    "reasonCode": {
+                      "const": "remove_or_unresolved_header"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    },
+                    "headerLine": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename",
+                    "headerLine"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "warning"
+                    },
+                    "reasonCode": {
+                      "const": "remove_allowed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    },
+                    "headerLine": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename",
+                    "headerLine"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "import_exception"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "non_utf8"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "file_too_large"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "skipped"
+                    },
+                    "reasonCode": {
+                      "const": "empty_file"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "skipped"
+                    },
+                    "reasonCode": {
+                      "const": "missing_file"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "import_errors"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    },
+                    "unresolvedLines": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "import_service_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "tenant_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "import_classes_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_dto"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "dto"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_model"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "model"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_dto_and_model"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "dto_and_model"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_unspecified"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "unspecified"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_timeout"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_exit"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_invocation_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "applied"
+                    },
+                    "reasonCode": {
+                      "const": "schema_updated"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "manual_required"
+                    },
+                    "reasonCode": {
+                      "const": "manual_schema_required"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "manual_required"
+                    },
+                    "reasonCode": {
+                      "const": "model_refetch_required"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "manual_required"
+                    },
+                    "reasonCode": {
+                      "const": "enum_persistence_required"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "schema_tenant_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "schema_update_busy"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "schema_success_unconfirmed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "automatic_update_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "backoffice_reset"
+                    },
+                    "reportedOutcome": {
+                      "const": "applied"
+                    },
+                    "reasonCode": {
+                      "const": "f4_reset"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.xml$"
+                    },
+                    "services": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    },
+                    "uiConfigurationReset": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename",
+                    "services",
+                    "uiConfigurationReset"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "backoffice_reset"
+                    },
+                    "reportedOutcome": {
+                      "const": "disabled"
+                    },
+                    "reasonCode": {
+                      "const": "config_reset_disabled"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.xml$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "backoffice_reset"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "config_reset_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.xml$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "finished"
+                    },
+                    "reasonCode": {
+                      "const": "native_finished"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "documents": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000
+                    },
+                    "durationMs": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    },
+                    "listenerMetadata": {
+                      "oneOf": [
+                        {
+                          "const": "unknown"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 2147483647
+                        }
+                      ]
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    },
+                    "properties": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "documents",
+                    "durationMs",
+                    "listenerMetadata",
+                    "fieldFreshnessConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "finished_unverified"
+                    },
+                    "reasonCode": {
+                      "const": "native_errors_may_be_skipped"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "documents": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000
+                    },
+                    "durationMs": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    },
+                    "listenerMetadata": {
+                      "oneOf": [
+                        {
+                          "const": "unknown"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 2147483647
+                        }
+                      ]
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    },
+                    "properties": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "documents",
+                    "durationMs",
+                    "listenerMetadata",
+                    "fieldFreshnessConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "skipped"
+                    },
+                    "reasonCode": {
+                      "const": "no_stored_documents"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "fieldFreshnessConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "failed"
+                    },
+                    "reasonCode": {
+                      "const": "native_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "fieldFreshnessConfirmed"
+                  ]
+                }
+              ]
+            }
+          },
+          "required": [
+            "sequence",
+            "level",
+            "timestamp",
+            "type",
+            "message",
+            "messageTruncated",
+            "sap"
+          ],
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "compile",
+                      "compiler_diagnostic"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "fileBasename"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "reload",
+                      "structural_reload",
+                      "refused",
+                      "framework_failure",
+                      "restart_required"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "ownerClassName"
+                ]
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "enum": [
+                      "unknown",
+                      "compile_error"
+                    ]
+                  }
+                }
+              },
+              "then": {
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "fileBasename"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "ownerClassName"
+                      ]
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "sap_operation"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "sap"
+                ],
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "ownerClassName"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "fileBasename"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "not": {
+                  "required": [
+                    "sap"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      },
+      "sapOutcomesTruncated": {
+        "type": "boolean"
       }
     },
     "required": [
@@ -921,7 +2306,9 @@
       "editRevisionConfirmed",
       "reloadConfirmed",
       "diagnostics",
-      "diagnosticsTruncated"
+      "diagnosticsTruncated",
+      "sapOutcomes",
+      "sapOutcomesTruncated"
     ],
     "oneOf": [
       {
@@ -1263,6 +2650,27 @@
           ]
         }
       }
+    ],
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "action": {
+              "const": "checkpoint"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "sapOutcomes": {
+              "maxItems": 0
+            },
+            "sapOutcomesTruncated": {
+              "const": false
+            }
+          }
+        }
+      }
     ]
   },
   "reclazz_events": {
@@ -1363,7 +2771,8 @@
                 "compiler_diagnostic",
                 "refused",
                 "framework_failure",
-                "restart_required"
+                "restart_required",
+                "sap_operation"
               ]
             },
             "message": {
@@ -1383,6 +2792,1217 @@
               "maxLength": 255,
               "minLength": 6,
               "pattern": "^[^/\\\\\\u0000-\\u001f\\u007f]+\\.java$"
+            },
+            "sap": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "applied"
+                    },
+                    "reasonCode": {
+                      "const": "imported"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "refused"
+                    },
+                    "reasonCode": {
+                      "const": "remove_or_unresolved_header"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    },
+                    "headerLine": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename",
+                    "headerLine"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "warning"
+                    },
+                    "reasonCode": {
+                      "const": "remove_allowed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    },
+                    "headerLine": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename",
+                    "headerLine"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "import_exception"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "non_utf8"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "file_too_large"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "skipped"
+                    },
+                    "reasonCode": {
+                      "const": "empty_file"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "skipped"
+                    },
+                    "reasonCode": {
+                      "const": "missing_file"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "import_errors"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.impex$"
+                    },
+                    "unresolvedLines": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "import_service_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "tenant_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "impex_import"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "import_classes_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_dto"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "dto"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_model"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "model"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_dto_and_model"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "dto_and_model"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "generated"
+                    },
+                    "reasonCode": {
+                      "const": "regenerated_unspecified"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "generationKind": {
+                      "const": "unspecified"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "generationKind"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_timeout"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_exit"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "codegen"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "ant_invocation_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "applied"
+                    },
+                    "reasonCode": {
+                      "const": "schema_updated"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "manual_required"
+                    },
+                    "reasonCode": {
+                      "const": "manual_schema_required"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "manual_required"
+                    },
+                    "reasonCode": {
+                      "const": "model_refetch_required"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "manual_required"
+                    },
+                    "reasonCode": {
+                      "const": "enum_persistence_required"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "schema_tenant_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "schema_update_busy"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "schema_success_unconfirmed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "items_schema"
+                    },
+                    "reportedOutcome": {
+                      "const": "unavailable"
+                    },
+                    "reasonCode": {
+                      "const": "automatic_update_unavailable"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "backoffice_reset"
+                    },
+                    "reportedOutcome": {
+                      "const": "applied"
+                    },
+                    "reasonCode": {
+                      "const": "f4_reset"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.xml$"
+                    },
+                    "services": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    },
+                    "uiConfigurationReset": {
+                      "const": true
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename",
+                    "services",
+                    "uiConfigurationReset"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "backoffice_reset"
+                    },
+                    "reportedOutcome": {
+                      "const": "disabled"
+                    },
+                    "reasonCode": {
+                      "const": "config_reset_disabled"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.xml$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "backoffice_reset"
+                    },
+                    "reportedOutcome": {
+                      "const": "error"
+                    },
+                    "reasonCode": {
+                      "const": "config_reset_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "resourceBasename": {
+                      "type": "string",
+                      "minLength": 5,
+                      "maxLength": 255,
+                      "pattern": "^[A-Za-z0-9_$][A-Za-z0-9_$.-]*\\.xml$"
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "resourceBasename"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "finished"
+                    },
+                    "reasonCode": {
+                      "const": "native_finished"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "documents": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000
+                    },
+                    "durationMs": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    },
+                    "listenerMetadata": {
+                      "oneOf": [
+                        {
+                          "const": "unknown"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 2147483647
+                        }
+                      ]
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    },
+                    "properties": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "documents",
+                    "durationMs",
+                    "listenerMetadata",
+                    "fieldFreshnessConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "finished_unverified"
+                    },
+                    "reasonCode": {
+                      "const": "native_errors_may_be_skipped"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "documents": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 10000
+                    },
+                    "durationMs": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2147483647
+                    },
+                    "listenerMetadata": {
+                      "oneOf": [
+                        {
+                          "const": "unknown"
+                        },
+                        {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 2147483647
+                        }
+                      ]
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    },
+                    "properties": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 2147483647
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "documents",
+                    "durationMs",
+                    "listenerMetadata",
+                    "fieldFreshnessConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "skipped"
+                    },
+                    "reasonCode": {
+                      "const": "no_stored_documents"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "fieldFreshnessConfirmed"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "operation": {
+                      "const": "solr_reindex"
+                    },
+                    "reportedOutcome": {
+                      "const": "failed"
+                    },
+                    "reasonCode": {
+                      "const": "native_failed"
+                    },
+                    "evidenceScope": {
+                      "const": "agent_message"
+                    },
+                    "applicationBehaviorConfirmed": {
+                      "const": false
+                    },
+                    "targetTag": {
+                      "type": "string",
+                      "maxLength": 64,
+                      "pattern": "^(discovery|owner[1-9][0-9]{0,8}(/config[1-9][0-9]{0,8}/type[1-9][0-9]{0,8})?)$"
+                    },
+                    "fieldFreshnessConfirmed": {
+                      "const": false
+                    }
+                  },
+                  "required": [
+                    "operation",
+                    "reportedOutcome",
+                    "reasonCode",
+                    "evidenceScope",
+                    "applicationBehaviorConfirmed",
+                    "targetTag",
+                    "fieldFreshnessConfirmed"
+                  ]
+                }
+              ]
             }
           },
           "required": [
@@ -1455,6 +4075,41 @@
                         "ownerClassName"
                       ]
                     }
+                  ]
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": {
+                  "type": {
+                    "const": "sap_operation"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "sap"
+                ],
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "ownerClassName"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "fileBasename"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "else": {
+                "not": {
+                  "required": [
+                    "sap"
                   ]
                 }
               }

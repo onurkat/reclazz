@@ -61,6 +61,8 @@ final class EventObservation {
                 owner = message.substring(0, index); type = "restart_required";
             }
         }
+        JsonObject sap = SapOperationObservation.describe(level, message);
+        if (sap != null) { type = "sap_operation"; out.add("sap", sap); }
         out.addProperty("sequence", Long.toString(event.sequence()));
         out.addProperty("level", level);
         out.add("timestamp", event.timestamp() == null ? JsonNull.INSTANCE : new JsonPrimitive(event.timestamp()));

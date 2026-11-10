@@ -62,8 +62,7 @@ final class AwaitReload implements AutoCloseable {
             String file = opts.containsKey("filePath") ? Path.of(opts.get("filePath")).getFileName().toString() : null;
             while (System.nanoTime() < until) {
                 if (cancel.isCancelled()) throw new EventSubscription.Failure("cancelled", "Observation cancelled");
-                List<EventSubscription.Event> events = stream.since(after);
-                out.addProperty("cursor", Long.toString(stream.cursor()));
+                List<EventSubscription.Event> events = observations(out, stream, after);
                 Selection selected = select(events, file, owner);
                 if (selected != null) {
                     diagnostics(out, events, selected);
@@ -71,9 +70,8 @@ final class AwaitReload implements AutoCloseable {
                         return outcome(out, selected.status(), selected.status().equals("compile_error") ? "compiler_diagnostic"
                                 : selected.detail().startsWith("Multiple same-basename") ? "ambiguous_source" : "framework_failure", selected.detail());
                     JsonObject receipt = receipt(stream, owner, opts.get("sha256"), until);
-                    Selection latest = select(stream.since(after), file, owner);
+                    Selection latest = select(observations(out, stream, after), file, owner);
                     if (!Objects.equals(latest, selected)) continue;
-                    out.addProperty("cursor", Long.toString(stream.cursor()));
                     String state = receipt.get("status").getAsString();
                     if (state.equals("running")) { stream.awaitChange(stream.cursor(), until); continue; }
                     if (selected.status().equals("refused") && state.equals("failed")) {
@@ -96,7 +94,7 @@ final class AwaitReload implements AutoCloseable {
                 }
                 JsonObject admission = stream.state(until);
                 // A terminal event may have arrived while the state command was in flight.
-                if (select(stream.since(after), file, owner) != null) continue;
+                if (select(observations(out, stream, after), file, owner) != null) continue;
                 if (admission.get("paused").getAsBoolean() || !admission.get("buildHold").getAsString().equals("none")) {
                     out.add("admission", admission);
                     return outcome(out, "held", "admission_blocked", "Agent-wide admission state only; target observation/pending is unconfirmed and already admitted work may finish");
@@ -110,12 +108,34 @@ final class AwaitReload implements AutoCloseable {
             String code = failure instanceof EventSubscription.Failure f ? f.code : "observation_unavailable";
             if (entry != null && Set.of("session_changed", "malformed_response", "response_timeout", "target_mismatch").contains(code))
                 entry.stream.close();
-            if (opts.get("action").equals("wait") && code.equals("deadline") && entry != null && entry.stream.alive())
-                return outcome(out, "timeout", "deadline", "Total observation deadline exceeded; no reload completion confirmed");
+            if (opts.get("action").equals("wait") && code.equals("deadline") && entry != null && entry.stream.alive()) {
+                try {
+                    observations(out, entry.stream, Long.parseLong(opts.get("afterCursor")));
+                    return outcome(out, "timeout", "deadline", "Total observation deadline exceeded; no reload completion confirmed");
+                } catch (IOException invalid) {
+                    code = invalid instanceof EventSubscription.Failure f ? f.code : "observation_unavailable";
+                }
+            }
+            out.add("sapOutcomes", new JsonArray()); out.addProperty("sapOutcomesTruncated", false);
             return outcome(out, "unavailable", code, failure.getMessage());
         } finally {
             registry.finish(entry, cancel);
         }
+    }
+
+    private static List<EventSubscription.Event> observations(JsonObject out, EventSubscription stream, long after) throws IOException {
+        EventSubscription.Snapshot snapshot = stream.snapshot(after);
+        List<JsonObject> rows = new ArrayList<>();
+        for (EventSubscription.Event event : snapshot.events()) {
+            JsonObject row = EventObservation.describe(event);
+            if (row.has("sap")) rows.add(row);
+        }
+        stream.recheck(after);
+        JsonArray annotations = new JsonArray();
+        rows.subList(Math.max(0, rows.size() - 16), rows.size()).forEach(annotations::add);
+        out.add("sapOutcomes", annotations); out.addProperty("sapOutcomesTruncated", rows.size() > 16);
+        out.addProperty("cursor", Long.toString(snapshot.head()));
+        return snapshot.events();
     }
 
     private static JsonObject receipt(EventSubscription stream, String owner, String expected, long until) throws IOException {
@@ -174,6 +194,7 @@ final class AwaitReload implements AutoCloseable {
         r.addProperty("correlationScope", "received_events");
         r.addProperty("sourcePathConfirmed", false); r.addProperty("editRevisionConfirmed", false);
         r.add("diagnostics", new JsonArray()); r.addProperty("diagnosticsTruncated", false);
+        r.add("sapOutcomes", new JsonArray()); r.addProperty("sapOutcomesTruncated", false);
         for (String k : List.of("filePath", "className", "ownerClassName", "sha256")) if (opts.containsKey(k)) r.addProperty(k, opts.get(k));
         return r;
     }

@@ -33,6 +33,7 @@ class BatchCancellationTest {
                 String c;
                 while ((c = in.readLine()) != null) {
                     if (c.startsWith("DOCTOR ")) {
+                        AwaitReloadTest.event(out,"OK","ImpEx imported: example.impex");
                         JsonObject d = DoctorTest.evidence(c); d.addProperty("sessionId", "session-test"); DoctorTest.send(out, c, d);
                     } else {
                         assertTrue(c.startsWith("RELOAD status request="), c);
@@ -69,6 +70,7 @@ class BatchCancellationTest {
                 for (int i = 0; i < 2; i++) {
                     String c = in.readLine(); JsonObject d = DoctorTest.evidence(c);
                     d.addProperty("sessionId", "session-test"); DoctorTest.send(out, c, d);
+                    AwaitReloadTest.event(out,"OK",SapOperationObservationTest.ITEMS);
                 }
                 assertTrue(in.readLine().startsWith("DOCTOR ")); blocked.countDown();
                 assertNull(in.readLine(), "cancel/EOF closes the shared stream without mutating");
@@ -101,6 +103,7 @@ class BatchCancellationTest {
                 for (int i = 0; i < 2; i++) {
                     String c = in.readLine(); JsonObject d = DoctorTest.evidence(c);
                     d.addProperty("sessionId", "session-test"); DoctorTest.send(out, c, d);
+                    AwaitReloadTest.event(out,"OK",SapOperationObservationTest.ITEMS);
                 }
                 assertTrue(in.readLine().startsWith("DOCTOR ")); blocked.countDown();
                 assertNull(in.readLine(), "resource cancellation/EOF must close the shared stream");

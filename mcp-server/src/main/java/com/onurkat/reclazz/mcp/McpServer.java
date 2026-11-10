@@ -173,6 +173,7 @@ public final class McpServer implements AutoCloseable {
         JsonObject await = tool("reclazz_await_reload",
                 "Checkpoint a persistent received-event stream before saving, then wait for exact-owner events and a same-session byte receipt. "
                         + "Source mode requires ownerClassName; basename correlation proves no full source path, source revision or application behavior. "
+                        + "Bounded sapOutcomes describe agent messages only and never change Java await acceptance. "
                         + "Read-only; cancellation closes the subscription. Total timeout default 5000, max 60000 ms.", false);
         JsonObject ap = await.getAsJsonObject("inputSchema").getAsJsonObject("properties");
         for (String key : List.of("action", "sessionId", "subscriptionId", "afterCursor", "filePath", "className", "ownerClassName", "sha256"))
@@ -205,6 +206,7 @@ public final class McpServer implements AutoCloseable {
         JsonObject events = tool("reclazz_events",
                 "List bounded received-event pages from an await_reload checkpoint. Reuse nextCursor as sinceCursor. "
                         + "Exact filters are AND on one event; event types confirm no reload, source revision or behavior. "
+                        + "Typed SAP outcomes describe explicit agent messages, not correlated edits or native application proof. "
                         + "No implicit reconnect; cancellation closes the shared observation subscription.", false);
         JsonObject ep = events.getAsJsonObject("inputSchema").getAsJsonObject("properties");
         for (String key : List.of("sessionId", "subscriptionId", "sinceCursor", "limit", "level", "ownerClassName", "fileBasename"))

@@ -184,6 +184,24 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     results.push({ name, isError, data });
     return data;
   }
+  // P5 fixtures come from the Java fake-agent tests, not this ordinary application JVM.
+  // Compile their advertised schemas through the official SDK; this is contract evidence only.
+  const sapFixtureDir = path.join(root, 'mcp-server/build/sap-outcome-fixtures');
+  const sapFixtureNames = (await fs.readdir(sapFixtureDir)).filter(name => name.endsWith('.json') && !name.startsWith('row-'));
+  assert.equal(sapFixtureNames.length, 10, 'Run the complete MCP Java tests; reject stale SAP fixtures');
+  for (const name of sapFixtureNames) {
+    const fixture = JSON.parse(await fs.readFile(path.join(sapFixtureDir, name), 'utf8'));
+    const tool = name.startsWith('await-') ? 'reclazz_await_reload' : 'reclazz_events';
+    const validator = client.getToolOutputValidator(tool);
+    assert.equal(validator(fixture.data).valid, true, `${name}: ${JSON.stringify(validator(fixture.data))}`);
+    const rows = fixture.data.sapOutcomes ?? fixture.data.events;
+    for (let index = 0; index < rows.length; index++) {
+      const invalid = structuredClone(fixture.data);
+      (invalid.sapOutcomes ?? invalid.events)[index].sap.applicationBehaviorConfirmed = true;
+      assert.equal(validator(invalid).valid, false, `${name}: invented SAP application proof`);
+    }
+  }
+  t.diagnostic(`SDK validated ${sapFixtureNames.length} synthetic-agent SAP fixtures; no native SAP claim`);
   const status = await call('status');
   assert.equal(status.attached, true);
   const resourceStatus = await resource('reclazz://status', 'status');
@@ -280,6 +298,8 @@ test('official SDK against packaged MCP and a persistent application JVM', { tim
     assert.equal(awaited.status, 'applied');
     assert.equal(awaited.hashSource, 'caller');
     assert.equal(awaited.correlationScope, 'received_events');
+    assert.deepEqual(awaited.sapOutcomes, []);
+    assert.equal(awaited.sapOutcomesTruncated, false);
     assert.equal(awaited.sourcePathConfirmed, false);
     assert.equal(awaited.editRevisionConfirmed, false);
     assert.equal(awaited.receipt.sessionId, doctor.sessionId);
