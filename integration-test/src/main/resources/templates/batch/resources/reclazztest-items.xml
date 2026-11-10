@@ -9,6 +9,10 @@
                     <modifiers read="true" write="true" optional="false" unique="true"/>
                     <persistence type="property"/>
                 </attribute>
+                <attribute qualifier="dynamicLabel" type="java.lang.String">
+                    <modifiers read="true" write="true" optional="true" search="false"/>
+                    <persistence type="dynamic" attributeHandler="reclazzDynamicLabelHandler"/>
+                </attribute>
             </attributes>
         </itemtype>
     </itemtypes>

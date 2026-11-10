@@ -590,7 +590,7 @@ fun main() {
         val result=runGatedProfile("restore-contract",{null}) {withRestore({Unit}) {error("restore failure")}}
         check(result.status==TestStatus.FAIL && "restore failure" in result.notes)
     }
-    case("defaultMembershipRetainsCommitted45") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==45)}
+    case("defaultMembershipRetainsCommitted46") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==46)}
     case("defaultMembershipRejectsMissingOrika") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OrikaPropertyRollbackLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsSameCountReplacement") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OrikaPropertyRollbackLiveTest"+"FakeTest").toList())}.isFailure)}
     val generatedOwners=setOf("com.example.Data","com.example.Dto")
@@ -785,6 +785,7 @@ fun main() {
     }
     cases += com.onurkat.reclazz.inttest.tests.runBatchHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runDaoHarnessContracts()
+    cases += com.onurkat.reclazz.inttest.tests.runDynamicHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }
 }
