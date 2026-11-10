@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- MCP exposes read-only status, pending and bounded event resources, plus a
+  verification workflow prompt, while preserving the eleven tool contracts.
+
 - MCP `reclazz_events` lists bounded, filtered event pages from a shared reload
   checkpoint, with explicit cursor eviction, timestamp and attribution limits.
   Listed events do not confirm applied bytes or application behavior.

@@ -3,8 +3,10 @@
 An [MCP](https://modelcontextprotocol.io) server that turns the running Reclazz
 agent into tools a coding agent can call: check whether Reclazz is attached,
 nudge a scan after a build, ask what still needs a restart, or diagnose why a
-class did not reload. It is a thin, loopback-only client of the agent's status
-socket and asks the agent nothing beyond its own state.
+class did not reload. Read-only resources expose the same status, pending and
+event queries, and a verification prompt guides the next authorized edit. It
+is a thin, loopback-only client of the agent's status socket and asks the agent
+nothing beyond its own state.
 
 It lives in `:mcp-server`, not the agent jar, because the agent's own tests
 forbid the shipped agent from opening a client socket.
@@ -299,8 +301,11 @@ stdio session. An invalid initialization request does not change it.
 Following the [MCP version negotiation rule](https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#version-negotiation),
 a client that supports the returned version sends `notifications/initialized`
 and continues. A client that cannot support it should disconnect. This server
-advertises tools only. It does not implement HTTP transport, resources, prompts,
-sampling or elicitation. Full initialization-order enforcement is not added here;
+advertises `tools:{}`, `resources:{}` and `prompts:{}` in both supported
+versions. Existing tool definitions and negotiated result formats are unchanged.
+Resource subscriptions and list-change notifications are not advertised. HTTP
+transport, sampling and elicitation are not implemented. Full initialization-order
+enforcement is not added here;
 for compatibility, direct calls before initialization retain the legacy format.
 
 ## Structured tool contracts
@@ -350,6 +355,151 @@ python3 mcp-server/src/test/python/check_tool_contracts.py
 The Python checker validates the schemas, successful and failed results, and
 rejects deliberate missing fields, wrong types, invalid statuses and invented
 completion flags. It is an optional development check, not a runtime dependency.
+
+## Read-only resources
+
+Clients can use `resources/list` to discover two fixed resources and
+`resources/templates/list` to discover one parameterized event resource:
+
+| Name | URI or URI template | Data |
+|---|---|---|
+| `status` | `reclazz://status` | Same JSON as `reclazz_status`, including `attached:false` and any diagnostic reason |
+| `pending` | `reclazz://pending` | Same JSON as `reclazz_pending`, including `status`, `lines`, `detail` and `complete:false` |
+| `events` | `reclazz://events/{session}/{subscription}?since={since}{&limit}` | Same bounded received-event page as `reclazz_events`, including unavailable reasons and non-proof flags |
+
+All three use `application/json`. A `resources/read` result has one `contents`
+entry with `uri`, `mimeType` and JSON serialized in `text`. Parse that text to
+obtain the data object. A resource result has neither a tool `isError` flag nor
+`structuredContent`. A successful JSON-RPC read can therefore contain
+`attached:false` or `status:"unavailable"`; inspect the data before proceeding.
+
+For example, these `resources/read` parameters were used in recorded packaged
+SDK acceptance:
+
+```json
+{
+  "uri": "reclazz://status"
+}
+```
+
+Decoded `contents[0].text`, showing only the recorded attachment fields:
+
+```json
+{
+  "attached": true,
+  "agent": "1.5.0",
+  "protocol": 1
+}
+```
+
+The complete result also contains the target port and health observations.
+This excerpt is not an application-behavior or reload receipt.
+
+### Event resource selectors
+
+First obtain a `reclazz_await_reload` checkpoint with `status:"ready"` on this
+MCP server's startup target. Substitute its exact session, subscription and
+cursor into the template. For example, this is a parameter template, not a
+literal live identity:
+
+```json
+{
+  "uri": "reclazz://events/SESSION/SUBSCRIPTION?since=0&limit=50"
+}
+```
+
+Use the returned checkpoint cursor instead of `0` when it differs. Each session
+and subscription segment accepts 1 to 64 ASCII letters, digits, `_` or `-`.
+`since` is required: a nonnegative decimal cursor without leading zeros,
+fitting a Java `long`. `limit` is optional, defaults to 50 and accepts 1 to 100
+without leading zeros. Query order can vary. The URI is limited to 4,096 Java
+characters; percent escapes, controls, fragments, userinfo, ports, extra path
+segments and duplicate, unknown or empty query values are rejected.
+
+Resource reads always use the server's startup target and the same existing
+checkpoint history as the tools. A URI cannot override `projectDir`, `port`,
+`portFile`, `hybrisHome` or a file path. Project evidence is checked as for the
+corresponding tool. No resource URI is fetched as a filesystem or network URL.
+A read does not create a checkpoint or reconnect a stale subscription. A
+checkpoint made with a different tool target override is not silently retargeted.
+
+Use `nextCursor` to continue through the shared history. Stale identities,
+future or evicted cursors, target mismatch and transport failures retain the
+existing unavailable event-page result; they do not become healthy empty pages.
+The default event-read deadline is 5,000 ms. Filters and a custom timeout remain
+available through `reclazz_events`, not the resource URI. Events still confirm
+neither applied bytes, source paths/revisions nor application behavior.
+
+Both discovery methods return one bounded page without `nextCursor`; a
+continuation `cursor` is rejected. Listing them does not contact the agent.
+Event resource reads use the existing cancellable observation worker. Ping and
+pure tool/resource/prompt metadata remain responsive during that work; other
+execution receives busy rather than being queued. Status and pending retain
+their existing bounded synchronous socket behavior.
+
+## Verification prompt
+
+`prompts/list` advertises one prompt, `verify_my_last_change`. Retrieve it using
+`prompts/get` with these parameters:
+
+```json
+{
+  "name": "verify_my_last_change"
+}
+```
+
+The result contains a description and one fixed `user` message with text
+content. No arguments are accepted; an absent or empty `arguments` object is
+valid. Listing or retrieving the prompt performs no agent query, build, edit,
+model call or application action, and grants no additional permission.
+
+The prompt guides the agent through doctor identity checks, a checkpoint before
+a new authorized edit, the real external BUILD lifecycle where applicable,
+awaiting an exact-owner reload, exact-byte verification and the application's
+own HTTP/UI/database check. A previously saved edit cannot gain retroactive
+checkpoint or source-revision proof. BUILD `ok` is sent with the same owner only
+after the complete build succeeds, never just to clear a hold. Automatic agent
+compilation remains a separate path. Failed, held, refused, restart-required or
+unavailable results must be reported instead of an automatic resume or restart.
+
+### Resource and prompt errors
+
+| Case | JSON-RPC result |
+|---|---|
+| Missing/wrongly typed parameters, malformed selectors, unknown fields, invalid prompt name or nonempty prompt arguments | `-32602` |
+| Well-formed unknown resource URI, such as `reclazz://unknown` | `-32002` |
+| Unexpected internal context-request failure | `-32603` |
+| Another execution while the observation worker is active | `-32000` |
+| Unsupported subscription or completion method | `-32601` |
+
+New resource/prompt methods accept optional object `_meta` without interpreting
+it as a selector. No-ID notifications remain silent. A known resource with
+unavailable runtime evidence returns its diagnostic JSON, not an invented
+success or a resource-not-found error.
+
+### Recorded client coverage
+
+Recorded locally on **2026-11-10**, with matching locally built agent/MCP 1.5.0:
+
+| Client/check | Observed | Explicit limit |
+|---|---|---|
+| Official TypeScript SDK 1.30.0, packaged real JVM | Two resources, one template, prompt list/get; status, pending, observed and unavailable event reads | Separate consumer acceptance, not an installed AI-client UI result |
+| Claude Code 2.1.321, constrained print run against temporary Spring sample | Actual `resources/list` with both resources and `prompts/list` with the verification prompt | `resources/templates/list`, `resources/read` and `prompts/get` were not requested with built-in tools disabled; no read/UI claim |
+| Independent protocol client against clean SAP Commerce | Two resources, one template, status/pending read, prompt list/get and expected URI errors | Protocol acceptance, not Claude Code or a new SAP operation receipt |
+
+The client decides how resources/prompts appear. The earlier Codex/Claude
+eleven-tool acceptance and documented Cursor setup do not establish these new
+client lanes; see the [dated client matrix](client-matrix.md#installed-coding-clients).
+
+Executable contracts: [resource tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpResourcesTest.java),
+[prompt tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpPromptsTest.java)
+and the [packaged SDK acceptance](../mcp-server/src/test/client/acceptance.test.mjs).
+After `:mcp-server:test`, the optional independent JSON Schema check uses the
+same existing tool output schemas against actual resource data:
+
+```sh
+python3 mcp-server/src/test/python/check_resource_contracts.py
+```
 
 ## Input validation
 

@@ -6,12 +6,13 @@ bytes applied? Is something held or waiting for a restart? What should it check
 before telling you the change works?
 
 Keep the application running while the agent gathers that evidence. The bridge
-exposes eleven tools through stdio, backed by the attached Reclazz agent's local
-status socket. Use the [MCP reference](mcp-server.md) for installation, full
-schemas and target selection. This page explains the developer benefits.
+exposes eleven tools, read-only resources and a verification prompt through
+stdio, backed by the attached Reclazz agent's local status socket. Use the
+[MCP reference](mcp-server.md) for installation, full schemas and target selection. This page explains the developer benefits.
 
 Examples below come from recorded local acceptance through **10 November 2026**.
-Each request is an MCP tool name and argument object, not a shell command.
+Tool requests are shown as an MCP tool name and argument object, not a shell
+command. The resource and prompt examples identify their method and parameters.
 Results show selected fields or selected array entries, not complete responses.
 Uppercase session, cursor, path, hash and owner values are placeholders to replace
 with evidence from your own run. Rendering this page does not rerun acceptance.
@@ -350,6 +351,59 @@ did not provide an installed non-GUI Agent CLI for that acceptance. The two
 CLI results do not certify desktop GUIs, other operating systems or every tool
 in each client. Client permissions and provider authentication remain separate.
 
+## Read context and choose a verification workflow
+
+A coding client may want attachment or restart context as a resource, or a
+reusable prompt before the next edit. `reclazz://status` and `reclazz://pending`
+provide the same diagnostic JSON as the corresponding tools. The event URI
+template shares the tools' existing checkpoint and bounded event history.
+
+For example, packaged SDK acceptance used these `resources/read` parameters:
+
+```json
+{
+  "uri": "reclazz://status"
+}
+```
+
+Recorded attachment fields decoded from the resource's `contents[0].text`:
+
+```json
+{
+  "attached": true,
+  "agent": "1.5.0",
+  "protocol": 1
+}
+```
+
+This is a projection of the recorded result, not its port and full health data.
+Resource reads stay on the server's startup target; a URI cannot select another
+project or port. A successful read can contain unavailable evidence, so inspect
+its JSON before treating it as useful context.
+
+Clients can also retrieve `verify_my_last_change` through `prompts/get`:
+
+```json
+{
+  "name": "verify_my_last_change"
+}
+```
+
+The prompt guides doctor -> checkpoint before a new edit -> real BUILD signals
+for external compilation -> await reload -> verify the bytes -> check the
+application. It explains already-saved edits and tells the agent never to send
+BUILD `ok` merely to clear a hold. Fetching the prompt executes none of those
+steps and grants no permission to perform them.
+
+**Limit:** The client decides how to surface these capabilities. Recorded
+Claude Code acceptance listed both resources and the prompt, but did not request
+the template, read a resource or retrieve the prompt in its constrained run.
+The official SDK separately exercised those operations. Event resources remain
+observations, not byte receipts, source-revision proof or application tests.
+Tools-only clients keep the same eleven tools. See
+[resources and prompts](mcp-server.md#read-only-resources) for selectors, errors
+and exact client coverage.
+
 ## Keep the Reclazz bridge local
 
 The transport is `coding client ↔ stdio MCP server ↔ 127.0.0.1 status socket`.
@@ -382,11 +436,12 @@ follow the [matching-build instructions](mcp-server.md#build-and-install-locally
 | Automatic actions during BUILD holds | Started/failed hold, same-owner recovery and restored SAP behavior | [Automatic action tests](../agent/src/test/java/com/onurkat/reclazz/agent/ReloadBuildAutomaticTest.java) |
 | Await reload | Received-event correlation, exact-owner receipts and negative outcomes | [Await tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/AwaitReloadTest.java) |
 | Event pages | Ordered pagination, exact filters, gaps and honest observation limits | [Event tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/RecentEventsTest.java) |
+| Resources and verification prompt | Packaged resource/prompt contracts and SDK reads; installed Claude Code listing with explicit limits | [Resource and prompt reference](mcp-server.md#read-only-resources) |
 | Real coding clients | Eleven-tool discovery and read-only status in Claude Code and Codex CLI | [Dated client acceptance](client-matrix.md#installed-coding-clients) |
 
-The bridge currently provides tools only. Resources/prompts and SAP-specific
-operation receipts are not shipped by this work. No automatic restart, durable
-edit journal, source-revision proof or universal rollback is promised.
+The bridge provides tools, read-only resources and a verification prompt.
+SAP-specific operation receipts remain outside this work. No automatic restart,
+durable edit journal, source-revision proof or universal rollback is promised.
 
 Start with the [setup reference](mcp-server.md), verify the intended JVM, and
 finish the edit loop with the application's own result.
