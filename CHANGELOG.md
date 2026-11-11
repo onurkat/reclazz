@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Live SAP Commerce tests cover RemoveInterceptor body reload with exact native
+  callback counts, committed row absence and cleanup outside the measured scope.
+
 - Live SAP Commerce acceptance covers LoadInterceptor body reload through fresh
   native model loads after context clearing, same-request warm lookups, explicit
   old-model reattachment, exact callback counts and complete cleanup. This does

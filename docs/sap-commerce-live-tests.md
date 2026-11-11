@@ -6,7 +6,8 @@ actually returns: an HTTP response, persisted query result, rendered component
 or Backoffice view. A reload notification alone cannot pass them. Refusal cases
 must also prove that the last working behavior and protected data stay intact.
 
-Evidence is recorded through 11 November 2026. LoadInterceptor acceptance
+Evidence is recorded through 11 November 2026. RemoveInterceptor focused checks
+passed; independent default-suite acceptance of that addition is pending. LoadInterceptor acceptance
 extends the earlier documentation baseline at commit `f0ee45f`.
 It describes existing acceptance evidence, not a new run performed by building
 this documentation. See the [setup guide](sap-commerce.md) to attach Reclazz,
@@ -17,8 +18,10 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite currently has **48 scenarios, all required to PASS, with zero
-SKIPs**. Its latest recorded acceptance ran five times on one server boot
+The default suite currently has **49 scenarios, all required to PASS (49/49), with zero
+SKIPs**. The added RemoveInterceptor scenario passed focused v1/v2/v1 and
+negative controls; its independent 5+1 acceptance is pending. The previous
+48-scenario suite's latest recorded acceptance ran five times on one server boot
 and once after a fresh boot: **six runs of 48/48 PASS**, with zero bean-refresh
 failures, zero model-listener attachment errors and unchanged fixture files. Hibernate ORM is tested separately in the
 agent regression suite; it is not a SAP live scenario.
@@ -89,7 +92,7 @@ and [override priority](../integration-test/src/main/kotlin/com/onurkat/reclazz/
 
 ## Interceptors and mappings
 
-**You edit:** A ValidateInterceptor, PrepareInterceptor, InitDefaultsInterceptor or LoadInterceptor body, add an XML
+**You edit:** A ValidateInterceptor, PrepareInterceptor, InitDefaultsInterceptor, LoadInterceptor or RemoveInterceptor body, add an XML
 interceptor mapping, or change its interceptor reference and type code.
 
 **Reclazz does:** Refreshes the interceptor and updates SAP's actual interceptor
@@ -118,7 +121,16 @@ attached them. Persisted target/control data and five unrelated guard rows stay
 unchanged; cleanup releases all rows, models, scopes and records. This proves
 fresh model conversion, not a database or region-cache miss, and does not cover
 refresh(). Withheld-edit and reuse-held negative controls both fail as required.
-RemoveInterceptor still needs its own live acceptance.
+The Remove case commits three disposable nonce-owned rows, then invokes native
+ModelService.remove once per step across v1/v2/v1. An unedited recorder verifies
+one callback and exact model identity; a separate request verifies committed row
+absence. A control row stays intact. Six unscoped synthetic guard removals and
+cleanup cannot add callback evidence. Both focused runs passed; withholding the
+edit and omitting native removal failed their receipt/callback oracles, with all
+owned rows, scopes and records cleaned. This covers existing body reload, not
+cascade/veto semantics or concurrent removal. Independent default49 acceptance
+is pending.
+See [native removal](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/RemoveInterceptorLiveTest.kt).
 See [fresh and warm loads](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LoadInterceptorLiveTest.kt).
 See [defaults on create](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InitDefaultsInterceptorLiveTest.kt).
 See [prepare saves](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PrepareInterceptorLiveTest.kt),
@@ -328,7 +340,7 @@ support claim. Each scope needs a concrete plan, native baseline, application
 oracle, cleanup and independent review before it can move into the tested list.
 If SAP already handles an edit, its test records that existing behavior.
 
-1. RemoveInterceptor
+1. RemoveInterceptor (focused checks passed; independent acceptance pending)
 2. Platform logger properties
 3. Custom ImpEx translator/decorator
 4. Stored validation constraint engine

@@ -101,6 +101,7 @@ fun main() {
         PrepareInterceptorLiveTest(config, agentClient, httpVerifier),
         InitDefaultsInterceptorLiveTest(config, agentClient, httpVerifier),
         LoadInterceptorLiveTest(config, agentClient, httpVerifier),
+        RemoveInterceptorLiveTest(config, agentClient, httpVerifier),
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

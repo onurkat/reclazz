@@ -1,9 +1,9 @@
 """Shared exact default-suite and normal-fixture contract for native drivers."""
 import re
 
-DEFAULT_CASES = 48
-DEFAULT_OUTCOME = {'PASS': 48, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
-NORMAL_FIXTURE_FILES = 83
+DEFAULT_CASES = 49
+DEFAULT_OUTCOME = {'PASS': 49, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
+NORMAL_FIXTURE_FILES = 86
 # Report labels from the committed Kotlin scenario constructors; replacements cannot pass by count.
 DEFAULT_TEST_NAMES = (
     'Method body change',
@@ -54,6 +54,7 @@ DEFAULT_TEST_NAMES = (
     'Native PrepareInterceptor save',
     'Native InitDefaultsInterceptor create',
     'Native LoadInterceptor load',
+    'Native RemoveInterceptor remove',
 )
 
 
