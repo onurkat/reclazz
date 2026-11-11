@@ -18,6 +18,11 @@
         <property name="interceptor" ref="reclazzProbeInitDefaultsInterceptor"/>
         <property name="typeCode" value="ReclazzSchemaProbe"/>
     </bean>
+    <bean id="reclazzProbeLoadInterceptor" class="com.onurkat.reclazztest.batch.ProbeLoadInterceptor"/>
+    <bean id="reclazzProbeLoadMapping" class="de.hybris.platform.servicelayer.interceptor.impl.InterceptorMapping">
+        <property name="interceptor" ref="reclazzProbeLoadInterceptor"/>
+        <property name="typeCode" value="ReclazzSchemaProbe"/>
+    </bean>
 
     <bean id="reclazzProbePrepareInterceptor" class="com.onurkat.reclazztest.batch.ProbePrepareInterceptor"/>
     <bean id="reclazzProbePrepareMapping" class="de.hybris.platform.servicelayer.interceptor.impl.InterceptorMapping">

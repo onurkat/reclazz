@@ -69,7 +69,7 @@ internal val committedDefaultMembership = setOf(
     "ValidatorParameterLiveTest",
     "FlexibleSearchLiveTest",
     "DynamicAttributeLiveTest",
-    "PrepareInterceptorLiveTest", "InitDefaultsInterceptorLiveTest",
+    "PrepareInterceptorLiveTest", "InitDefaultsInterceptorLiveTest", "LoadInterceptorLiveTest",
 )
 internal fun requireDefaultMembership(actual: List<String>) {
     check(actual.size == actual.toSet().size && actual.toSet() == committedDefaultMembership) {

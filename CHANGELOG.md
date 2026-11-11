@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Live SAP Commerce acceptance covers LoadInterceptor body reload through fresh
+  native model loads after context clearing, same-request warm lookups, explicit
+  old-model reattachment, exact callback counts and complete cleanup. This does
+  not assert a database or region-cache miss.
+
 - Live SAP Commerce acceptance covers InitDefaultsInterceptor body reload through
   native creates before save, retained unsaved defaults, detached persisted reads,
   exact callback counts and complete held-model cleanup.

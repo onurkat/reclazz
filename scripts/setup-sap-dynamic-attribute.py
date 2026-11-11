@@ -78,9 +78,9 @@ def check_sources(hashes):
     Never overwrite a same-count local edit. The latter mode makes setup usable
     after this change is committed, before an older DB has the new descriptor.
     """
-    if len(hashes) not in (72, 74, 77, NORMAL_FIXTURE_FILES):
+    if len(hashes) not in (72, 74, 77, 80, NORMAL_FIXTURE_FILES):
         raise RuntimeError('Expected old72, reviewed74 or current reviewed fixture membership')
-    staged = len(hashes) in (74, 77, NORMAL_FIXTURE_FILES)
+    staged = len(hashes) in (74, 77, 80, NORMAL_FIXTURE_FILES)
     owned = {'reclazztest/' + relative for relative in OWNED}
     for relative in OWNED[2:]:
         if (REPO / 'reclazztest' / relative).exists() != staged:
