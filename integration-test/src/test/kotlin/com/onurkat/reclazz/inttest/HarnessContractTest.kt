@@ -798,6 +798,7 @@ fun main() {
     cases += com.onurkat.reclazz.inttest.tests.runRemoveHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runLoggerHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runImpexTranslatorHarnessContracts()
+    cases += com.onurkat.reclazz.inttest.tests.runValidationConstraintsHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }
 }

@@ -92,6 +92,9 @@ public class ImpexAutoImporter {
      * Import an ImpEx file into the running system.
      */
     public void importFile(Path impexFile, HybrisContext context) {
+        Thread caller = Thread.currentThread();
+        ClassLoader originalLoader = caller.getContextClassLoader();
+        boolean nativeScope = false;
         try {
             if (!Files.exists(impexFile)) {
                 StatusReporter.warn("ImpEx file not found: " + impexFile);
@@ -174,6 +177,10 @@ public class ImpexAutoImporter {
             // The watcher thread has no tenant, activate the master tenant
             // (Registry loaded via the context's classloader).
             ClassLoader hybrisCl = appContext.getClass().getClassLoader();
+            // Use exactly the context loader that resolves the native API below.
+            // Provider discovery (for example JAXB) reads the caller's TCCL too.
+            caller.setContextClassLoader(hybrisCl);
+            nativeScope = true;
             if (!PlatformTenant.ensureActive(hybrisCl)) {
                 StatusReporter.warn("ImpEx not imported: platform tenant unavailable; save again to retry.");
                 return;
@@ -182,7 +189,7 @@ public class ImpexAutoImporter {
             // Create ImpExResource from the file content
             Class<?> streamBasedClass = Class.forName(
                     "de.hybris.platform.servicelayer.impex.impl.StreamBasedImpExResource",
-                    false, appContext.getClass().getClassLoader());
+                    false, hybrisCl);
 
             // Use the string-based constructor
             Object impexResource = streamBasedClass
@@ -195,7 +202,7 @@ public class ImpexAutoImporter {
             // Import
             Class<?> impExResourceClass = Class.forName(
                     "de.hybris.platform.servicelayer.impex.ImpExResource",
-                    false, appContext.getClass().getClassLoader());
+                    false, hybrisCl);
 
             Method importData = importService.getClass().getMethod("importData", impExResourceClass);
             Object result = importData.invoke(importService, impexResource);
@@ -237,6 +244,8 @@ public class ImpexAutoImporter {
                     "ImpEx auto-import requires running server.");
         } catch (Exception e) {
             StatusReporter.error("Failed to import ImpEx " + impexFile.getFileName() + ": " + Failures.describe(e));
+        } finally {
+            if (nativeScope) caller.setContextClassLoader(originalLoader);
         }
     }
     /**

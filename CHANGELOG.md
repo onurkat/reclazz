@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- SAP Commerce ImpEx auto-import scopes native calls to the application context
+  classloader so installed providers such as JAXB can be discovered, then restores
+  the caller's original thread context classloader.
+
 - Cache/transaction annotation reloads attempt a batch-wide metadata repair and
   one delayed repeat, with independent diagnostic checks and warnings on detected
   stale or uninspectable metadata. A request racing the reload can still leave
