@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- SAP Commerce ImpEx imports refresh the native validation engine when persisted
+  constraint or constraint-group counts or latest modification times change.
+  Refresh failures preserve the import result and leave a pending engine concern.
+
 - SAP Commerce ImpEx auto-import scopes native calls to the application context
   classloader so installed providers such as JAXB can be discovered, then restores
   the caller's original thread context classloader.

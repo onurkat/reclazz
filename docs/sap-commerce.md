@@ -59,6 +59,22 @@ very regeneration that used to remove it.
 The path in these lines is specific to this machine, so keep the change out of
 version control (a per-developer config layer or an untracked `local.properties`).
 
+## Persisted validation constraints after ImpEx
+
+The ImpEx watcher compares the persisted count and latest modification time of
+`AbstractConstraint` (including its subtypes) and `ConstraintGroup` before and
+after a finished import without errors. When either changes, it reloads the
+native validation engine once and reports why. Unrelated imports do not reload
+it. This is part of the watcher behavior; there is no separate refresh flag.
+The reload affects the service as a whole and is not atomic with concurrent
+validation requests. A reload failure keeps the successful import result and
+adds a pending validation-engine concern; a later successful reload clears that
+concern, leaving other pending reasons intact.
+
+- Explicit `modifiedtime` writes can hide a constraint change; reload the engine manually.
+- Same-tick changes that preserve both count and maximum time can be missed.
+- A native query/service failure reports that refresh was skipped; the data import can still succeed. Check native validation and reload manually if needed.
+
 ## The human one-click alternative
 
 A developer in IntelliJ does not do any of the above by hand: with the Reclazz

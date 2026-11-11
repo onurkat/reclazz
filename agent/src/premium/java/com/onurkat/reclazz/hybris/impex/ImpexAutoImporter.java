@@ -205,6 +205,7 @@ public class ImpexAutoImporter {
                     false, hybrisCl);
 
             Method importData = importService.getClass().getMethod("importData", impExResourceClass);
+            var constraintState = ConstraintEngineReloader.before(appContext, hybrisCl);
             Object result = importData.invoke(importService, impexResource);
 
             // Check result
@@ -236,6 +237,7 @@ public class ImpexAutoImporter {
                         + ". The lines themselves are not printed here, because an ImpEx "
                         + "carries data about people; HAC shows them under ImpEx Import.");
             } else {
+                ConstraintEngineReloader.after(constraintState, result, impexFile.getFileName().toString());
                 StatusReporter.success("ImpEx imported: " + impexFile.getFileName());
             }
 

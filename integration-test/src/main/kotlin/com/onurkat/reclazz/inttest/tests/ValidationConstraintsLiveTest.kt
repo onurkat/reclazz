@@ -8,13 +8,15 @@ import java.nio.file.*
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-/** Stage1 research only; explicit witness success never means automatic apply. */
+/** Native constraint acceptance and separate research controls; a witness is never automatic apply. */
 class ValidationConstraintsLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifier,
     private val withheld:Boolean=System.getenv("RECLAZZ_CONSTRAINT_WITHHOLD_SAVE")=="true",
     private val partial:Boolean=System.getenv("RECLAZZ_CONSTRAINT_PARTIAL_SETUP")=="true",
     private val diagnostic:String=System.getenv("RECLAZZ_CONSTRAINT_DIAGNOSTIC").orEmpty(),
-    private val providerOnly:Boolean=System.getenv("RECLAZZ_CONSTRAINT_WATCHER_PROVIDER")=="true")
-    :BatchLiveTest(if(providerOnly) "ImpEx application provider loader" else "Persisted validation constraints (Stage1)",c,a,h) {
+    private val providerOnly:Boolean=System.getenv("RECLAZZ_CONSTRAINT_WATCHER_PROVIDER")=="true",
+    private val fingerprintOnly:Boolean=System.getenv("RECLAZZ_CONSTRAINT_FINGERPRINT")=="true",
+    private val engineEffects:Boolean=System.getenv("RECLAZZ_CONSTRAINT_ENGINE_EFFECTS")=="true")
+    :BatchLiveTest(if(engineEffects) "Constraint engine effects (StageB)" else if(fingerprintOnly) "Constraint effect fingerprint (StageA)" else if(providerOnly) "ImpEx application provider loader" else "Persisted validation constraints (Stage1)",c,a,h) {
     override fun scenario() {
         val run="reclazz-c62-${UUID.randomUUID()}";val params=mapOf("run" to run);val url="$endpoint/validation-constraints"
         val length=(run+"-aaaa").length;val roles=listOf("short","long");val groups=listOf("target","control")
@@ -60,6 +62,7 @@ class ValidationConstraintsLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifi
                 n["native"][path]["control"]["short"]["count"].asInt()==1 &&n["native"][path]["control"]["long"]["count"].asInt()==0
         }
         fun read(reloads:List<String> = listOf("SETUP"))=common(json(get("$url/read",params)),reloads)
+        var terminalNanos=0L;var terminalUtc=""
         fun import(version:String,allowRefusal:Boolean=false):Boolean {
             val body=get("$url/script",params+mapOf("version" to version));check(body.statusCode==200)
             val path=Path.of(config.impexDir,"reclazz-c62-$run-${++writes}.impex");check(!Files.exists(path));val cursor=agentClient.cursor()
@@ -67,7 +70,14 @@ class ValidationConstraintsLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifi
             val end=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(config.eventTimeoutMs)
             while(true) {
                 val arrivals=agentClient.getEvents().filter {it.sequence>cursor};resourceFailure(arrivals,listOf(path.fileName.toString())) {false}?.let {if(allowRefusal&&"ImpEx import had errors" in it)return false else error(it)}
-                if(arrivals.any {it.level=="OK"&&it.message=="ImpEx imported: ${path.fileName}"})break
+                if(arrivals.any {it.level=="OK"&&it.message=="ImpEx imported: ${path.fileName}"}){
+                    if(engineEffects) {
+                        val notices=arrivals.count {it.level=="INFO"&&it.message=="Validation engine reloaded after ImpEx changed constraints: ${path.fileName}"}
+                        check(notices==(if(version.startsWith("unrelated-"))0 else 1)){"Wrong automatic reload notices for $version: $notices"}
+                        println("    Validation automatic reload receipt: "+batchJson.writeValueAsString(mapOf("run" to run,"version" to version,"file" to path.fileName.toString(),"reloads" to notices)))
+                    }
+                    terminalNanos=System.nanoTime();terminalUtc=java.time.Instant.now().toString();break
+                }
                 check(System.nanoTime()<end){"Missing exact import terminal for ${path.fileName}"};Thread.sleep(10)
             }
             // The native observation follows the accepted file, not a service-save substitute.
@@ -144,24 +154,151 @@ class ValidationConstraintsLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifi
                 }
                 check(matrix(measured,true));println("VALIDATION_DIAGNOSTIC DIRECT_CONTROL_APPLIED");error("DIRECT_CONTROL_ONLY: not watcher success")
             }
-            import("v2");val deadline=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(config.eventTimeoutMs);var changed=read()
-            number(changed["target"],"max",(length-1).toLong())
-            while(!matrix(changed,true)&&System.nanoTime()<deadline){check(matrix(changed,false)){"Unexpected native matrix: $changed"};Thread.sleep(30);changed=read();number(changed["target"],"max",(length-1).toLong())}
-            println("    Validation measured: $changed")
-            if(!matrix(changed,true)) {
-                check(matrix(changed,false));println("VALIDATION_STALE_CAPTURED_BEFORE_WITNESS")
+            // The existing observer also attributes exact owned ImpEx artifacts for cleanup.
+            val observer=json(post("$url/diagnostic",params+mapOf("action" to "watch-arm")))
+            owned(observer);yes(observer,"armed");yes(observer["hybrisLoader"],"providerVisible")
+            println("    Validation engine observer: $observer")
+            fun engineWindow(version:String,v2:Boolean):JsonNode? {
+                val start=terminalNanos;check(start>0)
+                val deadline=start+TimeUnit.MILLISECONDS.toNanos(config.eventTimeoutMs)
+                var samples=0;var last:JsonNode?=null
+                fun elapsed()=(System.nanoTime()-start)/1_000_000.0
+                fun summary(outcome:String) {
+                    println("    Validation window: "+batchJson.writeValueAsString(mapOf("run" to run,"phase" to version,"terminalUtc" to terminalUtc,"budgetMs" to config.eventTimeoutMs,"elapsedMs" to elapsed(),"samples" to samples,"outcome" to outcome)))
+                    System.out.flush()
+                }
+                while(true) {
+                    val remaining=deadline-System.nanoTime()
+                    if(remaining<=0)break
+                    val budget=minOf(2000L,TimeUnit.NANOSECONDS.toMillis(remaining)).coerceAtLeast(1)
+                    val response=try {httpVerifier.get("$url/read",params,budget)}
+                    catch(e:Exception){error("Measurement read failed within $version window: ${e.message}")}
+                    check(System.nanoTime()<=deadline){"MEASUREMENT_DEADLINE_EXCEEDED: $version response arrived after deadline"}
+                    val observed=common(json(response),listOf("SETUP"))
+                    number(observed["target"],"max",(length+if(v2)-1 else 1).toLong())
+                    println("    Validation sample: "+batchJson.writeValueAsString(mapOf("run" to run,"phase" to version,"elapsedMs" to elapsed(),"sample" to ++samples,"snapshot" to observed)))
+                    System.out.flush();last=observed
+                    check(matrix(observed,false)||matrix(observed,true)){"Unexpected native matrix: $observed"}
+                    if(matrix(observed,v2)){summary("APPLIED");return observed}
+                    val left=deadline-System.nanoTime()
+                    if(left>0)TimeUnit.NANOSECONDS.sleep(minOf(TimeUnit.MILLISECONDS.toNanos(250),left))
+                }
+                check(last!=null){"No complete native samples in $version window"}
+                summary("STALE");return null
+            }
+            var fingerprintService:Int?=null
+            fun fingerprint(label:String,nonce:String,maximum:Long):JsonNode {
+                val f=json(post("$url/diagnostic",params+mapOf("action" to "constraint-fingerprint")));owned(f);yes(f,"nativeOwners")
+                number(f,"ownedConstraintCount",2);number(f,"ownedGroupCount",2)
+                check(f["serviceIdentity"]?.isIntegralNumber==true){"Missing fingerprint service identity"}
+                if(fingerprintService==null)fingerprintService=f["serviceIdentity"].asInt() else check(fingerprintService==f["serviceIdentity"].asInt()){"Fingerprint service changed"}
+                for(root in listOf("AbstractConstraint","ConstraintGroup")) {
+                    val row=f["roots"]?.get(root);check(row?.get("count")?.isIntegralNumber==true&&row["count"].asLong()>=2){"Invalid fingerprint count"}
+                    check(row?.get("maxModifiedMillis")?.isIntegralNumber==true){"Invalid fingerprint max"}
+                    val empty=f["empty"]?.get(root);check(empty?.get("count")?.isIntegralNumber==true&&empty["count"].asLong()==0L&&empty["maxModifiedMillis"]?.isNull==true){"Invalid empty aggregate"}
+                }
+                check(f["short"]?.get("pk")?.asText()==ids["short"]&&f["short"]["nonce"]?.asText()==nonce){"Unrelated owned write did not persist"}
+                number(f["target"],"max",maximum);check(f["target"]["modifiedMillis"]?.isIntegralNumber==true){"Missing target timestamp"}
+                check(f["queryMs"]?.isNumber==true&&f["queryMs"].asDouble().isFinite()&&f["queryMs"].asDouble()>=0){"Invalid fingerprint query timing"}
+                println("    Validation fingerprint $label: $f");return f
+            }
+            fun fingerprintChanged(before:JsonNode,after:JsonNode) {
+                check(before["roots"]["ConstraintGroup"]==after["roots"]["ConstraintGroup"]){"Constraint groups changed"}
+                check(before["roots"]["AbstractConstraint"]["count"]==after["roots"]["AbstractConstraint"]["count"]){"Constraint count changed on UPDATE"}
+                check(before["roots"]["AbstractConstraint"]["maxModifiedMillis"]!=after["roots"]["AbstractConstraint"]["maxModifiedMillis"]&&before["target"]["modifiedMillis"]!=after["target"]["modifiedMillis"]){"Constraint fingerprint unchanged"}
+            }
+            if(fingerprintOnly) {
+                check(!withheld&&!partial&&diagnostic.isEmpty()&&!providerOnly&&!engineEffects)
+                val f0=fingerprint("baseline",run+"-aaaa",(length+1).toLong())
+                import("unrelated-v2");val unrelated=fingerprint("unrelated-v2",run+"-zzzz",(length+1).toLong())
+                check(unrelated["roots"]==f0["roots"]){"Unrelated import changed constraint fingerprint"}
+                import("unrelated-v1");val f1=fingerprint("unrelated-v1",run+"-aaaa",(length+1).toLong());check(f1["roots"]==f0["roots"]){"Unrelated restore changed constraint fingerprint"}
+                import("v2");val f2=fingerprint("v2",run+"-aaaa",(length-1).toLong());fingerprintChanged(f1,f2)
+                check(engineWindow("v2",true)==null){"Fingerprint primary unexpectedly automatic"}
+                println("VALIDATION_STALE_CAPTURED_BEFORE_WITNESS");System.out.flush()
+                val witness=common(json(post("$url/witness",params)),listOf("SETUP","WITNESS"));check(matrix(witness,true)){"Fingerprint witness failed"}
+                val cost=witness["witnessCost"];check(cost?.isObject==true&&cost["reason"]?.asText()=="WITNESS"){"Missing witness cost"}
+                for(key in listOf("reloadCallMs","firstHeldValidationMs","heldPassMs","freshPassMs"))check(cost[key]?.isNumber==true&&cost[key].asDouble().isFinite()&&cost[key].asDouble()>=0){"Invalid witness cost $key"}
+                println("    Validation explicit witness: $witness")
+                import("v1");val f3=fingerprint("v1",run+"-aaaa",(length+1).toLong());fingerprintChanged(f2,f3)
+                val restored=read(listOf("SETUP","WITNESS"));check(matrix(restored,false)||matrix(restored,true)){"Invalid post-restore matrix"};println("    Validation fingerprint restored: $restored")
+                println("VALIDATION_FINGERPRINT_OUTCOME EFFECTS_AND_COST_OBSERVED");return@withRestore
+            }
+            val effectBefore=if(engineEffects) {
+                check(!withheld&&!partial&&diagnostic.isEmpty()&&!providerOnly)
+                val initial=fingerprint("baseline",run+"-aaaa",(length+1).toLong())
+                import("unrelated-v2");val unrelated=fingerprint("unrelated-v2",run+"-zzzz",(length+1).toLong())
+                check(unrelated["roots"]==initial["roots"]){"Unrelated import changed constraint fingerprint"}
+                import("unrelated-v1");val restored=fingerprint("unrelated-v1",run+"-aaaa",(length+1).toLong())
+                check(restored["roots"]==initial["roots"]){"Unrelated restore changed constraint fingerprint"};restored
+            } else null
+            import("v2");val changed=engineWindow("v2",true)
+            if(changed==null) {
+                println("VALIDATION_STALE_CAPTURED_BEFORE_WITNESS");System.out.flush()
                 val witness=common(json(post("$url/witness",params)),listOf("SETUP","WITNESS"));number(witness["target"],"max",(length-1).toLong());println("    Validation explicit witness: $witness")
                 if(matrix(witness,true)){println("VALIDATION_OUTCOME STALE_ONLY_AFTER_EXPLICIT_RELOAD");error("AUTOMATIC_APPLY_RED: persisted v2; native v1 until explicit witness")}
                 println("VALIDATION_OUTCOME NEITHER");error("Explicit witness also failed; no product-gap conclusion")
             }
-            import("v1");val restored=read();number(restored["target"],"max",(length+1).toLong());check(matrix(restored,false)){"Automatic v1 restore matrix missing: $restored"};println("    Validation restored: $restored");println("VALIDATION_OUTCOME AUTOMATIC_ROUND_TRIP")
+            val effectV2=if(engineEffects)fingerprint("v2",run+"-aaaa",(length-1).toLong()).also {fingerprintChanged(effectBefore!!,it)} else null
+            println("    Validation measured: $changed")
+            import("v1");val restored=engineWindow("v1",false)
+            check(restored!=null){"RESTORE_AUTOMATIC_APPLY_RED: persisted v1; native v2 through restore deadline"}
+            if(engineEffects)fingerprintChanged(effectV2!!,fingerprint("v1",run+"-aaaa",(length+1).toLong()))
+            println("    Validation restored: $restored");println("VALIDATION_OUTCOME AUTOMATIC_ROUND_TRIP")
         }) {
             restoreAll({for(file in files)Files.deleteIfExists(file)}, {
                 if(attempted) {
                     val cleanup=json(post("$url/cleanup",params));owned(cleanup);yes(cleanup,"idle");yes(cleanup,"sessionClosed");yes(cleanup,"baselineRestored");number(cleanup,"owned",0);number(cleanup,"heldRemaining",0)
                     check(cleanup["workerAlive"]?.isBoolean==true&&!cleanup["workerAlive"].asBoolean());if(begun)number(cleanup,"removed",6)
                     println("    Validation cleanup: $cleanup")
-                    if(diagnostic.isNotEmpty()||providerOnly){yes(cleanup,"observerRemoved");yes(cleanup,"artifactBaselineRestored")}
+                    yes(cleanup,"observerRemoved")
+                    val artifacts=cleanup["artifactDiagnostics"];check(artifacts?.isObject==true){"Missing artifact diagnostics"}
+                    check(artifacts["baselineChecked"]?.isBoolean==true&&artifacts["restored"]?.isBoolean==true){"Missing artifact diagnostic flags"}
+                    val types=artifacts["types"];check(types?.isObject==true){"Missing artifact types"}
+                    if(artifacts["baselineChecked"].asBoolean()) {
+                        val names=setOf("ImpExMedia","ImpExImportCronJob","ImpExImportJob","JobLog","LogFile")
+                        check(types.fieldNames().asSequence().toSet()==names){"Missing artifact type inventory"}
+                        val empty=java.security.MessageDigest.getInstance("SHA-256").digest(byteArrayOf()).joinToString(""){"%02x".format(it)}
+                        check(artifacts["ownedReferenceInspectionComplete"]?.isBoolean==true){"Missing owned reference inspection"}
+                        var restored=true // Global deltas and attribution completeness are diagnostic only.
+                        for(type in names) {
+                            val row=types[type]
+                            fun count(key:String):Long {check(row[key]?.isIntegralNumber==true&&row[key].asLong()>=0){"Invalid artifact $key"};return row[key].asLong()}
+                            val before=count("beforeCount");val now=count("currentCount");val added=count("addedCount");val removed=count("removedCount")
+                            check(now==before+added-removed&&added<=now&&removed<=before){"Artifact count mismatch"}
+                            for((key,n) in listOf("addedSha256" to added,"removedSha256" to removed)) {
+                                val hash=row[key]?.asText().orEmpty();check(hash.matches(Regex("[a-f0-9]{64}"))&&(n!=0L||hash==empty)){"Invalid artifact $key"}
+                            }
+                            val captured=count("capturedCount");val remaining=count("ownedRemainingCount");val gone=count("ownedRemovedCount")
+                            check(captured==remaining+gone&&remaining<=added){"Artifact ownership count mismatch"}
+                            val basis=row["ownershipBasis"];check(basis?.isObject==true){"Missing artifact ownership basis"}
+                            val reasons=setOf("exact-owned-script-bytes","returned-resource","owned-cron-work-media","owned-cron-unresolved-media","owned-cron-log","owned-cron-log-file","owned-job-media-relationship","owned-cron-job-reference")
+                            var attributed=0L
+                            for((reason,value) in basis.fields().asSequence()){check(reason in reasons&&value.isIntegralNumber&&value.asLong() in 1..captured){"Invalid artifact ownership basis"};attributed+=value.asLong()}
+                            check(attributed>=captured){"Missing captured artifact attribution"}
+                            val foreignAdded=row["foreignAdded"];val foreignRemoved=row["foreignRemoved"]
+                            check(foreignAdded?.isArray==true&&foreignRemoved?.isArray==true){"Missing foreign artifact attribution"}
+                            fun identities(entries:JsonNode) {
+                                val ids=entries.map {it["identitySha256"]?.asText().orEmpty()}
+                                check(ids.toSet().size==ids.size&&ids.all {it.matches(Regex("[a-f0-9]{64}"))}){"Invalid foreign artifact identities"}
+                            }
+                            identities(foreignAdded);identities(foreignRemoved)
+                            for(entry in foreignAdded) {
+                                check(entry["classification"]?.asText()=="FOREIGN_ADDED"&&entry["basis"]?.asText()=="native-owner-relations-and-reference-scan"){"Unresolved foreign owner basis"}
+                                yes(entry,"ownerResolved");yes(entry,"referencesChecked");number(entry,"ownedReferenceCount",0)
+                                val owners=entry["ownerTypes"];check(owners?.isArray==true&&owners.size()>0&&owners.all {it.asText() in setOf("CronJob","Job","Media","Item")}){"Missing foreign owner types"}
+                            }
+                            for(entry in foreignRemoved) {
+                                check(entry["classification"]?.asText()=="FOREIGN_REMOVED"&&entry["basis"]?.asText()=="pre-existing-not-referenced-by-owned"){"Invalid foreign removal basis"};number(entry,"ownedReferenceCount",0)
+                            }
+                            val unresolved=count("unresolvedAddedCount");val ownedAdded=count("ownedReferencingAddedCount");val ownedRemoved=count("ownedReferencedRemovedCount")
+                            check(added==foreignAdded.size()+unresolved+ownedAdded&&removed==foreignRemoved.size()+ownedRemoved&&remaining<=ownedAdded){"Artifact attribution count mismatch"}
+                            if(remaining!=0L)restored=false
+                        }
+                        check(artifacts["restored"].asBoolean()==restored){"Artifact diagnostic restoration mismatch"}
+                    } else check(!begun&&types.size()==0&&artifacts["restored"].asBoolean()){"Unchecked artifact baseline after setup"}
+                    check(cleanup["artifactBaselineRestored"]?.isBoolean==true&&cleanup["artifactBaselineRestored"]==artifacts["restored"]){"Artifact baseline/diagnostic mismatch"}
+                    yes(cleanup,"artifactBaselineRestored")
                 }
             }, {
                 val end=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(minOf(config.eventTimeoutMs,2000))
