@@ -77,6 +77,29 @@ class SapProcessDefinitionCreateTest {
         SapProcessDefinitions.discard(cache); StatusReporter.removeListener(listener); RestartLedger.clear();
         ProcessTenantFixture.reset();
     }
+    @Test void invalidCreationThenRegistrationResolvesOwnConcern() throws Exception {
+        reload(resource("newResource", file)); Files.writeString(file, "<process>");
+        assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply(file, "CREATED"));
+        assertTrue(RestartLedger.digest().toString().contains("SAP process definition was not applied"));
+        xml(file, "exampleNew", "v1"); assertEquals(PlatformChangeHandler.Outcome.HANDLED, apply(file, "MODIFIED"));
+        assertNotNull(active("exampleNew"));
+        assertFalse(RestartLedger.digest().toString().contains("SAP process definition was not applied"));
+    }
+    @Test void oneOfTwoOwnersRecoversOtherConcernStays() throws Exception {
+        var b = secondEngine(); xml(file, "exampleNew", "v1"); reload(resource("newResource", file));
+        Files.writeString(file, "<process>"); assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply(file, "MODIFIED"));
+        String aTag = "context@" + Integer.toHexString(System.identityHashCode(context));
+        String bTag = "context@" + Integer.toHexString(System.identityHashCode(second));
+        assertTrue(RestartLedger.digest().toString().contains(aTag)); assertTrue(RestartLedger.digest().toString().contains(bTag));
+        b.provider.dynamic = true; xml(file, "exampleNew", "v2");
+        assertEquals(PlatformChangeHandler.Outcome.HANDLED, apply(file, "MODIFIED"));
+        assertFalse(RestartLedger.digest().toString().contains(aTag));
+        assertTrue(RestartLedger.digest().toString().contains(bTag));
+        b.provider.dynamic = false; assertEquals(PlatformChangeHandler.Outcome.HANDLED, apply(file, "MODIFIED"));
+        assertFalse(RestartLedger.digest().toString().contains("SAP process definition was not applied"));
+        assertEquals(1, RestartLedger.size());
+        assertTrue(RestartLedger.digest().toString().contains("newResource: was added"));
+    }
     @Test void aliasRegistrationAndRealEditShareOneHistory() throws Exception {
         Path alias=temporary.resolve("installed");Files.createSymbolicLink(alias,temporary);
         xml(file,"exampleNew","v1");reload(resource("newResource",alias.resolve(file.getFileName())));

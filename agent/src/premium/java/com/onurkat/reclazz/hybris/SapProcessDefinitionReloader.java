@@ -10,7 +10,9 @@ import com.onurkat.reclazz.platform.SapProcessDefinitions;
 import com.onurkat.reclazz.platform.SapProcessResources;
 import com.onurkat.reclazz.ui.RestartLedger;
 import com.onurkat.reclazz.ui.StatusReporter;
+import java.lang.ref.WeakReference;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -18,6 +20,11 @@ import java.util.concurrent.locks.ReadWriteLock;
 /** Native parse then guarded publication. Discovery and the startup observer never call this. */
 public final class SapProcessDefinitionReloader implements PlatformChangeHandler {
     private static final String PREFIX = "de.hybris.platform.processengine.definition.";
+
+    private static final int MAX_REFUSALS = 200;
+    private static final List<Refusal> refusals = new ArrayList<>();
+    private static long nextRefusal;
+    private record Refusal(Path path, WeakReference<Object> context, String reason, String ledgerReason) { }
 
     @Override public Outcome handle(Change change) {
         Path path = SapProcessResources.canonical(change.path());
@@ -153,6 +160,7 @@ public final class SapProcessDefinitionReloader implements PlatformChangeHandler
                 return refuse(path, context, "process definition ownership changed during validation");
             }
             if (version.equals(version(active))) {
+                resolve(path, context);
                 StatusReporter.info("SAP process " + name + " unchanged in " + path.getFileName() + " [" + tag(context) + "]");
                 return Outcome.IGNORED;
             }
@@ -160,6 +168,7 @@ public final class SapProcessDefinitionReloader implements PlatformChangeHandler
             factory.getClass().getMethod("add", definitionType).invoke(factory, candidate);
             SapProcessDefinitions.replace(cache, provider, context, baseline,
                     new SapProcessDefinitions.Definition(path, name, version));
+            resolve(path, context);
             StatusReporter.info("SAP process " + name + " reloaded from " + path.getFileName()
                     + ": processes started from now on use the edited definition; "
                     + "processes already started keep the version they started with. [" + tag(context) + "]");
@@ -244,6 +253,7 @@ public final class SapProcessDefinitionReloader implements PlatformChangeHandler
                 n.factory.getClass().getMethod("add", definitionType).invoke(n.factory, candidate.definition);
                 SapProcessDefinitions.associate(n.cache, n.provider, candidate.source,
                         new SapProcessDefinitions.Definition(candidate.source.path(), candidate.name, candidate.version));
+                resolve(candidate.source.path(), n.context);
                 StatusReporter.success("SAP process " + candidate.name + " registered in " + tag(n.context) + " from " + candidate.source.path().getFileName()
                         + ": new processes can be started now; restart not required.");
             }
@@ -300,7 +310,34 @@ public final class SapProcessDefinitionReloader implements PlatformChangeHandler
         return "context@" + Integer.toHexString(System.identityHashCode(context));
     }
     private static Outcome refuse(Path path, Object context, String reason) {
-        return refuse(path, tag(context) + ": " + reason);
+        String detail = tag(context) + ": " + reason;
+        synchronized (refusals) {
+            refusals.removeIf(entry -> entry.context.get() == null);
+            Refusal entry = refusals.stream().filter(r -> r.path.equals(path)
+                    && r.context.get() == context && r.reason.equals(reason)).findFirst().orElse(null);
+            if (entry == null) {
+                // The ledger subject is a basename; an opaque token keeps distinct paths separate.
+                entry = new Refusal(path, new WeakReference<>(context), reason,
+                        "SAP process definition was not applied: " + detail + " [refusal#" + ++nextRefusal + "]");
+                if (refusals.size() == MAX_REFUSALS) refusals.remove(0);
+                refusals.add(entry);
+            }
+            RestartLedger.note(path.getFileName().toString(), entry.ledgerReason);
+        }
+        StatusReporter.warn("SAP process definition " + path.getFileName() + " MODIFIED: not applied; restart required. " + detail);
+        return Outcome.ADVICE;
+    }
+    private static void resolve(Path path, Object context) {
+        synchronized (refusals) {
+            refusals.removeIf(entry -> {
+                Object owner = entry.context.get();
+                if (owner == context && entry.path.equals(path)) {
+                    RestartLedger.resolve(path.getFileName().toString(), entry.ledgerReason);
+                    return true;
+                }
+                return owner == null;
+            });
+        }
     }
     private static Outcome refuse(Path path, String reason) {
         StatusReporter.warn("SAP process definition " + path.getFileName() + " MODIFIED: not applied; restart required. " + reason);

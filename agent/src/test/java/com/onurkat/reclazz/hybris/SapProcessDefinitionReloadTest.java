@@ -71,6 +71,40 @@ class SapProcessDefinitionReloadTest {
         assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply()); assertSame(old, active("exampleA"));
         assertEquals(1, RestartLedger.size()); assertTrue(messages.toString().contains("SAXParseException"));
     }
+    @Test void invalidEditThenDifferentValidVersionResolvesOwnConcern() throws Exception {
+        loaded(); Files.writeString(file, "<process>");
+        assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply()); assertEquals(1, RestartLedger.size());
+        assertTrue(messages.stream().anyMatch(m -> m.startsWith("WARN:") && m.contains("not applied")));
+        RestartLedger.note(file.getFileName().toString(), "unrelated concern");
+        save("exampleA", "v2"); assertEquals(PlatformChangeHandler.Outcome.HANDLED, apply());
+        assertEquals("v2", active("exampleA").graph()); assertEquals(1, RestartLedger.size());
+        assertTrue(RestartLedger.digest().toString().contains("unrelated concern"));
+        assertFalse(RestartLedger.digest().toString().contains("SAP process definition was not applied"));
+    }
+    @Test void invalidEditThenOriginalValidBytesResolvesOwnConcern() throws Exception {
+        loaded(); var old = active("exampleA"); int publications = cache.publications;
+        Files.writeString(file, "<process>"); assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply());
+        assertEquals(1, RestartLedger.size()); save("exampleA", "v1");
+        assertEquals(PlatformChangeHandler.Outcome.IGNORED, apply());
+        assertSame(old, active("exampleA")); assertEquals(publications, cache.publications);
+        assertEquals(0, RestartLedger.size());
+    }
+    @Test void sameBasenameRecoveryDoesNotResolveAnotherPath() throws Exception {
+        Path sibling = Files.createDirectories(temporary.resolve("other")).resolve("flow.xml");
+        Files.writeString(sibling, "<process name='exampleB' start='v1'/>"); register(sibling, "sibling");
+        loaded();
+        Files.writeString(file, "<process>"); Files.writeString(sibling, "<process>");
+        assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply());
+        var siblingChange = new PlatformChangeHandler.Change(Capability.PROCESS_RELOAD,
+                sibling, "MODIFIED", "example", "resources");
+        assertEquals(PlatformChangeHandler.Outcome.ADVICE, new SapProcessDefinitionReloader().handle(siblingChange));
+        assertEquals(2, RestartLedger.size());
+        save("exampleA", "v2"); assertEquals(PlatformChangeHandler.Outcome.HANDLED, apply());
+        assertEquals(1, RestartLedger.size());
+        Files.writeString(sibling, "<process name='exampleB' start='v2'/>");
+        assertEquals(PlatformChangeHandler.Outcome.HANDLED, new SapProcessDefinitionReloader().handle(siblingChange));
+        assertEquals(0, RestartLedger.size());
+    }
     @Test void dbBackedDefinitionIsRefused() throws Exception {
         loaded(); var old = active("exampleA"); provider.dynamic = true; save("exampleA", "v2");
         assertEquals(PlatformChangeHandler.Outcome.ADVICE, apply()); assertSame(old, active("exampleA"));

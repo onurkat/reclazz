@@ -49,6 +49,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- SAP process reload clears its pending restart concern after verified recovery
+  of the same resource in the same owning context, while retaining refusal warnings.
+
 - SAP interceptor reload skips mappings whose type is absent in that owner before
   changing registrations; genuine failures retain registration and rollback causes.
 
