@@ -99,6 +99,7 @@ fun main() {
         FlexibleSearchLiveTest(config, agentClient, httpVerifier),
         DynamicAttributeLiveTest(config, agentClient, httpVerifier),
         PrepareInterceptorLiveTest(config, agentClient, httpVerifier),
+        InitDefaultsInterceptorLiveTest(config, agentClient, httpVerifier),
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

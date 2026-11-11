@@ -6,7 +6,7 @@ actually returns: an HTTP response, persisted query result, rendered component
 or Backoffice view. A reload notification alone cannot pass them. Refusal cases
 must also prove that the last working behavior and protected data stay intact.
 
-Evidence is recorded through 10 November 2026. PrepareInterceptor acceptance
+Evidence is recorded through 11 November 2026. InitDefaultsInterceptor acceptance
 extends the earlier documentation baseline at commit `f0ee45f`.
 It describes existing acceptance evidence, not a new run performed by building
 this documentation. See the [setup guide](sap-commerce.md) to attach Reclazz,
@@ -17,9 +17,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite currently has **46 scenarios, all required to PASS, with zero
+The default suite currently has **47 scenarios, all required to PASS, with zero
 SKIPs**. Its latest recorded acceptance ran five times on one server boot
-and once after a fresh boot: **six runs of 46/46 PASS**, with zero bean-refresh
+and once after a fresh boot: **six runs of 47/47 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the
 agent regression suite; it is not a SAP live scenario.
 
@@ -89,7 +89,7 @@ and [override priority](../integration-test/src/main/kotlin/com/onurkat/reclazz/
 
 ## Interceptors and mappings
 
-**You edit:** A ValidateInterceptor or PrepareInterceptor body, add an XML
+**You edit:** A ValidateInterceptor, PrepareInterceptor or InitDefaultsInterceptor body, add an XML
 interceptor mapping, or change its interceptor reference and type code.
 
 **Reclazz does:** Refreshes the interceptor and updates SAP's actual interceptor
@@ -102,7 +102,15 @@ v1. Independent detached reads require the same PK, one callback per save and
 an unchanged control row. The permanent mapping also leaves DAO-, dynamic- and
 schema-shaped nonces unchanged; cleanup proves zero remaining synthetic rows
 and recorder entries.
-InitDefaults, Load and Remove interceptors still need their own live acceptance.
+The InitDefaults case checks v1, edited v2 and restored v1 immediately after
+native ModelService.create, before a separate save. An unsaved model retained
+across the edit keeps its original v1 default. Detached persisted reads agree,
+with exactly one callback per create and none added by save. Unscoped creates
+and DAO/dynamic/schema/prepare-shaped guard rows stay unchanged; cleanup releases
+all held models, scopes, recorder entries and owned rows. This is request-thread
+coverage, not concurrent tenant/session acceptance.
+Load and Remove interceptors still need their own live acceptance.
+See [defaults on create](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InitDefaultsInterceptorLiveTest.kt).
 See [prepare saves](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PrepareInterceptorLiveTest.kt),
 [mapping addition](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingAddLiveTest.kt)
 and [mapping edits](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingEditLiveTest.kt).
@@ -310,44 +318,43 @@ support claim. Each scope needs a concrete plan, native baseline, application
 oracle, cleanup and independent review before it can move into the tested list.
 If SAP already handles an edit, its test records that existing behavior.
 
-1. InitDefaultsInterceptor
-2. LoadInterceptor
-3. RemoveInterceptor
-4. Platform logger properties
-5. Custom ImpEx translator/decorator
-6. Stored validation constraint engine
-7. OCC timestamp formatter consumer
-8. Duplicate Backoffice F4 dispatch
-9. Native SAP Trigger firing
-10. Spring scheduled metadata lifecycle
-11. Process action/in-flight version
-12. Stored script/executable cache
-13. Velocity RendererTemplate
-14. SCAN wire completion
-15. CMS UID/persisted catalogs
-16. CMS page/slot selection
-17. Deployed JSP/resource edit
-18. Search restriction/session visibility
-19. Facade consumer chain
-20. Nested/list DTO conversion slice
-21. New OCC controller enrollment
-22. OCC native error response/serialization
-23. ImpEx UPDATE/macros/malformed recovery
-24. Locale/fallback missing slice
-25. Backoffice label bundles
-26. Native SAP region cache
-27. ZUL/widget/VM definition slice
-28. Workflow action/decision
-29. TaskRunner retry/condition lifecycle
-30. Spring Integration handler/channel
-31. Hot-folder ingestion
-32. Solr config/facet slice
-33. One additive metadata shape
-34. Native event listener lifecycle
-35. Local SAP security/filter rule
-36. Stored AdvancedSavedQuery parameters
-37. Legacy AddOn source staging
-38. One commerce service, then bounded remaining domains
+1. LoadInterceptor
+2. RemoveInterceptor
+3. Platform logger properties
+4. Custom ImpEx translator/decorator
+5. Stored validation constraint engine
+6. OCC timestamp formatter consumer
+7. Duplicate Backoffice F4 dispatch
+8. Native SAP Trigger firing
+9. Spring scheduled metadata lifecycle
+10. Process action/in-flight version
+11. Stored script/executable cache
+12. Velocity RendererTemplate
+13. SCAN wire completion
+14. CMS UID/persisted catalogs
+15. CMS page/slot selection
+16. Deployed JSP/resource edit
+17. Search restriction/session visibility
+18. Facade consumer chain
+19. Nested/list DTO conversion slice
+20. New OCC controller enrollment
+21. OCC native error response/serialization
+22. ImpEx UPDATE/macros/malformed recovery
+23. Locale/fallback missing slice
+24. Backoffice label bundles
+25. Native SAP region cache
+26. ZUL/widget/VM definition slice
+27. Workflow action/decision
+28. TaskRunner retry/condition lifecycle
+29. Spring Integration handler/channel
+30. Hot-folder ingestion
+31. Solr config/facet slice
+32. One additive metadata shape
+33. Native event listener lifecycle
+34. Local SAP security/filter rule
+35. Stored AdvancedSavedQuery parameters
+36. Legacy AddOn source staging
+37. One commerce service, then bounded remaining domains
 
 Later refinements include B2B approval, Adaptive Search, personalization,
 rule compilation and Integration API virtual attributes. They do not bypass

@@ -8,6 +8,9 @@ import java.nio.file.Path
 class BatchFixtureBaseline(private val config:TestConfig) {
     private val relative=listOf("project.properties","resources/reclazztest-spring.xml",
         "src/com/onurkat/reclazztest/batch/ProbeQueryDao.java",
+        "src/com/onurkat/reclazztest/batch/ProbeInitDefaultsInterceptor.java",
+        "src/com/onurkat/reclazztest/batch/ProbeInitDefaultsState.java",
+        "web/src/com/onurkat/reclazztest/controllers/InitDefaultsProbeController.java",
         "src/com/onurkat/reclazztest/batch/ProbePrepareInterceptor.java",
         "src/com/onurkat/reclazztest/batch/ProbePrepareState.java",
         "web/src/com/onurkat/reclazztest/controllers/PrepareProbeController.java",

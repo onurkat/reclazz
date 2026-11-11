@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Live SAP Commerce acceptance covers InitDefaultsInterceptor body reload through
+  native creates before save, retained unsaved defaults, detached persisted reads,
+  exact callback counts and complete held-model cleanup.
+
 - MCP exposes read-only status, pending and bounded event resources, plus a
   verification workflow prompt, while preserving the eleven tool contracts.
 

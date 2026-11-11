@@ -590,7 +590,8 @@ fun main() {
         val result=runGatedProfile("restore-contract",{null}) {withRestore({Unit}) {error("restore failure")}}
         check(result.status==TestStatus.FAIL && "restore failure" in result.notes)
     }
-    case("defaultMembershipRetainsCommitted46") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==46)}
+    case("defaultMembershipRetainsCommitted47") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==47)}
+    case("defaultMembershipRejectsMissingInitDefaults") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"InitDefaultsInterceptorLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsMissingPrepare") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"PrepareInterceptorLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsExtraHibernate") {check(runCatching {requireDefaultMembership((committedDefaultMembership+"HibernateL2CacheTest").toList())}.isFailure)}
     case("defaultMembershipRejectsDuplicate") {check(runCatching {requireDefaultMembership(committedDefaultMembership.toList()+"MethodBodyChangeTest")}.isFailure)}
@@ -790,6 +791,7 @@ fun main() {
     cases += com.onurkat.reclazz.inttest.tests.runDaoHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runDynamicHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runPrepareHarnessContracts()
+    cases += com.onurkat.reclazz.inttest.tests.runInitDefaultsHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }
 }

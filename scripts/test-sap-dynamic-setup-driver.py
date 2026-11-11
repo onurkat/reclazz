@@ -162,6 +162,17 @@ class DynamicSetupTest(unittest.TestCase):
             (repo / 'reclazztest/prepare-0').write_bytes(b'foreign edit')
             with self.assertRaisesRegex(RuntimeError, 'Unowned fixture change'): d.check_sources(hashes)
 
+    def test_current80_source_keeps_non_dynamic_fixtures_head_verified(self):
+        repo, templates, hashes = self.source_tree(True)
+        for number in range(6):
+            name = 'reclazztest/prepare-' + str(number)
+            (repo / name).write_bytes(b'baseline'); hashes[name] = 'hash'
+        with patch.object(d, 'REPO', repo), patch.object(d, 'TEMPLATES', templates), \
+             patch.object(d.subprocess, 'run', return_value=SimpleNamespace(stdout=b'baseline')):
+            d.check_sources(hashes)
+            (repo / 'reclazztest/prepare-0').write_bytes(b'foreign edit')
+            with self.assertRaisesRegex(RuntimeError, 'Unowned fixture change'): d.check_sources(hashes)
+
     def test_partial_source_provisioning_is_refused(self):
         repo, templates, hashes = self.source_tree(True)
         (repo / 'reclazztest' / d.OWNED[3]).unlink()
