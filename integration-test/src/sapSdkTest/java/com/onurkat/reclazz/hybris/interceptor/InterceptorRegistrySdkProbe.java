@@ -34,6 +34,7 @@ public class InterceptorRegistrySdkProbe {
     }
     public static void main(String[] args) throws Exception {
         loaderAndTenantBoundary();
+        mixedOwnerFactory();
         recreatedRegistry();
         try (var context = new GenericApplicationContext()) {
             context.registerBeanDefinition("target", new RootBeanDefinition(Target.class));
@@ -144,6 +145,84 @@ public class InterceptorRegistrySdkProbe {
             check(current.getValidateInterceptors("Product").size() == 1, "recreated registry duplicate");
             check(current.getValidateInterceptors("Product").contains(next), "recreated registry stale");
             System.out.println("PASS: Spring-dependent registry recreation");
+        }
+    }
+
+
+    public static final class Session {
+        public void activate() { }
+    }
+    public static final class Sessions {
+        final Session initial = new Session();
+        int created, closed;
+        public boolean hasCurrentSession() { return true; }
+        public Session getCurrentSession() { return initial; }
+        public Session getRawSession(Session session) { return session; }
+        public Session createNewSession() { created++; return new Session(); }
+        public void closeSession(Session session) { closed++; }
+    }
+    static com.onurkat.reclazz.ext.PremiumModule shippedModule() {
+        var platform = (com.onurkat.reclazz.platform.PlatformContext) java.lang.reflect.Proxy.newProxyInstance(
+            Target.class.getClassLoader(), new Class<?>[]{com.onurkat.reclazz.platform.PlatformContext.class},
+            (p,m,a) -> { if (m.getName().equals("getPlatformId")) return com.onurkat.reclazz.platform.PlatformContext.Platform.HYBRIS;
+                throw new UnsupportedOperationException(m.getName()); });
+        return new com.onurkat.reclazz.hybris.SapPremiumModuleFactory().create(new com.onurkat.reclazz.ext.PremiumContext() {
+            public com.onurkat.reclazz.platform.PlatformContext platform() { return platform; }
+            public com.onurkat.reclazz.config.AgentConfig config() { return com.onurkat.reclazz.config.AgentConfig.parse(null); }
+            public com.onurkat.reclazz.platform.PropertyFileSnapshots propertySnapshots() { return new com.onurkat.reclazz.platform.PropertyFileSnapshots(); }
+            public java.lang.instrument.Instrumentation instrumentation() { return null; }
+            public int applyLoggerLevels(Map<String,String> values, Collection<String> keys) { throw new AssertionError(); }
+            public boolean requestRunningSystemUpdate() { throw new AssertionError(); }
+        });
+    }
+    static void mixedOwnerFactory() throws Exception {
+        java.net.URL fixture = java.nio.file.Path.of(System.getProperty("probe.tenantClasses")).toUri().toURL();
+        try(var loader=new java.net.URLClassLoader(new java.net.URL[]{fixture},Target.class.getClassLoader()) {
+            @Override protected Class<?> loadClass(String name,boolean resolve) throws ClassNotFoundException {
+                if(!name.startsWith("de.hybris.platform.core.Registry")) return super.loadClass(name,resolve);
+                synchronized(getClassLoadingLock(name)) {
+                    Class<?> c=findLoadedClass(name); if(c==null)c=findClass(name); if(resolve)resolveClass(c); return c;
+                }
+            }
+        }; var owner=new GenericApplicationContext(); var hidden=new GenericApplicationContext()) {
+            owner.setClassLoader(loader); owner.getBeanFactory().setBeanClassLoader(loader);
+            hidden.setClassLoader(new ClassLoader(Target.class.getClassLoader()) {
+                @Override protected Class<?> loadClass(String name,boolean resolve) throws ClassNotFoundException {
+                    if(name.equals(Target.class.getName())) throw new ClassNotFoundException(name);
+                    return super.loadClass(name,resolve);
+                }
+            }); hidden.refresh();
+            owner.registerBeanDefinition("target",new RootBeanDefinition(Target.class));
+            mapping(owner,"mapping","target",7);
+            Registry registry=new Registry(); registry.setApplicationContext(owner);registry.setInterceptorExecutionPolicy(new Policy());
+            Sessions sessions=new Sessions();owner.getBeanFactory().registerSingleton("sessionService",sessions);
+            owner.getBeanFactory().registerSingleton("interceptorRegistry",registry);owner.refresh();
+            loader.loadClass("de.hybris.platform.core.Registry").getField("context").set(null,owner);
+            registry.registerInterceptor(owner.getBean("mapping",InterceptorMapping.class));registry.getValidateInterceptors("Product");
+            var module=shippedModule();var messages=new ArrayList<String>();
+            com.onurkat.reclazz.ui.StatusReporter.StatusListener listener=(level,text)->{if(level.equals("WARN"))messages.add(text);};
+            com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+            try {
+                for(boolean reverse:List.of(false,true)) {
+                    messages.clear();com.onurkat.reclazz.ui.RestartLedger.clear();
+                    Target old=owner.getBean("target",Target.class);
+                    var pending=module.prepareInterceptor(Target.class.getName(),reverse?List.of(owner,hidden):List.of(hidden,owner));
+                    owner.getDefaultListableBeanFactory().destroySingleton("target");Target next=owner.getBean("target",Target.class);
+                    check(pending.complete(),"mixed owner factory reported false");
+                    var targets=registry.getValidateInterceptors("Product");
+                    check(targets.size()==1 && targets.contains(next) && !targets.contains(old),"factory lost exact new target");
+                    check(messages.isEmpty() && com.onurkat.reclazz.ui.RestartLedger.size()==0,"invisible owner produced restart concern");
+                }
+                messages.clear();com.onurkat.reclazz.ui.RestartLedger.clear();
+                Target old=owner.getBean("target",Target.class);
+                var pending=module.prepareInterceptor(Target.class.getName(),List.of(hidden,owner));
+                owner.getDefaultListableBeanFactory().destroySingleton("target");registry.failOnce=true;
+                check(!pending.complete(),"owning registration failure reported success");
+                check(!messages.isEmpty() && com.onurkat.reclazz.ui.RestartLedger.size()>0,"owning failure hidden");
+                check(registry.getValidateInterceptors("Product").size()==1 && registry.getValidateInterceptors("Product").contains(old),"failure did not restore old mapping");
+                check(sessions.created==6 && sessions.closed==6,"factory did not restore scoped sessions");
+            } finally {com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);com.onurkat.reclazz.ui.RestartLedger.clear();}
+            System.out.println("PASS: shipped factory mixed-owner both orders, exact targets, quiet nonowners, owning failure and rollback");
         }
     }
 

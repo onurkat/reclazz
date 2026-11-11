@@ -49,6 +49,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- SAP Commerce interceptor reload no longer reports a restart for contexts whose class loader cannot resolve the interceptor class.
+
 - BUILD holds retain automatic source, resource and platform work until a
   successful build; held action counts remain visible alongside class files.
 

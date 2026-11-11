@@ -143,7 +143,12 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                             Object factory = owner.getClass().getMethod("getBeanFactory").invoke(owner);
                             if (!seen.add(factory)) continue;
                             ClassLoader loader = (ClassLoader) owner.getClass().getMethod("getClassLoader").invoke(owner);
-                            Class<?> type = Class.forName(name, false, loader);
+                            Class<?> type;
+                            try { type = Class.forName(name, false, loader); }
+                            catch (ClassNotFoundException notVisible) {
+                                // This context cannot resolve the interceptor on this reload thread.
+                                continue;
+                            }
                             String[] beans = (String[]) owner.getClass().getMethod("getBeanNamesForType", Class.class).invoke(owner, type);
                             boolean local = false;
                             for (String bean : beans) if (Boolean.TRUE.equals(factory.getClass().getMethod("containsBeanDefinition", String.class).invoke(factory, bean))) local = true;
