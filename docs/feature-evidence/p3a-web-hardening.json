@@ -350,7 +350,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2375,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-VALIDATION-ADD"
         }
       ],
@@ -402,7 +402,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2391,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-VALIDATION-CHANGE"
         }
       ],
@@ -454,7 +454,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2407,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-VALIDATION-REMOVE-RESTORE"
         }
       ],
@@ -506,7 +506,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2423,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-VALIDATION-HELD"
         }
       ],
@@ -558,7 +558,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2439,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-VALIDATION-SIDE-EFFECTS"
         }
       ],
@@ -610,7 +610,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2455,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-VALIDATION-CONTROL"
         }
       ],
@@ -651,7 +651,7 @@
     },
     {
       "id": "P3A-REQUEST-COMPLETE",
-      "statement": "Completing one request cannot release a second held worker’s code.",
+      "statement": "Completing one request cannot release a second held worker\u2019s code.",
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
@@ -662,7 +662,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2471,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-REQUEST-COMPLETE"
         }
       ],
@@ -689,7 +689,7 @@
           }
         }
       ],
-      "observable": "Completing one request cannot release a second held worker’s code.",
+      "observable": "Completing one request cannot release a second held worker\u2019s code.",
       "control": "Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
@@ -703,7 +703,7 @@
     },
     {
       "id": "P3A-REQUEST-TIMEOUT",
-      "statement": "A timeout503 and another completed request cannot release an interrupt-ignoring worker’s code.",
+      "statement": "A timeout503 and another completed request cannot release an interrupt-ignoring worker\u2019s code.",
       "shipped_surfaces": [
         {
           "path": "docs/usage.md",
@@ -714,7 +714,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2487,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-REQUEST-TIMEOUT"
         }
       ],
@@ -741,7 +741,7 @@
           }
         }
       ],
-      "observable": "A timeout503 and another completed request cannot release an interrupt-ignoring worker’s code.",
+      "observable": "A timeout503 and another completed request cannot release an interrupt-ignoring worker\u2019s code.",
       "control": "Warm 1:1 baseline, each worker logs 1:1, native HTTP status/body, unchanged nonce; fast request remains 1:1 while either worker owns old code, then eventually 3:3. Disabling the corresponding hook makes the whole observing test RED at its first failing assertion; this is not an independent mutation witness for every later assertion.",
       "execution_lanes": [
         "sapmachine-17-macos-arm64",
@@ -766,7 +766,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2503,
-          "sha256": "46bcda1089d8b9140de3b420c13ac5a21d62465700f603698c42515b3455c40c",
+          "sha256": "1ad7186286cd72ed41a15ce95431d016c902000772f58c33c938c67cbfeda340",
           "quote": "### P3A-REQUEST-LATEST"
         }
       ],

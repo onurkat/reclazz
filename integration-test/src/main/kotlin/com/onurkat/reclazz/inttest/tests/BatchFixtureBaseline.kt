@@ -6,7 +6,11 @@ import java.nio.file.Path
 
 /** Includes every baseline a Batch A scenario edits, including its exception paths. */
 class BatchFixtureBaseline(private val config:TestConfig) {
-    private val relative=listOf("src/com/onurkat/reclazztest/batch/ProbeLoggerState.java",
+    private val relative=listOf("src/com/onurkat/reclazztest/batch/ProbeImpexCellDecorator.java",
+        "src/com/onurkat/reclazztest/batch/ProbeImpexState.java",
+        "src/com/onurkat/reclazztest/batch/ProbeImpexValueTranslator.java",
+        "web/src/com/onurkat/reclazztest/controllers/ImpexTranslatorProbeController.java",
+        "src/com/onurkat/reclazztest/batch/ProbeLoggerState.java",
         "web/src/com/onurkat/reclazztest/controllers/LoggerProbeController.java","project.properties","resources/reclazztest-spring.xml",
         "src/com/onurkat/reclazztest/batch/ProbeQueryDao.java",
         "src/com/onurkat/reclazztest/batch/ProbeInitDefaultsInterceptor.java",

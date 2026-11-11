@@ -27,6 +27,7 @@ TEMPLATES = REPO / 'integration-test/src/main/resources/templates/batch'
 OWNED = ('resources/reclazztest-items.xml', 'resources/reclazztest-spring.xml',
          'src/com/onurkat/reclazztest/batch/DynamicLabelHandler.java',
          'web/src/com/onurkat/reclazztest/controllers/DynamicProbeController.java')
+IMPEX_OWNED = ('web/src/com/onurkat/reclazztest/controllers/ImpexTranslatorProbeController.java', 'src/com/onurkat/reclazztest/batch/ProbeImpexValueTranslator.java', 'src/com/onurkat/reclazztest/batch/ProbeImpexCellDecorator.java', 'src/com/onurkat/reclazztest/batch/ProbeImpexState.java')
 UPDATE_PROPERTIES = (b'\nupdate.importEssentialData.enabled=false\nupdate.clearHmcConfiguration.enabled=false\n'
                      b'update.localizeTypes.enabled=false\nupdate.rebuildLucenesearchIndexes.enabled=false\n'
                      b'update.executeProjectData.extensionName.list=\n')
@@ -78,10 +79,15 @@ def check_sources(hashes):
     Never overwrite a same-count local edit. The latter mode makes setup usable
     after this change is committed, before an older DB has the new descriptor.
     """
-    if len(hashes) not in (72, 74, 77, 80, 83, 86, NORMAL_FIXTURE_FILES):
+    if len(hashes) not in (72, 74, 77, 80, 83, 86, 88, NORMAL_FIXTURE_FILES):
         raise RuntimeError('Expected old72, reviewed74 or current reviewed fixture membership')
-    staged = len(hashes) in (74, 77, 80, 83, 86, NORMAL_FIXTURE_FILES)
+    staged = len(hashes) in (74, 77, 80, 83, 86, 88, NORMAL_FIXTURE_FILES)
     owned = {'reclazztest/' + relative for relative in OWNED}
+    if len(hashes) == NORMAL_FIXTURE_FILES:
+        impex_names = {'reclazztest/' + relative for relative in IMPEX_OWNED}
+        if not impex_names <= hashes.keys():
+            raise RuntimeError('Partial ImpEx source provisioning')
+        owned |= impex_names
     for relative in OWNED[2:]:
         if (REPO / 'reclazztest' / relative).exists() != staged:
             raise RuntimeError('Partial dynamic source provisioning')

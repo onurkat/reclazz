@@ -103,12 +103,13 @@ fun main() {
         LoadInterceptorLiveTest(config, agentClient, httpVerifier),
         RemoveInterceptorLiveTest(config, agentClient, httpVerifier),
         LoggerLevelsLiveTest(config, agentClient, httpVerifier),
+        ImpexTranslatorLiveTest(config, agentClient, httpVerifier),
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
     val profile = System.getenv("RECLAZZ_TEST_PROFILE") ?: "default"
     if (profile != "default") {
-        if (profile !in setOf("codegen", "items-attempt", "statics-on", "statics-off", "solr-attempt", "cms-attempt") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
+        if (profile !in setOf("codegen", "items-attempt", "statics-on", "statics-off", "solr-attempt", "cms-attempt", "impex-translator-stage1") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
             agentClient.disconnect()
             error("Unknown profile or RECLAZZ_TEST_ONLY combined with a profile: $profile")
         }
@@ -117,6 +118,7 @@ fun main() {
             else if(profile == "items-attempt") ItemsSchemaLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "solr-attempt") SolrTargetedReindexLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "cms-attempt") CmsComponentLiveTest(config,agentClient,httpVerifier).run()
+            else if(profile == "impex-translator-stage1") ImpexTranslatorLiveTest(config,agentClient,httpVerifier).run()
             else ResetStaticsLiveTest(config,agentClient,httpVerifier,profile == "statics-on").run()) }
         finally { agentClient.disconnect(); report.print() }
         exitProcess(if(report.hasFailures()) 1 else 0)

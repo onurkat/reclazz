@@ -590,7 +590,7 @@ fun main() {
         val result=runGatedProfile("restore-contract",{null}) {withRestore({Unit}) {error("restore failure")}}
         check(result.status==TestStatus.FAIL && "restore failure" in result.notes)
     }
-    case("defaultMembershipRetainsCommitted50") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==50)}
+    case("defaultMembershipRetainsCommitted51") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==51)}
     case("defaultMembershipRejectsMissingInitDefaults") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"InitDefaultsInterceptorLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsMissingLoad") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"LoadInterceptorLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsMissingRemove") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"RemoveInterceptorLiveTest").toList())}.isFailure)}
@@ -797,6 +797,7 @@ fun main() {
     cases += com.onurkat.reclazz.inttest.tests.runLoadHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runRemoveHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runLoggerHarnessContracts()
+    cases += com.onurkat.reclazz.inttest.tests.runImpexTranslatorHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }
 }

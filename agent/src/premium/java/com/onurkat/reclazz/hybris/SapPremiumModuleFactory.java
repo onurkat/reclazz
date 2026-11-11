@@ -372,6 +372,10 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
 
         private void handleImpexChange(ChangeEvent event,
                                               ImpexAutoImporter impexImporter) {
+            if (event.getType() == ChangeEvent.Type.DELETED || !java.nio.file.Files.exists(event.getPath())) {
+                StatusReporter.detail("ImpEx file deleted: " + event.getPath().getFileName() + "; nothing to import");
+                return;
+            }
             StatusReporter.info("ImpEx file changed: " + event.getPath().getFileName());
             impexImporter.importFile(event.getPath(),
                     ((HybrisPlatformContext) platformContext).getHybrisContext());

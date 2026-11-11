@@ -206,6 +206,27 @@ class DynamicSetupTest(unittest.TestCase):
             (repo / 'reclazztest/prepare-0').write_bytes(b'foreign edit')
             with self.assertRaisesRegex(RuntimeError, 'Unowned fixture change'): d.check_sources(hashes)
 
+    def test_current92_source_verifies_all_new_impex_templates_and_old_sources(self):
+        repo, templates, hashes = self.source_tree(True)
+        for number in range(14):
+            name = 'reclazztest/prepare-' + str(number)
+            (repo / name).write_bytes(b'baseline'); hashes[name] = 'hash'
+        for relative in d.IMPEX_OWNED:
+            target=repo/'reclazztest'/relative; target.parent.mkdir(parents=True,exist_ok=True); target.write_bytes(b'impex')
+            template=templates/relative; template.parent.mkdir(parents=True,exist_ok=True); template.write_bytes(b'impex')
+            hashes['reclazztest/'+relative]='hash'
+        with patch.object(d,'REPO',repo), patch.object(d,'TEMPLATES',templates), \
+             patch.object(d.subprocess,'run',return_value=SimpleNamespace(stdout=b'baseline')):
+            d.check_sources(hashes)
+            for relative in d.IMPEX_OWNED:
+                target=repo/'reclazztest'/relative; target.write_bytes(b'foreign')
+                with self.assertRaisesRegex(RuntimeError,'Unowned fixture change'): d.check_sources(hashes)
+                target.write_bytes(b'impex')
+            replaced=dict(hashes); replaced.pop('reclazztest/'+d.IMPEX_OWNED[0]); replaced['reclazztest/foreign']='hash'
+            with self.assertRaisesRegex(RuntimeError,'Partial ImpEx'): d.check_sources(replaced)
+            (repo/'reclazztest/prepare-0').write_bytes(b'foreign')
+            with self.assertRaisesRegex(RuntimeError,'Unowned fixture change'): d.check_sources(hashes)
+
     def test_partial_source_provisioning_is_refused(self):
         repo, templates, hashes = self.source_tree(True)
         (repo / 'reclazztest' / d.OWNED[3]).unlink()

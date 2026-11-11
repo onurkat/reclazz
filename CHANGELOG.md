@@ -65,6 +65,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Deleted ImpEx file events no longer attempt an import or warn about a missing
+  file. Explicit imports of missing paths still warn.
+
 - Log4j2 property level changes select the existing context that owns the named
   logger and verify its effective level before reporting success. Ambiguous
   owners are refused unless a saved SAP logger alias is declared by every
