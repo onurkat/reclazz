@@ -193,8 +193,99 @@ class PropertyChangeAcceptanceTest {
                     public static void setLevel(String logger, org.apache.logging.log4j.Level value) { level = value.name(); }
                 }
                 """);
+        // Model a real single existing context. An invocation-only Configurator
+        // stub cannot prove that the live logger received a level.
+        java.util.Map<String, String> contextSources = java.util.Map.of(
+                "LogManager", """
+                    package org.apache.logging.log4j;
+                    public class LogManager {
+                        private static final org.apache.logging.log4j.core.impl.Log4jContextFactory FACTORY = new org.apache.logging.log4j.core.impl.Log4jContextFactory();
+                        public static org.apache.logging.log4j.core.impl.Log4jContextFactory getFactory() { return FACTORY; }
+                    }
+                    """,
+                "Log4jContextFactory", """
+                    package org.apache.logging.log4j.core.impl;
+                    public class Log4jContextFactory {
+                        private final org.apache.logging.log4j.core.selector.ContextSelector selector = new org.apache.logging.log4j.core.selector.ClassLoaderContextSelector();
+                        public org.apache.logging.log4j.core.selector.ContextSelector getSelector() { return selector; }
+                    }
+                    """,
+                "ContextSelector", """
+                    package org.apache.logging.log4j.core.selector;
+                    public interface ContextSelector {
+                        java.util.List<org.apache.logging.log4j.core.LoggerContext> getLoggerContexts();
+                    }
+                    """,
+                "Lazy", """
+                    package org.apache.logging.log4j.util;
+                    public class Lazy {
+                        public boolean isInitialized() { return false; }
+                        public Object value() { throw new AssertionError("unused default initialized"); }
+                    }
+                    """,
+                "ClassLoaderContextSelector", """
+                    package org.apache.logging.log4j.core.selector;
+                    import org.apache.logging.log4j.core.LoggerContext;
+                    public class ClassLoaderContextSelector implements ContextSelector {
+                        private final org.apache.logging.log4j.util.Lazy defaultLoggerContext = new org.apache.logging.log4j.util.Lazy();
+                        public java.util.List<LoggerContext> getLoggerContexts() { return java.util.List.of(LoggerContext.INSTANCE); }
+                        public LoggerContext getContext(String name, ClassLoader loader, boolean current) { throw new AssertionError(); }
+                        public LoggerContext getContext(String name, ClassLoader loader, boolean current, java.net.URI uri) { throw new AssertionError(); }
+                        public LoggerContext getContext(String name, ClassLoader loader, java.util.Map.Entry<String, Object> entry, boolean current, java.net.URI uri) { throw new AssertionError(); }
+                        protected LoggerContext getDefault() { throw new AssertionError(); }
+                    }
+                    """,
+                "LoggerContext", """
+                    package org.apache.logging.log4j.core;
+                    public class LoggerContext {
+                        public static final LoggerContext INSTANCE = new LoggerContext();
+                        private final org.apache.logging.log4j.core.config.Configuration configuration =
+                            new org.apache.logging.log4j.core.config.Configuration();
+                        private final java.util.Map<String, Logger> loggers = new java.util.HashMap<>();
+                        public org.apache.logging.log4j.core.config.Configuration getConfiguration() { return configuration; }
+                        public java.util.Collection<Logger> getLoggers() { return loggers.values(); }
+                        public Logger getLogger(String name) { return loggers.computeIfAbsent(name, n -> new Logger(n, this)); }
+                        public void updateLoggers() { }
+                    }
+                    """,
+                "Configuration", """
+                    package org.apache.logging.log4j.core.config;
+                    public class Configuration {
+                        private final java.util.Map<String, LoggerConfig> entries = new java.util.HashMap<>();
+                        public java.util.Map<String, LoggerConfig> getLoggers() { return entries; }
+                        public void addLogger(String name, LoggerConfig config) { entries.put(name, config); }
+                    }
+                    """,
+                "LoggerConfig", """
+                    package org.apache.logging.log4j.core.config;
+                    public class LoggerConfig {
+                        private org.apache.logging.log4j.Level level;
+                        public LoggerConfig(String name, org.apache.logging.log4j.Level value, boolean additive) { setLevel(value); }
+                        public void setLevel(org.apache.logging.log4j.Level value) { level = value; Configurator.level = value.name(); }
+                        public org.apache.logging.log4j.Level getLevel() { return level; }
+                    }
+                    """,
+                "Logger", """
+                    package org.apache.logging.log4j.core;
+                    public class Logger {
+                        private final String name;
+                        private final LoggerContext context;
+                        public Logger(String name, LoggerContext context) { this.name = name; this.context = context; }
+                        public String getName() { return name; }
+                        public LoggerContext getContext() { return context; }
+                        public org.apache.logging.log4j.Level getLevel() {
+                            return context.getConfiguration().getLoggers().get(name).getLevel();
+                        }
+                    }
+                    """);
+        var compilerArgs = new java.util.ArrayList<String>(java.util.List.of("-d", sources.toString(), level.toString(), config.toString()));
+        for (var entry : contextSources.entrySet()) {
+            Path source = sources.resolve(entry.getKey() + ".java");
+            Files.writeString(source, entry.getValue());
+            compilerArgs.add(source.toString());
+        }
         assertEquals(0, javax.tools.ToolProvider.getSystemJavaCompiler().run(null, null, null,
-                "-d", sources.toString(), level.toString(), config.toString()));
+                compilerArgs.toArray(String[]::new)));
         var loader = new java.net.URLClassLoader(new java.net.URL[]{sources.toUri().toURL()}, getClass().getClassLoader());
         return new LoggerFixture(loader, loader.loadClass("org.apache.logging.log4j.Level"),
                 loader.loadClass("org.apache.logging.log4j.core.config.Configurator"));

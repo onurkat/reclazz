@@ -17,7 +17,7 @@ it does not start the server. Report these checks separately from a live run.
 | --- | --- |
 | Class redefinition | method body, add and remove method, add and remove field, change signature, constructor, annotation |
 | Spring | bean refresh, MVC re-scan, cache eviction, scheduler, event listener |
-| SAP Commerce (live suite) | interceptor model save with rollback, ImpEx auto-import |
+| SAP Commerce (live suite) | interceptor model save with rollback, ImpEx auto-import, native logger level delivery |
 | SAP Commerce (isolated SDK + real agent) | dynamic attribute get/set, CronJob performable body/helper reload, exact-byte receipts |
 | Optional Hibernate ORM | separate real L2 provider regression in `:agent:hibernateTest`; no Hibernate ORM scenario in the SAP live suite |
 | Behaviour under load | multi-class reload, large class, rapid successive changes, syntax error recovery |
@@ -60,6 +60,41 @@ export RECLAZZ_TEST_PORT_FILE=/path/to/project/.idea/reclazz/agent.port
 | `RECLAZZ_TEST_EVENT_TIMEOUT` | `30000` | ms to wait for a reload event |
 | `RECLAZZ_TEST_SETTLE_DELAY` | ignored | legacy compatibility only; waits use event ordering and HTTP deadlines |
 | `RECLAZZ_TEST_ONLY` | all | comma-separated scenario class names, e.g. `ConstructorChangeTest`, to re-run one alone |
+
+### Focused logger proof
+
+`RECLAZZ_TEST_ONLY=LoggerLevelsLiveTest` saves the target logger property from
+INFO to DEBUG and back. A bounded private appender must receive real target
+DEBUG only in the middle phase; target and control INFO markers prove the sink
+is alive. The control logger, root and unrelated configuration stay unchanged.
+Every outcome restores the original property bytes and detaches the appender.
+
+For deliberate failure controls, set `RECLAZZ_LOGGER_WITHHOLD_EDIT=true` (no
+property save) or `RECLAZZ_LOGGER_OMIT_NATIVE=true` (no native marker emission).
+Each must fail its application oracle and still clean up. Neither is a passing
+acceptance run. The default suite now contains 50 cases; its independent 5+1
+acceptance remains pending.
+
+The separate installed-SDK regression runs without starting SAP:
+
+```bash
+python3 -B scripts/test-sap-logging-sdk.py /path/to/hybris
+```
+
+It checks the real Log4j2 context owner, actual delivery and restoration,
+ambiguity refusal and separate framework classloaders. Log4j2 2.25.3 checks also
+cover the selector default omitted from its public list, identity deduplication
+and a fresh JVM whose unused default must remain uninitialized. Discovery is
+limited to listed contexts plus the selector default; unknown/inaccessible
+layouts are refused, and arbitrary thread-bound/custom contexts are outside
+this inventory. The SDK probe also uses installed SAP context/selector classes
+and their local Log4j bridge, Guava and SLF4J dependencies to prove a source-backed
+property group updates both listed/live and default/exact owners with real sink
+delivery and restoration. These jars are test-only, never added to the agent.
+The source declaration is authority for this narrow SAP alias path, not a claim
+of historical creator provenance. Plain level maps retain ambiguity refusal.
+This is SDK evidence,
+not live SAP acceptance.
 
 ## Why `RECLAZZ_TEST_MODE` matters
 

@@ -6,8 +6,8 @@ actually returns: an HTTP response, persisted query result, rendered component
 or Backoffice view. A reload notification alone cannot pass them. Refusal cases
 must also prove that the last working behavior and protected data stay intact.
 
-Evidence is recorded through 11 November 2026. RemoveInterceptor focused checks
-passed; independent default-suite acceptance of that addition is pending. LoadInterceptor acceptance
+Evidence is recorded through 11 November 2026. RemoveInterceptor and platform logger focused checks
+passed; independent default-suite acceptance of the logger addition is pending. LoadInterceptor acceptance
 extends the earlier documentation baseline at commit `f0ee45f`.
 It describes existing acceptance evidence, not a new run performed by building
 this documentation. See the [setup guide](sap-commerce.md) to attach Reclazz,
@@ -18,9 +18,10 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite currently has **49 scenarios, all required to PASS (49/49), with zero
-SKIPs**. The added RemoveInterceptor scenario passed focused v1/v2/v1 and
-negative controls; its independent 5+1 acceptance is pending. The previous
+The default suite currently has **50 scenarios, all required to PASS (50/50), with zero
+SKIPs**. The logger scenario passed focused INFO/DEBUG/INFO runs before and
+after two deliberate failure controls. Independent default50 acceptance is
+pending; these focused results do not stand in for the default 5+1 gate. The previous
 48-scenario suite's latest recorded acceptance ran five times on one server boot
 and once after a fresh boot: **six runs of 48/48 PASS**, with zero bean-refresh
 failures, zero model-listener attachment errors and unchanged fixture files. Hibernate ORM is tested separately in the
@@ -212,6 +213,41 @@ This does not certify every startup-only consumer, logger backend, locale
 fallback or stored type-name update. See [localization](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LocalizationLiveTest.kt)
 and [properties](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PlatformConfigLiveTest.kt).
 
+## Platform logger levels
+
+**You edit:** The level in a watched `log4j2.logger.<id>.name` / `.level`
+property pair, from INFO to DEBUG and back.
+
+**Reclazz does:** Finds the existing Log4j2 context owning the named logger,
+changes only its explicit configuration and reads back the live logger level
+before reporting success. A saved SAP alias can authorize several owners only
+when every owner has the same alias/name/level declaration in its verified
+in-memory property source. Each member is updated and read back; undeclared,
+file/XML, unknown or oversized sources refuse the group. Plain level maps and
+other ambiguous owners remain refused. Partial failure triggers verified
+rollback; failed rollback reports an error and a restart concern. Several
+contexts without a unique owner remain refused.
+A cold logger is allowed in a sole existing context. Inherited levels receive
+a named child configuration; parent and root remain unchanged. Discovery covers
+listed contexts plus the initialized selector default, using a read-only
+adapter verified against Log4j2 2.25.3. It does not initialize an unused default
+or enumerate arbitrary thread-bound/custom contexts. Unknown or inaccessible
+selector layouts and detected inventory changes warn without level mutation.
+
+**The focused test proves:** A private bounded appender receives target DEBUG
+only after the edit, with target/control INFO markers proving delivery in every
+phase. The control logger, root, unrelated logger configuration and appender
+attachments stay unchanged, in the same JVM. Withholding the property save and
+omitting native emissions both fail the test; a final ordinary run passes again.
+All four runs restored exact property bytes, removed the appender and left zero
+active fixture runs. The source-backed-group candidate then passed a single
+ordered 49-predecessor-plus-logger diagnostic: 50/50. Its installed jar/class
+identity was verified. The prior unique-owner candidate had refused the two
+owners and finished 49/50. This diagnostic is not independent default-suite
+acceptance; Claude's audit and five-plus-one gate remain pending. Separate installed-SDK tests cover ambiguous owners and isolated
+framework classloaders; logging XML and Solr's separate JVM are outside this
+scenario. See [logger delivery](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LoggerLevelsLiveTest.kt).
+
 ## Business process XML
 
 **You edit:** A process definition, or introduce a definition file and its bean
@@ -341,7 +377,7 @@ oracle, cleanup and independent review before it can move into the tested list.
 If SAP already handles an edit, its test records that existing behavior.
 
 1. RemoveInterceptor (focused checks passed; independent acceptance pending)
-2. Platform logger properties
+2. Platform logger properties (focused checks passed; independent acceptance pending)
 3. Custom ImpEx translator/decorator
 4. Stored validation constraint engine
 5. OCC timestamp formatter consumer

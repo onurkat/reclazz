@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- The live SAP Commerce logger scenario checks real INFO/DEBUG/INFO delivery,
+  unchanged control/root/appender state and complete private-sink cleanup.
+  Default-suite acceptance of this addition remains pending.
+
 - Live SAP Commerce tests cover RemoveInterceptor body reload with exact native
   callback counts, committed row absence and cleanup outside the measured scope.
 
@@ -51,6 +55,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   restart diagnostic.
 
 ### Fixed
+
+- Log4j2 property level changes select the existing context that owns the named
+  logger and verify its effective level before reporting success. Ambiguous
+  owners are refused unless a saved SAP logger alias is declared by every
+  owner in a verified in-memory property source. That source-backed group is
+  updated and read back in every member; partial failure rolls changes back,
+  and failed rollback reports an error and a restart concern. Inherited levels create
+  only a named child configuration, preserving the parent and root. Discovery
+  includes the initialized selector default omitted by the public context list,
+  without initializing an unused default. Unknown or inaccessible selector
+  layouts are refused; arbitrary thread-bound/custom contexts are not enumerated.
 
 - SAP process reload clears its pending restart concern after verified recovery
   of the same resource in the same owning context, while retaining refusal warnings.

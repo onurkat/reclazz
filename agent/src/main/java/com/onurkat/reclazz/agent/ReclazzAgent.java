@@ -1546,7 +1546,7 @@ public class ReclazzAgent {
 
         LoggingReloader reloader =
                 new LoggingReloader(instrumentation);
-        java.util.List<String> applied = reloader.applyLevels(levels);
+        java.util.List<String> applied = reloader.applyPropertyLevels(fromFile, changedKeys);
         if (!applied.isEmpty()) {
             StatusReporter.success(Plural.word(applied.size(),
                     "Logger level applied: ", "Logger levels applied: ")
