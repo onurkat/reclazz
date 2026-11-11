@@ -49,6 +49,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- SAP interceptor reload skips mappings whose type is absent in that owner before
+  changing registrations; genuine failures retain registration and rollback causes.
+
 - SAP Commerce interceptor reload no longer reports a restart for contexts whose class loader cannot resolve the interceptor class.
 
 - BUILD holds retain automatic source, resource and platform work until a

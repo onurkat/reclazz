@@ -33,6 +33,7 @@ public class InterceptorRegistrySdkProbe {
         @Override public void onValidate(Object model, InterceptorContext context) {}
     }
     public static void main(String[] args) throws Exception {
+        applicabilityCases();
         loaderAndTenantBoundary();
         mixedOwnerFactory();
         recreatedRegistry();
@@ -223,6 +224,155 @@ public class InterceptorRegistrySdkProbe {
                 check(sessions.created==6 && sessions.closed==6,"factory did not restore scoped sessions");
             } finally {com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);com.onurkat.reclazz.ui.RestartLedger.clear();}
             System.out.println("PASS: shipped factory mixed-owner both orders, exact targets, quiet nonowners, owning failure and rollback");
+        }
+    }
+
+
+    /** Uses SAP's real storage; only type availability and faults are controlled. */
+    public static class SelectiveRegistry extends Registry {
+        final Set<String> absent = new HashSet<>();
+        int registrations, removals, failRegistrations;
+        boolean queryFailure;
+        @Override protected boolean isValidTypeCode(String type) { return !absent.contains(type); }
+        @Override protected List<String> getAssignableTypes(String type) {
+            if (queryFailure) throw new IllegalStateException("type lookup unavailable");
+            if (absent.contains(type)) throw new de.hybris.platform.jalo.JaloItemNotFoundException("missing " + type, 0);
+            return super.getAssignableTypes(type);
+        }
+        @Override public void registerInterceptor(InterceptorMapping mapping) {
+            registrations++;
+            if (failRegistrations > 0) {
+                int left = failRegistrations--;
+                throw new IllegalStateException(left == 2 ? "registration refused" : "restoration refused");
+            }
+            super.registerInterceptor(mapping);
+        }
+        @Override public void unregisterInterceptor(InterceptorMapping mapping) { removals++; super.unregisterInterceptor(mapping); }
+        void resetCounts() { registrations=0; removals=0; }
+    }
+    static GenericApplicationContext selective(SelectiveRegistry registry, boolean absentMapping) {
+        var c=new GenericApplicationContext();
+        c.registerBeanDefinition("target",new RootBeanDefinition(Target.class));
+        c.registerBeanDefinition("other",new RootBeanDefinition(Other.class));
+        mapping(c,"mapping","target",7);mapping(c,"unrelated","other",12);
+        if(absentMapping)c.getBeanDefinition("mapping").getPropertyValues().add("typeCode","MissingProbe");
+        registry.setApplicationContext(c);registry.setInterceptorExecutionPolicy(new Policy());
+        c.getBeanFactory().registerSingleton("interceptorRegistry",registry);
+        c.getBeanFactory().registerSingleton("sessionService",new Sessions());c.refresh();
+        registry.registerInterceptor(c.getBean("mapping",InterceptorMapping.class));
+        registry.registerInterceptor(c.getBean("unrelated",InterceptorMapping.class));
+        registry.resetCounts();return c;
+    }
+    static java.net.URLClassLoader tenantLoader() throws Exception {
+        var url=java.nio.file.Path.of(System.getProperty("probe.tenantClasses")).toUri().toURL();
+        return new java.net.URLClassLoader(new java.net.URL[]{url},Target.class.getClassLoader()) {
+            @Override protected Class<?> loadClass(String name,boolean resolve) throws ClassNotFoundException {
+                if(!name.startsWith("de.hybris.platform.core.Registry"))return super.loadClass(name,resolve);
+                synchronized(getClassLoadingLock(name)) {
+                    var c=findLoadedClass(name);if(c==null)c=findClass(name);if(resolve)resolveClass(c);return c;
+                }
+            }
+        };
+    }
+    static void bindTenant(GenericApplicationContext c,ClassLoader loader) throws Exception {
+        c.setClassLoader(loader);c.getBeanFactory().setBeanClassLoader(loader);
+        loader.loadClass("de.hybris.platform.core.Registry").getField("context").set(null,c);
+    }
+    static void applicabilityCases() throws Exception {
+        var failed=new ArrayList<String>();int passed=0;
+        for(String name:List.of("absentTypeOwnerDoesNotMutateOrWarn","mixedTypeOwnersBothOrders",
+                "mixedApplicableAndAbsentMappings","preflightUnexpectedFailureStaysLoud",
+                "typeDisappearsAfterCaptureStaysLoud","inconsistentRegistriesStayLoud",
+                "realRegistrationAndRollbackCauses")) {
+            var messages=new ArrayList<String>();
+            com.onurkat.reclazz.ui.StatusReporter.StatusListener listener=(level,text)->messages.add(level+":"+text);
+            com.onurkat.reclazz.ui.StatusReporter.addListener(listener);
+            com.onurkat.reclazz.ui.RestartLedger.clear();
+            try { applicabilityCase(name,messages);passed++;System.out.println("PASS applicability: "+name); }
+            catch(AssertionError e){failed.add(name+": "+e.getMessage());System.out.println("FAIL applicability: "+name+": "+e.getMessage());}
+            finally {com.onurkat.reclazz.ui.StatusReporter.removeListener(listener);com.onurkat.reclazz.ui.RestartLedger.clear();}
+        }
+        System.out.println("Applicability cases: "+passed+"/7 passed");
+        check(failed.isEmpty(),failed.toString());
+    }
+    static String ledger() {return String.join("\n",com.onurkat.reclazz.ui.RestartLedger.digest());}
+    static void applicabilityCase(String name,List<String> messages) throws Exception {
+        if(name.equals("mixedTypeOwnersBothOrders")) {
+            var missing=new SelectiveRegistry();missing.absent.add("MissingProbe");var present=new SelectiveRegistry();
+            try(var absent=selective(missing,true);var owner=selective(present,false);
+                    var la=tenantLoader();var lb=tenantLoader()) {
+                bindTenant(absent,la);bindTenant(owner,lb);var module=shippedModule();
+                for(boolean reverse:List.of(false,true)) {
+                    var refresh=module.prepareInterceptor(Target.class.getName(),reverse?List.of(owner,absent):List.of(absent,owner));
+                    Object old=owner.getBean("target");owner.getDefaultListableBeanFactory().destroySingleton("target");
+                    Object next=owner.getBean("target");check(refresh.complete(),"mixed-owner refresh failed");
+                    var targets=present.getValidateInterceptors("Product");
+                    check(targets.size()==2 && targets.stream().filter(t->t==next).count()==1 && !targets.contains(old)
+                            && targets.contains(owner.getBean("other")),"eligible targets wrong");
+                    check(owner.getBean("mapping",InterceptorMapping.class).getOrder()==7,"mapping order changed");
+                    check(missing.registrations==0 && missing.removals==0,"absent owner mutated");
+                }
+                check(com.onurkat.reclazz.ui.RestartLedger.size()==0,"false mixed-owner concern");
+                check(messages.stream().noneMatch(m->m.startsWith("WARN:")),"false warning");
+                check(messages.stream().filter(m->m.startsWith("INFO:")&&m.contains("skipped")).count()==1,"skip not once per owner");
+            }return;
+        }
+        var registry=new SelectiveRegistry();boolean missing=name.equals("absentTypeOwnerDoesNotMutateOrWarn");
+        if(missing)registry.absent.add("MissingProbe");
+        try(var c=selective(registry,missing)) {
+            var reloader=new InterceptorReloader();Object mapping=c.getBean("mapping"),old=c.getBean("target");
+            if(name.equals("mixedApplicableAndAbsentMappings")) {
+                mapping(c,"absentMapping","target",9);
+                c.getBeanDefinition("absentMapping").getPropertyValues().add("typeCode","MissingProbe");
+                registry.absent.add("MissingProbe");c.getBean("absentMapping");
+            }
+            if(name.equals("preflightUnexpectedFailureStaysLoud"))registry.queryFailure=true;
+            if(name.equals("inconsistentRegistriesStayLoud")) {
+                var other=new SelectiveRegistry();other.absent.add("Product");other.setApplicationContext(c);other.setInterceptorExecutionPolicy(new Policy());
+                var service=new de.hybris.platform.servicelayer.internal.model.impl.DefaultModelService(){
+                    @Override public de.hybris.platform.servicelayer.interceptor.InterceptorRegistry lookupInterceptorRegistry(){return other;}
+                };
+                service.getInterceptorRegistry();c.getBeanFactory().registerSingleton("modelService",service);
+            }
+            var refresh=reloader.prepareInContext(Target.class.getName(),c,c.getClassLoader());
+            switch(name) {
+                case "absentTypeOwnerDoesNotMutateOrWarn" -> {
+                    check(refresh.complete(),"absent owner must be a no-op");check(!refresh.complete(),"no-op not one-shot");
+                    check(reloader.prepareInContext(Target.class.getName(),c,c.getClassLoader()).complete(),"repeat no-op failed");
+                    check(registry.registrations==0 && registry.removals==0,"absent mapping mutated");
+                    check(c.getBean("mapping")==mapping && c.getBean("target")==old,"absent Spring identity changed");
+                    check(com.onurkat.reclazz.ui.RestartLedger.size()==0,"absent type in ledger");
+                    check(messages.stream().noneMatch(m->m.startsWith("WARN:")),"absent type warned");
+                    check(messages.stream().filter(m->m.startsWith("INFO:")&&m.contains("skipped")).count()==1,"skip info not once");
+                }
+                case "mixedApplicableAndAbsentMappings" -> {
+                    c.getDefaultListableBeanFactory().destroySingleton("target");Object next=c.getBean("target");
+                    check(refresh.complete(),"mixed mappings failed");
+                    check(registry.registrations==1 && registry.removals==1,"absent mapping mutated");
+                    check(registry.getValidateInterceptors("Product").stream().filter(t->t==next).count()==1,"new target not exact");
+                    check(com.onurkat.reclazz.ui.RestartLedger.size()==0,"mixed mappings false concern");
+                }
+                case "preflightUnexpectedFailureStaysLoud","inconsistentRegistriesStayLoud" -> {
+                    check(!refresh.complete(),"preflight failure ignored");
+                    check(registry.registrations==0 && registry.removals==0,"mutated before eligibility");
+                    check(ledger().contains("IllegalStateException"),"preflight cause missing from ledger");
+                    if(registry.queryFailure)check(ledger().contains("type lookup unavailable"),"lookup message missing");
+                }
+                case "typeDisappearsAfterCaptureStaysLoud" -> {
+                    registry.absent.add("Product");c.getDefaultListableBeanFactory().destroySingleton("target");
+                    check(!refresh.complete(),"post-capture missing type swallowed");
+                    check(registry.removals==2 && registry.registrations==2,"rollback not attempted");
+                    check(ledger().contains("JaloItemNotFoundException") && ledger().contains("missing Product"),"missing-type cause lost");
+                }
+                case "realRegistrationAndRollbackCauses" -> {
+                    c.getDefaultListableBeanFactory().destroySingleton("target");registry.failRegistrations=2;
+                    check(!refresh.complete(),"registration failure ignored");
+                    check(ledger().contains("registration refused") && ledger().contains("restoration refused")
+                            && ledger().contains("IllegalStateException"),"both causes must survive rollback failure");
+                    check(messages.stream().anyMatch(m->m.contains("Interceptor re-registration failed")&&m.contains("registration refused")),"warning cause missing");
+                }
+                default -> throw new AssertionError(name);
+            }
         }
     }
 
