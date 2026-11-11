@@ -55,6 +55,10 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
     /** Annotation signatures of the class as it arrived, before transforming. */
     private final java.util.Set<String> originalAnnotations;
+    private java.util.Set<String> operationDescriptors;
+    public void setOperationDescriptors(java.util.Set<String> descriptors) {
+        operationDescriptors = java.util.Set.copyOf(descriptors);
+    }
 
     public MethodTrampolineAdapter(ClassVisitor cv, TransformContext context) {
         this(cv, context, java.util.Set.of());
@@ -264,7 +268,8 @@ public class MethodTrampolineAdapter extends ClassVisitor implements Opcodes {
 
         // Store metadata
         context.putMetadata(className, new TransformContext.ClassMetadata(
-                methodSigs, fieldSigs, 0, superName, originalAnnotations, declaredInterfaces));
+                methodSigs, fieldSigs, 0, superName, originalAnnotations, declaredInterfaces)
+                .withOperationDescriptors(operationDescriptors));
 
         super.visitEnd();
     }

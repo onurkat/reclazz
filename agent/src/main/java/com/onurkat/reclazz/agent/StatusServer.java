@@ -295,6 +295,14 @@ public class StatusServer implements StatusReporter.StatusListener {
         return clients.size();
     }
 
+    /** Existing timer only admits work; framework mutations run on the reload queue. */
+    public Runnable scheduleOperationRepair(Runnable admission, long delayMillis) {
+        var executor=heartbeatExecutor;
+        if(!running||executor==null||executor.isShutdown())throw new java.util.concurrent.RejectedExecutionException("status timer stopped");
+        var future=executor.schedule(admission,delayMillis,java.util.concurrent.TimeUnit.MILLISECONDS);
+        return ()->future.cancel(false);
+    }
+
     public void stop() {
         running = false;
         StatusReporter.removeListener(this);

@@ -3759,3 +3759,22 @@ not establish throughput, arbitrary asynchronous work or every possible race.
 
 Measured versions, source/artifact hashes and actual commands are in the record;
 other P3 MVC/data/callback families and unlisted environments remain separate.
+
+
+### Cache and transaction annotations during concurrent reloads
+
+After a relevant save, Reclazz clears and repopulates Spring cache/transaction
+operation metadata once at the batch boundary and attempts one delayed repair.
+A request racing the reload can still publish old metadata after these passes;
+it can remain until the next save or an application restart.
+
+Reclazz compares supported direct annotations obtained through fresh reflection
+against operation-source answers, including discoverable retained proxy Methods.
+A detected mismatch or repair failure produces a warning naming the affected
+class and annotation kind. Unsupported inspection, including composed or
+unverifiable proxy metadata, warns once per class and reason per agent session.
+An unknown historical annotation baseline suppresses unsupported-inspection
+warnings for that reload; detected mismatches and repair failures still warn.
+Matching samples are silent and do not guarantee that a later writer cannot
+publish stale metadata. Detailed output describes successful repair attempts as
+best effort. This does not provide concurrency-safe metadata publication.

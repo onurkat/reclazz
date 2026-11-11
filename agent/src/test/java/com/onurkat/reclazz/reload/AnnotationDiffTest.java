@@ -72,6 +72,36 @@ class AnnotationDiffTest extends TransformTestBase {
     }
 
     @Test
+    void fieldOnlyOperationAnnotationIsNotMethodRelevance() {
+        var writer=new org.objectweb.asm.ClassWriter(0);
+        writer.visit(org.objectweb.asm.Opcodes.V17,org.objectweb.asm.Opcodes.ACC_PUBLIC,"com/example/Owner",null,"java/lang/Object",null);
+        var field=writer.visitField(org.objectweb.asm.Opcodes.ACC_PUBLIC,"value","Ljava/lang/String;",null,null);
+        field.visitAnnotation("Lorg/springframework/cache/annotation/Cacheable;",true).visitEnd();field.visitEnd();writer.visitEnd();
+        assertTrue(AnnotationSignatures.operationDescriptors(writer.toByteArray()).isEmpty());
+        assertFalse(AnnotationSignatures.of(writer.toByteArray()).isEmpty(),"general change detection still sees field annotations");
+    }
+
+    @Test
+    void resultSnapshotSurvivesMetadataAdvance() {
+        byte[] before=compileOne("public class Subject { @Route(\"/old\") public void read(){} }");
+        byte[] after=compileOne("public class Subject { public void read(){} }");
+        var metadata=metadataFor(before).withOperationDescriptors(AnnotationSignatures.operationDescriptors(before));
+        var diff=StructuralAnalyzer.analyze(metadata,after);
+        var result=com.onurkat.reclazz.agent.ClassReloader.ReloadResult.success(false,false);
+        result.setPreviousOperationDescriptors(diff.getPreviousOperationDescriptors());
+        metadata.withOperationDescriptors(Set.of());
+        assertEquals(Set.of("LRoute;"),result.getPreviousOperationDescriptors());
+        assertTrue(diff.getNewOperationDescriptors().isEmpty());
+        assertThrows(UnsupportedOperationException.class,()->result.getPreviousOperationDescriptors().clear());
+    }
+
+    @Test
+    void unknownHistoricalDescriptorsRemainUnknown() {
+        byte[] after=compileOne("public class Subject { public void read(){} }");
+        assertNull(StructuralAnalyzer.analyze(metadataFor(after),after).getPreviousOperationDescriptors());
+    }
+
+    @Test
     void changingAnAnnotationValueIsNoticed() {
         byte[] before = compileOne(
                 "public class Subject { @Route(\"/ping\") public String handle() { return \"x\"; } }");

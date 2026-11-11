@@ -116,7 +116,7 @@ public class StructuralAnalyzer {
         boolean annotationsChanged = original.isAnnotationsKnown()
                 && !original.getAnnotations().equals(newAnnotations);
 
-        return new StructuralDiff(
+        StructuralDiff result = new StructuralDiff(
                 addedMethods, removedMethods, commonMethods,
                 addedFields, removedFields,
                 superChanged, interfacesChanged,
@@ -126,6 +126,10 @@ public class StructuralAnalyzer {
                 removedMethodSigs, removedFieldSigs,
                 addedInterfaces, removedInterfaces
         );
+        result.previousOperationDescriptors = original.getOperationDescriptors() == null ? null
+                : Set.copyOf(original.getOperationDescriptors());
+        result.newOperationDescriptors = AnnotationSignatures.operationDescriptors(newBytecode);
+        return result;
     }
 
     private static class NewClassCollector extends ClassVisitor {
@@ -164,6 +168,10 @@ public class StructuralAnalyzer {
      * Result of structural analysis.
      */
     public static class StructuralDiff {
+        private Set<String> previousOperationDescriptors;
+        private Set<String> newOperationDescriptors = Set.of();
+        public Set<String> getPreviousOperationDescriptors() { return previousOperationDescriptors; }
+        public Set<String> getNewOperationDescriptors() { return newOperationDescriptors; }
         private final Set<String> addedMethods;
         private final Set<String> removedMethods;
         private final Set<String> commonMethods;

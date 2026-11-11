@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Changed
+
+- Cache/transaction annotation reloads attempt a batch-wide metadata repair and
+  one delayed repeat, with independent diagnostic checks and warnings on detected
+  stale or uninspectable metadata. A request racing the reload can still leave
+  old metadata until another save or restart; matching checks are silent and
+  do not promise freshness. Restart advice remains in the pending ledger until
+  a later supported check verifies the corresponding concern has cleared.
+
 ### Added
 
 - The live SAP Commerce logger scenario checks real INFO/DEBUG/INFO delivery,

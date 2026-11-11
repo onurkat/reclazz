@@ -251,6 +251,7 @@ public class ReclazzTransformer implements ClassFileTransformer {
         // and only when the class does not already say what its UID is.
         MethodTrampolineAdapter adapter = new MethodTrampolineAdapter(
                 writer, context, AnnotationSignatures.of(classfileBuffer), originalUid, loader);
+        adapter.setOperationDescriptors(AnnotationSignatures.operationDescriptors(classfileBuffer));
 
         reader.accept(ConstructorCallRewriter.visitor(adapter,context::isWatched), ClassReader.EXPAND_FRAMES);
 

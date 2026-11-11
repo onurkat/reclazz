@@ -195,6 +195,7 @@ public class TransformContext {
         private final String superName;
         private final java.util.Set<String> annotations;
         private final boolean annotationsKnown;
+        private java.util.Set<String> operationDescriptors;
         private final java.util.Set<String> interfaces;
 
         /** For callers with no annotation information; the diff stays silent. */
@@ -262,6 +263,11 @@ public class TransformContext {
          * which is what a class recorded by an older build looks like.
          */
         public boolean isAnnotationsKnown() { return annotationsKnown; }
+        public java.util.Set<String> getOperationDescriptors() { return operationDescriptors; }
+        public ClassMetadata withOperationDescriptors(java.util.Set<String> descriptors) {
+            this.operationDescriptors = descriptors == null ? null : java.util.Set.copyOf(descriptors);
+            return this;
+        }
     }
 
     /**

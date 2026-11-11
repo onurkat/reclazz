@@ -708,3 +708,18 @@ val centralBundle by tasks.registering(Zip::class) {
     archiveFileName.set("reclazz-agent-${project.version}-central-bundle.zip")
     destinationDirectory.set(layout.buildDirectory)
 }
+
+// Intentionally RED research counterexamples for the unsupported freshness guarantee.
+// Explicit opt-in only: never part of test/check/unit/e2e or shipped artifacts.
+val operationMetadataResearch = sourceSets.create("operationMetadataResearch") {
+    compileClasspath += sourceSets.test.get().runtimeClasspath
+    runtimeClasspath += sourceSets.test.get().runtimeClasspath
+}
+tasks.register<Test>("operationMetadataResearchTest") {
+    group = "verification"
+    description = "Opt-in RED counterexamples: bounded repair does not guarantee metadata freshness"
+    testClassesDirs = operationMetadataResearch.output.classesDirs
+    classpath = operationMetadataResearch.runtimeClasspath
+    useJUnitPlatform()
+    jvmArgs("-Djdk.attach.allowAttachSelf=true")
+}

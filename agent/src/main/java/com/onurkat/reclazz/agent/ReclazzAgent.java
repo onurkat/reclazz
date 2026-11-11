@@ -86,6 +86,7 @@ import com.onurkat.reclazz.watcher.ChangeKind;
 public class ReclazzAgent {
 
     private static volatile Instrumentation instrumentation;
+    private static volatile SpringReloadOrchestrator activeSpringOrchestrator;
 
     /**
      * What each platform property file said last time, so a save is read as the
@@ -524,6 +525,7 @@ public class ReclazzAgent {
 
             // Set up Spring reload orchestrator (works for all platforms)
             SpringReloadOrchestrator springOrchestrator = new SpringReloadOrchestrator(platformContext);
+            activeSpringOrchestrator=springOrchestrator;
             springOrchestrator.setPreservedSingletons(modules::preservedSingletons);
             springOrchestrator.setRefreshOwnersOnHelper(config.getRefreshOwnersOnHelper());
 
@@ -598,6 +600,10 @@ public class ReclazzAgent {
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
 
             reloadQueue.setVerification(verification);
+            final ReloadQueue repairQueue=reloadQueue;
+            final StatusServer repairTimer=statusServer;
+            springOrchestrator.setOperationScheduler(repairTimer==null?null:repairTimer::scheduleOperationRepair,
+                    work->repairQueue.submitAutomatic("operation-metadata-repair","Repairing operation metadata",work));
             if (statusServer != null) {
                 statusServer.setOwnedBuildListener((owner, state) -> reloadQueue.build(owner, state, watcher::scanNow));
                 statusServer.setDoctorContext(watcher, reloadQueue::buildHoldKind);
@@ -685,6 +691,7 @@ public class ReclazzAgent {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 running = false;
                 watcher.stopWatching();
+                if(activeSpringOrchestrator!=null)activeSpringOrchestrator.closeOperationRepairs();
                 if (statusServer != null) {
                     statusServer.stop();
                 }
@@ -708,6 +715,8 @@ public class ReclazzAgent {
             // agent failing to start costs hot reload; the application failing
             // to start costs the application, and that is not this tool's
             // call to make.
+            if(activeSpringOrchestrator!=null)activeSpringOrchestrator.closeOperationRepairs();
+            activeSpringOrchestrator=null;
             StatusReporter.error("Failed to initialize Reclazz: " + Failures.describe(e));
             StatusReporter.error("  The application starts without hot reload.");
             StatusReporter.error("  Stack trace: " + e);
@@ -1269,6 +1278,8 @@ public class ReclazzAgent {
             var interceptor = work.result.isInterceptor() && work.modules != null
                     && platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS
                     ? work.modules.prepareInterceptor(work.className, platformContext.getAllApplicationContexts()) : null;
+            work.spring.setPreviousOperationDescriptors(work.result.getPreviousOperationDescriptors());
+            try {
             if (work.result.isSpringBean()) {
                 work.spring.onClassReloaded(work.className, type, work.result.isStructuralReload(),
                         work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
@@ -1278,6 +1289,7 @@ public class ReclazzAgent {
                         work.result.isAnnotationsChanged(), work.result.isMethodsAdded(),
                         work.result.getAddedMethodSigs(), work.result.getNewBytecode());
             }
+            } finally { work.spring.setPreviousOperationDescriptors(null); }
             if (interceptor != null && interceptor.complete()) {
                 ReloadEffects.note("interceptor re-registered");
                 StatusReporter.detail("Interceptor reloaded: " + work.className);

@@ -122,11 +122,22 @@ public class SpringReloadOrchestrator {
      */
     public void beginBatch() {
         beanReloader.beginBatch();
+        operationSourceReloader.beginBatch();
     }
 
     public void endBatch() {
-        beanReloader.endBatch();
+        try { beanReloader.endBatch(); } finally { operationSourceReloader.endBatch(); }
     }
+
+    private java.util.Set<String> previousOperationDescriptors;
+    public void setPreviousOperationDescriptors(java.util.Set<String> descriptors) {
+        previousOperationDescriptors=descriptors==null?null:java.util.Set.copyOf(descriptors);
+    }
+    public void setOperationScheduler(java.util.function.BiFunction<Runnable,Long,Runnable> timer,
+                                      java.util.function.Consumer<Runnable> admission) {
+        operationSourceReloader.setScheduler(timer,admission);
+    }
+    public void closeOperationRepairs() { operationSourceReloader.close(); }
 
     public void onHelperReloaded(String className, Class<?> type) {
         onHelperReloaded(className, type, false, false, false, java.util.Set.of(), null);
@@ -148,7 +159,7 @@ public class SpringReloadOrchestrator {
                 new ReloadSteps.Step("Transaction and cache metadata", r -> {
                     if (r.structural() || r.annotationsChanged()
                             || classesWithAddedMembers.contains(r.className())) {
-                        operationSourceReloader.reloadOperationSources(r.type(), r.annotationsChanged());
+                        operationSourceReloader.reloadOperationSources(r.type(), r.annotationsChanged(), previousOperationDescriptors, r.bytecode(), classesWithAddedMembers.contains(r.className()));
                     }
                 }),
                 new ReloadSteps.Step("Method security metadata", r -> {
@@ -404,7 +415,7 @@ public class SpringReloadOrchestrator {
             // @Transactional/@Cacheable method is invisible to the structural diff.
             new ReloadSteps.Step("Transaction and cache metadata", r -> {
                 if (r.structural() || r.annotationsChanged() || classesWithAddedMembers.contains(r.className()))
-                    operationSourceReloader.reloadOperationSources(r.type(), r.annotationsChanged());
+                    operationSourceReloader.reloadOperationSources(r.type(), r.annotationsChanged(), previousOperationDescriptors, r.bytecode(), classesWithAddedMembers.contains(r.className()));
             }),
 
             // The same cache, one framework over. Method security resolves

@@ -55,6 +55,26 @@ public final class AnnotationSignatures {
         return collector.signatures;
     }
 
+    /** Class/method annotation types only, collected before any transformation. */
+    public static Set<String> operationDescriptors(byte[] bytecode) {
+        Set<String> descriptors = new LinkedHashSet<>();
+        new ClassReader(bytecode).accept(new ClassVisitor(Opcodes.ASM9) {
+            @Override public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                if (visible) descriptors.add(descriptor);
+                return null;
+            }
+            @Override public MethodVisitor visitMethod(int access, String name, String desc, String sig, String[] exceptions) {
+                return new MethodVisitor(Opcodes.ASM9) {
+                    @Override public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                        if (visible) descriptors.add(descriptor);
+                        return null;
+                    }
+                };
+            }
+        }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        return Set.copyOf(descriptors);
+    }
+
     private static class Collector extends ClassVisitor {
         final Set<String> signatures = new LinkedHashSet<>();
 

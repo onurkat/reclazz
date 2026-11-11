@@ -1376,7 +1376,7 @@ public class StructuralReloader {
             // Update metadata in TransformContext
             context.putMetadata(internalName, new TransformContext.ClassMetadata(
                     diff.getNewMethods(), diff.getNewFields(), 0, diff.getNewSuperName(),
-                    diff.getNewAnnotations()));
+                    diff.getNewAnnotations()).withOperationDescriptors(diff.getNewOperationDescriptors()));
 
             boolean isStructural = diff.isStructural();
             String shape = null;
@@ -1591,6 +1591,7 @@ public class StructuralReloader {
             ClassReloader.ReloadResult result = ClassReloader.ReloadResult.structuralSuccess(
                     springBean, isInterceptor(targetClass), isStructural);
             result.setAnnotationsChanged(diff.isAnnotationsChanged());
+            result.setPreviousOperationDescriptors(diff.getPreviousOperationDescriptors());
             result.setMethodsAdded(!diff.getAddedMethods().isEmpty());
             result.setAddedMethodSigs(diff.getAddedMethods());
             result.setNewBytecode(newBytecode);

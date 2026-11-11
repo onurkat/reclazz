@@ -309,6 +309,11 @@ public class ClassReloader {
         private final String error;
         private String structuralChangeAdvice;
         private boolean annotationsChanged;
+        private java.util.Set<String> previousOperationDescriptors;
+        public void setPreviousOperationDescriptors(java.util.Set<String> descriptors) {
+            previousOperationDescriptors = descriptors == null ? null : java.util.Set.copyOf(descriptors);
+        }
+        public java.util.Set<String> getPreviousOperationDescriptors() { return previousOperationDescriptors; }
         private boolean methodsAdded;
         private java.util.Set<String> addedMethodSigs = java.util.Set.of();
         private byte[] newBytecode;
