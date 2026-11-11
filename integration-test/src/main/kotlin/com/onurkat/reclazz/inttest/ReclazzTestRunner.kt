@@ -104,6 +104,9 @@ fun main() {
         RemoveInterceptorLiveTest(config, agentClient, httpVerifier),
         LoggerLevelsLiveTest(config, agentClient, httpVerifier),
         ImpexTranslatorLiveTest(config, agentClient, httpVerifier),
+        ValidationConstraintsLiveTest(config, agentClient, httpVerifier,
+            withheld=false, partial=false, diagnostic="", providerOnly=false,
+            fingerprintOnly=false, engineEffects=true),                 // 52
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

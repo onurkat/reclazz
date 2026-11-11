@@ -16,7 +16,7 @@ class ValidationConstraintsLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifi
     private val providerOnly:Boolean=System.getenv("RECLAZZ_CONSTRAINT_WATCHER_PROVIDER")=="true",
     private val fingerprintOnly:Boolean=System.getenv("RECLAZZ_CONSTRAINT_FINGERPRINT")=="true",
     private val engineEffects:Boolean=System.getenv("RECLAZZ_CONSTRAINT_ENGINE_EFFECTS")=="true")
-    :BatchLiveTest(if(engineEffects) "Constraint engine effects (StageB)" else if(fingerprintOnly) "Constraint effect fingerprint (StageA)" else if(providerOnly) "ImpEx application provider loader" else "Persisted validation constraints (Stage1)",c,a,h) {
+    :BatchLiveTest(if(engineEffects) "Native validation constraints after ImpEx" else if(fingerprintOnly) "Constraint effect fingerprint (StageA)" else if(providerOnly) "ImpEx application provider loader" else "Persisted validation constraints (Stage1)",c,a,h) {
     override fun scenario() {
         val run="reclazz-c62-${UUID.randomUUID()}";val params=mapOf("run" to run);val url="$endpoint/validation-constraints"
         val length=(run+"-aaaa").length;val roles=listOf("short","long");val groups=listOf("target","control")

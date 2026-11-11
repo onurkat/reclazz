@@ -18,14 +18,11 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite currently has **50 scenarios, all required to PASS (50/50), with zero
-SKIPs**. The logger scenario passed focused INFO/DEBUG/INFO runs before and
-after two deliberate failure controls. Independent default50 acceptance is
-pending; these focused results do not stand in for the default 5+1 gate. The previous
-48-scenario suite's latest recorded acceptance ran five times on one server boot
-and once after a fresh boot: **six runs of 48/48 PASS**, with zero bean-refresh
-failures, zero model-listener attachment errors and unchanged fixture files. Hibernate ORM is tested separately in the
-agent regression suite; it is not a SAP live scenario.
+The default suite now contains **52 scenarios, all required to PASS, with zero
+SKIPs**. The latest recorded acceptance ran five times on one server boot and
+once after a fresh boot: **six runs of 52/52 PASS**, with zero bean-refresh
+failures and unchanged fixture files. Hibernate ORM is tested
+separately in the agent regression suite; it is not a SAP live scenario.
 
 The live tests run locally before relevant commits and releases. CI execution
 is manual; we do not run a licensed SAP server test on every push. Tests restore
@@ -139,6 +136,12 @@ See [prepare saves](../integration-test/src/main/kotlin/com/onurkat/reclazz/intt
 and [mapping edits](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingEditLiveTest.kt).
 
 ## Bean Validation
+
+| Default scenario | Verified behavior |
+|---|---|
+| Persisted validation constraints through ImpEx | The watcher reloads SAP's native validation engine after a constraint change; held and fresh validation see v2 and restored v1. Unrelated imports leave the engine unchanged. |
+
+Diagnostic and no-reload control runs of this scenario remain opt-in.
 
 **You edit:** A validator body or a Java constraint annotation parameter.
 

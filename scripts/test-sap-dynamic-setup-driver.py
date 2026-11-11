@@ -206,9 +206,9 @@ class DynamicSetupTest(unittest.TestCase):
             (repo / 'reclazztest/prepare-0').write_bytes(b'foreign edit')
             with self.assertRaisesRegex(RuntimeError, 'Unowned fixture change'): d.check_sources(hashes)
 
-    def test_current92_source_verifies_all_new_impex_templates_and_old_sources(self):
+    def test_current_source_verifies_all_new_impex_templates_and_old_sources(self):
         repo, templates, hashes = self.source_tree(True)
-        for number in range(14):
+        for number in range(d.NORMAL_FIXTURE_FILES - 78):
             name = 'reclazztest/prepare-' + str(number)
             (repo / name).write_bytes(b'baseline'); hashes[name] = 'hash'
         for relative in d.IMPEX_OWNED:

@@ -38,7 +38,14 @@ class BatchFixtureBaseline(private val config:TestConfig) {
         "web/src/com/onurkat/reclazztest/controllers/StaticProbeController.java","resources/reclazztest-items.xml")+
         listOf("StaticProbe","ProbePopulator","NativeProbeJob","NativeProbeListener","ProbeValidator","ValidatedPayload","OrikaRollbackData","OrikaRollbackWsDTO")
             .map {"src/com/onurkat/reclazztest/batch/$it.java"}
+    private val constraints=listOf("src/com/onurkat/reclazztest/batch/ProbeConstraintGroups.java",
+        "src/com/onurkat/reclazztest/batch/ProbeValidationState.java",
+        "web/src/com/onurkat/reclazztest/controllers/ValidationConstraintsProbeController.java")
     fun checkBytes() {
+        for(rel in constraints) {
+            val baseline=javaClass.classLoader.getResourceAsStream("templates/constraints-stage1/$rel")!!.use {it.readBytes()}
+            check(Files.readAllBytes(Path.of(config.extPath,rel)).contentEquals(baseline)) {"Constraint fixture not restored: $rel"}
+        }
         for(rel in relative) {
             val baseline=javaClass.classLoader.getResourceAsStream("templates/batch/$rel")!!.use {it.readBytes()}
             check(Files.readAllBytes(Path.of(config.extPath,rel)).contentEquals(baseline)) {"Batch A fixture not restored: $rel"}

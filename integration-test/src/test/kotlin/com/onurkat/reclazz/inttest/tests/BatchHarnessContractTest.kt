@@ -125,14 +125,14 @@ fun runBatchHarnessContracts():Int {
         }
     }}
     case("allNewTemplateBytesCheckedOnExceptionPath") {
-        val directory=Path.of(BatchLiveTest::class.java.classLoader.getResource("templates/batch")!!.toURI())
+        val directories=listOf("batch","constraints-stage1").map {Path.of(BatchLiveTest::class.java.classLoader.getResource("templates/$it")!!.toURI())}
         val root=Files.createTempDirectory("reclazz-batch-all-")
         try {
-            Files.walk(directory).use {paths->paths.filter(Files::isRegularFile).forEach {file->
+            for(directory in directories) Files.walk(directory).use {paths->paths.filter(Files::isRegularFile).forEach {file->
                 val target=root.resolve(directory.relativize(file));Files.createDirectories(target.parent);Files.copy(file,target)
             }}
             val checker=BatchFixtureBaseline(TestConfig(extPath=root.toString(),portFile="/unused"));checker.checkBytes()
-            Files.walk(directory).use {paths->paths.filter(Files::isRegularFile).forEach {file->
+            for(directory in directories) Files.walk(directory).use {paths->paths.filter(Files::isRegularFile).forEach {file->
                 val target=root.resolve(directory.relativize(file));val bytes=Files.readAllBytes(target)
                 try {Files.writeString(target,"dirty");check(runCatching {checker.checkBytes()}.isFailure)} finally {Files.write(target,bytes)}
             }}
