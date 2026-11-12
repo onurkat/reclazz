@@ -2077,7 +2077,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1051,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-REGISTER-NEW"
         }
       ],
@@ -2117,7 +2117,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1073,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-COMPONENT-PROFILE"
         }
       ],
@@ -2157,7 +2157,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1095,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-COMPONENT-CONDITIONAL"
         }
       ],
@@ -2197,7 +2197,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1117,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-COMPONENT-LAZY"
         }
       ],
@@ -2237,7 +2237,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1139,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-COMPONENT-PROTOTYPE"
         }
       ],
@@ -2277,7 +2277,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1161,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-COMPOSED-STEREOTYPE"
         }
       ],
@@ -2317,7 +2317,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1183,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-NEW-CONSTRUCTOR-INJECTION"
         }
       ],
@@ -2346,7 +2346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1205,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-REFRESH"
         }
       ],
@@ -2386,7 +2386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1227,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-HELD-CALLER"
         }
       ],
@@ -2426,7 +2426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1249,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-INJECTION-AUTOWIRED"
         }
       ],
@@ -2466,7 +2466,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1271,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-INJECTION-VALUE"
         }
       ],
@@ -2506,7 +2506,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1293,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-INJECTION-RESOURCE"
         }
       ],
@@ -2546,7 +2546,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1315,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-LITE-CONFIG"
         }
       ],
@@ -2586,7 +2586,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1337,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-ARGS"
         }
       ],
@@ -2626,7 +2626,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1359,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-RICH-ARGS"
         }
       ],
@@ -2666,7 +2666,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1381,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-PROVIDER"
         }
       ],
@@ -2706,7 +2706,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1403,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-PRIMITIVE-VALUE"
         }
       ],
@@ -2746,7 +2746,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1425,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-ARRAY-SET-ARGS"
         }
       ],
@@ -2786,7 +2786,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1447,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-ALL-PRIMITIVES"
         }
       ],
@@ -2826,7 +2826,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1469,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-VALUE-PROPERTY"
         }
       ],
@@ -2866,7 +2866,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1491,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-ALIASES"
         }
       ],
@@ -2906,7 +2906,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1513,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-QUALIFIER"
         }
       ],
@@ -2946,7 +2946,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1535,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-PRIMARY"
         }
       ],
@@ -2986,7 +2986,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1557,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-CONDITIONAL"
         }
       ],
@@ -3026,7 +3026,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1579,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-BOOT-PROPERTY"
         }
       ],
@@ -3066,7 +3066,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1601,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-BOOT-BEAN"
         }
       ],
@@ -3106,7 +3106,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1623,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-BOOT-MISSING-BEAN"
         }
       ],
@@ -3146,7 +3146,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1645,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-PROFILE"
         }
       ],
@@ -3186,7 +3186,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1667,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-SCOPE-PROTOTYPE"
         }
       ],
@@ -3226,7 +3226,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1689,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-LAZY"
         }
       ],
@@ -3266,7 +3266,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1711,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-FULL-CONFIG"
         }
       ],
@@ -3306,7 +3306,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1733,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-FULL-CONFIG-ARGS"
         }
       ],
@@ -3346,7 +3346,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1755,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-BEAN-STATIC"
         }
       ],
@@ -3386,7 +3386,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1777,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-FULL-CONFIG-STATIC-JAVA"
         }
       ],
@@ -3426,7 +3426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1799,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-LIFECYCLE-INIT"
         }
       ],
@@ -3473,7 +3473,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1821,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-LIFECYCLE-DESTROY"
         }
       ],
@@ -3520,7 +3520,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1843,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-LIFECYCLE-NATIVE-LIFECYCLE"
         }
       ],
@@ -3567,7 +3567,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1865,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-ADDED-OPERATIONS-PLAIN"
         }
       ],
@@ -3607,7 +3607,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1887,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-ADDED-OPERATIONS-HELD"
         }
       ],
@@ -3647,7 +3647,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1909,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-TX-ROLLBACK"
         }
       ],
@@ -3694,7 +3694,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1931,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-CACHE-HIT"
         }
       ],
@@ -3741,7 +3741,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1953,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-CACHE-PUT"
         }
       ],
@@ -3788,7 +3788,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1975,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-CACHE-EVICT"
         }
       ],
@@ -3835,7 +3835,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 1997,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-OPERATIONS-SELF-INVOKE"
         }
       ],
@@ -3882,7 +3882,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2019,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-COMPOSED-TRANSACTION"
         }
       ],
@@ -3922,7 +3922,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2041,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-COMPOSED-CACHE"
         }
       ],
@@ -3962,7 +3962,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2063,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-AOP-REFRESH"
         }
       ],
@@ -4009,7 +4009,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2085,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-SECURITY-PRE-POST"
         }
       ],
@@ -4061,7 +4061,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2107,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-COMPOSED-SECURITY"
         }
       ],
@@ -4118,7 +4118,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2129,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-SECURITY-METADATA"
         }
       ],
@@ -4189,7 +4189,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2151,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-SECURITY-SECURED"
         }
       ],
@@ -4260,7 +4260,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2173,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-SECURITY-FILTER-CHAIN"
         }
       ],
@@ -4312,7 +4312,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2195,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-CACHE-RELOAD-EVICTION"
         }
       ],
@@ -4364,7 +4364,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2217,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-SPRING6-ORDINARY-MATRIX"
         }
       ],
@@ -4393,7 +4393,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2239,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-EXISTING-TX-METADATA"
         }
       ],
@@ -4445,7 +4445,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2261,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-EXISTING-CACHE-METADATA"
         }
       ],
@@ -4497,7 +4497,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2283,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-TX-CLASS-DEFAULTS"
         }
       ],
@@ -4537,7 +4537,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2305,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-CACHE-CLASS-DEFAULTS"
         }
       ],
@@ -4577,7 +4577,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2327,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-SECURITY-FILTER-CHAIN-SWAP"
         }
       ],
@@ -4636,7 +4636,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 2349,
-          "sha256": "0df1271892060b9cd025c0ea7ded1c5b05bff887c156905b61c36e1c85d96e1c",
+          "sha256": "e9a83598544cad88e831e02359e1f44cefcfd21a15366a030741c1c184c2ce35",
           "quote": "### P2-SPRING6-BEAN-CONDITION-METADATA"
         }
       ],

@@ -456,6 +456,17 @@ pages, slots and templates are removed before catalog cleanup. See the
 This exercises existing Java reload after native selection; it does not prove
 search restriction visibility, template inheritance or JSP resource hot edits.
 
+A fourth opt-in case saves and restores the actual page-slot JSP source, with
+an escaped literal marker `jsp-v1 -> jsp-v2 -> jsp-v1`. The native servlet
+context must resolve that source file directly, and Jasper must use
+`development=true`, `checkInterval=0`, `modificationTestInterval=1`. Rendered
+HTML follows each save in the same JVM, with unchanged Java bytes, Java
+markers, page/slot/component identities and an independent unchanged view.
+No build, copy, cache clear or restart occurs between saves. This covers
+existing SAP/Tomcat JSP serving with Reclazz present; it adds no JSP reload
+mechanism to the agent. See the
+[JSP resource case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsJspResourceLiveTest.kt).
+
 ## Backoffice configuration and widgets
 
 **You edit:** Backoffice config XML, or add/edit/remove a one-parameter public
@@ -478,8 +489,9 @@ and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 ## Not covered yet
 
 Complete storefront rendering, CMS template inheritance/overrides, search
-restriction visibility and JSP resource hot edits remain open. The focused
-page/slot case above must not be read as their acceptance.
+restriction visibility, precompiled/deployed-copy JSP setups and tag/include
+invalidation remain open. The focused cases above must not be read as their
+acceptance.
 Native SAP region caches, recurring Trigger lifecycle, process actions held across an edit,
 new OCC controller enrollment, broader Backoffice bindings and the scenarios in
 the [coverage order](#coverage-order) also need their own live oracles.

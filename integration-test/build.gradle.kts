@@ -75,3 +75,11 @@ val cmsPageSlotContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.CmsPageSlotContractTestKt")
 }
+
+// Narrow native JSP HTML oracle; broad harness runs at independent audit.
+val cmsJspResourceContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.CmsJspResourceContractTestKt")
+}

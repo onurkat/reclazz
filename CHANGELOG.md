@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The opt-in CMS profile covers native SAP/Tomcat JSP source saves with Reclazz
+  present, with escaped HTML, stable Java/identity controls and owned recovery.
+  This documents existing Jasper serving rather than adding agent JSP reload.
+
 - The opt-in SAP Commerce CMS tests now check rendered Java changes after native
   UID lookup and page/slot selection in persisted catalog versions, with stable
   controls, persisted identities and owned cleanup.

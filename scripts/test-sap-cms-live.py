@@ -244,7 +244,7 @@ def runner(folder, label, inject=False):
 
 def attempt_profiles(inject=False):
     selected=os.environ.get('RECLAZZ_CMS_ATTEMPT_PROFILE')
-    allowed=['cms-attempt','cms-uid-attempt','cms-page-slot-attempt']
+    allowed=['cms-attempt','cms-uid-attempt','cms-page-slot-attempt','cms-jsp-attempt']
     if selected is not None:
         if selected not in allowed: raise RuntimeError('Unknown CMS attempt profile')
         return [selected]
@@ -255,7 +255,7 @@ def run_attempts(result,folder,inject=False):
     original=os.environ.get('RECLAZZ_CMS_ATTEMPT_PROFILE')
     try:
         for i,profile in enumerate(attempt_profiles(inject)):
-            key,label=('attempt','attempt') if i==0 else (('uidAttempt','attempt-uid') if profile=='cms-uid-attempt' else ('pageSlotAttempt','attempt-page-slot'))
+            key,label=('attempt','attempt') if i==0 else (('uidAttempt','attempt-uid') if profile=='cms-uid-attempt' else (('pageSlotAttempt','attempt-page-slot') if profile=='cms-page-slot-attempt' else ('jspAttempt','attempt-jsp')))
             os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']=profile
             result[key]=runner(folder,label,inject)
             if i>0 and (result[key]['exitCode']!=0 or result[key]['counts']!={'PASS':1,'FAIL':0,'ERROR':0,'SKIP':0}):
@@ -396,12 +396,13 @@ def main():
     focus=parser.add_mutually_exclusive_group()
     focus.add_argument('--focused-uid', action='store_true', help='One persisted UID case and recovery; no default suite')
     focus.add_argument('--focused-page-slot', action='store_true', help='One native page-slot case and recovery; no default suite')
+    focus.add_argument('--focused-jsp', action='store_true', help='One native JSP save case and recovery; no default suite')
     parser.add_argument('--setup-probe', action='store_true', help='Build/API/recovery diagnostic only; never CMS render acceptance')
     args = parser.parse_args()
-    focused=args.focused_uid or args.focused_page_slot
+    focused=args.focused_uid or args.focused_page_slot or args.focused_jsp
     if focused:
         if args.failure_control or args.setup_probe or args.runs != 3: parser.error('focused UID has one run and no failure/setup control')
-        os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']='cms-page-slot-attempt' if args.focused_page_slot else 'cms-uid-attempt'
+        os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']='cms-jsp-attempt' if args.focused_jsp else ('cms-page-slot-attempt' if args.focused_page_slot else 'cms-uid-attempt')
     if args.runs < 1 or (args.setup_probe and args.failure_control):
         parser.error('Positive runs required; setup probe cannot be a failure control')
     try:
@@ -430,7 +431,7 @@ def main():
     passed &= console_intact and baseline['nativeRefreshFailures'] == 0
     if not args.setup_probe and not focused:
         passed &= baseline.get('exitCode') == 0 and baseline.get('defaultSuite') is True and baseline.get('counts') == DEFAULT_OUTCOME
-    (folder / 'summary.json').write_text(json.dumps({'verdict': 'PASS' if passed else 'FAIL', 'setupOnly': args.setup_probe, 'focusedUid': args.focused_uid, 'focusedPageSlot': args.focused_page_slot, 'cycles': results, 'default': baseline}, indent=2) + '\n')
+    (folder / 'summary.json').write_text(json.dumps({'verdict': 'PASS' if passed else 'FAIL', 'setupOnly': args.setup_probe, 'focusedUid': args.focused_uid, 'focusedPageSlot': args.focused_page_slot, 'focusedJsp': args.focused_jsp, 'cycles': results, 'default': baseline}, indent=2) + '\n')
     print(('CMS_SETUP_PROBE ' if args.setup_probe else 'CMS_PROFILE ') + ('PASS' if passed else 'FAIL') + '; recovery evidence: ' + str(folder), flush=True)
     return 0 if passed else 1
 

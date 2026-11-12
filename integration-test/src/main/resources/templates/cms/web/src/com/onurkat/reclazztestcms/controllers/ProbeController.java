@@ -236,6 +236,15 @@ public class ProbeController {
         return Path.of(source.getLocation().toURI()).toRealPath();
     }
 
+    @GetMapping("/view-facts") @ResponseBody
+    public Map<String,Object> viewFacts() throws Exception {
+        var jsp=servletContext.getServletRegistration("jsp");
+        if(jsp==null)throw new IllegalStateException("Native JSP servlet missing");
+        return Map.of("viewPath",Path.of(servletContext.getRealPath("/WEB-INF/views/reclazz-page-slot.jsp")).toRealPath().toString(),
+                "jspClass",jsp.getClassName(),"jspInit",jsp.getInitParameters(),
+                "jvmStart",ManagementFactory.getRuntimeMXBean().getStartTime());
+    }
+
     @GetMapping("/gates") @ResponseBody
     public Map<String, Object> gates() throws Exception {
         var result = new LinkedHashMap<String, Object>();

@@ -118,7 +118,7 @@ fun main() {
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
     val profile = System.getenv("RECLAZZ_TEST_PROFILE") ?: "default"
     if (profile != "default") {
-        if (profile !in setOf("codegen", "items-attempt", "statics-on", "statics-off", "solr-attempt", "cms-attempt", "cms-uid-attempt", "cms-page-slot-attempt", "impex-translator-stage1", "validation-constraints-stage1") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
+        if (profile !in setOf("codegen", "items-attempt", "statics-on", "statics-off", "solr-attempt", "cms-attempt", "cms-uid-attempt", "cms-page-slot-attempt", "cms-jsp-attempt", "impex-translator-stage1", "validation-constraints-stage1") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
             agentClient.disconnect()
             error("Unknown profile or RECLAZZ_TEST_ONLY combined with a profile: $profile")
         }
@@ -129,6 +129,7 @@ fun main() {
             else if(profile == "cms-attempt") CmsComponentLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "cms-uid-attempt") CmsUidLookupLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "cms-page-slot-attempt") CmsPageSlotLiveTest(config,agentClient,httpVerifier).run()
+            else if(profile == "cms-jsp-attempt") CmsJspResourceLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "validation-constraints-stage1") ValidationConstraintsLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "impex-translator-stage1") ImpexTranslatorLiveTest(config,agentClient,httpVerifier).run()
             else ResetStaticsLiveTest(config,agentClient,httpVerifier,profile == "statics-on").run()) }
