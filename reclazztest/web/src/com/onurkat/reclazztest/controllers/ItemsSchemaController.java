@@ -97,4 +97,101 @@ public class ItemsSchemaController {
         result.put("databaseValue", searchService.search(query).getResult().get(0));
         modelService.detach(fresh); return result;
     }
+
+    private static final String ADDED = "ReclazzAddedTypeProbe";
+    private static final String ADDED_MODEL = "com.onurkat.reclazztest.model.ReclazzAddedTypeProbeModel";
+    private static final String ADDED_JALO = "com.onurkat.reclazztest.jalo.ReclazzAddedTypeProbe";
+    private boolean loadable(String name) {
+        try { Class.forName(name, false, Registry.getApplicationContext().getClassLoader()); return true; }
+        catch (ClassNotFoundException absent) { return false; }
+    }
+    @GetMapping("/new-type/facts")
+    public Map<String, Object> newTypeFacts() throws Exception {
+        var result = new LinkedHashMap<String, Object>();
+        var types = TypeManager.getInstance().getAllComposedTypes();
+        result.put("tenant", Registry.getCurrentTenant().getTenantID());
+        result.put("jvmStart", java.lang.management.ManagementFactory.getRuntimeMXBean().getStartTime());
+        result.put("collisions", types.stream().filter(t -> !ADDED.equals(t.getCode()) &&
+                (t.getItemTypeCode() == 31992 || "ReclazzAddedTypeProbes".equalsIgnoreCase(t.getTable()))).count());
+        boolean exists = types.stream().anyMatch(t -> ADDED.equals(t.getCode()));
+        result.put("present", exists);
+        // SAP caches failed class loads. Before generation, inspect resources without
+        // attempting Class.forName: a preflight must not poison the platform loader.
+        var loader = Registry.getApplicationContext().getClassLoader();
+        result.put("modelResourcePresent", loader.getResource(ADDED_MODEL.replace('.', '/') + ".class") != null);
+        result.put("jaloResourcePresent", loader.getResource(ADDED_JALO.replace('.', '/') + ".class") != null);
+        if (exists) {
+            result.put("modelLoaded", loadable(ADDED_MODEL)); result.put("jaloLoaded", loadable(ADDED_JALO));
+        }
+        var tables = new ArrayList<String>();
+        try (var connection = Registry.getCurrentTenant().getDataSource().getConnection();
+             var found = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"})) {
+            while (found.next()) {
+                String table = found.getString("TABLE_NAME");
+                if (table.toUpperCase(Locale.ROOT).contains("RECLAZZADDEDTYPEPROBES")) tables.add(table);
+            }
+        }
+        result.put("matchingTables", tables);
+        if (exists) {
+            var type = TypeManager.getInstance().getComposedType(ADDED);
+            ItemModel model = modelService.create(ADDED);
+            result.put("typeCode", type.getItemTypeCode()); result.put("table", type.getTable());
+            result.put("jaloClass", type.getJaloClass().getName());
+            result.put("modelClass", model.getClass().getName());
+            result.put("modelLoader", model.getClass().getClassLoader().getClass().getName());
+            modelService.detach(model);
+        }
+        return result;
+    }
+    private String newNonce(String nonce) {
+        if (!nonce.matches("reclazz-c33a-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"))
+            throw new IllegalArgumentException("Invalid new-type nonce");
+        return nonce;
+    }
+    private List<ItemModel> newRows(String nonce) {
+        return searchService.<ItemModel>search("SELECT {pk} FROM {" + ADDED + "} WHERE {nonce}=?nonce",
+                Map.of("nonce", newNonce(nonce))).getResult();
+    }
+    private Map<String, Object> newResult(ItemModel previous, ItemModel fresh, boolean database) throws Exception {
+        var result = newTypeFacts();
+        if (!ADDED_MODEL.equals(fresh.getClass().getName())) throw new IllegalStateException("Generated model required");
+        result.put("pk", fresh.getPk().toString()); result.put("differentInstance", previous != fresh);
+        result.put("nonce", fresh.getClass().getMethod("getNonce").invoke(fresh));
+        result.put("value", fresh.getClass().getMethod("getValue").invoke(fresh));
+        if (database) {
+            String table = TypeManager.getInstance().getComposedType(ADDED).getTable();
+            if (!"ReclazzAddedTypeProbes".equalsIgnoreCase(table) || !table.matches("[a-zA-Z0-9_]+"))
+                throw new IllegalStateException("Owned deployment table required");
+            try (var connection = Registry.getCurrentTenant().getDataSource().getConnection();
+                 var statement = connection.prepareStatement("SELECT p_value FROM " + table + " WHERE PK=?")) {
+                statement.setLong(1, Long.parseLong(fresh.getPk().toString()));
+                try (var rows = statement.executeQuery()) {
+                    if (!rows.next()) throw new IllegalStateException("Persisted row missing");
+                    result.put("databaseValue", rows.getString(1));
+                    if (rows.next()) throw new IllegalStateException("Duplicate PK");
+                }
+            }
+        }
+        modelService.detach(fresh); return result;
+    }
+    @PostMapping("/new-type/roundtrip")
+    public Map<String, Object> newRoundtrip(@RequestParam("nonce") String nonce) throws Exception {
+        if (!newRows(nonce).isEmpty()) throw new IllegalStateException("Nonce already persisted");
+        ItemModel original = modelService.create(ADDED);
+        original.getClass().getMethod("setNonce", String.class).invoke(original, nonce);
+        original.getClass().getMethod("setValue", String.class).invoke(original, "new-type-v1");
+        modelService.save(original); modelService.detach(original);
+        var found = newRows(nonce);
+        if (found.size() != 1) throw new IllegalStateException("Owned row missing");
+        return newResult(original, found.get(0), false);
+    }
+    @GetMapping("/new-type/roundtrip")
+    public Map<String, Object> readNewType(@RequestParam("nonce") String nonce, @RequestParam("pk") String pk) throws Exception {
+        var found = newRows(nonce);
+        if (found.size() != 1 || !found.get(0).getPk().equals(PK.parse(pk))) throw new IllegalStateException("Owned persisted PK mismatch");
+        ItemModel previous = found.get(0); modelService.detach(previous);
+        var fresh = newRows(nonce);
+        if (fresh.size() != 1 || !fresh.get(0).getPk().equals(PK.parse(pk))) throw new IllegalStateException("Owned persisted PK changed");
+        return newResult(previous, fresh.get(0), true);
+    }
 }

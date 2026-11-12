@@ -66,3 +66,35 @@ the validator version and exact call count, and rolls back in `finally`.
 Use a test environment: rollback does not undo external interceptor effects.
 The fixture does not configure Hibernate ORM; its former DAO constant was not
 an L2 cache test.
+
+
+### Opt-in new item type
+
+With `autoUpdateRunningSystem=true`, Reclazz picks up one new `generate=true`
+item type live through native generation and the schema-only update. The
+`items-new-type-attempt` profile proves the generated Model and Jalo, deployment
+31992/table, typed create/save, detached requery and a separate committed JDBC
+read without replacing the running JVM. This covers existing behavior.
+
+Run the outer driver `scripts/test-sap-items-live.py --new-item-type --runs 1`
+with `--fixture-manifest <reviewed JSON path-to-SHA256 manifest>`,
+`--restore-repo <normal checkout>` and `--lock <collab installation lock>`.
+Select the disposable install with `RECLAZZ_SAP_HOME` and `RECLAZZ_SAP_BASE`.
+The manifest contains the exact 113 normal fixture source files, including any
+reviewed edits. The mode takes eight complete stopped snapshots, including
+concrete generated Jalo sources, and restores the database, config, bootstrap,
+native outputs, fixtures, original agent and links. It then proves the new
+type/table/classes absent in a fresh normal boot. Inner PASS with failed recovery
+is FAIL. Never run the inner profile alone or undo its XML on a live server.
+Native HAC credentials are read only from the disposable install's local config;
+the recovery checks use read-only native metadata and class observations.
+
+The default suite remains 62 cases. This bounded profile does not certify enums,
+relations, incompatible edits or arbitrary schema changes. No new dependency or
+production agent change is involved.
+
+The pre-generation negative control inspects class resources rather than trying
+to load a nonexistent class: SAP's enabled `CacheClassNotFoundRule` remembers
+failed class loads. After generation the profile requires the real generated
+Model/Jalo classes and rejects generic fallbacks. A class previously requested
+and negatively cached before generation is outside this bounded coverage.

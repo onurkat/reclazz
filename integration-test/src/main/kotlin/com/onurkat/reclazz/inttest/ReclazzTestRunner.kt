@@ -123,12 +123,13 @@ fun main() {
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
     val profile = System.getenv("RECLAZZ_TEST_PROFILE") ?: "default"
     if (profile != "default") {
-        if (profile !in setOf("codegen", "items-attempt", "statics-on", "statics-off", "solr-attempt", "cms-attempt", "cms-uid-attempt", "cms-page-slot-attempt", "cms-jsp-attempt", "impex-translator-stage1", "validation-constraints-stage1") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
+        if (profile !in setOf("codegen", "items-attempt", "items-new-type-attempt", "statics-on", "statics-off", "solr-attempt", "cms-attempt", "cms-uid-attempt", "cms-page-slot-attempt", "cms-jsp-attempt", "impex-translator-stage1", "validation-constraints-stage1") || !System.getenv("RECLAZZ_TEST_ONLY").isNullOrBlank()) {
             agentClient.disconnect()
             error("Unknown profile or RECLAZZ_TEST_ONLY combined with a profile: $profile")
         }
         // Profile preflight precedes ALL default baseline restoration writes.
         try { report.add(if(profile == "codegen") BeansCodegenLiveTest(config,agentClient,httpVerifier).run()
+            else if(profile == "items-new-type-attempt") NewItemTypeLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "items-attempt") ItemsSchemaLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "solr-attempt") SolrTargetedReindexLiveTest(config,agentClient,httpVerifier).run()
             else if(profile == "cms-attempt") CmsComponentLiveTest(config,agentClient,httpVerifier).run()

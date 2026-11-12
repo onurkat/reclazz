@@ -3,6 +3,11 @@
 from pathlib import Path
 from sap_suite_contract import DEFAULT_CASES, DEFAULT_OUTCOME, NORMAL_FIXTURE_FILES, default_result
 import argparse
+import datetime
+import shutil
+import http.cookiejar
+import urllib.parse
+import urllib.error
 import hashlib
 import json
 import os
@@ -169,7 +174,8 @@ def runner(folder, label, profile=None, recovery=None, inject=False):
                                 env=env, stdout=stream, stderr=subprocess.STDOUT, timeout=900)
     text = (folder / (label + '.log')).read_text()
     return {'exitCode': result.returncode, **default_result(text),
-            'injectedFailure': 'Injected items failure after persisted write' in text}
+            'injectedFailure': 'Injected items failure after persisted write' in text,
+            'newTypeSuite': new_type_report(text)}
 
 
 def save_recovery_state(folder, config_bytes, fixture_bytes, generated, agent_hash):
@@ -188,6 +194,19 @@ def save_recovery_state(folder, config_bytes, fixture_bytes, generated, agent_ha
 
 
 def fixture_hashes():
+    manifest = os.environ.get('RECLAZZ_FIXTURE_MANIFEST')
+    if manifest:
+        expected = json.loads(Path(manifest).read_text())
+        if not isinstance(expected, dict) or len(expected) != NORMAL_FIXTURE_FILES:
+            raise RuntimeError('Reviewed fixture manifest membership mismatch')
+        for name, sha in expected.items():
+            path = Path(name)
+            if path.is_absolute() or '..' in path.parts or path.parts[0] not in {'reclazztest', 'reclazztestbackoffice'} or len(sha) != 64:
+                raise RuntimeError('Unsafe fixture manifest member')
+        actual = {name: digest(REPO / name) for name in expected}
+        if actual != expected:
+            raise RuntimeError('Reviewed fixture manifest byte mismatch')
+        return actual
     tracked = subprocess.check_output(['git', '--no-optional-locks', 'ls-files', '--', 'reclazztest', 'reclazztestbackoffice'], cwd=REPO, text=True).splitlines()
     added = subprocess.check_output(['git', '--no-optional-locks', 'ls-files', '--others', '--exclude-standard', '--', 'reclazztest', 'reclazztestbackoffice'], cwd=REPO, text=True).splitlines()
     return {name: digest(REPO / name) for name in tracked + added}
@@ -297,11 +316,238 @@ def preflight():
     return None
 
 
+
+NEW_TYPE_LABEL = 'New item type attempt (outer recovery required)'
+
+
+def new_type_report(text):
+    plain = re.sub(r'\x1b\[[0-9;]*m', '', text)
+    rows = re.findall(r'^([^|\n]+)\|\s*(PASS|FAIL|ERROR|SKIP)\s*\|[^\n]*$', plain, re.M)
+    return [(name.strip(), status) for name, status in rows] == [(NEW_TYPE_LABEL, 'PASS')]
+
+
+def hac(script,commit=False):
+ props=(SAP_HOME/'config/local.properties').read_text();password=next(line.split('=',1)[1].strip() for line in props.splitlines() if line.startswith('initialpassword.admin='))
+ opener=urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()),urllib.request.HTTPSHandler(context=TLS))
+ page=opener.open(BASE+'/hac/login',timeout=20).read().decode();token=re.search(r'name="_csrf" value="([^"]+)"',page).group(1)
+ try:opener.open(BASE+'/j_spring_security_check',urllib.parse.urlencode({'j_username':'admin','j_password':password,'_csrf':token}).encode(),timeout=20).read()
+ except urllib.error.HTTPError as e:
+  if e.code!=404:raise RuntimeError('Native HAC login failed') from None
+ password=None
+ page=opener.open(BASE+'/console/scripting',timeout=20).read().decode();token=re.search(r'name="_csrf" content="([^"]+)"',page).group(1)
+ request=urllib.request.Request(BASE+'/console/scripting/execute',data=urllib.parse.urlencode({'script':script,'scriptType':'groovy','commit':str(commit).lower()}).encode(),headers={'X-CSRF-TOKEN':token,'Accept':'application/json'})
+ result=json.load(opener.open(request,timeout=60))
+ if result.get('stacktraceText'):raise RuntimeError(str(result['stacktraceText']))
+ return json.loads(result['executionResult'])
+NEW_TYPE_COLLISIONS='''import groovy.json.JsonOutput
+import de.hybris.platform.core.Registry
+import de.hybris.platform.jalo.type.TypeManager
+def code='ReclazzAddedTypeProbe';def table='ReclazzAddedTypeProbes'
+def types=TypeManager.getInstance().getAllComposedTypes()
+def collisions=types.count{t->t.getCode()==code||t.getItemTypeCode()==31992||table.equalsIgnoreCase(t.getTable())}
+def con=Registry.getCurrentTenant().getDataSource().getConnection();def tables=[]
+try{def rs=con.metaData.getTables(null,null,null,['TABLE'] as String[]);try{while(rs.next()){def n=rs.getString('TABLE_NAME');if(n.toUpperCase().contains(table.toUpperCase()))tables.add(n)}}finally{rs.close()}}finally{con.close()}
+return JsonOutput.toJson([collisions:collisions,matchingTables:tables,baselinePresent:types.any{it.getCode()=='ReclazzSchemaProbe'},tenant:Registry.currentTenant.tenantID])'''
+
+def new_type_absent(load_classes=True):
+    facts = hac(NEW_TYPE_COLLISIONS)
+    if facts.get('collisions') != 0 or facts.get('matchingTables') != [] or facts.get('baselinePresent') is not True or facts.get('tenant') != 'master':
+        raise RuntimeError('New type/table collision or recovery mismatch: ' + str(facts))
+    script = """import groovy.json.JsonOutput
+import de.hybris.platform.core.Registry
+def names=['com.onurkat.reclazztest.model.ReclazzAddedTypeProbeModel','com.onurkat.reclazztest.jalo.ReclazzAddedTypeProbe']
+def found=names.collectEntries {name -> try {Class.forName(name,false,Registry.applicationContext.classLoader);[(name):true]}catch(ClassNotFoundException e){[(name):false]}}
+return JsonOutput.toJson(found)"""
+    if not load_classes:
+        # Class.forName before generation seeds SAP CacheClassNotFoundRule. A resource
+        # lookup proves absence without changing that cache in the experiment JVM.
+        script = script.replace("try {Class.forName(name,false,Registry.applicationContext.classLoader);[(name):true]}catch(ClassNotFoundException e){[(name):false]}",
+                                "[(name):(Registry.applicationContext.classLoader.getResource(name.replace('.', '/')+'.class')!=null)]")
+    classes = hac(script)
+    if len(classes) != 2 or any(value is not False for value in classes.values()):
+        raise RuntimeError('New generated Model/Jalo survived: ' + str(classes))
+    return {'metadata': facts, 'classes': classes}
+
+
+def wait_new_type_idle():
+    deadline = time.monotonic() + 1200
+    while time.monotonic() < deadline:
+        writers = java_writers()
+        if not writers:
+            stopped(); return
+        state = doctor()
+        if writers == [str(state['pid'])]:
+            status = hac("import groovy.json.JsonOutput;return JsonOutput.toJson([locked:new de.hybris.platform.hac.facade.HacInitUpdateFacade().isLocked()])")
+            if status.get('locked') is False:
+                return
+        time.sleep(5)
+    raise RuntimeError('Native writer/update remains; installation and lock preserved')
+
+
+def new_type_roots():
+    return {'db': SAP_HOME / 'data/hsqldb', 'config': SAP_HOME / 'config',
+            'bootstrap': PLATFORM / 'bootstrap', 'native-temp': SAP_HOME / 'temp/hybris',
+            'tomcat': PLATFORM / 'tomcat', 'fixture': REPO / 'reclazztest',
+            'backoffice-fixture': REPO / 'reclazztestbackoffice',
+            'native-backoffice': SAP_HOME / 'bin/modules/backoffice-framework/backoffice'}
+
+
+def rebuild_new_type(folder, checkout, label):
+    if checkout.resolve() != REPO.resolve():
+        raise RuntimeError('Build cleanup is confined to the assigned checkout')
+    stopped()
+    for name in ['reclazztest', 'reclazztestbackoffice']:
+        (SAP_HOME / 'temp/hybris/touch' / (name + '_srctouch')).unlink(missing_ok=True)
+        for relative in ['classes', 'backoffice/classes', 'web/webroot/WEB-INF/classes']:
+            target = checkout / name / relative
+            if target.exists():
+                shutil.rmtree(target)
+    command(['/bin/bash', '-c', 'source ./setantenv.sh && ant all'], folder / (label + '-build.log'), 900)
+
+
+def wt_targets(checkout):
+    found = []
+    for install in [SAP_HOME.parent, REPO.parent / 'reclazz-sap', REPO.parent / 'reclazz-sap-astra']:
+        for root, dirs, files in os.walk(install, followlinks=False):
+            for name in dirs + files:
+                path = Path(root) / name
+                if path.is_symlink() and path.resolve().is_relative_to(checkout):
+                    found.append(str(path))
+    return sorted(set(found))
+
+
+def new_type_profile(folder, restore_repo, lock, inject=False):
+    """Stage1's full stopped recovery, with the durable Kotlin oracle as inner attempt."""
+    record = {'phase': 'preflight', 'mode': 'new-item-type', 'attempt': 'UNRUN'}
+    def save():
+        (folder / 'result.json').write_text(json.dumps(record, indent=2) + '\n')
+    owner = 'OWNER=astra LANE=c33a-new-item-type WT=' + str(REPO) + ' SINCE=' + datetime.datetime.now(datetime.timezone.utc).isoformat() + ' PID=' + str(os.getpid()) + ' PURPOSE=new-item-type-profile\n'
+    lock.mkdir()  # no stale-lock guesses or concurrent installation work
+    (lock / 'owner').write_text(owner)
+    captured = False
+    clean_return = False
+    try:
+        record['beforeDoctor'] = doctor()
+        if java_writers() != [str(record['beforeDoctor']['pid'])]:
+            raise RuntimeError('Own native writer active; zero installation changes')
+        require_boot_options(get(ENDPOINT + '/gates'), False)
+        record['baselineFacts'] = get(ENDPOINT + '/items/facts'); validate_facts(record['baselineFacts'])
+        record['health'] = tenant_health(); record['beforeAbsent'] = new_type_absent()
+        fixtures = fixture_hashes()
+        record['originalLinks'] = {name: os.readlink(SAP_HOME / 'bin/custom' / name) for name in ['reclazztest', 'reclazztestbackoffice']}
+        if any((SAP_HOME / 'bin/custom' / name).resolve() != restore_repo / name for name in record['originalLinks']):
+            raise RuntimeError('Normal restore checkout/link mismatch')
+        record['jarDigest'] = digest(JAR); shutil.copy2(JAR, folder / 'agent-before.jar'); save()
+        stop(folder, 'snapshot')
+        for name, path in new_type_roots().items():
+            capture(path, folder / name, stopped)
+        captured = True
+        wrapper = PLATFORM / 'tomcat/conf/wrapper.conf'
+        save_recovery_state(folder, {wrapper: wrapper.read_bytes()}, (REPO / 'reclazztest/resources/reclazztest-items.xml').read_bytes(), list(new_type_roots().values()), record['jarDigest'])
+        state = json.loads((folder / 'state.json').read_text())
+        state.update(mode='new-item-type', fullSnapshotVerified=True,
+                     snapshots={name: str(path) for name, path in new_type_roots().items()})
+        (folder / 'state.json').write_text(json.dumps(state, indent=2) + '\n')
+        record['phase'] = 'captured'; save()
+        for name in record['originalLinks']:
+            link = SAP_HOME / 'bin/custom' / name; link.unlink(); link.symlink_to(REPO / name)
+        rebuild_new_type(folder, REPO, 'candidate')
+        wrapper.write_bytes(schema_wrapper_bytes(wrapper.read_bytes(), JAR))
+        record['profileBoot'] = start(folder, 'schema-profile', True)
+        validate_facts(record['profileBoot']['facts']); record['negativeControl'] = new_type_absent(load_classes=False)
+        record['phase'] = 'attempt'; save()
+        result = runner(folder, 'attempt', 'items-new-type-attempt', folder, inject)
+        record['inner'] = result; save()
+        if inject:
+            if result['exitCode'] == 0 or not result['injectedFailure']:
+                raise RuntimeError('Injected new-type failure not observed')
+        elif result['exitCode'] != 0 or not result['newTypeSuite']:
+            raise RuntimeError('Exact new-type attempt PASS missing')
+        if doctor()['sessionId'] != record['profileBoot']['doctor']['sessionId']:
+            raise RuntimeError('Experiment JVM changed')
+        validate_facts(get(ENDPOINT + '/items/facts'))
+        if tenant_health() != record['health']:
+            raise RuntimeError('Control health changed')
+        record['attempt'] = 'PASS'; save()
+    except Exception as failure:
+        record['failure'] = str(failure); record['attempt'] = 'FAIL'; save()
+    finally:
+        if captured:
+            try:
+                wait_new_type_idle(); stop(folder, 'restore')
+                for name in new_type_roots():
+                    verify(folder / name)
+                for name, path in new_type_roots().items():
+                    restore(folder / name, path, stopped)
+                record['allSnapshotHashesRestored'] = all(inventory(path) == verify(folder / name) for name, path in new_type_roots().items())
+                if not record['allSnapshotHashesRestored'] or fixture_hashes() != fixtures:
+                    raise RuntimeError('Full snapshot/fixture restoration mismatch')
+                record['phase'] = 'snapshots-restored'; save()
+                for name, target in record['originalLinks'].items():
+                    link = SAP_HOME / 'bin/custom' / name
+                    if link.resolve() != REPO / name:
+                        raise RuntimeError('Extension link changed during attempt')
+                    link.unlink(); link.symlink_to(target)
+                shutil.copy2(folder / 'agent-before.jar', JAR)
+                if digest(JAR) != record['jarDigest']:
+                    raise RuntimeError('Agent byte recovery mismatch')
+                # All native build outputs were restored from the stopped snapshot.
+                # The normal checkout was never edited/built: reuse its existing outputs.
+                record['normalBoot'] = start(folder, 'restored-main', False)
+                validate_facts(record['normalBoot']['facts']); record['restoredAbsent'] = new_type_absent()
+                if record['normalBoot']['doctor']['sessionId'] == record.get('profileBoot', {'doctor': record['beforeDoctor']})['doctor']['sessionId'] or tenant_health() != record['health']:
+                    raise RuntimeError('Fresh normal JVM/control recovery mismatch')
+                record['remainingWTTargets'] = wt_targets(REPO)
+                if record['remainingWTTargets']:
+                    raise RuntimeError('Worktree links remain')
+                record['restoration'] = 'PASS'; clean_return = True
+            except Exception as failure:
+                record['restoration'] = 'FAIL'; record['restoreFailure'] = str(failure)
+        else:
+            # No schema was saved; finish any native baseline startup after a partial capture.
+            try:
+                if not java_writers():
+                    record['normalBoot'] = start(folder, 'uncaptured-normal', False)
+                clean_return = True
+            except Exception as failure:
+                record['restoreFailure'] = str(failure)
+        record['verdict'] = 'PASS' if record.get('attempt') == 'PASS' and record.get('restoration') == 'PASS' else 'FAIL'
+        record['phase'] = 'restored' if clean_return else 'recovery-required'; save()
+        if clean_return and (lock / 'owner').read_text() == owner:
+            (lock / 'owner').unlink(); lock.rmdir(); record['lockReleased'] = True; save()
+    print('NEW_ITEM_TYPE_PROFILE ' + record['verdict'] + '; evidence: ' + str(folder), flush=True)
+    return record
+
+
+def run_new_type(args):
+    if not args.fixture_manifest or not args.restore_repo or not args.lock or args.runs != 1:
+        raise RuntimeError('--new-item-type requires --runs 1, --fixture-manifest, --restore-repo and --lock')
+    os.environ['RECLAZZ_FIXTURE_MANIFEST'] = str(args.fixture_manifest.resolve())
+    if SAP_HOME.resolve() != SAP_HOME or not (SAP_HOME.parent / 'hybris/bin/platform').is_dir():
+        raise RuntimeError('Disposable installation identity mismatch')
+    if not args.lock.parent.is_dir() or args.lock.name not in {'SAP-astra.lock', 'SAP.lock'}:
+        raise RuntimeError('Explicit collab installation lock required')
+    fixture_hashes()  # read-only manifest check before output/lock creation
+    restore_repo = args.restore_repo.resolve()
+    if restore_repo == REPO or not (restore_repo / 'reclazztest/resources/reclazztest-items.xml').is_file():
+        raise RuntimeError('A distinct normal restore checkout is required')
+    folder = Path(tempfile.mkdtemp(prefix='reclazz-new-item-type-', dir='/private/tmp'))
+    print('Recovery/evidence directory: ' + str(folder), flush=True)
+    result = new_type_profile(folder, restore_repo, args.lock, args.failure_control)
+    return 0 if result['verdict'] == 'PASS' else 1
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runs', type=int, default=3)
     parser.add_argument('--failure-control', action='store_true')
+    parser.add_argument('--new-item-type', action='store_true')
+    parser.add_argument('--fixture-manifest', type=Path)
+    parser.add_argument('--restore-repo', type=Path)
+    parser.add_argument('--lock', type=Path)
     args = parser.parse_args()
+    if args.new_item_type:
+        return run_new_type(args)
     if args.runs < 1:
         parser.error('--runs must be positive')
     # Read-only preflight precedes even the recovery/log directory.

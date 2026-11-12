@@ -28,7 +28,7 @@ class ItemsSchemaLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifier):BatchL
     private val owner="de.hybris.platform.core.model.ReclazzSchemaProbeModel"
     private var deadline=0L
     private fun left()=TimeUnit.NANOSECONDS.toMillis(deadline-System.nanoTime()).also {check(it>0){"Items schema attempt deadline"}}
-    private fun preflight():String? {
+    internal fun preflight():String? {
         profileGateReason(json(get("$endpoint/gates")),linkedMapOf("agentArgsFound" to true,"agentOptionsMatchConfig" to true,
             "autoCompile" to true,"autoUpdateRunningSystem" to true,"resetStatics" to false,
             "autoSolrReindex" to false,"impexAllowRemove" to false,"codegenExtensionLoaded" to true,"codegenGeneratedRoots" to true))?.let{return it}

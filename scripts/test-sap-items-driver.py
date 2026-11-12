@@ -160,5 +160,80 @@ class DriverTest(unittest.TestCase):
                 if expected: self.assertEqual(DEFAULT_OUTCOME, result['counts'])
 
 
+class NewTypeDriverTest(unittest.TestCase):
+    def test_exact_profile_report_membership(self):
+        row = driver.NEW_TYPE_LABEL + ' | PASS | 1s |\n'
+        self.assertTrue(driver.new_type_report(row))
+        for text in ['', row.replace('PASS', 'SKIP'), row.replace('PASS', 'FAIL'),
+                     row.replace('New item type', 'replacement'), row + row,
+                     row + 'Other | PASS | 1s |\n']:
+            self.assertFalse(driver.new_type_report(text))
+
+    def test_opt_in_requires_explicit_recovery_arguments_before_writes(self):
+        with patch.object(driver.tempfile, 'mkdtemp') as mkdir, patch('sys.argv', ['driver', '--new-item-type', '--runs', '1']):
+            with self.assertRaisesRegex(RuntimeError, 'requires'):
+                driver.main()
+            mkdir.assert_not_called()
+
+    def test_new_mode_dispatch_does_not_run_default_or_attribute_profile(self):
+        with patch.object(driver, 'run_new_type', return_value=0) as new, patch.object(driver, 'preflight') as preflight, patch.object(driver, 'profile') as profile, patch('sys.argv', ['driver', '--new-item-type']):
+            self.assertEqual(0, driver.main())
+            self.assertTrue(new.call_args.args[0].new_item_type)
+            preflight.assert_not_called(); profile.assert_not_called()
+
+    def test_explicit_fixture_manifest_never_invokes_git(self):
+        import json
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); manifest = root / 'manifest.json'
+            (root / 'reclazztest').mkdir(); (root / 'reclazztest/a').write_bytes(b'original')
+            manifest.write_text(json.dumps({'reclazztest/a': driver.digest(root / 'reclazztest/a')}))
+            with patch.object(driver, 'REPO', root), patch.object(driver, 'NORMAL_FIXTURE_FILES', 1), patch.dict(driver.os.environ, {'RECLAZZ_FIXTURE_MANIFEST': str(manifest)}), patch.object(driver.subprocess, 'check_output') as command:
+                self.assertEqual(1, len(driver.fixture_hashes())); command.assert_not_called()
+                (root / 'reclazztest/a').write_bytes(b'changed')
+                with self.assertRaisesRegex(RuntimeError, 'byte mismatch'):
+                    driver.fixture_hashes()
+                manifest.write_text(json.dumps({'../a': 'a' * 64}))
+                with self.assertRaisesRegex(RuntimeError, 'Unsafe'):
+                    driver.fixture_hashes()
+
+    def test_full_snapshot_includes_new_jalo_source(self):
+        roots = driver.new_type_roots()
+        self.assertEqual(driver.REPO / 'reclazztest', roots['fixture'])
+        self.assertEqual(driver.PLATFORM / 'bootstrap', roots['bootstrap'])
+        self.assertEqual(8, len(roots))
+
+    def test_experiment_absence_probe_does_not_seed_native_negative_class_cache(self):
+        native = {'collisions': 0, 'matchingTables': [], 'baselinePresent': True, 'tenant': 'master'}
+        with patch.object(driver, 'hac', side_effect=[native, {'model': False, 'jalo': False}]) as hac:
+            driver.new_type_absent(load_classes=False)
+            script = hac.call_args.args[0]
+            self.assertNotIn('Class.forName', script)
+            self.assertIn('getResource', script)
+        with patch.object(driver, 'hac', side_effect=[native, {'model': False, 'jalo': False}]) as hac:
+            driver.new_type_absent()
+            self.assertIn('Class.forName', hac.call_args.args[0])
+
+    def test_build_cleanup_refuses_the_normal_checkout(self):
+        with patch.object(driver, 'stopped') as stopped:
+            with self.assertRaisesRegex(RuntimeError, 'confined'):
+                driver.rebuild_new_type(Path('/tmp'), driver.REPO.parent / 'reclazz', 'normal')
+            stopped.assert_not_called()
+
+    def test_active_writer_refuses_snapshot_deletion(self):
+        with patch.object(driver, 'java_writers', return_value=['123']):
+            with self.assertRaisesRegex(RuntimeError, 'writer'):
+                driver.stopped()
+
+    def test_first_failure_survives_recovery_failure(self):
+        # Exercise the actual outer finally before any native mutation.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); lock = root / 'SAP-astra.lock'
+            with patch.object(driver, 'doctor', side_effect=RuntimeError('first failure')), patch.object(driver, 'java_writers', return_value=[]), patch.object(driver, 'start', side_effect=RuntimeError('recovery failure')):
+                result = driver.new_type_profile(root, root / 'normal', lock)
+            self.assertEqual('first failure', result['failure'])
+            self.assertEqual('recovery failure', result['restoreFailure'])
+            self.assertEqual('FAIL', result['verdict']); self.assertTrue(lock.exists())
+
+
 if __name__ == '__main__':
     unittest.main()

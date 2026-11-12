@@ -3485,7 +3485,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4875,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FIELD"
         }
       ],
@@ -3537,7 +3537,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4899,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FIELD-REJECT"
         }
       ],
@@ -3589,7 +3589,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4923,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FIELD-UNSAFE"
         }
       ],
@@ -3641,7 +3641,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4947,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-CONSTRUCTOR"
         }
       ],
@@ -3693,7 +3693,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4971,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-CONSTRUCTOR-REJECT"
         }
       ],
@@ -3745,7 +3745,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 4995,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-CONSTRUCTOR-UNSAFE"
         }
       ],
@@ -3797,7 +3797,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5019,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-TEXT-TEMPLATE"
         }
       ],
@@ -3849,7 +3849,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5043,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-TEXT-UNSAFE"
         }
       ],
@@ -3901,7 +3901,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5067,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-COLLECTION"
         }
       ],
@@ -3953,7 +3953,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5091,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-COLLECTION-REJECT"
         }
       ],
@@ -4005,7 +4005,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5115,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-INDIRECT-CHAIN"
         }
       ],
@@ -4057,7 +4057,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5139,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-INDIRECT-INVALID"
         }
       ],
@@ -4109,7 +4109,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5163,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-INDIRECT-CYCLE"
         }
       ],
@@ -4180,7 +4180,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5187,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-FACTORY-ARGUMENT"
         }
       ],
@@ -4251,7 +4251,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5211,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-FACTORY-REJECT"
         }
       ],
@@ -4322,7 +4322,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5235,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-FACTORY-UNSAFE"
         }
       ],
@@ -4374,7 +4374,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5259,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-ADDED-FACTORY-ARGUMENT"
         }
       ],
@@ -4426,7 +4426,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5283,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-ADDED-FACTORY-LIFECYCLE"
         }
       ],
@@ -4478,7 +4478,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5307,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-ADDED-FACTORY-DEPENDENCY-EDIT"
         }
       ],
@@ -4530,7 +4530,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5331,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-ADDED-FACTORY-REJECT"
         }
       ],
@@ -4594,7 +4594,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5355,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TRANSACTION-PROXY"
         }
       ],
@@ -4658,7 +4658,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5379,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TRANSACTION-ROLLBACK"
         }
       ],
@@ -4715,7 +4715,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5403,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-SECURITY-PROXY"
         }
       ],
@@ -4755,7 +4755,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5427,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-CANDIDATE-REJECT"
         }
       ],
@@ -4795,7 +4795,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5451,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-CANDIDATE-RECOVERY"
         }
       ],
@@ -4835,7 +4835,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5475,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-KEY-REMOVAL"
         }
       ],
@@ -4875,7 +4875,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5499,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-FILE-DELETE"
         }
       ],
@@ -4915,7 +4915,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5523,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-YAML-LIST"
         }
       ],
@@ -4955,7 +4955,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5547,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-YAML-DELETE"
         }
       ],
@@ -4995,7 +4995,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5571,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-YAML-REJECT"
         }
       ],
@@ -5035,7 +5035,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5595,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-PRECEDENCE"
         }
       ],
@@ -5075,7 +5075,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5619,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-PROFILES"
         }
       ],
@@ -5115,7 +5115,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5643,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-MULTI-CONTEXT"
         }
       ],
@@ -5155,7 +5155,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5667,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-CAPTURED-CANDIDATE"
         }
       ],
@@ -5195,7 +5195,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5691,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-PARTIAL-RETRY"
         }
       ],
@@ -5235,7 +5235,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5715,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-UNOWNED"
         }
       ],
@@ -5275,7 +5275,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5739,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-OWNERSHIP-REPLACED"
         }
       ],
@@ -5315,7 +5315,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5763,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-YAML-IMPORT-REFUSAL"
         }
       ],
@@ -5355,7 +5355,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5787,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-READONLY-REMOVAL"
         }
       ],
@@ -5395,7 +5395,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5811,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-MIXED-ORIGINS"
         }
       ],
@@ -5435,7 +5435,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5835,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-VALIDATION"
         }
       ],
@@ -5475,7 +5475,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5859,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-RECORD"
         }
       ],
@@ -5515,7 +5515,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5883,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-TRACKING"
         }
       ],
@@ -5555,7 +5555,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5907,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-NATIVE-HOOKS"
         }
       ],
@@ -5595,7 +5595,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5931,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-PLACEHOLDERS"
         }
       ],
@@ -5635,7 +5635,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5955,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-IGNORE-FLAGS"
         }
       ],
@@ -5675,7 +5675,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 5979,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-SCRATCH-REFUSAL"
         }
       ],
@@ -5715,7 +5715,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6003,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-BINDER-REFUSAL"
         }
       ],
@@ -5755,7 +5755,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6027,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT-APPLY-PARTIAL"
         }
       ],
@@ -5795,7 +5795,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6051,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-CONSTRUCTOR-PARTIAL"
         }
       ],
@@ -5835,7 +5835,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6075,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-CONSTRUCTOR-NOCHECK-SIDE-EFFECT"
         }
       ],
@@ -5875,7 +5875,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6099,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FACTORY-PARTIAL"
         }
       ],
@@ -5915,7 +5915,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6123,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FACTORY-DEFERRED"
         }
       ],
@@ -5955,7 +5955,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6147,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FACTORY-COLLECTION-REFUSAL"
         }
       ],
@@ -5995,7 +5995,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6171,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FACTORY-OWNER-REFUSAL"
         }
       ],
@@ -6035,7 +6035,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6195,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-VALUE-FACTORY-RESOLVER-REFUSAL"
         }
       ],
@@ -6075,7 +6075,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6219,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-INDIRECT-CONTEXT-ISOLATION"
         }
       ],
@@ -6127,7 +6127,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6243,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-IMPORT-OWNER"
         }
       ],
@@ -6179,7 +6179,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6267,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-IMPORT-NOOP"
         }
       ],
@@ -6231,7 +6231,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6291,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-PROTOTYPE-REFUSAL"
         }
       ],
@@ -6283,7 +6283,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6315,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-WATCHER"
         }
       ],
@@ -6335,7 +6335,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6339,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-INVALID"
         }
       ],
@@ -6387,7 +6387,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6363,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-PROPERTY-INTEGRITY"
         }
       ],
@@ -6439,7 +6439,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6387,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-METADATA-REFUSAL"
         }
       ],
@@ -6491,7 +6491,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6411,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-LAZY-FLAG-REFUSAL"
         }
       ],
@@ -6543,7 +6543,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6435,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-LAZY-EQUIVALENCE"
         }
       ],
@@ -6595,7 +6595,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6459,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-INNER-VALUES"
         }
       ],
@@ -6647,7 +6647,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6483,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-INNER-NOOP"
         }
       ],
@@ -6699,7 +6699,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6507,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-INNER-RESOURCE-REFUSAL"
         }
       ],
@@ -6751,7 +6751,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6531,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-UNSUPPORTED-NOOP"
         }
       ],
@@ -6803,7 +6803,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6555,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-UNSUPPORTED-EDIT-REFUSAL"
         }
       ],
@@ -6855,7 +6855,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6579,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-ALIAS-REFUSAL"
         }
       ],
@@ -6907,7 +6907,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6603,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-INLINE-ALIAS-REFUSAL"
         }
       ],
@@ -6959,7 +6959,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6627,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-LOOKUP-REFUSAL"
         }
       ],
@@ -7011,7 +7011,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6651,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-LOADER-LIFECYCLE-REFUSAL"
         }
       ],
@@ -7063,7 +7063,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6675,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-FACTORYBEAN-REFUSAL"
         }
       ],
@@ -7115,7 +7115,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6699,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-SINGLETON-RECREATE"
         }
       ],
@@ -7167,7 +7167,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6723,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-SINGLETON-NOOP"
         }
       ],
@@ -7207,7 +7207,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6747,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-TYPE"
         }
       ],
@@ -7247,7 +7247,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6771,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-MODE"
         }
       ],
@@ -7287,7 +7287,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6795,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-CODE"
         }
       ],
@@ -7327,7 +7327,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6819,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-AMOUNT"
         }
       ],
@@ -7367,7 +7367,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6843,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-LOCATION"
         }
       ],
@@ -7407,7 +7407,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6867,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-TYPES"
         }
       ],
@@ -7447,7 +7447,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6891,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-MODES"
         }
       ],
@@ -7487,7 +7487,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6915,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-MAPPINGS"
         }
       ],
@@ -7527,7 +7527,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6939,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-SELECTION"
         }
       ],
@@ -7567,7 +7567,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6963,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-INTEGERSELECTION"
         }
       ],
@@ -7607,7 +7607,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 6987,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-BIGINTEGER"
         }
       ],
@@ -7647,7 +7647,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7011,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-MODESET"
         }
       ],
@@ -7687,7 +7687,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7035,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-NATIVE-ENUMKEYS"
         }
       ],
@@ -7727,7 +7727,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7059,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-INHERITED-GENERIC"
         }
       ],
@@ -7767,7 +7767,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7083,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-INHERITED-SCALAR"
         }
       ],
@@ -7807,7 +7807,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7107,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-CUSTOM-CONVERTERS"
         }
       ],
@@ -7847,7 +7847,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7131,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-UNKNOWN-CONVERTER-REFUSAL"
         }
       ],
@@ -7887,7 +7887,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7155,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-RESOURCE-CONVERSION-REFUSAL"
         }
       ],
@@ -7927,7 +7927,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7179,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-MISSING-SETTER-REFUSAL"
         }
       ],
@@ -7967,7 +7967,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7203,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-RECREATE-INIT-FAILURE"
         }
       ],
@@ -8007,7 +8007,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7227,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-RECREATE-RESTORE-FAILURE"
         }
       ],
@@ -8047,7 +8047,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7251,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-RECREATE-FINAL-HOLDER"
         }
       ],
@@ -8087,7 +8087,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7275,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-RECREATE-CONTAINER-HOLDER"
         }
       ],
@@ -8127,7 +8127,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7299,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-RECREATE-CONTEXTS"
         }
       ],
@@ -8167,7 +8167,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7323,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-PARTIAL-SETTER"
         }
       ],
@@ -8207,7 +8207,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7347,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-LAZY-DEFERRED-VALIDATION"
         }
       ],
@@ -8247,7 +8247,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7371,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-REMOVAL-REFUSAL"
         }
       ],
@@ -8287,7 +8287,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7395,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-FACTORYBEAN-PREFLIGHT"
         }
       ],
@@ -8327,7 +8327,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7419,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-XML-METADATA-CONTEXTS"
         }
       ],
@@ -8379,7 +8379,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7443,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-MESSAGE-NATIVE-WATCHER"
         }
       ],
@@ -8431,7 +8431,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7467,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-MESSAGE-NATIVE-CACHE-CONTROL"
         }
       ],
@@ -8471,7 +8471,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7491,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-MESSAGE-ANCESTOR-HOOK"
         }
       ],
@@ -8511,7 +8511,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7515,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-MESSAGE-UNKNOWN-REFUSAL"
         }
       ],
@@ -8551,7 +8551,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7539,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-MESSAGE-THROWING-REFUSAL"
         }
       ],
@@ -8591,7 +8591,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7563,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BUNDLE-PARENT-CACHE"
         }
       ],
@@ -8631,7 +8631,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7587,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TEMPLATE-NATIVE-RENDER"
         }
       ],
@@ -8671,7 +8671,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7611,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TEMPLATE-MALFORMED-RECOVERY"
         }
       ],
@@ -8711,7 +8711,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7635,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TEMPLATE-NATIVE-CACHE-CONTROL"
         }
       ],
@@ -8751,7 +8751,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7659,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TEMPLATE-NO-ENGINE"
         }
       ],
@@ -8791,7 +8791,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7683,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TEMPLATE-UNKNOWN-ENGINE"
         }
       ],
@@ -8823,7 +8823,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7707,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-BOOT3-PROPERTIES"
         }
       ],
@@ -8852,7 +8852,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7731,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-PACKAGED-RESOURCES"
         }
       ],
@@ -8881,7 +8881,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7755,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-MESSAGE-ANCESTOR-NATIVE"
         }
       ],
@@ -8910,7 +8910,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7779,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-MESSAGE-CUSTOM-BASENAME"
         }
       ],
@@ -8939,7 +8939,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7803,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-TEMPLATE-WEB-INTEGRATION"
         }
       ],
@@ -8968,7 +8968,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7827,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-SOURCE-OUTPUT-COPY"
         }
       ],
@@ -8997,7 +8997,7 @@
         {
           "path": "docs/feature-evidence.md",
           "line": 7851,
-          "sha256": "20a2062779cca08eb98fefe1fb874c453ad05189054a148a527e5a633e5826d2",
+          "sha256": "3cb8e7135c944404028bf39d00aa72936d5d5377246a55551b5c777672278b8e",
           "quote": "### P5-SAP-CONFIGURATION"
         }
       ],
