@@ -6,9 +6,7 @@ actually returns: an HTTP response, persisted query result, rendered component
 or Backoffice view. A reload notification alone cannot pass them. Refusal cases
 must also prove that the last working behavior and protected data stay intact.
 
-Evidence is recorded through 11 November 2026. RemoveInterceptor and platform logger focused checks
-passed; independent default-suite acceptance of the logger addition is pending. LoadInterceptor acceptance
-extends the earlier documentation baseline at commit `f0ee45f`.
+Evidence is recorded through 12 November 2026.
 It describes existing acceptance evidence, not a new run performed by building
 this documentation. See the [setup guide](sap-commerce.md) to attach Reclazz,
 and [reload conditions](usage.md#sap-reload-outcomes-and-verification) before
@@ -18,9 +16,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **53 scenarios, all required to PASS, with zero
+The default suite now contains **54 scenarios, all required to PASS, with zero
 SKIPs**. The latest recorded acceptance ran five times on one server boot and
-once after a fresh boot: **six runs of 53/53 PASS**, with zero bean-refresh
+once after a fresh boot: **six runs of 54/54 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested
 separately in the agent regression suite; it is not a SAP live scenario.
 
@@ -282,8 +280,18 @@ and [new definitions](../integration-test/src/main/kotlin/com/onurkat/reclazz/in
 **The test proves:** CronJobService execution returns the edited version once,
 with SUCCESS/FINISHED and owned job rows cleaned up. A published native SAP
 event reaches the edited listener once, with nonce-isolated control results.
-The CronJob invocation is synchronous; Trigger firing and listener registration
-lifecycle remain open. See [CronJob](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CronJobLiveTest.kt)
+The CronJobService case invokes the job synchronously. The separate native
+Trigger case persists one owned CronJob and three one-shot Triggers. SAP
+creates and dispatches each linked TriggerTask; its actual firing observes
+v1, the saved v2 body, then restored v1, each once with SUCCESS/FINISHED.
+Task identity and timestamp ordering are checked; the native scheduling offset
+is recorded rather than overridden. Owned tasks, triggers, job/history/log
+rows and probe observations are removed. In the default suite the case takes
+about 71 s, because SAP schedules each one-shot task after its activation time.
+This records existing body reload through SAP scheduling; it adds no scheduler
+adapter. Listener registration lifecycle remains open. See
+[native Trigger firing](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/TriggerFiringLiveTest.kt),
+[CronJob](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CronJobLiveTest.kt)
 and [events](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SapEventLiveTest.kt).
 
 ## Generated DTOs from beans.xml
@@ -371,7 +379,7 @@ and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 
 CMS UID lookup, persisted catalogs, page/slot selection and complete storefront
 rendering remain open. The CMS profile above must not be read as their acceptance.
-Native SAP region caches, Trigger scheduling, process actions held across an edit,
+Native SAP region caches, recurring Trigger lifecycle, process actions held across an edit,
 new OCC controller enrollment, broader Backoffice bindings and the scenarios in
 the [coverage order](#coverage-order) also need their own live oracles.
 

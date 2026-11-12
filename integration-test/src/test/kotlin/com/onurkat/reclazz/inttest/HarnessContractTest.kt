@@ -590,7 +590,7 @@ fun main() {
         val result=runGatedProfile("restore-contract",{null}) {withRestore({Unit}) {error("restore failure")}}
         check(result.status==TestStatus.FAIL && "restore failure" in result.notes)
     }
-    case("defaultMembershipRetainsCommitted53") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==53)}
+    case("defaultMembershipRetainsCommitted54") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==54)}
     case("defaultMembershipRejectsMissingOccDateParser") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OccDateParsingLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsMissingValidationConstraints") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"ValidationConstraintsLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsMissingInitDefaults") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"InitDefaultsInterceptorLiveTest").toList())}.isFailure)}
@@ -801,6 +801,8 @@ fun main() {
     cases += com.onurkat.reclazz.inttest.tests.runLoggerHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runImpexTranslatorHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runValidationConstraintsHarnessContracts()
+    case("defaultMembershipRejectsMissingNativeTrigger") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"TriggerFiringLiveTest").toList())}.isFailure)}
+    cases += com.onurkat.reclazz.inttest.tests.runTriggerFiringHarnessContracts()
     cases += com.onurkat.reclazz.inttest.tests.runOccDateParsingHarnessContracts()
     println("HARNESS: $cases cases, $failures failures")
     check(failures == 0) { "$failures harness contract cases failed" }
