@@ -16,9 +16,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **54 scenarios, all required to PASS, with zero
+The default suite now contains **55 scenarios, all required to PASS, with zero
 SKIPs**. The latest recorded acceptance ran five times on one server boot and
-once after a fresh boot: **six runs of 54/54 PASS**, with zero bean-refresh
+once after a fresh boot: **six runs of 55/55 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested
 separately in the agent regression suite; it is not a SAP live scenario.
 
@@ -71,6 +71,23 @@ definition change in its owning context.
 bean result, then the restored value. A new XML singleton becomes usable.
 See [XML edits](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SpringXmlLiveTest.kt)
 and [new beans](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SpringXmlNewBeanLiveTest.kt).
+
+## Spring scheduled metadata
+
+**You edit:** The fixed delay on an existing prepared `@Scheduled` method.
+
+**Reclazz does:** Uses the existing Spring scheduler reload path to replace the
+method's registration.
+
+**The test proves:** One owned native FixedDelayTask follows 1000 -> 300 ->
+restored 1000 ms. Actual monotonic tick gaps follow the interval in each phase,
+and the registered task and ticks use the current bean. The owner context stays
+the same and exactly one owned registration remains. Cleanup clears the run's
+observations and restores the one baseline timer. The round trip takes
+about 12 s. Foreign schedules are excluded from its count and are not changed.
+This records existing metadata reload; added/removed scheduled methods and
+other scheduling modes are outside this case. See the
+[metadata round trip](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ScheduledMetadataLiveTest.kt).
 
 ## MVC and OCC mappings and field sets
 
