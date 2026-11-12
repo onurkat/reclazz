@@ -16,12 +16,16 @@ public class ReclazzParagraphComponentController extends AbstractCMSComponentCon
     protected void fillModel(HttpServletRequest request, Model model, CMSParagraphComponentModel component) {
         model.addAttribute("nonce", request.getAttribute("reclazzCmsNonce"));
         model.addAttribute("marker", "cms-v1");
+        if (component.getPk()!=null) {
+            String content=component.getContent(Locale.ENGLISH);
+            model.addAttribute("marker", "selected-target".equals(content) ? "uid-v1" : "uid-stable");
+        }
         model.addAttribute("content", component.getContent(Locale.ENGLISH));
         model.addAttribute("unsaved", component.getPk() == null);
     }
 
     @Override
     protected String getView(CMSParagraphComponentModel component) {
-        return "reclazz-paragraph";
+        return component.getPk()==null ? "reclazz-paragraph" : "reclazz-uid-paragraph";
     }
 }

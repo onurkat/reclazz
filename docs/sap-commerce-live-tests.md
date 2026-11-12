@@ -433,8 +433,16 @@ handling in the temporary CMS profile.
 **The test proves:** The inherited controller renders an unsaved request
 component through JSP: HTTP 200, HTML content type and one proof element with
 the current nonce, edited marker and expected content. It does not save/edit
-JSP bytes or exercise UID lookup, persisted catalogs, page slots or a complete
-storefront. See [CMS profile](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt).
+JSP bytes, page slots or a complete storefront. A separate persisted-UID case
+creates one owned content catalog with two versions and four saved components.
+SAP's inherited controller resolves the same UID through the session catalog
+version, then renders JSP. Editing and reverting the selected component's Java
+marker changes its HTML while the other version and independent controls remain
+stable. Persisted identities stay unchanged, the previous session catalog scope
+is restored, and owned rows are removed through SAP's model service. This case
+is opt-in and does not increase the default 58-case suite. See the
+[request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
+and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 
 ## Backoffice configuration and widgets
 
@@ -457,8 +465,8 @@ and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 
 ## Not covered yet
 
-CMS UID lookup, persisted catalogs, page/slot selection and complete storefront
-rendering remain open. The CMS profile above must not be read as their acceptance.
+CMS page/slot selection and complete storefront rendering remain open. The
+focused UID/catalog case above must not be read as their acceptance.
 Native SAP region caches, recurring Trigger lifecycle, process actions held across an edit,
 new OCC controller enrollment, broader Backoffice bindings and the scenarios in
 the [coverage order](#coverage-order) also need their own live oracles.

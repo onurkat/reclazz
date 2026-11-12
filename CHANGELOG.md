@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The opt-in SAP Commerce CMS tests now check rendered Java changes after native
+  UID lookup in persisted catalog versions, with stable controls and owned cleanup.
+
 - MCP clients can wait for a scan to finish queuing file changes using a matching
   request and agent session; scan completion does not claim reload success.
 

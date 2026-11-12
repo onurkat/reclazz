@@ -31,6 +31,93 @@ public class ProbeController {
     @Autowired private ApplicationContext context;
     @Autowired private ServletContext servletContext;
 
+    @Autowired private de.hybris.platform.catalog.CatalogVersionService catalogVersions;
+    @Autowired private ReclazzParagraphComponentController renderer;
+
+    private java.util.List<de.hybris.platform.core.model.ItemModel> uidRows(String nonce) {
+        owned(nonce);
+        return searchService.<de.hybris.platform.core.model.ItemModel>search(
+            "SELECT {pk} FROM {Catalog} WHERE {id}=?id", Map.of("id", nonce)).getResult();
+    }
+
+    @PostMapping("/uid/begin") @ResponseBody
+    public synchronized Map<String,Object> uidBegin(@RequestParam("nonce") String nonce) {
+        if (!uidRows(nonce).isEmpty()) throw new IllegalStateException("Owned catalog already exists");
+        de.hybris.platform.catalog.model.CatalogModel catalog = modelService.create("ContentCatalog");
+        catalog.setId(nonce); modelService.save(catalog);
+        for (String version : List.of("selected", "other")) {
+            de.hybris.platform.catalog.model.CatalogVersionModel cv = modelService.create("CatalogVersion");
+            cv.setCatalog(catalog); cv.setVersion(version); cv.setActive(false); modelService.save(cv);
+            for (String role : List.of("target", "control")) {
+                CMSParagraphComponentModel c = modelService.create("CMSParagraphComponent");
+                modelService.setAttributeValue(c, "uid", nonce + "-" + role);
+                modelService.setAttributeValue(c, "catalogVersion", cv);
+                c.setContent(version + "-" + role, Locale.ENGLISH); modelService.save(c);
+            }
+        }
+        return Map.of("nonce",nonce,"catalogs",uidRows(nonce).size());
+    }
+
+    @GetMapping("/uid/render")
+    public String uidRender(@RequestParam("nonce") String nonce, @RequestParam("version") String version,
+            @RequestParam("role") String role, HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+        owned(nonce);
+        if (!List.of("selected","other").contains(version) || !List.of("target","control").contains(role)
+                || uidRows(nonce).size()!=1) throw new IllegalArgumentException("Invalid owned CMS selection");
+        var previous = new ArrayList<>(catalogVersions.getSessionCatalogVersions());
+        try {
+            var cv=catalogVersions.getCatalogVersion(nonce,version);
+            catalogVersions.setSessionCatalogVersions(List.of(cv));
+            if (request.getAttribute("component") != null) throw new IllegalStateException("Injected component forbidden");
+            request.setAttribute("componentUid",nonce+"-"+role);
+            request.setAttribute("reclazzCmsNonce",nonce);
+            String view=renderer.handleGet(request,response,model);
+            CMSParagraphComponentModel c=(CMSParagraphComponentModel)model.getAttribute("component");
+            if(c==null || c.getPk()==null || !cv.equals(modelService.getAttributeValue(c,"catalogVersion")))
+                throw new IllegalStateException("Native UID lookup selected wrong persisted version");
+            model.addAttribute("uid",modelService.getAttributeValue(c,"uid"));
+            model.addAttribute("pk",c.getPk().toString()); model.addAttribute("version",version);
+            return view;
+        } finally {
+            catalogVersions.setSessionCatalogVersions(previous);
+            if(!new HashSet<>(previous).equals(new HashSet<>(catalogVersions.getSessionCatalogVersions())))
+                throw new IllegalStateException("Session catalog restoration failed");
+        }
+    }
+
+    @PostMapping("/uid/cleanup") @ResponseBody
+    public synchronized Map<String,Object> uidCleanup(@RequestParam("nonce") String nonce) {
+        owned(nonce);
+        var previous=new ArrayList<>(catalogVersions.getSessionCatalogVersions());
+        try {
+            var catalogs=uidRows(nonce);
+            for(var catalog:catalogs) {
+                var versions=searchService.<de.hybris.platform.catalog.model.CatalogVersionModel>search(
+                    "SELECT {pk} FROM {CatalogVersion} WHERE {catalog}=?catalog",Map.of("catalog",catalog)).getResult();
+                for(var cv:versions) {
+                    // Native remove interceptors query categories through session.catalogversions.
+                    catalogVersions.setSessionCatalogVersions(List.of(cv));
+                    var components=searchService.<CMSParagraphComponentModel>search(
+                        "SELECT {pk} FROM {CMSParagraphComponent} WHERE {catalogVersion}=?cv",Map.of("cv",cv)).getResult();
+                    for(var c:components) {
+                        String uid=modelService.getAttributeValue(c,"uid");
+                        if(!List.of(nonce+"-target",nonce+"-control").contains(uid)) throw new IllegalStateException("Foreign component in owned catalog");
+                    }
+                    modelService.removeAll(components); modelService.remove(cv);
+                }
+                modelService.remove(catalog);
+            }
+            int remaining=uidRows(nonce).size()+searchService.search(
+                "SELECT {pk} FROM {CMSParagraphComponent} WHERE {uid} IN (?target,?control)",
+                Map.of("target",nonce+"-target","control",nonce+"-control")).getResult().size();
+            return Map.of("nonce",nonce,"ownedRemaining",remaining);
+        } finally {
+            catalogVersions.setSessionCatalogVersions(previous);
+            if(!new HashSet<>(previous).equals(new HashSet<>(catalogVersions.getSessionCatalogVersions())))
+                throw new IllegalStateException("Cleanup session catalog restoration failed");
+        }
+    }
+
     private String owned(String nonce) {
         if (!nonce.matches("reclazz-cms-[a-f0-9-]{36}")) throw new IllegalArgumentException("Invalid owned CMS nonce");
         return nonce;

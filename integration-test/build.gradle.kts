@@ -59,3 +59,11 @@ val velocityTemplateContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.VelocityTemplateHarnessContractTestKt")
 }
+
+// Narrow C39 proof checks; full harness belongs to audit.
+val cmsUidContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.CmsUidContractTestKt")
+}

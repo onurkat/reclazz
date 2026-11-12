@@ -73,7 +73,7 @@ def preflight():
     if not normal.get('reclazztestbackoffice'):
         raise RuntimeError('Backoffice fixture not loaded')
     validate_custom(False); require_profile_absent(); profile_hashes()
-    if len(cms.fixture_hashes()) != NORMAL_FIXTURE_FILES + 10 + 9 or len(solr.fixture_hashes()) != NORMAL_FIXTURE_FILES + 10:
+    if len(cms.fixture_hashes()) != NORMAL_FIXTURE_FILES + 10 + 10 or len(solr.fixture_hashes()) != NORMAL_FIXTURE_FILES + 10:
         raise RuntimeError('Normal fixture membership mismatch')
     props = (HOME / 'config/local.properties').read_bytes()
     if re.search(rb'(?m)^\s*backoffice\.cockpitng\.reset\.(?:triggers|scope)\s*=', props):

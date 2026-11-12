@@ -99,10 +99,10 @@ class CmsDriverTest(unittest.TestCase):
                 (touch / name).write_bytes(b'marker')
             folder = Path(temporary) / 'recovery'; folder.mkdir()
             driver.capture(home / 'temp/hybris', folder / 'native-temp', lambda: None)
-            with patch.object(driver, 'SAP_HOME', home), patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.solr, 'stopped', side_effect=RuntimeError('writer')):
+            with patch.object(driver, 'SAP_HOME', home), patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.support, 'stopped', side_effect=RuntimeError('writer')):
                 with self.assertRaises(RuntimeError): driver.invalidate_profile_markers(folder)
             self.assertTrue((touch / 'cms2_srctouch').exists())
-            with patch.object(driver, 'SAP_HOME', home), patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.solr, 'stopped'):
+            with patch.object(driver, 'SAP_HOME', home), patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.support, 'stopped'):
                 removed = driver.invalidate_profile_markers(folder)
             self.assertEqual({'cms2_itemstouch', 'cms2_srctouch', 'reclazztestcms_srctouch'}, set(removed))
             self.assertEqual({'core_srctouch', 'other_file'}, {f.name for f in touch.iterdir()})
@@ -112,7 +112,7 @@ class CmsDriverTest(unittest.TestCase):
             root = Path(temporary); live = root / 'live'; live.mkdir(); (live / 'base').write_bytes(b'v1')
             driver.capture(live, root / 'snapshot', lambda: None); (live / 'base').write_bytes(b'v2')
             for reason in ['Tomcat survives', 'ant survives', 'HSQLDB lock remains']:
-                with patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.solr, 'stopped', side_effect=RuntimeError(reason)):
+                with patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.support, 'stopped', side_effect=RuntimeError(reason)):
                     with self.assertRaises(RuntimeError):
                         driver.restore_trees(root, {'snapshot': live})
                 self.assertEqual(b'v2', (live / 'base').read_bytes())
@@ -126,7 +126,7 @@ class CmsDriverTest(unittest.TestCase):
             root = Path(temporary); live = root / 'live'; live.mkdir(); (live / 'own.java').write_bytes(b'own')
             driver.capture(live, root / 'snapshot', lambda: None)
             extra = live / 'web/commonwebsrc/vendor'; extra.mkdir(parents=True); (extra / 'native.java').write_bytes(b'build')
-            with patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.solr, 'stopped'):
+            with patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.support, 'stopped'):
                 driver.restore_trees(root, {'snapshot': live})
             self.assertFalse((live / 'web').exists()); self.assertEqual(b'own', (live / 'own.java').read_bytes())
 
@@ -138,7 +138,7 @@ class CmsDriverTest(unittest.TestCase):
                 driver.capture(live, root / name, lambda: None); (live / 'base').write_bytes(b'live')
                 targets[name] = live
             (root / 'two/files/base').write_bytes(b'corrupt')
-            with patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.solr, 'stopped'):
+            with patch.object(driver.solr, 'no_inner_writer'), patch.object(driver.support, 'stopped'):
                 with self.assertRaises(RuntimeError):
                     driver.restore_trees(root, targets)
             self.assertTrue(all((live / 'base').read_bytes() == b'live' for live in targets.values()))
@@ -163,6 +163,22 @@ class CmsDriverTest(unittest.TestCase):
                 self.assertIn('CMS_SETUP_PROBE PASS', output.getvalue()); self.assertNotIn('CMS_PROFILE PASS', output.getvalue())
                 self.assertTrue(profile.call_args.args[-1])
 
+
+    def test_cms_stop_uses_owned_home_writer_guard_not_solr_port(self):
+        with patch.object(driver.solr,'no_inner_writer') as inner, patch.object(driver.support,'stop') as stop, \
+             patch.object(driver.solr,'stop_all') as solr_stop:
+            driver.stop(Path('/owned'), 'capture')
+            inner.assert_called_once();stop.assert_called_once_with(Path('/owned'),'capture');solr_stop.assert_not_called()
+
+    def test_focused_uid_runs_one_cycle_without_default_runner(self):
+        import contextlib, io, os
+        with tempfile.TemporaryDirectory() as temporary:
+            with patch.dict(os.environ, {}, clear=False), patch.object(driver, 'preflight'), patch.object(driver.tempfile, 'mkdtemp', return_value=temporary), \
+                 patch.object(driver, 'profile', return_value={'verdict':'PASS','restoration':'PASS'}) as profile, patch.object(driver, 'runner') as runner, \
+                 patch('sys.argv',['driver','--focused-uid']), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0,driver.main())
+                profile.assert_called_once();runner.assert_not_called()
+                self.assertEqual('cms-uid-attempt',os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE'])
 
     def test_default_report_requires_exact_membership_and_outcome(self):
         runner = driver
