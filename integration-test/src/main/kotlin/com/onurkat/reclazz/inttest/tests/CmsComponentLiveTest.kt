@@ -62,7 +62,7 @@ class CmsComponentLiveTest(c: TestConfig, a: AgentEventClient, h: HttpVerifier) 
             "nativeSuperclass" to true, "inheritedHandler" to true, "jspViewResolver" to true))?.let { return it }
         val repo = Path.of(config.extPath).toRealPath().parent
         val home = System.getenv("RECLAZZ_TEST_HYBRIS_HOME")?.let { Path.of(it).toRealPath() } ?: return "Clean CMS home missing"
-        if (home != repo.parent.resolve("reclazz-sap/hybris") || !Files.isSameFile(home.resolve("bin/custom/reclazztest"), Path.of(config.extPath))) return "Foreign clean home"
+        if (home != cleanSapHybris(repo.parent) || !Files.isSameFile(home.resolve("bin/custom/reclazztest"), Path.of(config.extPath))) return "Foreign clean home"
         fixture = CmsFixtureBaseline(repo.resolve("reclazztestcms")); fixture.checkBytes()
         if (!Files.isSymbolicLink(home.resolve("bin/custom/reclazztestcms")) || !Files.isSameFile(home.resolve("bin/custom/reclazztestcms"), fixture.root)) return "Foreign CMS symlink"
         nonce = System.getenv("RECLAZZ_CMS_NONCE") ?: return "Owned CMS nonce missing"

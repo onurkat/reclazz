@@ -33,7 +33,7 @@ class ItemsSchemaLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifier):BatchL
             "autoCompile" to true,"autoUpdateRunningSystem" to true,"resetStatics" to false,
             "autoSolrReindex" to false,"impexAllowRemove" to false,"codegenExtensionLoaded" to true,"codegenGeneratedRoots" to true))?.let{return it}
         val home=System.getenv("RECLAZZ_TEST_HYBRIS_HOME")?.let{Path.of(it).toRealPath()} ?: return "RECLAZZ_TEST_HYBRIS_HOME missing"
-        if(home!=Path.of(config.extPath).toRealPath().parent.parent.resolve("reclazz-sap/hybris").normalize())
+        if(home!=cleanSapHybris(Path.of(config.extPath).toRealPath().parent.parent).normalize())
             return "Items requires the disposable clean install beside this repository"
         if(!Files.isSameFile(home.resolve("bin/custom/reclazztest"),Path.of(config.extPath))) return "Items fixture/install mismatch"
         val recovery=System.getenv("RECLAZZ_ITEMS_RECOVERY")?.let{Path.of(it)} ?: return "Stopped DB recovery snapshot missing; use scripts/test-sap-items-live.py"

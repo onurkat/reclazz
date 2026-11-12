@@ -25,7 +25,7 @@ class CmsUidLookupLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifier):
         val nonce=System.getenv("RECLAZZ_CMS_NONCE")
         if(nonce==null||!nonce.matches(Regex("reclazz-cms-[a-f0-9-]{36}"))||System.getenv("RECLAZZ_CMS_RECOVERY").isNullOrBlank()) "Owned CMS profile/recovery required" else {
             val home=Path.of(System.getenv("RECLAZZ_TEST_HYBRIS_HOME") ?: error("CMS home missing")).toRealPath()
-            check(home==root.parent.parent.resolve("reclazz-sap/hybris")) {"Foreign CMS home"}
+            check(home==cleanSapHybris(root.parent.parent)) {"Foreign CMS home"}
             check(Files.isSameFile(home.resolve("bin/custom/reclazztestcms"),root)) {"Foreign CMS link"}
             check(Files.isSameFile(home.resolve("bin/custom/reclazztest"),Path.of(config.extPath))) {"Foreign base fixture link"}
             val state=batchJson.readTree(Files.readString(Path.of(System.getenv("RECLAZZ_CMS_RECOVERY"),"state.json")))

@@ -62,7 +62,7 @@ class SolrTargetedReindexLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifier
             "solrserverLoaded" to true,"solrFixtureLoaded" to true,"solrReachable" to true))?.let{return it}
         val home=System.getenv("RECLAZZ_TEST_HYBRIS_HOME")?.let {Path.of(it).toRealPath()} ?: return "Clean home missing"
         val repo=Path.of(config.extPath).toRealPath().parent
-        if(home!=repo.parent.resolve("reclazz-sap/hybris") || !Files.isSameFile(home.resolve("bin/custom/reclazztest"),Path.of(config.extPath))) return "Foreign clean install"
+        if(home!=cleanSapHybris(repo.parent) || !Files.isSameFile(home.resolve("bin/custom/reclazztest"),Path.of(config.extPath))) return "Foreign clean install"
         val root=repo.resolve("reclazztestsolr");fixture=SolrFixtureBaseline(root)
         if(!Files.isSymbolicLink(home.resolve("bin/custom/reclazztestsolr")) || !Files.isSameFile(home.resolve("bin/custom/reclazztestsolr"),root)) return "Foreign Solr fixture symlink"
         fixture.checkBytes()

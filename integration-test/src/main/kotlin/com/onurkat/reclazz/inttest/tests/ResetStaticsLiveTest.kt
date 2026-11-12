@@ -33,7 +33,7 @@ class ResetStaticsLiveTest(c:TestConfig,a:AgentEventClient,h:HttpVerifier,privat
             "autoCompile" to true,"resetStatics" to enabled,"autoUpdateRunningSystem" to false,
             "autoSolrReindex" to false,"impexAllowRemove" to false))?.let{return it}
         val home=System.getenv("RECLAZZ_TEST_HYBRIS_HOME")?.let{Path.of(it).toRealPath()} ?: return "Clean install home missing"
-        if(home!=Path.of(config.extPath).toRealPath().parent.parent.resolve("reclazz-sap/hybris").normalize() ||
+        if(home!=cleanSapHybris(Path.of(config.extPath).toRealPath().parent.parent).normalize() ||
             !Files.isSameFile(home.resolve("bin/custom/reclazztest"),Path.of(config.extPath))) return "Clean install fixture mismatch"
         for(rel in listOf(relative,controller)) if(!Files.readAllBytes(Path.of(config.extPath,rel)).contentEquals(original(rel))) return "Dirty static fixture: $rel"
         val state=json(get("$endpoint/statics"))

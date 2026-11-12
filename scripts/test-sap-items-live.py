@@ -16,9 +16,11 @@ import urllib.request
 from sap_items_snapshot import capture, restore, verify, inventory
 
 REPO = Path(__file__).resolve().parent.parent
-SAP_HOME = REPO.parent / 'reclazz-sap' / 'hybris'
+# A second disposable install (for a parallel agent) is selected with
+# RECLAZZ_SAP_HOME and RECLAZZ_SAP_BASE; the default is the one beside the repo.
+SAP_HOME = Path(os.environ.get('RECLAZZ_SAP_HOME') or REPO.parent / 'reclazz-sap') / 'hybris'
 PLATFORM = SAP_HOME / 'bin/platform'
-BASE = 'https://localhost:9102'
+BASE = os.environ.get('RECLAZZ_SAP_BASE') or 'https://localhost:9102'
 ENDPOINT = BASE + '/reclazztest/v2/test/batch'
 PORT_FILE = SAP_HOME.parent / 'agent.port'
 JAR = SAP_HOME.parent / 'agent/reclazz-agent.jar'
