@@ -41,3 +41,12 @@ val harnessContractTest by tasks.registering(JavaExec::class) {
     mainClass.set("com.onurkat.reclazz.inttest.HarnessContractTestKt")
 }
 tasks.check { dependsOn(harnessContractTest) }
+
+// Narrow C61 runner contract; broad harness remains an independent audit gate.
+val storedScriptContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    description = "Exercise only stored-script live runner contracts"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.StoredScriptHarnessContractTestKt")
+}

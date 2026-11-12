@@ -16,11 +16,11 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **56 scenarios, all required to PASS, with zero
+The default suite now contains **57 scenarios, all required to PASS, with zero
 SKIPs**. The latest recorded acceptance ran five times on one server boot and
-once after a fresh boot: **six runs of 56/56 PASS**, with zero bean-refresh
-failures and unchanged fixture files. Hibernate ORM is tested
-separately in the agent regression suite; it is not a SAP live scenario.
+once after a fresh boot: **six runs of 57/57 PASS**, with zero bean-refresh
+failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
+regression suite; it is not a SAP live scenario.
 
 The live tests run locally before relevant commits and releases. CI execution
 is manual; we do not run a licensed SAP server test on every push. Tests restore
@@ -149,8 +149,8 @@ absence. A control row stays intact. Six unscoped synthetic guard removals and
 cleanup cannot add callback evidence. Both focused runs passed; withholding the
 edit and omitting native removal failed their receipt/callback oracles, with all
 owned rows, scopes and records cleaned. This covers existing body reload, not
-cascade/veto semantics or concurrent removal. Independent default49 acceptance
-is pending.
+cascade/veto semantics or concurrent removal. It is part of the default suite
+and passes in the six-run acceptance above.
 See [native removal](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/RemoveInterceptorLiveTest.kt).
 See [fresh and warm loads](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LoadInterceptorLiveTest.kt).
 See [defaults on create](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InitDefaultsInterceptorLiveTest.kt).
@@ -260,7 +260,7 @@ adapter verified against Log4j2 2.25.3. It does not initialize an unused default
 or enumerate arbitrary thread-bound/custom contexts. Unknown or inaccessible
 selector layouts and detected inventory changes warn without level mutation.
 
-**The focused test proves:** A private bounded appender receives target DEBUG
+**The test proves:** A private bounded appender receives target DEBUG
 only after the edit, with target/control INFO markers proving delivery in every
 phase. The control logger, root, unrelated logger configuration and appender
 attachments stay unchanged, in the same JVM. Withholding the property save and
@@ -269,8 +269,8 @@ All four runs restored exact property bytes, removed the appender and left zero
 active fixture runs. The source-backed-group candidate then passed a single
 ordered 49-predecessor-plus-logger diagnostic: 50/50. Its installed jar/class
 identity was verified. The prior unique-owner candidate had refused the two
-owners and finished 49/50. This diagnostic is not independent default-suite
-acceptance; Claude's audit and five-plus-one gate remain pending. Separate installed-SDK tests cover ambiguous owners and isolated
+owners and finished 49/50. It is part of the default suite and passes in the six-run acceptance
+above. Separate installed-SDK tests cover ambiguous owners and isolated
 framework classloaders; logging XML and Solr's separate JVM are outside this
 scenario. See [logger delivery](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LoggerLevelsLiveTest.kt).
 
@@ -309,6 +309,27 @@ not every protected-member or classloader shape.
 
 Retry, error and split branches are outside this case. The case takes about
 84 s. See [action and in-flight process](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ProcessActionLiveTest.kt).
+
+## Stored database scripts
+
+**You edit:** The content of one owned Groovy `Script` through a watched ImpEx
+UPDATE, from v1 to v2 and back. The same `model://` URI is resolved through
+SAP's native `ScriptingLanguagesService.getExecutableByURI()` and executed
+with a distinct binding in each phase.
+
+**The test proves:** After two initial URI resolutions, withholding
+the edit still returns v1. The first fresh URI execution after the completed
+import returns v2, and the first after restoration returns v1. The independent
+control script stays unchanged, with the same service, JVM and retained target
+reference throughout. No restart or manual cache flush occurs between phases.
+Owned target/control rows and all their revisions are removed afterward.
+
+SAP already handles this database-script invalidation; no agent adapter was
+added. The initially retained compiled executable continues returning v1 even
+when a fresh lookup returns v2. The test records that distinction; it does not
+claim retained objects are retargeted. File and classpath script repositories
+are outside this case. It is part of the default suite and passes in the
+six-run acceptance above. See [stored script execution](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/StoredScriptLiveTest.kt).
 
 ## CronJobs and native events
 
