@@ -14,6 +14,11 @@ final class DoctorReport {
 
     static String snapshot(String token, ReloadVerification verification, FileWatcher watcher,
                            String hold, boolean build, boolean scan) {
+        return snapshot(token, verification, watcher, hold, build, scan, false);
+    }
+
+    static String snapshot(String token, ReloadVerification verification, FileWatcher watcher,
+                           String hold, boolean build, boolean scan, boolean scanCompletion) {
         FileWatcher.WatchEvidence watch = watcher == null
                 ? new FileWatcher.WatchEvidence("unavailable", 0, 0, List.of(), false) : watcher.doctorEvidence();
         String json = "{" + field("requestId", token) + "," + field("status", "observed")
@@ -32,10 +37,17 @@ final class DoctorReport {
                 + ",\"watchedDirectories\":[" + watch.directories().stream().map(DoctorReport::quote).collect(Collectors.joining(",")) + "]"
                 + ",\"buildOwnershipSupported\":" + build
                 + ",\"verifySupported\":" + (verification != null)
-                + ",\"scanSupported\":" + scan + ",\"reloadConfirmed\":false}";
+                + ",\"scanSupported\":" + scan + ",\"scanCompletionSupported\":" + scanCompletion
+                + ",\"reloadConfirmed\":false}";
         // StatusServer's outer message escaping must never truncate a JSON receipt.
         if (json.length() > 3900) throw new IllegalStateException("Doctor report exceeds bounded message size");
         return json;
+    }
+
+    static String scanResult(String token, String session, String status, String detail, int count) {
+        return "{" + field("requestId", token) + "," + field("sessionId", session)
+                + "," + field("status", status) + "," + field("detail", detail)
+                + ",\"reloadConfirmed\":false" + (count < 0 ? "" : ",\"enqueued\":" + count) + "}";
     }
 
     static String unavailable(String token) {

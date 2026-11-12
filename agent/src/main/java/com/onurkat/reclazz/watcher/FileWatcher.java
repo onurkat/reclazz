@@ -176,16 +176,28 @@ public class FileWatcher {
 
     /** Set by {@link #requestScan()}, taken by the poll loop. */
     private volatile boolean scanRequested;
-    private final java.util.concurrent.ConcurrentLinkedQueue<java.util.concurrent.CompletableFuture<Void>> scanBarriers =
+    private final java.util.concurrent.ConcurrentLinkedQueue<java.util.concurrent.CompletableFuture<Integer>> scanBarriers =
             new java.util.concurrent.ConcurrentLinkedQueue<>();
+
+    private final Object scanBarrierLock = new Object();
+    private final java.util.Set<java.util.concurrent.CompletableFuture<Integer>> outstandingScans =
+            java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     /** Returns only after the poll loop has delivered all pending files from its scan. */
     public void scanNow() {
-        if (!active) throw new IllegalStateException("The file watcher is stopped; build remains held");
-        var done = new java.util.concurrent.CompletableFuture<Void>();
-        scanBarriers.add(done);
+        scanNowAndCount();
+    }
+
+    /** Valid events delivered in the barrier pass; coalesced callers share this count. */
+    public int scanNowAndCount() {
+        var done = new java.util.concurrent.CompletableFuture<Integer>();
+        synchronized (scanBarrierLock) {
+            if (!active) throw new IllegalStateException("The file watcher is stopped; build remains held");
+            outstandingScans.add(done);
+            scanBarriers.add(done);
+        }
         try {
-            done.get(10, TimeUnit.SECONDS);
+            return done.get(10, TimeUnit.SECONDS);
         } catch (InterruptedException interrupted) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Build scan interrupted; build remains held", interrupted);
@@ -193,6 +205,15 @@ public class FileWatcher {
             throw new IllegalStateException("Build scan did not finish; build remains held", failure);
         } finally {
             scanBarriers.remove(done);
+            outstandingScans.remove(done);
+        }
+    }
+
+    private void failScanBarriers() {
+        synchronized (scanBarrierLock) {
+            active = false;
+            outstandingScans.forEach(barrier -> barrier.completeExceptionally(new IOException("File watcher stopped")));
+            scanBarriers.clear();
         }
     }
 
@@ -312,14 +333,13 @@ public class FileWatcher {
             Thread.currentThread().interrupt();
         } finally {
             watchState = "stopped";
+            failScanBarriers();
         }
     }
 
     public void stopWatching() {
-        active = false;
+        failScanBarriers();
         watchState = "stopped";
-        scanBarriers.forEach(barrier -> barrier.completeExceptionally(new IOException("File watcher stopped")));
-        scanBarriers.clear();
         try {
             watchService.close();
         } catch (IOException ignored) {}
@@ -872,7 +892,7 @@ public class FileWatcher {
             scanHotFiles(pendingEvents);
             recoverLostDirectories(pendingEvents);
 
-            List<java.util.concurrent.CompletableFuture<Void>> barriers = new ArrayList<>();
+            List<java.util.concurrent.CompletableFuture<Integer>> barriers = new ArrayList<>();
             for (var barrier = scanBarriers.poll(); barrier != null; barrier = scanBarriers.poll()) barriers.add(barrier);
             if (!barriers.isEmpty()) {
                 try {
@@ -885,6 +905,8 @@ public class FileWatcher {
 
             // A successful build is settled. Flush already observed events too.
             // Dispatch events whose debounce period has elapsed
+            int deliveredCount = 0;
+            boolean deliverySucceeded = true;
             if (!pendingEvents.isEmpty()) {
                 long now = System.currentTimeMillis();
                 List<ChangeEvent> due = new ArrayList<>();
@@ -899,10 +921,17 @@ public class FileWatcher {
                     ChangeEvent event = toChangeEvent(pending);
                     if (event != null) due.add(event);
                 }
-                deliver(due);
+                deliverySucceeded = deliver(due);
+                deliveredCount = due.size();
             }
 
-            barriers.forEach(barrier -> barrier.complete(null));
+            synchronized (scanBarrierLock) {
+                for (var barrier : barriers) {
+                    if (!active || !deliverySucceeded)
+                        barrier.completeExceptionally(new IOException(!active ? "File watcher stopped" : "Scan event delivery failed"));
+                    else barrier.complete(deliveredCount);
+                }
+            }
 
             if (lastModifiedMap.size() > MAX_DEDUP_ENTRIES) {
                 evictOldEntries();
@@ -1101,26 +1130,30 @@ public class FileWatcher {
         if (event != null) deliver(List.of(event));
     }
 
-    private void deliver(List<ChangeEvent> events) {
-        if (events.isEmpty()) return;
+    private boolean deliver(List<ChangeEvent> events) {
+        if (events.isEmpty()) return true;
         if (batchHandler != null) {
             try {
                 batchHandler.accept(events);
+                return true;
             } catch (Exception e) {
                 StatusReporter.error("Error in change handler: " + Failures.describe(e));
+                return false;
             }
-            return;
         }
-        if (changeHandler == null) return;
+        if (changeHandler == null) return false;
+        boolean delivered = true;
         for (ChangeEvent event : events) {
             // One at a time, as before: a handler that throws on one file
             // does not cost the others in the same pass.
             try {
                 changeHandler.accept(event);
             } catch (Exception e) {
+                delivered = false;
                 StatusReporter.error("Error in change handler: " + Failures.describe(e));
             }
         }
+        return delivered;
     }
 
     /** The event a due file becomes, or null when it is a repeat or its bytes did not change. */

@@ -115,4 +115,66 @@ class ScanOnRequestTest {
         }
     }
 
+    private void countedWatcher() throws Exception {
+        watcher = new FileWatcher(new NoopPlatformContext(), AgentConfig.parse("startupDelaySec=0,debounceMs=5000"));
+        watcher.registerRecursive(tempDir, "app", "classes");
+    }
+    private void changedFile() throws Exception {
+        var file=Files.write(tempDir.resolve("Counted.class"),new byte[]{1,2,3});
+        Files.setLastModifiedTime(file,FileTime.fromMillis(System.currentTimeMillis()+1));
+    }
+    private Thread startCounted() {
+        var thread=new Thread(watcher::startWatching);thread.setDaemon(true);thread.start();return thread;
+    }
+    private void queued(int count) throws Exception {
+        var field=FileWatcher.class.getDeclaredField("scanBarriers");field.setAccessible(true);
+        var queue=(java.util.Queue<?>)field.get(watcher);long until=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(3);
+        while(queue.size()<count){assertTrue(System.nanoTime()<until,"scan admission deadline");Thread.yield();}
+    }
+    @Test void countedEmptyScanRepliesZero() throws Exception {
+        countedWatcher();var request=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);var thread=startCounted();
+        try{assertEquals(0,request.get(3,java.util.concurrent.TimeUnit.SECONDS));}finally{watcher.stopWatching();thread.join(2000);}
+    }
+    @Test void coalescedScansCountDeliveredEventsOncePerPass() throws Exception {
+        countedWatcher();changedFile();var delivered=new java.util.concurrent.atomic.AtomicInteger();watcher.onFileChanges(events->delivered.addAndGet(events.size()));
+        var a=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);var b=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(2);var thread=startCounted();
+        try{assertEquals(1,a.get(3,java.util.concurrent.TimeUnit.SECONDS));assertEquals(1,b.get(3,java.util.concurrent.TimeUnit.SECONDS));assertEquals(1,delivered.get());
+            assertEquals(0,watcher.scanNowAndCount());
+        }finally{watcher.stopWatching();thread.join(2000);}
+    }
+    @Test void laterBarrierCannotAcknowledgeThePassAlreadyDelivering() throws Exception {
+        countedWatcher();changedFile();var entered=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+        watcher.onFileChanges(events->{entered.countDown();awaitCounted(release);});
+        var first=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);var thread=startCounted();
+        try{assertTrue(entered.await(3,java.util.concurrent.TimeUnit.SECONDS));assertFalse(first.isDone());
+            var later=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);assertFalse(later.isDone());
+            release.countDown();assertEquals(1,first.get(3,java.util.concurrent.TimeUnit.SECONDS));assertEquals(0,later.get(3,java.util.concurrent.TimeUnit.SECONDS));
+        }finally{release.countDown();watcher.stopWatching();thread.join(2000);}
+    }
+    @Test void stopFailsQueuedScanWithoutWaitingForDeadline() throws Exception {
+        countedWatcher();var request=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);watcher.stopWatching();
+        assertThrows(java.util.concurrent.ExecutionException.class,()->request.get(2,java.util.concurrent.TimeUnit.SECONDS));
+        assertThrows(IllegalStateException.class,watcher::scanNowAndCount);
+    }
+    @Test void stopFailsAlreadyDrainedBarrierWhileCallbackIsHeld() throws Exception {
+        countedWatcher();changedFile();var entered=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+        watcher.onFileChanges(events->{entered.countDown();awaitCounted(release);});
+        var request=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);var thread=startCounted();
+        try{assertTrue(entered.await(3,java.util.concurrent.TimeUnit.SECONDS));watcher.stopWatching();
+            assertThrows(java.util.concurrent.ExecutionException.class,()->request.get(2,java.util.concurrent.TimeUnit.SECONDS));
+        }finally{release.countDown();watcher.stopWatching();thread.join(2000);}
+    }
+    @Test void failedDeliveryCannotBecomeCountedSuccess() throws Exception {
+        countedWatcher();changedFile();watcher.onFileChanges(events->{throw new IllegalStateException("deliberate callback failure");});
+        var request=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);var thread=startCounted();
+        try{assertThrows(java.util.concurrent.ExecutionException.class,()->request.get(3,java.util.concurrent.TimeUnit.SECONDS));}
+        finally{watcher.stopWatching();thread.join(2000);}
+    }
+    @Test void absentHandlerCannotClaimNonemptyEventsWereQueued() throws Exception {
+        countedWatcher();changedFile();var request=java.util.concurrent.CompletableFuture.supplyAsync(watcher::scanNowAndCount);queued(1);var thread=startCounted();
+        try{assertThrows(java.util.concurrent.ExecutionException.class,()->request.get(3,java.util.concurrent.TimeUnit.SECONDS));}
+        finally{watcher.stopWatching();thread.join(2000);}
+    }
+    private static void awaitCounted(java.util.concurrent.CountDownLatch latch){try{assertTrue(latch.await(5,java.util.concurrent.TimeUnit.SECONDS));}catch(InterruptedException e){throw new RuntimeException(e);}}
+
 }

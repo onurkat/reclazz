@@ -153,7 +153,7 @@ class McpTargetTest {
         var target = McpTarget.parse(new String[]{"--project-dir", a.toString(), "--port-file", "missing.port"}, dir);
         try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
             String c = in.readLine(); JsonObject d = DoctorTest.evidence(c); d.addProperty("workingDirectory", nested.toString());
-            DoctorTest.send(out,c,d); assertEquals("SCAN", in.readLine());
+            DoctorTest.send(out,c,d); ScanCompletionTest.advertise(in,out);String scan=in.readLine();ScanCompletionTest.send(out,scan,ScanCompletionTest.receipt(scan,0));
         })) {
             Files.createDirectories(b.resolve(".reclazz"));
             Files.writeString(b.resolve(".reclazz/agent.port"), agent.opts().get("port"));

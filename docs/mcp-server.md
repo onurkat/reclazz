@@ -254,7 +254,7 @@ application is a separate condition: `reclazz_status` reports `attached:false`.
 | `reclazz_build` | Signal `started`, `ok` or `failed`; waits for the agent to acknowledge the signal, and returns a tool error if unconfirmed |
 | `reclazz_verify_batch` | Read 1–32 unique class/hash pairs on one connection within a total timeout; cancellable through stdio |
 | `reclazz_verify` | Structured exact-byte reload receipt; requires `className` and lower-case `sha256`; only `status:applied` is success |
-| `reclazz_scan` | Ask the agent to look at the watched directories now and reload changed classes, instead of waiting for its next poll |
+| `reclazz_scan` | Wait for a correlated scan/enqueue receipt from the agent; reload completion remains separate |
 | `reclazz_pending` | Restart-required changes plus manual-pause and pending counts |
 | `reclazz_reload_control` | Pause/resume automatic reload admission or inspect its state; never releases BUILD holds |
 | `reclazz_diagnose` | Why a given class did or did not reload last time (requires `className`) |
@@ -322,7 +322,7 @@ these newer fields.
 | `reclazz_doctor` | `status:observed` with JVM/watch/capability evidence, or `unavailable`; separate `clientWorkingDirectory`, `nextActions`, `reloadConfirmed:false` |
 | `reclazz_reload_control` | `status:acknowledged` with `action`, `paused`, pending counts and `buildHold`, or `unavailable`; `reloadConfirmed:false` |
 | `reclazz_status` | Existing `attached`, optional `agent`, `protocol`, `port`, `health`, `reason` fields |
-| `reclazz_scan` | `status:sent` or `unavailable`, `detail`, `reloadConfirmed:false` |
+| `reclazz_scan` | `status:queued` or `unavailable`, `enqueued` on success, `requestId`, `sessionId`, `detail`, `reloadConfirmed:false` |
 | `reclazz_build` | `status:acknowledged` or `unavailable`, requested `state` and `owner`, `detail`, `reloadConfirmed:false` |
 | `reclazz_pending` | `status:observed` or `unavailable`, `lines`, `detail`, `complete:false` |
 | `reclazz_diagnose` | Same diagnostic fields plus requested `className` |
@@ -957,3 +957,15 @@ and the application's own tests to establish behavior.
 
 See the [SAP observation benefit](mcp-for-coding-agents.md#read-sap-operation-outcomes-with-their-limits)
 and the [parser contract tests](../mcp-server/src/test/java/com/onurkat/reclazz/mcp/SapOperationObservationTest.java).
+
+### Scan completion support
+
+`reclazz_scan` checks DOCTOR's additive `scanCompletionSupported` capability and
+waits on that same connection for its token/session-matched SCAN_RESULT. It
+returns queued only after file events were delivered to the agent callback.
+Zero is a valid unchanged scan; coalesced requests share a pass count. This
+neither clears BUILD/pause holds nor proves compilation or reload success.
+Unsupported older agents, missing/malformed receipts, session changes, stopped
+watchers, disconnects and timeouts return unavailable; no retry or reconnect
+silently turns an unknown result into success. Older IDE/wire clients retain
+bare SCAN behavior. Use matching agent/MCP versions for completion receipts.

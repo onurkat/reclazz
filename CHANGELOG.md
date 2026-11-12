@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- MCP clients can wait for a scan to finish queuing file changes using a matching
+  request and agent session; scan completion does not claim reload success.
+
 - A reloaded method that reads or writes a protected field inherited from a
   superclass in another package no longer fails with IllegalAccessError.
 

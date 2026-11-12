@@ -63,6 +63,7 @@ public class StatusServer implements StatusReporter.StatusListener {
 
     /** Acts on SCAN: the watcher looks now instead of waiting for the JDK. */
     private volatile Runnable scanner;
+    private volatile java.util.function.IntSupplier scanCompleter;
     private volatile java.util.function.Consumer<String> build;
     private volatile java.util.function.BiPredicate<String, String> ownedBuild;
     private static final String RELOAD = "RELOAD";
@@ -167,10 +168,15 @@ public class StatusServer implements StatusReporter.StatusListener {
         this.scanner = scanner;
     }
 
+    /** A counted scan/delivery barrier, separate from the legacy nudge. */
+    public void setScanCompleter(java.util.function.IntSupplier scanCompleter) {
+        this.scanCompleter = scanCompleter;
+    }
+
     /**
      * Runs a client's command and sends the answer to every client, so the
      * report lands in the reload log the developer is already looking at.
-     * Requested BUILD receipts go only to the requesting connection.
+     * Requested BUILD/SCAN receipts go only to the requesting connection.
      */
     void handleCommand(String line) {
         handleCommand(line, ignored -> { });
@@ -200,7 +206,8 @@ public class StatusServer implements StatusReporter.StatusListener {
                 try {
                     var hold = buildHold;
                     result = DoctorReport.snapshot(token, verification, doctorWatcher,
-                            hold == null ? "unavailable" : hold.get(), ownedBuild != null, scanner != null);
+                            hold == null ? "unavailable" : hold.get(), ownedBuild != null, scanner != null,
+                            scanCompleter != null && verification != null);
                 } catch (RuntimeException unavailable) { result = DoctorReport.unavailable(token); }
                 String message = "DOCTOR_RESULT " + token + " " + result;
                 reply.accept(String.format("{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
@@ -255,6 +262,32 @@ public class StatusServer implements StatusReporter.StatusListener {
                 for (String reportLine : RestartLedger.digest()) {
                     StatusReporter.info(reportLine);
                 }
+                return;
+            }
+            if (trimmed.startsWith(SCAN + " ")) {
+                String[] parts = trimmed.split("\\s+");
+                if (parts.length != 2 || !parts[1].matches("request=[A-Za-z0-9_-]{1,64}")) return;
+                String token = parts[1].substring(8);
+                var session = verification;
+                String sessionId = session == null ? "" : session.sessionId();
+                String status = "unavailable", detail = "Scan completion is unavailable";
+                int count = -1;
+                try {
+                    var complete = scanCompleter;
+                    if (running && complete != null && !sessionId.isBlank()) {
+                        int delivered = complete.getAsInt();
+                        if (delivered >= 0 && running && verification == session) {
+                            status = "queued"; count = delivered;
+                            detail = "Scan events delivered; reload completion is not confirmed";
+                        }
+                    }
+                } catch (RuntimeException failure) {
+                    detail = "Scan did not complete: " + failure.getClass().getSimpleName();
+                }
+                String result = DoctorReport.scanResult(token, sessionId, status, detail, count);
+                String message = "SCAN_RESULT " + token + " " + result;
+                reply.accept(String.format("{\"level\":\"INFO\",\"message\":\"%s\",\"timestamp\":\"%s\"}",
+                        escapeJson(message), Instant.now().toString()));
                 return;
             }
             if (trimmed.equalsIgnoreCase(SCAN)) {

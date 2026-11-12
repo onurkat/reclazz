@@ -108,8 +108,8 @@ public final class McpServer implements AutoCloseable {
                 "Read correlated JVM/session/watch and BUILD/VERIFY capability evidence. Compare the target before acting. "
                         + "A bounded directory sample and working directory do not prove output coverage, project root or reload success.", false));
         tools.add(tool("reclazz_scan",
-                "Ask the agent to look at the watched directories now and reload changed classes, "
-                        + "instead of waiting for its next poll. Dispatch only, not acceptance or reload completion.",
+                "Wait for a token/session-correlated scan and event-queue receipt from a supporting agent. "
+                        + "This neither releases build/pause holds nor confirms reload completion.",
                 false));
         tools.add(tool("reclazz_pending",
                 "List what still needs a restart in this session (changes the agent could not apply live).",
@@ -406,11 +406,16 @@ public final class McpServer implements AutoCloseable {
                 break;
             }
             case "reclazz_scan": {
-                AgentSocket.Result r = AgentSocket.run(opts, "SCAN");
-                isError = r.reason != null;
-                text = isError ? "Scan request failed: " + r.reason
-                        : "Sent SCAN to the agent. Acceptance and reload completion are not confirmed.";
-                data = ToolContracts.operation(isError ? "unavailable" : "sent", text);
+                var scanOptions = new java.util.HashMap<>(opts);
+                scanOptions.putIfAbsent("timeoutMs", "2000");
+                try (BuildSession session = BuildSession.open(scanOptions)) {
+                    data = session.scan();
+                    text = "Scan events queued: " + data.get("enqueued").getAsInt() + ". Reload completion is not confirmed.";
+                } catch (java.io.IOException | IllegalArgumentException failure) {
+                    isError = true;
+                    text = "Scan request failed: " + failure.getMessage();
+                    data = ToolContracts.operation("unavailable", text);
+                }
                 break;
             }
             case "reclazz_diagnose": {

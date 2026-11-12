@@ -130,6 +130,10 @@ class McpToolContractsTest {
     @ParameterizedTest @ValueSource(strings={"reclazz_status","reclazz_pending","reclazz_diagnose","reclazz_scan"})
     void connectedDiagnosticsAndScanDoNotClaimCompletion(String tool) throws Exception {
         try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
+            if (tool.equals("reclazz_scan")) {
+                ScanCompletionTest.advertise(in,out);String scan=in.readLine();
+                ScanCompletionTest.send(out,scan,ScanCompletionTest.receipt(scan,0));return;
+            }
             String command = in.readLine();
             assertEquals(switch (tool) {case "reclazz_status" -> "HEALTH"; case "reclazz_pending" -> "PENDING";
                 case "reclazz_scan" -> "SCAN"; default -> "DIAGNOSE A";}, command);
@@ -140,7 +144,7 @@ class McpToolContractsTest {
             if (tool.equals("reclazz_status")) {
                 assertTrue(data.get("attached").getAsBoolean()); assertEquals(1, data.getAsJsonArray("health").size());
             } else if (tool.equals("reclazz_scan")) {
-                assertEquals("sent", data.get("status").getAsString()); assertFalse(data.get("reloadConfirmed").getAsBoolean());
+                assertEquals("queued", data.get("status").getAsString()); assertEquals(0,data.get("enqueued").getAsInt()); assertFalse(data.get("reloadConfirmed").getAsBoolean());
             } else {
                 assertEquals("observed", data.get("status").getAsString()); assertFalse(data.get("complete").getAsBoolean());
                 assertEquals("observed \"value\"", data.getAsJsonArray("lines").get(0).getAsString());

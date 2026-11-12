@@ -142,4 +142,15 @@ class ProtocolContractTest {
         assertEquals(List.of("pause", "resume", "status"), calls);
     }
 
+    @Test void scanCompletionGrammarAndMeaningAreDocumented() throws Exception {
+        String text=doc();
+        for(String required:List.of("SCAN [request=<token>]", "SCAN_RESULT <token> <json>",
+                "scanCompletionSupported", "enqueued", "Coalesced", "not completed compilation/reload"))
+            assertTrue(text.contains(required),required);
+        var server=new StatusServer(0,null);var replies=new java.util.ArrayList<String>();
+        server.handleCommand("SCAN request=unavailable",replies::add);
+        assertEquals(1,replies.size());assertTrue(replies.get(0).contains("SCAN_RESULT unavailable"));
+        assertTrue(replies.get(0).contains("unavailable"));assertFalse(replies.get(0).contains("enqueued"));
+    }
+
 }

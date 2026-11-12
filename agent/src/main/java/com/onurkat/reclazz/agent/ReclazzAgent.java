@@ -562,6 +562,7 @@ public class ReclazzAgent {
             // watched" belong to the watcher, and it does not exist until now.
             if (statusServer != null) {
                 statusServer.setScanner(watcher::requestScan);
+                statusServer.setScanCompleter(watcher::scanNowAndCount);
                 statusServer.setHealthReporter(() -> withStall(SessionReport.lines(
                         watcher.watchedDirectoryCount(),
                         watcher.unwatchableCount(),

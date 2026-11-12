@@ -137,7 +137,7 @@ class McpDistributionTest {
         try (var agent = new BuildSafetyTest.FakeAgent((in,out) -> {
             String c = in.readLine(); JsonObject d = DoctorTest.evidence(c);
             d.addProperty("workingDirectory", project.toString()); DoctorTest.send(out,c,d);
-            assertEquals("SCAN", in.readLine());
+            ScanCompletionTest.advertise(in,out);String scan=in.readLine();ScanCompletionTest.send(out,scan,ScanCompletionTest.receipt(scan,0));
         })) {
             Files.writeString(project.resolve("custom.port"), agent.opts().get("port"));
             Run r = run(List.of("-jar", installJar().toString(), "--project-dir", "selected project", "--port-file", "custom.port"),

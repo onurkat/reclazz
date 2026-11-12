@@ -57,7 +57,7 @@ a client that stops reading rather than blocking a reload on it.
 A client may send one line at a time, at most 512 characters; anything not
 listed here is ignored without an answer, and a line that never ends closes
 the connection. Every answer arrives as ordinary `INFO` lines on the stream,
-to every client, except requested BUILD receipts, RELOAD state, DOCTOR observations and VERIFY results, which go only to the requesting connection.
+to every client, except requested BUILD receipts, RELOAD state, DOCTOR observations, SCAN results and VERIFY results, which go only to the requesting connection.
 
 | Command | Answer |
 |---|---|
@@ -68,10 +68,42 @@ to every client, except requested BUILD receipts, RELOAD state, DOCTOR observati
 | `VERIFY <token> <class> <sha256>` | read the latest exact-byte reload receipt for one class; requester-only structured result (below) |
 | `DOCTOR <token>` | read bounded JVM, session, watcher and capability evidence; requester-only result (below) |
 | `RELOAD <action> request=<token>` | pause/resume/status automatic reload admission; requester-only correlated state (below) |
-| `SCAN` | look at the watched directories now, instead of on the next poll. Files changed since their recorded baseline, or first seen with an mtime after the original watched-root registration, are handled as usual. Older unseen files establish a silent baseline and are not auto-applied just because they were found. Send it when a build has just finished |
+| `SCAN [request=<token>]` | look at the watched directories now, instead of on the next poll. Files changed since their recorded baseline, or first seen with an mtime after the original watched-root registration, are handled as usual. Older unseen files establish a silent baseline and are not auto-applied just because they were found. Send it when a build has just finished |
 
 Nothing a client sends makes the agent load, reload or run anything it
 would not have on its own.
+
+## SCAN completion
+
+Bare `SCAN` keeps its fire-and-forget behavior. `SCAN request=<token>` uses a
+1-64 character ASCII letter/digit/underscore/hyphen token and replies only to
+that connection, once: `SCAN_RESULT <token> <json>` as an `INFO` message.
+The JSON contains `requestId`, `sessionId` (the same session as DOCTOR), `status`,
+`detail`, `reloadConfirmed:false`, and `enqueued` only for status `queued`.
+Status `unavailable` means the scan/delivery failed, timed out, stopped or its
+completion hook/session was unavailable; a missing count never means zero.
+
+`enqueued` counts valid file events delivered to the agent callback in that
+scan pass, including already pending events flushed by the barrier. Coalesced
+requests share that pass count; counts are not additive or uniquely caused by
+one request. An unchanged scan can complete with zero. The receipt follows
+callback delivery, not completed compilation/reload. Pause and BUILD holds
+remain effective; use VERIFY and application checks for reload outcome.
+
+Concurrent connections can await separate barriers; commands on one connection
+run serially. A request arriving after a pass's barrier cutoff waits for a
+later pass. Tokens are correlation labels, not a server deduplication key;
+use a fresh token for each request. Malformed arguments are ignored. Disconnect
+makes a reply undeliverable without undoing the scan or affecting other callers.
+Watcher stop fails queued and in-flight barriers; server stop closes sockets.
+The internal watcher wait is bounded at ten seconds. A client timeout means
+unknown outcome; do not infer success, replay on another agent, or accept a late
+reply for a new request. No terminal is broadcast to another client.
+
+DOCTOR advertises `scanCompletionSupported` only when the counted hook and
+verification session are wired. This is an additive protocol-1 capability,
+separate from legacy `scanSupported`. Older reports that omit it do not
+establish completion support. Legacy clients can continue sending bare SCAN.
 
 ## Pausing automatic reload
 

@@ -118,13 +118,14 @@ class McpToolErrorsTest {
     }
 
     @Test
-    void scanConfirmsDispatchOnlyWithoutWaitingForAReceipt() throws Exception {
+    void scanWaitsForReceiptWithoutClaimingReload() throws Exception {
         try (Peer peer = new Peer(HELLO, (in, out) -> {
-            assertEquals("SCAN", in.readLine());
+            ScanCompletionTest.advertise(in,out);
+            String scan=in.readLine();ScanCompletionTest.send(out,scan,ScanCompletionTest.receipt(scan,0));
             assertNull(in.readLine());
         })) {
             String result = text(call("reclazz_scan", peer.port()), false);
-            assertTrue(result.contains("Sent SCAN"), result);
+            assertTrue(result.contains("Scan events queued: 0"), result);
             assertTrue(result.contains("not confirmed"), result);
             peer.verify();
         }

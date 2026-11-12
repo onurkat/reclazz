@@ -19,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 /** A receipt barrier on one connection; never reconnect to a different agent mid-build. */
 final class BuildSession implements AutoCloseable {
+    private static final com.google.gson.Gson STRICT_JSON = new com.google.gson.GsonBuilder()
+            .setStrictness(com.google.gson.Strictness.STRICT).create();
     private final Socket socket;
     private final BufferedReader in;
     private final int timeoutMs;
@@ -54,17 +56,23 @@ final class BuildSession implements AutoCloseable {
             socket.connect(new InetSocketAddress("127.0.0.1", address.port), until == 0 ? timeout : remainingMillis(until));
             BuildSession session = new BuildSession(socket, timeout, owner);
             session.cancellation = cancellation;
-            JsonObject hello = session.read(until == 0 ? session.deadline() : until);
-            if (!"CONNECTED".equals(text(hello, "level")) || text(hello, "agent").isBlank()
-                    || !hello.has("version") || hello.get("version").getAsInt() < 1) {
-                throw new IOException("No valid agent handshake");
+            JsonObject hello;
+            try {
+                hello = session.read(until == 0 ? session.deadline() : until);
+                var level = hello.get("level"); var agent = hello.get("agent"); var version = hello.get("version");
+                if (level == null || !level.isJsonPrimitive() || !level.getAsJsonPrimitive().isString() || !"CONNECTED".equals(level.getAsString())
+                        || agent == null || !agent.isJsonPrimitive() || !agent.getAsJsonPrimitive().isString() || agent.getAsString().isBlank()
+                        || version == null || !version.isJsonPrimitive() || !version.getAsJsonPrimitive().isNumber() || !"1".equals(version.getAsString()))
+                    throw new IOException("No valid agent handshake");
+            } catch (IOException | RuntimeException invalid) {
+                throw new IOException("Invalid agent handshake", invalid);
             }
             McpTarget.verifyProject(opts, socket, session.in, until == 0 ? session.deadline() : until);
             return session;
         } catch (IOException | RuntimeException e) {
             socket.close();
             if (cancellation != null) cancellation.detach(socket);
-            throw new IOException("Cannot open build session: " + e.getMessage(), e);
+            throw new IOException("Cannot open build session: " + (e instanceof java.net.ConnectException ? "cannot reach the agent on 127.0.0.1:" + address.port : e.getMessage()), e);
         }
     }
 
@@ -133,6 +141,45 @@ final class BuildSession implements AutoCloseable {
             }
         } catch (IOException | RuntimeException e) {
             throw new IOException("Reload control not confirmed; state may have changed. Query status before retrying.", e);
+        }
+    }
+
+    JsonObject scan() throws IOException {
+        JsonObject evidence = doctor();
+        if (!"observed".equals(text(evidence, "status"))
+                || !evidence.has("scanCompletionSupported") || !evidence.get("scanCompletionSupported").getAsBoolean()
+                || text(evidence, "sessionId").isBlank())
+            throw new IOException("Agent does not advertise SCAN completion support; use a matching agent");
+        String session = text(evidence, "sessionId");
+        String token = UUID.randomUUID().toString();
+        socket.getOutputStream().write(("SCAN request=" + token + "\n").getBytes(StandardCharsets.UTF_8));
+        socket.getOutputStream().flush();
+        String prefix = "SCAN_RESULT " + token + " ";
+        long until = deadline();
+        try {
+            while (true) {
+                JsonObject event = read(until);
+                String message = text(event, "message");
+                if (!"INFO".equals(text(event, "level")) || !message.startsWith(prefix)) continue;
+                JsonObject result = STRICT_JSON.fromJson(message.substring(prefix.length()), JsonObject.class);
+                for (String field : Set.of("requestId", "sessionId", "status", "detail")) {
+                    var value = result.get(field);
+                    if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
+                        throw new IOException("Malformed SCAN result " + field);
+                }
+                if (!token.equals(text(result, "requestId")) || !session.equals(text(result, "sessionId")))
+                    throw new IOException("SCAN result request/session mismatch");
+                var confirmed = result.get("reloadConfirmed");
+                if (confirmed == null || !confirmed.isJsonPrimitive() || !confirmed.getAsJsonPrimitive().isBoolean()
+                        || confirmed.getAsBoolean()) throw new IOException("SCAN cannot confirm reload");
+                if (!"queued".equals(text(result, "status"))) throw new IOException("Scan completion unavailable: " + text(result, "detail"));
+                var count = result.get("enqueued");
+                if (count == null || !count.isJsonPrimitive() || !count.getAsJsonPrimitive().isNumber()
+                        || !count.getAsString().matches("[0-9]{1,9}")) throw new IOException("Invalid SCAN event count");
+                return result;
+            }
+        } catch (IOException | RuntimeException failure) {
+            throw new IOException("SCAN completion not confirmed; reload outcome remains separate", failure);
         }
     }
 
@@ -227,7 +274,11 @@ final class BuildSession implements AutoCloseable {
             int c = in.read();
             if (c < 0) throw new IOException("Agent disconnected");
             if (c == '\n') {
-                try { return JsonParser.parseString(line.toString()).getAsJsonObject(); }
+                try {
+                    JsonObject result = STRICT_JSON.fromJson(line.toString(), JsonObject.class);
+                    if (result == null) throw new IOException("Invalid agent response");
+                    return result;
+                }
                 catch (RuntimeException e) { throw new IOException("Invalid agent response", e); }
             }
             line.append((char) c);

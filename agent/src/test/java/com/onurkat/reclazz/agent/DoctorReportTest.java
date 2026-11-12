@@ -36,6 +36,7 @@ class DoctorReportTest {
         assertFalse(cold.get("buildOwnershipSupported").asBoolean());
         assertFalse(cold.get("verifySupported").asBoolean());
         assertFalse(cold.get("scanSupported").asBoolean());
+        assertFalse(cold.get("scanCompletionSupported").asBoolean());
         var ledger = ReloadVerificationTest.ledger();
         var f = new ReloadBuildTest.Fixture();
         f.queue.build("alice","started",()->fail("scan must not run"));
@@ -44,6 +45,7 @@ class DoctorReportTest {
         server.setOwnedBuildListener((owner,state)->{fail("build must not run");return false;});
         server.setScanner(()->fail("scan must not run"));
         server.setVerification(ledger);
+        server.setScanCompleter(()->{fail("doctor must not scan");return 0;});
         server.setDoctorContext(null,f.queue::buildHoldKind);
         JsonNode warm=query(server);
         assertEquals("named",warm.get("buildHold").asText());
@@ -51,6 +53,7 @@ class DoctorReportTest {
         assertTrue(warm.get("buildOwnershipSupported").asBoolean());
         assertTrue(warm.get("verifySupported").asBoolean());
         assertTrue(warm.get("scanSupported").asBoolean());
+        assertTrue(warm.get("scanCompletionSupported").asBoolean());
         assertEquals(ledger.sessionId(),warm.get("sessionId").asText());
         assertEquals(json.readTree(ledger.query("q","A","a".repeat(64))).get("sessionId"),warm.get("sessionId"));
         assertNotEquals(ReloadVerificationTest.ledger().sessionId(),ledger.sessionId());

@@ -54,10 +54,20 @@ class ScanOnBuildFinishedLatencyTest {
                 app.rewrite(name, unit(i, "v2"));
                 if (nudge) {
                     try (Socket s = new Socket("127.0.0.1", port)) {
+                        s.setSoTimeout(5000);
                         OutputStream out = s.getOutputStream();
-                        out.write("SCAN\n".getBytes(StandardCharsets.UTF_8));
+                        String token = "latency-" + i;
+                        out.write(("SCAN request=" + token + "\n").getBytes(StandardCharsets.UTF_8));
                         out.flush();
-                        Thread.sleep(50);            // let the line land before the socket goes
+                        var in = new java.io.BufferedReader(new java.io.InputStreamReader(s.getInputStream(), StandardCharsets.UTF_8));
+                        String prefix = "SCAN_RESULT " + token + " ";
+                        var json = new com.fasterxml.jackson.databind.ObjectMapper();
+                        String message;
+                        do {String line = in.readLine();assertNotNull(line);message = json.readTree(line).path("message").asText();}
+                        while (!message.startsWith(prefix));
+                        var receipt = json.readTree(message.substring(prefix.length()));
+                        assertEquals("queued", receipt.get("status").asText());
+                        assertFalse(receipt.get("reloadConfirmed").asBoolean());
                     }
                 }
                 String noticedLine = "Class file changed: " + name + ".class";

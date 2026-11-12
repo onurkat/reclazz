@@ -89,4 +89,10 @@ class DoctorTest {
         JsonObject d=evidence("DOCTOR x");d.addProperty("watchedDirectoryCount",2);
         assertThrows(IOException.class,()->DoctorResult.parse(d.toString(),"x"));
     }
+    @Test void missingScanCompletionCapabilityStaysUnsupported() throws Exception {
+        JsonObject old=evidence("DOCTOR x");assertFalse(DoctorResult.parse(old.toString(),"x").get("scanCompletionSupported").getAsBoolean());
+        old.addProperty("scanCompletionSupported",true);assertTrue(DoctorResult.parse(old.toString(),"x").get("scanCompletionSupported").getAsBoolean());
+        old.addProperty("scanCompletionSupported","true");assertThrows(IOException.class,()->DoctorResult.parse(old.toString(),"x"));
+    }
+
 }

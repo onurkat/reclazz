@@ -30,6 +30,8 @@ final class DoctorResult {
                 || !Set.of("none", "named", "legacy", "unavailable").contains(string(data, "buildHold")))
             throw new IOException("Invalid lifecycle evidence");
         for (String name : Set.of("watchSampleTruncated", "buildOwnershipSupported", "verifySupported", "scanSupported", "reloadConfirmed")) bool(data,name);
+        if (data.has("scanCompletionSupported")) bool(data, "scanCompletionSupported");
+        else data.addProperty("scanCompletionSupported", false);
         if (bool(data,"reloadConfirmed") || (bool(data,"verifySupported") && string(data,"sessionId").isBlank()))
             throw new IOException("Invalid completion or session evidence");
         int count = count(data,"watchedDirectoryCount"); count(data,"unwatchableDirectoryCount");
