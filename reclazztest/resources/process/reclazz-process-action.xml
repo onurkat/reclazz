@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<process xmlns="http://www.hybris.de/xsd/processdefinition" name="reclazz-process-action" start="held"
+         processClass="de.hybris.platform.processengine.model.BusinessProcessModel">
+    <wait id="held" then="action" prependProcessCode="true"><event>reclazzActionContinue</event></wait>
+    <action id="action" bean="reclazzProbeProcessAction"><transition name="OK" to="done"/></action>
+    <end id="done" state="SUCCEEDED">action-complete</end>
+    <end id="cleanup" state="FAILED">owned-cleanup</end>
+</process>

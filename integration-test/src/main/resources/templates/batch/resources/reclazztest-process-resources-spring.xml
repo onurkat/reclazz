@@ -4,4 +4,11 @@
     <bean id="reclazzBatchExistingProcessResource" class="de.hybris.platform.processengine.definition.ProcessDefinitionResource">
         <property name="resource" value="classpath:/process/reclazz-process-existing.xml"/>
     </bean>
+    <bean id="reclazzProbeProcessAction" class="com.onurkat.reclazztest.batch.ProbeProcessAction">
+        <property name="modelService" ref="modelService"/>
+        <property name="processParameterHelper" ref="processParameterHelper"/>
+    </bean>
+    <bean id="reclazzActionProcessResource" class="de.hybris.platform.processengine.definition.ProcessDefinitionResource">
+        <property name="resource" value="classpath:/process/reclazz-process-action.xml"/>
+    </bean>
 </beans>

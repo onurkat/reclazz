@@ -110,6 +110,7 @@ fun main() {
         OccDateParsingLiveTest(config, agentClient, httpVerifier),       // 53
         TriggerFiringLiveTest(config, agentClient, httpVerifier),        // 54
         ScheduledMetadataLiveTest(config, agentClient, httpVerifier),    // 55
+        ProcessActionLiveTest(config, agentClient, httpVerifier),        // 56
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

@@ -16,9 +16,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **55 scenarios, all required to PASS, with zero
+The default suite now contains **56 scenarios, all required to PASS, with zero
 SKIPs**. The latest recorded acceptance ran five times on one server boot and
-once after a fresh boot: **six runs of 55/55 PASS**, with zero bean-refresh
+once after a fresh boot: **six runs of 56/56 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested
 separately in the agent regression suite; it is not a SAP live scenario.
 
@@ -287,6 +287,26 @@ path with the expected definition version. New file-first and bean-first
 definitions execute. This does not prove action-body reload or a process held
 in flight across an edit. See [definition edits](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ProcessXmlLiveTest.kt)
 and [new definitions](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/NewProcessLiveTest.kt).
+
+## Business process action body
+
+**You edit:** The body of a prepared Java process action using SAP's public
+`getProcessParameterHelper()` accessor, from `action-v1` to
+`action-v2` and back, without changing its process definition.
+
+**The test checks:** A native process is held at its wait node before the edit.
+After the matching compile and reload receipts, releasing that same process
+must persist `action-v2` in its own process parameter and reach `SUCCEEDED`.
+A fresh process must also persist v2, and another must persist v1 after source
+restoration. Process identity and definition version stay pinned. Cleanup
+removes the owned processes, tasks, task logs and context parameters.
+
+An initial native probe accessed the inherited protected helper field directly
+and failed after reload with `IllegalAccessError`. That access form remains an
+unresolved limitation; the public-accessor case does not certify it.
+
+This is a coverage case for existing Java body reload. Retry, error and split
+branches are outside it. The case takes about 84 s. See [action and in-flight process](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ProcessActionLiveTest.kt).
 
 ## CronJobs and native events
 
