@@ -83,3 +83,11 @@ val cmsJspResourceContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.CmsJspResourceContractTestKt")
 }
+
+// Narrow C17 native PK/context oracle and directly affected default membership.
+val searchRestrictionContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.SearchRestrictionContractTestKt")
+}

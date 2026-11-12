@@ -113,6 +113,7 @@ fun main() {
         ProcessActionLiveTest(config, agentClient, httpVerifier),        // 56
         StoredScriptLiveTest(config, agentClient, httpVerifier),         // 57
         VelocityTemplateLiveTest(config, agentClient, httpVerifier),     // 58
+        SearchRestrictionLiveTest(config, agentClient, httpVerifier),    // 59
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

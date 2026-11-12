@@ -16,9 +16,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **58 scenarios, all required to PASS, with zero
-SKIPs**. The latest recorded acceptance ran five times on one server boot and
-once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
+The default suite now contains **59 scenarios, all required to PASS, with zero
+SKIPs**. The archived acceptance for the preceding 58-case membership ran five
+times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
 regression suite; it is not a SAP live scenario.
 
@@ -440,7 +440,7 @@ version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
 is restored, and owned rows are removed through SAP's model service. This case
-is opt-in and does not increase the default 58-case suite. See the
+is opt-in and does not increase the default 59-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 
@@ -467,6 +467,28 @@ existing SAP/Tomcat JSP serving with Reclazz present; it adds no JSP reload
 mechanism to the agent. See the
 [JSP resource case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsJspResourceLiveTest.kt).
 
+## Search restrictions and session catalog visibility
+
+**You edit:** The owned Java DAO query suffix, `one -> two -> one`.
+
+**Reclazz does:** Reloads the query method while SAP keeps applying native
+persisted `SearchRestriction` rows. No restriction cache or security bypass
+is added by Reclazz.
+
+**The test proves:** Two owned non-admin users each see their exact owned
+Product PK in each of two session catalog versions. The restrictions combine
+user-specific product codes with SAP's native `?session.catalogversions`
+predicate. Changing and restoring the DAO query selects the expected second
+and first Product PKs. A native-admin query still sees all eight owned products,
+and an unrelated Title query stays unchanged. Product, user, catalog and
+restriction identities remain stable. Local views restore the outer user,
+catalog versions, enabled flag and session restrictions; exact owned cleanup
+removes the test rows. No global or per-query restriction disable is used.
+This normal-boot case is the 59th default scenario; full 59-case repeatability
+must be established by its independent audit. Restriction text saves, role
+hierarchies and CMS page-service restriction semantics are separate scopes.
+See the [native restriction case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SearchRestrictionLiveTest.kt).
+
 ## Backoffice configuration and widgets
 
 **You edit:** Backoffice config XML, or add/edit/remove a one-parameter public
@@ -489,9 +511,9 @@ and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 ## Not covered yet
 
 Complete storefront rendering, CMS template inheritance/overrides, search
-restriction visibility, precompiled/deployed-copy JSP setups and tag/include
-invalidation remain open. The focused cases above must not be read as their
-acceptance.
+restriction visibility through CMS page services, precompiled/deployed-copy
+JSP setups and tag/include invalidation remain open. The focused cases above
+must not be read as their acceptance.
 Native SAP region caches, recurring Trigger lifecycle, process actions held across an edit,
 new OCC controller enrollment, broader Backoffice bindings and the scenarios in
 the [coverage order](#coverage-order) also need their own live oracles.

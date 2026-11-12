@@ -41,6 +41,10 @@
         <constructor-arg ref="flexibleSearchService"/>
     </bean>
 
+    <bean id="reclazzProbeSearchRestrictionDao" class="com.onurkat.reclazztest.batch.ProbeSearchRestrictionDao">
+        <constructor-arg ref="flexibleSearchService"/>
+    </bean>
+
     <!-- Services live in the web context (reclazztest-web-spring.xml); scanning them
          here too would register every listener and schedule twice. -->
     <context:component-scan base-package="com.onurkat.reclazztest.interceptors"/>

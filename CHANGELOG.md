@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   present, with escaped HTML, stable Java/identity controls and owned recovery.
   This documents existing Jasper serving rather than adding agent JSP reload.
 
+- The default SAP Commerce suite adds native SearchRestriction user/catalog
+  visibility through a Java DAO edit, with exact persisted results, stable
+  admin/query controls and owned cleanup (59 scenarios).
+
 - The opt-in SAP Commerce CMS tests now check rendered Java changes after native
   UID lookup and page/slot selection in persisted catalog versions, with stable
   controls, persisted identities and owned cleanup.
