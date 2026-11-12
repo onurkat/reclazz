@@ -52,7 +52,7 @@ jobs:
       - name: Check source coverage, routes, anchors and evidence
         run: python scripts/check-docs-site.py --revision "$GITHUB_SHA"
       - name: Package the checked site
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: build/site
 
