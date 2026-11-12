@@ -16,7 +16,7 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **59 scenarios, all required to PASS, with zero
+The default suite now contains **60 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
@@ -188,6 +188,27 @@ control field. The Orika rollback case proves that a removed property disappears
 again from the response. Arbitrary converter/list directives are not certified.
 See [populator](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PopulatorOccLiveTest.kt)
 and [Orika rollback](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OrikaPropertyRollbackLiveTest.kt).
+
+## Native facade and dependent service
+
+**You edit:** Only the Java body of an owned service injected into a native
+`DefaultProductFacade` child bean. The service delegates product lookup to SAP's
+native product DAO and changes the selected owned product.
+
+**The test proves:** Public HTTP returns `ProductData` from the native facade,
+using an isolated SAP populating converter with native `ProductBasicPopulator`.
+The selected product name changes v1 -> v2 -> v1; other converted fields and an
+independent facade endpoint remain stable. Exact persisted product identities,
+names, bean collaborators and JVM identity stay unchanged. All three owned
+products and their catalog/version are removed afterward. An actual baseline
+response rejects the withheld v2 oracle before the edit.
+
+This is default case 60. It covers the dedicated native basic converter, not the
+full storefront URL/image converter, cart/checkout, or arbitrary facade paths.
+It adds a native facade/service consumer to existing populator/OCC coverage;
+no new agent reload mechanism is claimed. Full default repeatability belongs
+to independent audit. See
+[the facade scenario](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/FacadeChainLiveTest.kt).
 
 ## DAO and FlexibleSearch
 
@@ -440,7 +461,7 @@ version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
 is restored, and owned rows are removed through SAP's model service. This case
-is opt-in and does not increase the default 59-case suite. See the
+is opt-in and does not increase the default 60-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 

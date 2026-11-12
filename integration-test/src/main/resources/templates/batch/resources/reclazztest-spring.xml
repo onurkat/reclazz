@@ -45,6 +45,20 @@
         <constructor-arg ref="flexibleSearchService"/>
     </bean>
 
+    <!-- C19 owned native facade chain; global native aliases are unchanged. -->
+    <bean id="reclazzProbeFacadeProductService" parent="defaultProductService" class="com.onurkat.reclazztest.batch.ProbeFacadeProductService"/>
+    <bean id="reclazzProbeFacadeProductConverter" parent="abstractPopulatingConverter">
+        <property name="targetClass" value="de.hybris.platform.commercefacades.product.data.ProductData"/>
+        <property name="populators"><list><ref bean="productBasicPopulator"/></list></property>
+    </bean>
+    <bean id="reclazzProbeProductFacade" parent="defaultProductFacade">
+        <property name="productService" ref="reclazzProbeFacadeProductService"/>
+        <property name="productConverter" ref="reclazzProbeFacadeProductConverter"/>
+    </bean>
+    <bean id="reclazzProbeControlProductFacade" parent="defaultProductFacade">
+        <property name="productConverter" ref="reclazzProbeFacadeProductConverter"/>
+    </bean>
+
     <!-- Services live in the web context (reclazztest-web-spring.xml); scanning them
          here too would register every listener and schedule twice. -->
     <context:component-scan base-package="com.onurkat.reclazztest.interceptors"/>

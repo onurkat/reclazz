@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- The default SAP Commerce suite adds native facade/service-chain coverage: an
+  owned service edit changes converted ProductData while native bean wiring,
+  persisted rows and an independent facade control stay stable (60 scenarios).
+
 - The opt-in CMS profile covers native SAP/Tomcat JSP source saves with Reclazz
   present, with escaped HTML, stable Java/identity controls and owned recovery.
   This documents existing Jasper serving rather than adding agent JSP reload.

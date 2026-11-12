@@ -590,7 +590,7 @@ fun main() {
         val result=runGatedProfile("restore-contract",{null}) {withRestore({Unit}) {error("restore failure")}}
         check(result.status==TestStatus.FAIL && "restore failure" in result.notes)
     }
-    case("defaultMembershipRetainsCommitted59") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==59)}
+    case("defaultMembershipRetainsCommitted60") {requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==60)}
     case("defaultMembershipRejectsMissingOccDateParser") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"OccDateParsingLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsMissingValidationConstraints") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"ValidationConstraintsLiveTest").toList())}.isFailure)}
     case("defaultMembershipRejectsMissingInitDefaults") {check(runCatching {requireDefaultMembership((committedDefaultMembership-"InitDefaultsInterceptorLiveTest").toList())}.isFailure)}

@@ -91,3 +91,11 @@ val searchRestrictionContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.SearchRestrictionContractTestKt")
 }
+
+// Narrow C19 native facade response and identity oracle.
+val facadeChainContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.FacadeChainContractTestKt")
+}
