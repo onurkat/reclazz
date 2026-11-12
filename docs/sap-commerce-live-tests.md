@@ -16,7 +16,7 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **61 scenarios, all required to PASS, with zero
+The default suite now contains **62 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
@@ -175,6 +175,24 @@ the prepared class.
 message or accepts a value after its limit changes. Invalid and valid controls
 remain checked. This does not cover stored SAP validation-engine constraints.
 See [validator scenarios](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ValidatorLiveTest.kt).
+
+## Native OCC exception error response
+
+`OccErrorResponseLiveTest` exercises an existing Java body reload path through
+SAP's native `RestExceptionResolver`, `DefaultWebserviceErrorFactory` and
+`ExceptionConverter`. An owned service selects one of two preloaded exception
+types. Editing only its throw site must change the public HTTP400 error type
+First -> Second -> First; the exact parsed error document is checked each time.
+The generic error message remains unchanged under the native default policy.
+
+The controller does not construct error JSON or catch the exception. Its success
+endpoint and independent control exception stay unchanged, as do the serving
+context, service identity and JVM. An actual baseline response must fail the v2
+oracle before the edit; source-correlated compile/reload receipts are required
+in both directions. This is default case62 and coverage of existing behavior,
+not a new exception handler or a change to SAP's error policy. The focused native
+result and recovery are recorded at handoff; full default repeatability belongs
+to the independent audit.
 
 ## New OCC controller after startup
 
@@ -482,7 +500,7 @@ version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
 is restored, and owned rows are removed through SAP's model service. This case
-is opt-in and does not increase the default 61-case suite. See the
+is opt-in and does not increase the default 62-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 

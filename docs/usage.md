@@ -3788,3 +3788,9 @@ warnings for that reload; detected mismatches and repair failures still warn.
 Matching samples are silent and do not guarantee that a later writer cannot
 publish stale metadata. Detailed output describes successful repair attempts as
 best effort. This does not provide concurrency-safe metadata publication.
+
+
+The SAP Commerce default live suite also checks native OCC error serialization:
+an owned service's thrown exception type changes through Java reload, while SAP's
+own resolver produces the HTTP400 document. The generic message, a success
+endpoint and an independent error remain stable; no custom error handler is added.

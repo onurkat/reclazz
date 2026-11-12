@@ -68,4 +68,5 @@
         <property name="interceptor" ref="testValidateInterceptor"/>
         <property name="typeCode" value="Product"/>
     </bean>
+    <bean id="reclazzProbeOccErrorService" class="com.onurkat.reclazztest.batch.ProbeOccErrorService"/>
 </beans>

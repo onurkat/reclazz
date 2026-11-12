@@ -21,6 +21,6 @@ fun main() {
     val cleanup="""{"run":"$run","sessionRestored":true,"products":0,"versions":0,"catalogs":0,"ownedRemaining":0}"""
     requireFacadeCleanup(batchJson.readTree(cleanup),run);checks++
     for(key in listOf("products","versions","catalogs","ownedRemaining")) {check(runCatching {requireFacadeCleanup(batchJson.readTree(cleanup.replace("\"$key\":0","\"$key\":1")),run)}.isFailure);checks++}
-    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==61&&"FacadeChainLiveTest" in committedDefaultMembership);checks++
+    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==62&&"FacadeChainLiveTest" in committedDefaultMembership);checks++
     println("FACADE_CHAIN_CONTRACT $checks checks PASS")
 }

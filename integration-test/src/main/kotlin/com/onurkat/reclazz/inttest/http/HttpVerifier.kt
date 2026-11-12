@@ -54,7 +54,7 @@ class HttpVerifier(private val baseUrl: String, timeoutMs: Long) {
         }
     }
 
-    fun get(path: String, queryParams: Map<String, String> = emptyMap(), budgetMs: Long? = null): HttpResult {
+    fun get(path: String, queryParams: Map<String, String> = emptyMap(), budgetMs: Long? = null, headers: Map<String, String> = emptyMap()): HttpResult {
         // Callers pass either an absolute URL (config.testEndpointBase already
         // contains baseUrl) or a bare path, only prefix the latter.
         val absolute = if (path.startsWith("http")) path else "$baseUrl$path"
@@ -66,6 +66,7 @@ class HttpVerifier(private val baseUrl: String, timeoutMs: Long) {
 
         val request = Request.Builder()
             .url(urlBuilder.toString())
+            .apply { headers.forEach { (name, value) -> header(name, value) } }
             .get()
             .build()
 

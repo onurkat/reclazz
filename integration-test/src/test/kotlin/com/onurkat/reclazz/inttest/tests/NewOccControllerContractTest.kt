@@ -23,6 +23,6 @@ fun main() {
     requireNewOccFacts(batchJson.readTree(facts),nonce,123,true);checks++
     for(text in listOf(facts.replace("definingLoaderMatches\":false","definingLoaderMatches\":true"),facts.replace("localBean\":true","localBean\":false"),facts.replace("ctx.TenantIgnoreXmlWebApplicationContext","ctx.CloseAwareApplicationContext"),facts.replace("jvmStart\":123","jvmStart\":456"),facts.replace("beanCount\":1","beanCount\":0"),facts.replace("handlerCount\":1","handlerCount\":0"),facts.replace("handler.CommerceHandlerMapping","handler.FakeMapping"),facts.replace(owner,owner+"Other"),facts.replace(bean,bean+"Other"))) {check(runCatching {requireNewOccFacts(batchJson.readTree(text),nonce,123,true)}.isFailure);checks++}
     check(runCatching {requireNewOccFacts(batchJson.readTree(facts),nonce,123,false)}.isFailure);checks++
-    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==61&&"NewOccControllerEvidenceTest" in committedDefaultMembership);checks++
+    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==62&&"NewOccControllerEvidenceTest" in committedDefaultMembership);checks++
     println("NEW_OCC_CONTROLLER_CONTRACT $checks checks PASS")
 }
