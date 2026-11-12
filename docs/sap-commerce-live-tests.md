@@ -18,9 +18,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **52 scenarios, all required to PASS, with zero
+The default suite now contains **53 scenarios, all required to PASS, with zero
 SKIPs**. The latest recorded acceptance ran five times on one server boot and
-once after a fresh boot: **six runs of 52/52 PASS**, with zero bean-refresh
+once after a fresh boot: **six runs of 53/53 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested
 separately in the agent regression suite; it is not a SAP live scenario.
 
@@ -87,6 +87,14 @@ changes the actual OCC response. New controller enrollment is a separate open
 scope. See [routes](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OccRequestMappingLiveTest.kt),
 [field sets](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OccFieldSetLiveTest.kt)
 and [override priority](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PlatformConfigLiveTest.kt).
+
+**You edit:** The Java body of your own request date parser that an OCC
+controller calls (a Spring `Converter<String, Date>` bean).
+
+**The test proves:** The OCC response returns the edited parsed time, then the
+restored one; invalid input keeps its 400 status and a time/locale control stays
+unchanged. SAP's own `WsDateFormatter` and response serialization are not
+covered by this case. See [OCC date parsing](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OccDateParsingLiveTest.kt).
 
 ## Interceptors and mappings
 
@@ -379,42 +387,37 @@ support claim. Each scope needs a concrete plan, native baseline, application
 oracle, cleanup and independent review before it can move into the tested list.
 If SAP already handles an edit, its test records that existing behavior.
 
-1. RemoveInterceptor (focused checks passed; independent acceptance pending)
-2. Platform logger properties (focused checks passed; independent acceptance pending)
-3. Custom ImpEx translator/decorator
-4. Stored validation constraint engine
-5. OCC timestamp formatter consumer
-6. Duplicate Backoffice F4 dispatch
-7. Native SAP Trigger firing
-8. Spring scheduled metadata lifecycle
-9. Process action/in-flight version
-10. Stored script/executable cache
-11. Velocity RendererTemplate
-12. SCAN wire completion
-13. CMS UID/persisted catalogs
-14. CMS page/slot selection
-15. Deployed JSP/resource edit
-16. Search restriction/session visibility
-17. Facade consumer chain
-18. Nested/list DTO conversion slice
-19. New OCC controller enrollment
-20. OCC native error response/serialization
-21. ImpEx UPDATE/macros/malformed recovery
-22. Locale/fallback missing slice
-23. Backoffice label bundles
-24. Native SAP region cache
-25. ZUL/widget/VM definition slice
-26. Workflow action/decision
-27. TaskRunner retry/condition lifecycle
-28. Spring Integration handler/channel
-29. Hot-folder ingestion
-30. Solr config/facet slice
-31. One additive metadata shape
-32. Native event listener lifecycle
-33. Local SAP security/filter rule
-34. Stored AdvancedSavedQuery parameters
-35. Legacy AddOn source staging
-36. One commerce service, then bounded remaining domains
+1. Duplicate Backoffice F4 dispatch
+2. Native SAP Trigger firing
+3. Spring scheduled metadata lifecycle
+4. Process action/in-flight version
+5. Stored script/executable cache
+6. Velocity RendererTemplate
+7. SCAN wire completion
+8. CMS UID/persisted catalogs
+9. CMS page/slot selection
+10. Deployed JSP/resource edit
+11. Search restriction/session visibility
+12. Facade consumer chain
+13. Nested/list DTO conversion slice
+14. New OCC controller enrollment
+15. OCC native error response/serialization
+16. ImpEx UPDATE/macros/malformed recovery
+17. Locale/fallback missing slice
+18. Backoffice label bundles
+19. Native SAP region cache
+20. ZUL/widget/VM definition slice
+21. Workflow action/decision
+22. TaskRunner retry/condition lifecycle
+23. Spring Integration handler/channel
+24. Hot-folder ingestion
+25. Solr config/facet slice
+26. One additive metadata shape
+27. Native event listener lifecycle
+28. Local SAP security/filter rule
+29. Stored AdvancedSavedQuery parameters
+30. Legacy AddOn source staging
+31. One commerce service, then bounded remaining domains
 
 Later refinements include B2B approval, Adaptive Search, personalization,
 rule compilation and Integration API virtual attributes. They do not bypass

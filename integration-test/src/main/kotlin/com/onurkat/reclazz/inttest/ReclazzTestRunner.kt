@@ -107,6 +107,7 @@ fun main() {
         ValidationConstraintsLiveTest(config, agentClient, httpVerifier,
             withheld=false, partial=false, diagnostic="", providerOnly=false,
             fingerprintOnly=false, engineEffects=true),                 // 52
+        OccDateParsingLiveTest(config, agentClient, httpVerifier),       // 53
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
