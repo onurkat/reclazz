@@ -50,3 +50,12 @@ val storedScriptContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.StoredScriptHarnessContractTestKt")
 }
+
+// Focused C63 runner contract, independently of the full audit harness.
+val velocityTemplateContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    description = "Exercise only native Velocity template runner contracts"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.VelocityTemplateHarnessContractTestKt")
+}

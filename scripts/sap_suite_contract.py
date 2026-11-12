@@ -1,9 +1,9 @@
 """Shared exact default-suite and normal-fixture contract for native drivers."""
 import re
 
-DEFAULT_CASES = 57
-DEFAULT_OUTCOME = {'PASS': 57, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
-NORMAL_FIXTURE_FILES = 105
+DEFAULT_CASES = 58
+DEFAULT_OUTCOME = {'PASS': 58, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
+NORMAL_FIXTURE_FILES = 106
 # Report labels from the committed Kotlin scenario constructors; replacements cannot pass by count.
 DEFAULT_TEST_NAMES = (
     'Method body change',
@@ -63,6 +63,7 @@ DEFAULT_TEST_NAMES = (
     'Spring scheduled metadata lifecycle',
     'Process action body and in-flight process',
     'Stored script through native executable cache',
+    'Native Velocity RendererTemplate content',
 )
 
 

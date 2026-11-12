@@ -16,9 +16,9 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **57 scenarios, all required to PASS, with zero
+The default suite now contains **58 scenarios, all required to PASS, with zero
 SKIPs**. The latest recorded acceptance ran five times on one server boot and
-once after a fresh boot: **six runs of 57/57 PASS**, with zero bean-refresh
+once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
 regression suite; it is not a SAP live scenario.
 
@@ -330,6 +330,26 @@ when a fresh lookup returns v2. The test records that distinction; it does not
 claim retained objects are retargeted. File and classpath script repositories
 are outside this case. It is part of the default suite and passes in the
 six-run acceptance above. See [stored script execution](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/StoredScriptLiveTest.kt).
+
+## Velocity database templates
+
+**You edit:** The default script content of owned subject and body
+`RendererTemplate` models through a watched ImpEx UPDATE, from v1 to v2 and
+back. The renderer type is Velocity; output stays in an in-memory writer.
+No email is sent.
+
+**The test proves:** SAP's native `RendererService` renders the exact
+subject and body text with a new binding in each phase. Withholding the save
+keeps v1. The first render after the completed v2 import returns v2, and the
+first after restoration returns v1. An independent control template stays
+unchanged. The same service and JVM handle every phase without restart or
+manual cache flush. Owned templates and their media are removed afterward.
+
+This records SAP's existing default-content media behavior; no agent adapter
+was added. At the explicit English locale, UTF-8 text and literal `<&>` in the
+plain-text binding are checked exactly. This does not establish HTML escaping,
+localized template selection, physical `.vm` file reload, or email delivery.
+See [native Velocity template rendering](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/VelocityTemplateLiveTest.kt).
 
 ## CronJobs and native events
 
