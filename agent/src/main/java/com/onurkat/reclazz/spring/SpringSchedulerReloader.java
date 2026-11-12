@@ -47,8 +47,25 @@ public class SpringSchedulerReloader {
         return reloadScheduledMethods(reloadedClass, Set.of(), null);
     }
 
-    public synchronized boolean reloadScheduledMethods(Class<?> reloadedClass,
-                                                        Set<String> addedMethods, byte[] bytecode) {
+    public boolean reloadScheduledMethods(Class<?> reloadedClass,
+                                          Set<String> addedMethods, byte[] bytecode) {
+        return reloadScheduledMethods(reloadedClass, addedMethods, bytecode, true);
+    }
+
+    void beforeBeanRefresh(Class<?> reloadedClass) {
+        if (!hasScheduledAnnotation(reloadedClass)) return;
+        // The native processor reads merged annotations during initialization,
+        // before the later operation-source repair step clears these caches.
+        String failure = SpringOperationSourceReloader.clearSpringAnnotationCaches(reloadedClass);
+        if (failure != null) report(reloadedClass, failure);
+    }
+
+    boolean afterBeanRefresh(Class<?> reloadedClass, Set<String> addedMethods, byte[] bytecode) {
+        return reloadScheduledMethods(reloadedClass, addedMethods, bytecode, false);
+    }
+
+    private synchronized boolean reloadScheduledMethods(Class<?> reloadedClass,
+            Set<String> addedMethods, byte[] bytecode, boolean refreshOriginals) {
         AddedScheduledAdapter.Plan plan = AddedScheduledAdapter.inspect(bytecode, addedMethods, reloadedClass.getClassLoader());
         for (String reason : plan.refused()) report(reloadedClass, reason);
         boolean original = hasScheduledAnnotation(reloadedClass);
@@ -65,7 +82,7 @@ public class SpringSchedulerReloader {
                 for (String beanName : beans) {
                     found = true;
                     try {
-                        reloaded |= reloadBean(appContext, processor, beanName, reloadedClass, original, plan);
+                        reloaded |= reloadBean(appContext, processor, beanName, reloadedClass, original, plan, refreshOriginals);
                     } catch (Throwable failure) {
                         report(reloadedClass, beanName + ": " + Failures.describe(failure));
                     }
@@ -79,7 +96,8 @@ public class SpringSchedulerReloader {
     }
 
     private boolean reloadBean(Object context, Object processor, String beanName,
-                               Class<?> type, boolean original, AddedScheduledAdapter.Plan plan) throws Throwable {
+                               Class<?> type, boolean original, AddedScheduledAdapter.Plan plan,
+                               boolean refreshOriginals) throws Throwable {
         Method destroy = processor.getClass().getMethod(
                 "postProcessBeforeDestruction", Object.class, String.class);
         Method postProcess = processor.getClass().getMethod(
@@ -101,7 +119,14 @@ public class SpringSchedulerReloader {
         }
         Object bean = SpringBeans.getBean(context, beanName);
         if (bean == null) throw new IllegalStateException("bean " + beanName + " is unavailable");
-        if (original) {
+        // A processor installed in the factory already handles original methods
+        // when Spring recreates the singleton (possibly at batch end). Repeating
+        // initialization here schedules another immediate first tick before its
+        // predecessor can be cancelled. Standalone processor callers still need
+        // the explicit refresh, as do processors outside the native bean lifecycle.
+        boolean nativeLifecycle = !refreshOriginals && ((java.util.List<?>) factory.getClass()
+                .getMethod("getBeanPostProcessors").invoke(factory)).stream().anyMatch(p -> p == processor);
+        if (original && !nativeLifecycle) {
             destroy.invoke(processor, bean, beanName);
             postProcess.invoke(processor, bean, beanName);
         }

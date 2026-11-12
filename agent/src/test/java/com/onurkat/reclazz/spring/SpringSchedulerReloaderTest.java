@@ -34,6 +34,54 @@ class SpringSchedulerReloaderTest {
         public static void staticJob() { }
     }
 
+    @org.springframework.stereotype.Service
+    static class NativeJobs {
+        int calls;
+        @org.springframework.scheduling.annotation.Scheduled(fixedDelay = 1000)
+        public void tick() { calls++; }
+    }
+
+    @Test
+    void nativeBeanRecreationDoesNotScheduleTheReplacementTwice() {
+        // Run each registration's initial tick inline: the duplicate is observable
+        // deterministically even when its future is cancelled a moment later.
+        var executor = new ScheduledThreadPoolExecutor(1) {
+            @Override public java.util.concurrent.ScheduledFuture<?> scheduleWithFixedDelay(
+                    Runnable command, long initial, long delay, java.util.concurrent.TimeUnit unit) {
+                command.run();
+                return super.scheduleWithFixedDelay(command, 60_000, 60_000,
+                        java.util.concurrent.TimeUnit.MILLISECONDS);
+            }
+        };
+        var processor = new ScheduledAnnotationBeanPostProcessor();
+        try (var context = new GenericApplicationContext()) {
+            processor.setScheduler(executor);
+            processor.setBeanFactory(context.getBeanFactory());
+            context.getBeanFactory().addBeanPostProcessor(processor);
+            context.getBeanFactory().registerSingleton("schedulerProcessor", processor);
+            context.registerBean("nativeJobs", NativeJobs.class);
+            context.refresh();
+            processor.afterSingletonsInstantiated();
+            NativeJobs old = context.getBean(NativeJobs.class);
+            assertEquals(1, old.calls);
+            PlatformContext platform = (PlatformContext) Proxy.newProxyInstance(
+                    getClass().getClassLoader(), new Class<?>[]{PlatformContext.class},
+                    (p, m, args) -> m.getName().equals("getAllApplicationContexts") ? List.of(context) : null);
+            var orchestrator = new SpringReloadOrchestrator(platform);
+            orchestrator.beginBatch();
+            try { orchestrator.onClassReloaded(NativeJobs.class.getName(), NativeJobs.class, false); }
+            finally { orchestrator.endBatch(); }
+            NativeJobs current = context.getBean(NativeJobs.class);
+            assertNotSame(old, current);
+            assertEquals(1, old.calls, "retired singleton must remain cancelled");
+            assertEquals(1, current.calls, "native bean initialization already scheduled its first tick");
+            assertEquals(1, processor.getScheduledTasks().size());
+        } finally {
+            processor.destroy();
+            executor.shutdownNow();
+        }
+    }
+
     private static final Set<String> ADDED = Set.of("first:()V", "second:()V");
 
     @Test

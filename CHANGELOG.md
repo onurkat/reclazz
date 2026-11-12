@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Spring scheduled singleton refresh uses native initialization once, avoiding
+  a duplicate immediate tick. Batch RELOAD receipts follow deferred bean
+  recreation so restored schedules belong to the current singleton. Repeated
+  notifications of one Java disk version compile once; explicit resaves remain
+  eligible for compilation and retry.
+
 - SAP Commerce ImpEx imports refresh the native validation engine when persisted
   constraint or constraint-group counts or latest modification times change.
   Refresh failures preserve the import result and leave a pending engine concern.

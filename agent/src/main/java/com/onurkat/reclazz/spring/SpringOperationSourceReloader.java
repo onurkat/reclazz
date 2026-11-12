@@ -301,7 +301,7 @@ public class SpringOperationSourceReloader {
      * this, both repopulate on the next lookup, and a Spring that removed
      * them makes this a no-op.
      */
-    private static String clearSpringAnnotationCaches(Class<?> reloadedClass) {
+    static String clearSpringAnnotationCaches(Class<?> reloadedClass) {
         ClassLoader loader = reloadedClass.getClassLoader();
         if (loader == null) return null;
         for (String utility : new String[] {

@@ -1206,6 +1206,8 @@ public class ReclazzAgent {
         final SpringReloadOrchestrator spring;
         final PremiumModules modules;
         boolean success = true;
+        String effects;
+        boolean frameworkCompleted;
 
         FrameworkReload(String className, ClassReloader.ReloadResult result, byte[] bytes,
                         boolean wasLoaded, String source, long started, boolean timed,
@@ -1228,19 +1230,27 @@ public class ReclazzAgent {
     }
 
     private static void endReloadBatch(SpringReloadOrchestrator spring) {
+        java.util.List<FrameworkReload> ready = java.util.List.of();
         try {
             StructuralReloader structural = structuralReloader;
             if (structural != null) structural.endBatch();
         } finally {
             try {
                 if (--frameworkBatchDepth == 0) {
-                    var ready = java.util.List.copyOf(pendingFramework);
+                    ready = java.util.List.copyOf(pendingFramework);
                     pendingFramework.clear();
                     for (FrameworkReload work : ready) completeFramework(work, true);
                 }
             } finally {
-                try { spring.endBatch(); }
-                finally {
+                try {
+                    spring.endBatch();
+                    // Ordinary constructor owners can be recreated only here.
+                    // No client may observe RELOAD while those old receivers
+                    // still own timers or references.
+                    for (FrameworkReload work : ready) {
+                        if (work.frameworkCompleted) publishFramework(work);
+                    }
+                } finally {
                     if (frameworkBatchDepth == 0) {
                         pendingFramework.clear();
                         StructuralReloader structural = structuralReloader;
@@ -1294,10 +1304,9 @@ public class ReclazzAgent {
                 ReloadEffects.note("interceptor re-registered");
                 StatusReporter.detail("Interceptor reloaded: " + work.className);
             }
-            String effects = ReloadEffects.end();
-            reloadLanded(work.className, work.result.isStructuralReload(),
-                    work.timed ? System.currentTimeMillis() - work.started : -1,
-                    work.result.getShape(), work.source, effects);
+            work.effects = ReloadEffects.end();
+            work.frameworkCompleted = true;
+            if (!deferred) publishFramework(work);
         } catch (Throwable t) {
             work.success = false;
             String why = Failures.describe(t);
@@ -1306,6 +1315,22 @@ public class ReclazzAgent {
                     + "; the framework refresh after it did not finish: " + why, work.source);
         } finally {
             ReloadEffects.end();
+        }
+    }
+
+    private static void publishFramework(FrameworkReload work) {
+        try {
+            reloadLanded(work.className, work.result.isStructuralReload(),
+                    work.timed ? System.currentTimeMillis() - work.started : -1,
+                    work.result.getShape(), work.source, work.effects);
+        } catch (Throwable t) {
+            // Receipt delivery retains the same per-class failure boundary as
+            // framework work; one listener cannot suppress sibling receipts.
+            work.success = false;
+            String why = Failures.describe(t);
+            StatusReporter.error("Reload of " + work.className + " did not finish: " + why);
+            recordOutcome(work.className, true, kindOf(work.result)
+                    + "; the reload receipt did not finish: " + why, work.source);
         }
     }
 

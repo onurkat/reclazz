@@ -130,12 +130,12 @@ public class FileWatcher {
     private static final int MAX_DEDUP_ENTRIES = 5000;
     private final Map<Path, Long> lastModifiedMap = new ConcurrentHashMap<>();
     /**
-     * What the watcher remembers about one class file.
+     * What the watcher remembers about one watched file.
      *
-     * <p>Three things, in one object rather than three maps of boxed longs.
-     * Measured on 20,000 class files, the three maps cost 520 bytes per file,
-     * and a SAP Commerce install has fifty thousand; one entry with three
-     * primitive fields is the same knowledge at a fraction of the cost.
+     * <p>Class baseline and delivery metadata share one object rather than
+     * separate maps of boxed longs. Java sources also remember the timestamp
+     * actually delivered, so inventory sightings and late JDK notifications
+     * cannot be mistaken for a new source save.
      *
      * <p>{@code contentHash} skips dispatch when the file's bytes are
      * identical to the last dispatched version. Hybris's {@code ant build}
@@ -160,6 +160,8 @@ public class FileWatcher {
     private static final class FileState {
         /** CRC32 of the bytes last dispatched or baselined, or -1 for none. */
         long contentHash = -1L;
+        /** Java disk version already delivered; independent of inventory/scan sightings. */
+        long deliveredSourceMtime;
         /** The baseline's mtime, or 0 once consumed or never taken. */
         long baselineMtime;
         /** The mtime last seen with, or 0 when never seen (or deleted). */
@@ -1136,7 +1138,31 @@ public class FileWatcher {
             // Seen no longer; the hash stays, so a file recreated with the
             // same bytes is still known to be what the JVM already holds.
             FileState state = fileStates.get(pending.path);
-            if (state != null) state.seenMtime = 0;
+            if (state != null) {
+                state.seenMtime = 0;
+                if (pending.path.getFileName().toString().endsWith(".java")) {
+                    state.deliveredSourceMtime = 0;
+                    state.contentHash = -1L;
+                }
+            }
+        }
+
+        // The hot scan can deliver a source save before the JDK poll reports
+        // the same write. Recompiling that late duplicate recreates singletons
+        // after their accepted RELOAD. A deliberate resave (new mtime) remains
+        // a compile/retry even with identical bytes; changed same-mtime bytes
+        // also remain visible. Inventory sightings are not delivery evidence.
+        if (pending.type != ChangeEvent.Type.DELETED
+                && pending.path.getFileName().toString().endsWith(".java")) {
+            long mtime = lastModifiedMillis(pending.path);
+            long hash = computeContentHash(pending.path);
+            if (mtime > 0 && hash != -1L) {
+                FileState state = stateOf(pending.path);
+                boolean duplicate = state.deliveredSourceMtime == mtime && state.contentHash == hash;
+                state.deliveredSourceMtime = mtime;
+                state.contentHash = hash;
+                if (duplicate) return null;
+            }
         }
 
         // Content-hash dedupe for .class files. A no-op build

@@ -265,6 +265,7 @@ public class SpringReloadOrchestrator {
         if (addedMethods) classesWithAddedMembers.add(className);
 
         if (isSpringBean(reloadedClass)) {
+            schedulerReloader.beforeBeanRefresh(reloadedClass);
             var lifecycle = lifecycleReloader.prepare(reloadedClass, addedMethodSigs, newBytecode);
             if (lifecycle == null) return;
             // 0. What the container thinks this class needs injected, before
@@ -429,7 +430,11 @@ public class SpringReloadOrchestrator {
                     r -> securityReloader.refreshMethodSecurity(r.type(), r.annotationsChanged())),
 
             new ReloadSteps.Step("Scheduler re-registration",
-                    r -> schedulerReloader.reloadScheduledMethods(r.type(), r.addedMethods(), r.bytecode())),
+                    r -> {
+                        if (isSpringBean(r.type()))
+                            schedulerReloader.afterBeanRefresh(r.type(), r.addedMethods(), r.bytecode());
+                        else schedulerReloader.reloadScheduledMethods(r.type(), r.addedMethods(), r.bytecode());
+                    }),
             // Same relevance gate. An existing @EventListener adapter on an
             // original method holds a Method whose body redefinition updated in
             // place, so a body-only edit keeps dispatching through it with nothing
