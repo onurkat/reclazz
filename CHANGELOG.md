@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- A reloaded method that reads or writes a protected field inherited from a
+  superclass in another package no longer fails with IllegalAccessError.
+
 - Spring scheduled singleton refresh uses native initialization once, avoiding
   a duplicate immediate tick. Batch RELOAD receipts follow deferred bean
   recreation so restored schedules belong to the current singleton. Repeated

@@ -7,6 +7,6 @@ import de.hybris.platform.processengine.model.BusinessProcessModel;
 public class ProbeProcessAction extends AbstractProceduralAction<BusinessProcessModel> {
     @Override
     public void executeAction(BusinessProcessModel process) {
-        getProcessParameterHelper().setProcessParameter(process, "reclazzActionResult", "action-v1");
+        processParameterHelper.setProcessParameter(process, "reclazzActionResult", "action-v1");
     }
 }

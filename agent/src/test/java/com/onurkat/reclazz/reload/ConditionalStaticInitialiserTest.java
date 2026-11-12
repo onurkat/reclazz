@@ -195,6 +195,7 @@ class ConditionalStaticInitialiserTest {
         assertEquals(keys, companion.getStaticPlan().slicedKeys, companion.getStaticPlan().refused.toString());
         assertTrue(companion.getStaticPlan().hasCode());
         var lookup = MethodHandles.privateLookupIn(owner, MethodHandles.lookup());
+        com.onurkat.reclazz.bootstrap.LookupCapture.store(owner, lookup);
         var hidden = lookup.defineHiddenClass(companion.getBytecode(), true, MethodHandles.Lookup.ClassOption.NESTMATE);
         hidden.findStatic(hidden.lookupClass(), StaticInitialiserSlicer.INIT_METHOD, MethodType.methodType(void.class)).invokeExact();
     }

@@ -290,8 +290,8 @@ and [new definitions](../integration-test/src/main/kotlin/com/onurkat/reclazz/in
 
 ## Business process action body
 
-**You edit:** The body of a prepared Java process action using SAP's public
-`getProcessParameterHelper()` accessor, from `action-v1` to
+**You edit:** The body of a prepared Java process action reading the inherited
+protected `processParameterHelper` field directly, from `action-v1` to
 `action-v2` and back, without changing its process definition.
 
 **The test checks:** A native process is held at its wait node before the edit.
@@ -301,12 +301,14 @@ A fresh process must also persist v2, and another must persist v1 after source
 restoration. Process identity and definition version stay pinned. Cleanup
 removes the owned processes, tasks, task logs and context parameters.
 
-An initial native probe accessed the inherited protected helper field directly
-and failed after reload with `IllegalAccessError`. That access form remains an
-unresolved limitation; the public-accessor case does not certify it.
+The initial direct-field probe failed after reload with `IllegalAccessError`.
+Companion field access now links through the original class lookup; the focused
+native case passes with the direct field, including the held process and source
+restoration. This proves this inherited SAP helper field in the tested subclass,
+not every protected-member or classloader shape.
 
-This is a coverage case for existing Java body reload. Retry, error and split
-branches are outside it. The case takes about 84 s. See [action and in-flight process](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ProcessActionLiveTest.kt).
+Retry, error and split branches are outside this case. The case takes about
+84 s. See [action and in-flight process](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ProcessActionLiveTest.kt).
 
 ## CronJobs and native events
 

@@ -217,6 +217,7 @@ class ConditionalInstanceInitialiserTest {
         var companion = CompanionGenerator.generate(source.name, bytes, diff, 1, Set.of());
         assertEquals(keys, companion.getInstancePlan().initialisers.keySet(), companion.getInstancePlan().refused.toString());
         var lookup = MethodHandles.privateLookupIn(Fixture.class, MethodHandles.lookup());
+        com.onurkat.reclazz.bootstrap.LookupCapture.store(Fixture.class, lookup);
         var hidden = lookup.defineHiddenClass(companion.getBytecode(), true, MethodHandles.Lookup.ClassOption.NESTMATE);
         Map<String, MethodHandle> handles = new LinkedHashMap<>();
         for (String key : keys) {

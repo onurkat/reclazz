@@ -61,7 +61,43 @@ public final class ProtectedCallResolver {
     public static final int KIND_STATIC = 2;
     public static final int KIND_INTERFACE = 3;
 
+    public static final int FIELD_GET = 0;
+    public static final int FIELD_SET = 1;
+    public static final int FIELD_GET_STATIC = 2;
+    public static final int FIELD_SET_STATIC = 3;
+
     private ProtectedCallResolver() {}
+
+    /**
+     * Links a physical field instruction copied into a companion using the
+     * original host's access. A hidden nestmate has private host access but
+     * is not itself a subclass of the host's parent. In particular it cannot
+     * directly read that parent's cross-package protected fields.
+     *
+     * <p>Keep the symbolic owner and let Lookup resolve inheritance, including
+     * its protected receiver restriction. Added and watched external fields
+     * are dispatched before this route; a missing physical field is an error.
+     */
+    public static CallSite physicalField(MethodHandles.Lookup caller, String name,
+                                         MethodType type, String ownerInternal,
+                                         String targetInternal, int kind) throws Throwable {
+        ClassLoader loader = caller.lookupClass().getClassLoader();
+        Class<?> target = Class.forName(targetInternal.replace('/', '.'), false, loader);
+        MethodHandles.Lookup lookup = readTargetLookup(target);
+        if (lookup == null) {
+            throw new IllegalAccessException("No captured host lookup for " + target.getName());
+        }
+        Class<?> owner = Class.forName(ownerInternal.replace('/', '.'), false, loader);
+        MethodHandle field = switch (kind) {
+            case FIELD_GET -> lookup.findGetter(owner, name, type.returnType());
+            case FIELD_SET -> lookup.findSetter(owner, name, type.parameterType(1));
+            case FIELD_GET_STATIC -> lookup.findStaticGetter(owner, name, type.returnType());
+            case FIELD_SET_STATIC -> lookup.findStaticSetter(owner, name, type.parameterType(0));
+            default -> throw new IllegalArgumentException("Unsupported physical field kind: " + kind);
+        };
+        return new ConstantCallSite(field.asType(type));
+    }
+
 
     /**
      * Invokedynamic bootstrap method. Called once per rewritten call

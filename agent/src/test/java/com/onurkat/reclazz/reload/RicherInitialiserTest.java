@@ -216,6 +216,7 @@ class RicherInitialiserTest implements Opcodes {
         if (statics) assertEquals(keys, companion.getStaticPlan().slicedKeys, companion.getStaticPlan().refused.toString());
         else assertEquals(keys, companion.getInstancePlan().initialisers.keySet(), companion.getInstancePlan().refused.toString());
         var lookup = MethodHandles.privateLookupIn(owner, MethodHandles.lookup());
+        com.onurkat.reclazz.bootstrap.LookupCapture.store(owner, lookup);
         var hidden = lookup.defineHiddenClass(companion.getBytecode(), true, MethodHandles.Lookup.ClassOption.NESTMATE);
         if (statics) hidden.findStatic(hidden.lookupClass(), StaticInitialiserSlicer.INIT_METHOD, MethodType.methodType(void.class)).invokeExact();
         else {

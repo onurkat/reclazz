@@ -207,9 +207,25 @@ public class CompanionGenerator implements Opcodes {
 
     private static MethodVisitor externalInstanceFields(MethodVisitor visitor, String originalClass,
                                                         TransformContext context) {
-        if (context == null) return visitor;
-        FieldAccessAdapter fields = new FieldAccessAdapter(visitor, context, originalClass);
-        return new MethodVisitor(ASM9, visitor) {
+        MethodVisitor physical = new MethodVisitor(ASM9, visitor) {
+            @Override public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
+                String type;
+                int kind;
+                switch (opcode) {
+                    case GETFIELD -> { type = "(L" + owner + ";)" + descriptor; kind = ProtectedCallResolver.FIELD_GET; }
+                    case PUTFIELD -> { type = "(L" + owner + ";" + descriptor + ")V"; kind = ProtectedCallResolver.FIELD_SET; }
+                    case GETSTATIC -> { type = "()" + descriptor; kind = ProtectedCallResolver.FIELD_GET_STATIC; }
+                    case PUTSTATIC -> { type = "(" + descriptor + ")V"; kind = ProtectedCallResolver.FIELD_SET_STATIC; }
+                    default -> throw new IllegalArgumentException("Unsupported field opcode: " + opcode);
+                }
+                super.visitInvokeDynamicInsn(name, type,
+                        new Handle(H_INVOKESTATIC, PROTECTED_CALL_RESOLVER, "physicalField", PROTECTED_CALL_BSM_DESC, false),
+                        owner, originalClass, kind);
+            }
+        };
+        if (context == null) return physical;
+        FieldAccessAdapter fields = new FieldAccessAdapter(physical, context, originalClass);
+        return new MethodVisitor(ASM9, physical) {
             @Override public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
                 if (!owner.equals(originalClass) && (opcode == GETFIELD || opcode == PUTFIELD)) {
                     // Own added fields already use FieldStore in CompanionMethodAdapter.
@@ -531,7 +547,7 @@ public class CompanionGenerator implements Opcodes {
                 }
             }
 
-            // Regular field access, companion has NESTMATE access to original class
+            // Remaining physical fields use the host Lookup after watched external dispatch.
             super.visitFieldInsn(opcode, owner, name, descriptor);
         }
 
@@ -614,9 +630,8 @@ public class CompanionGenerator implements Opcodes {
          * is essentially a direct call. The only real cost is one bsm
          * invocation per call site at first use.
          *
-         * <p>Static calls are exempt, they don't have receiver-type
-         * issues and the access rules collapse to plain class-level
-         * checks that hidden classes also pass for public targets.
+         * <p>Static calls also use host access: inherited protected static
+         * members still need the original subclass context.
          * Array {@code clone()} and similar are exempt by virtue of
          * having an array-type owner string starting with {@code [}.
          */

@@ -22,7 +22,7 @@ import static org.objectweb.asm.Opcodes.*;
 
 class CompanionExternalFieldPolicyTest extends TransformTestBase {
     @Test
-    void externalInstanceFieldsUseWatchedDispatchWithoutChangingOtherInstructions() {
+    void externalInstanceFieldsUseWatchedDispatchBeforeHostCheckedPhysicalFields() {
         byte[] bytes = compile(
                 new SourceFile("Foreign", "public class Foreign { public int value; public int __reclazz$marker; public static int shared; }"),
                 new SourceFile("Plain", "public class Plain { public int value; }"),
@@ -46,8 +46,14 @@ class CompanionExternalFieldPolicyTest extends TransformTestBase {
         MethodNode live = method(CompanionGenerator.generate("Probe", bytes, diff, 1, Set.of(), Set.of(), context).getBytecode());
         List<String> fields = new ArrayList<>();
         List<String> sites = new ArrayList<>();
+        List<String> physical = new ArrayList<>();
         for (var instruction : live.instructions) {
             if (instruction instanceof FieldInsnNode f) fields.add(f.owner + "." + f.name + ":" + f.getOpcode());
+            if (instruction instanceof InvokeDynamicInsnNode site && site.bsm.getName().equals("physicalField")) {
+                assertEquals("com/onurkat/reclazz/bootstrap/ProtectedCallResolver", site.bsm.getOwner());
+                assertEquals("Probe", site.bsmArgs[1]);
+                physical.add(site.bsmArgs[0] + "." + site.name + ":" + site.desc + ":" + site.bsmArgs[2]);
+            }
             if (instruction instanceof InvokeDynamicInsnNode site
                     && (site.bsm.getName().equals("bootstrapFieldGet") || site.bsm.getName().equals("bootstrapFieldSet"))) {
                 assertEquals("com/onurkat/reclazz/bootstrap/ReclazzBootstrap", site.bsm.getOwner());
@@ -56,13 +62,15 @@ class CompanionExternalFieldPolicyTest extends TransformTestBase {
             }
         }
         assertEquals(List.of("bootstrapFieldSet:(LForeign;I)V", "bootstrapFieldGet:(LForeign;)I"), sites);
-        assertEquals(Set.of("Probe.own:" + PUTFIELD, "Probe.own:" + GETFIELD,
-                "Foreign.__reclazz$marker:" + GETFIELD, "Plain.value:" + GETFIELD,
-                "Foreign.shared:" + GETSTATIC), Set.copyOf(fields));
-        assertEquals(5, fields.size());
+        assertTrue(fields.isEmpty(), fields.toString());
+        assertEquals(List.of("Probe.own:(LProbe;I)V:1", "Foreign.__reclazz$marker:(LForeign;)I:0",
+                "Plain.value:(LPlain;)I:0", "Probe.own:(LProbe;)I:0", "Foreign.shared:()I:2"), physical);
         MethodNode legacy = method(CompanionGenerator.generate("Probe", bytes, diff, 2, Set.of(), Set.of()).getBytecode());
         assertEquals(7, java.util.stream.StreamSupport.stream(legacy.instructions.spliterator(), false)
-                .filter(i -> i instanceof FieldInsnNode).count(), "context-free callers retain their prior bytecode policy");
+                .filter(i -> i instanceof InvokeDynamicInsnNode site && site.bsm.getName().equals("physicalField")).count(),
+                "context-free generation also retains host access");
+        assertEquals(0, java.util.stream.StreamSupport.stream(legacy.instructions.spliterator(), false)
+                .filter(i -> i instanceof FieldInsnNode).count());
     }
 
     private static ClassNode node(byte[] bytes) {

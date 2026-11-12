@@ -193,6 +193,7 @@ class MultiConstructorInitialiserTest implements Opcodes {
         var companion = CompanionGenerator.generate(source.name,bytes,StructuralAnalyzer.analyze(before,bytes),1,Set.of());
         assertEquals(keys(),companion.getInstancePlan().initialisers.keySet(),companion.getInstancePlan().refused.toString());
         var lookup = MethodHandles.privateLookupIn(Routes.class,MethodHandles.lookup());
+        com.onurkat.reclazz.bootstrap.LookupCapture.store(Routes.class, lookup);
         var hidden = lookup.defineHiddenClass(companion.getBytecode(),true,MethodHandles.Lookup.ClassOption.NESTMATE);
         Map<String,MethodHandle> handles = new LinkedHashMap<>();
         for (String key : keys()) handles.put(key,hidden.findStatic(hidden.lookupClass(),InstanceInitialiserSlicer.methodName(key.substring(0,key.indexOf(':'))),
