@@ -61,6 +61,21 @@ public class SpringMvcReloader {
         return reloaded && !sapFailure[0];
     }
 
+    /** New XML-scanned controllers refresh only the contexts that actually own the scan. */
+    boolean reloadMappingsInOwner(Object context, Class<?> type) {
+        return reloadMappingsIn(context,type,java.util.Set.of(),new boolean[1]);
+    }
+
+    /** Remove only this operation's handlers after its newly introduced definitions are rolled back. */
+    void rollbackNewMappings(Object context, Class<?> type) {
+        Object mapping=findHandlerMapping(context);if(mapping==null)return;
+        try {
+            if(SapCommerceMappings.supports(mapping)) {
+                if(!SapCommerceMappings.rescan(mapping,type))throw new IllegalStateException("Native mappings recovery failed");
+            } else unregisterMappings(mapping,type);
+        } catch(Exception failure) {throw new IllegalStateException("New controller mapping recovery failed",failure);}
+    }
+
     private boolean reloadMappingsIn(Object appContext, Class<?> controllerClass,
                                      java.util.Set<String> addedHandlers, boolean[] sapFailure) {
         try {

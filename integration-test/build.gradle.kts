@@ -99,3 +99,11 @@ val facadeChainContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.FacadeChainContractTestKt")
 }
+
+// Narrow C22 new-controller enrollment evidence; broad harness belongs to audit.
+val newOccControllerContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.NewOccControllerContractTestKt")
+}

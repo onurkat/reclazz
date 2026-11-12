@@ -23,12 +23,12 @@ import com.onurkat.reclazz.util.Reflect;
  * autowired constructors and post-processors included, just works once
  * somebody registers the definition. That is all this does.
  *
- * <p>The class is registered in the context whose classloader defines it, so
- * a web extension's controller lands in its web context and a core service in
- * the global one. A name collision is left alone and said: redefining an
- * existing bean is a different operation with different blast radius, and it
- * already has a reloader. Failures unregister the definition again, so a
- * constructor that throws leaves the context exactly as it was.
+ * <p>A controller in a captured plain XML component-scan uses that scan's
+ * actual owning contexts. Other components use their defining loader's
+ * context. A name collision is left alone: redefining an existing bean is a
+ * different operation with a different blast radius and its own reloader.
+ * Failures remove only definitions introduced by this operation; owned MVC
+ * registrations are rolled back when scan-owner mapping registration fails.
  *
  * <p>Scope: concrete components with singleton or prototype scope and no scoped proxy,
  * resolved once the class is loaded through the context's Spring. A direct
@@ -44,6 +44,7 @@ public final class SpringNewBeanRegistrar {
         REGISTERED("registered as a new bean", true),
         FILTERED("component conditions did not match", true),
         CONDITION_FAILED("component condition evaluation failed", false),
+        OWNER_FAILED("scan-owner controller registration failed", false),
         NOT_A_COMPONENT(null, false), DECLINED(null, false);
 
         private final String description;
@@ -129,6 +130,26 @@ public final class SpringNewBeanRegistrar {
             }
             if (home == null) return Outcome.DECLINED;
 
+            Object factory=SpringBeans.getBeanFactory(home);
+            Stereotype candidate=resolveStereotype(clazz,factory,factory.getClass().getClassLoader());
+            if(candidate!=null&&candidate.controller) {
+                var owners=SpringComponentScanOwners.find(className,contexts);
+                if(!owners.isEmpty())return registerScannedController(clazz,bytecode,owners);
+            }
+            return registerInContext(clazz,bytecode,home,false,new java.util.ArrayList<>());
+
+        } catch (Throwable t) {
+            StatusReporter.warn("New component " + className + " could not be registered: "
+                    + rootCause(t));
+            return Outcome.DECLINED;
+        }
+    }
+
+
+    private record Created(Object context,Object factory,String name,Object definition) { }
+
+    private Outcome registerInContext(Class<?> clazz,byte[] bytecode,Object home,boolean deferMappings,java.util.List<Created> created) throws Exception {
+        String className=clazz.getName();
             Object beanFactory = SpringBeans.getBeanFactory(home);
             ClassLoader springLoader = beanFactory.getClass().getClassLoader();
             // Resolve the stereotype and bean name through Spring's own merged
@@ -178,6 +199,7 @@ public final class SpringNewBeanRegistrar {
                 return Outcome.DECLINED;
             }
             register.invoke(beanFactory, beanName, definition);
+            created.add(new Created(home,beanFactory,beanName,definition));
 
             try {
                 boolean eager = Boolean.TRUE.equals(definition.getClass().getMethod("isSingleton").invoke(definition))
@@ -187,7 +209,7 @@ public final class SpringNewBeanRegistrar {
                         + clazz.getName() + "), " + (eager ? "dependencies injected, ready to serve."
                         : "created on demand."));
 
-                if (stereotype.controller) {
+                if (stereotype.controller && !deferMappings) {
                     boolean mapped = mvcReloader.reloadMappings(clazz);
                     if (mapped) {
                         StatusReporter.success("Spring MVC mappings registered for the new "
@@ -210,10 +232,44 @@ public final class SpringNewBeanRegistrar {
                         + "the context is unchanged.");
                 return Outcome.DECLINED;
             }
-        } catch (Throwable t) {
-            StatusReporter.warn("New component " + className + " could not be registered: "
-                    + rootCause(t));
-            return Outcome.DECLINED;
+    }
+
+    private Outcome registerScannedController(Class<?> clazz,byte[] bytes,List<Object> owners) {
+        var created=new java.util.ArrayList<Created>();
+        var attempted=new java.util.ArrayList<Object>();
+        try {
+            // Preflight every owner/collision before mutating the first context.
+            for(Object owner:owners) {
+                if(Class.forName(clazz.getName(),false,contextClassLoader(owner))!=clazz)throw new IllegalStateException("Scan-owner class identity differs");
+                Object factory=SpringBeans.getBeanFactory(owner);
+                Stereotype stereotype=resolveStereotype(clazz,factory,factory.getClass().getClassLoader());
+                if(stereotype==null||!stereotype.controller)throw new IllegalStateException("Scan-owner controller metadata unavailable");
+                Method contains=Reflect.findMethod(factory.getClass(),"containsBeanDefinition",String.class);
+                Method singleton=Reflect.findMethod(factory.getClass(),"containsSingleton",String.class);
+                if(contains==null||singleton==null||Boolean.TRUE.equals(contains.invoke(factory,stereotype.beanName))||Boolean.TRUE.equals(singleton.invoke(factory,stereotype.beanName)))
+                    throw new IllegalStateException("Scan-owner bean name already present");
+            }
+            for(Object owner:owners) {
+                Outcome outcome=registerInContext(clazz,bytes,owner,true,created);
+                if(outcome!=Outcome.REGISTERED&&outcome!=Outcome.FILTERED)throw new IllegalStateException("Scan-owner registration: "+outcome);
+            }
+            if(created.isEmpty())return Outcome.FILTERED;
+            for(Created value:created) {
+                attempted.add(value.context);
+                if(!mvcReloader.reloadMappingsInOwner(value.context,clazz))throw new IllegalStateException("Scan-owner MVC mappings unavailable");
+            }
+            StatusReporter.success("Spring MVC mappings registered for the new controller "+clazz.getSimpleName()+".");
+            return Outcome.REGISTERED;
+        } catch(Throwable failure) {
+            for(Created value:created)try {
+                Method has=Reflect.findMethod(value.factory.getClass(),"containsBeanDefinition",String.class);
+                Method get=Reflect.findMethod(value.factory.getClass(),"getBeanDefinition",String.class);
+                if(Boolean.TRUE.equals(has.invoke(value.factory,value.name))&&get.invoke(value.factory,value.name)==value.definition)
+                    Reflect.findMethod(value.factory.getClass(),"removeBeanDefinition",String.class).invoke(value.factory,value.name);
+            } catch(Throwable recovery) {failure.addSuppressed(recovery);}
+            for(Object owner:attempted)try {mvcReloader.rollbackNewMappings(owner,clazz);}catch(Throwable recovery) {failure.addSuppressed(recovery);}
+            StatusReporter.warn("New controller "+clazz.getName()+" scan-owner registration failed: "+rootCause(failure));
+            return Outcome.OWNER_FAILED;
         }
     }
 

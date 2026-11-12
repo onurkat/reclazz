@@ -1,0 +1,16 @@
+package com.onurkat.reclazztest.occ;
+
+import de.hybris.platform.commerceservices.request.mapping.annotation.ApiVersion;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
+
+@Controller("reclazzC22__NONCE__")
+@ApiVersion("v2")
+@RequestMapping("/{baseSiteId}/reclazz-c22-__NONCE__")
+public class ReclazzNewOcc__NONCE__ {
+    @GetMapping @ResponseBody
+    public Map<String,String> probe(@RequestParam("requestNonce") String requestNonce) {
+        return Map.of("sourceNonce","__NONCE__","requestNonce",requestNonce);
+    }
+}

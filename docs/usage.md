@@ -438,6 +438,16 @@ An eager singleton still initializes immediately, and a failed eager creation
 removes its definition. On context close, Spring destroys created singletons;
 prototype cleanup remains the caller's responsibility.
 
+New controllers in an already loaded plain XML `context:component-scan` use the
+captured scan's owning contexts, including SAP Commerce OCC web contexts. The
+scan must use literal package names and default scanner settings, without
+filters or enclosing profiles. Only the successfully loaded XML content can
+establish ownership; an unapplied XML edit cannot redirect registration.
+Unsupported scan settings keep the existing registration path with a diagnostic.
+Other components keep their defining-context registration behavior. Deleting a
+source or class file does not remove its already loaded bean or HTTP handler;
+restart to clear that runtime registration.
+
 Class-level `@Profile` and `@Conditional`, including composed annotations, now use
 the application's native Spring condition evaluator before registration. Profile
 expressions and default profiles follow the current environment. Custom conditions

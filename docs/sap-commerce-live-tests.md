@@ -16,7 +16,7 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **60 scenarios, all required to PASS, with zero
+The default suite now contains **61 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
@@ -175,6 +175,27 @@ the prepared class.
 message or accepts a value after its limit changes. Invalid and valid controls
 remain checked. This does not cover stored SAP validation-engine constraints.
 See [validator scenarios](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ValidatorLiveTest.kt).
+
+## New OCC controller after startup
+
+**You add:** A controller Java source that was absent at server startup, in a
+package covered by an already loaded plain XML component-scan. Each test run
+uses a new class, bean name and route.
+
+**Reclazz does:** Registers the new controller in the contexts that actually
+loaded the matching scan, then uses SAP's native MVC mapping lifecycle. A
+shared defining classloader does not place an OCC controller in the global
+context. Unsupported scan filters, custom scanner settings and unresolved
+package expressions do not establish a new scan owner.
+
+**The test proves:** Native OCC changes from404 to200 and returns both the fresh
+source nonce and request nonce, with actual `CommerceHandlerMapping` ownership,
+unchanged existing OCC/probe endpoints and the same JVM. This is default case61.
+Deleting the source/class files leaves the already loaded endpoint active until
+restart; automatic bean/handler removal is not claimed. The test removes its
+owned files, and install recovery resets runtime registrations. The focused
+regression passed; full61-case repeatability remains an independent audit gate.
+See [the new-controller case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/NewOccControllerEvidenceTest.kt).
 
 ## Populators and Orika
 
@@ -461,7 +482,7 @@ version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
 is restored, and owned rows are removed through SAP's model service. This case
-is opt-in and does not increase the default 60-case suite. See the
+is opt-in and does not increase the default 61-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 

@@ -16,7 +16,7 @@ public final class SpringXmlResources {
     private SpringXmlResources() { }
     /** Each loaded file by its real path: the path it was loaded from, and the document reader that parsed it. */
     private record Entry(WeakReference<Object> registry, Map<Path, Loaded> paths) { }
-    private record Loaded(Path path, WeakReference<Class<?>> documentReader) { }
+    private record Loaded(Path path, WeakReference<Class<?>> documentReader, byte[] digest) { }
     private static final List<Entry> entries = new ArrayList<>();
 
     /** Called after a successful doLoadBeanDefinitions return, including nested imports. */
@@ -29,7 +29,7 @@ public final class SpringXmlResources {
             if (registry == null || !"file".equals(url.getProtocol())) return;
             Path path = Path.of(url.toURI()).toAbsolutePath().normalize();
             if (!path.getFileName().toString().endsWith(".xml")) return;
-            Loaded loaded = new Loaded(path, new WeakReference<>(documentReaderClass(reader)));
+            Loaded loaded = new Loaded(path, new WeakReference<>(documentReaderClass(reader)), digest(path));
             synchronized (entries) {
                 entries.removeIf(e -> e.registry().get() == null);
                 for (Entry entry : entries) {
@@ -69,6 +69,23 @@ public final class SpringXmlResources {
             }
         }
         return result;
+    }
+
+    /** A source edit not yet read successfully cannot confer new scan ownership. */
+    public static boolean matchesLoadedContent(Path path,Object context,byte[] digest) {
+        if(digest==null)return false;
+        Object factory=activeFactory(context);if(factory==null)return false;
+        synchronized(entries) {
+            for(Entry entry:entries)if(entry.registry().get()==context||entry.registry().get()==factory) {
+                Loaded loaded=entry.paths().get(canonical(path));
+                if(loaded!=null&&java.util.Arrays.equals(loaded.digest(),digest))return true;
+            }
+        }
+        return false;
+    }
+    private static byte[] digest(Path path) {
+        try {return java.security.MessageDigest.getInstance("SHA-256").digest(java.nio.file.Files.readAllBytes(path));}
+        catch(Exception unavailable) {return null;}
     }
 
     /** Snapshot for the watcher; no context, factory or classloader is retained by it. */

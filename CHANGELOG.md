@@ -8,6 +8,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- New controller classes in captured plain XML component-scan packages register
+  in the actual scan owners before native MVC refresh. SAP Commerce OCC now
+  serves a new endpoint after startup without placing its bean in the global
+  context. The default live suite includes this case (61 scenarios); source
+  deletion does not remove an already loaded endpoint.
+
 - The default SAP Commerce suite adds native facade/service-chain coverage: an
   owned service edit changes converted ProductData while native bean wiring,
   persisted rows and an independent facade control stay stable (60 scenarios).

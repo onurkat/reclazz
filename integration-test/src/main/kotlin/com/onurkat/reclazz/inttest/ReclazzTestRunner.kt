@@ -115,6 +115,7 @@ fun main() {
         VelocityTemplateLiveTest(config, agentClient, httpVerifier),     // 58
         SearchRestrictionLiveTest(config, agentClient, httpVerifier),
         FacadeChainLiveTest(config, agentClient, httpVerifier),          // 60    // 59
+        NewOccControllerEvidenceTest(config, agentClient, httpVerifier), // 61
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")
