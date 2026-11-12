@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+- Add default live coverage for resolved ImpEx UPDATE macros, whole-file unresolved-header refusal and corrected-save recovery with owned row cleanup.
+
 - Add default live coverage for native SAP Commerce OCC error responses after an owned Java throw-type edit, with stable success/error controls and same-JVM restoration.
 
 ### Changed

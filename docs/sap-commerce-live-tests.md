@@ -16,7 +16,7 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **62 scenarios, all required to PASS, with zero
+The default suite now contains **63 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
@@ -282,9 +282,26 @@ REMOVE permission off, it refuses a file containing a REMOVE header.
 
 **The test proves:** Imported values appear through the application. The refusal
 case leaves the protected row unchanged and does not import a following bait
-row. Positive REMOVE, a full macro matrix and malformed-import recovery are
-not covered by these live cases. See [auto-import](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ImpexAutoImportTest.kt)
+row. The dedicated macro UPDATE case below adds unresolved-header guard
+recovery. Positive REMOVE, a full macro matrix and native parser rollback
+are not covered by these live cases. See [auto-import](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ImpexAutoImportTest.kt)
 and [refusal](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ImpexRemoveRefusalLiveTest.kt).
+
+## ImpEx UPDATE macros and corrected-save recovery
+
+`ImpexUpdateMacrosLiveTest` adds default case63 to the existing auto-import
+coverage. A run-owned watched file uses a resolved UPDATE header macro, a
+column macro and code/value macros. SAP's native import changes the owned
+Title target from v0 to v1; detached database reads retain exact PKs, German
+values and an independent control row.
+
+A later save contains an unresolved header after a valid UPDATE bait row.
+Reclazz's existing whole-file preflight refuses it: the exact warning names
+the file and line, no success receipt is accepted, and both rows stay unchanged.
+Correcting the same file imports v2; a final UPDATE restores v0 before owned
+file/row cleanup. This demonstrates pre-import guard recovery, not native
+parser atomicity or rollback. Positive REMOVE and the full macro matrix remain
+outside this case. The actual baseline must fail the v1 oracle before any save.
 
 ## Localization and properties
 
@@ -500,7 +517,7 @@ version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
 is restored, and owned rows are removed through SAP's model service. This case
-is opt-in and does not increase the default 62-case suite. See the
+is opt-in and does not increase the default 63-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 

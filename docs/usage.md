@@ -3794,3 +3794,9 @@ The SAP Commerce default live suite also checks native OCC error serialization:
 an owned service's thrown exception type changes through Java reload, while SAP's
 own resolver produces the HTTP400 document. The generic message, a success
 endpoint and an independent error remain stable; no custom error handler is added.
+
+
+SAP Commerce default coverage also checks resolved ImpEx UPDATE header/value
+macros and corrected-save recovery after an unresolved header is refused by
+Reclazz's pre-import guard. Persisted target/control rows and owned cleanup
+are verified; this does not assert native parser rollback or enable REMOVE.

@@ -117,6 +117,7 @@ fun main() {
         FacadeChainLiveTest(config, agentClient, httpVerifier),          // 60    // 59
         NewOccControllerEvidenceTest(config, agentClient, httpVerifier), // 61
         OccErrorResponseLiveTest(config, agentClient, httpVerifier),    // 62
+        ImpexUpdateMacrosLiveTest(config, agentClient, httpVerifier),   // 63
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

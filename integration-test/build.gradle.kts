@@ -115,3 +115,11 @@ val occErrorResponseContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.OccErrorResponseContractTestKt")
 }
+
+// Narrow C28 watched macro UPDATE/guard recovery contract.
+val impexUpdateMacrosContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.ImpexUpdateMacrosContractTestKt")
+}

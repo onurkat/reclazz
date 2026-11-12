@@ -1,9 +1,9 @@
 """Shared exact default-suite and normal-fixture contract for native drivers."""
 import re
 
-DEFAULT_CASES = 62
-DEFAULT_OUTCOME = {'PASS': 62, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
-NORMAL_FIXTURE_FILES = 113
+DEFAULT_CASES = 63
+DEFAULT_OUTCOME = {'PASS': 63, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
+NORMAL_FIXTURE_FILES = 114
 # Report labels from the committed Kotlin scenario constructors; replacements cannot pass by count.
 DEFAULT_TEST_NAMES = (
     'Method body change',
@@ -68,6 +68,7 @@ DEFAULT_TEST_NAMES = (
     'Native facade dependent service chain',
     'New OCC controller after startup',
     'Native OCC exception error response',
+    'Native ImpEx UPDATE macros and guard recovery',
 )
 
 

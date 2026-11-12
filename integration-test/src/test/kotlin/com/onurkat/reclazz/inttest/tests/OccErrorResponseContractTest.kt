@@ -97,6 +97,6 @@ fun main() {
             }finally {client.disconnect()}
         }}finally {root.toFile().deleteRecursively()}
     }
-    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==62&&"OccErrorResponseLiveTest" in committedDefaultMembership)
+    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==63&&"OccErrorResponseLiveTest" in committedDefaultMembership)
     println("OCC_ERROR_CONTRACT ${modes.size+1} checks PASS")
 }
