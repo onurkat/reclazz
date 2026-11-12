@@ -118,6 +118,107 @@ public class ProbeController {
         }
     }
 
+    private de.hybris.platform.core.model.ItemModel pageItem(String type, String uid,
+            de.hybris.platform.catalog.model.CatalogVersionModel cv) {
+        de.hybris.platform.core.model.ItemModel item=modelService.create(type);
+        modelService.setAttributeValue(item,"uid",uid);modelService.setAttributeValue(item,"catalogVersion",cv);
+        return item;
+    }
+
+    private de.hybris.platform.cms2.servicelayer.services.CMSPageService pages() {
+        return context.getBean("cmsPageService",de.hybris.platform.cms2.servicelayer.services.CMSPageService.class);
+    }
+
+    @PostMapping("/page-slot/begin") @ResponseBody
+    public synchronized Map<String,Object> pageBegin(@RequestParam("nonce") String nonce) throws Exception {
+        uidBegin(nonce);
+        var previous=new ArrayList<>(catalogVersions.getSessionCatalogVersions());
+        try {
+            var components=context.getBean("cmsComponentService",de.hybris.platform.cms2.servicelayer.services.CMSComponentService.class);
+            for(String version:List.of("selected","other")) {
+                var cv=catalogVersions.getCatalogVersion(nonce,version);catalogVersions.setSessionCatalogVersions(List.of(cv));
+                var template=pageItem("PageTemplate",nonce+"-template",cv);modelService.save(template);
+                var page=pageItem("ContentPage",nonce+"-page",cv);
+                modelService.setAttributeValue(page,"masterTemplate",template);
+                modelService.setAttributeValue(page,"label","/"+nonce);modelService.save(page);
+                for(String role:List.of("target","control")) {
+                    CMSParagraphComponentModel component=components.getAbstractCMSComponent(nonce+"-"+role);
+                    component.setContent(version+"-page-"+role,Locale.ENGLISH);modelService.save(component);
+                    var slot=pageItem("ContentSlot",nonce+"-"+role+"-slot",cv);
+                    modelService.setAttributeValue(slot,"cmsComponents",List.of(component));modelService.save(slot);
+                    var placement=pageItem("ContentSlotForPage",nonce+"-"+role+"-placement",cv);
+                    modelService.setAttributeValue(placement,"page",page);modelService.setAttributeValue(placement,"contentSlot",slot);
+                    modelService.setAttributeValue(placement,"position",role);modelService.save(placement);
+                }
+            }
+            return Map.of("nonce",nonce,"catalogs",uidRows(nonce).size());
+        } finally {catalogVersions.setSessionCatalogVersions(previous);}
+    }
+
+    @GetMapping("/page-slot/render")
+    public String pageRender(@RequestParam("nonce") String nonce,@RequestParam("version") String version,
+            @RequestParam("position") String position,HttpServletRequest request,HttpServletResponse response,Model model) throws Exception {
+        owned(nonce);
+        if(!List.of("selected","other").contains(version)||!List.of("target","control").contains(position)||uidRows(nonce).size()!=1)
+            throw new IllegalArgumentException("Invalid owned page selection");
+        var previous=new ArrayList<>(catalogVersions.getSessionCatalogVersions());
+        try {
+            var cv=catalogVersions.getCatalogVersion(nonce,version);catalogVersions.setSessionCatalogVersions(List.of(cv));
+            var page=pages().getPageForId(nonce+"-page");
+            if(page.getPk()==null||!cv.equals(modelService.getAttributeValue(page,"catalogVersion")))throw new IllegalStateException("Wrong native page version");
+            var data=pages().getContentSlotForPage(page,position);var slot=data.getContentSlot();
+            if(!position.equals(data.getPosition())||!cv.equals(modelService.getAttributeValue(slot,"catalogVersion"))||slot.getPk()==null)
+                throw new IllegalStateException("Wrong native page slot");
+            var members=data.getCMSComponents();
+            if(members.size()!=1)throw new IllegalStateException("Owned slot membership changed");
+            var selected=members.iterator().next();String uid=modelService.getAttributeValue(selected,"uid");
+            if(!uid.equals(nonce+"-"+position)||selected.getPk()==null)throw new IllegalStateException("Wrong native slot component");
+            if(request.getAttribute("component")!=null)throw new IllegalStateException("Injected page component forbidden");
+            request.setAttribute("componentUid",uid);request.setAttribute("reclazzCmsNonce",nonce);
+            String view=renderer.handleGet(request,response,model);
+            var rendered=(CMSParagraphComponentModel)model.getAttribute("component");
+            if(!selected.getPk().equals(rendered.getPk())||!cv.equals(modelService.getAttributeValue(rendered,"catalogVersion")))
+                throw new IllegalStateException("UID renderer bypassed selected slot member");
+            model.addAttribute("uid",uid);model.addAttribute("pk",rendered.getPk().toString());model.addAttribute("version",version);
+            model.addAttribute("pageUid",modelService.getAttributeValue(page,"uid"));model.addAttribute("pagePk",page.getPk().toString());
+            model.addAttribute("slotUid",modelService.getAttributeValue(slot,"uid"));model.addAttribute("slotPk",slot.getPk().toString());
+            model.addAttribute("position",data.getPosition());return view;
+        } finally {
+            catalogVersions.setSessionCatalogVersions(previous);
+            if(!new HashSet<>(previous).equals(new HashSet<>(catalogVersions.getSessionCatalogVersions())))throw new IllegalStateException("Page session restore failed");
+        }
+    }
+
+    @PostMapping("/page-slot/cleanup") @ResponseBody
+    public synchronized Map<String,Object> pageCleanup(@RequestParam("nonce") String nonce) {
+        owned(nonce);var previous=new ArrayList<>(catalogVersions.getSessionCatalogVersions());
+        var types=List.of("ContentSlotForPage","ContentPage","ContentSlot","PageTemplate");
+        var ownedIds=List.of(nonce+"-page",nonce+"-template",nonce+"-target-slot",nonce+"-control-slot",nonce+"-target-placement",nonce+"-control-placement");
+        try {
+            for(var catalog:uidRows(nonce)) {
+                var versions=searchService.<de.hybris.platform.catalog.model.CatalogVersionModel>search(
+                    "SELECT {pk} FROM {CatalogVersion} WHERE {catalog}=?catalog",Map.of("catalog",catalog)).getResult();
+                for(var cv:versions) {
+                    catalogVersions.setSessionCatalogVersions(List.of(cv));
+                    for(String type:types) {
+                        var rows=searchService.<de.hybris.platform.core.model.ItemModel>search(
+                            "SELECT {pk} FROM {"+type+"} WHERE {catalogVersion}=?cv",Map.of("cv",cv)).getResult();
+                        for(var row:rows)if(!ownedIds.contains(modelService.<String>getAttributeValue(row,"uid")))throw new IllegalStateException("Foreign page row in owned catalog");
+                        modelService.removeAll(rows);
+                    }
+                }
+            }
+            int remaining=0;
+            for(String type:types)remaining+=searchService.search("SELECT {pk} FROM {"+type+"} WHERE {uid} IN (?ids)",Map.of("ids",ownedIds)).getResult().size();
+            catalogVersions.setSessionCatalogVersions(previous);
+            var cleanup=uidCleanup(nonce);
+            return Map.of("nonce",nonce,"ownedPageRows",remaining,"ownedRemaining",remaining+((Number)cleanup.get("ownedRemaining")).intValue());
+        } finally {
+            catalogVersions.setSessionCatalogVersions(previous);
+            if(!new HashSet<>(previous).equals(new HashSet<>(catalogVersions.getSessionCatalogVersions())))throw new IllegalStateException("Page cleanup session restore failed");
+        }
+    }
+
     private String owned(String nonce) {
         if (!nonce.matches("reclazz-cms-[a-f0-9-]{36}")) throw new IllegalArgumentException("Invalid owned CMS nonce");
         return nonce;

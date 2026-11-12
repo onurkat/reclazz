@@ -786,7 +786,7 @@ fun main() {
         val root=Files.createTempDirectory("reclazz-cms-contract-")
         try {
             for(relative in CmsFixtureBaseline.relatives) { val path=root.resolve(relative);Files.createDirectories(path.parent);Files.write(path,CmsFixtureBaseline.original(relative)) }
-            val baseline=CmsFixtureBaseline(root);baseline.checkBytes();check(CmsFixtureBaseline.relatives.size==10)
+            val baseline=CmsFixtureBaseline(root);baseline.checkBytes();check(CmsFixtureBaseline.relatives.size==11)
             Files.writeString(root.resolve("project.properties"),"dirty");check(runCatching { baseline.checkBytes() }.isFailure)
             check(CmsFixtureBaseline.relatives.none { "commonwebsrc" in it || it.endsWith(".jar") })
         } finally { root.toFile().deleteRecursively() }

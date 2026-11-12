@@ -6,7 +6,7 @@ import java.nio.file.Path
 /** Owned CMS files only; native commonweb sources/jars are ignored build outputs. */
 class CmsFixtureBaseline(val root: Path) {
     companion object {
-        val relatives = listOf("web/webroot/WEB-INF/views/reclazz-uid-paragraph.jsp", "extensioninfo.xml", "project.properties", "buildcallbacks.xml",
+        val relatives = listOf("web/webroot/WEB-INF/views/reclazz-page-slot.jsp", "web/webroot/WEB-INF/views/reclazz-uid-paragraph.jsp", "extensioninfo.xml", "project.properties", "buildcallbacks.xml",
             "web/webroot/WEB-INF/web.xml", "web/webroot/WEB-INF/config/reclazztestcms-web-spring.xml",
             "web/webroot/WEB-INF/config/v2-servlet.xml", "web/webroot/WEB-INF/views/reclazz-paragraph.jsp",
             "web/src/com/onurkat/reclazztestcms/controllers/ProbeController.java",

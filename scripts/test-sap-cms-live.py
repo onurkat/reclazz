@@ -99,8 +99,8 @@ def fixture_hashes():
             if source.read_bytes() != actual.read_bytes():
                 raise RuntimeError('Dirty CMS fixture: ' + str(relative))
             result[str(actual.relative_to(REPO))] = support.digest(actual)
-    if len(result) != NORMAL_FIXTURE_FILES + 10 + 10:
-        raise RuntimeError(f'Expected{NORMAL_FIXTURE_FILES + 10} normal/Solr +10 owned CMS fixture files')
+    if len(result) != NORMAL_FIXTURE_FILES + 10 + 11:
+        raise RuntimeError(f'Expected{NORMAL_FIXTURE_FILES + 10} normal/Solr +11 owned CMS fixture files')
     return result
 
 
@@ -242,6 +242,29 @@ def runner(folder, label, inject=False):
             'injectedFailure': 'Injected CMS failure after real rendered v2' in text}
 
 
+def attempt_profiles(inject=False):
+    selected=os.environ.get('RECLAZZ_CMS_ATTEMPT_PROFILE')
+    allowed=['cms-attempt','cms-uid-attempt','cms-page-slot-attempt']
+    if selected is not None:
+        if selected not in allowed: raise RuntimeError('Unknown CMS attempt profile')
+        return [selected]
+    return allowed[:1] if inject else allowed
+
+
+def run_attempts(result,folder,inject=False):
+    original=os.environ.get('RECLAZZ_CMS_ATTEMPT_PROFILE')
+    try:
+        for i,profile in enumerate(attempt_profiles(inject)):
+            key,label=('attempt','attempt') if i==0 else (('uidAttempt','attempt-uid') if profile=='cms-uid-attempt' else ('pageSlotAttempt','attempt-page-slot'))
+            os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']=profile
+            result[key]=runner(folder,label,inject)
+            if i>0 and (result[key]['exitCode']!=0 or result[key]['counts']!={'PASS':1,'FAIL':0,'ERROR':0,'SKIP':0}):
+                raise RuntimeError('Native CMS profile case failed: '+profile)
+    finally:
+        if original is None: os.environ.pop('RECLAZZ_CMS_ATTEMPT_PROFILE',None)
+        else: os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']=original
+
+
 def setup_api_probe(folder):
     cp = os.pathsep.join(str(path) for path in [PLATFORM / 'bootstrap/modelclasses',
                                                EXT / 'web/webroot/WEB-INF/classes'])
@@ -315,16 +338,7 @@ def profile(folder, number, inject, setup_only=False):
             result['profileBoot'] = start(root, 'profile', True, normal_extensions)
             timings['setup'] = round(time.monotonic() - cycle_started, 3)
             attempt_started = time.monotonic()
-            result['attempt'] = runner(root, 'attempt', inject)
-            if not setup_only and not inject and os.environ.get('RECLAZZ_CMS_ATTEMPT_PROFILE') != 'cms-uid-attempt':
-                with_uid=os.environ.get('RECLAZZ_CMS_ATTEMPT_PROFILE')
-                os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']='cms-uid-attempt'
-                try: result['uidAttempt']=runner(root, 'attempt-uid', False)
-                finally:
-                    if with_uid is None: os.environ.pop('RECLAZZ_CMS_ATTEMPT_PROFILE',None)
-                    else: os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']=with_uid
-                if result['uidAttempt']['exitCode'] != 0 or result['uidAttempt']['counts'] != {'PASS':1,'FAIL':0,'ERROR':0,'SKIP':0}:
-                    raise RuntimeError('Native persisted UID attempt failed')
+            run_attempts(result,root,inject)
             timings['attempt'] = round(time.monotonic() - attempt_started, 3)
             attempt = result['attempt']
             expected = {'PASS': 0, 'FAIL': 1, 'ERROR': 0, 'SKIP': 0} if inject else {'PASS': 1, 'FAIL': 0, 'ERROR': 0, 'SKIP': 0}
@@ -379,12 +393,15 @@ def profile(folder, number, inject, setup_only=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runs', type=int, default=3); parser.add_argument('--failure-control', action='store_true')
-    parser.add_argument('--focused-uid', action='store_true', help='One persisted UID case and recovery; no default suite')
+    focus=parser.add_mutually_exclusive_group()
+    focus.add_argument('--focused-uid', action='store_true', help='One persisted UID case and recovery; no default suite')
+    focus.add_argument('--focused-page-slot', action='store_true', help='One native page-slot case and recovery; no default suite')
     parser.add_argument('--setup-probe', action='store_true', help='Build/API/recovery diagnostic only; never CMS render acceptance')
     args = parser.parse_args()
-    if args.focused_uid:
+    focused=args.focused_uid or args.focused_page_slot
+    if focused:
         if args.failure_control or args.setup_probe or args.runs != 3: parser.error('focused UID has one run and no failure/setup control')
-        os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']='cms-uid-attempt'
+        os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']='cms-page-slot-attempt' if args.focused_page_slot else 'cms-uid-attempt'
     if args.runs < 1 or (args.setup_probe and args.failure_control):
         parser.error('Positive runs required; setup probe cannot be a failure control')
     try:
@@ -394,13 +411,13 @@ def main():
     folder = Path(tempfile.mkdtemp(prefix='reclazz-cms-', dir='/private/tmp'))
     print('Recovery/evidence directory: ' + str(folder), flush=True)
     results = []
-    count = 1 if args.setup_probe or args.focused_uid else args.runs + int(args.failure_control)
+    count = 1 if args.setup_probe or focused else args.runs + int(args.failure_control)
     for number in range(count):
         result = profile(folder, number + 1, args.failure_control and number == 0, args.setup_probe); results.append(result)
         if result['verdict'] != 'PASS':
             break
     console_offsets = {path: path.stat().st_size for path in (SAP_HOME / 'log/tomcat').glob('console-*.log')}
-    baseline = runner(folder, 'normal-default') if not args.setup_probe and not args.focused_uid and all(row['verdict'] == 'PASS' for row in results) else {'unrun': 'setup-only or profile failed'}
+    baseline = runner(folder, 'normal-default') if not args.setup_probe and not focused and all(row['verdict'] == 'PASS' for row in results) else {'unrun': 'setup-only or profile failed'}
     default_tail = b''; console_intact = True
     for path in (SAP_HOME / 'log/tomcat').glob('console-*.log'):
         console_intact &= path.stat().st_size >= console_offsets.get(path, 0)
@@ -411,9 +428,9 @@ def main():
     baseline['consoleIntact'] = console_intact
     passed = len(results) == count and all(row['verdict'] == 'PASS' for row in results)
     passed &= console_intact and baseline['nativeRefreshFailures'] == 0
-    if not args.setup_probe and not args.focused_uid:
+    if not args.setup_probe and not focused:
         passed &= baseline.get('exitCode') == 0 and baseline.get('defaultSuite') is True and baseline.get('counts') == DEFAULT_OUTCOME
-    (folder / 'summary.json').write_text(json.dumps({'verdict': 'PASS' if passed else 'FAIL', 'setupOnly': args.setup_probe, 'focusedUid': args.focused_uid, 'cycles': results, 'default': baseline}, indent=2) + '\n')
+    (folder / 'summary.json').write_text(json.dumps({'verdict': 'PASS' if passed else 'FAIL', 'setupOnly': args.setup_probe, 'focusedUid': args.focused_uid, 'focusedPageSlot': args.focused_page_slot, 'cycles': results, 'default': baseline}, indent=2) + '\n')
     print(('CMS_SETUP_PROBE ' if args.setup_probe else 'CMS_PROFILE ') + ('PASS' if passed else 'FAIL') + '; recovery evidence: ' + str(folder), flush=True)
     return 0 if passed else 1
 

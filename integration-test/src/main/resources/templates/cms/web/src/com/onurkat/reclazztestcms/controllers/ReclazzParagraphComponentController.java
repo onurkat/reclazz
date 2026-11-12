@@ -19,6 +19,7 @@ public class ReclazzParagraphComponentController extends AbstractCMSComponentCon
         if (component.getPk()!=null) {
             String content=component.getContent(Locale.ENGLISH);
             model.addAttribute("marker", "selected-target".equals(content) ? "uid-v1" : "uid-stable");
+            if(content.contains("-page-")) model.addAttribute("marker","selected-page-target".equals(content) ? "page-v1" : "page-stable");
         }
         model.addAttribute("content", component.getContent(Locale.ENGLISH));
         model.addAttribute("unsaved", component.getPk() == null);
@@ -26,6 +27,7 @@ public class ReclazzParagraphComponentController extends AbstractCMSComponentCon
 
     @Override
     protected String getView(CMSParagraphComponentModel component) {
+        if(component.getPk()!=null && component.getContent(Locale.ENGLISH).contains("-page-"))return "reclazz-page-slot";
         return component.getPk()==null ? "reclazz-paragraph" : "reclazz-uid-paragraph";
     }
 }

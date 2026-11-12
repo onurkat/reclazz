@@ -90,7 +90,7 @@ class BackofficeDriverTest(unittest.TestCase):
 
     def test_profile_is_separate_and_normal_memberships_unchanged(self):
         self.assertEqual(NORMAL_FIXTURE_FILES+10,len(d.solr.fixture_hashes()))
-        self.assertEqual(NORMAL_FIXTURE_FILES+20,len(d.cms.fixture_hashes()))
+        self.assertEqual(NORMAL_FIXTURE_FILES+21,len(d.cms.fixture_hashes()))
         self.assertEqual(3,len(d.profile_hashes()))
         self.assertNotIn('reclazz_regression_v1',(d.NORMAL_EXT/'resources/reclazztestbackoffice-backoffice-config.xml').read_text())
 

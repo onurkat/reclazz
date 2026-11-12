@@ -180,6 +180,32 @@ class CmsDriverTest(unittest.TestCase):
                 profile.assert_called_once();runner.assert_not_called()
                 self.assertEqual('cms-uid-attempt',os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE'])
 
+    def test_focused_page_slot_runs_one_cycle_without_default_runner(self):
+        import contextlib, io, os
+        with tempfile.TemporaryDirectory() as temporary:
+            with patch.dict(os.environ, {}, clear=False), patch.object(driver, 'preflight'), patch.object(driver.tempfile, 'mkdtemp', return_value=temporary), \
+                 patch.object(driver,'profile',return_value={'verdict':'PASS','restoration':'PASS'}) as profile,patch.object(driver,'runner') as runner, \
+                 patch('sys.argv',['driver','--focused-page-slot']),contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(0,driver.main());profile.assert_called_once();runner.assert_not_called()
+                self.assertEqual('cms-page-slot-attempt',os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE'])
+
+    def test_full_profile_keeps_all_three_cases_and_rejects_extra_case_failure(self):
+        import os
+        good={'exitCode':0,'counts':{'PASS':1,'FAIL':0,'ERROR':0,'SKIP':0}}
+        with patch.dict(os.environ,{},clear=False):
+            os.environ.pop('RECLAZZ_CMS_ATTEMPT_PROFILE',None)
+            self.assertEqual(['cms-attempt','cms-uid-attempt','cms-page-slot-attempt'],driver.attempt_profiles())
+            self.assertEqual(['cms-attempt'],driver.attempt_profiles(True))
+            result={}
+            with patch.object(driver,'runner',return_value=good) as runner:
+                driver.run_attempts(result,Path('/owned'))
+                self.assertEqual(3,runner.call_count);self.assertEqual({'attempt','uidAttempt','pageSlotAttempt'},set(result))
+            self.assertNotIn('RECLAZZ_CMS_ATTEMPT_PROFILE',os.environ)
+            with patch.object(driver,'runner',side_effect=[good,good,{'exitCode':1,'counts':{'PASS':0,'FAIL':1,'ERROR':0,'SKIP':0}}]):
+                with self.assertRaises(RuntimeError):driver.run_attempts({},Path('/owned'))
+            os.environ['RECLAZZ_CMS_ATTEMPT_PROFILE']='cms-page-slot-attempt'
+            self.assertEqual(['cms-page-slot-attempt'],driver.attempt_profiles())
+
     def test_default_report_requires_exact_membership_and_outcome(self):
         runner = driver
         rows = [(name, 'PASS') for name in DEFAULT_TEST_NAMES]

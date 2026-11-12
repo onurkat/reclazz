@@ -67,3 +67,11 @@ val cmsUidContractTest by tasks.registering(JavaExec::class) {
     classpath = sourceSets.test.get().runtimeClasspath
     mainClass.set("com.onurkat.reclazz.inttest.tests.CmsUidContractTestKt")
 }
+
+// Narrow C40 page/slot proof oracle; full harness remains an audit gate.
+val cmsPageSlotContractTest by tasks.registering(JavaExec::class) {
+    group = "verification"
+    dependsOn(tasks.testClasses)
+    classpath = sourceSets.test.get().runtimeClasspath
+    mainClass.set("com.onurkat.reclazz.inttest.tests.CmsPageSlotContractTestKt")
+}
