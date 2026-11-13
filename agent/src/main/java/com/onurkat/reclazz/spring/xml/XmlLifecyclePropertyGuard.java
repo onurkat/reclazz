@@ -10,6 +10,11 @@ final class XmlLifecyclePropertyGuard {
 
     static boolean classify(Object factory, Object parsedFactory, String name, Object previous,
                             Object candidate, BeanDefinitionDiff diff) {
+        return classify(factory, parsedFactory, name, previous, candidate, diff, null);
+    }
+
+    static boolean classify(Object factory, Object parsedFactory, String name, Object previous,
+                            Object candidate, BeanDefinitionDiff diff, SapXmlEventListeners.Admission admission) {
         try {
             Object instance = previous == null ? null : factory.getClass()
                     .getMethod("getSingleton", String.class).invoke(factory, name);
@@ -37,6 +42,9 @@ final class XmlLifecyclePropertyGuard {
             for (String marker : new String[]{"org.springframework.beans.factory.config.BeanPostProcessor",
                     "org.springframework.beans.factory.config.BeanFactoryPostProcessor",
                     "org.springframework.beans.factory.InitializingBean", "org.springframework.beans.factory.DisposableBean"}) {
+                if (marker.equals("org.springframework.beans.factory.InitializingBean") && previous == null
+                        && admission != null && admission.factory() == factory
+                        && admission.definition() == candidate && admission.type() == declared) continue;
                 Class<?> contract = Class.forName(marker, false, springLoader);
                 if (contract.isAssignableFrom(declared) || (instance != null && contract.isInstance(instance))) {
                     reason = marker.substring(marker.lastIndexOf('.') + 1);

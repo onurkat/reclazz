@@ -197,6 +197,7 @@ public final class SpringXmlReloader {
         final ClassLoader tenantLoader;
         final BeanDefinitionDiff diff = new BeanDefinitionDiff();
         final java.util.Set<Object> changedMappings = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
+        java.util.Map<String, SapXmlEventListeners.Admission> listeners = java.util.Map.of();
         int applied;
         SpringIntegrationEndpoints.Outcome endpoints = SpringIntegrationEndpoints.Outcome.NONE;
         boolean securityHandled;
@@ -233,7 +234,16 @@ public final class SpringXmlReloader {
             if (change.observed) com.onurkat.reclazz.platform.SapProcessDefinitions.reconcile(xmlPath, change.context,
                     new java.util.HashSet<>(java.util.Arrays.asList(SpringReflection.getBeanDefinitionNames(change.temporary))));
             if(change.securityHandled)continue;
-            XmlSafetyClassifier.classify(change.factory, change.temporary, xmlPath, change.diff, save.rawProperties);
+            if (change.observed) {
+                try {
+                    if (platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS)
+                        change.listeners = SapXmlEventListeners.inspect(change.context, change.factory, change.temporary, xmlPath);
+                } catch (RuntimeException unavailable) {
+                    // An unavailable optional platform identity denies only the SAP allowance.
+                    // Ordinary XML classification must still run for generic adapters.
+                }
+            }
+            XmlSafetyClassifier.classify(change.factory, change.temporary, xmlPath, change.diff, save.rawProperties, change.listeners);
             XmlAliasDiagnostics.classify(change.context, change.factory, change.temporary, xmlPath, change.diff,
                     change.endpoints.derivedAliases());
         }
@@ -263,7 +273,10 @@ public final class SpringXmlReloader {
             change.activate();
             for (BeanDefinitionDiff.NewBean add : change.diff.added) {
                 try {
-                    applyNewBean(change.context, change.factory, add);
+                    var listener = change.listeners.get(add.beanName);
+                    if (listener != null && listener.definition() == add.newBeanDefinition)
+                        SapXmlEventListeners.create(add.beanName, listener, beanLifecycle);
+                    else applyNewBean(change.context, change.factory, add);
                     if (change.observed) com.onurkat.reclazz.platform.SapProcessDefinitions.registered(xmlPath, change.context, add.beanName);
                     change.applied++;
                 } catch (Exception e) {

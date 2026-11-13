@@ -81,6 +81,39 @@ until restart. Reclazz separately records the parse currently served by the prox
 so unchanged saves and repeated A→B→A edits compare with the active policy. The
 child stays open while served and is closed after replacement or owner shutdown.
 
+## Adding a plain XML event listener while running
+
+A newly added public class directly extending SAP Commerce's
+`AbstractEventListener` can be registered by saving a Spring XML file that was
+successfully loaded by the owning context. The class must already be visible to
+that context. Add a singleton bean with explicit `tenantService` and
+`clusterService` references to those existing native services. Spring performs
+its ordinary context injection, inherited initialization and listener registration;
+Reclazz does not add a second EventService registration. Saving the same XML
+again retains the listener and delivers each fresh event once.
+
+This path is deliberately limited to a class with an empty no-argument
+constructor, no fields or extra callbacks, and only its `onEvent` implementation
+(including the compiler's bridge). Custom constructors, lifecycle overrides,
+init/destroy methods, extra properties, application advice, parent/factory
+construction and changes to existing listeners retain restart guidance. A
+processor that returns a proxy is refused; failed creation removes the exact
+object registered by Spring, even if a later processor throws before `getBean`
+returns. Listener removal/re-addition and dependency/lifecycle changes are outside
+this path. Existing body-edit support is separate.
+
+The opt-in SDK regression uses the installed SDK without changing a running
+installation:
+
+```bash
+python3 scripts/test-sap-events-xml-sdk.py "$HYBRIS_HOME" --agent /abs/path/reclazz-agent.jar
+```
+
+Its tenant and cluster service proxies are isolated mechanics controls; real
+native delivery requires a live tenant. The native experiment uses genuine
+services and EventService delivery, with a restart-needing agent-off control and
+an identical-second-save check. It does not add a default live-suite scenario.
+
 ## Persisted validation constraints after ImpEx
 
 The ImpEx watcher compares the persisted count and latest modification time of

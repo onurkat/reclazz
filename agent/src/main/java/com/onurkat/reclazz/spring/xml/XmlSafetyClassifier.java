@@ -44,6 +44,11 @@ final class XmlSafetyClassifier {
 
     static void classify(Object liveFactory, Object tempFactory, Path xmlPath, BeanDefinitionDiff out,
                          Map<Object, Object[]> rawProperties) {
+        classify(liveFactory, tempFactory, xmlPath, out, rawProperties, Map.of());
+    }
+
+    static void classify(Object liveFactory, Object tempFactory, Path xmlPath, BeanDefinitionDiff out,
+                         Map<Object, Object[]> rawProperties, Map<String, SapXmlEventListeners.Admission> listeners) {
         String[] newNames = SpringReflection.getBeanDefinitionNames(tempFactory);
         Set<String> newNameSet = new HashSet<>();
 
@@ -56,7 +61,7 @@ final class XmlSafetyClassifier {
             String shapeReason = unsafeShapeReason(newBd);
             if (shapeReason != null && unchangedUnsupported(liveFactory, tempFactory, beanName, existing, newBd)) continue;
             if (shapeReason == null && !XmlBeanRecreator.handles(existing, newBd)) {
-                if (XmlLifecyclePropertyGuard.classify(liveFactory, tempFactory, beanName, existing, newBd, out)) continue;
+                if (XmlLifecyclePropertyGuard.classify(liveFactory, tempFactory, beanName, existing, newBd, out, listeners.get(beanName))) continue;
                 if (XmlFactoryBeanPropertyGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             }
             if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
