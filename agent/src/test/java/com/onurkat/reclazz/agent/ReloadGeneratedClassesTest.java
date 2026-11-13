@@ -63,7 +63,7 @@ class ReloadGeneratedClassesTest {
   var f=new ReloadBuildTest.Fixture();var hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});
   f.write("Model",1);hold.failed();
   f.queue.submitAutomatic("items.xml","corrected XML",()->f.applied.add(9));f.run();assertEquals(List.of(9),f.applied);
-  var retry=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});f.disk.put(f.path("Model"),new byte[]{2});
+  var retry=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});f.write("Model",2);
   var done=retry.compiled(()->{}).toCompletableFuture();f.run();assertFalse(done.isCompletedExceptionally());assertEquals(List.of(9,2),f.applied);
  }
  @Test void nativeCompletionWaitsForBothForeignBuildOwnerAndManualPause() {
@@ -135,6 +135,8 @@ class ReloadGeneratedClassesTest {
    f.disk.put(f.path("Model"),new byte[]{1});queue.enqueueClassFile(new ChangeEvent(f.path("Model"),ChangeEvent.Type.MODIFIED,"demo","classes"));queue.submitClassBatch(1);pump.run();assertTrue(f.applied.isEmpty());
    Files.createFile(platform.resolve("release"));await(()->!running(reloader));pump.run();assertTrue(f.applied.isEmpty());assertFalse(schema.get());
    Files.writeString(xml,"<items>corrected</items>");f.disk.put(f.path("Model"),new byte[]{2});
+   // A later native compile emits a fresh watcher event; the failed event was dropped.
+   queue.enqueueClassFile(new ChangeEvent(f.path("Model"),ChangeEvent.Type.MODIFIED,"demo","classes"));
    queue.submitAutomatic("items.xml","corrected XML",()->reloader.handle(new ChangeEvent(xml,ChangeEvent.Type.MODIFIED,"demo","resources")));pump.run();
    await(()->{pump.run();return !running(reloader);});pump.run();
    assertEquals(2,Files.readAllLines(platform.resolve("runs")).size());assertTrue(schema.get());assertEquals(List.of(2),f.applied);
@@ -142,6 +144,63 @@ class ReloadGeneratedClassesTest {
    Files.writeString(platform.resolve("release"),"");await(()->{pump.run();return !running(reloader);});
    var field=CodegenReloader.class.getDeclaredField("executor");field.setAccessible(true);((ExecutorService)field.get(reloader)).shutdownNow();queue.shutdown();
   }
+ }
+ @Test void explicitFailedHoldDiscardsItsOutputAndReleasesLaterWrites() {
+  var f=new ReloadBuildTest.Fixture();var hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output/generated")),()->{});
+  f.write("generated/Model",1);f.write("Other",7);f.run();assertEquals(List.of(7),f.applied);
+  hold.failed();assertTrue(hold.compiled(()->fail("failed hold exposed roots")).toCompletableFuture().isCompletedExceptionally());
+  f.run();assertEquals(List.of(7),f.applied,"failed build's pending output must be discarded");
+  assertEquals(0,f.queue.control("status",()->{}).pendingClasses());
+  f.write("generated/Model",2);f.run();assertEquals(List.of(7,2),f.applied);
+  hold.failed();f.run();assertEquals(List.of(7,2),f.applied,"repeated failure redelivered output");
+ }
+ @Test void supersededOldFailureCannotReleaseTheNewHold() {
+  var f=new ReloadBuildTest.Fixture();var old=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});
+  f.write("Model",1);f.run();var current=f.queue.holdGeneratedClasses(List.of(Path.of("/other")),()->{});
+  old.failed();assertTrue(old.compiled(()->fail("old hold exposed roots")).toCompletableFuture().isCompletedExceptionally());
+  f.write("Model",2);f.run();assertTrue(f.applied.isEmpty());
+  var done=current.compiled(()->{}).toCompletableFuture();f.run();assertFalse(done.isCompletedExceptionally());assertEquals(List.of(2),f.applied);
+ }
+ @Test void inlineSupersessionCallbackCannotDeliverPendingClasses() {
+  var applied=new ArrayList<Integer>();
+  ReloadQueue queue=new ReloadQueue(e->applied.add((int)e.getBytes()[0]),new ReloadQueue.Bracket(){public void begin(){}public void end(){}},
+      Runnable::run,new ReloadStall(()->0L,30000),()->0L,millis->{},path->new byte[]{1});
+  var old=queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});
+  queue.enqueueClassFile(new ChangeEvent(Path.of("/output/Model.class"),ChangeEvent.Type.MODIFIED,"m","classes"));
+  // A synchronous completion callback must observe the replacement hold already installed.
+  queue.control("pause",()->{});
+  old.compiled(()->{}).whenComplete((v,e)->{queue.control("resume",()->{});queue.submitClassBatch(1);});
+  var next=queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});
+  old.failed();assertTrue(applied.isEmpty());next.compiled(()->{});assertEquals(List.of(1),applied);queue.shutdown();
+ }
+ @Test void failedGeneratedHoldKeepsForeignBuildAndPauseGates() {
+  for(boolean buildFirst:List.of(false,true)) {
+   var f=new ReloadBuildTest.Fixture();f.queue.build("owner","started",()->{});f.queue.control("pause",()->{});
+   var hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});f.write("Model",1);hold.failed();
+   f.write("Model",2);f.run();assertTrue(f.applied.isEmpty());assertEquals("named",f.queue.buildHoldKind());
+   if(buildFirst)f.queue.build("owner","ok",()->{});else f.queue.control("resume",()->{});
+   f.run();assertTrue(f.applied.isEmpty());
+   if(buildFirst)f.queue.control("resume",()->{});else f.queue.build("owner","ok",()->{});
+   f.run();assertEquals(List.of(2),f.applied);
+  }
+ }
+ @Test void generatedFailureDuringOrdinaryCaptureInvalidatesStaleBytes() {
+  var f=new ReloadBuildTest.Fixture();f.write("Model",0);
+  f.duringRead=()->{f.duringRead=()->{};var hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});f.write("Model",1);hold.failed();f.write("Model",2);};
+  f.run();assertEquals(List.of(2),f.applied);
+ }
+ @Test void explicitFailureDuringGeneratedCaptureDiscardsDrainedOutput() {
+  var f=new ReloadBuildTest.Fixture();var hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});f.write("Model",1);f.run();
+  f.duringRead=()->{f.duringRead=()->{};hold.failed();};
+  var done=hold.compiled(()->{}).toCompletableFuture();f.run();assertTrue(done.isCompletedExceptionally());assertTrue(f.applied.isEmpty());
+  assertEquals(0,f.queue.control("status",()->{}).pendingClasses());
+  f.write("Model",2);f.run();assertEquals(List.of(2),f.applied);
+ }
+ @Test void shutdownRetiresGeneratedHoldWithoutSubmittingOrDelivering() {
+  var f=new ReloadBuildTest.Fixture();var hold=f.queue.holdGeneratedClasses(List.of(Path.of("/output")),()->{});f.write("Model",1);
+  int tasks=f.tasks.size();f.queue.shutdown();assertEquals(tasks,f.tasks.size());
+  assertTrue(hold.compiled(()->fail("shutdown exposure")).toCompletableFuture().isCompletedExceptionally());
+  f.run();assertTrue(f.applied.isEmpty());assertEquals(0,f.queue.control("status",()->{}).pendingClasses());
  }
  interface Check { boolean done() throws Exception; }
  static void await(Check check) throws Exception {long end=System.nanoTime()+TimeUnit.SECONDS.toNanos(10);while(!check.done()){if(System.nanoTime()>end)throw new AssertionError("fixture timeout");Thread.sleep(10);}}

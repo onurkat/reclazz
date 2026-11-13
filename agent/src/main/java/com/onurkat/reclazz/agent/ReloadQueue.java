@@ -93,14 +93,17 @@ public final class ReloadQueue {
         if (normalized.isEmpty()) throw new IllegalArgumentException("Generated class roots are empty");
         synchronized (buildLock) {
             if (!running) throw new IllegalStateException("Reload queue stopped");
-            if (generatedHold != null) {
-                var combined = new java.util.LinkedHashSet<>(generatedHold.roots);
+            GeneratedHold previous = generatedHold;
+            if (previous != null) {
+                var combined = new java.util.LinkedHashSet<>(previous.roots);
                 combined.addAll(normalized); normalized = List.copyOf(combined);
-                generatedHold.failed();
             }
             generatedEpoch++;
-            generatedHold = new GeneratedHold(normalized, scan);
-            return generatedHold;
+            GeneratedHold next = new GeneratedHold(normalized, scan);
+            generatedHold = next;
+            // Completion callbacks may run inline: they must already see the new gate.
+            if (previous != null) previous.failed();
+            return next;
         }
     }
 
@@ -113,6 +116,7 @@ public final class ReloadQueue {
         final Runnable scan;
         final java.util.concurrent.CompletableFuture<Void> completion = new java.util.concurrent.CompletableFuture<>();
         boolean ready;
+        boolean discarded;
         GeneratedHold(List<Path> roots, Runnable scan) { this.roots=roots; this.scan=scan; }
         boolean contains(Path path) { Path p=path.toAbsolutePath().normalize(); return roots.stream().anyMatch(p::startsWith); }
         public java.util.concurrent.CompletionStage<Void> compiled(Runnable expose) {
@@ -122,7 +126,19 @@ public final class ReloadQueue {
             synchronized (buildLock) { if (generatedHold == this && !completion.isDone()) ready=true; }
             submitGenerated(); return completion;
         }
-        public void failed() { reject(new IllegalStateException("Generated output failed or was superseded")); }
+        public void failed() {
+            synchronized (buildLock) {
+                if (generatedHold == this) {
+                    // Failed compiler output may be partial. Retire the gate, but
+                    // discard its pending output; only later writes are ordinary work.
+                    discarded = true;
+                    pendingClassFiles.keySet().removeIf(this::contains);
+                    generatedHold = null;
+                    generatedEpoch++;
+                }
+                reject(new IllegalStateException("Generated output failed or was superseded"));
+            }
+        }
         void reject(Throwable failure) {
             synchronized (buildLock) { ready=false; completion.completeExceptionally(failure); }
         }
@@ -156,10 +172,10 @@ public final class ReloadQueue {
             List<ChangeEvent> captured=capture(batch,true);
             synchronized (buildLock) {
                 if (captured == null) {
-                    restore(batch); hold.reject(new IOException("Generated class output could not be captured")); return;
+                    restoreGenerated(batch, hold); hold.reject(new IOException("Generated class output could not be captured")); return;
                 }
                 if (generatedHold != hold || !hold.ready || holding || paused
-                        || pauseEpoch != pauseGeneration || buildEpoch != generation) { restore(batch); return; }
+                        || pauseEpoch != pauseGeneration || buildEpoch != generation) { restoreGenerated(batch, hold); return; }
             }
             if (!captured.isEmpty()) classBoundary.accept(() -> applyClassBatch(captured));
             synchronized (buildLock) {
@@ -169,7 +185,7 @@ public final class ReloadQueue {
             }
             submitClassBatch(0);
         } catch (Throwable failure) {
-            synchronized (buildLock) { restore(batch); hold.reject(failure); }
+            synchronized (buildLock) { restoreGenerated(batch, hold); hold.reject(failure); }
         }
     }
 
@@ -497,6 +513,11 @@ public final class ReloadQueue {
             }
         }
         return List.copyOf(capture);
+    }
+
+    /** Called under buildLock; an explicitly failed, drained batch must not return. */
+    private void restoreGenerated(List<ChangeEvent> batch, GeneratedHold hold) {
+        if (!hold.discarded) restore(batch);
     }
 
     private void restore(List<ChangeEvent> batch) {

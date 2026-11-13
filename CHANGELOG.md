@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+- After a failed codegen build, classes written later (for example by a manual `ant build`) reload again; the failed build's own pending output is discarded.
+
 - An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. Only endpoints with an explicit id are replaced; an endpoint without an id keeps its booted handler and the save reports it, because its generated name can belong to another file's endpoint. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
 
 - Register a newly added plain SAP Commerce XML event listener through its owning Spring context without restarting. Native listener initialization and registration run once; failed creation removes the exact registration, including a failed proxy. Custom lifecycle, construction and changed existing listeners still require restart.
