@@ -9,6 +9,8 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import org.objectweb.asm.*;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HybrisEnumCodeTest {
@@ -70,6 +72,54 @@ class HybrisEnumCodeTest {
             assertEquals("CUSTOM",fixture.type.getMethod("getCode").invoke(fixture.type.getEnumConstants()[0]));
         }
     }
+    private static final int EXT_FLAGS=Opcodes.ACC_PRIVATE|Opcodes.ACC_TRANSIENT|Opcodes.ACC_SYNTHETIC;
+    private static final int LOOKUP_FLAGS=Opcodes.ACC_PRIVATE|Opcodes.ACC_STATIC|Opcodes.ACC_SYNTHETIC;
+    record Infrastructure(String name,String descriptor,int flags,String lookupDescriptor,int lookupFlags) { }
+    private static final Infrastructure OWNED=new Infrastructure(InjectedNames.EXT_FIELD,"[Ljava/lang/Object;",EXT_FLAGS,"Ljava/lang/invoke/MethodHandles$Lookup;",LOOKUP_FLAGS);
+    @Test void exactAgentStorageDoesNotMakeTheNativeEnumUnsupported() throws Exception {
+        try(var f=fixture(source("BASE(\"BASE\")"),source("BASE(\"BASE\"), NEXT(\"NEXT\")"),OWNED)) {
+            var ext=f.type.getDeclaredField(InjectedNames.EXT_FIELD);
+            assertTrue(ext.isSynthetic());assertEquals(EXT_FLAGS,ext.getModifiers());assertEquals(Object[].class,ext.getType());
+            Object base=f.type.getEnumConstants()[0];
+            assertTrue(apply(f.type,f.next),"Agent-owned per-object storage is not unsupported application state");
+            Object next=Enum.valueOf(f.type.asSubclass(Enum.class),"NEXT");
+            assertEquals("NEXT",f.type.getMethod("getCode").invoke(next));assertSame(base,f.type.getEnumConstants()[0]);
+            assertEquals(0,((Enum<?>)base).ordinal());assertEquals(1,((Enum<?>)next).ordinal());
+        }
+    }
+    @Test void reservedPrefixOrSyntheticBitAloneDoesNotAuthorizeExtraState() throws Exception {
+        for(var state:List.of(
+                new Infrastructure("__reclazz$custom","[Ljava/lang/Object;",EXT_FLAGS,OWNED.lookupDescriptor,LOOKUP_FLAGS),
+                new Infrastructure(InjectedNames.EXT_FIELD,"Ljava/lang/Object;",EXT_FLAGS,OWNED.lookupDescriptor,LOOKUP_FLAGS),
+                new Infrastructure(InjectedNames.EXT_FIELD,OWNED.descriptor,Opcodes.ACC_PRIVATE|Opcodes.ACC_TRANSIENT,OWNED.lookupDescriptor,LOOKUP_FLAGS),
+                new Infrastructure(InjectedNames.EXT_FIELD,OWNED.descriptor,Opcodes.ACC_PRIVATE|Opcodes.ACC_SYNTHETIC,OWNED.lookupDescriptor,LOOKUP_FLAGS),
+                new Infrastructure(InjectedNames.EXT_FIELD,OWNED.descriptor,EXT_FLAGS,null,LOOKUP_FLAGS),
+                new Infrastructure(InjectedNames.EXT_FIELD,OWNED.descriptor,EXT_FLAGS,"Ljava/lang/Object;",LOOKUP_FLAGS),
+                new Infrastructure(InjectedNames.EXT_FIELD,OWNED.descriptor,EXT_FLAGS,OWNED.lookupDescriptor,Opcodes.ACC_PRIVATE|Opcodes.ACC_STATIC))) {
+            try(var f=fixture(source("BASE(\"BASE\")"),source("BASE(\"BASE\"), NEXT(\"NEXT\")"),state)) {
+                Object base=f.type.getEnumConstants()[0];assertFalse(apply(f.type,f.next),state.toString());
+                assertEquals(1,f.type.getEnumConstants().length);assertSame(base,f.type.getEnumConstants()[0]);
+                assertEquals("BASE",f.type.getMethod("getCode").invoke(base));
+            }
+        }
+    }
+    @Test void extraStateInRawIncomingBytecodeIsStillRefusedEvenWithAgentNames() throws Exception {
+        try(var f=fixture(source("BASE(\"BASE\")"),source("BASE(\"BASE\"), NEXT(\"NEXT\")"),OWNED)) {
+            assertFalse(apply(f.type,inject(f.next,OWNED)));
+            assertEquals(1,f.type.getEnumConstants().length);
+        }
+    }
+    static byte[] inject(byte[] bytes,Infrastructure state) {
+        ClassWriter writer=new ClassWriter(0);
+        new ClassReader(bytes).accept(new ClassVisitor(Opcodes.ASM9,writer) {
+            @Override public void visitEnd() {
+                super.visitField(state.flags,state.name,state.descriptor,null,null).visitEnd();
+                if(state.lookupDescriptor!=null)super.visitField(state.lookupFlags,InjectedNames.LOOKUP_FIELD,state.lookupDescriptor,null,null).visitEnd();
+                super.visitEnd();
+            }
+        },0);
+        return writer.toByteArray();
+    }
     static boolean apply(Class<?> type, byte[] bytes) {
         // Exercise the real append path without installing java.util transforms into
         // the unit-test worker. The child-JVM regression exercises actual instrumentation.
@@ -80,10 +130,12 @@ class HybrisEnumCodeTest {
     record Fixture(URLClassLoader loader, Class<?> type, byte[] next) implements AutoCloseable {
         public void close() throws Exception {loader.close();}
     }
-    Fixture fixture(String before,String after) throws Exception {
+    Fixture fixture(String before,String after) throws Exception { return fixture(before,after,null); }
+    Fixture fixture(String before,String after,Infrastructure state) throws Exception {
         Path old=dir.resolve("old"),next=dir.resolve("next");
         compile(old,"de.hybris.platform.core.HybrisEnumValue",CONTRACT);
         compile(old,"app.State",before);
+        if(state!=null){Path file=old.resolve("app/State.class");Files.write(file,inject(Files.readAllBytes(file),state));}
         compile(next,"de.hybris.platform.core.HybrisEnumValue",CONTRACT);
         compile(next,"app.State",after);
         var loader=new URLClassLoader(new java.net.URL[]{old.toUri().toURL()},getClass().getClassLoader());

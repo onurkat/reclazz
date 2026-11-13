@@ -13,6 +13,13 @@ import java.util.Map;
 
 /** Only the existing automation inputs and core logger/admission callbacks. */
 public interface PremiumContext {
+    interface GeneratedOutput {
+        java.util.concurrent.CompletionStage<Void> compiled(Runnable expose);
+        void failed();
+    }
+    default GeneratedOutput holdGeneratedClasses(Collection<java.nio.file.Path> roots) {
+        throw new IllegalStateException("Generated class admission is not ready");
+    }
     PlatformContext platform();
     AgentConfig config();
     PropertyFileSnapshots propertySnapshots();

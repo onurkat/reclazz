@@ -77,6 +77,20 @@ public final class GeneratedClassPath {
         }
     }
 
+    /** Checked readiness: zero newly added roots can still mean already ready. */
+    static boolean ready(ClassLoader platformLoader, Collection<Path> roots, Instrumentation instrumentation) {
+        if (platformLoader == null || roots == null || roots.isEmpty()
+                || roots.stream().anyMatch(p -> !Files.isDirectory(p))) return false;
+        expose(platformLoader,roots,instrumentation);
+        try {
+            ClassLoader models=Class.forName(ITEM_MODEL,false,platformLoader).getClassLoader();
+            if (!(models instanceof URLClassLoader loader)) return false;
+            Set<URL> urls=Set.copyOf(Arrays.asList(loader.getURLs()));
+            for (Path root:roots) if (!urls.contains(root.toUri().toURL())) return false;
+            return true;
+        } catch (Throwable refused) { return false; }
+    }
+
     /**
      * {@code URLClassLoader.addURL} is protected in a package java.base does not
      * open. The agent opens it to itself here, the first time a regen needs it,

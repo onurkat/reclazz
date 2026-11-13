@@ -83,6 +83,96 @@ public final class ReloadQueue {
     private final ByteReader reader;
     static final long BUILD_WARN_MS = 300_000;
 
+    private GeneratedHold generatedHold;
+    private long generatedEpoch;
+
+    /** A native compiler owns only these paths, independently of user BUILD/pause. */
+    public com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput holdGeneratedClasses(
+            java.util.Collection<Path> roots, Runnable scan) {
+        List<Path> normalized = roots.stream().map(p -> p.toAbsolutePath().normalize()).distinct().toList();
+        if (normalized.isEmpty()) throw new IllegalArgumentException("Generated class roots are empty");
+        synchronized (buildLock) {
+            if (!running) throw new IllegalStateException("Reload queue stopped");
+            if (generatedHold != null) {
+                var combined = new java.util.LinkedHashSet<>(generatedHold.roots);
+                combined.addAll(normalized); normalized = List.copyOf(combined);
+                generatedHold.failed();
+            }
+            generatedEpoch++;
+            generatedHold = new GeneratedHold(normalized, scan);
+            return generatedHold;
+        }
+    }
+
+    private boolean generatedPath(Path path) {
+        return generatedHold != null && generatedHold.contains(path);
+    }
+
+    private final class GeneratedHold implements com.onurkat.reclazz.ext.PremiumContext.GeneratedOutput {
+        final List<Path> roots;
+        final Runnable scan;
+        final java.util.concurrent.CompletableFuture<Void> completion = new java.util.concurrent.CompletableFuture<>();
+        boolean ready;
+        GeneratedHold(List<Path> roots, Runnable scan) { this.roots=roots; this.scan=scan; }
+        boolean contains(Path path) { Path p=path.toAbsolutePath().normalize(); return roots.stream().anyMatch(p::startsWith); }
+        public java.util.concurrent.CompletionStage<Void> compiled(Runnable expose) {
+            synchronized (buildLock) { if (generatedHold != this || completion.isDone()) return completion; }
+            try { expose.run(); }
+            catch (Throwable failure) { reject(failure); return completion; }
+            synchronized (buildLock) { if (generatedHold == this && !completion.isDone()) ready=true; }
+            submitGenerated(); return completion;
+        }
+        public void failed() { reject(new IllegalStateException("Generated output failed or was superseded")); }
+        void reject(Throwable failure) {
+            synchronized (buildLock) { ready=false; completion.completeExceptionally(failure); }
+        }
+    }
+
+    private void submitGenerated() {
+        synchronized (buildLock) {
+            if (generatedHold == null || !generatedHold.ready || holding || paused) return;
+        }
+        submit("Admitting generated class output", this::acceptGenerated);
+    }
+
+    private void acceptGenerated() {
+        GeneratedHold hold; long pauseEpoch; long buildEpoch;
+        synchronized (buildLock) {
+            hold=generatedHold;
+            if (hold == null || !hold.ready || holding || paused) return;
+            pauseEpoch=pauseGeneration; buildEpoch=generation;
+        }
+        List<ChangeEvent> batch=new ArrayList<>();
+        try {
+            hold.scan.run();
+            synchronized (buildLock) {
+                if (generatedHold != hold || !hold.ready || holding || paused) return;
+                var entries=pendingClassFiles.entrySet().iterator();
+                while(entries.hasNext()) {
+                    var entry=entries.next();
+                    if (hold.contains(entry.getKey())) { batch.add(entry.getValue().withBytes(null)); entries.remove(); }
+                }
+            }
+            List<ChangeEvent> captured=capture(batch,true);
+            synchronized (buildLock) {
+                if (captured == null) {
+                    restore(batch); hold.reject(new IOException("Generated class output could not be captured")); return;
+                }
+                if (generatedHold != hold || !hold.ready || holding || paused
+                        || pauseEpoch != pauseGeneration || buildEpoch != generation) { restore(batch); return; }
+            }
+            if (!captured.isEmpty()) classBoundary.accept(() -> applyClassBatch(captured));
+            synchronized (buildLock) {
+                if (generatedHold == hold && hold.ready) {
+                    generatedHold=null; generatedEpoch++; hold.completion.complete(null);
+                }
+            }
+            submitClassBatch(0);
+        } catch (Throwable failure) {
+            synchronized (buildLock) { restore(batch); hold.reject(failure); }
+        }
+    }
+
     private final Handler handler;
     private final Bracket bracket;
     private final Executor executor;
@@ -205,6 +295,7 @@ public final class ReloadQueue {
             // Do not hold buildLock while the watcher calls back into this queue.
             scan.run();
             submitPendingAutomatic();
+            submitGenerated();
             submitClassBatch(0); // still independently gated by BUILD and manual pause
         });
         return result;
@@ -243,6 +334,7 @@ public final class ReloadQueue {
     /** Stop the thread and the watch; nothing queued runs after this. */
     public void shutdown() {
         running = false;
+        synchronized (buildLock) { if (generatedHold != null) generatedHold.failed(); }
         if (ownedExecutor != null) ownedExecutor.shutdownNow();
     }
 
@@ -343,16 +435,19 @@ public final class ReloadQueue {
             // The hold is released even if an admitted class callback fails.
             // Each automatic action still checks for a newer hold or pause.
             submitPendingAutomatic();
+            submitGenerated();
         }
     }
 
     void reloadClassBatch() {
         List<ChangeEvent> batch;
         long accepted;
+        long outputEpoch;
         long pauseEpoch;
         synchronized (buildLock) {
             if (holding || paused) return;
             accepted = generation;
+            outputEpoch = generatedEpoch;
             pauseEpoch = pauseGeneration;
             batch = drainClassFiles();
         }
@@ -380,8 +475,9 @@ public final class ReloadQueue {
         batch = new ArrayList<>(latest.values());
         List<ChangeEvent> capture = capture(batch, false);
         synchronized (buildLock) {
-            if (holding || paused || generation != accepted || pauseGeneration != pauseEpoch) {
+            if (holding || paused || generation != accepted || pauseGeneration != pauseEpoch || outputEpoch != generatedEpoch) {
                 restore(batch);
+                submitClassBatch(0);
                 return;
             }
         }
@@ -439,8 +535,12 @@ public final class ReloadQueue {
     private List<ChangeEvent> drainClassFiles() {
         synchronized (buildLock) {
             if (pendingClassFiles.isEmpty()) return new ArrayList<>();
-            List<ChangeEvent> drained = new ArrayList<>(pendingClassFiles.values());
-            pendingClassFiles.clear();
+            List<ChangeEvent> drained = new ArrayList<>();
+            var entries=pendingClassFiles.entrySet().iterator();
+            while(entries.hasNext()) {
+                var entry=entries.next();
+                if (!generatedPath(entry.getKey())) { drained.add(entry.getValue()); entries.remove(); }
+            }
             return drained;
         }
     }

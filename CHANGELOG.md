@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+- Hold generated SAP Commerce class output until native compilation and generated classpath readiness, then complete class delivery before the schema step. Failed generation retains its output while corrected XML can retry; user build ownership and pause remain independent.
+
 - Initialise the native code of appended generated SAP Commerce static enum values before publication. Unsupported custom SAP enum initialisation is refused with restart guidance.
 
 - Add default live coverage for resolved ImpEx UPDATE macros, whole-file unresolved-header refusal and corrected-save recovery with owned row cleanup.

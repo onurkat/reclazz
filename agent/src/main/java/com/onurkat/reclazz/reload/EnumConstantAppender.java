@@ -6,6 +6,8 @@ package com.onurkat.reclazz.reload;
 
 import com.onurkat.reclazz.bootstrap.EnumCollectionHealer;
 import com.onurkat.reclazz.bootstrap.EnumSurgery;
+import com.onurkat.reclazz.bootstrap.InjectedNames;
+import com.onurkat.reclazz.bootstrap.ReflectionBridge;
 import com.onurkat.reclazz.transform.EnumCollectionTransformer;
 import com.onurkat.reclazz.ui.StatusReporter;
 
@@ -180,8 +182,19 @@ public final class EnumConstantAppender {
         try {
             Field code = loaded.getDeclaredField("code");
             if (code.getType() != String.class || code.getModifiers() != (Modifier.PRIVATE | Modifier.FINAL)) return nativeCodeRefused("loaded code field shape");
-            for (Field field : loaded.getDeclaredFields()) {
-                if (!Modifier.isStatic(field.getModifiers()) && !field.equals(code)) return nativeCodeRefused("extra loaded instance field");
+            Field[] physical = ReflectionBridge.physicalDeclaredFields(loaded);
+            boolean ownLookup = java.util.Arrays.stream(physical).anyMatch(field ->
+                    field.getName().equals(InjectedNames.LOOKUP_FIELD)
+                    && field.getType() == java.lang.invoke.MethodHandles.Lookup.class
+                    && field.getModifiers() == (Modifier.PRIVATE | Modifier.STATIC | Opcodes.ACC_SYNTHETIC));
+            for (Field field : physical) {
+                if (Modifier.isStatic(field.getModifiers()) || field.equals(code)) continue;
+                // Only our exact per-object storage shape is outside the user's enum state.
+                // Raw incoming bytecode below still must declare code alone.
+                boolean ownStorage = ownLookup && field.getName().equals(InjectedNames.EXT_FIELD)
+                        && field.getType() == Object[].class
+                        && field.getModifiers() == (Modifier.PRIVATE | Modifier.TRANSIENT | Opcodes.ACC_SYNTHETIC);
+                if (!ownStorage) return nativeCodeRefused("extra loaded instance field");
             }
             ClassNode node = new ClassNode();
             new ClassReader(incoming).accept(node, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);

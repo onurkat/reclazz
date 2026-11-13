@@ -121,6 +121,7 @@ public class ReclazzAgent {
     private static volatile ExecutorService watcherExecutor;
     /** The reload thread and what is queued for it; see {@link ReloadQueue}. */
     private static volatile ReloadQueue reloadQueue;
+    private static volatile Runnable generatedClassScan;
     private static volatile StatusServer statusServer;
 
     /**
@@ -601,6 +602,7 @@ public class ReclazzAgent {
                     batchBracket, config.isRequestBoundary() ? RequestReloadBoundary::run : Runnable::run);
 
             reloadQueue.setVerification(verification);
+            generatedClassScan=watcher::scanNow;
             final ReloadQueue repairQueue=reloadQueue;
             final StatusServer repairTimer=statusServer;
             springOrchestrator.setOperationScheduler(repairTimer==null?null:repairTimer::scheduleOperationRepair,
@@ -697,6 +699,7 @@ public class ReclazzAgent {
                     statusServer.stop();
                 }
                 if (reloadQueue != null) {
+                    generatedClassScan=null;
                     reloadQueue.shutdown();
                 }
                 if (watcherExecutor != null) {
@@ -726,6 +729,7 @@ public class ReclazzAgent {
                 statusServer = null;
             }
             if (reloadQueue != null) {
+                generatedClassScan=null;
                 reloadQueue.shutdown();
                 reloadQueue = null;
             }
@@ -835,6 +839,11 @@ public class ReclazzAgent {
                     @Override public Instrumentation instrumentation() { return instrumentation; }
                     @Override public int applyLoggerLevels(Map<String, String> content, java.util.Collection<String> keys) {
                         return ReclazzAgent.applyLoggerLevels(content, keys);
+                    }
+                    @Override public PremiumContext.GeneratedOutput holdGeneratedClasses(java.util.Collection<Path> roots) {
+                        ReloadQueue queue=reloadQueue; Runnable scan=generatedClassScan;
+                        if (queue == null || scan == null) throw new IllegalStateException("Generated class admission is not ready");
+                        return queue.holdGeneratedClasses(roots,scan);
                     }
                     @Override public boolean requestRunningSystemUpdate() {
                         return modules.request(Capability.RUNNING_SYSTEM_UPDATE).granted();

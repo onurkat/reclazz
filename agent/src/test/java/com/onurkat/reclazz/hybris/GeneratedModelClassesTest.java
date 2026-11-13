@@ -47,9 +47,19 @@ class GeneratedModelClassesTest {
             assertThrows(NoSuchFieldException.class, () -> item.getField("REGENERATED"),
                     "a class the startup path has keeps coming from it");
 
+            assertTrue(GeneratedClassPath.ready(platform,List.of(generated),ByteBuddyAgent.install()),
+                    "already exposed roots are a ready success");
+            assertFalse(GeneratedClassPath.ready(platform,List.of(generated.resolve("missing")),ByteBuddyAgent.install()),
+                    "an unavailable expected directory is not ready");
             assertEquals(0, GeneratedClassPath.expose(platform, List.of(generated), ByteBuddyAgent.install()),
                     "a directory already on the path is not added again");
         }
+    }
+
+    @Test void readinessRefusesUnsupportedOrMissingPlatformLoader(@TempDir Path dir) {
+        assertFalse(GeneratedClassPath.ready(null,List.of(dir),null));
+        assertFalse(GeneratedClassPath.ready(getClass().getClassLoader(),List.of(dir),null));
+        assertFalse(GeneratedClassPath.ready(getClass().getClassLoader(),List.of(),null));
     }
 
     @Test
