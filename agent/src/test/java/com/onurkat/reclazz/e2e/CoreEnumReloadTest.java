@@ -46,6 +46,69 @@ class CoreEnumReloadTest {
         }
     }
 
+    @Test
+    void generatedNativeEnumCodeIsReadyInTheRunningJvm() throws Exception {
+        String contract="package de.hybris.platform.core; public interface HybrisEnumValue { String getCode(); String getType(); }";
+        String labels="package app; public class Labels { public static String label(State s) { switch(s) { case BASE: return \"base\"; default: return \"other\"; } } }";
+        try (var app=WatchedApp.in(dir).jvmArgs("-Dprobe.dir="+dir)
+                .with("HybrisEnumValue",contract).with("State",nativeState("BASE(\"BASE\")"))
+                .with("Labels",labels).with("App",nativeDriver()).start()) {
+            app.awaitOrFail("NATIVE_READY=","native BASE and old collections must be initialised");
+            app.awaitOrFail("] Watching 1 director","watcher ready");
+            String identity=app.latest("NATIVE_READY=").substring("NATIVE_READY=".length());
+            app.rewrite("State",nativeState("BASE(\"BASE\"), NEXT(\"NEXT\")"));
+            app.awaitOrFail("gained [NEXT]","enum append must finish");
+            Files.createFile(dir.resolve("native-probe"));
+            app.awaitOrFail("NATIVE_CHECK=","native code/accessors and old collections must work");
+            assertEquals("NATIVE_CHECK=NEXT:State:1:BASE:true:true:0:next:true:other:2 id="+identity,app.latest("NATIVE_CHECK="),app.tail());
+            assertEquals(1,app.output().stream().filter(line->line.startsWith("NATIVE_READY=")).count());
+        }
+    }
+    @Test
+    void generatedNativeEnumCanAppendAfterAnEarlierBodyReload() throws Exception {
+        String contract="package de.hybris.platform.core; public interface HybrisEnumValue { String getCode(); String getType(); }";
+        String labels="package app; public class Labels { public static String label(State s) { switch(s) { case BASE: return \"base\"; default: return \"other\"; } } }";
+        try (var app=WatchedApp.in(dir).jvmArgs("-Dprobe.dir="+dir)
+                .with("HybrisEnumValue",contract).with("State",nativeState("BASE(\"BASE\")"))
+                .with("Labels",labels).with("App",nativeDriver()).start()) {
+            app.awaitOrFail("NATIVE_READY=","BASE must be warmed before the first reload");
+            app.awaitOrFail("] Watching 1 director","watcher ready");
+            String identity=app.latest("NATIVE_READY=").substring("NATIVE_READY=".length());
+            app.rewrite("State",nativeState("BASE(\"BASE\")").replace("return code;", "return this.code;" ).replace("return \"State\";", "return \"State\".intern();"));
+            app.awaitOrFail("Reloaded app.State","an actual body reload must precede append");
+            app.rewrite("State",nativeState("BASE(\"BASE\"), NEXT(\"NEXT\")").replace("return \"State\";", "return \"State\".intern();"));
+            app.awaitOrFail("gained [NEXT]","previously reloaded enum must accept supported append");
+            Files.createFile(dir.resolve("native-probe"));
+            app.awaitOrFail("NATIVE_CHECK=","native code and retained objects must work");
+            assertEquals("NATIVE_CHECK=NEXT:State:1:BASE:true:true:0:next:true:other:2 id="+identity,app.latest("NATIVE_CHECK="),app.tail());
+        }
+    }
+
+    private static String nativeState(String constants) {
+        return "package app; public enum State implements de.hybris.platform.core.HybrisEnumValue { "+constants
+            + "; private final String code; State(String code) { this.code=code.intern(); } public String getCode() { return code; } public String getType() { return \"State\"; } }";
+    }
+    private static String nativeDriver() {
+        return """
+                package app;
+                import java.nio.file.*;
+                import java.util.*;
+                public class App {
+                    public static void main(String[] args) throws Exception {
+                        State base=State.BASE;Class<?> type=State.class;
+                        if(!State.valueOf("BASE").getCode().equals("BASE") || State.values().length!=1 || !Labels.label(base).equals("base")) throw new AssertionError();
+                        EnumMap<State,String> map=new EnumMap<>(State.class);map.put(base,"base");
+                        EnumSet<State> set=EnumSet.of(base);
+                        String id=ProcessHandle.current().pid()+":"+UUID.randomUUID();
+                        System.out.println("NATIVE_READY="+id);
+                        while(!Files.exists(Path.of(System.getProperty("probe.dir"),"native-probe")))Thread.sleep(10);
+                        State next=State.valueOf("NEXT");map.put(next,"next");set.add(next);
+                        System.out.println("NATIVE_CHECK="+next.getCode()+":"+next.getType()+":"+next.ordinal()+":"+base.getCode()+":"+(base==State.BASE)+":"+(type==State.class)+":"+base.ordinal()+":"+map.get(next)+":"+set.contains(next)+":"+Labels.label(next)+":"+State.values().length+" id="+id);
+                    }
+                }
+                """;
+    }
+
     private static String appended(int version) {
         return "[RED, BLUE, GREEN]:ord=0,1:blue=old:green=2/new/true/other/ArrayIndexOutOfBoundsException:arrayLength=2:marker=v" + version;
     }

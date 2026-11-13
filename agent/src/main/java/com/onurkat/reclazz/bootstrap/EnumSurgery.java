@@ -6,6 +6,7 @@ package com.onurkat.reclazz.bootstrap;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,8 +74,19 @@ public final class EnumSurgery {
      *                  next ordinal after the ones already there
      */
     public static Outcome append(Class<?> enumClass, List<String> names) {
+        return append(enumClass, names, null);
+    }
+
+    /** Internal native-enum route; the caller validates the incoming constructor/code mapping. */
+    public static Outcome append(Class<?> enumClass, List<String> names, Field codeField) {
         if (enumClass == null || !enumClass.isEnum() || names == null || names.isEmpty()) {
             return Outcome.declined("nothing to append");
+        }
+        if (codeField != null && (codeField.getDeclaringClass() != enumClass
+                || codeField.getType() != String.class
+                || codeField.getModifiers() != (Modifier.PRIVATE | Modifier.FINAL)
+                || !codeField.equals(declaredField(enumClass, "code")))) {
+            return Outcome.declined("the validated native enum code field is unavailable");
         }
         if (!UnsafeAccess.isAvailable()) {
             return Outcome.declined("this JVM does not expose the memory access this needs");
@@ -130,6 +142,11 @@ public final class EnumSurgery {
                 Object constant = UnsafeAccess.allocateInstance(enumClass);
                 UnsafeAccess.putObject(constant, nameField, names.get(i));
                 UnsafeAccess.putInt(constant, ordinalField, existing.length + i);
+                if (codeField != null) {
+                    // Complete native state before field/FieldStore/values publication.
+                    UnsafeAccess.putObject(constant, codeField, names.get(i).intern());
+                    UnsafeAccess.storeFence();
+                }
                 grown[existing.length + i] = constant;
 
                 // The static field exists only where the redefinition was
