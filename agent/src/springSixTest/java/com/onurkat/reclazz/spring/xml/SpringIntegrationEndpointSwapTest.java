@@ -149,6 +149,37 @@ class SpringIntegrationEndpointSwapTest {
         assertEquals("", restartWarnings(), events.toString());
     }
 
+    /**
+     * Endpoints without an id get generated #N names whose numbering differs between the live
+     * boot (another SI file loaded first) and a fresh parse of one file. They must never be paired
+     * by name: an unrelated edit in the file leaves every anonymous endpoint exactly as booted.
+     */
+    @Test void anonymousEndpointsAreNeverPairedByGeneratedName() throws Exception {
+        Path other = dir.resolve("other-si-spring.xml");
+        Files.writeString(other, Files.readString(xml("<int:service-activator input-channel='other' expression=\"'O:' + payload\"/>"))
+                .replace("<int:channel id=\"in\"/>", "")
+                .replace("<bean id=\"greeter\" class=\"" + Greeter.class.getName() + "\"/>", ""));
+        Path path = dir.resolve("si-probe-spring.xml");
+        String probe = Files.readString(xml("<int:service-activator input-channel='in' expression=\"'A:' + payload\"/>"
+                + "<bean id='plain' class='java.lang.StringBuilder'><constructor-arg value='v1'/></bean>"))
+                .replace("<int:channel id=\"other\"/>", "");
+        Files.writeString(path, probe);
+        var context = new GenericApplicationContext(); contexts.add(context);
+        var reader = new XmlBeanDefinitionReader(context);
+        for (Path file : List.of(other, path)) {
+            var resource = new FileSystemResource(file);
+            reader.loadBeanDefinitions(resource); SpringXmlResources.record(reader, resource);
+        }
+        context.refresh(); ApplicationContextHolder.register(context);
+        Files.writeString(path, probe.replace("value='v1'", "value='v2'"));
+        reload(path);
+        assertEquals(List.of("A:x", "A:x", "A:x", "A:x"), send(context, "in"));
+        assertEquals(List.of("O:x", "O:x", "O:x", "O:x"), send(context, "other"));
+        assertEquals(1, subscribers(context, "in"));
+        assertEquals(1, subscribers(context, "other"));
+        assertTrue(events.stream().noneMatch(e -> e.contains("Spring Integration endpoint")), events.toString());
+    }
+
     @Test void unchangedSaveTouchesNothing() throws Exception {
         Path path = xml("<int:service-activator id='act' input-channel='in' expression=\"'A:' + payload\"/>");
         var context = load(path);

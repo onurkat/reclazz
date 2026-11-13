@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-- An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
+- An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. Only endpoints with an explicit id are replaced; an endpoint without an id keeps its booted handler and the save reports it, because its generated name can belong to another file's endpoint. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
 
 - Reload access-expression edits in a captured single Spring Security XML http group through the existing filter proxy. Scope/authentication changes are refused; boot bean definitions remain unchanged.
 

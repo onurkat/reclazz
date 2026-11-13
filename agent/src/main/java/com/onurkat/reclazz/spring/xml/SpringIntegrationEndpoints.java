@@ -47,6 +47,11 @@ final class SpringIntegrationEndpoints {
         for (String name : SpringReflection.getBeanDefinitionNames(parsed)) {
             Object next = SpringReflection.getBeanDefinition(parsed, name);
             if (next == null || !ENDPOINT.equals(SpringReflection.getBeanClassName(next))) continue;
+            // An endpoint without an id is named ConsumerEndpointFactoryBean#N, and N depends on
+            // how many endpoints were parsed before it: a fresh parse of one file and the live boot
+            // number them differently, so the same name can be another file's endpoint. Only an
+            // explicit id identifies the same endpoint; generated ones stay on the generic path.
+            if (generated(name)) continue;
             Object previous = SpringReflection.getBeanDefinition(live, name);
             String nextHandler = handlerName(next);
             if (nextHandler != null) derived.add(name + ".handler");
@@ -152,18 +157,21 @@ final class SpringIntegrationEndpoints {
      * was not declared by this file is shared, not this file's change.
      */
     private static void dropSharedInfrastructure(Object live, Object parsed, Path xmlPath) {
-        String path = xmlPath.toAbsolutePath().toString();
-        String marker = xmlPath.getFileName() + "]";
         for (String name : SpringReflection.getBeanDefinitionNames(parsed)) {
             Object next = SpringReflection.getBeanDefinition(parsed, name);
             String type = next == null ? null : SpringReflection.getBeanClassName(next);
             if (type == null || !type.startsWith(CONFIG) || type.equals(ENDPOINT)) continue;
             Object previous = SpringReflection.getBeanDefinition(live, name);
             if (previous == null || !type.equals(SpringReflection.getBeanClassName(previous))) continue;
-            String resource = SpringReflection.getResourceDescription(previous);
-            boolean ownedHere = resource != null && (resource.contains(path) || resource.endsWith(marker));
-            if (!ownedHere || isInfrastructure(type)) SpringReflection.removeBeanDefinition(parsed, name);
+            // Only namespace infrastructure (fixed names, one per context) is shared. A generated
+            // handler name can belong to another file's endpoint and is never dropped or paired here.
+            if (isInfrastructure(type)) SpringReflection.removeBeanDefinition(parsed, name);
         }
+    }
+
+    /** Spring's generated bean name: the class name, '#' and a parse-order counter. */
+    static boolean generated(String name) {
+        return name.indexOf('#') > 0;
     }
 
     private static boolean isInfrastructure(String type) {

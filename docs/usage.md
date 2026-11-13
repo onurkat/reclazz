@@ -376,7 +376,8 @@ An edited Spring Integration consumer endpoint in XML (`service-activator`,
 `transformer`, `filter`, `router` and similar) is replaced in place: the old
 endpoint is stopped and unsubscribed, the new one is created and started, and
 the next message goes to the new handler. A new handler that fails to build
-leaves the old endpoint running. Adding or removing endpoints, channels,
+leaves the old endpoint running. The endpoint needs an explicit `id`; one
+without an id is reported for a restart. Adding or removing endpoints, channels,
 pollers and gateways still needs a restart.
 
 For an existing bean in a watched Spring XML resource, edits to constructor arguments,
