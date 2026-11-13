@@ -28,7 +28,7 @@ Finish with [your first reload](#your-first-reload).
 - Stock JDKs support Reclazz's documented structural reload paths; a special JBR
   installation is not required to begin. Supported changes and native type limits
   are in [usage](usage.md) and [superclass feasibility](superclass-feasibility.md).
-- Examples use source version **1.5.0**. A source version is not proof that every
+- Examples use source version **1.6.0**. A source version is not proof that every
   registry has published it. Choose a version present in your chosen channel or
   [build from source](#building-from-source). Match the agent and its integration artifacts;
   newer BUILD/VERIFY/MCP features may require local builds.
@@ -92,7 +92,7 @@ the Reclazz plugin to its `build.gradle.kts`:
 
 ```kotlin
 plugins {
-    id("com.onurkat.reclazz") version "1.5.0"
+    id("com.onurkat.reclazz") version "1.6.0"
 }
 repositories { mavenCentral() }
 ```
@@ -107,7 +107,7 @@ an explicit `watchDirs` list replaces them in the [Gradle options](gradle-plugin
 
 If that plugin version is not available in the Plugin Portal, use a released
 matching version or the standalone route. A local agent can be selected via
-`reclazz { agentJar.set(file("/absolute/path/to/agent-1.5.0.jar")) }`; this replaces
+`reclazz { agentJar.set(file("/absolute/path/to/agent-1.6.0.jar")) }`; this replaces
 agent resolution, not Gradle plugin resolution. Full setup: [Gradle plugin](gradle-plugin.md).
 
 ## Maven
@@ -186,17 +186,17 @@ From the repository root, with its Gradle wrapper and JDK 17+:
 ./gradlew :mcp-server:mcpRelease
 ```
 
-On Windows use `gradlew.bat` in place of `./gradlew`. For the current 1.5.0 source:
+On Windows use `gradlew.bat` in place of `./gradlew`. For the current 1.6.0 source:
 
 | Output | Use |
 |---|---|
-| `agent/build/libs/agent-1.5.0.jar` | Standalone shaded agent; use this exact path in `-javaagent` for a local build |
-| `build/distributions/reclazz-1.5.0.zip` | Local IDE plugin; install from disk |
-| `mcp-server/build/distributions/mcp/reclazz-mcp-1.5.0.jar` and `.jar.sha256` | Optional standalone MCP package |
+| `agent/build/libs/agent-1.6.0.jar` | Standalone shaded agent; use this exact path in `-javaagent` for a local build |
+| `build/distributions/reclazz-1.6.0.zip` | Local IDE plugin; install from disk |
+| `mcp-server/build/distributions/mcp/reclazz-mcp-1.6.0.jar` and `.jar.sha256` | Optional standalone MCP package |
 
 Read `pluginVersion` in `gradle.properties` if building another version.
-`agent-1.5.0-thin.jar` is not the standalone package. The source build's
-`agent-1.5.0.jar`, GitHub's `reclazz-agent-1.5.0.jar` and the IDE's bundled
+`agent-1.6.0-thin.jar` is not the standalone package. The source build's
+`agent-1.6.0.jar`, GitHub's `reclazz-agent-1.6.0.jar` and the IDE's bundled
 `reclazz-agent.jar` are different names for their respective packaging contexts.
 For local Maven plugin/agent installation, see [Maven local builds](maven.md#local-builds).
 These commands build local files; they do not publish a release.

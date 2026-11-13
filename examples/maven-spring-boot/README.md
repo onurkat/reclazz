@@ -9,7 +9,7 @@ fixture, not a current-version recommendation. Java 17+ and Maven 3.9.x are need
 ## Run
 
 Make matching Reclazz agent and Maven plugin artifacts available first. This
-example selects 1.5.0; if they are not published in your chosen repository, use
+example selects 1.6.0; if they are not published in your chosen repository, use
 [local builds](../../docs/maven.md#local-builds). No starter or MCP client is needed.
 From this directory:
 

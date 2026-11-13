@@ -26,7 +26,7 @@ val reclazzAgent by configurations.creating
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
 
-    reclazzAgent("com.onurkat.reclazz:reclazz-agent:1.5.0")
+    reclazzAgent("com.onurkat.reclazz:reclazz-agent:1.6.0")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }

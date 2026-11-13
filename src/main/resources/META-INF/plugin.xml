@@ -110,6 +110,17 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.6.0</h3>
+        <ul>
+            <li><b>Pause automatic reload.</b> Pause Automatic Reload in the Tools menu and the Reclazz tool window keeps saved changes waiting during a refactor or branch switch and applies them on resume. The status bar shows Paused and how many changes are waiting.</li>
+            <li><b>More Spring XML edits without a restart.</b> New beans with <code>InitializingBean</code> or <code>init-method</code>, changed <code>${key}</code> values from project.properties and newly added <code>&lt;import&gt;</code> files apply to the running server.</li>
+            <li><b>SAP XML directives and listeners.</b> Populator add/remove edits in <code>ModifyPopulatorList</code>, new event listeners, hot-folder converter mappings and file adapter regex and rate apply live.</li>
+            <li><b>Spring Integration and Security.</b> An edited service-activator, transformer, filter or router answers the next messages; an edited Security XML access rule is enforced by the running filter chain.</li>
+            <li><b>New item types, relations and enum values.</b> They become usable in the same JVM after SAP's own code generation. A failed generation no longer blocks later class reloads.</li>
+            <li><b>MCP for coding agents.</b> <code>reclazz_await_reload</code> waits until a save is applied, <code>reclazz_events</code> pages reload events, and new resources plus a verification prompt help an agent check its own edits.</li>
+            <li><b>Clearer settings.</b> Settings are grouped into SAP Commerce, Reloading and Advanced, with details behind help icons, and SAP projects can turn off the Backoffice configuration reset on save.</li>
+            <li><b>Fixes.</b> Reloaded methods can use protected fields inherited from another package, Log4j levels go to the owning context, and deleted ImpEx files are no longer imported.</li>
+        </ul>
         <h3>1.5.0</h3>
         <ul>
             <li><b>SAP process XML reloads.</b> Saving a registered local process definition updates the active definition after native validation: processes started afterwards use the edited graph, processes already started keep the version they started with. Renamed or duplicate definitions, active dynamic DB definitions and files loaded before the agent are refused with a reason.</li>

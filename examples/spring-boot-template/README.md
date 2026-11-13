@@ -39,12 +39,12 @@ This template wires the agent by hand so the flag and paths are visible. Two
 ecosystem pieces make it a single line each:
 
 - The Spring Boot starter (on Maven Central):
-  `developmentOnly("com.onurkat.reclazz:reclazz-spring-boot-starter:1.5.0")`
+  `developmentOnly("com.onurkat.reclazz:reclazz-spring-boot-starter:1.6.0")`
   reports at startup whether the agent is attached and adds a `reclazz` actuator
   endpoint. See
   [spring-boot-starter.md](https://github.com/onurkat/reclazz/blob/main/docs/spring-boot-starter.md).
 - The Gradle plugin (on the Gradle Plugin Portal):
-  `id("com.onurkat.reclazz") version "1.5.0"` attaches the agent to `bootRun` and
+  `id("com.onurkat.reclazz") version "1.6.0"` attaches the agent to `bootRun` and
   `test` for you. See
   [gradle-plugin.md](https://github.com/onurkat/reclazz/blob/main/docs/gradle-plugin.md).
 

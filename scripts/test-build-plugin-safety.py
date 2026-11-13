@@ -257,7 +257,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work-dir", type=Path, required=True)
     parser.add_argument("--tool", choices=["gradle", "maven", "all"], default="all")
-    parser.add_argument("--version", default="1.5.0")
+    parser.add_argument("--version", default=_VERSION)
     parser.add_argument("--gradle", type=Path, required=True)
     parser.add_argument("--maven", type=Path, default=Path(shutil.which("mvn") or "mvn"))
     parser.add_argument("--java", type=Path, default=Path(shutil.which("java") or "java"))

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-14
+
 ### Changed
 
 - New controller classes in captured plain XML component-scan packages register

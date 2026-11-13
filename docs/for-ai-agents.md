@@ -26,13 +26,13 @@ test JVM, so a plain `bootRun` / `mvn test` runs against reloaded classes.
 ```kotlin
 plugins {
     id("org.springframework.boot") version "3.3.0"
-    id("com.onurkat.reclazz") version "1.5.0"
+    id("com.onurkat.reclazz") version "1.6.0"
 }
 ```
 
 The plugin resolves `com.onurkat.reclazz:reclazz-agent` from Maven Central and
 wires the flag into `bootRun` and `Test`. It is published on the Gradle Plugin
-Portal, so the `id(...) version "1.5.0"` form above resolves as-is. Details and
+Portal, so the `id(...) version "1.6.0"` form above resolves as-is. Details and
 options: [gradle-plugin.md](gradle-plugin.md).
 
 ### Maven
@@ -67,7 +67,7 @@ below supply different evidence; an attachment check is not a reload receipt.
   ```
 
   ```json
-  {"attached":true,"agent":"1.5.0","protocol":1,"port":54123,"health":["Reloads: 3, failures: 0, median 12ms"]}
+  {"attached":true,"agent":"1.6.0","protocol":1,"port":54123,"health":["Reloads: 3, failures: 0, median 12ms"]}
   ```
 
   `{"attached":false,"reason":"..."}` when nothing is running. See
