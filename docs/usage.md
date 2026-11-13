@@ -276,11 +276,20 @@ existing controller rescan and added-endpoint behavior.
 
 ### SAP populator and list-merge directives
 
-Edits to existing `ModifyPopulatorList` and `ListMergeDirective` XML definitions
-require restart. Changing a directive's setter does not rebuild its target list;
-replaying its initialization can retain obsolete entries or add duplicates.
-Reclazz rejects these edits before changing the live definition or directive and
-reports that the effective target lists were not refreshed. This includes property,
+Changing which populator an existing `ModifyPopulatorList` adds or removes
+(its `add` or `remove` reference) applies to the running converter: Reclazz takes
+the old `add` out of the target list, puts the old `remove` back, then removes the
+new `remove` and appends the new `add`, the same way SAP applies a directive at
+startup. A populator bean added in the same save can be the new `add`. A populator
+that comes back this way is appended, so when several directives touch one list
+its order can differ from a fresh start. If the edit cannot be applied, the list
+and the directive stay as they were and the save reports a restart.
+
+Other edits to existing `ModifyPopulatorList` and `ListMergeDirective` XML
+definitions require restart: a changed `list` target, subclasses, inherited or
+lazy directives, and every `ListMergeDirective` edit. Reclazz rejects these
+before changing the live definition or directive and reports that the effective
+target lists were not refreshed. This includes property,
 ordering and `depends-on` edits, inherited definitions and subclasses. Lazy directives
 are not instantiated by the check, and unchanged definitions do not generate a warning.
 

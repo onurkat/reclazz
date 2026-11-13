@@ -71,6 +71,33 @@ public class ListDirectiveSdkProbe {
                 Object directive=ctx.getBeanFactory().getSingleton("directive");
                 require((directive==null)==variant.equals("lazy"), "lazy directive initialization changed");
                 Object definition=((org.springframework.beans.factory.support.AbstractBeanDefinition)ctx.getBeanFactory().getBeanDefinition("directive")).cloneBeanDefinition();
+                if(!merge && (variant.equals("normal") || variant.equals("shared"))) {
+                    // An exact eager ModifyPopulatorList: add/remove edits apply to the live list.
+                    boolean sharedList=variant.equals("shared");
+                    for(int round=0;round<2;round++) {
+                        com.onurkat.reclazz.ui.RestartLedger.clear();
+                        Files.writeString(file,xml(false,"C",variant));reloader.reloadLoaded(file);
+                        require(com.onurkat.reclazz.ui.RestartLedger.digest().equals(List.of("Nothing from this session needs a restart.")), "applied directive edit must not ask for a restart");
+                        require(ctx.getBeanFactory().getSingleton("directive")==directive, "directive identity changed");
+                        require(directive.getClass().getMethod("getAdd").invoke(directive)==ctx.getBean("C"), "directive add not updated");
+                        equal(sharedList?"ACC":"AC",output(ctx));
+                    }
+                    com.onurkat.reclazz.ui.RestartLedger.clear();
+                    Files.writeString(file,xml(false,"B",variant).replace("</bean></beans>","<property name='remove' ref='A'/></bean></beans>"));reloader.reloadLoaded(file);
+                    require(com.onurkat.reclazz.ui.RestartLedger.digest().equals(List.of("Nothing from this session needs a restart.")), "remove edit must apply");
+                    equal(sharedList?"CB":"B",output(ctx));
+                    com.onurkat.reclazz.ui.RestartLedger.clear();
+                    Files.writeString(file,xml(false,"B",variant).replace("ref='converter'","ref='unrelated'"));reloader.reloadLoaded(file);
+                    require(com.onurkat.reclazz.ui.RestartLedger.digest().stream().anyMatch(s -> s.contains("SAP list directive edit requires restart")), "target list change must still ask for a restart");
+                    equal(sharedList?"CB":"B",output(ctx));
+                    com.onurkat.reclazz.ui.RestartLedger.clear();
+                    Files.writeString(file,xml(false,"B",variant));reloader.reloadLoaded(file);
+                    // The removed populator comes back at the end, so a shared list's order can differ from boot.
+                    equal(sharedList?"CAB":"AB",output(ctx));
+                    equal("A",((AbstractPopulatingConverter)ctx.getBean("unrelated")).convert(new Object()));
+                    System.out.println(variant+" MODIFY edit applied to the live list: "+output(ctx));
+                    continue;
+                }
                 for(String changed:List.of(xml(merge,"C",variant), xml(merge,"C",variant))) {
                     com.onurkat.reclazz.ui.RestartLedger.clear();
                     Files.writeString(file,changed);reloader.reloadLoaded(file);

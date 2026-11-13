@@ -323,6 +323,18 @@ public final class SpringXmlReloader {
                             "bean add failed: " + SpringReflection.rootCause(e)));
                 }
             }
+            for (SapPopulatorDirectives.Edit directive : change.diff.directiveEdits) {
+                try {
+                    SapPopulatorDirectives.apply(change.factory, directive);
+                    change.applied++;
+                    StatusReporter.info("SAP populator directive " + directive.beanName() + change.label
+                            + " applied: target populator list updated");
+                } catch (Exception e) {
+                    change.diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(directive.beanName(),
+                            "SAP populator directive edit could not be applied, previous list kept: "
+                                    + SpringReflection.rootCause(e)));
+                }
+            }
             if (!change.diff.hasChanges() && change.applied == 0) StatusReporter.info("Spring XML " + xmlPath.getFileName() + change.label
                     + ", parsed OK, no live-applicable changes detected");
             else reportWithLabel(xmlPath, change.applied, change.diff, change.label);

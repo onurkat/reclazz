@@ -24,6 +24,12 @@ final class SapListDirectiveGuard {
                 }
             }
             if (!directive) return false;
+            if (!normalized(previous).equals(normalized(candidate))
+                    && SapPopulatorDirectives.supported(factory, name, previous, candidate)) {
+                // Applied after this save's new beans exist, so a new populator can be the add.
+                diff.directiveEdits.add(new SapPopulatorDirectives.Edit(name, candidate));
+                return true;
+            }
             if (!normalized(previous).equals(normalized(candidate))) {
                 diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(name,
                         "SAP list directive edit requires restart; effective target lists were not refreshed"));
