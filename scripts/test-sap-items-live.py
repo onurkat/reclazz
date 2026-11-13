@@ -19,6 +19,11 @@ import tempfile
 import time
 import urllib.request
 from sap_items_snapshot import capture, restore, verify, inventory
+import re as _re
+from pathlib import Path as _Path
+
+# Built artifact names follow pluginVersion, so a version bump needs no edit here.
+_VERSION = _re.search(r'^pluginVersion=(\S+)$', (_Path(__file__).resolve().parents[1] / 'gradle.properties').read_text(), _re.M).group(1)
 
 REPO = Path(__file__).resolve().parent.parent
 # A second disposable install (for a parallel agent) is selected with
@@ -473,7 +478,7 @@ def new_type_profile(folder, restore_repo, lock, inject=False, new_relation=Fals
         for name in record['originalLinks']:
             link = SAP_HOME / 'bin/custom' / name; link.unlink(); link.symlink_to(REPO / name)
         if new_relation:
-            candidate = REPO / 'agent/build/libs/agent-1.5.0.jar'
+            candidate = REPO / 'agent/build/libs' / f'agent-{_VERSION}.jar'
             record['candidateSha256'] = digest(candidate); shutil.copy2(candidate, JAR)
         rebuild_new_type(folder, REPO, 'candidate')
         wrapper.write_bytes(schema_wrapper_bytes(wrapper.read_bytes(), JAR))

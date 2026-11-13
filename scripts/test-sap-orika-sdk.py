@@ -11,6 +11,11 @@ import threading
 import time
 import urllib.error
 import urllib.request
+import re as _re
+from pathlib import Path as _Path
+
+# Built artifact names follow pluginVersion, so a version bump needs no edit here.
+_VERSION = _re.search(r'^pluginVersion=(\S+)$', (_Path(__file__).resolve().parents[1] / 'gradle.properties').read_text(), _re.M).group(1)
 
 
 def dto(stage):
@@ -97,5 +102,5 @@ def run(args):
 if __name__ == '__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('hybris_home',type=Path)
-    parser.add_argument('--agent',type=Path,default=Path(__file__).resolve().parents[1]/'agent/build/libs/agent-1.5.0.jar')
+    parser.add_argument('--agent',type=Path,default=Path(__file__).resolve().parents[1]/'agent/build/libs'/f"agent-{_VERSION}.jar")
     run(parser.parse_args())

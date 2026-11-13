@@ -18,6 +18,11 @@ import subprocess
 import time
 import uuid
 from xml.sax.saxutils import escape
+import re as _re
+from pathlib import Path as _Path
+
+# Built artifact names follow pluginVersion, so a version bump needs no edit here.
+_VERSION = _re.search(r'^pluginVersion=(\S+)$', (_Path(__file__).resolve().parents[1] / 'gradle.properties').read_text(), _re.M).group(1)
 
 
 def require(ok, message):
@@ -258,10 +263,10 @@ def main():
     parser.add_argument("--java", type=Path, default=Path(shutil.which("java") or "java"))
     parser.add_argument("--javac", type=Path, default=Path(shutil.which("javac") or "javac"))
     parser.add_argument("--maven-cache", type=Path, default=Path.home() / ".m2/repository")
-    parser.add_argument("--agent", type=Path, default=root / "agent/build/libs/agent-1.5.0.jar")
-    parser.add_argument("--mcp", type=Path, default=root / "mcp-server/build/libs/reclazz-mcp-1.5.0.jar")
-    parser.add_argument("--gradle-plugin", type=Path, default=root / "gradle-plugin/build/libs/gradle-plugin-1.5.0.jar")
-    parser.add_argument("--maven-plugin", type=Path, default=root / "maven-plugin/target/reclazz-maven-plugin-1.5.0.jar")
+    parser.add_argument("--agent", type=Path, default=root / f"agent/build/libs/agent-{_VERSION}.jar")
+    parser.add_argument("--mcp", type=Path, default=root / f"mcp-server/build/libs/reclazz-mcp-{_VERSION}.jar")
+    parser.add_argument("--gradle-plugin", type=Path, default=root / f"gradle-plugin/build/libs/gradle-plugin-{_VERSION}.jar")
+    parser.add_argument("--maven-plugin", type=Path, default=root / f"maven-plugin/target/reclazz-maven-plugin-{_VERSION}.jar")
     parser.add_argument("--maven-pom", type=Path, default=root / "maven-plugin/pom.xml")
     args = parser.parse_args()
     args.work_dir = args.work_dir.resolve()

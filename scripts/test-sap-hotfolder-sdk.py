@@ -2,6 +2,11 @@
 """Opt-in real installed SAP SDK regression; no installation mutation or native boot."""
 from pathlib import Path
 import argparse, os, subprocess, tempfile
+import re as _re
+from pathlib import Path as _Path
+
+# Built artifact names follow pluginVersion, so a version bump needs no edit here.
+_VERSION = _re.search(r'^pluginVersion=(\S+)$', (_Path(__file__).resolve().parents[1] / 'gradle.properties').read_text(), _re.M).group(1)
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
@@ -11,7 +16,7 @@ def main():
     sdk = Path(os.environ.get("RECLAZZ_SAP_HOME", str(repo.parent / "reclazz-sap-astra"))) / "hybris/bin"
     source = sdk / "modules/core-accelerator/acceleratorservices/src"
     java = Path(os.environ["JAVA_HOME"]) / "bin"
-    jar = args.agent_jar or repo / "agent/build/libs/agent-1.5.0.jar"
+    jar = args.agent_jar or repo / "agent/build/libs" / f"agent-{_VERSION}.jar"
     classpath = os.pathsep.join([str(p) for p in sorted((sdk / "platform").rglob("*.jar"))] + [str(jar)])
     native = source / "de/hybris/platform/acceleratorservices/dataimport/batch"
     names = ["BatchHeader.java", "HeaderTask.java", "converter/ImpexConverter.java", "converter/ImpexRowFilter.java", "converter/impl/DefaultImpexConverter.java", "converter/mapping/ConverterMapping.java", "converter/mapping/impl/DefaultConverterMapping.java", "task/ImpexTransformerTask.java", "task/CleanupHelper.java", "util/BatchDirectoryUtils.java"]
