@@ -11,6 +11,7 @@ import com.intellij.openapi.options.ConfigurationException
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
+import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.*
 import com.onurkat.reclazz.plugin.agent.AgentJarLocator
 import com.onurkat.reclazz.plugin.agent.AttachAction
@@ -36,6 +37,7 @@ class ReclazzConfigurable internal constructor(
     private var autoCompileCheckbox = false
     private var autoImpexCheckbox = false
     private var autoSolrReindexCheckbox = false
+    private var backofficeConfigResetCheckbox = true
     private var autoUpdateRunningSystemCheckbox = false
     private var impexAllowRemoveCheckbox = false
     private var reloadBoundaryField = "immediate"
@@ -65,6 +67,7 @@ class ReclazzConfigurable internal constructor(
         autoCompileCheckbox = settings.autoCompile
         autoImpexCheckbox = settings.autoImpex
         autoSolrReindexCheckbox = settings.autoSolrReindex
+        backofficeConfigResetCheckbox = settings.backofficeConfigReset
         autoUpdateRunningSystemCheckbox = settings.autoUpdateRunningSystem
         impexAllowRemoveCheckbox = settings.impexAllowRemove
         reloadBoundaryField = settings.reloadBoundary
@@ -105,18 +108,32 @@ class ReclazzConfigurable internal constructor(
             }
             row {
                 label(statusLine)
+                link("Test connection") {
+                    applyConnectionSettings()
+                    testConnection()
+                }
             }
             row {
-                browserLink("Documentation", "https://github.com/onurkat/reclazz")
+                browserLink("Documentation", "https://reclazz.com/docs/")
                 browserLink("Report issue", "https://github.com/onurkat/reclazz/issues")
                 browserLink("What's new", "https://github.com/onurkat/reclazz/blob/main/CHANGELOG.md")
             }
             separator()
 
+            // The master switch comes first: every option below either feeds
+            // the agent it injects or only matters while it is on.
+            lateinit var enabledCell: Cell<com.intellij.ui.components.JBCheckBox>
+            row {
+                enabledCell = checkBox("Enable Reclazz in this project")
+                    .bindSelected(::enabledCheckbox)
+                    .comment("Adds the agent to Java run configurations, reloads on compile and sets the JVM " +
+                            "flags hot-swap needs. Turn it off to only monitor an agent attached elsewhere.")
+            }
+
             // Hybris hero, only shown when a SAP Commerce project is detected.
             // Promotes the single most important action: "Install Agent".
             if (isHybris) {
-                group("SAP Commerce Cloud") {
+                group("SAP Commerce") {
                     if (agentInstalled) {
                         row {
                             label("Agent configured for SAP Commerce startup").applyToComponent {
@@ -138,9 +155,8 @@ class ReclazzConfigurable internal constructor(
                         }
                     } else {
                         row {
-                            comment("One-time setup: add the Reclazz agent to your SAP " +
-                                    "Commerce server so class changes hot-reload at runtime. " +
-                                    "Safe to re-run, fully idempotent.")
+                            comment("One-time setup: adds the Reclazz agent to your SAP Commerce " +
+                                    "server so class changes reload while it runs. Safe to run again.")
                         }
                         row {
                             button("Install Reclazz Agent") {
@@ -174,6 +190,12 @@ class ReclazzConfigurable internal constructor(
                             .bindSelected(::autoSolrReindexCheckbox)
                             .comment("Bounded native updates with normal listeners and bookkeeping. Stored field freshness is not verified.")
                     }
+                    row {
+                        checkBox("Reset Backoffice configuration when its XML is saved")
+                            .bindSelected(::backofficeConfigResetCheckbox)
+                            .comment("Same as F4 in Backoffice, so it also discards configuration changes made in the UI. " +
+                                    "Turn it off to reset by hand.")
+                    }
                     row("Watch extensions:") {
                         textField()
                             .bindText(::watchExtensionsField)
@@ -191,55 +213,31 @@ class ReclazzConfigurable internal constructor(
                 }
             }
 
-            // The only place Reclazz mentions sponsorship: one line, opt-out,
-            // never shown again once dismissed. No popups, no notifications,
-            // no startup banner, a dev tool that nags is a dev tool people
-            // uninstall.
-            if (!settings.supportLineDismissed) {
-                row {
-                    comment("Reclazz is free and open source. " +
-                            "<a href='https://github.com/sponsors/onurkat'>Sponsor</a> " +
-                            "its maintenance, or <a href='dismiss'>hide this</a>.") { event ->
-                        if (event.description == "dismiss") {
-                            settings.supportLineDismissed = true
-                            supportRow?.visible(false)
-                        } else {
-                            com.intellij.ide.BrowserUtil.browse(event.url.toString())
-                        }
-                    }
-                }.also { supportRow = it }
-            }
-
             group("General") {
                 row {
-                    checkBox("Enable Reclazz features")
-                        .bindSelected(::enabledCheckbox)
-                        .comment("Auto-inject agent into run configs, trigger reloads on " +
-                                "compile, and auto-configure JDK flags. Uncheck if you only " +
-                                "want to monitor an externally-attached agent.")
-                }
-                row {
-                    checkBox("Auto-configure JVM for hot-swap (recommended)")
+                    checkBox("Configure the JVM for hot-swap")
                         .bindSelected(::autoDetectJdkCheckbox)
+                        .comment("Recommended. Adds the JVM options class redefinition needs to injected run configurations.")
+                }.enabledIf(enabledCell.selected)
+                row("Apply reloads:") {
+                    comboBox(listOf("immediate", "request"),
+                        SimpleListCellRenderer.create("") { if (it == "request") "At the next request boundary" else "Immediately" })
+                        .bindItem({ reloadBoundaryField }, { reloadBoundaryField = it ?: "immediate" })
+                        .comment("Request boundary waits for supported MVC requests and needs -javaagent at JVM startup; " +
+                                "dynamic attach always applies immediately. Takes effect at the next launch or install.")
                 }
                 row {
-                    checkBox("Verbose logging (for bug reports)")
-                        .bindSelected(::verboseCheckbox)
-                }
-                row {
-                    checkBox("Refresh JPA mapping when an entity field changes (opt-in)")
+                    checkBox("Refresh JPA mapping when an entity field changes")
                         .bindSelected(::jpaRefreshCheckbox)
                         .comment("Rebuilds the persistence unit and closes old persistence contexts. Existing field changes " +
                                 "require enhanced redefinition. New entities also work on stock JDKs, including " +
                                 "supported Hibernate validate with a prepared schema.")
                 }
-            }
-
-            row("Reload boundary:") {
-                comboBox(listOf("immediate", "request"))
-                    .bindItem({ reloadBoundaryField }, { reloadBoundaryField = it ?: "immediate" })
-                    .comment("Request mode waits for supported MVC requests and requires -javaagent at JVM startup. " +
-                            "Dynamic attach uses immediate mode instead. Changes apply to the next launch or install.")
+                row {
+                    checkBox("Verbose logging")
+                        .bindSelected(::verboseCheckbox)
+                        .comment("Useful when reporting a bug.")
+                }
             }
 
             collapsibleGroup("Advanced") {
@@ -256,13 +254,13 @@ class ReclazzConfigurable internal constructor(
                 row("Exclude classes from transformation:") {
                     textField()
                         .bindText(::excludeClassesField)
-                        .comment("Semicolon-separated class-name globs (e.g. com.example.Legacy*). Distinct from watched-file exclusions.")
+                        .comment("Semicolon-separated class-name globs (e.g. com.example.Legacy*). The agent never instruments these classes.")
                         .columns(COLUMNS_LARGE)
                 }
-                row("Exclude patterns:") {
+                row("Ignore changed files matching:") {
                     textField()
                         .bindText(::excludePatternsField)
-                        .comment("Semicolon-separated globs (e.g. *Test.class;*Mock*)")
+                        .comment("Semicolon-separated globs (e.g. *Test.class;*Mock*). Matching files are not reloaded.")
                         .columns(COLUMNS_LARGE)
                 }
                 row("Debounce (ms):") {
@@ -296,10 +294,6 @@ class ReclazzConfigurable internal constructor(
                         .comment("0 = read from port file. Use when agent port is fixed.")
                 }
                 row {
-                    button("Test Agent Connection") {
-                        applyConnectionSettings()
-                        testConnection()
-                    }
                     button("Attach to Running Server...") {
                         apply()
                         // Calls the shared flow directly. Invoking the
@@ -309,6 +303,25 @@ class ReclazzConfigurable internal constructor(
                     }
                 }
             }.apply { expanded = false }
+
+            // The only place Reclazz mentions sponsorship: one line at the
+            // end, opt-out, never shown again once dismissed. No popups, no
+            // notifications, no startup banner, a dev tool that nags is a dev
+            // tool people uninstall.
+            if (!settings.supportLineDismissed) {
+                row {
+                    comment("Reclazz is free and open source. " +
+                            "<a href='https://github.com/sponsors/onurkat'>Sponsor</a> " +
+                            "its maintenance, or <a href='dismiss'>hide this</a>.") { event ->
+                        if (event.description == "dismiss") {
+                            settings.supportLineDismissed = true
+                            supportRow?.visible(false)
+                        } else {
+                            com.intellij.ide.BrowserUtil.browse(event.url.toString())
+                        }
+                    }
+                }.also { supportRow = it }
+            }
         }.also { dialogPanel = it }
     }
 
@@ -413,6 +426,7 @@ class ReclazzConfigurable internal constructor(
                 autoCompileCheckbox != settings.autoCompile ||
                 autoImpexCheckbox != settings.autoImpex ||
                 autoSolrReindexCheckbox != settings.autoSolrReindex ||
+                backofficeConfigResetCheckbox != settings.backofficeConfigReset ||
                 autoUpdateRunningSystemCheckbox != settings.autoUpdateRunningSystem ||
                 impexAllowRemoveCheckbox != settings.impexAllowRemove ||
                 reloadBoundaryField != settings.reloadBoundary ||
@@ -447,6 +461,7 @@ class ReclazzConfigurable internal constructor(
                 autoCompile = autoCompileCheckbox,
                 autoImpex = autoImpexCheckbox,
                 autoSolrReindex = autoSolrReindexCheckbox,
+                backofficeConfigReset = backofficeConfigResetCheckbox,
                 autoUpdateRunningSystem = autoUpdateRunningSystemCheckbox,
                 impexAllowRemove = impexAllowRemoveCheckbox,
                 reloadBoundary = reloadBoundaryField,
@@ -475,6 +490,7 @@ class ReclazzConfigurable internal constructor(
         autoCompileCheckbox = settings.autoCompile
         autoImpexCheckbox = settings.autoImpex
         autoSolrReindexCheckbox = settings.autoSolrReindex
+        backofficeConfigResetCheckbox = settings.backofficeConfigReset
         autoUpdateRunningSystemCheckbox = settings.autoUpdateRunningSystem
         impexAllowRemoveCheckbox = settings.impexAllowRemove
         reloadBoundaryField = settings.reloadBoundary

@@ -182,6 +182,7 @@ object AgentJarLocator {
                 if (settings.impexAllowRemove) args.add("impexAllowRemove=true")
             }
             if (settings.autoSolrReindex) args.add("autoSolrReindex=true")
+            if (!settings.backofficeConfigReset) args.add("backofficeConfigReset=false")
             if (settings.autoUpdateRunningSystem) args.add("autoUpdateRunningSystem=true")
         } else {
             // Non-Hybris: pass IntelliJ's module compiler outputs as watchDirs

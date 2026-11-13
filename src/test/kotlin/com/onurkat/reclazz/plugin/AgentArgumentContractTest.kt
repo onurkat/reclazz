@@ -39,7 +39,7 @@ class AgentArgumentContractTest {
     @Test
     fun everyAgentArgumentIsExposedDerivedOrDeliberatelyOmitted() {
         val exposed = setOf("watchExtensions", "excludePatterns", "autoCompile", "autoImpex",
-            "debounceMs", "startupDelaySec", "verbose", "jpaRefresh", "autoSolrReindex",
+            "debounceMs", "startupDelaySec", "verbose", "jpaRefresh", "autoSolrReindex", "backofficeConfigReset",
             "autoUpdateRunningSystem", "impexAllowRemove", "reloadBoundary", "structuralReload", "resetStatics", "excludeClasses")
         val derived = setOf("hybrisHome", "statusPort", "portFile", "watchDirs")
         // Detector override, server-console formatting, bytecode diagnostics, server-log lifecycle,

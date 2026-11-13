@@ -26,6 +26,8 @@ class ReclazzSettings : PersistentStateComponent<ReclazzSettings.State> {
         var autoCompile: Boolean = false,
         var autoImpex: Boolean = false,
         var autoSolrReindex: Boolean = false,
+        /** Native F4-equivalent Backoffice config reset on save; the agent's default is on. */
+        var backofficeConfigReset: Boolean = true,
         var autoUpdateRunningSystem: Boolean = false,
         var impexAllowRemove: Boolean = false,
         var reloadBoundary: String = "immediate",

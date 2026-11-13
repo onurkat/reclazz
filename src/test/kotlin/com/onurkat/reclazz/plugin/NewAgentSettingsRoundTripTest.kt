@@ -25,7 +25,7 @@ import kotlin.test.assertFalse as expectFalse
 
 class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
     private fun nonDefaults() = ReclazzSettings.State(enabled = true, autoDetectJdk = false,
-        autoImpex = true, autoSolrReindex = true, autoUpdateRunningSystem = true, impexAllowRemove = true,
+        autoImpex = true, autoSolrReindex = true, autoUpdateRunningSystem = true, impexAllowRemove = true, backofficeConfigReset = false,
         reloadBoundary = "request", structuralReload = false, resetStatics = true, excludeClasses = "com.example.Legacy*;com.example.Old")
 
     fun testNewSettingsRoundTripAndReachAllThreeLaunchPaths() {
@@ -35,7 +35,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
             expectEquals(state, restored)
             val settings = ReclazzSettings.getInstance(project)
             settings.loadState(restored)
-            val expected = setOf("autoSolrReindex=true", "autoUpdateRunningSystem=true", "impexAllowRemove=true",
+            val expected = setOf("autoSolrReindex=true", "autoUpdateRunningSystem=true", "impexAllowRemove=true", "backofficeConfigReset=false",
                 "reloadBoundary=request", "structuralReload=false", "resetStatics=true", "excludeClasses=com.example.Legacy*;com.example.Old")
             val args = AgentJarLocator.buildAgentArgs(layout.project, settings.state)
             expectTrue(args.split(',').containsAll(expected), args)
@@ -64,7 +64,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
     fun testSapOptionsAreNotSentForGenericProjectAndRemoveRequiresAutoImpex() {
         SyntheticProject(project, sap = false).use { layout ->
             val args = AgentJarLocator.buildAgentArgs(layout.project, nonDefaults())
-            for (key in listOf("autoSolrReindex", "autoUpdateRunningSystem", "impexAllowRemove", "autoImpex", "hybrisHome")) {
+            for (key in listOf("autoSolrReindex", "autoUpdateRunningSystem", "impexAllowRemove", "autoImpex", "hybrisHome", "backofficeConfigReset")) {
                 expectFalse(args.contains("$key="), args)
             }
             expectTrue(args.contains("structuralReload=false"))
@@ -73,7 +73,7 @@ class NewAgentSettingsRoundTripTest : BasePlatformTestCase() {
         SyntheticProject(project, sap = true).use { layout ->
             expectFalse(AgentJarLocator.buildAgentArgs(layout.project, nonDefaults().copy(autoImpex = false)).contains("impexAllowRemove="))
             val defaults = AgentJarLocator.buildAgentArgs(layout.project, ReclazzSettings.State())
-            for (key in listOf("autoSolrReindex", "autoUpdateRunningSystem", "impexAllowRemove", "reloadBoundary", "structuralReload", "resetStatics", "excludeClasses")) {
+            for (key in listOf("autoSolrReindex", "autoUpdateRunningSystem", "impexAllowRemove", "reloadBoundary", "structuralReload", "resetStatics", "excludeClasses", "backofficeConfigReset")) {
                 expectFalse(defaults.contains("$key="), defaults)
             }
         }

@@ -135,6 +135,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- IDE Settings: the enable switch comes first and the JVM option follows it, the reload boundary reads Immediately or At the next request boundary, a Test connection link sits beside the status, the Documentation link opens the docs site, and SAP Commerce projects get a switch for the Backoffice configuration reset on save (`backofficeConfigReset`), which the agent already supported.
+
 - After a failed codegen build, classes written later (for example by a manual `ant build`) reload again; the failed build's own pending output is discarded.
 
 - Deleted ImpEx file events no longer attempt an import or warn about a missing

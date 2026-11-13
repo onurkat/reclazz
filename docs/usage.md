@@ -2872,10 +2872,12 @@ installation message describes.
 | Update stored Solr documents after provider reload | Off | SAP Commerce development only; bounded native updates with normal listeners/bookkeeping, no proof of field freshness |
 | Update running system after model changes | Off | SAP Commerce development only; opt-in schema additions and keyed localization writes to the live database |
 | Allow REMOVE in auto-imported ImpEx | Off | Available only when auto-import is enabled; permits live row deletion on save |
-| Reload boundary | immediate | request mode requires the agent at JVM startup; dynamic attach explicitly warns and uses immediate mode |
+| Reset Backoffice configuration when its XML is saved | On | SAP Commerce; the native F4 reset, which also discards configuration made in the Backoffice UI. Off sends `backofficeConfigReset=false` |
+| Apply reloads | Immediately | At the next request boundary requires the agent at JVM startup; dynamic attach explicitly warns and applies immediately |
 | Enable structural reload (Advanced) | On | Disable for method-body reloads only |
 | Re-run changed static field initializers (Advanced) | Off | Applies on the next launch; eligible static finals become non-final. Existing captured copies retain the old object |
-| Exclude classes from transformation (Advanced) | Empty | Semicolon-separated class-name globs; distinct from watched-file exclude patterns |
+| Exclude classes from transformation (Advanced) | Empty | Semicolon-separated class-name globs the agent never instruments |
+| Ignore changed files matching (Advanced) | Empty | Semicolon-separated globs; matching changed files are not reloaded |
 
 Existing JPA refresh remains opt-in. Its scope includes new entities on stock
 JDKs with a prepared schema; existing field changes require enhanced redefinition.

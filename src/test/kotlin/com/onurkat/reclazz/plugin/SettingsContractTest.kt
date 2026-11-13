@@ -23,6 +23,7 @@ class SettingsContractTest {
         "autoCompile" to false,
         "autoImpex" to false,
         "autoSolrReindex" to false,
+        "backofficeConfigReset" to true,
         "autoUpdateRunningSystem" to false,
         "impexAllowRemove" to false,
         "reloadBoundary" to "immediate",
