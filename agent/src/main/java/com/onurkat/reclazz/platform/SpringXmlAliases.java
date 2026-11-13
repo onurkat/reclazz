@@ -19,6 +19,7 @@ public final class SpringXmlAliases {
 
     public static synchronized void begin(Object reader, Object resource) {
         try {
+            SpringSecurityXmlResources.begin(reader, resource);
             Path path = path(resource);
             if (path != null) entry(pending, reader).files().put(path, new LinkedHashMap<>());
         } catch (Throwable ignored) { /* Observation must not affect application parsing. */ }
@@ -35,6 +36,7 @@ public final class SpringXmlAliases {
     }
 
     private static void component(Object reader, Object resource, Object component) throws Exception {
+        SpringSecurityXmlResources.component(reader, resource, component);
         // Standard BeanComponentDefinition exposes its BeanDefinitionHolder aliases.
         // Other namespace components do not necessarily represent a named bean.
         try {
@@ -52,6 +54,7 @@ public final class SpringXmlAliases {
 
     /** Publish only after the native reader successfully returns. Failed parses keep the old baseline. */
     public static synchronized void complete(Object reader, Object resource) {
+        SpringSecurityXmlResources.complete(reader, resource);
         try {
             Path path = path(resource);
             Entry staged = find(pending, reader);

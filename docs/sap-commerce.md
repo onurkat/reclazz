@@ -59,6 +59,28 @@ very regeneration that used to remove it.
 The path in these lines is specific to this machine, so keep the change out of
 version control (a per-developer config layer or an untracked `local.properties`).
 
+## Spring Security XML access rules
+
+For a successfully observed local security XML file containing one `security:http`
+group, saving only its `intercept-url` access expressions can replace the served
+chain without restarting SAP Commerce. The candidate is built in a child context
+with the owning live context as parent; authentication services retain their
+existing identities. The servlet keeps its original `FilterChainProxy`, and only
+the exact owned chain slot changes. Other files' chains retain their order and
+identity. A failed candidate or proxy publication keeps the previous policy.
+
+Ownership comes from native namespace component events, not generated bean-name
+suffixes. Unobserved files, multiple http groups per file, matcher/route changes,
+authentication changes and other XML changes require restart. The focused native
+proof uses stateless HTTP Basic, an ant matcher and expression authorization;
+this does not claim OAuth, external identity-provider or method-security reload.
+
+Live Spring bean definitions and the native chain-list bean remain as booted.
+Consequently, `getBean` of a generated chain name still returns the boot object
+until restart. Reclazz separately records the parse currently served by the proxy
+so unchanged saves and repeated A→B→A edits compare with the active policy. The
+child stays open while served and is closed after replacement or owner shutdown.
+
 ## Persisted validation constraints after ImpEx
 
 The ImpEx watcher compares the persisted count and latest modification time of

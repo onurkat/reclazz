@@ -495,6 +495,37 @@ public class SpringSecurityReloader {
         }
     }
 
+    /** Exact identity replacement for an XML-owned chain, with rollback of all proxy fields. */
+    public static void replaceXmlChain(Object context,Object previous,Object replacement) throws Exception {
+        record Edit(Object proxy,Field field,Object before,Object after) { }
+        List<Edit> edits=new java.util.ArrayList<>();
+        java.util.Set<Object> seen=java.util.Collections.newSetFromMap(new IdentityHashMap<>());
+        for(String name:proxyBeanNames(context)) {
+            Object bean=context.getClass().getMethod("getBean",String.class).invoke(context,name);
+            for(Object proxy:withNestedProxies(bean)) {
+                if(!seen.add(proxy))continue;
+                Field field=chainListField(proxy.getClass());if(field==null)continue;field.setAccessible(true);
+                Object raw=field.get(proxy);if(!(raw instanceof List<?> chains))continue;
+                List<Object> next=new java.util.ArrayList<>(chains);boolean found=false;
+                for(int i=0;i<next.size();i++)if(next.get(i)==previous){next.set(i,replacement);found=true;}
+                if(found)edits.add(new Edit(proxy,field,raw,next));
+            }
+        }
+        if(edits.isEmpty())throw new IllegalStateException("owned XML chain is not in a live proxy");
+        List<Edit> written=new java.util.ArrayList<>();
+        try {
+            for(Edit edit:edits) {
+                if(edit.field.get(edit.proxy)!=edit.before)throw new IllegalStateException("proxy chain list changed during preparation");
+                edit.field.set(edit.proxy,edit.after);written.add(edit);
+            }
+        } catch(Exception failure) {
+            for(int i=written.size()-1;i>=0;i--) {
+                Edit edit=written.get(i);edit.field.set(edit.proxy,edit.before);
+            }
+            throw failure;
+        }
+    }
+
     /** Whether the chain carries filters; an {@code ignoring()} chain has none. */
     private static boolean hasFilters(Object chain) {
         try {

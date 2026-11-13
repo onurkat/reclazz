@@ -199,6 +199,7 @@ public final class SpringXmlReloader {
         final java.util.Set<Object> changedMappings = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
         int applied;
         SpringIntegrationEndpoints.Outcome endpoints = SpringIntegrationEndpoints.Outcome.NONE;
+        boolean securityHandled;
         OwnerChange(Object temporary, Object context, Object factory, String label,
                     boolean observed, ClassLoader tenantLoader) {
             this.temporary = temporary; this.context = context; this.factory = factory;
@@ -219,12 +220,19 @@ public final class SpringXmlReloader {
             change.diff.unsafe.addAll(change.endpoints.failures());
         }
         PropertySave save = new PropertySave(owners);
+        for(var change:changes) {
+            change.activate();
+            var security=SpringSecurityXmlChains.apply(change.context,change.factory,change.temporary,xmlPath);
+            change.securityHandled=security.handled();change.applied+=security.applied();
+            if(security.failure()!=null)change.diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange("security:http",security.failure()));
+        }
         // Capture every participating raw definition before any owner's setters run.
-        for (var change : changes) save.capture(change.factory, change.temporary);
+        for (var change : changes) if(!change.securityHandled) save.capture(change.factory, change.temporary);
         for (var change : changes) {
             change.activate();
             if (change.observed) com.onurkat.reclazz.platform.SapProcessDefinitions.reconcile(xmlPath, change.context,
                     new java.util.HashSet<>(java.util.Arrays.asList(SpringReflection.getBeanDefinitionNames(change.temporary))));
+            if(change.securityHandled)continue;
             XmlSafetyClassifier.classify(change.factory, change.temporary, xmlPath, change.diff, save.rawProperties);
             XmlAliasDiagnostics.classify(change.context, change.factory, change.temporary, xmlPath, change.diff,
                     change.endpoints.derivedAliases());
