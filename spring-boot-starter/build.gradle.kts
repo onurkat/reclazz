@@ -27,7 +27,7 @@ repositories {
     mavenCentral()
 }
 
-val bootVersion = "3.3.5"
+val bootVersion = "4.1.1"
 
 dependencies {
     // The starter carries the auto-configuration; the app brings Spring Boot.
