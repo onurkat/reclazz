@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Changing the `add` or `remove` populator of an existing SAP `ModifyPopulatorList` in Spring XML now updates the running converter without a restart. Other directive edits keep the restart message.
 
+- Reload literal filename-regex and positive fixed-rate edits on an existing explicit-id standard Spring Integration file inbound adapter. The native source and duplicate history stay in place; failed restart restores the previous settings and running state. Other adapter/poller changes still require restart.
+
 - After a failed codegen build, classes written later (for example by a manual `ant build`) reload again; the failed build's own pending output is discarded.
 
 - Create newly appended ordinary Spring XML singleton beans through native Spring initialization, including InitializingBean and init-method. Identical saves retain the initialized instance; failed initialization removes its definition and singleton. Infrastructure, disposal and event-listener registration keep their existing restrictions.

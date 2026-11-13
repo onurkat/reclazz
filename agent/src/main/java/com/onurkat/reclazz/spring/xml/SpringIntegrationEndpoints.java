@@ -41,9 +41,10 @@ final class SpringIntegrationEndpoints {
 
     static Outcome apply(Object context, Object live, Object parsed, Path xmlPath, String label) {
         if (!usesIntegration(parsed)) return Outcome.NONE;
-        int swapped = 0;
+        Outcome polling = SpringIntegrationPollingAdapters.apply(context, live, parsed, xmlPath, label);
+        int swapped = polling.swapped();
         Set<String> derived = new HashSet<>();
-        List<BeanDefinitionDiff.UnsafeChange> failures = new ArrayList<>();
+        List<BeanDefinitionDiff.UnsafeChange> failures = new ArrayList<>(polling.failures());
         for (String name : SpringReflection.getBeanDefinitionNames(parsed)) {
             Object next = SpringReflection.getBeanDefinition(parsed, name);
             if (next == null || !ENDPOINT.equals(SpringReflection.getBeanClassName(next))) continue;
@@ -201,11 +202,11 @@ final class SpringIntegrationEndpoints {
         return copy;
     }
 
-    private static Object copy(Object definition) throws Exception {
+    static Object copy(Object definition) throws Exception {
         return call(definition, "cloneBeanDefinition");
     }
 
-    private static boolean same(Object previous, Object next) {
+    static boolean same(Object previous, Object next) {
         try {
             XmlRawValueComparator comparator = new XmlRawValueComparator(next.getClass().getClassLoader());
             return comparator.verifiedStandardDefinition(previous).equals(comparator.verifiedStandardDefinition(next));
@@ -214,7 +215,7 @@ final class SpringIntegrationEndpoints {
         }
     }
 
-    private static Object call(Object target, String name, Object... args) throws ReflectiveOperationException {
+    static Object call(Object target, String name, Object... args) throws ReflectiveOperationException {
         for (Method method : target.getClass().getMethods()) {
             if (!method.getName().equals(name) || method.getParameterCount() != args.length) continue;
             Class<?>[] types = method.getParameterTypes();

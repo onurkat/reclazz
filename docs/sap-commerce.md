@@ -321,3 +321,31 @@ not reprocess a file already in flight or provide a transaction across tenants.
 The local regression `scripts/test-sap-hotfolder-sdk.py` uses installed SDK sources
 and proves native converter selection and row output; its standalone JVM does not
 prove tenant activation, CSV import or database persistence.
+
+## Existing file inbound adapter regex and rate
+
+In captured Spring XML, an existing explicit-id standard
+`file:inbound-channel-adapter` can accept literal `filename-regex` and positive
+millisecond `fixed-rate` edits. Reclazz prepares the new pattern and trigger,
+stops that adapter, updates the native objects and restarts it only if it was
+running. The source, scanner, composite filter and `AcceptOnce` history remain
+in place, so an already accepted file left in the input directory is not delivered
+again. Failed preparation leaves the old adapter untouched; a failed start restores
+the old pattern, trigger, raw settings and running state.
+
+This boundary requires the standard default file scanner/filter chain, no custom
+poller settings, and `max-messages-per-poll="1"`. Directory, filename-pattern,
+fixed-delay, initial-delay, custom source/filter/scanner/scheduler, executor,
+advice/transaction settings, added/removed adapters and nonliteral settings still
+require restart. Generated filter/trigger names are matched through the explicit
+adapter's own references, including when other XML files were loaded first.
+There is no promise to reverse a file delivery already in flight or to reprocess
+queued files. The default live suite and fixture membership are unchanged.
+
+The focused SAP Commerce proof measured the two edits separately in the same JVM:
+after changing A to B, fresh A/B files yielded counts `[0, 1]`, and the fixed-rate
+edit changed receipt gaps from about 2000 ms to 497–499 ms. The agent-off control
+kept A and about 2000 ms. The complete stopped twelve-root setup recovered and
+normal master/junit health passed. This proof used the literal A/B patterns;
+inline regex flags are covered by the local real-Spring regression, not a further
+live retry.

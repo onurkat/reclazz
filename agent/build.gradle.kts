@@ -323,6 +323,8 @@ dependencies {
     add(springSixTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:2.1.1")
     // Real Spring Integration endpoint swap regressions; test-only, never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework.integration:spring-integration-core:6.3.5")
+    // File adapter regressions only; same isolated SI version, never packaged.
+    add(springSixTests.implementationConfigurationName, "org.springframework.integration:spring-integration-file:6.3.5")
     add(springSixTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
 }
 val springSixTest by tasks.registering(Test::class) {
