@@ -6,40 +6,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-- Changing the `add` or `remove` populator of an existing SAP `ModifyPopulatorList` in Spring XML now updates the running converter without a restart. Other directive edits keep the restart message.
-
-- Reload literal filename-regex and positive fixed-rate edits on an existing explicit-id standard Spring Integration file inbound adapter. The native source and duplicate history stay in place; failed restart restores the previous settings and running state. Other adapter/poller changes still require restart.
-
-- After a failed codegen build, classes written later (for example by a manual `ant build`) reload again; the failed build's own pending output is discarded.
-
-- Create newly appended ordinary Spring XML singleton beans through native Spring initialization, including InitializingBean and init-method. Identical saves retain the initialized instance; failed initialization removes its definition and singleton. Infrastructure, disposal and event-listener registration keep their existing restrictions.
-
-- Refresh existing plain Spring XML scalar setters using native SAP Commerce configuration values when an exact `${key}` placeholder changes. Keep bean identity and definitions; unsupported lifecycle or failed setters report restart guidance. A later file save can retry without pending-key bookkeeping.
-
-- An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. Only endpoints with an explicit id are replaced; an endpoint without an id keeps its booted handler and the save reports it, because its generated name can belong to another file's endpoint. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
-
-- Register a newly added plain SAP Commerce XML event listener through its owning Spring context without restarting. Native listener initialization and registration run once; failed creation removes the exact registration, including a failed proxy. Custom lifecycle, construction and changed existing listeners still require restart.
-
-- An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
-
-- Reload access-expression edits in a captured single Spring Security XML http group through the existing filter proxy. Scope/authentication changes are refused; boot bean definitions remain unchanged.
-
-- Add opt-in live coverage for existing SAP Commerce one-to-many and many-to-many relation admission, same loaded model accessors and detached bidirectional persistence, with full stopped recovery.
-
-- Refresh the native SAP Commerce hot-folder converter cache after an existing plain converter mapping changes its converter reference in captured Spring XML. The existing task and static proxy stay in place; failed native preparation restores that owner's prior reference and cache. Unsupported mapping/task shapes require a restart.
-
-- An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
-
-- Hold generated SAP Commerce class output until native compilation and generated classpath readiness, then complete class delivery before the schema step. Failed generation retains its output while corrected XML can retry; user build ownership and pause remain independent.
-
-- Initialise the native code of appended generated SAP Commerce static enum values before publication. Unsupported custom SAP enum initialisation is refused with restart guidance.
-
-- Add default live coverage for resolved ImpEx UPDATE macros, whole-file unresolved-header refusal and corrected-save recovery with owned row cleanup.
-
-- Add opt-in live coverage for the existing SAP Commerce new-item-type path, including generated Model/Jalo visibility, typed persisted reads and full stopped recovery; default membership stays unchanged.
-
-- Add default live coverage for native SAP Commerce OCC error responses after an owned Java throw-type edit, with stable success/error controls and same-JVM restoration.
-
 ### Changed
 
 - New controller classes in captured plain XML component-scan packages register
@@ -93,6 +59,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- Changing the `add` or `remove` populator of an existing SAP `ModifyPopulatorList` in Spring XML now updates the running converter without a restart. Other directive edits keep the restart message.
+
+- Reload literal filename-regex and positive fixed-rate edits on an existing explicit-id standard Spring Integration file inbound adapter. The native source and duplicate history stay in place; failed restart restores the previous settings and running state. Other adapter/poller changes still require restart.
+
+- Create newly appended ordinary Spring XML singleton beans through native Spring initialization, including InitializingBean and init-method. Identical saves retain the initialized instance; failed initialization removes its definition and singleton. Infrastructure, disposal and event-listener registration keep their existing restrictions.
+
+- Refresh existing plain Spring XML scalar setters using native SAP Commerce configuration values when an exact `${key}` placeholder changes. Keep bean identity and definitions; unsupported lifecycle or failed setters report restart guidance. A later file save can retry without pending-key bookkeeping.
+
+- An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. Only endpoints with an explicit id are replaced; an endpoint without an id keeps its booted handler and the save reports it, because its generated name can belong to another file's endpoint. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
+
+- Register a newly added plain SAP Commerce XML event listener through its owning Spring context without restarting. Native listener initialization and registration run once; failed creation removes the exact registration, including a failed proxy. Custom lifecycle, construction and changed existing listeners still require restart.
+
+- Reload access-expression edits in a captured single Spring Security XML http group through the existing filter proxy. Scope/authentication changes are refused; boot bean definitions remain unchanged.
+
+- Add opt-in live coverage for existing SAP Commerce one-to-many and many-to-many relation admission, same loaded model accessors and detached bidirectional persistence, with full stopped recovery.
+
+- Refresh the native SAP Commerce hot-folder converter cache after an existing plain converter mapping changes its converter reference in captured Spring XML. The existing task and static proxy stay in place; failed native preparation restores that owner's prior reference and cache. Unsupported mapping/task shapes require a restart.
+
+- Hold generated SAP Commerce class output until native compilation and generated classpath readiness, then complete class delivery before the schema step. Failed generation retains its output while corrected XML can retry; user build ownership and pause remain independent.
+
+- Initialise the native code of appended generated SAP Commerce static enum values before publication. Unsupported custom SAP enum initialisation is refused with restart guidance.
+
+- Add default live coverage for resolved ImpEx UPDATE macros, whole-file unresolved-header refusal and corrected-save recovery with owned row cleanup.
+
+- Add opt-in live coverage for the existing SAP Commerce new-item-type path, including generated Model/Jalo visibility, typed persisted reads and full stopped recovery; default membership stays unchanged.
+
+- Add default live coverage for native SAP Commerce OCC error responses after an owned Java throw-type edit, with stable success/error controls and same-JVM restoration.
+
 - The live SAP Commerce logger scenario checks real INFO/DEBUG/INFO delivery,
   unchanged control/root/appender state and complete private-sink cleanup.
   Default-suite acceptance of this addition remains pending.
@@ -140,6 +134,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   restart diagnostic.
 
 ### Fixed
+
+- After a failed codegen build, classes written later (for example by a manual `ant build`) reload again; the failed build's own pending output is discarded.
 
 - Deleted ImpEx file events no longer attempt an import or warn about a missing
   file. Explicit imports of missing paths still warn.

@@ -6,7 +6,7 @@ actually returns: an HTTP response, persisted query result, rendered component
 or Backoffice view. A reload notification alone cannot pass them. Refusal cases
 must also prove that the last working behavior and protected data stay intact.
 
-Evidence is recorded through 12 November 2026.
+Evidence is recorded through 13 November 2026.
 It describes existing acceptance evidence, not a new run performed by building
 this documentation. See the [setup guide](sap-commerce.md) to attach Reclazz,
 and [reload conditions](usage.md#sap-reload-outcomes-and-verification) before
@@ -19,7 +19,9 @@ SAP modules and synthetic test extensions. It is separate from customer systems.
 The default suite now contains **64 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
-failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
+failures and unchanged fixture files. Since 13 November 2026 each accepted change
+runs the default suite twice, once on the same boot and once after a fresh boot;
+the latest acceptance was 64/64 in both runs. Hibernate ORM is tested separately in the agent
 regression suite; it is not a SAP live scenario.
 
 The live tests run locally before relevant commits and releases. CI execution
@@ -326,8 +328,9 @@ request-reply messages through the owned `DirectChannel` answer `A:x` in each
 owner context. After the save the same four messages answer `B:x`, the channel
 has exactly one subscriber, and the save reports no restart item. The original
 file is restored and `A:x` is verified again. Adding or removing endpoints,
-channel type changes, pollers, gateways and Java DSL flows still ask for a
-restart.
+channel type changes, gateways and Java DSL flows still ask for a restart.
+Poller edits are restart-only except the file inbound adapter case in
+[focused checks](#focused-checks-outside-the-default-suite).
 
 ## Localization and properties
 
@@ -611,15 +614,45 @@ dispatch are not resolved by this acceptance.
 See [Backoffice conditions](usage.md#backoffice-java-modules)
 and the [live profile driver](../scripts/test-sap-backoffice-live.py).
 
+## Focused checks outside the default suite
+
+These changes were measured on a running SAP Commerce 2211 installation, but
+they are not part of the 64 default scenarios. In each case a native-only run
+(agent off, same save) first showed that SAP keeps the old behavior until a
+restart. The agent run then showed the new behavior in the same JVM, and a
+deliberately disabled agent step made the focused tests fail. Repeatable local
+regressions use the installed SAP SDK classes; they start no server and change
+no installation.
+
+| You edit in Spring XML | What the running server shows | Repeatable regression |
+|---|---|---|
+| Append an ordinary singleton with `InitializingBean` or `init-method` | The bean is created once through Spring's own initialization; an identical save keeps the same instance | Agent tests (`XmlNewInitializingBeanTest`) |
+| A `project.properties` value used as an exact `${key}` bean property | The existing bean receives the new value and keeps its identity | Agent tests (`XmlPlaceholderPropertiesTest`) |
+| `add` or `remove` populator of an existing `ModifyPopulatorList` | The running converter uses the new populator list; the edit can be reverted | `scripts/test-sap-directives-sdk.py` |
+| Append a plain SAP `AbstractEventListener` bean | The new listener receives the next event once; failed creation removes it | `scripts/test-sap-events-xml-sdk.py` |
+| The `converter` of an existing hot-folder converter mapping | The next ingested file is converted by the new converter | `scripts/test-sap-hotfolder-sdk.py` |
+| `filename-regex` or `fixed-rate` of an explicit-id file inbound adapter | The next poll uses the new pattern and rate; files already seen are not delivered again | Agent tests (`SpringIntegrationPollingAdapterReloadTest`) |
+| An access expression in a `security:http` group | The servlet filter chain enforces the new rule; failure keeps the old chain | Agent tests (`SpringSixXmlSecurityReloadTest`) |
+
+Conditions and limits for each case are in the [setup guide](sap-commerce.md)
+and [usage](usage.md#sap-populator-and-list-merge-directives). A failed SAP code
+generation no longer blocks later class reloads; agent tests cover that case.
+
+Backoffice widget definitions and new widget folders were measured and are not
+supported: SAP reads them from the Backoffice jars built by `ant build`, and
+even with SAP's development switches F4 and Reset Everything did not show the
+change. Use the native build and redeploy, or restart. Widget controller Java
+bodies reload as ordinary classes.
+
 ## Not covered yet
 
 Complete storefront rendering, CMS template inheritance/overrides, search
 restriction visibility through CMS page services, precompiled/deployed-copy
 JSP setups and tag/include invalidation remain open. The focused cases above
 must not be read as their acceptance.
-Native SAP region caches, recurring Trigger lifecycle, process actions held across an edit,
-new OCC controller enrollment, broader Backoffice bindings and the scenarios in
-the [coverage order](#coverage-order) also need their own live oracles.
+Recurring Trigger lifecycle, process actions held across an edit, broader
+Backoffice bindings and the scenarios in the [coverage order](#coverage-order)
+also need their own live oracles.
 
 Positive destructive ImpEx REMOVE and automatic conversion-directive replay
 remain outside the current acceptance. Field-initializer concurrency is deferred.
@@ -633,37 +666,19 @@ support claim. Each scope needs a concrete plan, native baseline, application
 oracle, cleanup and independent review before it can move into the tested list.
 If SAP already handles an edit, its test records that existing behavior.
 
-1. Duplicate Backoffice F4 dispatch
-2. Native SAP Trigger firing
-3. Spring scheduled metadata lifecycle
-4. Process action/in-flight version
-5. Stored script/executable cache
-6. Velocity RendererTemplate
-7. SCAN wire completion
-8. CMS UID/persisted catalogs
-9. CMS page/slot selection
-10. Deployed JSP/resource edit
-11. Search restriction/session visibility
-12. Facade consumer chain
-13. Nested/list DTO conversion slice
-14. New OCC controller enrollment
-15. OCC native error response/serialization
-16. ImpEx UPDATE/macros/malformed recovery
-17. Locale/fallback missing slice
-18. Backoffice label bundles
-19. Native SAP region cache
-20. ZUL/widget/VM definition slice
-21. Workflow action/decision
-22. TaskRunner retry/condition lifecycle
-23. Spring Integration handler/channel
-24. Hot-folder ingestion
-25. Solr config/facet slice
-26. One additive metadata shape
-27. Native event listener lifecycle
-28. Local SAP security/filter rule
-29. Stored AdvancedSavedQuery parameters
-30. Legacy AddOn source staging
-31. One commerce service, then bounded remaining domains
+1. Duplicate Backoffice F4 dispatch (a bug investigation)
+2. Nested/list DTO conversion slice
+3. Locale/fallback missing slice
+4. Workflow action/decision
+5. TaskRunner retry/condition lifecycle
+6. Solr config/facet slice
+7. One commerce service, then bounded remaining domains
+
+The other scopes of the earlier queue are either in the tested list above or
+were closed without new work: SAP already applies data changes made through
+ImpEx or Backoffice (saved queries, rules, Solr properties), AddOn staging is
+done by SAP's own `ant build`, and native region caches and Backoffice label
+bundles did not justify a reload path.
 
 Later refinements include B2B approval, Adaptive Search, personalization,
 rule compilation and Integration API virtual attributes. They do not bypass
