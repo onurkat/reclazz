@@ -157,6 +157,23 @@ public class HybrisConfigReloader {
         return new Result(applied, pending, true);
     }
 
+    /** Read only the requested keys from the active native configuration, without exposing values in logs. */
+    public java.util.Map<String,String> currentValues(java.util.Collection<String> keys) {
+        java.util.Map<String,String> values=new java.util.LinkedHashMap<>();
+        Class<?> config=findConfig();if(config==null)return values;
+        try {
+            Method get=config.getMethod("getParameter",String.class);
+            for(String key:keys) {
+                Object value=get.invoke(null,key);
+                if(value instanceof String text && !isUnresolved(text))values.put(key,text);
+            }
+        } catch(ReflectiveOperationException | RuntimeException unavailable) {
+            RestartLedger.note("project.properties", "XML placeholder refresh could not read native configuration");
+            StatusReporter.warn("XML placeholder refresh could not read native configuration; restart required.");
+        }
+        return java.util.Map.copyOf(values);
+    }
+
     /**
      * Whether a value still contains a placeholder the platform expands when it
      * loads the file.

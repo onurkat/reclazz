@@ -246,6 +246,12 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                 var propertyResult = configReloader.applyResult(candidate);
                 java.util.List<String> applied = propertyResult.applied();
                 context.applyLoggerLevels(candidate.content(), applied);
+                // A no-change save may retry a failed setter; Config acceptance stays independent.
+                java.util.Set<String> replayKeys=new java.util.LinkedHashSet<>(candidate.changed().isEmpty()
+                        ? candidate.content().keySet() : candidate.changed().keySet());
+                replayKeys.removeAll(propertyResult.pending());
+                context.reapplyXmlProperties(configReloader.currentValues(replayKeys));
+
 
                 if (applied.isEmpty() && propertyResult.reachable()) {
                     if (!propertyResult.pending().isEmpty()) return;
@@ -260,7 +266,7 @@ public final class SapPremiumModuleFactory implements PremiumModuleFactory {
                             + Plural.of(applied.size(), "property change") + ": "
                             + (applied.size() > 8 ? applied.subList(0, 8) + " …" : applied.toString()));
                     StatusReporter.info("Values read per request take effect now; "
-                            + "anything consumed once at startup still needs a restart.");
+                            + "supported XML scalar setters are refreshed; other startup consumers may still need a restart.");
                     context.propertiesApplied(applied);
                     return;
                 }

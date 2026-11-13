@@ -848,6 +848,9 @@ public class ReclazzAgent {
                     @Override public boolean requestRunningSystemUpdate() {
                         return modules.request(Capability.RUNNING_SYSTEM_UPDATE).granted();
                     }
+                    @Override public void reapplyXmlProperties(java.util.Map<String,String> values) {
+                        new com.onurkat.reclazz.spring.xml.SpringXmlReloader(platformContext).reapplyPlaceholderProperties(values);
+                    }
                     @Override public void propertiesApplied(java.util.Collection<String> keys) {
                         com.onurkat.reclazz.spring.SapCommerceMappings.reselect(keys);
                     }

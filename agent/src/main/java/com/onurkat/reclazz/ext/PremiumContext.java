@@ -28,4 +28,6 @@ public interface PremiumContext {
     boolean requestRunningSystemUpdate();
     /** Configuration keys the platform now answers with new values; consumers that read them once read again. */
     default void propertiesApplied(Collection<String> keys) { }
+    /** Effective native values, never raw file values, for bounded XML setter replay. */
+    default void reapplyXmlProperties(Map<String,String> values) { }
 }

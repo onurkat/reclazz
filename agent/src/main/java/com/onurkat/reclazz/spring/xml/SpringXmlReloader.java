@@ -80,6 +80,11 @@ public final class SpringXmlReloader {
         this.beanLifecycle = java.util.Objects.requireNonNull(beanLifecycle);
     }
 
+    /** Native platform values for exact XML scalar placeholders; no definition mutation. */
+    public void reapplyPlaceholderProperties(java.util.Map<String,String> values) {
+        XmlPlaceholderProperties.apply(java.util.Map.copyOf(values), gatherCandidateContexts());
+    }
+
     /** Entry for filenames recognized by captured resource identity, never by bean names. */
     public void reloadLoaded(Path xmlPath) {
         List<Object> owners = SpringXmlResources.owners(xmlPath, gatherCandidateContexts());

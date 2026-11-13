@@ -100,6 +100,24 @@ suite. The focused SAP Commerce proof covers a precompiled InitializingBean and
 an existing consumer's lookup in the captured master request context; init-method
 is covered by focused Spring tests.
 
+## Updating a simple XML configuration placeholder
+
+A SAP Commerce property-file save can update an already-created plain singleton
+whose XML scalar property is exactly `${key}`. The setter receives the current
+native Config value, with Spring's existing scalar conversion; the bean and its
+raw definition remain in place. A second change to the key updates the same bean.
+Only unchanged, successfully captured local XML and its actual owners are used.
+
+This path does not recreate beans, initialize lazy singletons or replay lifecycle,
+FactoryBean, infrastructure or listener registrations. Constructor/factory values,
+composite/default/nested placeholders, SpEL, collections and key deletion are outside
+this path. A setter failure names the key and bean in restart guidance; Config may
+already hold the new value. Native configuration acceptance is independent. A later
+save with no changed property values retries eligible placeholders from that file
+using native values, without storing pending keys. Setter side effects cannot be
+undone and setters should tolerate another invocation. No default-suite expansion
+is implied by the focused master-context proof.
+
 ## Adding a plain XML event listener while running
 
 A newly added public class directly extending SAP Commerce's

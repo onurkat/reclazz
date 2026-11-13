@@ -63,6 +63,15 @@ class HybrisConfigReloadTest {
         return f;
     }
 
+    @Test
+    void xmlReplayReadsNativeValuesWithoutChangingThem() {
+        StubConfig.seed("owned", "native-value");
+        StubConfig.seed("unresolved", "${unavailable}");
+        assertEquals(java.util.Map.of("owned", "native-value"),
+                reloader().currentValues(List.of("owned", "unresolved", "absent")));
+        assertEquals("native-value", StubConfig.getParameter("owned"));
+    }
+
     // ── Only what changed ─────────────────────────────────────────────────
 
     @Test
