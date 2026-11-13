@@ -118,18 +118,18 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     // Spring for XML reloader tests only, production code stays
     // reflection-only and has no Spring compile dependency.
-    testImplementation("org.springframework:spring-beans:5.3.39")
-    testImplementation("org.springframework:spring-context:5.3.39")
+    testImplementation("org.springframework:spring-beans:7.0.10")
+    testImplementation("org.springframework:spring-context:7.0.10")
     // Real JSR-250 lifecycle regressions only; never packaged with the agent.
     testImplementation("javax.annotation:javax.annotation-api:1.3.2")
     // Real local Kafka broker regressions only; never packaged with the agent.
     testImplementation("org.springframework.kafka:spring-kafka:2.9.13")
     testImplementation("org.springframework.kafka:spring-kafka-test:2.9.13")
-    testImplementation("org.springframework:spring-messaging:5.3.39")
+    testImplementation("org.springframework:spring-messaging:7.0.10")
     // Real Rabbit listener regressions only; production remains reflection-only.
     testImplementation("org.springframework.amqp:spring-rabbit:2.4.17")
     // Real commit/rollback regressions against a local in-memory database only.
-    testImplementation("org.springframework:spring-jdbc:5.3.39")
+    testImplementation("org.springframework:spring-jdbc:7.0.10")
     testImplementation("com.h2database:h2:2.5.250")
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.25.1")
@@ -139,8 +139,8 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-web:5.7.11")
     // Spring MVC, its test support and the servlet API, for driving a real
     // RequestMappingHandlerMapping under load while a controller is re-scanned.
-    testImplementation("org.springframework:spring-webmvc:5.3.39")
-    testImplementation("org.springframework:spring-test:5.3.39")
+    testImplementation("org.springframework:spring-webmvc:7.0.10")
+    testImplementation("org.springframework:spring-test:7.0.10")
     testImplementation("javax.servlet:javax.servlet-api:4.0.1")
     // Real local servlet async lifecycle tests; never shipped in the agent.
     testImplementation("org.apache.tomcat.embed:tomcat-embed-core:9.0.121") {
@@ -203,7 +203,7 @@ val jmsTests = sourceSets.create("jmsTest") {
 configurations[jmsTests.implementationConfigurationName].extendsFrom(configurations.testImplementation.get())
 configurations[jmsTests.runtimeOnlyConfigurationName].extendsFrom(configurations.testRuntimeOnly.get())
 dependencies {
-    add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:5.3.39")
+    add(jmsTests.implementationConfigurationName, "org.springframework:spring-jms:7.0.10")
     add(jmsTests.implementationConfigurationName, "org.apache.activemq:activemq-broker:5.19.11")
 }
 val jmsTest by tasks.registering(Test::class) {
@@ -298,10 +298,10 @@ val springSixTests = sourceSets.create("springSixTest") {
 }
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:7.0.10")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:7.0.10")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:7.0.10")
     add(springSixTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:10.1.60") {
         // jakarta.annotation-api below already supplies these classes.
         exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
@@ -314,7 +314,7 @@ dependencies {
     add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-config:6.3.4")
     add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-web:6.3.4")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
-    add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:7.0.10")
     add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
     add(springSixTests.implementationConfigurationName, "com.h2database:h2:2.5.250")
     // Native repository refresh regressions only; never shipped with the agent.
@@ -351,10 +351,10 @@ dependencies {
     add(modernMessagingTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
     // Existing repository test-only attacher for native Rabbit worker tracking.
     add(modernMessagingTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.14")
-    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
-    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-messaging:6.1.14")
-    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-tx:6.1.14")
-    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-jms:6.1.14")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-context:7.0.10")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-messaging:7.0.10")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-tx:7.0.10")
+    add(modernMessagingTests.implementationConfigurationName, "org.springframework:spring-jms:7.0.10")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka:3.2.4")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework.kafka:spring-kafka-test:3.2.4")
     add(modernMessagingTests.implementationConfigurationName, "org.springframework.amqp:spring-rabbit:3.1.7")
@@ -363,7 +363,7 @@ dependencies {
     add(modernMessagingTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher")
 }
 configurations[modernMessagingTests.runtimeClasspathConfigurationName].resolutionStrategy.eachDependency {
-    if (requested.group == "org.springframework") useVersion("6.1.14")
+    if (requested.group == "org.springframework") useVersion("7.0.10")
 }
 val modernMessagingTest by tasks.registering(Test::class) {
     group = "verification"
