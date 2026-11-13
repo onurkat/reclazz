@@ -61,9 +61,19 @@
       "status": {
         "type": "string",
         "enum": [
-          "sent",
+          "queued",
           "unavailable"
         ]
+      },
+      "requestId": {
+        "type": "string"
+      },
+      "sessionId": {
+        "type": "string"
+      },
+      "enqueued": {
+        "type": "integer",
+        "minimum": 0
       },
       "detail": {
         "type": "string"

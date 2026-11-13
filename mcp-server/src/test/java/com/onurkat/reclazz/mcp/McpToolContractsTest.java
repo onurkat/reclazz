@@ -61,7 +61,13 @@ class McpToolContractsTest {
         assertTrue(r.has("structuredContent"), r.toString());
         JsonObject data = r.getAsJsonObject("structuredContent");
         assertEquals(data, JsonParser.parseString(r.getAsJsonArray("content").get(0).getAsJsonObject().get("text").getAsString()));
-        JsonObject exported = new JsonObject(); exported.add("schema", tools(s).get(tool).get("outputSchema"));
+        JsonObject schema = tools(s).get(tool).getAsJsonObject("outputSchema");
+        // The official SDK rejects a status its tool's schema does not list; so does this check.
+        JsonObject status = schema.getAsJsonObject("properties").getAsJsonObject("status");
+        if (status != null && status.has("enum") && data.has("status"))
+            assertTrue(status.getAsJsonArray("enum").contains(data.get("status")),
+                tool + " returned status " + data.get("status") + " outside its output schema " + status.get("enum"));
+        JsonObject exported = new JsonObject(); exported.add("schema", schema);
         exported.add("data", data);
         Path out = Path.of("build", "tool-contract-fixtures"); Files.createDirectories(out);
         Files.writeString(out.resolve(tool + "-" + fixture + ".json"), exported.toString());
