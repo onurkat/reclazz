@@ -480,6 +480,12 @@
             <add-to-group group-id="ToolsMenu" anchor="last"/>
             <add-to-group group-id="EditorPopupMenu" anchor="last"/>
         </action>
+        <action id="Reclazz.PauseReload"
+                class="com.onurkat.reclazz.plugin.reload.PauseReloadAction"
+                text="Pause Automatic Reload"
+                description="Keep saved changes waiting until you resume">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </action>
         <action id="Reclazz.PendingRestart"
                 class="com.onurkat.reclazz.plugin.reload.PendingRestartAction"
                 text="What Still Needs a Restart?"

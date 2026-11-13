@@ -69,7 +69,8 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
     override fun getTooltipText(): String {
         val manager = ReloadManager.getInstance(project)
         return if (manager.isConnected) {
-            val head = "Reclazz: Connected, " + plural(manager.reloadCount, "reload")
+            val paused = if (manager.pauseState?.paused == true) ". Automatic reload is paused" else ""
+            val head = "Reclazz: Connected, " + plural(manager.reloadCount, "reload") + paused
             val last = lastReload
             if (last == null) head else "$head\nLast: $last"
         } else {
@@ -103,7 +104,13 @@ class ReloadStatusWidget(private val project: Project) : StatusBarWidget, Status
             }
             "OK" -> if (event.message.startsWith("Hot-swapped:")) "Reclazz: " + plural(manager.reloadCount, "reload") else displayText
             "ERROR" -> "Reclazz: Error"
+            "PAUSE", "PAUSE_STATE" -> if (manager.isConnected) "Reclazz: " + plural(manager.reloadCount, "reload") else displayText
             else -> displayText
+        }
+        // A pause is easy to forget, so while it lasts it is what the bar says.
+        val pause = manager.pauseState
+        if (pause?.paused == true && event.level != "DISCONNECTED") {
+            displayText = if (pause.waiting > 0) "Reclazz: Paused (${pause.waiting} waiting)" else "Reclazz: Paused"
         }
         statusBar?.updateWidget(ID())
     }

@@ -25,10 +25,10 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
         try {
             val form = configurable.createComponent()
             val controls = descendants(form)
-            controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Enable structural reload") }.isSelected = false
+            controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Reload added and removed members") }.isSelected = false
             controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Re-run changed static") }.isSelected = true
             controls.filterIsInstance<JComboBox<*>>().single().selectedItem = "request"
-            val exclusion = controls.filterIsInstance<JLabel>().single { it.text.startsWith("Exclude classes from transformation") }.labelFor as JTextField
+            val exclusion = controls.filterIsInstance<JLabel>().single { it.text?.startsWith("Exclude classes") == true }.labelFor as JTextField
             exclusion.text = "com.example.Legacy*"
             expectTrue(configurable.isModified)
             configurable.apply()
@@ -64,15 +64,15 @@ class ReclazzConfigurableApplyTest : BasePlatformTestCase() {
             }
             try {
                 val controls = descendants(configurable.createComponent())
-                val autoImpex = controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Auto-import ImpEx") }
+                val autoImpex = controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Import ImpEx files") }
                 val remove = controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Allow REMOVE") }
                 expectFalse(remove.isEnabled)
                 autoImpex.isSelected = true
                 expectTrue(remove.isEnabled)
                 remove.isSelected = true
-                controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Update stored Solr documents") }.isSelected = true
-                controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Update running system") }.isSelected = true
-                controls.filterIsInstance<JButton>().single { it.text == (if (reinstall) "Reinstall" else "Install Reclazz Agent") }.doClick()
+                controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Update Solr documents") }.isSelected = true
+                controls.filterIsInstance<JCheckBox>().single { it.text.startsWith("Update the running system") }.isSelected = true
+                controls.filterIsInstance<JButton>().single { it.text == (if (reinstall) "Reinstall" else "Install Agent") }.doClick()
                 val captured = checkNotNull(installed)
                 expectTrue(captured.autoSolrReindex)
                 expectTrue(captured.autoUpdateRunningSystem)

@@ -59,6 +59,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
+- **Pause Automatic Reload** in the IDE (Tools menu and the Reclazz tool window). Saves made while paused are kept by the agent and applied on resume; the status bar shows `Paused` with the number of waiting changes until then.
+
+- IDE Settings are reorganized into SAP Commerce, Reloading and a collapsed Advanced group, with short labels and the details behind each option's help icon. The enable switch comes first, the agent status has a Test connection link, the reload boundary reads Immediately or At the next request boundary, and the Documentation link opens the docs site. SAP Commerce projects get a switch for the Backoffice configuration reset on save (`backofficeConfigReset`), which the agent already supported.
+
 - Changing the `add` or `remove` populator of an existing SAP `ModifyPopulatorList` in Spring XML now updates the running converter without a restart. Other directive edits keep the restart message.
 
 - Reload literal filename-regex and positive fixed-rate edits on an existing explicit-id standard Spring Integration file inbound adapter. The native source and duplicate history stay in place; failed restart restores the previous settings and running state. Other adapter/poller changes still require restart.
@@ -134,8 +138,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   restart diagnostic.
 
 ### Fixed
-
-- IDE Settings: the enable switch comes first and the JVM option follows it, the reload boundary reads Immediately or At the next request boundary, a Test connection link sits beside the status, the Documentation link opens the docs site, and SAP Commerce projects get a switch for the Backoffice configuration reset on save (`backofficeConfigReset`), which the agent already supported.
 
 - After a failed codegen build, classes written later (for example by a manual `ant build`) reload again; the failed build's own pending output is discarded.
 

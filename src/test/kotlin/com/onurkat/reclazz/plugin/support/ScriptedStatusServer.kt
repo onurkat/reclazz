@@ -19,6 +19,7 @@ class ScriptedStatusServer(private val portFile: Path) : AutoCloseable {
     private val server = ServerSocket(0, 5, InetAddress.getByName("127.0.0.1"))
     val port: Int = server.localPort
     private val clients = CopyOnWriteArrayList<Socket>()
+    @Volatile var paused = false
     private val heartbeat = Executors.newSingleThreadScheduledExecutor { r -> Thread(r, "Synthetic-Heartbeat").apply { isDaemon = true } }
 
     init {
@@ -36,6 +37,15 @@ class ScriptedStatusServer(private val portFile: Path) : AutoCloseable {
                                 while (true) {
                                     val command = input.readLine() ?: break
                                     if (command == "HEALTH") replay(client)
+                                    RELOAD_COMMAND.matchEntire(command)?.let { match ->
+                                        // Answers like the agent's StatusServer: requester-only RELOAD_STATE.
+                                        val (action, token) = match.destructured
+                                        if (action == "pause") paused = true
+                                        if (action == "resume") paused = false
+                                        val waiting = if (paused) 2 else 0
+                                        send(client, event("INFO", "RELOAD_STATE $token $action paused=$paused " +
+                                            "pendingClasses=$waiting pendingActions=1 buildHold=none"))
+                                    }
                                 }
                             }
                         } catch (_: Exception) {
@@ -88,6 +98,8 @@ class ScriptedStatusServer(private val portFile: Path) : AutoCloseable {
             "INFO" to "Loaded and prepared by the agent, so a reload of it would be applied.",
             "INFO" to "Synthetic replay complete"
         )
+
+        private val RELOAD_COMMAND = Regex("RELOAD (pause|resume|status) request=([A-Za-z0-9_-]{1,64})")
 
         private fun escape(value: String) = value.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r")
         private fun event(level: String, message: String, connected: Boolean = false): String =

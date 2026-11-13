@@ -43,6 +43,23 @@ class ReloadManager(private val project: Project) : Disposable {
     var lastError: String? = null
         private set
 
+    /**
+     * The agent's manual pause, as it last reported it; null until it has
+     * answered, and again after a disconnect. The pause lives in the agent,
+     * so a reconnect asks rather than assumes.
+     */
+    data class PauseState(val paused: Boolean, val pendingClasses: Int, val pendingActions: Int) {
+        val waiting: Int get() = pendingClasses + pendingActions
+    }
+
+    @Volatile
+    var pauseState: PauseState? = null
+        private set
+
+    private val reloadRequests = AtomicInteger(0)
+    @Volatile
+    private var pausePoller: ScheduledExecutorService? = null
+
     fun addEventListener(listener: (AgentEvent) -> Unit) {
         eventListeners.add(listener)
     }
@@ -84,6 +101,8 @@ class ReloadManager(private val project: Project) : Disposable {
                     onEvent = { event -> handleEvent(event) },
                     onDisconnect = {
                         isConnected = false
+                        pauseState = null
+                        stopPausePoll()
                         notifyListeners(AgentEvent("DISCONNECTED", "Agent disconnected", ""))
                         scheduleReconnect()
                     }
@@ -104,6 +123,8 @@ class ReloadManager(private val project: Project) : Disposable {
 
     fun disconnectFromAgent() {
         stopReconnect()
+        stopPausePoll()
+        pauseState = null
         statusClient?.disconnectVoluntarily()
         statusClient = null
         isConnected = false
@@ -137,12 +158,18 @@ class ReloadManager(private val project: Project) : Disposable {
     }
 
     private fun handleEvent(event: AgentEvent) {
+        if (event.level == "INFO" && event.message.startsWith("RELOAD_STATE ")) {
+            handleReloadState(event)
+            return
+        }
         when (event.level) {
             "CONNECTED" -> {
                 isConnected = true
                 lastError = null
                 log.info("Connected to Reclazz agent ${event.agentVersion.ifEmpty { "(version not reported)" }}")
                 reportVersionMismatchOnce(event.agentVersion)
+                // The pause outlives this connection, so learn it now.
+                sendReloadControl("status")
             }
             "RELOAD", "STRUCTURAL_RELOAD" -> {
                 // Both light (method-body) and heavy (structural / companion
@@ -197,6 +224,59 @@ class ReloadManager(private val project: Project) : Disposable {
      */
     fun diagnose(className: String): Boolean {
         return statusClient?.send("DIAGNOSE $className") ?: false
+    }
+
+    /**
+     * Pause or resume automatic reload in the running agent. Changes made
+     * while paused are kept, and resume applies them. The answer arrives as
+     * a [PauseState] and a PAUSE line in the tool window.
+     *
+     * @return false when no agent is connected to ask
+     */
+    fun setReloadPaused(paused: Boolean): Boolean = sendReloadControl(if (paused) "pause" else "resume")
+
+    private fun sendReloadControl(action: String): Boolean =
+        statusClient?.send("RELOAD $action request=ide-${reloadRequests.incrementAndGet()}") ?: false
+
+    /**
+     * `RELOAD_STATE <token> <action> paused=<b> pendingClasses=<n> pendingActions=<n> buildHold=<h>`,
+     * a reply to this client only. Older agents never send it.
+     */
+    private fun handleReloadState(event: AgentEvent) {
+        val parts = event.message.split(' ')
+        val action = parts.getOrNull(2) ?: return
+        val fields = parts.drop(3).mapNotNull { part ->
+            part.split('=', limit = 2).takeIf { it.size == 2 }?.let { it[0] to it[1] }
+        }.toMap()
+        val paused = fields["paused"]?.toBooleanStrictOrNull() ?: return
+        val state = PauseState(paused,
+            fields["pendingClasses"]?.toIntOrNull() ?: 0,
+            fields["pendingActions"]?.toIntOrNull() ?: 0)
+        pauseState = state
+        if (paused) startPausePoll() else stopPausePoll()
+        val message = when (action) {
+            "pause" -> "Automatic reload paused. Saved changes wait until you resume."
+            "resume" -> if (state.waiting > 0) "Automatic reload resumed. Applying ${com.onurkat.reclazz.plugin.ui.plural(state.waiting, "waiting change")}."
+                        else "Automatic reload resumed."
+            else -> ""
+        }
+        // Status answers only refresh what is shown; pause and resume are said.
+        notifyListeners(AgentEvent(if (message.isEmpty()) "PAUSE_STATE" else "PAUSE", message, event.timestamp))
+    }
+
+    /** While paused, keep the waiting count current without a click. */
+    private fun startPausePoll() {
+        if (pausePoller != null) return
+        pausePoller = Executors.newSingleThreadScheduledExecutor { r ->
+            Thread(r, "Reclazz-PauseStatus").apply { isDaemon = true }
+        }.also {
+            it.scheduleWithFixedDelay({ sendReloadControl("status") }, 3, 3, TimeUnit.SECONDS)
+        }
+    }
+
+    private fun stopPausePoll() {
+        pausePoller?.shutdownNow()
+        pausePoller = null
     }
 
     /** Hold class output until the compiler reports its result. */

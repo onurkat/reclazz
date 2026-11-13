@@ -2863,21 +2863,28 @@ You do not need to edit any properties files or manage the agent JAR path.
 
 **Settings > Tools > Reclazz** stores agent choices per project. Changes reach the
 next IDE launch or dynamic attach. For a server started outside the IDE, use
-**Install Reclazz Agent** or **Reinstall** to apply the current form and regenerate
+**Install Agent** or **Reinstall** to apply the current form and regenerate
 its managed startup block, then regenerate the server config and restart as the
 installation message describes.
 
 | Control | Default | Scope |
 |---|---|---|
-| Update stored Solr documents after provider reload | Off | SAP Commerce development only; bounded native updates with normal listeners/bookkeeping, no proof of field freshness |
-| Update running system after model changes | Off | SAP Commerce development only; opt-in schema additions and keyed localization writes to the live database |
-| Allow REMOVE in auto-imported ImpEx | Off | Available only when auto-import is enabled; permits live row deletion on save |
-| Reset Backoffice configuration when its XML is saved | On | SAP Commerce; the native F4 reset, which also discards configuration made in the Backoffice UI. Off sends `backofficeConfigReset=false` |
+| Import ImpEx files on save | Off | SAP Commerce; imports a saved watched ImpEx file |
+| Allow REMOVE statements | Off | Available only when ImpEx import on save is on; permits live row deletion on save |
+| Reset Backoffice configuration on save | On | SAP Commerce; the native F4 reset, which also resets configuration made in the Backoffice UI. Off sends `backofficeConfigReset=false` |
+| Update the running system after items.xml changes | Off | SAP Commerce development only; opt-in schema additions and keyed localization writes to the live database |
+| Update Solr documents after a provider reloads | Off | SAP Commerce development only; bounded native updates with normal listeners/bookkeeping, no proof of field freshness |
 | Apply reloads | Immediately | At the next request boundary requires the agent at JVM startup; dynamic attach explicitly warns and applies immediately |
-| Enable structural reload (Advanced) | On | Disable for method-body reloads only |
-| Re-run changed static field initializers (Advanced) | Off | Applies on the next launch; eligible static finals become non-final. Existing captured copies retain the old object |
-| Exclude classes from transformation (Advanced) | Empty | Semicolon-separated class-name globs the agent never instruments |
-| Ignore changed files matching (Advanced) | Empty | Semicolon-separated globs; matching changed files are not reloaded |
+| Reload added and removed members (Advanced) | On | Off limits reloads to method bodies |
+| Re-run changed static initializers (Advanced) | Off | Applies on the next launch; eligible static finals become non-final. Existing captured copies retain the old object |
+| Exclude classes (Advanced) | Empty | Semicolon-separated class-name globs the agent never instruments |
+| Ignore files (Advanced) | Empty | Semicolon-separated globs; matching changed files are not reloaded |
+
+**Pause Automatic Reload** (Tools menu and the Reclazz tool window) holds
+automatic reload in the running agent. Saves made while paused are kept and
+applied on resume; the status bar shows `Paused` and the number of waiting
+changes until then. It is a session switch, not a stored setting, and an agent
+older than 1.4.0 does not answer it.
 
 Existing JPA refresh remains opt-in. Its scope includes new entities on stock
 JDKs with a prepared schema; existing field changes require enhanced redefinition.
@@ -3430,7 +3437,7 @@ members visible on the original class. See the [versioned core evidence](feature
 
 ### Changed Static Initializers
 
-Start the JVM with `resetStatics=true`, or enable **Re-run changed static field
+Start the JVM with `resetStatics=true`, or enable **Re-run changed static
 initializers** in IDE Settings before the next launch. The default is off.
 Keep `structuralReload=true` so first-load preparation is enabled.
 For example, editing an existing `static final Map<String,String> CODES =

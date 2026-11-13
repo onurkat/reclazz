@@ -54,6 +54,8 @@ class ReloadLogPanel(private val project: Project) : Disposable {
     }
 
     private fun appendEvent(event: AgentEvent) {
+        // A pause status refresh only updates the status bar.
+        if (event.level == "PAUSE_STATE") return
         val contentType = contentType(event)
 
         val prefix = when (event.level) {

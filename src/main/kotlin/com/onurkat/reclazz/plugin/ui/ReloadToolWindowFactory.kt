@@ -27,6 +27,7 @@ class ReloadToolWindowFactory : ToolWindowFactory, DumbAware {
 
         // Add export log action to the tool window title bar
         toolWindow.setTitleActions(listOf(
+            com.intellij.openapi.actionSystem.ActionManager.getInstance().getAction("Reclazz.PauseReload"),
             object : AnAction("Export Log") {
                 override fun actionPerformed(e: AnActionEvent) {
                     // Deprecated from 2025.1, and it stays. The replacement,

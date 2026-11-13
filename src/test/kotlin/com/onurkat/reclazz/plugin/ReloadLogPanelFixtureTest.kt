@@ -155,8 +155,12 @@ class ReloadLogPanelFixtureTest : BasePlatformTestCase() {
                 }
                 expectEquals(before + 1, manager.reloadCount, "Only the scripted class RELOAD increments the count")
                 expectEquals(null, manager.lastError, "Asynchronous INFO indexing failure must not become class ERROR")
-                expectEquals(ScriptedStatusServer.script.map { it.first },
-                    received.filter { it.level != "CONNECTED" }.map { it.level })
+                // A RELOAD_STATE reply updates the pause state instead of printing its raw line.
+                expectEquals(ScriptedStatusServer.script.map { if (it.second.startsWith("RELOAD_STATE ")) "PAUSE_STATE" else it.first },
+                    // The connect-time pause status answer comes before the replay.
+                    received.filter { it.level != "CONNECTED" }.dropWhile { it.level == "PAUSE_STATE" }.map { it.level })
+                expectEquals(ReloadManager.PauseState(paused = true, pendingClasses = 1, pendingActions = 0), manager.pauseState)
+                expectTrue(!console.text.contains("RELOAD_STATE"), "The raw pause reply is not shown")
             }
             for (message in listOf("Other provider: FAILED (x)", "SAP Solr a: FINISHED documents=1", "SAP Solr a: FAILED_EXTRA (x)")) {
                 expectEquals(ConsoleViewContentType.NORMAL_OUTPUT, panel.contentType(AgentEvent("INFO", message, "")))
