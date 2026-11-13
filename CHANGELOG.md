@@ -16,6 +16,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Add opt-in live coverage for existing SAP Commerce one-to-many and many-to-many relation admission, same loaded model accessors and detached bidirectional persistence, with full stopped recovery.
 
+- Refresh the native SAP Commerce hot-folder converter cache after an existing plain converter mapping changes its converter reference in captured Spring XML. The existing task and static proxy stay in place; failed native preparation restores that owner's prior reference and cache. Unsupported mapping/task shapes require a restart.
+
+- An edited Spring Integration endpoint in XML (service-activator, transformer, filter, router and other consumer endpoints) now answers the next messages without a restart: the old endpoint is stopped and unsubscribed, the new one is created and started, and a failing new handler leaves the old endpoint in place. Namespace infrastructure beans and generated handler names no longer show up as restart items. When a file is loaded into several contexts, each status line names its context. The default SAP Commerce live suite covers this case (64 scenarios).
+
 - Hold generated SAP Commerce class output until native compilation and generated classpath readiness, then complete class delivery before the schema step. Failed generation retains its output while corrected XML can retry; user build ownership and pause remain independent.
 
 - Initialise the native code of appended generated SAP Commerce static enum values before publication. Unsupported custom SAP enum initialisation is refused with restart guidance.

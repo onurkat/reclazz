@@ -199,6 +199,7 @@ public final class SpringXmlReloader {
         final java.util.Set<Object> changedMappings = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
         java.util.Map<String, SapXmlEventListeners.Admission> listeners = java.util.Map.of();
         int applied;
+        SapHotFolderMappings.Prepared hotFolder;
         SpringIntegrationEndpoints.Outcome endpoints = SpringIntegrationEndpoints.Outcome.NONE;
         boolean securityHandled;
         OwnerChange(Object temporary, Object context, Object factory, String label,
@@ -247,6 +248,22 @@ public final class SpringXmlReloader {
             XmlAliasDiagnostics.classify(change.context, change.factory, change.temporary, xmlPath, change.diff,
                     change.endpoints.derivedAliases());
         }
+        boolean hybris;
+        try { hybris = platformContext.getPlatformId() == PlatformContext.Platform.HYBRIS; }
+        catch (RuntimeException unavailable) { hybris = false; }
+        for (var owner : changes) {
+            var selected = owner.diff.propertyChanges.stream()
+                    .filter(edit -> SapHotFolderMappings.candidate(owner.factory, edit)).toList();
+            if (selected.isEmpty()) continue;
+            try {
+                owner.hotFolder = SapHotFolderMappings.prepare(owner.context, owner.factory, selected,
+                        hybris && owner.observed);
+            } catch (Exception failure) {
+                owner.diff.propertyChanges.removeAll(selected);
+                for (var edit : selected) owner.diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(edit.beanName,
+                        "hot-folder mapping requires restart: " + SpringReflection.rootCause(failure)));
+            }
+        }
         boolean mappingMutation = changes.stream().anyMatch(owner -> owner.diff.propertyChanges.stream().anyMatch(change ->
                 SapFieldSetRefresher.isMapping(SpringReflection.getExistingSingleton(owner.factory, change.beanName))));
         if (mappingMutation) com.onurkat.reclazz.bootstrap.CacheDependencyLedger.beginMutation();
@@ -255,6 +272,23 @@ public final class SpringXmlReloader {
             try {
                 for (var change : changes) {
                     change.activate();
+                    if (change.hotFolder != null) {
+                        var edits = change.hotFolder.edits();
+                        try {
+                            for (var edit : edits) save.requirePublished(change.factory, edit.change());
+                            change.hotFolder.apply();
+                            for (var edit : edits) {
+                                save.succeeded(change.factory, edit.change());
+                                change.applied++;
+                            }
+                        } catch (Exception failure) {
+                            for (var edit : edits) change.diff.unsafe.add(new BeanDefinitionDiff.UnsafeChange(edit.change().beanName,
+                                    "hot-folder native refresh failed: " + SpringReflection.rootCause(failure)));
+                        }
+                        // Metadata participation was captured by publish; the generic
+                        // setter path must not repeat this owner-local transaction.
+                        change.diff.propertyChanges.removeAll(edits.stream().map(SapHotFolderMappings.Edit::change).toList());
+                    }
                     change.applied += applyProperties(change.context, change.factory, change.diff, save, change.changedMappings);
                 }
             } finally {

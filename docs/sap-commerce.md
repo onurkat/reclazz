@@ -260,3 +260,27 @@ fixture membership unchanged. It does not certify arbitrary, localized, ordered,
 cascading or incompatible relation edits. No production agent change or new
 dependency is involved. Source membership comes from the shared suite contract;
 do not copy a historical fixture/test count into new profile checks.
+
+## Existing hot-folder converter references
+
+Changing the `converter` reference of an existing `DefaultConverterMapping` in
+captured Spring XML refreshes the native `ImpexTransformerTask` cache for that
+owner. Both referenced `DefaultImpexConverter` beans must already be plain local
+singletons, with an unchanged literal mapping prefix. Reclazz initializes a
+detached native task and publishes its completed cache to the held task, retaining
+the task and any static `SingletonTargetSource` proxy. Failed preparation restores
+that owner's previous reference and cache; it does not retry initialization on the
+live task.
+
+The focused live proof used real native file ingestion, conversion, import and
+cleanup: the reference edit produced the B row once, and an identical save followed
+by another fresh file also produced B once in the same JVM. Without the agent,
+the same edit kept using A. This proof is opt-in and does not expand the default
+suite or certify the whole hot-folder configuration surface.
+
+New/removed mappings, prefix edits, custom or lazy mappings, proxy converters,
+dynamic task proxies and unverifiable collectors require a restart. This does
+not reprocess a file already in flight or provide a transaction across tenants.
+The local regression `scripts/test-sap-hotfolder-sdk.py` uses installed SDK sources
+and proves native converter selection and row output; its standalone JVM does not
+prove tenant activation, CSV import or database persistence.
