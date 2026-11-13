@@ -194,4 +194,114 @@ public class ItemsSchemaController {
         if (fresh.size() != 1 || !fresh.get(0).getPk().equals(PK.parse(pk))) throw new IllegalStateException("Owned persisted PK changed");
         return newResult(previous, fresh.get(0), true);
     }
+    private static final List<String> REL_TYPES = List.of("ReclazzRelationLeftProbe", "ReclazzRelationRightProbe");
+    private static final List<String> REL_NAMES = List.of("ReclazzOneToManyProbe", "ReclazzManyToManyProbe");
+    private static final List<String> REL_TABLES = List.of("ReclazzRelLeftProbes", "ReclazzRelRightProbes", "ReclazzRelLinks");
+    private static final Map<String, Class<?>> REL_CLASSES = new java.util.concurrent.ConcurrentHashMap<>();
+    private static String cap(String q) { return Character.toUpperCase(q.charAt(0)) + q.substring(1); }
+    private List<String> relationQualifiers(String type) {
+        return type.equals(REL_TYPES.get(0)) ? List.of("children", "rightPeers") : List.of("relationParent", "leftPeers");
+    }
+    @GetMapping("/new-relation/facts")
+    public Map<String, Object> relationFacts() throws Exception {
+        var out = new LinkedHashMap<String, Object>();
+        out.put("tenant", Registry.getCurrentTenant().getTenantID());
+        out.put("jvmStart", java.lang.management.ManagementFactory.getRuntimeMXBean().getStartTime());
+        var types = TypeManager.getInstance().getAllComposedTypes();
+        var expected = Map.of(31993, REL_TYPES.get(0), 31994, REL_TYPES.get(1), 31995, REL_NAMES.get(1));
+        out.put("collisions", types.stream().filter(t -> expected.containsKey(t.getItemTypeCode()) &&
+                !expected.get(t.getItemTypeCode()).equals(t.getCode()) ||
+                REL_TABLES.stream().anyMatch(table -> table.equalsIgnoreCase(t.getTable())) &&
+                !REL_TYPES.contains(t.getCode()) && !REL_NAMES.contains(t.getCode())).count());
+        var models = new LinkedHashMap<String, Object>();
+        var resources = new LinkedHashMap<String, Boolean>();
+        var loader = Registry.getApplicationContext().getClassLoader();
+        for (String name : REL_TYPES) {
+            resources.put(name, loader.getResource(("com.onurkat.reclazztest.model." + name + "Model").replace('.', '/') + ".class") != null);
+            if (types.stream().noneMatch(t -> name.equals(t.getCode()))) continue;
+            ItemModel model = modelService.create(name);
+            Class<?> cls = model.getClass();
+            if (!cls.getName().equals("com.onurkat.reclazztest.model." + name + "Model")) throw new IllegalStateException("Generated model required");
+            REL_CLASSES.putIfAbsent(name, cls);
+            var attributes = new LinkedHashMap<String, Boolean>();
+            var accessors = new LinkedHashMap<String, Boolean>();
+            var type = typeService.getComposedTypeForCode(name);
+            for (String q : relationQualifiers(name)) {
+                attributes.put(q, typeService.hasAttribute(type, q));
+                accessors.put(q, Arrays.stream(cls.getMethods()).anyMatch(m -> m.getName().equals("get" + cap(q)) && m.getParameterCount() == 0) &&
+                        Arrays.stream(cls.getMethods()).anyMatch(m -> m.getName().equals("set" + cap(q)) && m.getParameterCount() == 1));
+            }
+            models.put(name, Map.of("className", cls.getName(), "classId", System.identityHashCode(cls),
+                    "sameClass", REL_CLASSES.get(name) == cls, "attributes", attributes, "accessors", accessors));
+            modelService.detach(model);
+        }
+        var relations = new LinkedHashMap<String, Object>();
+        for (String name : REL_NAMES) {
+            var type = types.stream().filter(t -> name.equals(t.getCode())).findFirst();
+            if (type.isPresent()) {
+                var meta = new LinkedHashMap<String, Object>();
+                meta.put("table", type.get().getTable()); meta.put("typecode", type.get().getItemTypeCode()); relations.put(name, meta);
+            }
+        }
+        var tables = new ArrayList<String>();
+        try (var connection = Registry.getCurrentTenant().getDataSource().getConnection();
+             var found = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"})) {
+            while (found.next()) {
+                String table = found.getString("TABLE_NAME");
+                if (REL_TABLES.stream().anyMatch(n -> n.equalsIgnoreCase(table))) tables.add(table);
+            }
+        }
+        out.put("models", models); out.put("relations", relations); out.put("resources", resources); out.put("tables", tables); return out;
+    }
+    private String relationNonce(String nonce) {
+        if (!nonce.matches("reclazz-c33c-[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")) throw new IllegalArgumentException("Invalid relation nonce");
+        return nonce;
+    }
+    private List<ItemModel> relationRows(String type, String nonce, String suffix) {
+        if (!REL_TYPES.contains(type) || !List.of("l1", "l2", "r1", "r2").contains(suffix)) throw new IllegalArgumentException("Owned relation row required");
+        return searchService.<ItemModel>search("SELECT {pk} FROM {" + type + "} WHERE {nonce}=?n", Map.of("n", relationNonce(nonce) + suffix)).getResult();
+    }
+    private ItemModel relationRow(String type, String nonce, String suffix, boolean create) {
+        var rows = relationRows(type, nonce, suffix);
+        if (create) {
+            if (!rows.isEmpty()) throw new IllegalStateException("Nonce already persisted");
+            ItemModel model = modelService.create(type); modelService.setAttributeValue(model, "nonce", nonce + suffix); modelService.save(model); return model;
+        }
+        if (rows.size() != 1) throw new IllegalStateException("Owned relation row missing"); return rows.get(0);
+    }
+    private Object relationGet(ItemModel model, String qualifier) throws Exception {
+        return model.getClass().getMethod("get" + cap(qualifier)).invoke(model);
+    }
+    private void relationSet(ItemModel model, String qualifier, Object value) throws Exception {
+        var methods = Arrays.stream(model.getClass().getMethods()).filter(m -> m.getName().equals("set" + cap(qualifier)) && m.getParameterCount() == 1).toList();
+        if (methods.size() != 1) throw new IllegalStateException("Generated relation setter required"); methods.get(0).invoke(model, new Object[]{value});
+    }
+    private List<String> relationPks(Object value) {
+        if (value instanceof ItemModel item) return List.of(item.getPk().toString());
+        if (!(value instanceof Collection<?> items)) throw new IllegalStateException("Typed relation collection required");
+        return items.stream().map(item -> ((ItemModel) item).getPk().toString()).sorted().toList();
+    }
+    private Map<String, Object> relationResult(String shape, String nonce, boolean create) throws Exception {
+        relationNonce(nonce);
+        if (!List.of("one", "many").contains(shape)) throw new IllegalArgumentException("Unknown owned shape");
+        String left = REL_TYPES.get(0), right = REL_TYPES.get(1);
+        if (create) {
+            ItemModel l1 = relationRow(left, nonce, "l1", true), r1 = relationRow(right, nonce, "r1", true), r2 = relationRow(right, nonce, "r2", true);
+            if (shape.equals("one")) { relationSet(r1, "relationParent", l1); relationSet(r2, "relationParent", l1); modelService.save(r1); modelService.save(r2); }
+            else { ItemModel l2 = relationRow(left, nonce, "l2", true); relationSet(l1, "rightPeers", new HashSet<>(List.of(r1, r2))); relationSet(l2, "rightPeers", new HashSet<>(List.of(r2))); modelService.save(l1); modelService.save(l2); }
+        }
+        ItemModel previous = relationRow(left, nonce, "l1", false); modelService.detachAll();
+        ItemModel l1 = relationRow(left, nonce, "l1", false), r1 = relationRow(right, nonce, "r1", false), r2 = relationRow(right, nonce, "r2", false);
+        var result = new LinkedHashMap<String, Object>(); var ids = new LinkedHashMap<String, String>();
+        ids.put("l1", l1.getPk().toString()); ids.put("r1", r1.getPk().toString()); ids.put("r2", r2.getPk().toString());
+        var links = new LinkedHashMap<String, Object>();
+        if (shape.equals("one")) { links.put("l1", relationPks(relationGet(l1, "children"))); links.put("r1", relationPks(relationGet(r1, "relationParent"))); links.put("r2", relationPks(relationGet(r2, "relationParent"))); }
+        else { ItemModel l2 = relationRow(left, nonce, "l2", false); ids.put("l2", l2.getPk().toString()); links.put("l1", relationPks(relationGet(l1, "rightPeers"))); links.put("l2", relationPks(relationGet(l2, "rightPeers"))); links.put("r1", relationPks(relationGet(r1, "leftPeers"))); links.put("r2", relationPks(relationGet(r2, "leftPeers"))); }
+        result.put("facts", relationFacts()); result.put("nonce", nonce); result.put("shape", shape); result.put("ids", ids); result.put("links", links); result.put("detached", previous != l1);
+        modelService.detachAll(); return result;
+    }
+    @PostMapping("/new-relation/roundtrip")
+    public Map<String, Object> createRelation(@RequestParam("shape") String shape, @RequestParam("nonce") String nonce) throws Exception { return relationResult(shape, nonce, true); }
+    @GetMapping("/new-relation/roundtrip")
+    public Map<String, Object> readRelation(@RequestParam("shape") String shape, @RequestParam("nonce") String nonce) throws Exception { return relationResult(shape, nonce, false); }
 }

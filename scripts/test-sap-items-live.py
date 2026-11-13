@@ -175,7 +175,7 @@ def runner(folder, label, profile=None, recovery=None, inject=False):
     text = (folder / (label + '.log')).read_text()
     return {'exitCode': result.returncode, **default_result(text),
             'injectedFailure': 'Injected items failure after persisted write' in text,
-            'newTypeSuite': new_type_report(text)}
+            'newTypeSuite': new_type_report(text), 'newRelationSuite': new_relation_report(text)}
 
 
 def save_recovery_state(folder, config_bytes, fixture_bytes, generated, agent_hash):
@@ -320,10 +320,15 @@ def preflight():
 NEW_TYPE_LABEL = 'New item type attempt (outer recovery required)'
 
 
-def new_type_report(text):
+NEW_RELATION_LABEL = 'New relation attempt (outer recovery required)'
+
+def new_relation_report(text):
+    return new_type_report(text, NEW_RELATION_LABEL)
+
+def new_type_report(text, label=NEW_TYPE_LABEL):
     plain = re.sub(r'\x1b\[[0-9;]*m', '', text)
     rows = re.findall(r'^([^|\n]+)\|\s*(PASS|FAIL|ERROR|SKIP)\s*\|[^\n]*$', plain, re.M)
-    return [(name.strip(), status) for name, status in rows] == [(NEW_TYPE_LABEL, 'PASS')]
+    return [(name.strip(), status) for name, status in rows] == [(label, 'PASS')]
 
 
 def hac(script,commit=False):
@@ -416,12 +421,28 @@ def wt_targets(checkout):
     return sorted(set(found))
 
 
-def new_type_profile(folder, restore_repo, lock, inject=False):
+
+NEW_RELATION_COLLISIONS = "import groovy.json.JsonOutput\nimport de.hybris.platform.core.Registry\nimport de.hybris.platform.jalo.type.TypeManager\ndef ctx=Registry.applicationContext;def ms=ctx.getBean('modelService');def fs=ctx.getBean('flexibleSearchService');def tm=TypeManager.getInstance()\ndef names=['ReclazzRelationLeftProbe','ReclazzRelationRightProbe','ReclazzOneToManyProbe','ReclazzManyToManyProbe'];def tables=['ReclazzRelLeftProbes','ReclazzRelRightProbes','ReclazzRelLinks'];def types=tm.allComposedTypes\n def collisions=types.findAll{names.contains(it.code)||[31993,31994,31995].contains(it.itemTypeCode)||tables.any{n->n.equalsIgnoreCase(it.table)}}.collect{it.code}\n def con=Registry.currentTenant.dataSource.connection;def found=[]\n try{def rs=con.metaData.getTables(null,null,null,['TABLE'] as String[]);try{while(rs.next()){def n=rs.getString('TABLE_NAME');if(tables.any{t->t.equalsIgnoreCase(n)})found.add(n)}}finally{rs.close()}}finally{con.close()}\n return JsonOutput.toJson([collisions:collisions,tables:found,tenant:Registry.currentTenant.tenantID])"
+
+def new_relation_absent(load_classes=False):
+    facts = hac(NEW_RELATION_COLLISIONS)
+    if facts.get('collisions') != [] or facts.get('tables') != [] or facts.get('tenant') != 'master':
+        raise RuntimeError('Relation type/table collision or recovery mismatch: ' + str(facts))
+    names = [f'com.onurkat.reclazztest.{kind}.{name}' + ('Model' if kind == 'model' else '') for kind in ['model', 'jalo'] for name in ['ReclazzRelationLeftProbe', 'ReclazzRelationRightProbe']]
+    script = "import groovy.json.JsonOutput;import de.hybris.platform.core.Registry;def names=" + json.dumps(names) + ";return JsonOutput.toJson(names.collectEntries{n->[(n):(Registry.applicationContext.classLoader.getResource(n.replace('.','/')+'.class')!=null)]})"
+    resources = hac(script)
+    if len(resources) != 4 or any(value is not False for value in resources.values()):
+        raise RuntimeError('Relation generated resources survived: ' + str(resources))
+    return {'metadata': facts, 'resources': resources}
+
+def new_type_profile(folder, restore_repo, lock, inject=False, new_relation=False):
     """Stage1's full stopped recovery, with the durable Kotlin oracle as inner attempt."""
-    record = {'phase': 'preflight', 'mode': 'new-item-type', 'attempt': 'UNRUN'}
+    mode = 'new-relation' if new_relation else 'new-item-type'
+    absent = new_relation_absent if new_relation else new_type_absent
+    record = {'phase': 'preflight', 'mode': mode, 'attempt': 'UNRUN'}
     def save():
         (folder / 'result.json').write_text(json.dumps(record, indent=2) + '\n')
-    owner = 'OWNER=astra LANE=c33a-new-item-type WT=' + str(REPO) + ' SINCE=' + datetime.datetime.now(datetime.timezone.utc).isoformat() + ' PID=' + str(os.getpid()) + ' PURPOSE=new-item-type-profile\n'
+    owner = 'OWNER=astra LANE=' + ('c33c-new-relation' if new_relation else 'c33a-new-item-type') + ' WT=' + str(REPO) + ' SINCE=' + datetime.datetime.now(datetime.timezone.utc).isoformat() + ' PID=' + str(os.getpid()) + ' PURPOSE=new-item-type-profile\n'
     lock.mkdir()  # no stale-lock guesses or concurrent installation work
     (lock / 'owner').write_text(owner)
     captured = False
@@ -432,7 +453,7 @@ def new_type_profile(folder, restore_repo, lock, inject=False):
             raise RuntimeError('Own native writer active; zero installation changes')
         require_boot_options(get(ENDPOINT + '/gates'), False)
         record['baselineFacts'] = get(ENDPOINT + '/items/facts'); validate_facts(record['baselineFacts'])
-        record['health'] = tenant_health(); record['beforeAbsent'] = new_type_absent()
+        record['health'] = tenant_health(); record['beforeAbsent'] = absent()
         fixtures = fixture_hashes()
         record['originalLinks'] = {name: os.readlink(SAP_HOME / 'bin/custom' / name) for name in ['reclazztest', 'reclazztestbackoffice']}
         if any((SAP_HOME / 'bin/custom' / name).resolve() != restore_repo / name for name in record['originalLinks']):
@@ -445,23 +466,26 @@ def new_type_profile(folder, restore_repo, lock, inject=False):
         wrapper = PLATFORM / 'tomcat/conf/wrapper.conf'
         save_recovery_state(folder, {wrapper: wrapper.read_bytes()}, (REPO / 'reclazztest/resources/reclazztest-items.xml').read_bytes(), list(new_type_roots().values()), record['jarDigest'])
         state = json.loads((folder / 'state.json').read_text())
-        state.update(mode='new-item-type', fullSnapshotVerified=True,
+        state.update(mode=mode, fullSnapshotVerified=True,
                      snapshots={name: str(path) for name, path in new_type_roots().items()})
         (folder / 'state.json').write_text(json.dumps(state, indent=2) + '\n')
         record['phase'] = 'captured'; save()
         for name in record['originalLinks']:
             link = SAP_HOME / 'bin/custom' / name; link.unlink(); link.symlink_to(REPO / name)
+        if new_relation:
+            candidate = REPO / 'agent/build/libs/agent-1.5.0.jar'
+            record['candidateSha256'] = digest(candidate); shutil.copy2(candidate, JAR)
         rebuild_new_type(folder, REPO, 'candidate')
         wrapper.write_bytes(schema_wrapper_bytes(wrapper.read_bytes(), JAR))
         record['profileBoot'] = start(folder, 'schema-profile', True)
-        validate_facts(record['profileBoot']['facts']); record['negativeControl'] = new_type_absent(load_classes=False)
+        validate_facts(record['profileBoot']['facts']); record['negativeControl'] = absent(load_classes=False)
         record['phase'] = 'attempt'; save()
-        result = runner(folder, 'attempt', 'items-new-type-attempt', folder, inject)
+        result = runner(folder, 'attempt', 'items-new-relation-attempt' if new_relation else 'items-new-type-attempt', folder, inject)
         record['inner'] = result; save()
         if inject:
             if result['exitCode'] == 0 or not result['injectedFailure']:
                 raise RuntimeError('Injected new-type failure not observed')
-        elif result['exitCode'] != 0 or not result['newTypeSuite']:
+        elif result['exitCode'] != 0 or not result['newRelationSuite' if new_relation else 'newTypeSuite']:
             raise RuntimeError('Exact new-type attempt PASS missing')
         if doctor()['sessionId'] != record['profileBoot']['doctor']['sessionId']:
             raise RuntimeError('Experiment JVM changed')
@@ -494,7 +518,7 @@ def new_type_profile(folder, restore_repo, lock, inject=False):
                 # All native build outputs were restored from the stopped snapshot.
                 # The normal checkout was never edited/built: reuse its existing outputs.
                 record['normalBoot'] = start(folder, 'restored-main', False)
-                validate_facts(record['normalBoot']['facts']); record['restoredAbsent'] = new_type_absent()
+                validate_facts(record['normalBoot']['facts']); record['restoredAbsent'] = absent()
                 if record['normalBoot']['doctor']['sessionId'] == record.get('profileBoot', {'doctor': record['beforeDoctor']})['doctor']['sessionId'] or tenant_health() != record['health']:
                     raise RuntimeError('Fresh normal JVM/control recovery mismatch')
                 record['remainingWTTargets'] = wt_targets(REPO)
@@ -515,13 +539,13 @@ def new_type_profile(folder, restore_repo, lock, inject=False):
         record['phase'] = 'restored' if clean_return else 'recovery-required'; save()
         if clean_return and (lock / 'owner').read_text() == owner:
             (lock / 'owner').unlink(); lock.rmdir(); record['lockReleased'] = True; save()
-    print('NEW_ITEM_TYPE_PROFILE ' + record['verdict'] + '; evidence: ' + str(folder), flush=True)
+    print(('NEW_RELATION_PROFILE ' if new_relation else 'NEW_ITEM_TYPE_PROFILE ') + record['verdict'] + '; evidence: ' + str(folder), flush=True)
     return record
 
 
-def run_new_type(args):
+def run_new_type(args, new_relation=False):
     if not args.fixture_manifest or not args.restore_repo or not args.lock or args.runs != 1:
-        raise RuntimeError('--new-item-type requires --runs 1, --fixture-manifest, --restore-repo and --lock')
+        raise RuntimeError('Opt-in items mode requires --runs 1, --fixture-manifest, --restore-repo and --lock')
     os.environ['RECLAZZ_FIXTURE_MANIFEST'] = str(args.fixture_manifest.resolve())
     if SAP_HOME.resolve() != SAP_HOME or not (SAP_HOME.parent / 'hybris/bin/platform').is_dir():
         raise RuntimeError('Disposable installation identity mismatch')
@@ -531,9 +555,9 @@ def run_new_type(args):
     restore_repo = args.restore_repo.resolve()
     if restore_repo == REPO or not (restore_repo / 'reclazztest/resources/reclazztest-items.xml').is_file():
         raise RuntimeError('A distinct normal restore checkout is required')
-    folder = Path(tempfile.mkdtemp(prefix='reclazz-new-item-type-', dir='/private/tmp'))
+    folder = Path(tempfile.mkdtemp(prefix='reclazz-new-relation-' if new_relation else 'reclazz-new-item-type-', dir='/private/tmp'))
     print('Recovery/evidence directory: ' + str(folder), flush=True)
-    result = new_type_profile(folder, restore_repo, args.lock, args.failure_control)
+    result = new_type_profile(folder, restore_repo, args.lock, args.failure_control, new_relation)
     return 0 if result['verdict'] == 'PASS' else 1
 
 
@@ -542,10 +566,15 @@ def main():
     parser.add_argument('--runs', type=int, default=3)
     parser.add_argument('--failure-control', action='store_true')
     parser.add_argument('--new-item-type', action='store_true')
+    parser.add_argument('--new-relation', action='store_true')
     parser.add_argument('--fixture-manifest', type=Path)
     parser.add_argument('--restore-repo', type=Path)
     parser.add_argument('--lock', type=Path)
     args = parser.parse_args()
+    if args.new_relation and args.new_item_type:
+        parser.error('Select one opt-in items mode')
+    if args.new_relation:
+        return run_new_type(args, new_relation=True)
     if args.new_item_type:
         return run_new_type(args)
     if args.runs < 1:

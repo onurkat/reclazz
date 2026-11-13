@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Reload access-expression edits in a captured single Spring Security XML http group through the existing filter proxy. Scope/authentication changes are refused; boot bean definitions remain unchanged.
 
+- Add opt-in live coverage for existing SAP Commerce one-to-many and many-to-many relation admission, same loaded model accessors and detached bidirectional persistence, with full stopped recovery.
+
 - Hold generated SAP Commerce class output until native compilation and generated classpath readiness, then complete class delivery before the schema step. Failed generation retains its output while corrected XML can retry; user build ownership and pause remain independent.
 
 - Initialise the native code of appended generated SAP Commerce static enum values before publication. Unsupported custom SAP enum initialisation is refused with restart guidance.

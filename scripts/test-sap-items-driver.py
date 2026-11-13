@@ -235,5 +235,30 @@ class NewTypeDriverTest(unittest.TestCase):
             self.assertEqual('FAIL', result['verdict']); self.assertTrue(lock.exists())
 
 
+
+class NewRelationDriverTest(unittest.TestCase):
+    def test_exact_relation_report_rejects_other_modes_and_extra_rows(self):
+        row = driver.NEW_RELATION_LABEL + ' | PASS | 1s |\n'
+        self.assertTrue(driver.new_relation_report(row))
+        for text in ['', row.replace('PASS', 'SKIP'), row.replace('PASS', 'FAIL'), row + row, driver.NEW_TYPE_LABEL + ' | PASS | 1s |\n']:
+            self.assertFalse(driver.new_relation_report(text))
+    def test_relation_dispatch_is_opt_in(self):
+        with patch.object(driver, 'run_new_type', return_value=0) as run, patch.object(driver, 'preflight') as preflight, patch('sys.argv', ['driver', '--new-relation']):
+            self.assertEqual(0, driver.main()); self.assertTrue(run.call_args.kwargs['new_relation']); preflight.assert_not_called()
+    def test_relation_requires_outer_recovery_before_writes(self):
+        with patch.object(driver.tempfile, 'mkdtemp') as mkdir, patch('sys.argv', ['driver', '--new-relation', '--runs', '1']):
+            with self.assertRaisesRegex(RuntimeError, 'requires'): driver.main()
+            mkdir.assert_not_called()
+    def test_relation_absence_never_loads_future_classes(self):
+        facts={'tenant':'master','collisions':[],'tables':[]}
+        with patch.object(driver, 'hac', side_effect=[facts, {str(i):False for i in range(4)}]) as hac:
+            driver.new_relation_absent(); self.assertNotIn('Class.forName', hac.call_args.args[0]); self.assertIn('getResource', hac.call_args.args[0])
+    def test_relation_preserves_first_failure_and_lock_on_recovery_error(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary);lock=root/'SAP-astra.lock'
+            with patch.object(driver, 'doctor', side_effect=RuntimeError('first')), patch.object(driver, 'java_writers', return_value=[]), patch.object(driver, 'start', side_effect=RuntimeError('restore')):
+                result=driver.new_type_profile(root,root/'normal',lock,new_relation=True)
+            self.assertEqual('first',result['failure']);self.assertEqual('restore',result['restoreFailure']);self.assertEqual('new-relation',result['mode']);self.assertTrue(lock.exists())
+
 if __name__ == '__main__':
     unittest.main()

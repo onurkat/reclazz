@@ -181,7 +181,7 @@ Run the outer driver `scripts/test-sap-items-live.py --new-item-type --runs 1`
 with `--fixture-manifest <reviewed JSON path-to-SHA256 manifest>`,
 `--restore-repo <normal checkout>` and `--lock <collab installation lock>`.
 Select the disposable install with `RECLAZZ_SAP_HOME` and `RECLAZZ_SAP_BASE`.
-The manifest contains the exact 113 normal fixture source files, including any
+The manifest contains the exact normal fixture source membership from the shared suite contract, including any
 reviewed edits. The mode takes eight complete stopped snapshots, including
 concrete generated Jalo sources, and restores the database, config, bootstrap,
 native outputs, fixtures, original agent and links. It then proves the new
@@ -190,7 +190,7 @@ is FAIL. Never run the inner profile alone or undo its XML on a live server.
 Native HAC credentials are read only from the disposable install's local config;
 the recovery checks use read-only native metadata and class observations.
 
-The default suite remains 62 cases. This bounded profile does not certify enums,
+Default suite membership is unchanged by this mode. This bounded profile does not certify enums,
 relations, incompatible edits or arbitrary schema changes. No new dependency or
 production agent change is involved.
 
@@ -199,3 +199,31 @@ to load a nonexistent class: SAP's enabled `CacheClassNotFoundRule` remembers
 failed class loads. After generation the profile requires the real generated
 Model/Jalo classes and rejects generic fallbacks. A class previously requested
 and negatively cached before generation is outside this bounded coverage.
+
+
+### Opt-in new relations
+
+With `autoUpdateRunningSystem=true`, the existing native generation/schema path
+supports the bounded one-to-many and many-to-many relation edit exercised here.
+`items-new-relation-attempt` first creates two isolated generated endpoint types,
+warms their model classes, then adds both relations in one XML save. It requires
+new typed accessors on those same loaded classes and persisted asymmetric links
+re-read detached from both ends in a separate request. The one-to-many qualifier
+is `relationParent`; `owner` is inherited from SAP's base Item and is not a new
+relation attribute. The many-to-many relation has its own deployment31995.
+
+Run `scripts/test-sap-items-live.py --new-relation --runs 1` with the same explicit
+`--fixture-manifest`, `--restore-repo` and `--lock` arguments as the new-item-type
+mode. Set `RECLAZZ_SAP_HOME` and `RECLAZZ_SAP_BASE` to the disposable installation.
+The eight-root stopped recovery is shared: database, generated sources/classes,
+config and native outputs, original agent and extension links must all recover,
+then experimental types/tables/resources must be absent after a fresh normal
+boot. An inner PASS alone cannot pass the outer profile. Never run this inner
+profile directly or undo schema changes live. Future classes are inspected by
+resource lookup before generation to avoid seeding SAP's negative class cache.
+
+This opt-in proof covers existing behavior and leaves default suite and normal
+fixture membership unchanged. It does not certify arbitrary, localized, ordered,
+cascading or incompatible relation edits. No production agent change or new
+dependency is involved. Source membership comes from the shared suite contract;
+do not copy a historical fixture/test count into new profile checks.
