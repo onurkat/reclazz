@@ -72,6 +72,13 @@ bean result, then the restored value. A new XML singleton becomes usable.
 See [XML edits](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SpringXmlLiveTest.kt)
 and [new beans](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SpringXmlNewBeanLiveTest.kt).
 
+A separate focused check on 13 November 2026 confirmed existing local XML import
+support: adding an import to a loaded file made a plain singleton available, then
+editing the imported file updated the same singleton in the same JVM. Without the
+agent, the import save left the bean absent. The child file was prepared before
+boot to isolate the import edit; live child-file creation, remote imports and
+unloading were not measured. This adds no profile or default-suite membership.
+
 ## Spring scheduled metadata
 
 **You edit:** The fixed delay on an existing prepared `@Scheduled` method.
