@@ -112,6 +112,31 @@ public class BatchVerificationController {
         return Map.of("titleCount", titles.size(), "title", titles.isEmpty() ? "absent" : titles.get(0).getName(java.util.Locale.ENGLISH),
                 "baitCount", bait);
     }
+    @GetMapping("/si")
+    public List<Map<String, Object>> springIntegration() {
+        var rows = new ArrayList<Map<String, Object>>();
+        var owners = FixtureOwners.of("reclazztest-si-probe-spring.xml");
+        for (int i = 0; i < owners.size(); i++) {
+            var owner = owners.get(i); int ordinal = i + 1;
+            rows.add(FixtureOwners.execute(owner, () -> {
+                var channel = owner.getBean("reclazzSiProbeIn", org.springframework.integration.channel.DirectChannel.class);
+                var template = new org.springframework.integration.core.MessagingTemplate();
+                template.setReceiveTimeout(5000);
+                var replies = new ArrayList<Object>();
+                for (int n = 0; n < 4; n++) {
+                    var reply = template.sendAndReceive(channel,
+                            org.springframework.messaging.support.MessageBuilder.withPayload("x").build());
+                    replies.add(reply == null ? null : String.valueOf(reply.getPayload()));
+                }
+                var row = new LinkedHashMap<String, Object>();
+                row.put("owner", ordinal); row.put("replies", replies);
+                row.put("subscribers", channel.getSubscriberCount());
+                return row;
+            }));
+        }
+        if (rows.isEmpty()) throw new IllegalStateException("No observed synthetic Spring Integration owners");
+        return rows;
+    }
     @GetMapping("/xml")
     public List<Map<String, Object>> xml() {
         var rows = new ArrayList<Map<String, Object>>();

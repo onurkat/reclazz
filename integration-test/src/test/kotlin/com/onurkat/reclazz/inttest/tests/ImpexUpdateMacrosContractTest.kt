@@ -97,6 +97,6 @@ fun main() {
             }finally {client.disconnect()}
         }}finally {root.toFile().deleteRecursively()}
     }
-    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==63&&"ImpexUpdateMacrosLiveTest" in committedDefaultMembership)
+    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==64&&"ImpexUpdateMacrosLiveTest" in committedDefaultMembership)
     println("IMPEX_UPDATE_CONTRACT ${modes.size+5} checks PASS")
 }

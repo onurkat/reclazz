@@ -9,7 +9,7 @@ human setup and every agent argument, see the manual setup in
 recipe on top of it.
 
 For application-level proof, see [what we test live on SAP Commerce](sap-commerce-live-tests.md):
-63 default scenarios, separate opt-in profiles, their repeatability and the
+64 default scenarios, separate opt-in profiles, their repeatability and the
 areas that still need live acceptance.
 
 ## Why Hybris is different from Spring Boot

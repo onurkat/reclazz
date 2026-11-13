@@ -33,7 +33,7 @@ class BatchFixtureBaseline(private val config:TestConfig) {
         "web/src/com/onurkat/reclazztest/controllers/PrepareProbeController.java",
         "src/com/onurkat/reclazztest/batch/DynamicLabelHandler.java",
         "web/src/com/onurkat/reclazztest/controllers/DynamicProbeController.java",
-        "web/src/com/onurkat/reclazztest/controllers/DaoProbeController.java","resources/reclazztest-batch-spring.xml",
+        "web/src/com/onurkat/reclazztest/controllers/DaoProbeController.java","resources/reclazztest-batch-spring.xml","resources/reclazztest-si-probe-spring.xml",
         "resources/reclazztest-process-resources-spring.xml","resources/process/reclazz-process-existing.xml",
         "resources/impex/reclazz-batch-refusal.impex","resources/localization/reclazztest-locales_en.properties",
         "resources/occ/v2/reclazztestocc/web/spring/reclazztestocc-web-spring.xml",

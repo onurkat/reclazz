@@ -118,6 +118,7 @@ fun main() {
         NewOccControllerEvidenceTest(config, agentClient, httpVerifier), // 61
         OccErrorResponseLiveTest(config, agentClient, httpVerifier),    // 62
         ImpexUpdateMacrosLiveTest(config, agentClient, httpVerifier),   // 63
+        SpringIntegrationLiveTest(config, agentClient, httpVerifier),   // 64
     )
     requireDefaultMembership(allTests.map { it::class.simpleName!! })
     println("  Default committed membership: ${allTests.size} cases (Orika rollback included)")

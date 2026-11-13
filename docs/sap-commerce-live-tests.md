@@ -16,7 +16,7 @@ applying these results to your installation.
 
 We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
 SAP modules and synthetic test extensions. It is separate from customer systems.
-The default suite now contains **63 scenarios, all required to PASS, with zero
+The default suite now contains **64 scenarios, all required to PASS, with zero
 SKIPs**. The archived acceptance for the preceding 58-case membership ran five
 times on one server boot and once after a fresh boot: **six runs of 58/58 PASS**, with zero bean-refresh
 failures and unchanged fixture files. Hibernate ORM is tested separately in the agent
@@ -303,6 +303,25 @@ file/row cleanup. This demonstrates pre-import guard recovery, not native
 parser atomicity or rollback. Positive REMOVE and the full macro matrix remain
 outside this case. The actual baseline must fail the v1 oracle before any save.
 
+## Spring Integration endpoint edit
+
+**You edit:** The expression of a `<int:service-activator>` in a watched
+`*-spring.xml`.
+
+**Reclazz does:** Stops the old endpoint, which unsubscribes it from its
+channel, replaces the endpoint and its generated handler definition under
+their live names, then creates and starts the new endpoint, in every context
+that loaded the file. If the new handler cannot be created the old endpoint is
+started again and the save is reported as needing a restart.
+
+`SpringIntegrationLiveTest` adds default case64. Before the save, four
+request-reply messages through the owned `DirectChannel` answer `A:x` in each
+owner context. After the save the same four messages answer `B:x`, the channel
+has exactly one subscriber, and the save reports no restart item. The original
+file is restored and `A:x` is verified again. Adding or removing endpoints,
+channel type changes, pollers, gateways and Java DSL flows still ask for a
+restart.
+
 ## Localization and properties
 
 **You edit:** An English type-localization resource or an application property.
@@ -517,7 +536,7 @@ version, then renders JSP. Editing and reverting the selected component's Java
 marker changes its HTML while the other version and independent controls remain
 stable. Persisted identities stay unchanged, the previous session catalog scope
 is restored, and owned rows are removed through SAP's model service. This case
-is opt-in and does not increase the default 63-case suite. See the
+is opt-in and does not increase the default 64-case suite. See the
 [request-component case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt)
 and [persisted UID case](../integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt).
 

@@ -101,7 +101,8 @@ public final class SpringXmlReloader {
                 if (documentReader != null) PlatformTenant.ensureActive(loader);
                 if (temporary != null && SpringReflection.loadXml(temporary, xmlPath.toFile(), loader, environment,
                         documentReader))
-                    changes.add(new OwnerChange(temporary, context, factory, "", true,
+                    changes.add(new OwnerChange(temporary, context, factory,
+                            owners.size() == 1 ? "" : " [context " + (owners.indexOf(context) + 1) + "/" + owners.size() + "]", true,
                             documentReader == null ? null : loader));
             } catch (ReflectiveOperationException failure) {
                 StatusReporter.warn("Spring XML: application bean classloader unavailable");
@@ -197,6 +198,7 @@ public final class SpringXmlReloader {
         final BeanDefinitionDiff diff = new BeanDefinitionDiff();
         final java.util.Set<Object> changedMappings = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<>());
         int applied;
+        SpringIntegrationEndpoints.Outcome endpoints = SpringIntegrationEndpoints.Outcome.NONE;
         OwnerChange(Object temporary, Object context, Object factory, String label,
                     boolean observed, ClassLoader tenantLoader) {
             this.temporary = temporary; this.context = context; this.factory = factory;
@@ -206,6 +208,16 @@ public final class SpringXmlReloader {
     }
 
     private void applyToOwners(Path xmlPath, List<OwnerChange> changes, List<Object> owners) {
+        // Integration endpoints are swapped first, before the raw baseline is captured,
+        // so the generic classifier compares against the swapped definitions and sees
+        // only what is left.
+        for (var change : changes) {
+            change.activate();
+            change.endpoints = SpringIntegrationEndpoints.apply(change.context, change.factory, change.temporary,
+                    xmlPath, change.label);
+            change.applied += change.endpoints.swapped();
+            change.diff.unsafe.addAll(change.endpoints.failures());
+        }
         PropertySave save = new PropertySave(owners);
         // Capture every participating raw definition before any owner's setters run.
         for (var change : changes) save.capture(change.factory, change.temporary);
@@ -214,7 +226,8 @@ public final class SpringXmlReloader {
             if (change.observed) com.onurkat.reclazz.platform.SapProcessDefinitions.reconcile(xmlPath, change.context,
                     new java.util.HashSet<>(java.util.Arrays.asList(SpringReflection.getBeanDefinitionNames(change.temporary))));
             XmlSafetyClassifier.classify(change.factory, change.temporary, xmlPath, change.diff, save.rawProperties);
-            XmlAliasDiagnostics.classify(change.context, change.factory, change.temporary, xmlPath, change.diff);
+            XmlAliasDiagnostics.classify(change.context, change.factory, change.temporary, xmlPath, change.diff,
+                    change.endpoints.derivedAliases());
         }
         boolean mappingMutation = changes.stream().anyMatch(owner -> owner.diff.propertyChanges.stream().anyMatch(change ->
                 SapFieldSetRefresher.isMapping(SpringReflection.getExistingSingleton(owner.factory, change.beanName))));
@@ -224,7 +237,7 @@ public final class SpringXmlReloader {
             try {
                 for (var change : changes) {
                     change.activate();
-                    change.applied = applyProperties(change.context, change.factory, change.diff, save, change.changedMappings);
+                    change.applied += applyProperties(change.context, change.factory, change.diff, save, change.changedMappings);
                 }
             } finally {
                 save.settle(changes);
@@ -250,7 +263,7 @@ public final class SpringXmlReloader {
                             "bean add failed: " + SpringReflection.rootCause(e)));
                 }
             }
-            if (!change.diff.hasChanges()) StatusReporter.info("Spring XML " + xmlPath.getFileName() + change.label
+            if (!change.diff.hasChanges() && change.applied == 0) StatusReporter.info("Spring XML " + xmlPath.getFileName() + change.label
                     + ", parsed OK, no live-applicable changes detected");
             else reportWithLabel(xmlPath, change.applied, change.diff, change.label);
         }

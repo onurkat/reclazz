@@ -14,6 +14,6 @@ fun main() {
         response.replace("[\"501\"]","[\"502\"]"),response.replace("[\"301\"]","[\"302\"]"),response.replace("[\"401\"]","[\"401\",\"401\"]"))
     for(text in invalid)check(runCatching {verify(text)}.isFailure)
     check(runCatching {requireRestrictionSeed(batchJson.readTree(seedText.replace("adminAll\":[\"401\"","adminAll\":[\"999\"")),run)}.isFailure)
-    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==63)
+    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==64)
     println("SEARCH_RESTRICTION_CONTRACT ${invalid.size+4} checks PASS")
 }

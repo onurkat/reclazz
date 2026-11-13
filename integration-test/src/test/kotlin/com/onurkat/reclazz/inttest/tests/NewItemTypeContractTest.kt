@@ -27,6 +27,6 @@ fun main() {
     val xml=NewItemTypeLiveTest::class.java.classLoader.getResourceAsStream("templates/batch/resources/reclazztest-items.xml")!!.use{it.readBytes().toString(Charsets.UTF_8)}
     val edited=addNewItemType(xml);check(edited.replace(edited.substring(xml.indexOf("    </itemtypes>"),edited.indexOf("    </itemtypes>")),"")==xml);checks++
     check(runCatching{addNewItemType(edited)}.isFailure);checks++
-    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==63);checks++
+    requireDefaultMembership(committedDefaultMembership.toList());check(committedDefaultMembership.size==64);checks++
     println("NEW_ITEM_TYPE_CONTRACT $checks checks PASS")
 }
