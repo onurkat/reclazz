@@ -134,9 +134,9 @@ dependencies {
     // Real @Aspect proxy regressions only; no weaving and no production dependency.
     testImplementation("org.aspectj:aspectjweaver:1.9.25.1")
     // Native method authorization regressions only; never packaged in the agent.
-    testImplementation("org.springframework.security:spring-security-config:5.7.11")
+    testImplementation("org.springframework.security:spring-security-config:7.1.2")
     // Real servlet security policy observers only; never packaged with the agent.
-    testImplementation("org.springframework.security:spring-security-web:5.7.11")
+    testImplementation("org.springframework.security:spring-security-web:7.1.2")
     // Spring MVC, its test support and the servlet API, for driving a real
     // RequestMappingHandlerMapping under load while a controller is re-scanned.
     testImplementation("org.springframework:spring-webmvc:5.3.39")
@@ -311,8 +311,8 @@ dependencies {
     add(springSixTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:8.0.2.Final")
     add(springSixTests.implementationConfigurationName, "org.glassfish.expressly:expressly:5.0.0")
     // Native modern method authorization; isolated from Spring 5 and never packaged.
-    add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-config:6.3.4")
-    add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-web:6.3.4")
+    add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-config:7.1.2")
+    add(springSixTests.implementationConfigurationName, "org.springframework.security:spring-security-web:7.1.2")
     // Owner-approved real JPA/schema validation tests; isolated and never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-orm:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:6.5.3.Final")
