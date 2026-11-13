@@ -646,7 +646,7 @@ class SpringXmlReloaderTest {
     }
 
     @Test
-    void initializingBeanImplementerIsRejected() throws Exception {
+    void newInitializingBeanUsesNativeInitialization() throws Exception {
         Path xml = writeXml("beans.xml", """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <beans xmlns="http://www.springframework.org/schema/beans">
@@ -672,8 +672,13 @@ class SpringXmlReloaderTest {
 
         reloader.reload(xml);
 
-        assertFalse(liveContext.containsBean("initBean"),
-                "InitializingBean implementer must be rejected");
+        assertTrue(liveContext.containsBean("initBean"));
+        CustomInitializingBean initialized=liveContext.getBean("initBean",CustomInitializingBean.class);
+        assertEquals("x",initialized.getData());
+        assertEquals(1,initialized.calls);
+        reloader.reload(xml);
+        assertSame(initialized,liveContext.getBean("initBean"));
+        assertEquals(1,initialized.calls);
     }
 
     @Test
@@ -1456,14 +1461,15 @@ class SpringXmlReloaderTest {
         public Object postProcessAfterInitialization(Object bean, String beanName) { return bean; }
     }
 
-    /** Implements InitializingBean, should be rejected as unsafe. */
+    /** Ordinary new singleton initialized by native Spring creation. */
     public static class CustomInitializingBean
             implements org.springframework.beans.factory.InitializingBean {
         private String data;
+        public int calls;
         public String getData() { return data; }
         public void setData(String data) { this.data = data; }
         @Override
-        public void afterPropertiesSet() { /* would register things externally in real code */ }
+        public void afterPropertiesSet() { calls++; }
     }
 
     /**

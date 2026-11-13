@@ -39,9 +39,27 @@ final class XmlLifecyclePropertyGuard {
             // marker from the factory's Spring loader, not the watcher TCCL or agent loader.
             ClassLoader springLoader = factory.getClass().getClassLoader();
             String reason = null;
+            boolean ordinaryNewInitialization = false;
+            Class<?> initializing = Class.forName("org.springframework.beans.factory.InitializingBean", false, springLoader);
+            String initMethod = SpringReflection.getInitMethodName(candidate);
+            if (previous == null && admission == null && (initializing.isAssignableFrom(declared) || (initMethod != null && !initMethod.isEmpty()))) {
+                // Native getBean initializes an ordinary new singleton. Infrastructure
+                // and disposal roles still need a dedicated registration policy.
+                for (String marker : new String[]{"org.springframework.beans.factory.config.BeanPostProcessor",
+                        "org.springframework.beans.factory.config.BeanFactoryPostProcessor",
+                        "org.springframework.beans.factory.FactoryBean", "org.springframework.context.SmartLifecycle",
+                        "org.springframework.beans.factory.DisposableBean", "org.springframework.context.ApplicationListener"}) {
+                    if (Class.forName(marker, false, springLoader).isAssignableFrom(declared)) {
+                        reason = marker.substring(marker.lastIndexOf('.') + 1); break;
+                    }
+                }
+                ordinaryNewInitialization = reason == null;
+            }
             for (String marker : new String[]{"org.springframework.beans.factory.config.BeanPostProcessor",
                     "org.springframework.beans.factory.config.BeanFactoryPostProcessor",
                     "org.springframework.beans.factory.InitializingBean", "org.springframework.beans.factory.DisposableBean"}) {
+                if (reason != null) break;
+                if (marker.equals("org.springframework.beans.factory.InitializingBean") && ordinaryNewInitialization) continue;
                 if (marker.equals("org.springframework.beans.factory.InitializingBean") && previous == null
                         && admission != null && admission.factory() == factory
                         && admission.definition() == candidate && admission.type() == declared) continue;

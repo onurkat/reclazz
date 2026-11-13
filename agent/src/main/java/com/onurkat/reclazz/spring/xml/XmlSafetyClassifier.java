@@ -18,10 +18,11 @@ import java.util.Set;
  * {@link XmlBeanRecreator}. Rules for the remaining legacy property/addition path:
  * <ul>
  *   <li>{@code abstract="true"}, non-singleton scope, {@code factory-bean},
- *       {@code init-method}, {@code destroy-method}, {@code InitializingBean},
- *       {@code DisposableBean}, {@code BeanPostProcessor} →
+ *       {@code destroy-method}, {@code DisposableBean}, {@code BeanPostProcessor} →
  *       <b>unsafe for new or changed declarations</b>; a proven unchanged
  *       standard definition is a no-op</li>
+ *   <li>New ordinary singleton initialization uses native creation; existing
+ *       lifecycle properties retain their guards/recreation path.</li>
  *   <li>Bean not present in live factory → <b>NEW</b> (safe to add if shape OK)</li>
  *   <li>Bean exists, but {@code class}, {@code parent}, {@code scope}, or
  *       constructor-args differ → <b>unsafe</b> (would need destroy+recreate)</li>
@@ -58,15 +59,16 @@ final class XmlSafetyClassifier {
             if (newBd == null) continue;
 
             Object existing = SpringReflection.getBeanDefinition(liveFactory, beanName);
-            String shapeReason = unsafeShapeReason(newBd);
+            String shapeReason = unsafeShapeReason(newBd, existing == null);
+            boolean recreation = existing != null && XmlBeanRecreator.handles(existing, newBd);
             if (shapeReason != null && unchangedUnsupported(liveFactory, tempFactory, beanName, existing, newBd)) continue;
-            if (shapeReason == null && !XmlBeanRecreator.handles(existing, newBd)) {
+            if (shapeReason == null && !recreation) {
                 if (XmlLifecyclePropertyGuard.classify(liveFactory, tempFactory, beanName, existing, newBd, out, listeners.get(beanName))) continue;
                 if (XmlFactoryBeanPropertyGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             }
             if (SapListDirectiveGuard.classify(liveFactory, beanName, existing, newBd, out)) continue;
             if (XmlCollectionMergeGuard.classify(beanName, existing, newBd, out)) continue;
-            if (XmlBeanRecreator.handles(existing, newBd)) {
+            if (recreation) {
                 try {
                     var replacement = XmlBeanRecreator.prepare(liveFactory, tempFactory, beanName, existing, newBd, xmlPath);
                     if (replacement != null) out.recreated.add(replacement);
@@ -171,7 +173,7 @@ final class XmlSafetyClassifier {
      * Applied to both new beans and existing ones, if a user starts setting
      * an init-method on an existing bean, that counts as an unsafe change.
      */
-    private static String unsafeShapeReason(Object bd) {
+    private static String unsafeShapeReason(Object bd, boolean added) {
         if (SpringReflection.isAbstract(bd)) {
             return "abstract bean (template, nothing to instantiate)";
         }
@@ -179,7 +181,7 @@ final class XmlSafetyClassifier {
         if (scope != null && !scope.isEmpty() && !"singleton".equals(scope)) {
             return "scope=" + scope + " (only singleton beans are reloadable)";
         }
-        if (isNonEmpty(SpringReflection.getInitMethodName(bd))) {
+        if (!added && isNonEmpty(SpringReflection.getInitMethodName(bd))) {
             return "has init-method (side effects cannot be rolled back)";
         }
         if (isNonEmpty(SpringReflection.getDestroyMethodName(bd))) {

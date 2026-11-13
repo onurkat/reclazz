@@ -31,8 +31,8 @@ import com.onurkat.reclazz.util.Reflect;
  *       SpEL etc. are resolved through Spring's own
  *       {@code BeanDefinitionValueResolver}.</li>
  *   <li><b>New bean registration</b> for beans whose shape is safe
- *       (singleton, no init-method, no constructor-args, not a
- *       BeanPostProcessor). {@code registerBeanDefinition} + {@code getBean}
+ *       (ordinary singleton, no constructor-args or infrastructure role).
+ *       Native creation runs InitializingBean or a declared init-method. {@code registerBeanDefinition} + {@code getBean}
  *      , if instantiation fails, the partial state is rolled back.</li>
  *   <li>Selected existing constructor/factory/lifecycle edits use native
  *       recreation and direct holder repair through {@link XmlBeanRecreator}.</li>
@@ -40,8 +40,8 @@ import com.onurkat.reclazz.util.Reflect;
  *
  * <h2>Not supported</h2>
  * Bean removal, class changes, unsupported constructor/factory/lifecycle shapes,
- * BeanPostProcessors, {@code InitializingBean}/{@code DisposableBean}
- * implementers. Any such change is collected into a single warning asking
+ * BeanPostProcessors and {@code DisposableBean} implementers. Existing
+ * {@code InitializingBean} property edits retain their lifecycle guard. Any such change is collected into a single warning asking
  * the user to restart, the live context stays untouched.
  *
  * <h2>Caveats surfaced to the user</h2>

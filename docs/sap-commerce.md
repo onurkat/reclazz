@@ -81,6 +81,25 @@ until restart. Reclazz separately records the parse currently served by the prox
 so unchanged saves and repeated A→B→A edits compare with the active policy. The
 child stays open while served and is closed after replacement or owner shutdown.
 
+## Adding an ordinary XML bean with initialization
+
+Append a new ordinary singleton bean to a Spring XML file already loaded by its
+owning context. Its class must already be visible there. Spring's native
+`getBean` performs `InitializingBean.afterPropertiesSet` and an XML `init-method`;
+Reclazz does not invoke those callbacks itself. An identical save retains the
+same initialized object. If native creation fails, its singleton and definition
+are removed so a corrected save can retry. This does not undo arbitrary external
+side effects performed by application callbacks.
+
+BeanPostProcessor, BeanFactoryPostProcessor, FactoryBean, SmartLifecycle,
+DisposableBean, destroy-method and non-plain construction remain unsupported for
+this path. Event-listener initialization retains the separate restrictions below.
+Existing lifecycle property edits retain their previous guards or recreation
+path. This does not add delivery of new Java classes or expand the default live
+suite. The focused SAP Commerce proof covers a precompiled InitializingBean and
+an existing consumer's lookup in the captured master request context; init-method
+is covered by focused Spring tests.
+
 ## Adding a plain XML event listener while running
 
 A newly added public class directly extending SAP Commerce's

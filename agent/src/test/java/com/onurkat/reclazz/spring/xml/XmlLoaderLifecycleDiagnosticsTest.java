@@ -99,13 +99,18 @@ class XmlLoaderLifecycleDiagnosticsTest {
             assertSame(merged, live.getMergedBeanDefinition("target")); assertSame(declared, merged.getBeanClass());
         }
     }
-    @Test void newChildLifecycleDefinitionIsNotInstantiated() throws Exception {
+    @Test void newChildInitializerUsesItsOwnLoaderAndInitializesOnce() throws Exception {
         try (var s = new Scope("Ordinary", false, false)) {
             s.extra = "<bean id='newLifecycle' class='com.example.Fixture$Init'><property name='label' value='new'/></bean>";
             s.reload("before", "other");
-            assertTrue(s.events.stream().anyMatch(v -> v.contains("Restart required") && v.contains("newLifecycle")), s.events.toString());
-            assertFalse(s.context.getBeanFactory().containsBeanDefinition("newLifecycle"));
-            assertNull(System.getProperty("com.example.fixture.Init"));
+            assertTrue(s.context.getBeanFactory().containsBeanDefinition("newLifecycle"));
+            Object initialized=s.context.getBean("newLifecycle");
+            assertSame(s.loader,initialized.getClass().getClassLoader());
+            assertEquals("initialized",System.getProperty("com.example.fixture.Init"));
+            assertEquals("new:new:1:1",initialized.getClass().getMethod("state").invoke(initialized));
+            s.reload("before","other");
+            assertSame(initialized,s.context.getBean("newLifecycle"));
+            assertEquals("new:new:1:1",initialized.getClass().getMethod("state").invoke(initialized));
         }
     }
     public interface View { String label(); }
