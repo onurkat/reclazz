@@ -42,9 +42,45 @@ final class PropertyValueDependencies implements Predicate<String> {
         rawLookup.setAccessible(true);
         Class<?> helperType = Class.forName("org.springframework.util.PropertyPlaceholderHelper", true, loader);
         resolverType = Class.forName("org.springframework.util.PropertyPlaceholderHelper$PlaceholderResolver", false, loader);
-        helper = helperType.getConstructor(String.class, String.class, String.class, boolean.class)
-                .newInstance("${", "}", ":", true);
+        java.lang.reflect.Constructor<?> constructor;
+        try {
+            constructor = helperType.getConstructor(String.class, String.class, String.class, Character.class, boolean.class);
+        } catch (NoSuchMethodException legacy) {
+            constructor = helperType.getConstructor(String.class, String.class, String.class, boolean.class);
+        }
+        if (constructor.getParameterCount() == 5) {
+            Object escape = escapePolicy(loader, rawType, rawResolver,
+                    PropertyChangeCheck.call(context, "getEnvironment"), environment);
+            helper = constructor.newInstance("${", "}", ":", escape, true);
+        } else {
+            helper = constructor.newInstance("${", "}", ":", true);
+        }
         replace = helperType.getMethod("replacePlaceholders", String.class, resolverType);
+    }
+
+    private static Object escapePolicy(ClassLoader loader, Class<?> rawType, Object fresh,
+                                       Object live, Object candidate) throws Exception {
+        try {
+            Class<?> environmentType = Class.forName("org.springframework.core.env.AbstractEnvironment", false, loader);
+            Class<?> resolverBase = Class.forName("org.springframework.core.env.AbstractPropertyResolver", false, loader);
+            Method getter = environmentType.getDeclaredMethod("getPropertyResolver");
+            getter.setAccessible(true);
+            var field = resolverBase.getDeclaredField("escapeCharacter");
+            if (field.getType() != Character.class) throw new IllegalStateException("unknown escape member");
+            field.setAccessible(true);
+            Object expected = field.get(fresh);
+            for (Object environment : new Object[]{live, candidate}) {
+                if (!environmentType.isInstance(environment))
+                    throw new IllegalStateException("unknown environment");
+                Object resolver = getter.invoke(environment);
+                if (resolver == null || resolver.getClass() != rawType
+                        || !java.util.Objects.equals(expected, field.get(resolver)))
+                    throw new IllegalStateException("different or unknown resolver");
+            }
+            return expected;
+        } catch (Exception failure) {
+            throw new IllegalStateException("@Value escape policy could not be verified", failure);
+        }
     }
 
     @Override public boolean test(String expression) {

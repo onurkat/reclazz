@@ -18,6 +18,8 @@ public final class ExceptionHandlerTransformer implements ClassFileTransformer {
     private static final String INVOCABLE = "org/springframework/web/servlet/mvc/method/annotation/ServletInvocableHandlerMethod";
     private static final String INVOCABLE_CTOR = "(Ljava/lang/Object;Ljava/lang/reflect/Method;Lorg/springframework/context/MessageSource;)V";
     private static final String HANDLER_METHOD = "(Lorg/springframework/web/method/HandlerMethod;Ljava/lang/Exception;)L" + INVOCABLE + ";";
+    private static final String REQUEST_HANDLER_METHOD = "(Lorg/springframework/web/method/HandlerMethod;Ljava/lang/Exception;"
+            + "Lorg/springframework/web/context/request/ServletWebRequest;)L" + INVOCABLE + ";";
     private static final Handle METAFACTORY = new Handle(Opcodes.H_INVOKESTATIC,
             "java/lang/invoke/LambdaMetafactory", "metafactory",
             "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/String;Ljava/lang/invoke/MethodType;"
@@ -50,7 +52,7 @@ public final class ExceptionHandlerTransformer implements ClassFileTransformer {
                         @Override public void visitInvokeDynamicInsn(String name, String descriptor,
                                                                      Handle bootstrap, Object... arguments) {
                             super.visitInvokeDynamicInsn(name, descriptor, bootstrap, arguments);
-                            if (method.equals("getExceptionHandlerMethod") && desc.equals(HANDLER_METHOD)
+                            if (method.equals("getExceptionHandlerMethod") && (desc.equals(HANDLER_METHOD) || desc.equals(REQUEST_HANDLER_METHOD))
                                     && name.equals("apply") && descriptor.equals("()Ljava/util/function/Function;")
                                     && bootstrap.equals(METAFACTORY) && arguments.length == 3
                                     && Type.getMethodType("(Ljava/lang/Object;)Ljava/lang/Object;").equals(arguments[0])

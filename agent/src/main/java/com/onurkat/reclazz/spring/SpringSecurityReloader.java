@@ -783,6 +783,7 @@ public class SpringSecurityReloader {
         // fills itself with the old expression exactly like a cleared one
         // did. Filling it here first is what makes the answer current before
         // anybody asks.
+        evictSecuredScanner(target, reloadedClass);
         boolean hasCache = cacheField(target) != null;
         int cleared = 0;
         if (hasCache) {
@@ -803,6 +804,53 @@ public class SpringSecurityReloader {
             }
         }
         return cleared;
+    }
+
+    /** Evict the measured native Secured scanner keys before authorities are re-resolved. */
+    private static void evictSecuredScanner(Object source, Class<?> owner) {
+        if (owner == null || !source.getClass().getName().equals(
+                "org.springframework.security.authorization.method.SecuredAuthorizationManager")) return;
+        Field scannerField;
+        try {
+            scannerField = source.getClass().getDeclaredField("scanner");
+        } catch (NoSuchFieldException legacy) {
+            return; // Measured Security 6 has no annotation-scanner cache.
+        }
+        try {
+            scannerField.setAccessible(true);
+            Object scanner = scannerField.get(source);
+            String prefix = "org.springframework.security.core.annotation.";
+            if (scanner == null || !scanner.getClass().getName().equals(
+                    prefix + "ExpressionTemplateSecurityAnnotationScanner"))
+                throw new IllegalStateException("unknown Secured scanner");
+            Field uniqueField = scanner.getClass().getDeclaredField("unique");
+            uniqueField.setAccessible(true);
+            Object unique = uniqueField.get(scanner);
+            if (unique == null || !unique.getClass().getName().equals(prefix + "UniqueSecurityAnnotationScanner"))
+                throw new IllegalStateException("unknown unique Secured scanner");
+            Field cacheField = unique.getClass().getDeclaredField("uniqueMethodAnnotationCache");
+            if (!Map.class.isAssignableFrom(cacheField.getType()))
+                throw new IllegalStateException("unknown Secured method cache");
+            cacheField.setAccessible(true);
+            @SuppressWarnings("unchecked")
+            Map<Object, Object> cache = (Map<Object, Object>) cacheField.get(unique);
+            Class<?> keyType = Class.forName("org.springframework.core.MethodClassKey", false,
+                    source.getClass().getClassLoader());
+            Field target = keyType.getDeclaredField("targetClass");
+            Field method = keyType.getDeclaredField("method");
+            if (target.getType() != Class.class || method.getType() != java.lang.reflect.Method.class)
+                throw new IllegalStateException("unknown method cache key");
+            target.setAccessible(true);
+            method.setAccessible(true);
+            for (var entry : cache.entrySet()) {
+                Object key = entry.getKey();
+                if (key != null && key.getClass() == keyType && target.get(key) == owner
+                        && method.get(key) instanceof java.lang.reflect.Method)
+                    cache.remove(key, entry.getValue());
+            }
+        } catch (ReflectiveOperationException failure) {
+            throw new IllegalStateException("Secured annotation cache could not be refreshed", failure);
+        }
     }
 
     /**

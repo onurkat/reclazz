@@ -18,11 +18,54 @@ public final class MvcSingletonTransformer implements ClassFileTransformer {
     private static final String INTERCEPTOR = "org/springframework/web/servlet/HandlerInterceptor";
     private static final String BRIDGE = "com/onurkat/reclazz/bootstrap/MvcSingletonBridge";
 
+    private static int mappingProfile(ClassReader reader) {
+        var shape = new java.util.ArrayList<String>();
+        reader.accept(new ClassVisitor(Opcodes.ASM9) {
+            @Override public MethodVisitor visitMethod(int access, String method, String desc,
+                                                       String signature, String[] exceptions) {
+                if (!method.equals("getHandlerExecutionChain")
+                        || !(desc.equals("(Ljava/lang/Object;Ljavax/servlet/http/HttpServletRequest;)L" + CHAIN + ";")
+                        || desc.equals("(Ljava/lang/Object;Ljakarta/servlet/http/HttpServletRequest;)L" + CHAIN + ";"))) return null;
+                return new MethodVisitor(Opcodes.ASM9) {
+                    @Override public void visitTypeInsn(int opcode, String type) {
+                        if (type.contains("/ApiVersion") || type.contains("$ApiVersion"))
+                            shape.add(opcode + ":" + type);
+                    }
+                    @Override public void visitFieldInsn(int opcode, String owner, String field, String descriptor) {
+                        if (descriptor.contains("/ApiVersion") || field.equals("API_VERSION_ATTRIBUTE"))
+                            shape.add(opcode + ":" + owner + "." + field + descriptor);
+                    }
+                    @Override public void visitMethodInsn(int opcode, String owner, String method, String descriptor, boolean itf) {
+                        if (method.equals("addInterceptor") || owner.contains("/ApiVersion")
+                                || owner.contains("$ApiVersion") || descriptor.contains("/ApiVersion"))
+                            shape.add(opcode + ":" + owner + "." + method + descriptor + ":" + itf);
+                    }
+                };
+            }
+        }, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        String add = Opcodes.INVOKEVIRTUAL + ":" + CHAIN + ".addInterceptor(L" + INTERCEPTOR + ";)V:false";
+        if (shape.equals(java.util.List.of(add, add))) return 2;
+        String strategy = "Lorg/springframework/web/accept/ApiVersionStrategy;";
+        String holder = "org/springframework/web/accept/ApiVersionHolder";
+        String interceptor = MAPPING + "$ApiVersionDeprecationHandlerInterceptor";
+        String field = Opcodes.GETFIELD + ":" + MAPPING + ".versionStrategy" + strategy;
+        var seven = java.util.List.of(add, add, field,
+                Opcodes.GETSTATIC + ":" + MAPPING + ".API_VERSION_ATTRIBUTELjava/lang/String;",
+                Opcodes.CHECKCAST + ":" + holder,
+                Opcodes.INVOKEVIRTUAL + ":" + holder + ".hasVersion()Z:false",
+                Opcodes.INVOKEVIRTUAL + ":" + holder + ".getVersion()Ljava/lang/Comparable;:false",
+                Opcodes.NEW + ":" + interceptor, field,
+                Opcodes.INVOKESPECIAL + ":" + interceptor + ".<init>(" + strategy + "Ljava/lang/Comparable;)V:false", add);
+        if (shape.equals(seven)) return 3;
+        throw new IllegalStateException("unsupported interceptor profile");
+    }
+
     @Override public byte[] transform(ClassLoader loader, String name, Class<?> redefining,
                                       ProtectionDomain domain, byte[] bytes) {
         if (!MAPPING.equals(name) && !SERVLET.equals(name)) return null;
         try {
             ClassReader reader = new ClassReader(bytes);
+            int mappingSites = MAPPING.equals(name) ? mappingProfile(reader) : 2;
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
             int[] sites = {0, 0};
             reader.accept(new ClassVisitor(Opcodes.ASM9, writer) {
@@ -58,7 +101,7 @@ public final class MvcSingletonTransformer implements ClassFileTransformer {
                 }
             }, 0);
             boolean mapping = MAPPING.equals(name);
-            if (sites[0] != 2 || sites[1] != (mapping ? 0 : 2)) throw new IllegalStateException("unsupported sites " + sites[0] + "/" + sites[1]);
+            if (sites[0] != mappingSites || sites[1] != (mapping ? 0 : 2)) throw new IllegalStateException("unsupported sites " + sites[0] + "/" + sites[1]);
             byte[] result = writer.toByteArray();
             MvcSingletonBridge.installed(loader, mapping ? 1 : 2);
             return result;

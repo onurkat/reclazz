@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.objectweb.asm.Opcodes.*;
 
 public class MvcSingletonTransformerTest {
+    protected int mappingSites() { return 2; }
     @AfterEach void clear() { MvcSingletonBridge.clearForTests(); }
     protected byte[] nativeBytes(String name) throws Exception {
         try (var in = getClass().getClassLoader().getResourceAsStream(name + ".class")) { assertNotNull(in); return in.readAllBytes(); }
@@ -29,7 +30,7 @@ public class MvcSingletonTransformerTest {
         assertEquals(before.methods.stream().map(m -> m.access + m.name + m.desc).toList(), after.methods.stream().map(m -> m.access + m.name + m.desc).toList());
         long calls = after.methods.stream().flatMap(m -> java.util.Arrays.stream(m.instructions.toArray()))
                 .filter(i -> i instanceof MethodInsnNode c && c.owner.equals("com/onurkat/reclazz/bootstrap/MvcSingletonBridge")).count();
-        assertEquals(target.equals(MvcSingletonTransformer.MAPPING) ? 2 : 4, calls);
+        assertEquals(target.equals(MvcSingletonTransformer.MAPPING) ? mappingSites() : 4, calls);
     }
     @ParameterizedTest @ValueSource(strings = {"mapping-missing", "mapping-extra", "mapping-owner", "mapping-descriptor", "mapping-method", "mapping-signature", "servlet-missing", "servlet-extra", "servlet-owner", "servlet-descriptor", "servlet-method", "servlet-signature"})
     void unknownSitesRefuseTheWholeTarget(String mutation) throws Exception {

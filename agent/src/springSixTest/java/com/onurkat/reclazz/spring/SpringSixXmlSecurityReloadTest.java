@@ -83,7 +83,7 @@ public class SpringSixXmlSecurityReloadTest {
  @org.junit.jupiter.api.Test
  void generatedNameOffsetAndForeignChainArePreserved()throws Exception {
   Path target=directory.resolve("target.xml"),foreign=directory.resolve("foreign.xml");Files.writeString(target,XML);
-  Files.writeString(foreign,XML.substring(0,XML.indexOf(" <security:http"))+"<security:http pattern=\"/foreign/**\" request-matcher=\"ant\" security=\"none\"/></beans>");
+  Files.writeString(foreign,XML.substring(0,XML.indexOf(" <security:http"))+"<security:http pattern=\"/foreign/**\" request-matcher=\""+matcher()+"\" security=\"none\"/></beans>");
   try(var live=new GenericWebApplicationContext()) {
    live.setServletContext(new MockServletContext());load(live,foreign,true);load(live,target,true);live.refresh();
    var proxy=live.getBean(FilterChainProxy.class);var oldForeign=proxy.getFilterChains().get(0);
@@ -153,6 +153,12 @@ public class SpringSixXmlSecurityReloadTest {
    org.junit.jupiter.api.Assertions.assertSame(proxy,live.getBean(FilterChainProxy.class));
   }
  }
+ static String matcher() {
+  try {
+   Class.forName("org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher");
+   return "path";
+  } catch(ClassNotFoundException legacy) {return "ant";}
+ }
  static final String XML = """
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:security="http://www.springframework.org/schema/security" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
@@ -171,5 +177,5 @@ public class SpringSixXmlSecurityReloadTest {
   </security:authentication-provider>
  </security:authentication-manager>
 </beans>
-""";
+""".replace("request-matcher=\"ant\"", "request-matcher=\""+matcher()+"\"");
 }

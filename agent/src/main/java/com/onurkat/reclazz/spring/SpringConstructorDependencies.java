@@ -15,7 +15,7 @@ import java.util.Set;
 final class SpringConstructorDependencies {
     private static final String FACTORY =
             "org.springframework.beans.factory.support.DefaultListableBeanFactory";
-    private static final Set<String> VERSIONS = Set.of("5.3.39", "6.1.14", "5.3.43", "6.2.12");
+    private static final Set<String> VERSIONS = Set.of("5.3.39", "6.1.14", "5.3.43", "6.2.12", "7.0.10");
     private static final Set<String> DEFINITIONS = Set.of(
             "org.springframework.beans.factory.support.RootBeanDefinition",
             "org.springframework.beans.factory.support.GenericBeanDefinition",

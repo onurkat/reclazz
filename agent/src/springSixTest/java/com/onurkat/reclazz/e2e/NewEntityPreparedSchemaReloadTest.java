@@ -32,6 +32,18 @@ class NewEntityPreparedSchemaReloadTest {
         String cp=Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
                 .filter(p->prefixes.stream().anyMatch(Path.of(p).getFileName().toString()::startsWith))
                 .collect(Collectors.joining(File.pathSeparator));
+        var entries = new LinkedHashSet<>(Arrays.asList(cp.split(File.pathSeparator)));
+        for (String type : List.of("org.apache.commons.logging.LogFactory", "org.hibernate.models.spi.ClassLoading")) {
+            try {
+                var location = Class.forName(type).getProtectionDomain().getCodeSource().getLocation();
+                String entry = Path.of(location.toURI()).toString();
+                if (!prefixes.stream().anyMatch(Path.of(entry).getFileName().toString()::startsWith))
+                    entries.add(entry);
+            } catch (ClassNotFoundException absent) {
+                // Older native graphs do not require Hibernate Models.
+            }
+        }
+        cp = String.join(File.pathSeparator, entries);
         var builder=WatchedApp.in(tmp).classpath(cp).agentArgs("startupDelaySec=1,debounceMs=100,jpaRefresh=true,autoCompile="+auto)
                 .jvmArgs("-Dprobe.dir="+tmp,"-Dprepare="+!retry).with("App",APP).with("Existing",EXISTING);
         if(child)builder.childClassLoader();

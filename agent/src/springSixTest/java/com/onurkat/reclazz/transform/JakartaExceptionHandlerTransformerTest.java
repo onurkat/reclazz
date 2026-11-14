@@ -16,7 +16,7 @@ class JakartaExceptionHandlerTransformerTest extends ExceptionHandlerTransformer
 
     @ParameterizedTest
     @ValueSource(strings = {"name", "descriptor", "bootstrap", "bootstrapTag", "bootstrapDescriptor", "arity",
-            "sam", "constructorTag", "constructorOwner", "constructorDescriptor", "constructorInterface", "instantiated", "method", "duplicate", "missing"})
+            "sam", "constructorTag", "constructorOwner", "constructorDescriptor", "constructorInterface", "instantiated", "method", "enclosingDescriptor", "duplicate", "missing"})
     void unknownFactoryShapeRefusesTheWholeTransformation(String mutation) throws Exception {
         ClassNode changed = node(nativeResolver()); boolean found = false;
         outer: for (var method : changed.methods) for (var instruction : method.instructions.toArray()) {
@@ -37,6 +37,7 @@ class JakartaExceptionHandlerTransformerTest extends ExceptionHandlerTransformer
                 case "constructorInterface" -> call.bsmArgs[1] = new Handle(H_NEWINVOKESPECIAL, ctor.getOwner(), ctor.getName(), ctor.getDesc(), true);
                 case "instantiated" -> call.bsmArgs[2] = Type.getMethodType("(Ljava/lang/Object;)Ljava/lang/Object;");
                 case "method" -> method.name = "unsupportedMethod";
+                case "enclosingDescriptor" -> method.desc = method.desc.replace("Ljava/lang/Exception;", "Ljava/lang/Throwable;");
                 case "duplicate" -> method.instructions.insert(call, call.clone(null));
                 case "missing" -> method.instructions.set(call, new InsnNode(ACONST_NULL));
                 default -> fail(mutation);
