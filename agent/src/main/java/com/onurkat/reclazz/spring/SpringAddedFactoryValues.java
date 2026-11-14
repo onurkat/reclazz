@@ -31,7 +31,7 @@ final class SpringAddedFactoryValues {
     }
 
     static SpringFactoryValues.Values inspect(Object factory, Object definition, String name, Object singleton,
-            Class<? extends Annotation> annotation, Method value, PropertyValueDependencies affected) throws Exception {
+            Class<? extends Annotation> annotation, Method value, java.util.function.Predicate<String> affected) throws Exception {
         Object attribute = PropertyChangeCheck.call(definition, "getAttribute", ATTRIBUTE);
         if (!(attribute instanceof Metadata metadata)) return null;
         List<SpringPropertyRebinder.ValueTarget> targets = new ArrayList<>();

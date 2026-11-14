@@ -77,7 +77,7 @@ public final class SpringPropertyRebinder {
         PropertyChangeOutcome[] result = {PropertyChangeOutcome.held(
                 PropertyChangeOutcome.State.NOT_RUN, List.of("Property application did not run"))};
         boundary.accept(() -> {
-            result[0] = applyLive(candidate);
+            result[0] = applyLive(candidate, Map.of(), true, check.selection());
             if (result[0].state() == PropertyChangeOutcome.State.APPLIED) accepted.run();
         });
         if (result[0].state() == PropertyChangeOutcome.State.PARTIAL) {
@@ -88,11 +88,15 @@ public final class SpringPropertyRebinder {
         return result[0];
     }
 
-    private PropertyChangeOutcome applyLive(Map<String, String> changed) {
-        return applyLive(changed, Map.of(), true);
-    }
-
-    PropertyChangeOutcome applyLive(Map<String, String> changed, Map<String, Object> resets, boolean updateSources) {
+    PropertyChangeOutcome applyLive(Map<String, String> changed, Map<String, Object> resets,
+                                    boolean updateSources, ValueSelection selection) {
+        // Validate every context before the first live write (file callers also
+        // validate before installing their replacement sources).
+        try { validateSelection(changed, selection); }
+        catch (Exception failure) {
+            return PropertyChangeOutcome.held(PropertyChangeOutcome.State.UNCHECKABLE,
+                    List.of(Failures.describe(failure)));
+        }
         List<String> rebound = new ArrayList<>();
         List<String> rebuilt = new ArrayList<>();
         int valueFields = 0;
@@ -100,10 +104,10 @@ public final class SpringPropertyRebinder {
 
         for (Object context : applicationContexts) {
             try {
-                if (updateSources && !updateEnvironment(context, changed)) continue;
+                if (updateSources && !updateEnvironment(context, changed, true)) continue;
                 rebound.addAll(rebind(context, changed, resets, failures));
-                valueFields += reinjectValueFields(context, changed, failures);
-                rebuilt.addAll(recreateValueConstructorBeans(context, changed, failures, applicationContexts));
+                valueFields += reinjectValueFields(context, selection.forContext(context, changed), failures);
+                rebuilt.addAll(recreateValueConstructorBeans(context, selection.forContext(context, changed), failures, applicationContexts));
             } catch (Throwable t) {
                 String finding = context.getClass().getSimpleName() + ": " + Failures.describe(t);
                 failures.add(finding);
@@ -129,8 +133,29 @@ public final class SpringPropertyRebinder {
                             " that take a changed @Value at creation: ")
                     + rebuilt);
         }
+        if (updateSources && failures.isEmpty() && !changed.isEmpty()) {
+            for (Object context : applicationContexts) {
+                try {
+                    Method getter = Reflect.findMethod(context.getClass(), "getEnvironment");
+                    if (getter == null) continue;
+                    Object environment = getter.invoke(context);
+                    if (environment == null) continue;
+                    Object source = PropertyChangeCheck.call(PropertyChangeCheck.call(environment, "getPropertySources"), "get", SOURCE_NAME);
+                    if (source != null && PropertyChangeCheck.call(source, "getSource") instanceof OverlayValues values)
+                        values.accepted = Map.copyOf(values);
+                } catch (Exception failure) { failures.add("Overlay acceptance failed: " + Failures.describe(failure)); }
+            }
+        }
         return new PropertyChangeOutcome(failures.isEmpty() ? PropertyChangeOutcome.State.APPLIED
                 : PropertyChangeOutcome.State.PARTIAL, rebound, valueFields, rebuilt, failures);
+    }
+
+    void validateSelection(Map<String, String> changed, ValueSelection selection) throws Exception {
+        if (selection == null) throw new IllegalStateException("Missing @Value selection");
+        for (Object context : applicationContexts) {
+            Method getter = Reflect.findMethod(context.getClass(), "getEnvironment");
+            if (getter != null && getter.invoke(context) != null) selection.forContext(context, changed);
+        }
     }
 
     /**
@@ -150,12 +175,12 @@ public final class SpringPropertyRebinder {
      * by {@link #recreateValueConstructorBeans}, the same way the
      * constructor-bound properties bean is.
      */
-    private static int reinjectValueFields(Object context, Map<String, String> changed,
+    private static int reinjectValueFields(Object context, java.util.function.Predicate<String> affected,
                                            List<String> failures) throws Exception {
         int injected = 0;
         Object factory = SpringBeans.getBeanFactory(context);
         Object converter = PropertyChangeCheck.call(factory, "getTypeConverter");
-        for (ValueTarget target : valueTargets(context, changed)) {
+        for (ValueTarget target : valueTargets(context, affected)) {
             if (target.field() == null) continue;
             try {
                 Object resolved = PropertyChangeCheck.call(factory, "resolveEmbeddedValue", target.expression());
@@ -184,8 +209,11 @@ public final class SpringPropertyRebinder {
     }
 
     static List<ValueTarget> valueTargets(Object context, Map<String, String> changed, Object environment) throws Exception {
+        return valueTargets(context, new PropertyValueDependencies(context, changed, environment));
+    }
+
+    static List<ValueTarget> valueTargets(Object context, java.util.function.Predicate<String> affected) throws Exception {
         List<ValueTarget> targets = new ArrayList<>();
-        var affected = new PropertyValueDependencies(context, changed, environment);
         Object factory = SpringBeans.getBeanFactory(context);
         @SuppressWarnings("unchecked")
         Class<? extends java.lang.annotation.Annotation> annotation =
@@ -255,11 +283,10 @@ public final class SpringPropertyRebinder {
      * just filled in.
      */
     private static List<String> recreateValueConstructorBeans(Object context,
-                                                              Map<String, String> changed, List<String> failures, List<Object> contexts) {
+                                                              java.util.function.Predicate<String> affected, List<String> failures, List<Object> contexts) {
         List<String> rebuilt = new ArrayList<>();
         java.util.Set<String> coordinated = new java.util.HashSet<>();
         try {
-            var affected = new PropertyValueDependencies(context, changed);
             Object beanFactory = SpringBeans.getBeanFactory(context);
             Method getSingletonNames = Reflect.findMethod(beanFactory.getClass(), "getSingletonNames");
             Method getSingleton = Reflect.findMethod(beanFactory.getClass(), "getSingleton", String.class);
@@ -486,7 +513,19 @@ public final class SpringPropertyRebinder {
      * those sources differently across versions. Overriding is honest about
      * what happened and is undone by the restart that reloads the file anyway.
      */
+    /** Keep retry provenance in the owned map, without retaining a Context. */
+    static final class OverlayValues extends LinkedHashMap<String, Object> {
+        Map<String, Object> accepted;
+        OverlayValues(Map<String, Object> current, Map<String, Object> accepted) {
+            super(current); this.accepted = Map.copyOf(accepted);
+        }
+    }
+
     boolean updateEnvironment(Object context, Map<String, String> changed) throws Exception {
+        return updateEnvironment(context, changed, false);
+    }
+
+    private boolean updateEnvironment(Object context, Map<String, String> changed, boolean pending) throws Exception {
         Method getEnvironment = Reflect.findMethod(context.getClass(), "getEnvironment");
         if (getEnvironment == null) return false;
         Object environment = getEnvironment.invoke(context);
@@ -498,13 +537,16 @@ public final class SpringPropertyRebinder {
 
         Map<String, Object> values = new LinkedHashMap<>();
         Object existing = invokeIfPresent(sources, "get", SOURCE_NAME);
+        Map<String, Object> accepted = Map.of();
         if (existing != null) {
             Object source = existing.getClass().getMethod("getSource").invoke(existing);
             if (source instanceof Map<?, ?> previous) {
-                previous.forEach((key, value) -> values.put(String.valueOf(key), value));
+                for (var entry : previous.entrySet()) values.put(String.valueOf(entry.getKey()), entry.getValue());
+                accepted = previous instanceof OverlayValues overlay ? overlay.accepted : Map.copyOf(values);
             }
         }
         values.putAll(changed);
+        if (pending) values = new OverlayValues(values, accepted);
 
         Class<?> mapSource = Class.forName("org.springframework.core.env.MapPropertySource",
                 true, environment.getClass().getClassLoader());

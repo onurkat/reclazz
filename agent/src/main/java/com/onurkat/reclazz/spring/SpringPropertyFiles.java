@@ -23,7 +23,7 @@ public final class SpringPropertyFiles {
     // because they have no remaining key from which Boot can return a resource origin.
     private final Map<Object, Map<Path, List<Owned>>> ownership = new WeakHashMap<>();
     private record Owned(String name, int document, Object source, Map<String, Object> accepted) { }
-    private record Prepared(Object context, Object live, Object candidate, Path file, List<Owned> old,
+    private record Prepared(Object context, Object live, Object candidate, Object before, Path file, List<Owned> old,
                             List<Owned> next, Map<String, String> changed, Set<String> removed) { }
     public record Result(PropertyChangeOutcome outcome, Map<String, String> effective, Set<String> changed) { }
 
@@ -35,6 +35,7 @@ public final class SpringPropertyFiles {
     public synchronized Result apply(Path path, Supplier<List<Object>> contexts, Consumer<Runnable> boundary) {
         List<Prepared> plans = new ArrayList<>();
         Set<String> changed = new LinkedHashSet<>();
+        Set<Path> loaded = new TreeSet<>();
         try {
             Path file = path.toFile().getCanonicalFile().toPath();
             byte[] bytes = Files.notExists(file) ? new byte[0] : Files.readAllBytes(file);
@@ -46,20 +47,29 @@ public final class SpringPropertyFiles {
                 for (Object source : (Iterable<?>) call(live, "getPropertySources"))
                     if (source.getClass().getName().equals(ORIGIN_SOURCE)) bootSources = true;
                 List<Owned> owned = owned(live, file);
-                if (owned.isEmpty()) continue;
+                if (owned.isEmpty()) {
+                    if (file.toString().endsWith(".properties")) loaded.addAll(loadedFilesWithName(live, file));
+                    continue;
+                }
                 Prepared plan = prepare(context, live, file, bytes, owned);
                 plans.add(plan); changed.addAll(plan.changed().keySet());
             }
             if (plans.isEmpty()) {
                 if (!bootSources && path.toString().endsWith(".properties")) return null;
-                return held(PropertyChangeOutcome.State.UNCHECKABLE, "No verified Boot source owns " + path.getFileName());
+                String reason = file.toString().endsWith(".properties")
+                        ? file + " is not the file this application loaded (loaded files with this name: " + loaded
+                                + "). Changes reach the application when the build copies them; nothing was applied from this file."
+                        : "No verified Boot source owns " + path.getFileName();
+                return held(PropertyChangeOutcome.State.UNCHECKABLE, reason);
             }
+            Map<Prepared, ValueSelection> selections = new IdentityHashMap<>();
             Map<Prepared, Map<String, Object>> resets = new IdentityHashMap<>();
             for (Prepared plan : plans) {
                 Map<String, Object> reset = new HashMap<>(); resets.put(plan, reset);
                 var check = new PropertyChangeCheck().check(List.of(plan.context()), plan.changed(), plan.candidate(),
-                        plan.removed(), reset);
+                        plan.removed(), reset, plan.before());
                 if (!check.passed()) return held(check.state(), String.join("; ", check.findings()));
+                selections.put(plan, check.selection());
             }
             Map<String, String> effective = new LinkedHashMap<>();
             for (String key : changed) {
@@ -72,7 +82,16 @@ public final class SpringPropertyFiles {
                 List<String> rebound = new ArrayList<>(), rebuilt = new ArrayList<>(), failures = new ArrayList<>();
                 int fields = 0;
                 try {
-                    // Check every source before replacing any of them.
+                    // Validate every carried selection before any live write.
+                    try {
+                        for (Prepared plan : plans)
+                            new SpringPropertyRebinder(List.of(plan.context()))
+                                    .validateSelection(plan.changed(), selections.get(plan));
+                    } catch (Exception failure) {
+                        outcome[0] = PropertyChangeOutcome.held(PropertyChangeOutcome.State.UNCHECKABLE,
+                                List.of(Failures.describe(failure)));
+                        return;
+                    }
                     for (Prepared plan : plans) verifyOwnership(plan.live(), plan.old());
                     for (Prepared plan : plans) {
                         Object sources = call(plan.live(), "getPropertySources");
@@ -88,7 +107,7 @@ public final class SpringPropertyFiles {
                     for (Prepared plan : plans) {
                         if (plan.changed().isEmpty()) continue;
                         var result = new SpringPropertyRebinder(List.of(plan.context()))
-                                .applyLive(plan.changed(), resets.get(plan), false);
+                                .applyLive(plan.changed(), resets.get(plan), false, selections.get(plan));
                         rebound.addAll(result.rebound()); rebuilt.addAll(result.rebuilt());
                         fields += result.valueFields(); failures.addAll(result.findings());
                     }
@@ -121,16 +140,7 @@ public final class SpringPropertyFiles {
         List<Owned> found = new ArrayList<>();
         for (Object source : (Iterable<?>) call(environment, "getPropertySources")) {
             if (!source.getClass().getName().equals(ORIGIN_SOURCE)) continue;
-            Set<Path> origins = new HashSet<>();
-            for (String key : (String[]) call(source, "getPropertyNames")) {
-                Object origin = call(source, "getOrigin", key);
-                if (origin == null || !origin.getClass().getName().equals("org.springframework.boot.origin.TextResourceOrigin")) continue;
-                Object resource = call(origin, "getResource");
-                try {
-                    java.io.File originFile = (java.io.File) call(resource, "getFile");
-                    origins.add(originFile.getCanonicalFile().toPath());
-                } catch (java.lang.reflect.InvocationTargetException notFile) { /* Non-file resource cannot own this edit. */ }
-            }
+            Set<Path> origins = origins(source);
             if (origins.contains(file)) {
                 if (origins.size() != 1) throw new IllegalStateException("Mixed resource origins in one property source");
                 String name = (String) call(source, "getName");
@@ -141,6 +151,45 @@ public final class SpringPropertyFiles {
         }
         if (!found.isEmpty()) files.put(file, List.copyOf(found));
         return List.copyOf(found);
+    }
+
+    // Information only: neither matching names nor these paths establish a copy relation.
+    private Set<Path> loadedFilesWithName(Object environment, Path file) {
+        Set<Path> loaded = new TreeSet<>();
+        for (var entry : ownership.getOrDefault(environment, Map.of()).entrySet()) {
+            if (!entry.getKey().getFileName().equals(file.getFileName())) continue;
+            try {
+                verifyOwnership(environment, entry.getValue());
+                loaded.add(entry.getKey());
+            } catch (Exception stale) { /* An externally replaced source is no longer verified. */ }
+        }
+        try {
+            for (Object source : (Iterable<?>) call(environment, "getPropertySources")) {
+                if (!source.getClass().getName().equals(ORIGIN_SOURCE)) continue;
+                try {
+                    Set<Path> paths = origins(source);
+                    if (paths.size() == 1) {
+                        Path loadedFile = paths.iterator().next();
+                        if (loadedFile.getFileName().equals(file.getFileName())) loaded.add(loadedFile);
+                    }
+                } catch (Exception unavailable) { /* Optional diagnostic must not change the held outcome. */ }
+            }
+        } catch (Exception unavailable) { /* Keep the warning even if loaded paths cannot be described. */ }
+        return loaded;
+    }
+
+    private static Set<Path> origins(Object source) throws Exception {
+        Set<Path> origins = new HashSet<>();
+        for (String key : (String[]) call(source, "getPropertyNames")) {
+            Object origin = call(source, "getOrigin", key);
+            if (origin == null || !origin.getClass().getName().equals("org.springframework.boot.origin.TextResourceOrigin")) continue;
+            Object resource = call(origin, "getResource");
+            try {
+                java.io.File originFile = (java.io.File) call(resource, "getFile");
+                origins.add(originFile.getCanonicalFile().toPath());
+            } catch (java.lang.reflect.InvocationTargetException notFile) { /* Non-file resource cannot own this edit. */ }
+        }
+        return origins;
     }
 
     private static void verifyOwnership(Object environment, List<Owned> owned) throws Exception {
@@ -203,10 +252,19 @@ public final class SpringPropertyFiles {
             next.add(new Owned(old.name(), old.document(), source, replacement));
         }
         Object candidate = PropertyChangeCheck.candidateEnvironment(loader, live, Map.of());
+        Object before = PropertyChangeCheck.candidateEnvironment(loader, live, Map.of());
+        Object beforeSources = call(before, "getPropertySources");
+        // Partial application retains the last accepted map. Retry the same
+        // native before/after decision even when live sources already changed.
+        for (Owned old : owned) {
+            Object accepted = Class.forName(ORIGIN_SOURCE, true, loader).getConstructor(String.class, Map.class)
+                    .newInstance(old.name(), old.accepted());
+            call(beforeSources, "replace", old.name(), accepted);
+        }
         Object sources = call(candidate, "getPropertySources");
         // candidateEnvironment's empty legacy overlay does not change file precedence.
         for (Owned item : next) call(sources, "replace", item.name(), item.source());
-        return new Prepared(context, live, candidate, file, owned, List.copyOf(next), Map.copyOf(changed), Set.copyOf(removed));
+        return new Prepared(context, live, candidate, before, file, owned, List.copyOf(next), Map.copyOf(changed), Set.copyOf(removed));
     }
 
     private static Map<String, Object> values(Object source) throws Exception {

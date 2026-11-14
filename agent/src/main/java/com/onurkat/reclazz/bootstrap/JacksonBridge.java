@@ -5,6 +5,8 @@
 package com.onurkat.reclazz.bootstrap;
 
 import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -95,6 +97,39 @@ public final class JacksonBridge {
     public static Class<?> getDeclaringClass(Member member) {
         Schema schema = routes.get(member.getDeclaringClass()).schema;
         return schema == null ? member.getDeclaringClass() : schema.owner();
+    }
+
+    /** Jackson 3 uses handles for getters; preserve the caller's access check before routing. */
+    @SuppressWarnings("deprecation")
+    public static MethodHandle unreflect(MethodHandles.Lookup lookup, Method method)
+            throws IllegalAccessException {
+        MethodHandle nativeHandle = lookup.unreflect(method);
+        Schema schema = routes.get(method.getDeclaringClass()).schema;
+        if (schema == null || method.getParameterCount() != 0
+                || Modifier.isStatic(method.getModifiers()) || !schema.targets().containsKey(method))
+            return nativeHandle;
+        // The carrier is public even when the real owner is not. Preserve the
+        // reflection adapter's owner policy in addition to Lookup's own checks.
+        if (!method.isAccessible() && (!Modifier.isPublic(method.getModifiers())
+                || !Modifier.isPublic(schema.owner().getModifiers())))
+            throw new IllegalAccessException("Accessor access was not enabled by Jackson: " + method.getName());
+        try {
+            MethodHandle invoker = MethodHandles.lookup().findStatic(JacksonBridge.class, "invokeAdded",
+                    MethodType.methodType(Object.class, Method.class, Object.class));
+            return MethodHandles.insertArguments(invoker, 0, method)
+                    .asType(MethodType.methodType(method.getReturnType(), schema.owner()));
+        } catch (NoSuchMethodException impossible) {
+            throw new IllegalStateException(impossible);
+        }
+    }
+
+    /** Access is captured by unreflect; retained handles keep calling the live target. */
+    private static Object invokeAdded(Method method, Object receiver) throws Throwable {
+        if (receiver == null) throw new NullPointerException("accessor receiver");
+        Schema schema = routes.get(method.getDeclaringClass()).schema;
+        MethodHandle target = schema == null ? null : schema.targets().get(method);
+        if (target == null) throw new IllegalArgumentException("Unknown Jackson accessor " + method.getName());
+        return target.invoke(receiver);
     }
 
     /** Preserve Method.invoke's exception boundary, including for a throwing added getter. */

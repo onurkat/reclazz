@@ -74,19 +74,22 @@ final class JacksonEnumCaches {
             if (flushMapper(mapper)) flushed++;
         }
         for (Object context : ApplicationContextHolder.getAllContexts()) {
-            try {
-                Class<?> mapperType = Class.forName("com.fasterxml.jackson.databind.ObjectMapper",
-                        false, context.getClass().getClassLoader());
-                Method getBeansOfType = context.getClass().getMethod("getBeansOfType", Class.class);
-                Object beans = getBeansOfType.invoke(context, mapperType);
-                if (!(beans instanceof Map<?, ?> map)) continue;
-                for (Object mapper : map.values()) {
-                    if (mapper == null || seen.put(mapper, Boolean.TRUE) != null) continue;
-                    if (flushMapper(mapper)) flushed++;
+            for (String mapperName : new String[]{"com.fasterxml.jackson.databind.ObjectMapper",
+                    "tools.jackson.databind.ObjectMapper"}) {
+                try {
+                    Class<?> mapperType = Class.forName(mapperName,
+                            false, context.getClass().getClassLoader());
+                    Method getBeansOfType = context.getClass().getMethod("getBeansOfType", Class.class);
+                    Object beans = getBeansOfType.invoke(context, mapperType);
+                    if (!(beans instanceof Map<?, ?> map)) continue;
+                    for (Object mapper : map.values()) {
+                        if (mapper == null || seen.put(mapper, Boolean.TRUE) != null) continue;
+                        if (flushMapper(mapper)) flushed++;
+                    }
+                } catch (Throwable ignored) {
+                    // A context without Jackson, or one that will not be asked,
+                    // has no cache to go stale.
                 }
-            } catch (Throwable ignored) {
-                // A context without Jackson, or one that will not be asked,
-                // has no cache to go stale.
             }
         }
         return flushed;
@@ -99,6 +102,18 @@ final class JacksonEnumCaches {
      * of report this codebase refuses to make.
      */
     private static boolean flushMapper(Object mapper) {
+        try {
+            Class<?> modern = Class.forName("tools.jackson.databind.ObjectMapper", false,
+                    mapper.getClass().getClassLoader());
+            if (modern.isInstance(mapper)) {
+                modern.getMethod("clearCaches").invoke(mapper);
+                return true;
+            }
+        } catch (ClassNotFoundException absent) {
+            // Jackson 2 retains its verified field-based path below.
+        } catch (Throwable failure) {
+            return false;
+        }
         try {
             Object provider = read(mapper, "_serializerProvider");
             Object serializerCache = read(provider, "_serializerCache");

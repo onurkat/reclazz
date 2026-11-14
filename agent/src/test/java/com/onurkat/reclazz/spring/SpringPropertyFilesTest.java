@@ -4,6 +4,7 @@
  */
 package com.onurkat.reclazz.spring;
 
+import com.onurkat.reclazz.ui.StatusReporter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.beans.factory.annotation.Value;
@@ -121,6 +122,95 @@ class SpringPropertyFilesTest {
             assertEquals(PropertyChangeOutcome.State.UNCHECKABLE,
                     new SpringPropertyFiles().apply(other, List.of(context), Runnable::run).outcome().state());
             assertValues(context, 10);
+        }
+    }
+
+    @Test void unownedSourceMessageNamesLoadedCopy() throws Exception {
+        Path output = Files.createDirectories(tmp.resolve("build/resources/main")).resolve("application.properties");
+        Path source = Files.createDirectories(tmp.resolve("src/main/resources")).resolve("application.properties");
+        Files.writeString(output, "svc.timeout=10\n");
+        Files.writeString(source, "svc.timeout=99\n");
+        List<String> warnings = new ArrayList<>();
+        StatusReporter.StatusListener listener = (level, message) -> warnings.add(message);
+        StatusReporter.addListener(listener);
+        try (var context = context(output, "dev")) {
+            context.getEnvironment().getPropertySources().addLast(new MapPropertySource("defaults", Map.of("svc.timeout", "5")));
+            var reload = new SpringPropertyFiles();
+            // Native origins identify the loaded file before any ownership cache exists.
+            for (int attempt = 0; attempt < 2; attempt++) {
+                warnings.clear();
+                var result = reload.apply(source, List.of(context), action -> fail("Unowned file entered boundary"));
+                assertEquals(PropertyChangeOutcome.State.UNCHECKABLE, result.outcome().state());
+                String reason = result.outcome().findings().get(0);
+                assertTrue(reason.contains(source.toRealPath() + " is not the file this application loaded"), reason);
+                assertTrue(reason.contains("loaded files with this name: [" + output.toRealPath() + "]"), reason);
+                assertTrue(reason.contains("nothing was applied from this file"), reason);
+                assertTrue(warnings.stream().anyMatch(message -> message.contains(reason)), warnings.toString());
+                assertTrue(result.effective().isEmpty()); assertTrue(result.changed().isEmpty());
+                assertValues(context, attempt == 0 ? 10 : 5);
+                if (attempt == 0) {
+                    // Replacement loses native origins; empty files keep verified cached ownership.
+                    Files.writeString(output, ""); applied(reload, output, context);
+                }
+            }
+            context.getEnvironment().getPropertySources().replace("fixture", new MapPropertySource("fixture", Map.of("svc.timeout", "88")));
+            var stale = reload.apply(source, List.of(context), action -> fail("Unowned file entered boundary"));
+            // Without any Boot source, the existing legacy fallback is retained.
+            assertNull(stale);
+            assertEquals("88", context.getEnvironment().getProperty("svc.timeout"));
+        } finally { StatusReporter.removeListener(listener); }
+    }
+
+    @Test void unownedSourceMessageWithoutLoadedCopy() throws Exception {
+        Path loaded = file("different.properties", "svc.timeout=10\n");
+        Path source = file("application.properties", "svc.timeout=99\n");
+        List<String> warnings = new ArrayList<>();
+        StatusReporter.StatusListener listener = (level, message) -> warnings.add(message);
+        StatusReporter.addListener(listener);
+        try (var context = context(loaded, "dev")) {
+            var result = new SpringPropertyFiles().apply(source, List.of(context), action -> fail("Unowned file entered boundary"));
+            assertEquals(PropertyChangeOutcome.State.UNCHECKABLE, result.outcome().state());
+            String reason = result.outcome().findings().get(0);
+            assertTrue(reason.contains(source.toRealPath() + " is not the file this application loaded"), reason);
+            assertTrue(reason.contains("loaded files with this name: []"), reason);
+            assertFalse(reason.contains(loaded.toRealPath().toString()), reason);
+            assertTrue(reason.contains("nothing was applied from this file"), reason);
+            assertTrue(warnings.stream().anyMatch(message -> message.contains(reason)), warnings.toString());
+            assertTrue(result.effective().isEmpty()); assertTrue(result.changed().isEmpty());
+            assertValues(context, 10);
+        } finally { StatusReporter.removeListener(listener); }
+    }
+
+    static class BootEnvironment extends StandardEnvironment {
+        @Override protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources sources) {
+            return org.springframework.boot.context.properties.source.ConfigurationPropertySources.createPropertyResolver(sources);
+        }
+    }
+
+    @Test void boot27NativeResolverAllowsRemovalAndRestoration() throws Exception {
+        Path file = file("application.properties", "svc.timeout=10\n");
+        try (var context = new AnnotationConfigApplicationContext()) {
+            context.setEnvironment(new BootEnvironment());
+            var sources = context.getEnvironment().getPropertySources();
+            new PropertiesPropertySourceLoader().load("fixture", new FileSystemResource(file)).forEach(sources::addFirst);
+            sources.addLast(new MapPropertySource("defaults", Map.of("svc.timeout", "5")));
+            org.springframework.boot.context.properties.source.ConfigurationPropertySources.attach(context.getEnvironment());
+            context.register(Config.class); context.refresh();
+            Object resolver = PropertyChangeCheck.environmentResolver(getClass().getClassLoader(), context.getEnvironment());
+            assertEquals("org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertyResolver", resolver.getClass().getName());
+            assertEquals("2.7.18", resolver.getClass().getPackage().getImplementationVersion());
+            Settings held = context.getBean(Settings.class);
+            var reload = new SpringPropertyFiles();
+            assertValues(context, 10);
+            for (boolean delete : List.of(false, true)) {
+                if (delete) Files.delete(file); else Files.writeString(file, "marker=ready\n");
+                var result = reload.apply(file, List.of(context), Runnable::run);
+                assertEquals(PropertyChangeOutcome.State.APPLIED, result.outcome().state(), result.outcome().findings().toString());
+                assertEquals(1, result.outcome().valueFields());
+                assertValues(context, 5); assertSame(held, context.getBean(Settings.class));
+                Files.writeString(file, "svc.timeout=30\n"); applied(reload, file, context);
+                assertValues(context, 30); assertSame(held, context.getBean(Settings.class));
+            }
         }
     }
 

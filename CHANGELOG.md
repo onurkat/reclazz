@@ -14,7 +14,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   per-context singleton calls. Closed or replaced managed raw receivers require
   a restart; manual configurations retain ordinary Java calls.
 
+### Changed
+
+- Clarify unowned `.properties` warnings with the edited path and verified loaded files of the same name. Every warning remains visible; matching names do not establish a resource copy relationship.
+
 ### Fixed
+
+- Refresh relaxed-name `@Value` dependencies with the native resolver on Spring Boot versions that provide `ConfigurationPropertySources.createPropertyResolver` and `attach`. Retain the existing raw placeholder path when those public methods are absent. Preserve file precedence, trace deleted keys against accepted file values, and carry validated selection into field and constructor/factory refresh. Unknown resolver policies remain refused.
+
+- Refresh Jackson 3.1.7 mapper caches and route added getters through its method-handle accessor path, preserving lookup access and getter exceptions. Retained writers/readers keep their prefetched shape; fresh instances are needed for shape changes. Added setters/fields and relocated databind annotations are outside this coverage.
+
+- Re-scan standard Spring MVC endpoints when an actuator mapping shares the context, preserving unique custom mappings and leaving lazy mappings uninitialized.
 
 - Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 

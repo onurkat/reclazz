@@ -1794,8 +1794,9 @@ outside this addition. The original class's ordinary reflection still cannot see
 the added members. The Jackson hook must load before Jackson databind; attaching
 after Jackson loaded does not install it retroactively.
 
-Cache refresh discovers ObjectMapper beans in captured Spring contexts. A mapper
-created privately outside those contexts can retain its previous shape. An
+Cache refresh discovers ObjectMapper beans in captured Spring contexts and
+mappers tracked at construction. A mapper missed by both discovery routes can
+retain its previous shape. An
 ObjectWriter retained from before a change can retain its property list, while its
 added getters dispatch to updated bodies; obtain a new writer after reload for
 the new shape. Retained ObjectReaders can likewise keep an earlier input shape;
@@ -1815,9 +1816,22 @@ It sends loopback HTTP directly to Spring-managed ObjectMappers; it does not
 prove every MVC message-converter configuration. Getter-output policies run on
 normal loaders; setter/field input-output runs on normal and child loaders.
 Mix-ins, mapper access restrictions, final-write refusal and retained-writer
-behavior have separately labelled component-only observations. Jackson 3,
-other unlisted Jackson 2 versions and accessor-generating extensions such as Afterburner
-are not verified; this support targets Jackson's normal reflective accessor path.
+behavior have separately labelled component-only observations.
+
+Jackson 3.1.7 getter output is separately covered on stock JDK 17/21, both with
+Jackson 2 hidden and with both namespaces present: getter addition, body changes,
+annotation rename/ignore, removal/restoration, naming and generic values, access
+restrictions and exception propagation. A Spring-free process and the Boot 4.1.2
+sample's manual-agent mode also serve an added getter and its changed body over
+HTTP without restarting. The Jackson 3 hook routes its method-handle getter path
+and clears mapper caches through the public API; constructor tracking includes
+standalone and rebuilt mappers. Already-prefetched ObjectWriters keep their
+property list while added getter bodies remain live; retained ObjectReaders
+keep their prefetched deserializer. Obtain fresh writers/readers for a new shape.
+This Jackson 3 coverage does not establish added setters or fields for input
+or output, new constructor/record creators, or annotations relocated to
+`tools.jackson.databind.annotation`. Other unlisted Jackson versions and
+accessor-generating extensions such as Afterburner remain unverified.
 
 ### Scheduled methods added after startup
 

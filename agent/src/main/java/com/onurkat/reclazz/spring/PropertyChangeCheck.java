@@ -16,7 +16,7 @@ public final class PropertyChangeCheck {
     private static final String PLACEHOLDERS =
             "org.springframework.context.support.PropertySourcesPlaceholderConfigurer";
 
-    public record Result(PropertyChangeOutcome.State state, List<String> findings) {
+    public record Result(PropertyChangeOutcome.State state, List<String> findings, ValueSelection selection) {
         public Result { findings = List.copyOf(findings); }
         public boolean passed() { return findings.isEmpty(); }
     }
@@ -31,6 +31,12 @@ public final class PropertyChangeCheck {
 
     Result check(List<Object> contexts, Map<String, String> changed, Object preparedEnvironment,
                  Set<String> removed, Map<String, Object> resets) {
+        return check(contexts, changed, preparedEnvironment, removed, resets, null);
+    }
+
+    Result check(List<Object> contexts, Map<String, String> changed, Object preparedEnvironment,
+                 Set<String> removed, Map<String, Object> resets, Object beforeEnvironment) {
+        ValueSelection.Builder selections = new ValueSelection.Builder();
         List<String> rejected = new ArrayList<>();
         List<String> unavailable = new ArrayList<>();
         for (Object context : contexts) {
@@ -45,7 +51,8 @@ public final class PropertyChangeCheck {
                 ClassLoader loader = context.getClass().getClassLoader();
                 Object environment = preparedEnvironment != null ? preparedEnvironment
                         : candidateEnvironment(loader, liveEnvironment, changed);
-                checkValues(context, environment, changed, rejected, unavailable);
+                selections.context(context, changed);
+                checkValues(context, environment, changed, rejected, unavailable, selections, beforeEnvironment);
                 Class<?> annotation;
                 try { annotation = Class.forName(PROPERTIES + "ConfigurationProperties", false, loader); }
                 catch (ClassNotFoundException noBoot) { continue; }
@@ -89,7 +96,7 @@ public final class PropertyChangeCheck {
         findings.addAll(unavailable);
         return new Result(!unavailable.isEmpty() ? PropertyChangeOutcome.State.UNCHECKABLE
                 : !rejected.isEmpty() ? PropertyChangeOutcome.State.REJECTED
-                : PropertyChangeOutcome.State.APPLIED, findings);
+                : PropertyChangeOutcome.State.APPLIED, findings, selections.build());
     }
 
     static Object candidateEnvironment(ClassLoader loader, Object live,
@@ -115,13 +122,69 @@ public final class PropertyChangeCheck {
         Object first = Class.forName("org.springframework.core.env.MapPropertySource", true, loader)
                 .getConstructor(String.class, Map.class).newInstance("reclazz-candidate", overlay);
         call(sources, "addFirst", first);
+        if (bootResolver(loader, live)) attachBoot(loader, environment);
         return environment;
     }
 
+    /** A failed overlay may already be live. Trace retries against the last
+     * successfully accepted map, just as the owned-file route does. */
+    static Object acceptedEnvironment(ClassLoader loader, Object live) throws Exception {
+        Object before = candidateEnvironment(loader, live, Map.of());
+        Object liveSource = call(call(live, "getPropertySources"), "get", SpringPropertyRebinder.SOURCE_NAME);
+        if (liveSource != null && call(liveSource, "getSource") instanceof SpringPropertyRebinder.OverlayValues values
+                && !values.accepted.equals(values)) {
+            Object sources = call(before, "getPropertySources");
+            Class<?> sourceType = Class.forName("org.springframework.core.env.MapPropertySource", true, loader);
+            for (String name : List.of(SpringPropertyRebinder.SOURCE_NAME, "reclazz-candidate"))
+                call(sources, "replace", name, sourceType.getConstructor(String.class, Map.class).newInstance(name, values.accepted));
+        }
+        return before;
+    }
+
+    static Object environmentResolver(ClassLoader loader, Object environment) throws Exception {
+        Class<?> type = Class.forName("org.springframework.core.env.AbstractEnvironment", false, loader);
+        Method getter = type.getDeclaredMethod("getPropertyResolver");
+        getter.setAccessible(true);
+        return getter.invoke(environment);
+    }
+
+    static boolean isBootResolver(Object resolver) {
+        return resolver != null && resolver.getClass().getName()
+                .equals(PROPERTIES + "source.ConfigurationPropertySourcesPropertyResolver");
+    }
+
+    static boolean bootResolver(ClassLoader loader, Object environment) throws Exception {
+        if (!isBootResolver(environmentResolver(loader, environment))) return false;
+        try {
+            Class<?> factory = Class.forName(PROPERTIES + "source.ConfigurationPropertySources", false, loader);
+            Method attach = factory.getMethod("attach", Class.forName("org.springframework.core.env.Environment", false, loader));
+            Method create = factory.getMethod("createPropertyResolver",
+                    Class.forName("org.springframework.core.env.MutablePropertySources", false, loader));
+            return Modifier.isPublic(factory.getModifiers())
+                    && Modifier.isStatic(attach.getModifiers()) && attach.getReturnType() == void.class
+                    && Modifier.isStatic(create.getModifiers()) && create.getReturnType()
+                            == Class.forName("org.springframework.core.env.ConfigurablePropertyResolver", false, loader);
+        } catch (ClassNotFoundException | NoSuchMethodException absent) {
+            // Older Boot APIs keep the existing raw placeholder path.
+            return false;
+        }
+    }
+
+    static void attachBoot(ClassLoader loader, Object environment) throws Exception {
+        Class.forName(PROPERTIES + "source.ConfigurationPropertySources", true, loader)
+                .getMethod("attach", Class.forName("org.springframework.core.env.Environment", false, loader))
+                .invoke(null, environment);
+    }
+
     private static void checkValues(Object context, Object environment, Map<String, String> changed,
-                                    List<String> rejected, List<String> unavailable) throws Exception {
+                                    List<String> rejected, List<String> unavailable, ValueSelection.Builder selections, Object beforeEnvironment) throws Exception {
         Object converter = call(SpringBeans.getBeanFactory(context), "getTypeConverter");
-        for (var target : SpringPropertyRebinder.valueTargets(context, changed, environment)) {
+        var trace = new PropertyValueDependencies(context, changed, environment, beforeEnvironment);
+        for (var target : SpringPropertyRebinder.valueTargets(context, expression -> {
+            boolean selected = trace.test(expression);
+            if (selected) selections.expression(context, expression);
+            return selected;
+        })) {
             try {
                 Object resolved = call(environment, "resolveRequiredPlaceholders", target.expression());
                 resolved = PropertyValueExpression.evaluate(context, target, resolved);

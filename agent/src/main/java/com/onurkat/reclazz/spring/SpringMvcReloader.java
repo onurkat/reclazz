@@ -234,6 +234,9 @@ public class SpringMvcReloader {
                 Object mapping = getBeanOfType(ctx,
                         "org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping");
                 if (mapping != null) return mapping;
+            } catch (IllegalStateException ambiguous) {
+                StatusReporter.warn(Failures.describe(ambiguous));
+                return null;
             } catch (Exception ignored) {}
             try {
                 ctx = ctx.getClass().getMethod("getParent").invoke(ctx);
@@ -258,14 +261,37 @@ public class SpringMvcReloader {
     private Object getBeanOfType(Object appContext, String typeName) throws Exception {
         Class<?> targetType = Class.forName(typeName, false,
                 appContext.getClass().getClassLoader());
-        Method getBeanMethod = appContext.getClass().getMethod("getBean", Class.class);
-        try {
-            return getBeanMethod.invoke(appContext, targetType);
-        } catch (java.lang.reflect.InvocationTargetException e) {
-            // NoSuchBeanDefinitionException, this context has no MVC
-            // infrastructure (e.g. the Hybris global context). Not an error.
-            return null;
+        String[] names = (String[]) appContext.getClass()
+                .getMethod("getBeanNamesForType", Class.class, boolean.class, boolean.class)
+                .invoke(appContext, targetType, true, false);
+        Object factory = SpringBeans.getBeanFactory(appContext);
+        if (factory == null) throw new IllegalStateException("MVC mapping bean factory is unavailable");
+        Method singleton = factory.getClass().getMethod("getSingleton", String.class);
+        Method containsDefinition = factory.getClass().getMethod("containsBeanDefinition", String.class);
+        Method definition = factory.getClass().getMethod("getMergedBeanDefinition", String.class);
+        Method getBean = appContext.getClass().getMethod("getBean", String.class);
+        Map<String, Object> candidates = new java.util.LinkedHashMap<>();
+        for (String name : names) {
+            Object bean = singleton.invoke(factory, name);
+            if (!targetType.isInstance(bean)) {
+                // allowEagerInit=false avoids initializing FactoryBeans for type
+                // discovery; it does not stop getBean from creating a lazy bean.
+                if ((boolean) containsDefinition.invoke(factory, name)) {
+                    Object metadata = definition.invoke(factory, name);
+                    if ((boolean) metadata.getClass().getMethod("isLazyInit").invoke(metadata)) continue;
+                }
+                bean = getBean.invoke(appContext, name);
+            }
+            if (targetType.isInstance(bean)) candidates.put(name, bean);
         }
+        if (candidates.isEmpty()) return null;
+        if (candidates.size() == 1) return candidates.values().iterator().next();
+        List<Object> exact = candidates.values().stream()
+                .filter(bean -> bean.getClass() == targetType).toList();
+        if (exact.size() == 1) return exact.get(0);
+        List<String> descriptions = new ArrayList<>();
+        candidates.forEach((name, bean) -> descriptions.add(name + "=" + bean.getClass().getName()));
+        throw new IllegalStateException("MVC mapping selection refused: ambiguous candidates " + descriptions);
     }
 
     @SuppressWarnings("unchecked")

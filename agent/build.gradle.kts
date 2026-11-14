@@ -317,6 +317,7 @@ val springSixTests = sourceSets.create("springSixTest") {
 dependencies {
     add(springSixTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:5.10.2")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-context:6.1.14")
+    add(springSixTests.implementationConfigurationName, "org.springframework.boot:spring-boot:3.3.5")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-webmvc:6.1.14")
     add(springSixTests.implementationConfigurationName, "org.springframework:spring-test:6.1.14")
@@ -371,6 +372,7 @@ val springSevenTests = sourceSets.create("springSevenTest") {
 dependencies {
     add(springSevenTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:6.0.3")
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-context:7.0.10")
+    add(springSevenTests.implementationConfigurationName, "org.springframework.boot:spring-boot:4.1.2")
     // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-webmvc:7.0.10")
     add(springSevenTests.implementationConfigurationName, "org.springframework:spring-test:7.0.10")
@@ -380,6 +382,8 @@ dependencies {
     }
     // Legacy Jackson 2 fixture sidecar; this does not exercise Jackson 3 defaults.
     add(springSevenTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.21.7")
+    // Real Jackson 3 reload coverage; isolated test graph only.
+    add(springSevenTests.implementationConfigurationName, "tools.jackson.core:jackson-databind:3.1.7")
     add(springSevenTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:9.1.5.Final")
     add(springSevenTests.implementationConfigurationName, "org.glassfish.expressly:expressly:6.0.0")
     // Native modern method authorization; isolated from Spring 5 and never packaged.

@@ -24,7 +24,7 @@ final class SpringFactoryValues {
 
     /** Null means there is no resolved factory @Value declaration to own this bean. */
     static Values inspect(Object factory, String name, Object singleton,
-            Class<? extends Annotation> annotation, Method value, PropertyValueDependencies affected) throws Exception {
+            Class<? extends Annotation> annotation, Method value, java.util.function.Predicate<String> affected) throws Exception {
         if (!Boolean.TRUE.equals(PropertyChangeCheck.call(factory, "containsBeanDefinition", name))) return null;
         Object definition = PropertyChangeCheck.call(factory, "getMergedBeanDefinition", name);
         Values added = SpringAddedFactoryValues.inspect(factory, definition, name, singleton, annotation, value, affected);

@@ -17,7 +17,8 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
     @Override
     public byte[] transform(ClassLoader loader, String name, Class<?> redefining,
                             ProtectionDomain domain, byte[] bytes) {
-        if (name == null || !name.startsWith("com/fasterxml/jackson/databind/")) return null;
+        if (name == null || (!name.startsWith("com/fasterxml/jackson/databind/")
+                && !name.startsWith("tools/jackson/databind/"))) return null;
         try {
             ClassReader reader = new ClassReader(bytes);
             ClassWriter writer = new ClassWriter(reader, ClassWriter.COMPUTE_MAXS);
@@ -28,7 +29,8 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
                     return new MethodVisitor(Opcodes.ASM9, super.visitMethod(access, name, desc, signature, exceptions)) {
                         @Override public void visitInsn(int opcode) {
                             if (opcode == Opcodes.RETURN && name.equals("<init>")
-                                    && reader.getClassName().equals("com/fasterxml/jackson/databind/ObjectMapper")) {
+                                    && (reader.getClassName().equals("com/fasterxml/jackson/databind/ObjectMapper")
+                                    || reader.getClassName().equals("tools/jackson/databind/ObjectMapper"))) {
                                 super.visitVarInsn(Opcodes.ALOAD, 0);
                                 super.visitMethodInsn(Opcodes.INVOKESTATIC,
                                         "com/onurkat/reclazz/bootstrap/JacksonMapperRegistry", "track",
@@ -40,6 +42,12 @@ public final class JacksonAccessorTransformer implements ClassFileTransformer {
                         @Override public void visitMethodInsn(int opcode, String owner, String method,
                                                               String descriptor, boolean isInterface) {
                             String replacement = null;
+                            if (opcode == Opcodes.INVOKEVIRTUAL
+                                    && (reader.getClassName().equals("tools/jackson/databind/ser/BeanPropertyWriter$GetterHolder")
+                                    || reader.getClassName().equals("tools/jackson/databind/introspect/AnnotatedMethod$MethodHolder"))
+                                    && owner.equals("java/lang/invoke/MethodHandles$Lookup") && method.equals("unreflect")
+                                    && descriptor.equals("(Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;"))
+                                replacement = "(Ljava/lang/invoke/MethodHandles$Lookup;Ljava/lang/reflect/Method;)Ljava/lang/invoke/MethodHandle;";
                             if (opcode == Opcodes.INVOKEVIRTUAL) {
                                 if (owner.equals("java/lang/Class") && method.equals("getDeclaredMethods")
                                         && descriptor.equals("()[Ljava/lang/reflect/Method;"))

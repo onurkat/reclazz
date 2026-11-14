@@ -32,10 +32,13 @@ final class JacksonAddedGetters {
         try {
             Class.forName("com.fasterxml.jackson.databind.ObjectMapper", false, owner.getClassLoader());
         } catch (ClassNotFoundException | LinkageError unavailable) {
-            // An application without Jackson still needs the ordinary framework
-            // visibility diagnostic; there is no Jackson consumer to adapt here.
-            JacksonBridge.replace(owner, null, Map.of());
-            return Set.of();
+            try {
+                Class.forName("tools.jackson.databind.ObjectMapper", false, owner.getClassLoader());
+            } catch (ClassNotFoundException | LinkageError absent) {
+                // Without either Jackson family, retain the ordinary visibility diagnostic.
+                JacksonBridge.replace(owner, null, Map.of());
+                return Set.of();
+            }
         }
         ClassNode source = new ClassNode();
         new ClassReader(bytes).accept(source, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
