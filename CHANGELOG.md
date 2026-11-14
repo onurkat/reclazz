@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
-- JDK 25 runtime validation on macOS for agent unit, end-to-end and Spring 6 suites, with Spring 5/6 process fixtures targeting Java 21. An Ubuntu/JDK25 CI lane builds on JDK21; hosted Linux results are pending. Spring7 target25 coverage remains partial while two first-`@Bean` cases are audited separately.
+- JDK 25 runtime validation on macOS for agent unit, end-to-end and Spring 6 suites, with Spring 5/6 process fixtures targeting Java 21. An Ubuntu/JDK25 CI lane builds on JDK21; hosted Linux results are pending. The Spring 7 suite also passes on JDK 25 with application classes compiled for Java 25.
+- A stateless empty full configuration on Spring 7.0.10 can gain its first
+  instance `@Bean` while running, preserving held configuration references and
+  per-context singleton calls. Closed or replaced managed raw receivers require
+  a restart; manual configurations retain ordinary Java calls.
 
 ### Fixed
 

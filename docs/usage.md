@@ -662,7 +662,8 @@ Native and abstract methods do not work. The class must carry direct
 `@Configuration`, extend only `Object`, implement no interfaces and have exactly
 one local configuration singleton in each affected bean factory. Lite
 configuration (`proxyBeanMethods=false`) requires an unproxied instance; default
-configuration requires Spring's direct enhanced subclass as described below. Extra runtime class annotations are limited to
+configuration uses Spring's direct enhanced subclass or the bounded Spring 7.0.10
+raw-configuration path described below. Extra runtime class annotations are limited to
 `@Deprecated`; methods additionally allow direct `@Primary`, `@Qualifier`,
 `@Lazy`, `@Scope`, `@Profile`, `@Conditional` and the three Boot condition annotations
 described below. A direct `@Lazy` makes the added bean lazy, so
@@ -690,8 +691,8 @@ has no explicit classloader for resource lookup; custom context protocol resolve
 A direct `@Profile` on the same method participates in Spring's
 condition ordering and short-circuit evaluation.
 
-Recompiling the configuration re-evaluates its added factories. As with other
-added-factory reloads, prior Reclazz-owned products and aliases are removed first.
+Recompiling the configuration re-evaluates its added factories. On the native enhanced and lite paths,
+prior Reclazz-owned products and aliases are removed first.
 A false condition leaves no replacement definition or aliases; an evaluation
 error reports a failure and leaves that factory unregistered until a later
 successful save. Old products and condition callback side effects are not rolled
@@ -784,9 +785,25 @@ arguments passed directly to `BeanFactory.getBean(name, args)` are not forwarded
 to supplier-backed added factories; ordinary `getBean(name)` resolves their
 parameters. It does not add new supported parameter types or annotations, and
 it does not implement Spring's general circular-reference permissiveness.
-Full configuration must be Spring's direct enhanced subclass with its native bean
-factory binding; additional AOP proxies, user subclasses, inheritance and changing
-configuration mode at runtime are outside this scope. Existing lifecycle and
+Full configuration normally uses Spring's direct enhanced subclass with its native
+bean factory binding. Spring 7.0.10 can leave an empty full configuration raw at
+startup. Its first added instance factory is supported when the exact local
+singleton has no instance fields, one no-argument constructor and no lifecycle
+callbacks or interfaces. The original singleton is preserved across supported
+method edits, including removal of its last added factory and later re-addition.
+Each managed receiver resolves only its own active context; closing that context
+or replacing its singleton makes retained factory calls require a restart.
+Manual `new` receivers keep ordinary Java semantics. Other raw shapes, additional
+AOP proxies, user subclasses, inheritance and changing configuration mode at
+runtime require a restart.
+
+For this raw path, all contexts and name/alias/condition checks are preflighted
+before old registrations change. A preflight refusal or failed staging of newly
+added definitions preserves the prior generation in every context. Conditions
+see the registry before this save's new definitions are staged. Once changed or
+removed products are destroyed, initialization failures cannot restore those
+instances or arbitrary lifecycle side effects; only owned failed definitions are
+discarded, and their factory calls require a restart. Existing lifecycle and
 replacement rules below still apply: a saved configuration can recreate existing
 products, so references to old products are not promised to stay current.
 

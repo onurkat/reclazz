@@ -264,6 +264,12 @@ public class SpringReloadOrchestrator {
         if (reloadedClass == null) return;
         if (addedMethods) classesWithAddedMembers.add(className);
 
+        SpringAddedBeanReloader.PreparedRawConfigs raw;
+        try { raw = addedBeanReloader.prepareRaw(reloadedClass, addedMethodSigs, newBytecode); }
+        catch (Throwable failure) {
+            String reason = "Added @Bean needs a restart: " + com.onurkat.reclazz.ui.Failures.describe(failure);
+            RestartLedger.note(className, reason); StatusReporter.warn(reason); return;
+        }
         if (isSpringBean(reloadedClass)) {
             schedulerReloader.beforeBeanRefresh(reloadedClass);
             var lifecycle = lifecycleReloader.prepare(reloadedClass, addedMethodSigs, newBytecode);
@@ -288,7 +294,7 @@ public class SpringReloadOrchestrator {
             if (!lifecycle.install()) return;
             // Repository products have one refresh owner, including when their
             // interface also carries the ordinary Spring @Repository stereotype.
-            if (!SpringDataReloader.isRepository(reloadedClass)) beanReloader.refreshBean(className, reloadedClass);
+            if (!SpringDataReloader.isRepository(reloadedClass)) beanReloader.refreshBean(className, reloadedClass, raw);
 
             // 2. MVC re-scan. Structural changes need it because the set of
             // handler methods moved; annotation changes need it because the

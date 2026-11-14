@@ -54,6 +54,10 @@ public class SpringBeanReloader {
      * type matching works across contexts regardless of classloaders.
      */
     public void refreshBean(String className, Class<?> reloadedClass) {
+        refreshBean(className, reloadedClass, null);
+    }
+
+    void refreshBean(String className, Class<?> reloadedClass, SpringAddedBeanReloader.PreparedRawConfigs raw) {
         try {
             // Iterate every live context (global + web contexts): the bean
             // may be defined in any of them, or in several.
@@ -71,7 +75,7 @@ public class SpringBeanReloader {
             // Remember old→new instance pairs for reference healing below.
             java.util.LinkedHashSet<String> refreshedNames = new java.util.LinkedHashSet<>();
             java.util.IdentityHashMap<Object, Object> replacements = new java.util.IdentityHashMap<>();
-            int totalRefreshed = 0;
+            int totalRefreshed = 0, preservedRaw = 0;
             SpringMvcSingletons mvcBefore = batchDepth > 0 ? batchMvcBefore : null;
             var seenFactories = java.util.Collections.newSetFromMap(new java.util.IdentityHashMap<Object, Boolean>());
             int ownerIndex = 0;
@@ -84,6 +88,12 @@ public class SpringBeanReloader {
                             ? findBeanNamesByType(appContext, reloadedClass)
                             : findBeanNamesByClass(appContext, className);
                     for (String beanName : beanNames) {
+                        if (raw != null && raw.preserves(appContext, beanName,
+                                localFactory.getClass().getMethod("getSingleton", String.class).invoke(localFactory, beanName))) {
+                            ReloadEffects.note("raw configuration " + beanName + " preserved");
+                            preservedRaw++;
+                            continue;
+                        }
                         if (mvcBefore == null) {
                             mvcBefore = SpringMvcSingletons.capture(contexts);
                             if (batchDepth > 0) batchMvcBefore = mvcBefore;
@@ -119,7 +129,7 @@ public class SpringBeanReloader {
             }
 
             if (totalRefreshed == 0) {
-                StatusReporter.info("No Spring bean found for class: " + className);
+                if (preservedRaw == 0) StatusReporter.info("No Spring bean found for class: " + className);
                 return;
             }
 

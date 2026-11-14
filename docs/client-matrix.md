@@ -145,7 +145,7 @@ independent SDK/MCP client acceptance above.
 | Runtime / application fixtures | Observed result | Scope |
 | --- | --- | --- |
 | JDK25 / Spring 5/6 process fixtures target21 | PASS locally | `unitTest` 2691, `e2eTest` 333 and `springSixTest` 393, no failures |
-| JDK25 / Spring 7 fixtures target25 | Partial:391/393 | Two first-`@Bean` cases remain in the separate C3 audit; no full Spring7/JDK25 pass claimed |
+| JDK25 / Spring 7 fixtures target25 | PASS locally | `springSevenTest` 421, no failures (includes the first-`@Bean` cases) |
 | Ubuntu/JDK25, build JDK21 | Configured; Linux CI pending | Agent unit/e2e/Spring6 only; no hosted run dispatched or observed |
 | Windows/JDK25 and independent SDK/MCP on25 | Not run | Neither is implied by the local agent suites |
 
