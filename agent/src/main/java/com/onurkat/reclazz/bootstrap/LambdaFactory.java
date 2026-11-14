@@ -4,12 +4,19 @@
  */
 package com.onurkat.reclazz.bootstrap;
 
+import java.io.Serializable;
 import java.lang.invoke.CallSite;
 import java.lang.invoke.ConstantCallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandleProxies;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 /**
  * Links a lambda whose implementation lives in a hidden companion class.
@@ -35,13 +42,10 @@ import java.lang.invoke.MethodType;
  * the handle is the companion's current body, not a name that might resolve
  * to an older one.
  *
- * <p>Two honest differences from the metafactory's proxies, both invisible to
- * code that treats a lambda as a lambda: the object is a reflective proxy
- * rather than a spun class (a per-call cost that belongs to a development
- * reload, not production), and a serializable lambda loses its
- * serializability, which {@link #altMetafactory} accepts silently because a
- * reloaded lambda that must cross a serialization boundary needs a restart
- * anyway.
+ * <p>Extra marker interfaces, including {@code Serializable}, are preserved
+ * by a reflective proxy. Serialization itself still fails: its invocation
+ * handler is not serializable. A reloaded lambda that must cross a
+ * serialization boundary needs a restart.
  *
  * <p>BOOTSTRAP CLASS: must have ZERO dependencies outside java.*.
  */
@@ -51,11 +55,16 @@ public final class LambdaFactory {
     }
 
     private static final MethodHandle MAKE;
+    private static final MethodHandle MAKE_WITH_INTERFACES;
 
     static {
         try {
             MAKE = MethodHandles.lookup().findStatic(LambdaFactory.class, "make",
                     MethodType.methodType(Object.class, Class.class,
+                            MethodHandle.class, Object[].class));
+            MAKE_WITH_INTERFACES = MethodHandles.lookup().findStatic(LambdaFactory.class,
+                    "makeWithInterfaces", MethodType.methodType(Object.class, ClassLoader.class,
+                            Class[].class, String.class, MethodType[].class,
                             MethodHandle.class, Object[].class));
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
@@ -80,12 +89,6 @@ public final class LambdaFactory {
     }
 
     /**
-     * Drop-in signature match for {@code LambdaMetafactory.altMetafactory},
-     * which javac uses for serializable lambdas and marker interfaces. The
-     * extra flags are accepted and ignored: the object built here implements
-     * the functional interface and nothing else.
-     */
-    /**
      * The variant with marker interfaces, bridges and serializable lambdas.
      *
      * <p>No Java caller, and not dead: the companion generator rewrites the
@@ -96,8 +99,35 @@ public final class LambdaFactory {
      */
     public static CallSite altMetafactory(MethodHandles.Lookup caller, String invokedName,
                                           MethodType invokedType, Object... args) {
-        return metafactory(caller, invokedName, invokedType,
-                (MethodType) args[0], (MethodHandle) args[1], (MethodType) args[2]);
+        Class<?> samType = invokedType.returnType();
+        var interfaces = new LinkedHashSet<Class<?>>();
+        interfaces.add(samType);
+        var methods = new ArrayList<MethodType>();
+        methods.add((MethodType) args[0]);
+        int flags = (Integer) args[3];
+        int next = 4;
+        if ((flags & LambdaMetafactory.FLAG_MARKERS) != 0) {
+            int count = (Integer) args[next++];
+            for (int i = 0; i < count; i++) interfaces.add((Class<?>) args[next++]);
+        }
+        if ((flags & LambdaMetafactory.FLAG_BRIDGES) != 0) {
+            int count = (Integer) args[next++];
+            for (int i = 0; i < count; i++) methods.add((MethodType) args[next++]);
+        }
+        if ((flags & LambdaMetafactory.FLAG_SERIALIZABLE) != 0) {
+            interfaces.add(Serializable.class);
+        }
+        if (interfaces.size() == 1) {
+            return metafactory(caller, invokedName, invokedType,
+                    (MethodType) args[0], (MethodHandle) args[1], (MethodType) args[2]);
+        }
+        // The SAM may be a bootstrap interface while a marker belongs to the
+        // application. The capturing class's loader can see both.
+        MethodHandle make = MethodHandles.insertArguments(MAKE_WITH_INTERFACES, 0,
+                caller.lookupClass().getClassLoader(), interfaces.toArray(Class<?>[]::new),
+                invokedName, methods.toArray(MethodType[]::new), (MethodHandle) args[1]);
+        return new ConstantCallSite(make.asCollector(Object[].class, invokedType.parameterCount())
+                .asType(invokedType));
     }
 
     /** Bind the captures, wrap the rest as the interface. */
@@ -107,4 +137,32 @@ public final class LambdaFactory {
         MethodHandle bound = MethodHandles.insertArguments(impl, 0, captured);
         return MethodHandleProxies.asInterfaceInstance(samType, bound);
     }
+
+    /** Extra interfaces need an explicit proxy on JDKs whose MH wrappers omit them. */
+    @SuppressWarnings("unused")
+    private static Object makeWithInterfaces(ClassLoader loader, Class<?>[] interfaces,
+                                              String methodName, MethodType[] methods,
+                                              MethodHandle impl, Object[] captured) {
+        MethodHandle bound = MethodHandles.insertArguments(impl, 0, captured);
+        List<MethodType> signatures = List.of(methods);
+        // This handler intentionally does not implement Serializable.
+        return Proxy.newProxyInstance(loader, interfaces, (proxy, method, args) -> {
+            if (method.getDeclaringClass() == Object.class) {
+                return switch (method.getName()) {
+                    case "equals" -> proxy == args[0];
+                    case "hashCode" -> System.identityHashCode(proxy);
+                    case "toString" -> interfaces[0].getName() + "@"
+                            + Integer.toHexString(System.identityHashCode(proxy));
+                    default -> throw new UnsupportedOperationException(method.toString());
+                };
+            }
+            MethodType signature = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
+            if (method.getName().equals(methodName) && signatures.contains(signature)) {
+                return bound.asType(signature).invokeWithArguments(args == null ? new Object[0] : args);
+            }
+            if (method.isDefault()) return InvocationHandler.invokeDefault(proxy, method, args);
+            throw new AbstractMethodError(method.toString());
+        });
+    }
+
 }

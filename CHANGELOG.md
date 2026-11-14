@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Structurally reloaded lambdas retain requested marker interfaces, including
+  `Serializable`, on newer JDKs. Serialization itself remains unsupported and
+  fails with `NotSerializableException`.
+
 ## [1.6.0] - 2026-11-14
 
 ### Changed
