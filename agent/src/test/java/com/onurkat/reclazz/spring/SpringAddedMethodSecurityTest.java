@@ -96,25 +96,7 @@ class SpringAddedMethodSecurityTest {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("alice", "unused", AuthorityUtils.createAuthorityList(authority)));
     }
     @Test void nativeInterceptorAcceptsHiddenMethodWithActualTargetAndArguments() throws Throwable {
-        try(var context=new AnnotationConfigApplicationContext(Config.class)) {
-            Owner bean=context.getBean(Owner.class);
-            Owner target=(Owner)((Advised)bean).getTargetSource().getTarget();
-            MethodSecurityInterceptor interceptor=context.getBean(MethodSecurityInterceptor.class);
-            // A native probe independent of Reclazz operation activation/routing.
-            Method method=hidden(Before.class).getDeclaredMethod("work",String.class);
-            var invocation=new org.aopalliance.intercept.MethodInvocation() {
-                public Method getMethod() { return method; }
-                public Object[] getArguments() { return new Object[]{"alice"}; }
-                public Object getThis() { return target; }
-                public AccessibleObject getStaticPart() { return method; }
-                public Object proceed() { return work(target,"alice"); }
-            };
-            assertThrows(AuthenticationCredentialsNotFoundException.class,()->interceptor.invoke(invocation));
-            login("READ"); assertThrows(AccessDeniedException.class,()->interceptor.invoke(invocation));
-            assertEquals(0,target.calls);
-            login("WRITE"); assertEquals("alice",interceptor.invoke(invocation)); assertEquals(1,target.calls);
-            System.out.println("NATIVE_SECURITY="+interceptor.getClass().getName()+",source="+interceptor.getSecurityMetadataSource().getClass().getName());
-        }
+        LegacyAddedMethodSecuritySupport.nativeInterceptorAcceptsHiddenMethodWithActualTargetAndArguments();
     }
     @Test void addedPreAuthorizationDeniesBeforeBodyOnHeldProxyAndTarget() throws Throwable {
         try(var scope=new Scope(Config.class)) {
@@ -146,15 +128,7 @@ class SpringAddedMethodSecurityTest {
         }
     }
     @Test void customExpressionHandlerRefusesBeforeBody() throws Throwable {
-        try(var scope=new Scope(Config.class)) {
-            Object voter=scope.context.getBean(MethodSecurityInterceptor.class).getAccessDecisionManager();
-            var voters=((org.springframework.security.access.vote.AffirmativeBased)voter).getDecisionVoters();
-            var field=voters.get(0).getClass().getDeclaredField("preAdvice"); field.setAccessible(true);
-            var advice=(org.springframework.security.access.expression.method.ExpressionBasedPreInvocationAdvice)field.get(voters.get(0));
-            advice.setExpressionHandler(new org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler() { });
-            scope.publish(Before.class); login("WRITE");
-            assertThrows(IllegalStateException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
-        }
+        LegacyAddedMethodSecuritySupport.customExpressionHandlerRefusesBeforeBody();
     }
     @Test void savedPolicyAnnotationRemovalAndMethodRemovalFollowHeldCallSite() throws Throwable {
         try(var scope=new Scope(Config.class)) {
@@ -222,25 +196,10 @@ class SpringAddedMethodSecurityTest {
         }
     }
     @Test void customMetadataSourceCannotTurnAnnotatedOperationPublic() throws Throwable {
-        try(var scope=new Scope(Config.class)) {
-            scope.context.getBean(MethodSecurityInterceptor.class).setSecurityMetadataSource(new org.springframework.security.access.method.AbstractMethodSecurityMetadataSource() {
-                public Collection<org.springframework.security.access.ConfigAttribute> getAttributes(Method m,Class<?> t) { return List.of(); }
-                public Collection<org.springframework.security.access.ConfigAttribute> getAllConfigAttributes() { return List.of(); }
-            });
-            scope.publish(Before.class); login("WRITE");
-            assertThrows(IllegalStateException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
-        }
+        LegacyAddedMethodSecuritySupport.customMetadataSourceCannotTurnAnnotatedOperationPublic();
     }
     @Test void customDecisionManagerIsNotSilentlyTreatedAsStandardSecurity() throws Throwable {
-        try(var scope=new Scope(Config.class)) {
-            scope.context.getBean(MethodSecurityInterceptor.class).setAccessDecisionManager(new org.springframework.security.access.AccessDecisionManager() {
-                public void decide(org.springframework.security.core.Authentication a,Object o,Collection<org.springframework.security.access.ConfigAttribute> c) { }
-                public boolean supports(org.springframework.security.access.ConfigAttribute c) { return true; }
-                public boolean supports(Class<?> c) { return true; }
-            });
-            scope.publish(Before.class); login("WRITE");
-            assertThrows(IllegalStateException.class,()->scope.invoke("alice")); assertEquals(0,scope.target.calls);
-        }
+        LegacyAddedMethodSecuritySupport.customDecisionManagerIsNotSilentlyTreatedAsStandardSecurity();
     }
     @PreAuthorize("denyAll()") public static class ClassCallbacks {
         @org.springframework.context.event.EventListener private void event(String value) { }
@@ -267,15 +226,7 @@ class SpringAddedMethodSecurityTest {
         }
     }
     @Test void retiredMetadataCacheEntriesAreRemovedWithoutClearingOriginalMethod() throws Throwable {
-        try(var scope=new Scope(Config.class)) {
-            login("WRITE"); scope.bean.original("alice"); scope.publish(Before.class); scope.invoke("alice");
-            Object source=scope.context.getBean(MethodSecurityInterceptor.class).getSecurityMetadataSource();
-            Field f=source.getClass().getDeclaredField("attributeCache"); f.setAccessible(true); Map<?,?> cache=(Map<?,?>)f.get(source);
-            var before=new HashSet<>(cache.keySet());
-            scope.publish(Changed.class);
-            assertTrue(cache.size()<before.size(),"superseded hidden Method retained");
-            assertTrue(cache.keySet().stream().anyMatch(k->k.toString().contains("original")),"unrelated native metadata removed");
-        }
+        LegacyAddedMethodSecuritySupport.retiredMetadataCacheEntriesAreRemovedWithoutClearingOriginalMethod();
     }
     static String work(Owner target,String name) { target.calls++; return name; }
     static String write(AnnotationConfigApplicationContext context,Owner target,String name) throws Exception {

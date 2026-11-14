@@ -50,12 +50,7 @@ class SecurityProxyValueTest {
     }
     Class<?> securityConfiguration(boolean cglib) { return cglib?SecurityCglib.class:SecurityJdk.class; }
     void customizeSecurity(Advised proxy) throws Exception {
-        Object advisor=Arrays.stream(proxy.getAdvisors()).filter(SpringSecurityAdvice::isAdvisor).findFirst().orElseThrow();
-        var interceptor=(org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor)SpringSecurityAdvice.interceptor(advisor);
-        interceptor.setSecurityMetadataSource(new org.springframework.security.access.method.AbstractMethodSecurityMetadataSource() {
-            public Collection<org.springframework.security.access.ConfigAttribute> getAttributes(java.lang.reflect.Method m,Class<?> t) { return List.of(); }
-            public Collection<org.springframework.security.access.ConfigAttribute> getAllConfigAttributes() { return List.of(); }
-        });
+        LegacyMethodSecuritySupport.openAllMethods(proxy);
     }
     public static class FilteredService extends SecuredService {
         public FilteredService(JdbcTemplate jdbc,@Value("#{${cfg.seconds:5} * 1000L}") long millis) { super(jdbc,millis); }

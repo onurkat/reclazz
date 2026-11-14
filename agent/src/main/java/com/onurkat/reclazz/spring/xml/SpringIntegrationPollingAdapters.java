@@ -139,7 +139,7 @@ final class SpringIntegrationPollingAdapters {
         exact(factory,ADAPTER);
         Object adapter=field(factory,ADAPTER,"adapter");
         exact(adapter,"org.springframework.integration.endpoint.SourcePollingChannelAdapter");
-        Object source=field(factory,ADAPTER,"source");exact(source,FILE+"FileReadingMessageSource");
+        Object source=field(factory,ADAPTER,"source");exactAny(source,FILE+"FileReadingMessageSource",FILE+"inbound.FileReadingMessageSource");
         require(field(adapter,"org.springframework.integration.endpoint.SourcePollingChannelAdapter","source")==source,"source identity changed");
         Object scanner=call(source,"getScanner");exact(scanner,FILE+"DefaultDirectoryScanner");
         Object filter=field(scanner,FILE+"DefaultDirectoryScanner","filter");exact(filter,FILE+"filters.CompositeFileListFilter");
@@ -208,6 +208,7 @@ final class SpringIntegrationPollingAdapters {
     private static Object field(Object target,String owner,String name) throws Exception {
         Field f=Class.forName(owner,false,target.getClass().getClassLoader()).getDeclaredField(name);f.setAccessible(true);return f.get(target);
     }
+    private static void exactAny(Object target,String... names) {require(target!=null&&List.of(names).contains(target.getClass().getName()),"custom/unavailable live "+names[0]);}
     private static void exact(Object target,String name) {require(target!=null&&target.getClass().getName().equals(name),"custom/unavailable live "+name);}
     private static boolean owned(Object d,Path xml,Object live) throws Exception {
         String resource=SpringReflection.getResourceDescription(d);if(resource==null)return false;

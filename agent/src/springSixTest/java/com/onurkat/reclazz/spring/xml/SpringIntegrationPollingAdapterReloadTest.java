@@ -21,6 +21,7 @@ import org.springframework.integration.endpoint.SourcePollingChannelAdapter;
 
 class SpringIntegrationPollingAdapterReloadTest {
     @TempDir Path dir;
+    boolean customSource;
     GenericApplicationContext context;
     Path path;
     final List<String> receipts = new CopyOnWriteArrayList<>();
@@ -43,7 +44,32 @@ class SpringIntegrationPollingAdapterReloadTest {
     void load(String regex, int rate, boolean prior) throws Exception {
         Files.createDirectories(dir.resolve("input")); Files.createDirectories(dir.resolve("other"));
         path=dir.resolve("polling-spring.xml");Files.writeString(path,xml(regex,rate));
-        context=new GenericApplicationContext();var reader=new XmlBeanDefinitionReader(context);
+        context=new GenericApplicationContext();
+        if(customSource)context.getBeanFactory().addBeanPostProcessor(new org.springframework.beans.factory.config.BeanPostProcessor() {
+            @Override public Object postProcessAfterInitialization(Object bean,String name) {
+                if(!name.equals("input.adapter.source")||!bean.getClass().getSimpleName().equals("FileReadingMessageSource"))return bean;
+                try {
+                    String simple="CustomFileReadingMessageSource"+UUID.randomUUID().toString().replace("-","");
+                    Path sourceFile=dir.resolve(simple+".java");
+                    Files.writeString(sourceFile,"package com.example; public class "+simple+" extends "+bean.getClass().getName()+" {}");
+                    var compiler=javax.tools.ToolProvider.getSystemJavaCompiler();
+                    int result=compiler.run(null,null,null,"-classpath",com.onurkat.reclazz.e2e.harness.WatchedApp.springClasspath(),
+                        "-d",dir.toString(),sourceFile.toString());
+                    if(result!=0)throw new IllegalStateException("synthetic source compiler exit "+result);
+                    Object custom;
+                    try(var loader=new java.net.URLClassLoader(new java.net.URL[]{dir.toUri().toURL()},bean.getClass().getClassLoader())) {
+                        custom=loader.loadClass("com.example."+simple).getDeclaredConstructor().newInstance();
+                    }
+                    // Keep the native, fully initialized source state; change only its exact type.
+                    for(Class<?> owner=bean.getClass();owner!=Object.class;owner=owner.getSuperclass())
+                        for(var member:owner.getDeclaredFields())if(!java.lang.reflect.Modifier.isStatic(member.getModifiers())) {
+                            member.setAccessible(true);member.set(custom,member.get(bean));
+                        }
+                    return custom;
+                } catch(Exception failure) {throw new IllegalStateException("synthetic source subclass",failure);}
+            }
+        });
+        var reader=new XmlBeanDefinitionReader(context);
         if(prior) {
             Path first=dir.resolve("first-spring.xml");
             Files.writeString(first,xml("z-.*",200).replace("id=\"input\"","id=\"first\"").replace("id=\"other\"","id=\"second\""));
@@ -141,6 +167,56 @@ class SpringIntegrationPollingAdapterReloadTest {
         reload(xml("(?i)b-.*",100));drop("B-after");await(()->receipts.contains("B-after"));
         reload(xml("(?i)b-.*",50));
         assertTrue(events.stream().noneMatch(e->e.contains("Restart required")),events.toString());
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings={"regex","rate"})
+    void customSourceSubclassIsRefusedAndLiveStateUnchanged(String edit) throws Exception {
+        customSource=true;load("a-.*",100);
+        Object source=context.getBean("input.adapter.source");
+        Class<?> standard=source.getClass().getSuperclass();
+        assertTrue(Set.of("org.springframework.integration.file.FileReadingMessageSource",
+            "org.springframework.integration.file.inbound.FileReadingMessageSource").contains(standard.getName()));
+        var adapter=context.getBean("input.adapter",SourcePollingChannelAdapter.class);
+        Object factory=context.getBean("&input.adapter");
+        Class<?> factoryType=org.springframework.integration.config.SourcePollingChannelAdapterFactoryBean.class;
+        assertEquals(factoryType,factory.getClass());assertEquals(SourcePollingChannelAdapter.class,adapter.getClass());
+        assertSame(source,field(factory,factoryType,"source"));
+        assertSame(source,field(adapter,SourcePollingChannelAdapter.class,"source"));
+        drop("a-before");await(()->receipts.contains("a-before"));
+        Object scanner=standard.getMethod("getScanner").invoke(source);
+        Object filter=field(scanner,org.springframework.integration.file.DefaultDirectoryScanner.class,"filter");
+        assertSame(filter,context.getBean("org.springframework.integration.file.config.FileListFilterFactoryBean#0"));
+        Set<?> members=(Set<?>)field(filter,org.springframework.integration.file.filters.CompositeFileListFilter.class,"fileFilters");
+        Object regex=members.stream().filter(x->x instanceof org.springframework.integration.file.filters.RegexPatternFileListFilter).findFirst().orElseThrow();
+        Object once=members.stream().filter(x->x instanceof org.springframework.integration.file.filters.AcceptOnceFileListFilter).findFirst().orElseThrow();
+        Class<?> regexType=org.springframework.integration.file.filters.AbstractRegexPatternFileListFilter.class;
+        Object pattern=field(regex,regexType,"pattern");
+        Class<?> onceType=org.springframework.integration.file.filters.AcceptOnceFileListFilter.class;
+        Object seen=field(once,onceType,"seenSet");Set<?> history=new HashSet<>((Set<?>)seen);
+        assertFalse(history.isEmpty());
+        Class<?> polling=org.springframework.integration.endpoint.AbstractPollingEndpoint.class;
+        Object trigger=field(adapter,polling,"trigger");
+        var periodic=(org.springframework.scheduling.support.PeriodicTrigger)trigger;
+        var duration=periodic.getPeriodDuration();
+        Object metadata=field(factory,factoryType,"pollerMetadata");
+        Object definition=context.getBeanDefinition("org.springframework.integration.config.PeriodicTriggerFactoryBean#0").getPropertyValues().get("fixedRateValue");
+        boolean running=adapter.isRunning();
+        reload(xml(edit.equals("regex")?"b-.*":"a-.*",edit.equals("rate")?50:100));
+        assertTrue(events.stream().anyMatch(e->e.contains("Restart required")&&e.contains("custom/unavailable live")
+            &&e.contains("FileReadingMessageSource")),events.toString());
+        assertTrue(events.stream().noneMatch(e->e.contains("reconfigured: source and duplicate history retained")),events.toString());
+        assertSame(source,context.getBean("input.adapter.source"));
+        assertSame(source,field(factory,factoryType,"source"));assertSame(source,field(adapter,SourcePollingChannelAdapter.class,"source"));
+        assertSame(scanner,standard.getMethod("getScanner").invoke(source));
+        assertSame(filter,field(scanner,org.springframework.integration.file.DefaultDirectoryScanner.class,"filter"));
+        assertSame(pattern,field(regex,regexType,"pattern"));assertSame(seen,field(once,onceType,"seenSet"));
+        assertEquals(history,new HashSet<>((Set<?>)seen));assertSame(trigger,field(adapter,polling,"trigger"));
+        assertSame(trigger,((org.springframework.integration.scheduling.PollerMetadata)metadata).getTrigger());
+        assertEquals(duration,periodic.getPeriodDuration());assertEquals(running,adapter.isRunning());
+        assertSame(definition,context.getBeanDefinition("org.springframework.integration.config.PeriodicTriggerFactoryBean#0").getPropertyValues().get("fixedRateValue"));
+        drop("b-refused");drop("a-after");await(()->receipts.contains("a-after"));Thread.sleep(350);
+        assertFalse(receipts.contains("b-refused"));assertEquals(1,Collections.frequency(receipts,"a-before"));
     }
 
 }

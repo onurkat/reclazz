@@ -98,6 +98,15 @@ public final class WatchedApp implements AutoCloseable {
                 entries.add(entry);
             }
         }
+        // Spring 7 reads JSpecify at runtime; older fixture graphs do not carry it.
+        try {
+            Class<?> nullable = Class.forName("org.jspecify.annotations.Nullable", false, WatchedApp.class.getClassLoader());
+            entries.add(Path.of(nullable.getProtectionDomain().getCodeSource().getLocation().toURI()).toString());
+        } catch (ClassNotFoundException absent) {
+            // Preserve the existing Spring 5/6 classpath byte for byte.
+        } catch (java.net.URISyntaxException invalidLocation) {
+            throw new IllegalStateException("Cannot locate JSpecify fixture dependency", invalidLocation);
+        }
         if (entries.isEmpty()) throw new IllegalStateException("Spring jars must be on the test classpath");
         return String.join(File.pathSeparator, entries);
     }

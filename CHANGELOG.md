@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Structurally reloaded lambdas retain requested marker interfaces, including
   `Serializable`, on newer JDKs. Serialization itself remains unsupported and
   fails with `NotSerializableException`.
+- Standard Spring Integration 7 file polling adapters retain their live source and
+  duplicate history during supported regex and rate edits after the source class
+  relocation; custom source subclasses still require a restart.
 
 ## [1.6.0] - 2026-11-14
 

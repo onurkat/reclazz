@@ -343,6 +343,60 @@ val springSixTest by tasks.registering(Test::class) {
     testLogging { events("passed", "failed", "skipped") }
 }
 
+// Spring 7 research graph reuses sources, with isolated test-only dependencies.
+val springSevenTests = sourceSets.create("springSevenTest") {
+    java.setSrcDirs(listOf("src/springSixTest/java"))
+    compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
+    // Direct registrar tests need the agent's existing ASM runtime as well as
+    // its classes. This adds no Spring 5 test dependencies to the isolated graph.
+    runtimeClasspath += premium.output + sourceSets.main.get().runtimeClasspath + sourceSets.test.get().output
+}
+dependencies {
+    add(springSevenTests.implementationConfigurationName, "org.junit.jupiter:junit-jupiter:6.0.3")
+    add(springSevenTests.implementationConfigurationName, "org.springframework:spring-context:7.0.10")
+    // Real Jakarta MVC async lifecycle and local HTTP tests; never packaged.
+    add(springSevenTests.implementationConfigurationName, "org.springframework:spring-webmvc:7.0.10")
+    add(springSevenTests.implementationConfigurationName, "org.springframework:spring-test:7.0.10")
+    add(springSevenTests.implementationConfigurationName, "org.apache.tomcat.embed:tomcat-embed-core:11.0.27") {
+        // jakarta.annotation-api below already supplies these classes.
+        exclude(group = "org.apache.tomcat", module = "tomcat-annotations-api")
+    }
+    // Legacy Jackson 2 fixture sidecar; this does not exercise Jackson 3 defaults.
+    add(springSevenTests.implementationConfigurationName, "com.fasterxml.jackson.core:jackson-databind:2.21.7")
+    add(springSevenTests.implementationConfigurationName, "org.hibernate.validator:hibernate-validator:9.1.5.Final")
+    add(springSevenTests.implementationConfigurationName, "org.glassfish.expressly:expressly:6.0.0")
+    // Native modern method authorization; isolated from Spring 5 and never packaged.
+    add(springSevenTests.implementationConfigurationName, "org.springframework.security:spring-security-config:7.1.2")
+    add(springSevenTests.implementationConfigurationName, "org.springframework.security:spring-security-web:7.1.2")
+    // Owner-approved real JPA/schema validation tests; isolated and never packaged.
+    add(springSevenTests.implementationConfigurationName, "org.springframework:spring-orm:7.0.10")
+    add(springSevenTests.implementationConfigurationName, "org.hibernate.orm:hibernate-core:7.4.13.Final")
+    add(springSevenTests.implementationConfigurationName, "com.h2database:h2:2.4.240")
+    // Native repository refresh regressions only; never shipped with the agent.
+    add(springSevenTests.implementationConfigurationName, "org.springframework.data:spring-data-jpa:4.1.2")
+    add(springSevenTests.implementationConfigurationName, "net.bytebuddy:byte-buddy-agent:1.18.15")
+    add(springSevenTests.implementationConfigurationName, "jakarta.annotation:jakarta.annotation-api:3.0.0")
+    // Real Spring Integration endpoint swap regressions; test-only, never packaged.
+    add(springSevenTests.implementationConfigurationName, "org.springframework.integration:spring-integration-core:7.1.2")
+    // File adapter regressions only; same isolated SI version, never packaged.
+    add(springSevenTests.implementationConfigurationName, "org.springframework.integration:spring-integration-file:7.1.2")
+    add(springSevenTests.runtimeOnlyConfigurationName, "org.junit.platform:junit-platform-launcher:6.0.3")
+}
+val springSevenTest by tasks.registering(Test::class) {
+    group = "verification"
+    description = "Focused Spring 7 / Jakarta lifecycle regressions on an isolated dependency graph"
+    useJUnitPlatform()
+    testClassesDirs = springSevenTests.output.classesDirs
+    classpath = springSevenTests.runtimeClasspath
+    outputs.upToDateWhen { false }
+    dependsOn(tasks.named("shadowJar"))
+    systemProperty("reclazz.agent.jar",
+        tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile.get().asFile.absolutePath)
+    inputs.file(tasks.named<org.gradle.jvm.tasks.Jar>("shadowJar").get().archiveFile).withPropertyName("agentJar")
+    jvmArgs("-Djdk.attach.allowAttachSelf=true")
+    testLogging { events("passed", "failed", "skipped") }
+}
+
 // Native Spring 6 messaging regressions on an independent, test-only graph.
 val modernMessagingTests = sourceSets.create("modernMessagingTest") {
     compileClasspath += premium.output + sourceSets.main.get().output + sourceSets.test.get().output + sourceSets.main.get().compileClasspath
