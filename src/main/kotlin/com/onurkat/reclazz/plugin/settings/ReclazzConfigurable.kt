@@ -4,7 +4,6 @@
  */
 package com.onurkat.reclazz.plugin.settings
 
-import com.intellij.ide.plugins.PluginManager
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.options.ConfigurationException
@@ -13,6 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.popup.JBPopupFactory
 import com.intellij.ui.SimpleListCellRenderer
 import com.intellij.ui.dsl.builder.*
+import com.onurkat.reclazz.plugin.PluginPresence
 import com.onurkat.reclazz.plugin.agent.AgentJarLocator
 import com.onurkat.reclazz.plugin.agent.AttachAction
 import com.onurkat.reclazz.plugin.hybris.ExtensionResolver
@@ -22,6 +22,7 @@ import com.onurkat.reclazz.plugin.notifications.ReloadNotifications
 import com.onurkat.reclazz.plugin.reload.ReloadManager
 import com.onurkat.reclazz.plugin.ui.ReclazzSurfaces
 import javax.swing.JComponent
+import javax.swing.JList
 import javax.swing.JTextField
 import javax.swing.ListSelectionModel
 
@@ -85,10 +86,7 @@ class ReclazzConfigurable internal constructor(
         agentPortField = settings.agentPort
 
         val manager = ReloadManager.getInstance(project)
-        // Public entry point: PluginManagerCore.getPlugin is internal API and
-        // the Marketplace rejects plugins that call it.
-        val version = PluginManager.getInstance()
-            .findEnabledPlugin(AgentJarLocator.RECLAZZ_PLUGIN_ID)
+        val version = PluginPresence.enabledDescriptor(AgentJarLocator.RECLAZZ_PLUGIN_ID.idString)
             ?.version ?: "?"
         val connected = manager.isConnected
         val reloadCount = manager.reloadCount
@@ -193,7 +191,16 @@ class ReclazzConfigurable internal constructor(
             group("Reloading") {
                 row("Apply reloads:") {
                     comboBox(listOf("immediate", "request"),
-                        SimpleListCellRenderer.create("") { if (it == "request") "At the next request boundary" else "Immediately" })
+                        object : SimpleListCellRenderer<String>() {
+                            override fun customize(list: JList<out String>, value: String?, index: Int,
+                                                   selected: Boolean, hasFocus: Boolean) {
+                                text = when (value) {
+                                    null -> ""
+                                    "request" -> "At the next request boundary"
+                                    else -> "Immediately"
+                                }
+                            }
+                        })
                         .bindItem({ reloadBoundaryField }, { reloadBoundaryField = it ?: "immediate" })
                     contextHelp("At the next request boundary waits for running MVC requests to finish. It needs " +
                                 "the agent at JVM startup; an attached agent always applies immediately.")

@@ -7,7 +7,6 @@ package com.onurkat.reclazz.plugin
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.startup.ProjectActivity
-import com.intellij.ide.plugins.PluginManager
 import com.onurkat.reclazz.plugin.agent.AgentJarLocator
 import com.onurkat.reclazz.plugin.hybris.HybrisAgentInstaller
 import com.onurkat.reclazz.plugin.hybris.HybrisProjectDetector
@@ -63,8 +62,7 @@ class ReclazzStartup : ProjectActivity {
         // Keep the staged agent in step with the plugin. Only ever refreshes a
         // copy that already exists, and only says anything when it changed.
         if (AgentJarLocator.refreshStagedAgentJar()) {
-            val version = PluginManager.getInstance()
-                .findEnabledPlugin(AgentJarLocator.RECLAZZ_PLUGIN_ID)?.version ?: "a new version"
+            val version = PluginPresence.enabledDescriptor(AgentJarLocator.RECLAZZ_PLUGIN_ID.idString)?.version ?: "a new version"
             ReloadNotifications.agentJarRefreshed(project, version)
         }
 

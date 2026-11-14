@@ -118,7 +118,8 @@ val checkInternalApiUsage by tasks.registering {
 
     // Symbol to the public replacement to use instead.
     val denied = mapOf(
-        "PluginManagerCore" to "PluginManager.getInstance().findEnabledPlugin(id)",
+        "PluginManagerCore" to "PluginPresence.enabledDescriptor(id)",
+        "findEnabledPlugin" to "PluginPresence.enabledDescriptor(id)",
     )
 
     doLast {
@@ -304,23 +305,16 @@ intellijPlatform {
         )
 
         ides {
-            // Pinned rather than recommended(): the resolver in this Gradle
-            // plugin version reaches for builds that are not downloadable.
-            // 2025.3 is not resolvable here either, by version or by build
-            // number, so 2025.2 is the newest this toolchain can verify while
-            // untilBuild claims 262.
+            // Keep historical Community targets; 2025.3+ uses the unified IU installer.
+            // IPGP 2.2.1 / Gradle 8.10.2 resolves these installers without an upgrade.
+            // Each additional IDE download is about 1.5 GB, before verifier dependencies.
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2023.3")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2024.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.1")
             ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaCommunity, "2025.2")
-            // 2025.2 is still the newest this toolchain resolves: 2025.3 is in
-            // the release feed and not in the repository this plugin reads, and
-            // 2026.1 is not a Community build at all. That is the gate's limit
-            // and it costs something real. The Marketplace verifies against
-            // IntelliJ IDEA 2026.1, where ReadAction.compute is deprecated and
-            // nowhere below it is, so 1.1.0 shipped a warning this task could
-            // not have reported and still cannot. When a review comes back with
-            // a deprecation, the Marketplace page is the only place to read it.
+            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2025.3", true)
+            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.1", true)
+            ide(org.jetbrains.intellij.platform.gradle.IntelliJPlatformType.IntellijIdeaUltimate, "2026.2.5", true)
         }
     }
 

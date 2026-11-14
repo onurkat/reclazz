@@ -191,8 +191,8 @@ class ReloadManager(private val project: Project) : Disposable {
      */
     private fun reportVersionMismatchOnce(agentVersion: String) {
         if (versionMismatchReported) return
-        val pluginVersion = com.intellij.ide.plugins.PluginManager.getInstance()
-            .findEnabledPlugin(com.onurkat.reclazz.plugin.agent.AgentJarLocator.RECLAZZ_PLUGIN_ID)
+        val pluginVersion = com.onurkat.reclazz.plugin.PluginPresence.enabledDescriptor(
+            com.onurkat.reclazz.plugin.agent.AgentJarLocator.RECLAZZ_PLUGIN_ID.idString)
             ?.version ?: return
         val said = AgentVersionMatch.describe(pluginVersion, agentVersion) ?: return
         versionMismatchReported = true
