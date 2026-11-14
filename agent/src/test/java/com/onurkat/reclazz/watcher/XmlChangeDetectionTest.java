@@ -6,6 +6,7 @@ package com.onurkat.reclazz.watcher;
 
 import com.onurkat.reclazz.config.AgentConfig;
 import com.onurkat.reclazz.platform.PlatformContext;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -34,6 +35,13 @@ class XmlChangeDetectionTest {
     Path tempDir;
 
     private FileWatcher watcher;
+
+    @AfterEach
+    void stopWatcher() {
+        // Each watcher holds a native watch service; on Linux these come from a
+        // small per-user inotify allowance that a long suite would otherwise exhaust.
+        if (watcher != null) watcher.stopWatching();
+    }
 
     @BeforeEach
     void setUp() throws Exception {

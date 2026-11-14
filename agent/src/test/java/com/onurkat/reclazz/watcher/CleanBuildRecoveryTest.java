@@ -53,6 +53,8 @@ class CleanBuildRecoveryTest {
     @AfterEach
     void restoreGrace() {
         FileWatcher.missingGraceMs = originalGrace;
+        // Release the native watch service (a limited inotify instance on Linux).
+        if (watcher != null) watcher.stopWatching();
     }
 
     private FileWatcher.WatchedDirectory lose(Path directory) {

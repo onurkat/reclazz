@@ -29,7 +29,7 @@ class JavaSourceDispatchTest {
     }
 
     @Test void deletionAndRecreationOfTheSameSourceVersionAreDelivered() throws Exception {
-        var watcher = new FileWatcher(new NoopPlatformContext(), AgentConfig.parse(null));
+        var watcher = track(new FileWatcher(new NoopPlatformContext(), AgentConfig.parse(null)));
         var events = new ArrayList<ChangeEvent>(); watcher.onFileChange(events::add);
         Path file = dir.resolve("Job.java"); byte[] bytes = "class Job {}".getBytes();
         Files.write(file, bytes); FileTime stamp = Files.getLastModifiedTime(file);
@@ -42,13 +42,22 @@ class JavaSourceDispatchTest {
         assertEquals(ChangeEvent.Type.CREATED, events.get(2).getType());
     }
 
+    // Each watcher holds a native watch service; on Linux these come from a
+    // small per-user inotify allowance that a long suite would otherwise exhaust.
+    private final ArrayList<FileWatcher> watchers = new ArrayList<>();
+
+    private FileWatcher track(FileWatcher watcher) { watchers.add(watcher); return watcher; }
+
+    @org.junit.jupiter.api.AfterEach
+    void stopWatchers() { watchers.forEach(FileWatcher::stopWatching); }
+
     private static void clearRecent(FileWatcher watcher) throws Exception {
         var recent = FileWatcher.class.getDeclaredField("lastModifiedMap"); recent.setAccessible(true);
         ((Map<?,?>) recent.get(watcher)).clear();
     }
 
     private void exercise(boolean resave, boolean changed, int expected) throws Exception {
-        var watcher = new FileWatcher(new NoopPlatformContext(), AgentConfig.parse(null));
+        var watcher = track(new FileWatcher(new NoopPlatformContext(), AgentConfig.parse(null)));
         var events = new ArrayList<ChangeEvent>(); watcher.onFileChange(events::add);
         Path file = dir.resolve("Job.java"); Files.writeString(file, "class Job { int delay=1000; }");
         var first = new FileWatcher.PendingEvent(0, file, ChangeEvent.Type.MODIFIED, "app", "src");
