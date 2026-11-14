@@ -373,6 +373,12 @@ public final class WatchedApp implements AutoCloseable {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         assertNotNull(compiler, "a JDK is required to run this test");
         List<String> args = new ArrayList<>(List.of("-d", outputDir.toString(), "-nowarn"));
+        // Older Spring scanners cannot read newer class formats even when the
+        // application runs on that JDK. Keep its fixture target explicit;
+        // Spring-free/newer-framework runs can opt into the worker's format.
+        String release = System.getProperty("reclazz.fixtureRelease");
+        if (release == null && Runtime.version().feature() >= 22) release = "21";
+        if (release != null) args.addAll(List.of("--release", release));
         // The output directory is on the compile classpath, the way it is in a
         // real build: recompiling one source has to see the classes already
         // built beside it, or a file that refers to its neighbour fails to

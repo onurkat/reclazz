@@ -62,6 +62,23 @@ plugins {
 group = "com.onurkat.reclazz"
 version = rootProject.version
 
+// Test tooling only; this is the first JaCoCo release with official Java 25 support.
+jacoco {
+    toolVersion = "0.8.14"
+}
+
+// Opt-in worker JVM; the build/compiler and release 17 target stay unchanged.
+val testJava = providers.gradleProperty("reclazz.testJava")
+if (testJava.isPresent) {
+    val fixtureRelease = providers.systemProperty("reclazz.fixtureRelease")
+    val language = org.gradle.jvm.toolchain.JavaLanguageVersion.of(testJava.get().toInt())
+    val toolchains = extensions.getByType(org.gradle.jvm.toolchain.JavaToolchainService::class.java)
+    tasks.withType<Test>().configureEach {
+        javaLauncher.set(toolchains.launcherFor { languageVersion.set(language) })
+        if (fixtureRelease.isPresent) systemProperty("reclazz.fixtureRelease", fixtureRelease.get())
+    }
+}
+
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
