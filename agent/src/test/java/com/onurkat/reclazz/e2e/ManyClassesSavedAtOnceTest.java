@@ -10,6 +10,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -59,9 +60,12 @@ class ManyClassesSavedAtOnceTest {
             assertTrue(app.awaits("VERSIONS=" + "v2".repeat(SAVED), 120),
                     () -> "not every saved bean serves its new version:\n" + app.tail());
             long served = System.currentTimeMillis() - saved;
+            app.awaitOrFail("Batch of " + SAVED + " class files done",
+                    "all per-class reload results must be published before counting them");
+            List<String> out = app.output();
 
-            long reloadedLines = app.output().stream().filter(l -> l.contains("Reloaded app.Bean")).count();
-            long sweeps = app.output().stream().filter(l -> l.contains("Re-pointed")).count();
+            long reloadedLines = out.stream().filter(l -> l.contains("Reloaded app.Bean")).count();
+            long sweeps = out.stream().filter(l -> l.contains("Re-pointed")).count();
             // From the agent noticing the first class file to the application
             // serving every new version: the part of the wait the agent owns.
             // What comes before it is javac and the file watcher's poll.
@@ -73,21 +77,32 @@ class ManyClassesSavedAtOnceTest {
                     + " reloadedLines=" + reloadedLines
                     + " singletonSweeps=" + sweeps);
             if (Boolean.getBoolean("reclazz.bench.trace")) {
-                app.output().stream().filter(l -> l.contains("[Reclazz]"))
+                out.stream().filter(l -> l.contains("[Reclazz]"))
                         .forEach(l -> System.out.println("[trace] " + l));
             }
 
-            assertEquals(SAVED, reloadedLines, "each saved class reloads exactly once");
-            assertTrue(app.output().stream().anyMatch(l -> l.contains(SAVED + " class files changed together")),
+            assertEquals(SAVED, reloadedLines,
+                    () -> "each saved class reloads exactly once; per-class counts: "
+                            + IntStream.range(0, SAVED).mapToObj(i -> "Bean" + i + "="
+                                    + out.stream().filter(l -> l.matches(
+                                            ".*Reloaded app\\.Bean" + i + "(?:[^0-9].*|$)")).count())
+                                    .collect(Collectors.joining(", "))
+                            + "\nBatches:\n"
+                            + out.stream().filter(l -> l.contains("changed together"))
+                                    .collect(Collectors.joining("\n"))
+                            + "\nReloads:\n"
+                            + out.stream().filter(l -> l.contains("Reloaded app.Bean"))
+                                    .collect(Collectors.joining("\n")));
+            assertTrue(out.stream().anyMatch(l -> l.contains(SAVED + " class files changed together")),
                     () -> "the whole save should arrive as one batch, not a batch and stragglers:\n"
-                            + app.output().stream().filter(l -> l.contains("changed together"))
+                            + out.stream().filter(l -> l.contains("changed together"))
                                     .collect(Collectors.joining("\n")));
             // Once, or not at all: when the whole save is one batch the hub that
             // holds every saved bean is itself refreshed by the cascade, so there
             // may be nothing stale left for the sweep to re-point.
             assertTrue(sweeps <= 1,
                     () -> "the singleton sweep should run at most once for the whole save, ran " + sweeps + ":\n"
-                            + app.output().stream().filter(l -> l.contains("Re-pointed"))
+                            + out.stream().filter(l -> l.contains("Re-pointed"))
                                     .collect(Collectors.joining("\n")));
         }
     }
