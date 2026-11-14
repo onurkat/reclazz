@@ -1,0 +1,713 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAP Commerce: what we test live | Reclazz docs</title>
+<meta name="description" content="Complete configuration, behavior and scope reference: SAP Commerce: what we test live.">
+<meta name="theme-color" content="#0b0d12"><meta name="color-scheme" content="dark light">
+<link rel="canonical" href="https://reclazz.com/docs/reference/sap-commerce-live-tests/">
+<meta property="og:type" content="article"><meta property="og:title" content="SAP Commerce: what we test live | Reclazz docs">
+<meta property="og:description" content="Complete configuration, behavior and scope reference: SAP Commerce: what we test live."><meta property="og:url" content="https://reclazz.com/docs/reference/sap-commerce-live-tests/">
+<meta property="og:image" content="https://reclazz.com/og-image.png">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
+<link rel="stylesheet" href="/docs/assets/docs.css?v=1a3655f79ef4"><link rel="stylesheet" href="/assets/site.css?v=ff823a0eccc6">
+<script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "SAP Commerce: what we test live", "description": "Complete configuration, behavior and scope reference: SAP Commerce: what we test live.", "url": "https://reclazz.com/docs/reference/sap-commerce-live-tests/", "dateModified": "2026-10-19", "version": "1.6.0"}</script>
+</head>
+<body class="docs-page">
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="docs-header site-header">
+<a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" alt="" width="32" height="32"><span>Reclazz</span></a>
+<span class="header-divider" aria-hidden="true"></span><nav class="header-links" aria-label="Main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a></nav>
+<button class="search-trigger" id="search-open" type="button" aria-controls="search-dialog" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><span>Search documentation</span><kbd>⌘ K</kbd></button>
+<button class="theme-button" id="theme-toggle" type="button" aria-label="Switch color theme" hidden><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M20.6 13.1A8.5 8.5 0 0 1 10.9 3.4 8.5 8.5 0 1 0 20.6 13.1Z"/></svg></button>
+<a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
+<details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
+</header>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a aria-current="page" href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">◈</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.6.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a aria-current="page" href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">◈</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="sap-commerce-what-we-test-live">SAP Commerce: what we test live</h1><div class="reference-content"><p>Keep the server warm, then check the application. These scenarios save real
+files against a running SAP Commerce 2211 installation and check what SAP
+actually returns: an HTTP response, persisted query result, rendered component
+or Backoffice view. A reload notification alone cannot pass them. Refusal cases
+must also prove that the last working behavior and protected data stay intact.</p>
+<p>Evidence is recorded through 13 November 2026.
+It describes existing acceptance evidence, not a new run performed by building
+this documentation. See the <a href="/docs/reference/sap-commerce/">setup guide</a> to attach Reclazz,
+and <a href="/docs/reference/usage/#sap-reload-outcomes-and-verification">reload conditions</a> before
+applying these results to your installation.</p>
+<h2 id="how-we-run-it">How we run it</h2>
+<p>We use a clean, licensed SAP Commerce 2211 installation with HSQLDB, standard
+SAP modules and synthetic test extensions. It is separate from customer systems.
+The default suite now contains <strong>64 scenarios, all required to PASS, with zero
+SKIPs</strong>. The archived acceptance for the preceding 58-case membership ran five
+times on one server boot and once after a fresh boot: <strong>six runs of 58/58 PASS</strong>, with zero bean-refresh
+failures and unchanged fixture files. Since 13 November 2026 each accepted change
+runs the default suite twice, once on the same boot and once after a fresh boot;
+the latest acceptance was 64/64 in both runs. Hibernate ORM is tested separately in the agent
+regression suite; it is not a SAP live scenario.</p>
+<p>The live tests run locally before relevant commits and releases. CI execution
+is manual; we do not run a licensed SAP server test on every push. Tests restore
+fixture bytes and verify their application baseline, use owned data and check
+cleanup. This test cleanup is not an automatic undo feature for your application.</p>
+<p>Expensive or stateful cases have separate opt-in profiles. Their recorded
+acceptance differs from the default suite:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Recorded independent acceptance</th>
+<th>Recovery check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>beans.xml</code> generation</td>
+<td>Three consecutive passes on one boot</td>
+<td>Generated API and fixtures restored; default suite checked around the profile</td>
+</tr>
+<tr>
+<td><code>items.xml</code> schema update</td>
+<td>Three positive cycles and one deliberate failure control</td>
+<td>Stopped HSQLDB snapshot restored and verified; fresh normal boot, no added attribute or owned rows</td>
+</tr>
+<tr>
+<td>Static initialization</td>
+<td>Three positive off/on cycles and one deliberate failure control</td>
+<td>Fresh normal boot with the option off and startup values restored</td>
+</tr>
+<tr>
+<td>Solr targeted reindex</td>
+<td>Three positive cycles and one deliberate failure control</td>
+<td>Owned local Solr and temporary configuration removed; fresh normal boot</td>
+</tr>
+<tr>
+<td>CMS component render</td>
+<td>Three positive cycles and one deliberate failure control</td>
+<td>Temporary CMS layer restored and verified; fresh normal boot</td>
+</tr>
+<tr>
+<td>Backoffice</td>
+<td>Three rendered config edit/revert cycles, plus socket add/edit/remove checks</td>
+<td>Configuration media restored to the recorded baseline</td>
+</tr>
+</tbody>
+</table></div>
+<p>Profile provisioning and recovery can stop and restart the isolated test server.
+The edit assertions below happen on the running server. A schema profile's
+recovery boot is not evidence that arbitrary schema changes need no restart.
+The <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/ReclazzTestRunner.kt">runner</a>
+records default membership and separates the opt-in profiles.</p>
+<h2 id="class-bodies-and-structure">Class bodies and structure</h2>
+<p><strong>You edit:</strong> Java method bodies, constructors, methods, fields, signatures,
+annotations, lambdas or several related classes.</p>
+<p><strong>Reclazz does:</strong> Compiles and reloads prepared classes, refreshing affected
+Spring beans where the scenario requires it.</p>
+<p><strong>The test proves:</strong> Requests execute the changed behavior, including added or
+removed members, constructor effects and recovery after invalid source. These
+are bounded fixtures, not a promise that arbitrary object state migrates.
+See the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ConstructorChangeTest.kt">constructor scenario</a>
+and <a href="/docs/reference/usage/#known-limitations">JVM limits</a>.</p>
+<h2 id="spring-beans-and-xml">Spring beans and XML</h2>
+<p><strong>You edit:</strong> A bean body or constructor, an XML property/reference, or a new
+bean definition in a loaded Spring resource.</p>
+<p><strong>Reclazz does:</strong> Refreshes the affected bean or applies the supported XML
+definition change in its owning context.</p>
+<p><strong>The test proves:</strong> HTTP reads the new property, referenced service or recreated
+bean result, then the restored value. A new XML singleton becomes usable.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SpringXmlLiveTest.kt">XML edits</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SpringXmlNewBeanLiveTest.kt">new beans</a>.</p>
+<p>A separate focused check on 13 November 2026 confirmed existing local XML import
+support: adding an import to a loaded file made a plain singleton available, then
+editing the imported file updated the same singleton in the same JVM. Without the
+agent, the import save left the bean absent. The child file was prepared before
+boot to isolate the import edit; live child-file creation, remote imports and
+unloading were not measured. This adds no profile or default-suite membership.</p>
+<h2 id="spring-scheduled-metadata">Spring scheduled metadata</h2>
+<p><strong>You edit:</strong> The fixed delay on an existing prepared <code>@Scheduled</code> method.</p>
+<p><strong>Reclazz does:</strong> Uses the existing Spring scheduler reload path to replace the
+method's registration.</p>
+<p><strong>The test proves:</strong> One owned native FixedDelayTask follows 1000 -&gt; 300 -&gt;
+restored 1000 ms. Actual monotonic tick gaps follow the interval in each phase,
+and the registered task and ticks use the current bean. The owner context stays
+the same and exactly one owned registration remains. Cleanup clears the run's
+observations and restores the one baseline timer. The round trip takes
+about 12 s. Foreign schedules are excluded from its count and are not changed.
+This records existing metadata reload; added/removed scheduled methods and
+other scheduling modes are outside this case. See the
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ScheduledMetadataLiveTest.kt">metadata round trip</a>.</p>
+<h2 id="mvc-and-occ-mappings-and-field-sets">MVC and OCC mappings and field sets</h2>
+<p><strong>You edit:</strong> A prepared controller's request mapping, OCC override priority or
+field-set XML.</p>
+<p><strong>Reclazz does:</strong> Refreshes the relevant mappings or field-set configuration.</p>
+<p><strong>The test proves:</strong> The new route returns its expected payload while the old
+route becomes 404; an override changes the winning response; field selection
+changes the actual OCC response. New controller enrollment is a separate open
+scope. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OccRequestMappingLiveTest.kt">routes</a>,
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OccFieldSetLiveTest.kt">field sets</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PlatformConfigLiveTest.kt">override priority</a>.</p>
+<p><strong>You edit:</strong> The Java body of your own request date parser that an OCC
+controller calls (a Spring <code>Converter&lt;String, Date&gt;</code> bean).</p>
+<p><strong>The test proves:</strong> The OCC response returns the edited parsed time, then the
+restored one; invalid input keeps its 400 status and a time/locale control stays
+unchanged. SAP's own <code>WsDateFormatter</code> and response serialization are not
+covered by this case. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OccDateParsingLiveTest.kt">OCC date parsing</a>.</p>
+<h2 id="interceptors-and-mappings">Interceptors and mappings</h2>
+<p><strong>You edit:</strong> A ValidateInterceptor, PrepareInterceptor, InitDefaultsInterceptor, LoadInterceptor or RemoveInterceptor body, add an XML
+interceptor mapping, or change its interceptor reference and type code.</p>
+<p><strong>Reclazz does:</strong> Refreshes the interceptor and updates SAP's actual interceptor
+registry, preserving its native registry implementation.</p>
+<p><strong>The test proves:</strong> Native model saves observe the changed validation behavior
+and the intended mapping, including retargeting a mapping. The prepare case
+commits a changed field through ModelService.save: v1, edited v2, then restored
+v1. Independent detached reads require the same PK, one callback per save and
+an unchanged control row. The permanent mapping also leaves DAO-, dynamic- and
+schema-shaped nonces unchanged; cleanup proves zero remaining synthetic rows
+and recorder entries.
+The InitDefaults case checks v1, edited v2 and restored v1 immediately after
+native ModelService.create, before a separate save. An unsaved model retained
+across the edit keeps its original v1 default. Detached persisted reads agree,
+with exactly one callback per create and none added by save. Unscoped creates
+and DAO/dynamic/schema/prepare-shaped guard rows stay unchanged; cleanup releases
+all held models, scopes, recorder entries and owned rows. This is request-thread
+coverage, not concurrent tenant/session acceptance.
+The Load case clears the model context, then loads a persisted row through native
+ModelService.get. Three distinct callback-recorded objects prove v1/v2/v1, exactly
+one callback each. A second get in the same request returns the attached object
+without another callback; explicitly reattaching the retained old model across
+edits also preserves its original proof. Models are detached in the request that
+attached them. Persisted target/control data and five unrelated guard rows stay
+unchanged; cleanup releases all rows, models, scopes and records. This proves
+fresh model conversion, not a database or region-cache miss, and does not cover
+refresh(). Withheld-edit and reuse-held negative controls both fail as required.
+The Remove case commits three disposable nonce-owned rows, then invokes native
+ModelService.remove once per step across v1/v2/v1. An unedited recorder verifies
+one callback and exact model identity; a separate request verifies committed row
+absence. A control row stays intact. Six unscoped synthetic guard removals and
+cleanup cannot add callback evidence. Both focused runs passed; withholding the
+edit and omitting native removal failed their receipt/callback oracles, with all
+owned rows, scopes and records cleaned. This covers existing body reload, not
+cascade/veto semantics or concurrent removal. It is part of the default suite
+and passes in the six-run acceptance above.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/RemoveInterceptorLiveTest.kt">native removal</a>.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LoadInterceptorLiveTest.kt">fresh and warm loads</a>.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InitDefaultsInterceptorLiveTest.kt">defaults on create</a>.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PrepareInterceptorLiveTest.kt">prepare saves</a>,
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingAddLiveTest.kt">mapping addition</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/InterceptorMappingEditLiveTest.kt">mapping edits</a>.</p>
+<h2 id="bean-validation">Bean Validation</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Default scenario</th>
+<th>Verified behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persisted validation constraints through ImpEx</td>
+<td>The watcher reloads SAP's native validation engine after a constraint change; held and fresh validation see v2 and restored v1. Unrelated imports leave the engine unchanged.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Diagnostic and no-reload control runs of this scenario remain opt-in.</p>
+<p><strong>You edit:</strong> A validator body or a Java constraint annotation parameter.</p>
+<p><strong>Reclazz does:</strong> Reloads the validator and refreshes validation metadata for
+the prepared class.</p>
+<p><strong>The test proves:</strong> The existing validator/factory returns the changed violation
+message or accepts a value after its limit changes. Invalid and valid controls
+remain checked. This does not cover stored SAP validation-engine constraints.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ValidatorLiveTest.kt">validator scenarios</a>.</p>
+<h2 id="native-occ-exception-error-response">Native OCC exception error response</h2>
+<p><code>OccErrorResponseLiveTest</code> exercises an existing Java body reload path through
+SAP's native <code>RestExceptionResolver</code>, <code>DefaultWebserviceErrorFactory</code> and
+<code>ExceptionConverter</code>. An owned service selects one of two preloaded exception
+types. Editing only its throw site must change the public HTTP400 error type
+First -&gt; Second -&gt; First; the exact parsed error document is checked each time.
+The generic error message remains unchanged under the native default policy.</p>
+<p>The controller does not construct error JSON or catch the exception. Its success
+endpoint and independent control exception stay unchanged, as do the serving
+context, service identity and JVM. An actual baseline response must fail the v2
+oracle before the edit; source-correlated compile/reload receipts are required
+in both directions. This is default case62 and coverage of existing behavior,
+not a new exception handler or a change to SAP's error policy. The focused native
+result and recovery are recorded at handoff; full default repeatability belongs
+to the independent audit.</p>
+<h2 id="new-occ-controller-after-startup">New OCC controller after startup</h2>
+<p><strong>You add:</strong> A controller Java source that was absent at server startup, in a
+package covered by an already loaded plain XML component-scan. Each test run
+uses a new class, bean name and route.</p>
+<p><strong>Reclazz does:</strong> Registers the new controller in the contexts that actually
+loaded the matching scan, then uses SAP's native MVC mapping lifecycle. A
+shared defining classloader does not place an OCC controller in the global
+context. Unsupported scan filters, custom scanner settings and unresolved
+package expressions do not establish a new scan owner.</p>
+<p><strong>The test proves:</strong> Native OCC changes from404 to200 and returns both the fresh
+source nonce and request nonce, with actual <code>CommerceHandlerMapping</code> ownership,
+unchanged existing OCC/probe endpoints and the same JVM. This is default case61.
+Deleting the source/class files leaves the already loaded endpoint active until
+restart; automatic bean/handler removal is not claimed. The test removes its
+owned files, and install recovery resets runtime registrations. The focused
+regression passed; full61-case repeatability remains an independent audit gate.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/NewOccControllerEvidenceTest.kt">the new-controller case</a>.</p>
+<h2 id="populators-and-orika">Populators and Orika</h2>
+<p><strong>You edit:</strong> A populator body or an OCC field mapping that adds and then removes
+a mapped property.</p>
+<p><strong>Reclazz does:</strong> Refreshes the populator or conversion metadata.</p>
+<p><strong>The test proves:</strong> OCC returns the edited populated value with an unchanged
+control field. The Orika rollback case proves that a removed property disappears
+again from the response. Arbitrary converter/list directives are not certified.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PopulatorOccLiveTest.kt">populator</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/OrikaPropertyRollbackLiveTest.kt">Orika rollback</a>.</p>
+<h2 id="native-facade-and-dependent-service">Native facade and dependent service</h2>
+<p><strong>You edit:</strong> Only the Java body of an owned service injected into a native
+<code>DefaultProductFacade</code> child bean. The service delegates product lookup to SAP's
+native product DAO and changes the selected owned product.</p>
+<p><strong>The test proves:</strong> Public HTTP returns <code>ProductData</code> from the native facade,
+using an isolated SAP populating converter with native <code>ProductBasicPopulator</code>.
+The selected product name changes v1 -&gt; v2 -&gt; v1; other converted fields and an
+independent facade endpoint remain stable. Exact persisted product identities,
+names, bean collaborators and JVM identity stay unchanged. All three owned
+products and their catalog/version are removed afterward. An actual baseline
+response rejects the withheld v2 oracle before the edit.</p>
+<p>This is default case 60. It covers the dedicated native basic converter, not the
+full storefront URL/image converter, cart/checkout, or arbitrary facade paths.
+It adds a native facade/service consumer to existing populator/OCC coverage;
+no new agent reload mechanism is claimed. Full default repeatability belongs
+to independent audit. See
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/FacadeChainLiveTest.kt">the facade scenario</a>.</p>
+<h2 id="dao-and-flexiblesearch">DAO and FlexibleSearch</h2>
+<p><strong>You edit:</strong> The query body of a plain XML singleton DAO.</p>
+<p><strong>Reclazz does:</strong> Reloads the DAO through its existing Java/bean path.</p>
+<p><strong>The test proves:</strong> Genuine persisted fixture rows yield exactly two A rows,
+then one B row after the edit, then the original A rows after restoration.
+Cleanup removes all four owned rows. This proves query execution, not native
+region-cache invalidation or search-restriction coverage.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/FlexibleSearchLiveTest.kt">FlexibleSearch</a>.</p>
+<h2 id="dynamic-attributes">Dynamic attributes</h2>
+<p><strong>You edit:</strong> The getter/setter body of an XML-wired DynamicAttributeHandler.</p>
+<p><strong>Reclazz does:</strong> Reloads the handler used by the native generated model.</p>
+<p><strong>The test proves:</strong> Both a warmed held model and a detached/requeried model
+with the same PK return the changed getter value, then restore it. Distinct
+setter tokens reach the changed callback. The setter records a nonpersistent
+map value; it does not prove a stored database attribute write.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/DynamicAttributeLiveTest.kt">dynamic attributes</a>.</p>
+<h2 id="impex-auto-import-and-remove-refusal">ImpEx auto-import and REMOVE refusal</h2>
+<p><strong>You edit:</strong> The watched fixture ImpEx data, with auto-import explicitly enabled.</p>
+<p><strong>Reclazz does:</strong> Imports the supported file into the running platform. With
+REMOVE permission off, it refuses a file containing a REMOVE header.</p>
+<p><strong>The test proves:</strong> Imported values appear through the application. The refusal
+case leaves the protected row unchanged and does not import a following bait
+row. The dedicated macro UPDATE case below adds unresolved-header guard
+recovery. Positive REMOVE, a full macro matrix and native parser rollback
+are not covered by these live cases. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ImpexAutoImportTest.kt">auto-import</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ImpexRemoveRefusalLiveTest.kt">refusal</a>.</p>
+<h2 id="impex-update-macros-and-corrected-save-recovery">ImpEx UPDATE macros and corrected-save recovery</h2>
+<p><code>ImpexUpdateMacrosLiveTest</code> adds default case63 to the existing auto-import
+coverage. A run-owned watched file uses a resolved UPDATE header macro, a
+column macro and code/value macros. SAP's native import changes the owned
+Title target from v0 to v1; detached database reads retain exact PKs, German
+values and an independent control row.</p>
+<p>A later save contains an unresolved header after a valid UPDATE bait row.
+Reclazz's existing whole-file preflight refuses it: the exact warning names
+the file and line, no success receipt is accepted, and both rows stay unchanged.
+Correcting the same file imports v2; a final UPDATE restores v0 before owned
+file/row cleanup. This demonstrates pre-import guard recovery, not native
+parser atomicity or rollback. Positive REMOVE and the full macro matrix remain
+outside this case. The actual baseline must fail the v1 oracle before any save.</p>
+<h2 id="spring-integration-endpoint-edit">Spring Integration endpoint edit</h2>
+<p><strong>You edit:</strong> The expression of a <code>&lt;int:service-activator&gt;</code> in a watched
+<code>*-spring.xml</code>.</p>
+<p><strong>Reclazz does:</strong> Stops the old endpoint, which unsubscribes it from its
+channel, replaces the endpoint and its generated handler definition under
+their live names, then creates and starts the new endpoint, in every context
+that loaded the file. If the new handler cannot be created the old endpoint is
+started again and the save is reported as needing a restart.</p>
+<p><code>SpringIntegrationLiveTest</code> adds default case64. Before the save, four
+request-reply messages through the owned <code>DirectChannel</code> answer <code>A:x</code> in each
+owner context. After the save the same four messages answer <code>B:x</code>, the channel
+has exactly one subscriber, and the save reports no restart item. The original
+file is restored and <code>A:x</code> is verified again. Adding or removing endpoints,
+channel type changes, gateways and Java DSL flows still ask for a restart.
+Poller edits are restart-only except the file inbound adapter case in
+<a href="#focused-checks-outside-the-default-suite">focused checks</a>.</p>
+<h2 id="localization-and-properties">Localization and properties</h2>
+<p><strong>You edit:</strong> An English type-localization resource or an application property.</p>
+<p><strong>Reclazz does:</strong> Refreshes the relevant localization cache or applies changed
+platform configuration keys.</p>
+<p><strong>The test proves:</strong> A cached localization lookup returns the edited label;
+application HTTP reads the changed property while a control key stays stable.
+This does not certify every startup-only consumer, logger backend, locale
+fallback or stored type-name update. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LocalizationLiveTest.kt">localization</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/PlatformConfigLiveTest.kt">properties</a>.</p>
+<h2 id="platform-logger-levels">Platform logger levels</h2>
+<p><strong>You edit:</strong> The level in a watched <code>log4j2.logger.&lt;id&gt;.name</code> / <code>.level</code>
+property pair, from INFO to DEBUG and back.</p>
+<p><strong>Reclazz does:</strong> Finds the existing Log4j2 context owning the named logger,
+changes only its explicit configuration and reads back the live logger level
+before reporting success. A saved SAP alias can authorize several owners only
+when every owner has the same alias/name/level declaration in its verified
+in-memory property source. Each member is updated and read back; undeclared,
+file/XML, unknown or oversized sources refuse the group. Plain level maps and
+other ambiguous owners remain refused. Partial failure triggers verified
+rollback; failed rollback reports an error and a restart concern. Several
+contexts without a unique owner remain refused.
+A cold logger is allowed in a sole existing context. Inherited levels receive
+a named child configuration; parent and root remain unchanged. Discovery covers
+listed contexts plus the initialized selector default, using a read-only
+adapter verified against Log4j2 2.25.3. It does not initialize an unused default
+or enumerate arbitrary thread-bound/custom contexts. Unknown or inaccessible
+selector layouts and detected inventory changes warn without level mutation.</p>
+<p><strong>The test proves:</strong> A private bounded appender receives target DEBUG
+only after the edit, with target/control INFO markers proving delivery in every
+phase. The control logger, root, unrelated logger configuration and appender
+attachments stay unchanged, in the same JVM. Withholding the property save and
+omitting native emissions both fail the test; a final ordinary run passes again.
+All four runs restored exact property bytes, removed the appender and left zero
+active fixture runs. The source-backed-group candidate then passed a single
+ordered 49-predecessor-plus-logger diagnostic: 50/50. Its installed jar/class
+identity was verified. The prior unique-owner candidate had refused the two
+owners and finished 49/50. It is part of the default suite and passes in the six-run acceptance
+above. Separate installed-SDK tests cover ambiguous owners and isolated
+framework classloaders; logging XML and Solr's separate JVM are outside this
+scenario. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/LoggerLevelsLiveTest.kt">logger delivery</a>.</p>
+<h2 id="business-process-xml">Business process XML</h2>
+<p><strong>You edit:</strong> A process definition, or introduce a definition file and its bean
+in either arrival order.</p>
+<p><strong>Reclazz does:</strong> Refreshes or registers the supported process definition;
+malformed XML retains the last working definition.</p>
+<p><strong>The test proves:</strong> Native processes start and complete the selected wait/end
+path with the expected definition version. New file-first and bean-first
+definitions execute. This does not prove action-body reload or a process held
+in flight across an edit. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ProcessXmlLiveTest.kt">definition edits</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/NewProcessLiveTest.kt">new definitions</a>.</p>
+<h2 id="business-process-action-body">Business process action body</h2>
+<p><strong>You edit:</strong> The body of a prepared Java process action reading the inherited
+protected <code>processParameterHelper</code> field directly, from <code>action-v1</code> to
+<code>action-v2</code> and back, without changing its process definition.</p>
+<p><strong>The test checks:</strong> A native process is held at its wait node before the edit.
+After the matching compile and reload receipts, releasing that same process
+must persist <code>action-v2</code> in its own process parameter and reach <code>SUCCEEDED</code>.
+A fresh process must also persist v2, and another must persist v1 after source
+restoration. Process identity and definition version stay pinned. Cleanup
+removes the owned processes, tasks, task logs and context parameters.</p>
+<p>The initial direct-field probe failed after reload with <code>IllegalAccessError</code>.
+Companion field access now links through the original class lookup; the focused
+native case passes with the direct field, including the held process and source
+restoration. This proves this inherited SAP helper field in the tested subclass,
+not every protected-member or classloader shape.</p>
+<p>Retry, error and split branches are outside this case. The case takes about
+84 s. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ProcessActionLiveTest.kt">action and in-flight process</a>.</p>
+<h2 id="stored-database-scripts">Stored database scripts</h2>
+<p><strong>You edit:</strong> The content of one owned Groovy <code>Script</code> through a watched ImpEx
+UPDATE, from v1 to v2 and back. The same <code>model://</code> URI is resolved through
+SAP's native <code>ScriptingLanguagesService.getExecutableByURI()</code> and executed
+with a distinct binding in each phase.</p>
+<p><strong>The test proves:</strong> After two initial URI resolutions, withholding
+the edit still returns v1. The first fresh URI execution after the completed
+import returns v2, and the first after restoration returns v1. The independent
+control script stays unchanged, with the same service, JVM and retained target
+reference throughout. No restart or manual cache flush occurs between phases.
+Owned target/control rows and all their revisions are removed afterward.</p>
+<p>SAP already handles this database-script invalidation; no agent adapter was
+added. The initially retained compiled executable continues returning v1 even
+when a fresh lookup returns v2. The test records that distinction; it does not
+claim retained objects are retargeted. File and classpath script repositories
+are outside this case. It is part of the default suite and passes in the
+six-run acceptance above. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/StoredScriptLiveTest.kt">stored script execution</a>.</p>
+<h2 id="velocity-database-templates">Velocity database templates</h2>
+<p><strong>You edit:</strong> The default script content of owned subject and body
+<code>RendererTemplate</code> models through a watched ImpEx UPDATE, from v1 to v2 and
+back. The renderer type is Velocity; output stays in an in-memory writer.
+No email is sent.</p>
+<p><strong>The test proves:</strong> SAP's native <code>RendererService</code> renders the exact
+subject and body text with a new binding in each phase. Withholding the save
+keeps v1. The first render after the completed v2 import returns v2, and the
+first after restoration returns v1. An independent control template stays
+unchanged. The same service and JVM handle every phase without restart or
+manual cache flush. Owned templates and their media are removed afterward.</p>
+<p>This records SAP's existing default-content media behavior; no agent adapter
+was added. At the explicit English locale, UTF-8 text and literal <code>&lt;&amp;&gt;</code> in the
+plain-text binding are checked exactly. This does not establish HTML escaping,
+localized template selection, physical <code>.vm</code> file reload, or email delivery.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/VelocityTemplateLiveTest.kt">native Velocity template rendering</a>.</p>
+<h2 id="cronjobs-and-native-events">CronJobs and native events</h2>
+<p><strong>You edit:</strong> A JobPerformable body or an existing SAP event listener body.</p>
+<p><strong>Reclazz does:</strong> Reloads the prepared native consumer.</p>
+<p><strong>The test proves:</strong> CronJobService execution returns the edited version once,
+with SUCCESS/FINISHED and owned job rows cleaned up. A published native SAP
+event reaches the edited listener once, with nonce-isolated control results.
+The CronJobService case invokes the job synchronously. The separate native
+Trigger case persists one owned CronJob and three one-shot Triggers. SAP
+creates and dispatches each linked TriggerTask; its actual firing observes
+v1, the saved v2 body, then restored v1, each once with SUCCESS/FINISHED.
+Task identity and timestamp ordering are checked; the native scheduling offset
+is recorded rather than overridden. Owned tasks, triggers, job/history/log
+rows and probe observations are removed. In the default suite the case takes
+about 71 s, because SAP schedules each one-shot task after its activation time.
+This records existing body reload through SAP scheduling; it adds no scheduler
+adapter. Listener registration lifecycle remains open. See
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/TriggerFiringLiveTest.kt">native Trigger firing</a>,
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CronJobLiveTest.kt">CronJob</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SapEventLiveTest.kt">events</a>.</p>
+<h2 id="generated-dtos-from-beansxml">Generated DTOs from beans.xml</h2>
+<p><strong>You edit:</strong> A DTO property in <code>beans.xml</code> in the codegen profile.</p>
+<p><strong>Reclazz does:</strong> Runs platform generation/build and reloads generated bytecode.</p>
+<p><strong>The test proves:</strong> The generated setter is usable by compiled typed code;
+the new value appears in the FULL OCC response and stays absent from BASIC.
+Restoration removes the generated property again. Generation alone is not the
+oracle. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/BeansCodegenLiveTest.kt">DTO codegen</a>.</p>
+<h2 id="persistent-attributes-from-itemsxml">Persistent attributes from items.xml</h2>
+<p><strong>You edit:</strong> One additive persistent attribute in the isolated schema profile.</p>
+<p><strong>Reclazz does:</strong> Generates the model and, with <code>autoUpdateRunningSystem=true</code>
+explicitly enabled, requests the live type-system/schema update.</p>
+<p><strong>The test proves:</strong> The native descriptor exists and typed model code writes
+the attribute; detach/requery returns a different model instance with the
+persisted value. The driver restores the stopped database snapshot afterward.
+This is not type removal, arbitrary relation/index migration or safe production
+DDL. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ItemsSchemaLiveTest.kt">schema profile</a>
+and <a href="/docs/reference/usage/#agent-arguments">option conditions</a>.</p>
+<h2 id="static-initialization-with-an-explicit-opt-in">Static initialization with an explicit opt-in</h2>
+<p><strong>You edit:</strong> An eligible static literal-map initializer in the statics profile.</p>
+<p><strong>Reclazz does:</strong> With <code>resetStatics=true</code>, resets the eligible field after
+reload; the off lane and ineligible initializer cases retain their guardrails.</p>
+<p><strong>The test proves:</strong> Direct reads and a retained, warmed MethodHandle getter
+both see the new map. Runtime-created state and identity controls remain intact.
+This is not general static-state migration or field-initializer concurrency
+coverage. See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/ResetStaticsLiveTest.kt">statics profile</a>.</p>
+<h2 id="solr-targeted-reindex">Solr targeted reindex</h2>
+<p><strong>You edit:</strong> The fixture value-provider body in the isolated Solr profile.</p>
+<p><strong>Reclazz does:</strong> Reloads the provider and invokes the opted-in targeted reindex.</p>
+<p><strong>The test proves:</strong> The actual local Solr document's stored field changes,
+with one targeted property/document; its stable field and a control document
+stay unchanged. This does not certify Solr schema/facet changes, a remote
+cluster or a different search backend.
+See <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SolrTargetedReindexLiveTest.kt">Solr profile</a>.</p>
+<h2 id="cms-component-rendering">CMS component rendering</h2>
+<p><strong>You edit:</strong> A Java marker in a controller using SAP's inherited CMS request
+handling in the temporary CMS profile.</p>
+<p><strong>Reclazz does:</strong> Reloads the Java change used by that render path.</p>
+<p><strong>The test proves:</strong> The inherited controller renders an unsaved request
+component through JSP: HTTP 200, HTML content type and one proof element with
+the current nonce, edited marker and expected content. It does not save/edit
+JSP bytes or a complete storefront. A separate persisted-UID case
+creates one owned content catalog with two versions and four saved components.
+SAP's inherited controller resolves the same UID through the session catalog
+version, then renders JSP. Editing and reverting the selected component's Java
+marker changes its HTML while the other version and independent controls remain
+stable. Persisted identities stay unchanged, the previous session catalog scope
+is restored, and owned rows are removed through SAP's model service. This case
+is opt-in and does not increase the default 64-case suite. See the
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsComponentLiveTest.kt">request-component case</a>
+and <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsUidLookupLiveTest.kt">persisted UID case</a>.</p>
+<p>A third opt-in case selects an owned page by UID with <code>CMSPageService</code>, then
+resolves its target/control positions through native <code>getContentSlotForPage</code>
+and persisted <code>ContentSlotForPage</code> placements. The selected slot supplies the
+component UID to the inherited render path. A Java marker edit and revert
+changes only the selected target; the same-page control and both positions in
+the other catalog version stay stable. Page, slot and component identities
+stay unchanged, session catalog versions are restored, and owned placements,
+pages, slots and templates are removed before catalog cleanup. See the
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsPageSlotLiveTest.kt">page/slot case</a>.
+This exercises existing Java reload after native selection; it does not prove
+search restriction visibility, template inheritance or JSP resource hot edits.</p>
+<p>A fourth opt-in case saves and restores the actual page-slot JSP source, with
+an escaped literal marker <code>jsp-v1 -&gt; jsp-v2 -&gt; jsp-v1</code>. The native servlet
+context must resolve that source file directly, and Jasper must use
+<code>development=true</code>, <code>checkInterval=0</code>, <code>modificationTestInterval=1</code>. Rendered
+HTML follows each save in the same JVM, with unchanged Java bytes, Java
+markers, page/slot/component identities and an independent unchanged view.
+No build, copy, cache clear or restart occurs between saves. This covers
+existing SAP/Tomcat JSP serving with Reclazz present; it adds no JSP reload
+mechanism to the agent. See the
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/CmsJspResourceLiveTest.kt">JSP resource case</a>.</p>
+<h2 id="search-restrictions-and-session-catalog-visibility">Search restrictions and session catalog visibility</h2>
+<p><strong>You edit:</strong> The owned Java DAO query suffix, <code>one -&gt; two -&gt; one</code>.</p>
+<p><strong>Reclazz does:</strong> Reloads the query method while SAP keeps applying native
+persisted <code>SearchRestriction</code> rows. No restriction cache or security bypass
+is added by Reclazz.</p>
+<p><strong>The test proves:</strong> Two owned non-admin users each see their exact owned
+Product PK in each of two session catalog versions. The restrictions combine
+user-specific product codes with SAP's native <code>?session.catalogversions</code>
+predicate. Changing and restoring the DAO query selects the expected second
+and first Product PKs. A native-admin query still sees all eight owned products,
+and an unrelated Title query stays unchanged. Product, user, catalog and
+restriction identities remain stable. Local views restore the outer user,
+catalog versions, enabled flag and session restrictions; exact owned cleanup
+removes the test rows. No global or per-query restriction disable is used.
+This normal-boot case is the 59th default scenario; full 59-case repeatability
+must be established by its independent audit. Restriction text saves, role
+hierarchies and CMS page-service restriction semantics are separate scopes.
+See the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/integration-test/src/main/kotlin/com/onurkat/reclazz/inttest/tests/SearchRestrictionLiveTest.kt">native restriction case</a>.</p>
+<h2 id="backoffice-configuration-and-widgets">Backoffice configuration and widgets</h2>
+<p><strong>You edit:</strong> Backoffice config XML, or add/edit/remove a one-parameter public
+non-static <code>@SocketEvent</code> handler in an agent-prepared default MVC widget class.</p>
+<p><strong>Reclazz does:</strong> A config save calls the active cockpit configuration service's
+native <code>resetToDefaults()</code>, equivalent to the F4 config reset. Prepared Java
+body edits use class reload; a newly composed view can bind an added handler.</p>
+<p><strong>The test proves:</strong> Chrome shows the edited config title in the next fresh
+view through three edit/revert cycles without a server restart. Native widget
+dispatch handles the added method, the same view executes its edited body,
+and a fresh view has no handler after removal. Configuration media is restored.
+The F4-equivalent reset also resets UI-made config changes; it does not reset
+widgets. Open views retain bindings. Broader routing/MVVM and duplicate config
+dispatch are not resolved by this acceptance.
+See <a href="/docs/reference/usage/#backoffice-java-modules">Backoffice conditions</a>
+and the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/scripts/test-sap-backoffice-live.py">live profile driver</a>.</p>
+<h2 id="focused-checks-outside-the-default-suite">Focused checks outside the default suite</h2>
+<p>These changes were measured on a running SAP Commerce 2211 installation, but
+they are not part of the 64 default scenarios. In each case a native-only run
+(agent off, same save) first showed that SAP keeps the old behavior until a
+restart. The agent run then showed the new behavior in the same JVM, and a
+deliberately disabled agent step made the focused tests fail. Repeatable local
+regressions use the installed SAP SDK classes; they start no server and change
+no installation.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>You edit in Spring XML</th>
+<th>What the running server shows</th>
+<th>Repeatable regression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Append an ordinary singleton with <code>InitializingBean</code> or <code>init-method</code></td>
+<td>The bean is created once through Spring's own initialization; an identical save keeps the same instance</td>
+<td>Agent tests (<code>XmlNewInitializingBeanTest</code>)</td>
+</tr>
+<tr>
+<td>A <code>project.properties</code> value used as an exact <code>${key}</code> bean property</td>
+<td>The existing bean receives the new value and keeps its identity</td>
+<td>Agent tests (<code>XmlPlaceholderPropertiesTest</code>)</td>
+</tr>
+<tr>
+<td><code>add</code> or <code>remove</code> populator of an existing <code>ModifyPopulatorList</code></td>
+<td>The running converter uses the new populator list; the edit can be reverted</td>
+<td><code>scripts/test-sap-directives-sdk.py</code></td>
+</tr>
+<tr>
+<td>Append a plain SAP <code>AbstractEventListener</code> bean</td>
+<td>The new listener receives the next event once; failed creation removes it</td>
+<td><code>scripts/test-sap-events-xml-sdk.py</code></td>
+</tr>
+<tr>
+<td>The <code>converter</code> of an existing hot-folder converter mapping</td>
+<td>The next ingested file is converted by the new converter</td>
+<td><code>scripts/test-sap-hotfolder-sdk.py</code></td>
+</tr>
+<tr>
+<td><code>filename-regex</code> or <code>fixed-rate</code> of an explicit-id file inbound adapter</td>
+<td>The next poll uses the new pattern and rate; files already seen are not delivered again</td>
+<td>Agent tests (<code>SpringIntegrationPollingAdapterReloadTest</code>)</td>
+</tr>
+<tr>
+<td>An access expression in a <code>security:http</code> group</td>
+<td>The servlet filter chain enforces the new rule; failure keeps the old chain</td>
+<td>Agent tests (<code>SpringSixXmlSecurityReloadTest</code>)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Conditions and limits for each case are in the <a href="/docs/reference/sap-commerce/">setup guide</a>
+and <a href="/docs/reference/usage/#sap-populator-and-list-merge-directives">usage</a>. A failed SAP code
+generation no longer blocks later class reloads; agent tests cover that case.</p>
+<p>Backoffice widget definitions and new widget folders were measured and are not
+supported: SAP reads them from the Backoffice jars built by <code>ant build</code>, and
+even with SAP's development switches F4 and Reset Everything did not show the
+change. Use the native build and redeploy, or restart. Widget controller Java
+bodies reload as ordinary classes.</p>
+<h2 id="not-covered-yet">Not covered yet</h2>
+<p>Complete storefront rendering, CMS template inheritance/overrides, search
+restriction visibility through CMS page services, precompiled/deployed-copy
+JSP setups and tag/include invalidation remain open. The focused cases above
+must not be read as their acceptance.
+Recurring Trigger lifecycle, process actions held across an edit, broader
+Backoffice bindings and the scenarios in the <a href="#coverage-order">coverage order</a>
+also need their own live oracles.</p>
+<p>Positive destructive ImpEx REMOVE and automatic conversion-directive replay
+remain outside the current acceptance. Field-initializer concurrency is deferred.
+Installed SDK modules and existing reload paths are research evidence, not proof
+that their application behavior has passed a live test.</p>
+<h3 id="coverage-order">Coverage order</h3>
+<p>This is the current ordered research/build queue, not a release commitment or
+support claim. Each scope needs a concrete plan, native baseline, application
+oracle, cleanup and independent review before it can move into the tested list.
+If SAP already handles an edit, its test records that existing behavior.</p>
+<ol>
+<li>Duplicate Backoffice F4 dispatch (a bug investigation)</li>
+<li>Nested/list DTO conversion slice</li>
+<li>Locale/fallback missing slice</li>
+<li>Workflow action/decision</li>
+<li>TaskRunner retry/condition lifecycle</li>
+<li>Solr config/facet slice</li>
+<li>One commerce service, then bounded remaining domains</li>
+</ol>
+<p>The other scopes of the earlier queue are either in the tested list above or
+were closed without new work: SAP already applies data changes made through
+ImpEx or Backoffice (saved queries, rules, Solr properties), AddOn staging is
+done by SAP's own <code>ant build</code>, and native region caches and Backoffice label
+bundles did not justify a reload path.</p>
+<p>Later refinements include B2B approval, Adaptive Search, personalization,
+rule compilation and Integration API virtual attributes. They do not bypass
+the same setup and acceptance gates. This page will be updated as each scope
+receives an independent PASS and its corresponding commit.</p>
+<h3 id="opt-in-new-item-type">Opt-in new item type</h3>
+<p>With <code>autoUpdateRunningSystem=true</code>, Reclazz picks up one new <code>generate=true</code>
+item type live through native generation and the schema-only update. The
+<code>items-new-type-attempt</code> profile proves the generated Model and Jalo, deployment
+31992/table, typed create/save, detached requery and a separate committed JDBC
+read without replacing the running JVM. This covers existing behavior.</p>
+<p>Run the outer driver <code>scripts/test-sap-items-live.py --new-item-type --runs 1</code>
+with <code>--fixture-manifest &lt;reviewed JSON path-to-SHA256 manifest&gt;</code>,
+<code>--restore-repo &lt;normal checkout&gt;</code> and <code>--lock &lt;collab installation lock&gt;</code>.
+Select the disposable install with <code>RECLAZZ_SAP_HOME</code> and <code>RECLAZZ_SAP_BASE</code>.
+The manifest contains the exact normal fixture source membership from the shared suite contract, including any
+reviewed edits. The mode takes eight complete stopped snapshots, including
+concrete generated Jalo sources, and restores the database, config, bootstrap,
+native outputs, fixtures, original agent and links. It then proves the new
+type/table/classes absent in a fresh normal boot. Inner PASS with failed recovery
+is FAIL. Never run the inner profile alone or undo its XML on a live server.
+Native HAC credentials are read only from the disposable install's local config;
+the recovery checks use read-only native metadata and class observations.</p>
+<p>Default suite membership is unchanged by this mode. This bounded profile does not certify enums,
+relations, incompatible edits or arbitrary schema changes. No new dependency or
+production agent change is involved.</p>
+<p>The pre-generation negative control inspects class resources rather than trying
+to load a nonexistent class: SAP's enabled <code>CacheClassNotFoundRule</code> remembers
+failed class loads. After generation the profile requires the real generated
+Model/Jalo classes and rejects generic fallbacks. A class previously requested
+and negatively cached before generation is outside this bounded coverage.</p>
+<h3 id="opt-in-new-relations">Opt-in new relations</h3>
+<p>With <code>autoUpdateRunningSystem=true</code>, the existing native generation/schema path
+supports the bounded one-to-many and many-to-many relation edit exercised here.
+<code>items-new-relation-attempt</code> first creates two isolated generated endpoint types,
+warms their model classes, then adds both relations in one XML save. It requires
+new typed accessors on those same loaded classes and persisted asymmetric links
+re-read detached from both ends in a separate request. The one-to-many qualifier
+is <code>relationParent</code>; <code>owner</code> is inherited from SAP's base Item and is not a new
+relation attribute. The many-to-many relation has its own deployment31995.</p>
+<p>Run <code>scripts/test-sap-items-live.py --new-relation --runs 1</code> with the same explicit
+<code>--fixture-manifest</code>, <code>--restore-repo</code> and <code>--lock</code> arguments as the new-item-type
+mode. Set <code>RECLAZZ_SAP_HOME</code> and <code>RECLAZZ_SAP_BASE</code> to the disposable installation.
+The eight-root stopped recovery is shared: database, generated sources/classes,
+config and native outputs, original agent and extension links must all recover,
+then experimental types/tables/resources must be absent after a fresh normal
+boot. An inner PASS alone cannot pass the outer profile. Never run this inner
+profile directly or undo schema changes live. Future classes are inspected by
+resource lookup before generation to avoid seeding SAP's negative class cache.</p>
+<p>This opt-in proof covers existing behavior and leaves default suite and normal
+fixture membership unchanged. It does not certify arbitrary, localized, ordered,
+cascading or incompatible relation edits. No production agent change or new
+dependency is involved. Source membership comes from the shared suite contract;
+do not copy a historical fixture/test count into new profile checks.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/docs/sap-commerce-live-tests.md">docs/sap-commerce-live-tests.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/sap-commerce/"><span>← Previous</span><strong>Reclazz on SAP Commerce, for a coding agent</strong></a><a href="/docs/reference/spring-boot-starter/"><span>Next →</span><strong>Reclazz Spring Boot starter</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#how-we-run-it">How we run it</a><a href="#class-bodies-and-structure">Class bodies and structure</a><a href="#spring-beans-and-xml">Spring beans and XML</a><a href="#spring-scheduled-metadata">Spring scheduled metadata</a><a href="#mvc-and-occ-mappings-and-field-sets">MVC and OCC mappings and field sets</a><a href="#interceptors-and-mappings">Interceptors and mappings</a><a href="#bean-validation">Bean Validation</a><a href="#native-occ-exception-error-response">Native OCC exception error response</a><a href="#new-occ-controller-after-startup">New OCC controller after startup</a><a href="#populators-and-orika">Populators and Orika</a><a href="#native-facade-and-dependent-service">Native facade and dependent service</a><a href="#dao-and-flexiblesearch">DAO and FlexibleSearch</a><a href="#dynamic-attributes">Dynamic attributes</a><a href="#impex-auto-import-and-remove-refusal">ImpEx auto-import and REMOVE refusal</a><a href="#impex-update-macros-and-corrected-save-recovery">ImpEx UPDATE macros and corrected-save recovery</a><a href="#spring-integration-endpoint-edit">Spring Integration endpoint edit</a><a href="#localization-and-properties">Localization and properties</a><a href="#platform-logger-levels">Platform logger levels</a><a href="#business-process-xml">Business process XML</a><a href="#business-process-action-body">Business process action body</a><a href="#stored-database-scripts">Stored database scripts</a><a href="#velocity-database-templates">Velocity database templates</a><a href="#cronjobs-and-native-events">CronJobs and native events</a><a href="#generated-dtos-from-beansxml">Generated DTOs from beans.xml</a><a href="#persistent-attributes-from-itemsxml">Persistent attributes from items.xml</a><a href="#static-initialization-with-an-explicit-opt-in">Static initialization with an explicit opt-in</a><a href="#solr-targeted-reindex">Solr targeted reindex</a><a href="#cms-component-rendering">CMS component rendering</a><a href="#search-restrictions-and-session-catalog-visibility">Search restrictions and session catalog visibility</a><a href="#backoffice-configuration-and-widgets">Backoffice configuration and widgets</a><a href="#focused-checks-outside-the-default-suite">Focused checks outside the default suite</a><a href="#not-covered-yet">Not covered yet</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<footer class="site-footer"><div class="site-footer-inner">
+<div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
+<nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>
+<nav aria-label="Project links"><p>Project</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases">Releases ↗</a><a href="https://github.com/onurkat/reclazz/issues">Report an issue ↗</a></nav>
+<nav aria-label="Legal links"><p>Legal</p><a href="/license/">License</a><a href="/privacy/">Privacy</a></nav>
+<div class="footer-bottom"><span>© 2026 Onur Kat</span><a href="https://github.com/sponsors/onurkat">Support development ↗</a></div></div></footer><dialog class="search-dialog" id="search-dialog" aria-labelledby="search-title"><div class="search-top"><label id="search-title" for="docs-search">Search documentation</label><button id="search-close" class="dialog-close" type="button" aria-label="Close search">Esc</button></div><input id="docs-search" type="search" placeholder="What would you like to reload?" autocomplete="off"><p id="search-status" role="status" aria-live="polite">Search guides, changes and limits. Your query stays in this browser.</p><div id="search-results"></div><div class="search-hint">↑ ↓ to select · Enter to open · Esc to close</div></dialog><div class="sr-only" id="copy-status" role="status" aria-live="polite"></div>
+</body></html>

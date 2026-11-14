@@ -1,9 +1,9 @@
 {
   "source_commit": "75535bd739d7eefd43523dcc63799436c472fe12",
-  "source_version": "1.5.0",
+  "source_version": "1.6.0",
   "reviewed": "2026-10-19",
-  "build_revision": "main",
-  "pages": 33,
+  "build_revision": "75df861f844780774cfe9209d30abdc730115480",
+  "pages": 35,
   "site_pages": [
     "compare/index.html",
     "docs/boundaries/index.html",
@@ -24,11 +24,13 @@
     "docs/reference/index.html",
     "docs/reference/installation/index.html",
     "docs/reference/maven/index.html",
+    "docs/reference/mcp-for-coding-agents/index.html",
     "docs/reference/mcp-server/index.html",
     "docs/reference/product-reference/index.html",
     "docs/reference/protocol/index.html",
     "docs/reference/publishing/index.html",
     "docs/reference/reload-support/index.html",
+    "docs/reference/sap-commerce-live-tests/index.html",
     "docs/reference/sap-commerce/index.html",
     "docs/reference/spring-boot-starter/index.html",
     "docs/reference/spring-constructor-dependencies/index.html",
@@ -44,14 +46,14 @@
     "privacy/index.html"
   ],
   "curated_pages": 13,
-  "reference_pages": 20,
+  "reference_pages": 22,
   "support_entries": 83,
-  "options": 24,
-  "search_entries": 477,
+  "options": 26,
+  "search_entries": 556,
   "documents": {
     "docs/index.md": {
       "url": "/docs/reference/",
-      "sha256": "73663bfa5d26756abff1fd4351042f718323f6a438f849cbdf62c428365f0030"
+      "sha256": "ecd887190da3bcfabd111f67ce2a0be2c071e098c6dc91ada1fdc90ae07d08a3"
     },
     "docs/agentic-evaluation.md": {
       "url": "/docs/reference/agentic-evaluation/",
@@ -59,7 +61,7 @@
     },
     "docs/client-matrix.md": {
       "url": "/docs/reference/client-matrix/",
-      "sha256": "3867c468e7a641eadd0979bbe677ec6782d91582bb5cdf50b93f3530ff84af62"
+      "sha256": "90689b412fd77f0efa51a56af1507d1adea5add7e2647915b5bb4049e683be6e"
     },
     "docs/documentation-workflow.md": {
       "url": "/docs/reference/documentation-workflow/",
@@ -67,27 +69,31 @@
     },
     "docs/feature-evidence.md": {
       "url": "/docs/reference/feature-evidence/",
-      "sha256": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549"
+      "sha256": "338cffd6c01807d377a25bebbe2dbdaa325226b6da5facc3724eebfd971cfd68"
     },
     "docs/for-ai-agents.md": {
       "url": "/docs/reference/for-ai-agents/",
-      "sha256": "db061a80cd80347b63787fd5db5aec3a958de9f48def2846b1d7e3bb54170514"
+      "sha256": "bf131afe223e9b94ddd5d4df500ea4514e41b97031fef2549895660a9367a37c"
     },
     "docs/gradle-plugin.md": {
       "url": "/docs/reference/gradle-plugin/",
-      "sha256": "1612916caeccbc246b0a767417518087949e14be4625c706923825a2e43e4ab4"
+      "sha256": "b6e316a856da105edc5012a848f2f1a26584228626316a1f713a188a6f1eb47e"
     },
     "docs/installation.md": {
       "url": "/docs/reference/installation/",
-      "sha256": "f63ced3b9171794dd286198827a1df526de48d8b1eec48051d84fd77b0bf6397"
+      "sha256": "74f6f15215d6d1e572ecadd6d29cd21d6516456647003df16ce2f213ba7c0d99"
     },
     "docs/maven.md": {
       "url": "/docs/reference/maven/",
-      "sha256": "badbba8f5eb3df411ae31676faacfb1c8b3f1df4c35d3d71b08835c6fe7ae630"
+      "sha256": "a62be5bf6f88f844d033fa9223aa8f5b56be1939bc5e5e0561e60451cdf2415b"
+    },
+    "docs/mcp-for-coding-agents.md": {
+      "url": "/docs/reference/mcp-for-coding-agents/",
+      "sha256": "50e7ee37055af69aea165e13cfd27bc5437d4d4974ab23d0b613f4ba075d365c"
     },
     "docs/mcp-server.md": {
       "url": "/docs/reference/mcp-server/",
-      "sha256": "95a3db37e97d86a2df5ba8296a73b2bee0469c039702275195eaebb0d95e5359"
+      "sha256": "59f59ddb8959be66cc8d18e0da1ed070b7d9fec2ffd6bc0ae454b3b35589504c"
     },
     "docs/product-reference.md": {
       "url": "/docs/reference/product-reference/",
@@ -95,7 +101,7 @@
     },
     "docs/protocol.md": {
       "url": "/docs/reference/protocol/",
-      "sha256": "fb7bc2b3487d616f043c78cbfab56c51e982ab2158bed968760c28b27fcc92d3"
+      "sha256": "8091259eebb9acfb7a4e5c4594e1d28580890a121da568f349cc1f995d8b9e53"
     },
     "docs/publishing.md": {
       "url": "/docs/reference/publishing/",
@@ -103,15 +109,19 @@
     },
     "docs/reload-support.md": {
       "url": "/docs/reference/reload-support/",
-      "sha256": "d1ac757bb12bbc78ed417b8dbd9c05988f4a3edeb8a58b4aea515bd9b5871af3"
+      "sha256": "f300c0c9b842d296a76db13964946ef109f9ee5f4597bd730c7cc23b6b21cd2d"
     },
     "docs/sap-commerce.md": {
       "url": "/docs/reference/sap-commerce/",
-      "sha256": "9831a84484ec089e71189c4d23a91e1b58668b7408862760ee7b54debc575a57"
+      "sha256": "7b3d669f8856f6a884c0cea3bd8dd935ea269d1afac96ae59911250ac8f3eeed"
+    },
+    "docs/sap-commerce-live-tests.md": {
+      "url": "/docs/reference/sap-commerce-live-tests/",
+      "sha256": "b7a53d78ae4114c8a0107242ee48ff19f532abaddf7517a92dcc5464849a10ed"
     },
     "docs/spring-boot-starter.md": {
       "url": "/docs/reference/spring-boot-starter/",
-      "sha256": "dc78778fce13b0656f4d34d1ae73ac28cf955b7b6ea1e46bc5241cbb10bbd58e"
+      "sha256": "9c089729bd947c04fc28913857fd2360c3a46dc1c74d7168dfacd83c38b218ef"
     },
     "docs/spring-constructor-dependencies.md": {
       "url": "/docs/reference/spring-constructor-dependencies/",
@@ -123,70 +133,74 @@
     },
     "docs/test-guide.md": {
       "url": "/docs/reference/test-guide/",
-      "sha256": "793f27f03dc0844b2d2fb55c8615e2a8260191848692cc849f9a4ca1652de8f8"
+      "sha256": "f9044cde2300246c17812c90d387bac94c6ac2cb95753ddd5b7969e3e576b878"
     },
     "docs/usage.md": {
       "url": "/docs/reference/usage/",
-      "sha256": "6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15"
+      "sha256": "a0da3e8091c14c701f9db9366f33efef9dd8a1c3c70ec2377dba1d9cd8684ffc"
     }
   },
   "inputs": {
     "README.md": "9fc35a893d11cfb122805c4c04086f0373bf33b0a41539829cbba7922bf29811",
     "SECURITY.md": "b08bec95bf8b0adaddd4cf0ac79db4af40df8e619b16ec85d456b61ddedbeff1",
     "docs/agentic-evaluation.md": "e2cf6ae5a994f82f91c5db7ac3496053001368e191178985ef6ef3240b5668af",
-    "docs/client-matrix.md": "3867c468e7a641eadd0979bbe677ec6782d91582bb5cdf50b93f3530ff84af62",
+    "docs/client-matrix.md": "90689b412fd77f0efa51a56af1507d1adea5add7e2647915b5bb4049e683be6e",
     "docs/documentation-workflow.md": "44b31f771dd8ec09c060113753ae12afa9c172b141e5648180d897e7d71c6d8e",
     "docs/feature-evidence/backoffice-module.json": "e331a4863117f43edda2c0c86ac34ae8fd302492193c26724d26601c3537d733",
     "docs/feature-evidence/backoffice-socket.json": "1e05f21b9fac74e12a7ac5758c1fe0b9c18381cd57e4092547730a246298684e",
     "docs/feature-evidence/p1-core-cells.txt": "575d52ccbfc238839d45d29c04985e6c68a23e7a47b178a3e4de9033c009fe93",
-    "docs/feature-evidence/p1-core.json": "9b5f146ec7f6d284d1ead2ca409ba6e34ea8258d8b159892c508128e28bce18f",
+    "docs/feature-evidence/p1-core.json": "fefba73439354a0671d82b9a83bb27878f9a521a3eafa09bdcb541e760e302ac",
     "docs/feature-evidence/p2-cells.txt": "7eeb6cc761d148219731b2c0792b3e482e68ea69f9050998fc3d9e54d7227718",
-    "docs/feature-evidence/p2-ordinary-spring.json": "3544593745cbfc91630ff5c554e816ff3b2f58d00561adb811435c75b581ae21",
+    "docs/feature-evidence/p2-ordinary-spring.json": "591170d407f6f8b667bbfe8f0f1919856e8807cb9533af0e4c435bb3bc551768",
     "docs/feature-evidence/p3a-cells.txt": "e72efab0ab839957d99433f2bf8b5729ec495738f0fd068f48af7901132e811c",
-    "docs/feature-evidence/p3a-web-hardening.json": "f9334633b2382a2f320c0583a655c297d9eef89c86801fdacdf5996acf699613",
+    "docs/feature-evidence/p3a-web-hardening.json": "6141e234b0fe16db13b1df33a967542596bbf57512d7ea84c6a2322b28476848",
     "docs/feature-evidence/p3b-cells.txt": "3f57dae80aaf7eb6ecf4a65fa301a978fea779048a32a036215cd88e6ebd255c",
-    "docs/feature-evidence/p3b-mvc-web.json": "3b0e33d7280e9bdde47ab0734af2d2a21a6f8ec09afe97f2e003ae21b2e00307",
-    "docs/feature-evidence/p3c-callbacks-data.json": "bd8dbebd72ba8807230bd07fce148e603c085728d7a812bf38caac59c42892cb",
+    "docs/feature-evidence/p3b-mvc-web.json": "2735230374aa8a31198adcecd99fb9f38908439cc483173b97b52684b3848f96",
+    "docs/feature-evidence/p3c-callbacks-data.json": "bd23d8aeaa592acf81d7fa8fd2904ec77192372bc2ad8ad4a6a485690e875a00",
     "docs/feature-evidence/p3c-cells.txt": "3833578e21aafe8faee2a4018fe3a6f315c7bed273b26aa82e7e1ccd9797f69b",
     "docs/feature-evidence/p4-cells.txt": "aa5d9b5768f8a88403e6497eb1f384b479b512b0de42f13659ecfcbd06b94208",
-    "docs/feature-evidence/p4-messaging.json": "dc2b1c051493637de0be65cc09bf81262cdb7147affe90c8a9c3dafed3295bee",
+    "docs/feature-evidence/p4-messaging.json": "b25ce639b099224f9dee2da06ad12910ad3aed5a7fcaa5348a20efce19d637f5",
     "docs/feature-evidence/p5-cells.txt": "4c79d2056e3ae53dbfe61f3edddd02d526090d380e9d39671bb2a4c9a334368c",
-    "docs/feature-evidence/p5-resources.json": "1ee8c855fea8d1e0bcb7e882fd9444de47351e1b7d4fa7a7f48337273ea0ae8a",
+    "docs/feature-evidence/p5-resources.json": "d0fb8f8661f274e24c3295dbfaedf8633495c04a4795ec5bed4bbfb5f70d3a4b",
     "docs/feature-evidence/reflection-jackson-candidate.json": "6a98e4075c0c34199bf285fa9c8c8f94990cb9f03915820d58a560863a578331",
-    "docs/feature-evidence/sap-process-reload.json": "d45a5c1293c7eb14ddf477966f69f5377160bfb10aa4c47180d718edb00ab73f",
+    "docs/feature-evidence/sap-process-create.json": "bda88fe8e2658bb6105394bf1ac8d9f610783221c39480c680bf92f3af34ee25",
+    "docs/feature-evidence/sap-process-reload.json": "ef30de7a3a85b0d84fcba09e2ed0153f68f91abe6ee1df46575a42d8b891b137",
     "docs/feature-evidence/sap-solr-reindex.json": "fabbe6457c4ed5b2f8c6ebd01f40852825000667f48d5a7df46d632d1e227f61",
-    "docs/feature-evidence.md": "f39eadec7edb43f56e37317c8c2f920178cdff746ef9c15d79b22b21c1729549",
-    "docs/for-ai-agents.md": "db061a80cd80347b63787fd5db5aec3a958de9f48def2846b1d7e3bb54170514",
-    "docs/gradle-plugin.md": "1612916caeccbc246b0a767417518087949e14be4625c706923825a2e43e4ab4",
-    "docs/index.md": "73663bfa5d26756abff1fd4351042f718323f6a438f849cbdf62c428365f0030",
-    "docs/installation.md": "f63ced3b9171794dd286198827a1df526de48d8b1eec48051d84fd77b0bf6397",
-    "docs/maven.md": "badbba8f5eb3df411ae31676faacfb1c8b3f1df4c35d3d71b08835c6fe7ae630",
-    "docs/mcp-server.md": "95a3db37e97d86a2df5ba8296a73b2bee0469c039702275195eaebb0d95e5359",
+    "docs/feature-evidence/static-initializer-reset.json": "3c0f03dd35fd0fb7a042dad9539bcfa680b08b633f71f3291d28f274d96dc2ea",
+    "docs/feature-evidence.md": "338cffd6c01807d377a25bebbe2dbdaa325226b6da5facc3724eebfd971cfd68",
+    "docs/for-ai-agents.md": "bf131afe223e9b94ddd5d4df500ea4514e41b97031fef2549895660a9367a37c",
+    "docs/gradle-plugin.md": "b6e316a856da105edc5012a848f2f1a26584228626316a1f713a188a6f1eb47e",
+    "docs/index.md": "ecd887190da3bcfabd111f67ce2a0be2c071e098c6dc91ada1fdc90ae07d08a3",
+    "docs/installation.md": "74f6f15215d6d1e572ecadd6d29cd21d6516456647003df16ce2f213ba7c0d99",
+    "docs/maven.md": "a62be5bf6f88f844d033fa9223aa8f5b56be1939bc5e5e0561e60451cdf2415b",
+    "docs/mcp-for-coding-agents.md": "50e7ee37055af69aea165e13cfd27bc5437d4d4974ab23d0b613f4ba075d365c",
+    "docs/mcp-server.md": "59f59ddb8959be66cc8d18e0da1ed070b7d9fec2ffd6bc0ae454b3b35589504c",
     "docs/product-reference.md": "a1686774b5a0d7ddec0ea36eea91ea048b2216093ce375bc5687cbf8b891c7cb",
-    "docs/protocol.md": "fb7bc2b3487d616f043c78cbfab56c51e982ab2158bed968760c28b27fcc92d3",
+    "docs/protocol.md": "8091259eebb9acfb7a4e5c4594e1d28580890a121da568f349cc1f995d8b9e53",
     "docs/publishing.md": "e7d78dd3cc5c8d0a8e44195d3188c4788f3d86864e2296955406c4c1b79d8a1a",
-    "docs/reload-support.md": "d1ac757bb12bbc78ed417b8dbd9c05988f4a3edeb8a58b4aea515bd9b5871af3",
-    "docs/sap-commerce.md": "9831a84484ec089e71189c4d23a91e1b58668b7408862760ee7b54debc575a57",
+    "docs/reload-support.md": "f300c0c9b842d296a76db13964946ef109f9ee5f4597bd730c7cc23b6b21cd2d",
+    "docs/sap-commerce-live-tests.md": "b7a53d78ae4114c8a0107242ee48ff19f532abaddf7517a92dcc5464849a10ed",
+    "docs/sap-commerce.md": "7b3d669f8856f6a884c0cea3bd8dd935ea269d1afac96ae59911250ac8f3eeed",
     "docs/site/boundaries.html": "9ee7a573ccea480fba68f3b9d477bc693e217a2c07ed20f350a8fb787d1db658",
     "docs/site/configuration-reference.html": "1c3b2696d15324320a0d562837572f1b95fe6b6b6fe21631fe48241a22ff058a",
-    "docs/site/configuration.html": "183373c11f7f8171e1d2170c95efaad62598973e9ce38011a586c7228b1f37ce",
+    "docs/site/configuration.html": "78dd2c85f4b21448f4db9713b11a0b958666fb2b51d02d242c35f90d71d3b9c2",
     "docs/site/evidence.html": "6e86bfd5b86de3fe1cc3ec05e999e95207d33b5f15e4d84b5518e07a96fdf9c3",
-    "docs/site/java.html": "2487237bcab3162ccf3fb9d5e7e422e3f8b1350c6b67d9543600ae3270292924",
-    "docs/site/manifest.json": "f1aecd020965be5365f17e2695dc036dcfc8858d09ab3fc2be3bdd44cc84fbf9",
+    "docs/site/java.html": "1d937bf96f5c1f214bb1da1564330c725a1f59298f67e86137b8acb234a97b32",
+    "docs/site/manifest.json": "af19907b878a2207fd0ad551872507245a3860c8c9554d4890b7665735454c17",
     "docs/site/messaging.html": "f1ff82aecc34698677a399c198b1f301ff7d01b5efe4f5c9a7c80571053a7f10",
     "docs/site/overview.html": "b277dc8fe0c1cc212a0f2bc9a041dbf7cad7f8b334c77bbbe1a94a0d5afc4f86",
     "docs/site/persistence.html": "f72ce073837d8623190b317c6cf3370826f8832475360c91d20c6b6b7b785610",
     "docs/site/quickstart.html": "00f6ada4b08baf812ca943dab83fa2547a2b0076a0cb3126928b5690937e5d56",
-    "docs/site/sap-commerce.html": "13e8477ec2f8ac643c3a1b68948d5875aabcd77dcd0c3b8644e67236c1862ca4",
+    "docs/site/sap-commerce.html": "9db32de1f1b848a5f2a273ec3aa1cb9a29d7c49459ef505444bceab222f66dd1",
     "docs/site/spring.html": "93de90926d016c35bd10ae00ee887a4f64df64175a450bfb369fba5819b2548a",
     "docs/site/support-matrix.html": "46c601bf0348ddab646a1e34c30d1e1dae1dc7ee5444acf04b54a2d64a0b3e72",
     "docs/site/troubleshooting.html": "116e49dd707ea821c87c2fe8a98db1daab2dad8638c0ca8cf57f8748b393cc77",
-    "docs/spring-boot-starter.md": "dc78778fce13b0656f4d34d1ae73ac28cf955b7b6ea1e46bc5241cbb10bbd58e",
+    "docs/spring-boot-starter.md": "9c089729bd947c04fc28913857fd2360c3a46dc1c74d7168dfacd83c38b218ef",
     "docs/spring-constructor-dependencies.md": "bb086b685a2ed864bae7ca267a81836489ef9d9b5cf0b2c52e4820fd38cda66f",
     "docs/superclass-feasibility.md": "c6d55bc0dcf25d4da95685211cd65c3a5c0148932378ba6192e2b55245c075a0",
-    "docs/test-guide.md": "793f27f03dc0844b2d2fb55c8615e2a8260191848692cc849f9a4ca1652de8f8",
-    "docs/usage.md": "6812986f950a975b88323aa21ab8d847c392226bdc63cedc85c9e618d5200c15",
-    "gradle.properties": "d63224037554a3e7eb4857a9013a332513eed9ff522c2943c8e20ff3bb9219ae",
+    "docs/test-guide.md": "f9044cde2300246c17812c90d387bac94c6ac2cb95753ddd5b7969e3e576b878",
+    "docs/usage.md": "a0da3e8091c14c701f9db9366f33efef9dd8a1c3c70ec2377dba1d9cd8684ffc",
+    "gradle.properties": "614e5ec5b5ff3c5fb7a82964378280534d44d2034497e7da00a4f5306154630a",
     "requirements-docs.txt": "cb5264b274f45a2b3e2e5b0227ee9b5390f8638440a4e6afcfeee71956957fb1",
     "website/__init__.py": "cfe645b62ef93ae19a774be733a803c255af200e2ac11a5ccfdca3e73c1cb96a",
     "website/build.py": "611b1e6ca09ca0e397ae2d7c028bb4c635af80a06813e6a3d216d225817fb074",
@@ -206,7 +220,7 @@
     "website/static/docs/assets/docs.js": "bd702e25fabdaf6dd6e3146f784bc06ad72df334858f316628ecd7e64dbf3200",
     "website/static/docs/assets/theme.js": "44ab3cc4ede71a386a9f29f8681878ecd3166728a0f4f73a875f4bc25385fe4f",
     "website/static/favicon.svg": "313c0b75d93f8ef79f69c56f7ebcf784485b304fdd4456b2e4166542b3c49917",
-    "website/static/index.html": "27b38038275c8e6b934c33e1c1586b7b90faa19baa730006693b89008d0d9ce1",
+    "website/static/index.html": "818cb728ee5629468f13f35c147da151059ae4dc4c57f40d561be6ebc0523019",
     "website/static/license/index.html": "54fa4f24e9266238da701779e554b0ad1bdaa54cbc4b79ba807ca5440aa59d0b",
     "website/static/og-image.png": "c6a29a01302e81d76129a8470b7fceb147f462e77b200dde22846cc28ef3912c",
     "website/static/privacy/index.html": "15b4df8f13717f20276aaad342ff690dc4649a018600972318be440e53b5aa77",

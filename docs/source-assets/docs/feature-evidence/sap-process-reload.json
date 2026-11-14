@@ -113,9 +113,9 @@
   ],
   "full_agent_test": "NOT_RUN: owner release-only gate",
   "test_source_sha256": {
-    "agent/src/test/java/com/onurkat/reclazz/hybris/SapProcessDefinitionReloadTest.java": "9c975ea79c06bd630d80fd19cc9203000d6f5af4243adae117f36d92557e99e0",
-    "agent/src/test/java/com/onurkat/reclazz/e2e/SapProcessDefinitionReloadTest.java": "6d37b5f576f00584022c5b92cb15ff4a5413ea84bf073680ce59654d82f26573",
-    "integration-test/src/sapSdkTest/java/com/example/ProcessReloadSdkProbe.java": "a0550f4883109d3afea30d0668816509fa3820f8f9a5d7b5aaee5bcea9592ed8"
+    "agent/src/test/java/com/onurkat/reclazz/hybris/SapProcessDefinitionReloadTest.java": "7816851a6a681c820b9ce252e75e0b7f1936044cfdb2a9238cb4f08be78d4483",
+    "agent/src/test/java/com/onurkat/reclazz/e2e/SapProcessDefinitionReloadTest.java": "c3c384e933c3c038153a36c59f7acd76f7b86504f103894a563319c075aff505",
+    "integration-test/src/sapSdkTest/java/com/example/ProcessReloadSdkProbe.java": "305057514a16c3b11c0b308c208cf09153e97a6568d7dd6ffc958e73e0a9c777"
   },
   "artifact_sha256": {
     "agent/build/libs/agent-1.4.1.jar": "d0b2d348ca40565ebca62448c02e5fb980f093246c7f75b217e453ef56804f90",

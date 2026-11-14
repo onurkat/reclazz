@@ -1,0 +1,69 @@
+{
+  "format_version": 1,
+  "capability": "sap-process-create",
+  "status": "IMPLEMENTED_V5_LOCAL_LIVE_VERIFIED_AWAITING_INDEPENDENT_AUDIT",
+  "scope": "Watched observed Spring source adds an exact standard ProcessDefinitionResource singleton; each proven provider-owner context is evaluated independently in its own tenant/session/TCCL scope with its own cache, sibling/collision set and DB guard. Cold lazy loading is existing native behaviour.",
+  "ownership": "Weak exact singleton/resource/context/bean-factory identity and source path, revalidated before publication; complete registration batch and conservative unproven sibling refusal. Optional process module admission and watched module/file exclusions remain required. Owner-scoped retirement preserves healthy owners; an unavailable or refused owner does not prevent another from publishing. The original edit-provider subclass contract is preserved; creation still requires the exact standard provider.",
+  "verification": {
+    "unit_command": "./gradlew :agent:unitTest --rerun",
+    "counts": {
+      "unitTest": {
+        "tests": 2331,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 5
+      },
+      "solrUnitTest": {
+        "tests": 44,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "jmsUnitTest": {
+        "tests": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "hibernateTest": {
+        "tests": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "e2eTest": {
+        "tests": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "native_sdk": "V5: 32 creation checks per SDK (64 total), plus 22 observed + 7 late edit checks per SDK (58 total), total 122. Both 2211-jdk21.8/JDK21 and 2211.49/JDK17 exit 0. Exact .45 not tested.",
+    "sdk_boundary": "Real native parser/cache/Spring hook and production observer, with explicit test-only empty-DB and tenant/session binding seams. No native tenant implementation, database-backed query, startProcess or task execution is proved by these SDK JVMs.",
+    "central_red": "Initial five tests: four expected failures on unchanged production code; stage2-red.log and stage2-red-results. The duplicate-refusal test already passed and is not evidence of new support.",
+    "live": "Astra V5 local 2211-jdk21.8/JDK21 acceptance passed through HAC and the real watcher after one explicitly owner-approved restart. Two exact native owner caches were warmed in isolated non-web preparation workers using SapOwnerScope (40/40 and41/41 resource/startup observations; distinct native tenants; HAC caller tenant/session/TCCL restored). Both bean-before-XML and XML-before-bean orders published independently to both warm owners. P/Q started with v1, a real XML edit updated both owners preserving historical object identities; P stayed pinned to v1 and R started v2. Unique wait events sent once; all three completed naturally SUCCEEDED with expected version/end, actionCount1, tasks0, conditions0. No manual native add or state correction. Own XMLs/beans/listener/run/receipts/observations and10 native active/history keys removed, original source bytes restored; unrelated cache/ledger identities preserved. Three completed rows retained. Independent read-only final cleanup verified in HAC ROLLBACK. Raw local v5-live-* receipts and screenshots are in .collab/current/research; Claude independent audit/commit still pending.",
+    "full_agent_test": "NOT_RUN: owner release-only gate",
+    "e2e_command": "./gradlew :agent:e2eTest --rerun --tests '*SapProcessDefinition*Test' --tests '*SapSolrReindexTest' -x :agent:rabbitTest -x :agent:jmsE2eTest",
+    "causal_control": "Final V5 scratch copy omits only new-name native add. Both SDKs exit 1 with missing-name NoSuchProcessDefinitionException (expected RED); production source untouched. v5-causal-no-create/results.json/logs.",
+    "sdk_results": ".collab/current/research/v5-final-sdk-results.json",
+    "v5_red": "31 tests, 8 failures on prior production implementation; one failure is the newly required skipped-owner diagnostic, others cover multi-owner publication/isolation/restoration. Raw XML/log retained. An earlier compile-only test helper error was fixed before that run.",
+    "live_harness_boundary": "Direct cross-owner preparation on the HAC HTTP thread is rejected by native Registry web-context tenant checks. Isolated bounded non-web workers avoid inheriting the HTTP context; production watcher work is unchanged. The first terminal verification ran before native tasks finished and failed; later read-only status and verification passed, with no second event submission."
+  },
+  "limits": [
+    "No DynamicProcessDefinition writes",
+    "No process replay/restart/migration",
+    "No definition retention guarantee after cache eviction or server restart",
+    "No cluster propagation",
+    "No new support claim for native cold lazy loading",
+    "Local live acceptance covers native publication/edit in two tenant owners and three main-tenant process executions on 2211-jdk21.8/JDK21 only. No second-tenant process start, live dynamic-row collision, cluster or broader runtime claim; independent Claude audit/commit pending."
+  ],
+  "test_sources": {
+    "agent/src/test/java/com/onurkat/reclazz/hybris/SapProcessDefinitionCreateTest.java": "08fc14d99fcf4a64958a8c52a23aeabc54bae54a36265495a6260588aa806ab0",
+    "agent/src/test/java/com/onurkat/reclazz/e2e/SapProcessDefinitionCreateTest.java": "4c5a8ffec9eaa07e4f670abf1d5f13607d1019e32695676179a87f676f1244c9",
+    "integration-test/src/sapSdkTest/java/com/example/ProcessCreateSdkProbe.java": "09d2afaba6f15f23cee208e8e6b75f18080055bc06f7a2566adea8f87e06a283",
+    "integration-test/src/sapSdkTest/java/com/example/ProcessCreateSdkAgent.java": "200fc2586c709668dd08fb35df4ccd51f69d20cf9e68df9739954483781a5fbd",
+    "agent/src/test/java/com/onurkat/reclazz/hybris/ProcessTenantFixture.java": "64ddf5c45782da61b2dce11c7bf548416232740c1cdf2d5d3cefbd92d19ae228",
+    "agent/src/processTestFixtures/java/de/hybris/platform/core/Registry.java": "79a98e5b57cbbfee604f0febbba4d31b0abf1dcb1b7c30ab90ba2cd8815c8660",
+    "agent/src/processTestFixtures/java/de/hybris/platform/jalo/JaloSession.java": "fafcedabb2d26ef8699a98caaa7c56da916c3fd845993bc31e37837514b30ac3"
+  }
+}

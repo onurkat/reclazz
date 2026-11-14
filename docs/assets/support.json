@@ -40,7 +40,7 @@
     "category": "Java",
     "title": "Add a static field with an initializer",
     "status": "conditional",
-    "conditions": "Compile-time constants and separable initializers, including bounded forward conditionals/switches, are supported. Existing static blocks and values are not reset.",
+    "conditions": "Compile-time constants and separable initializers, including bounded forward conditionals/switches, are supported. Other static blocks and current added-field values are preserved.",
     "action": "Check the new value and any extraction refusal reason.",
     "source": "docs/usage.md#added-static-field-values"
   },
@@ -48,10 +48,10 @@
     "id": "static-reset",
     "category": "Java",
     "title": "Change an already initialized static field initializer",
-    "status": "restart",
-    "conditions": "Later saves preserve the current added static value, including null or application writes. Reload does not replay arbitrary static initialization.",
-    "action": "Restart to run startup initialization again; account for external side effects.",
-    "source": "docs/usage.md#added-static-field-values"
+    "status": "conditional",
+    "conditions": "resetStatics=true at startup; an existing prepared physical field with a changed isolated pure initializer. Frozen first-load definalization is reflection-visible. Added fields keep execute-once behavior.",
+    "action": "Check the reset/refusal diagnostic; restart for captured aliases, constants, missing preparation or refused expressions.",
+    "source": "docs/usage.md#changed-static-initializers"
   },
   {
     "id": "inlined-constant",
@@ -652,7 +652,7 @@
     "category": "SAP Commerce",
     "title": "Refresh supported interceptor mappings",
     "status": "conditional",
-    "conditions": "Mappings are captured before bean refresh and re-registered in the actual SAP registry. SDK contract is not live model-save tenant acceptance.",
+    "conditions": "Mappings and native registry identities survive interceptor bean refresh. Watched XML additions and setter-defined interceptor ref/typeCode edits reconcile each owner\u2019s context and ModelService registries. Mapping definitions requiring recreation, and unsupported removal, need a restart.",
     "action": "Check the registry result and a relevant live model operation.",
     "source": "docs/usage.md#sap-reload-outcomes-and-verification"
   },
@@ -678,9 +678,9 @@
     "id": "backoffice-config",
     "category": "SAP Commerce",
     "title": "Edit *-backoffice-config.xml",
-    "status": "conditional",
-    "conditions": "The source resets supported CockpitConfigurationService caches through Resettable.reset, without resetToDefaults. Packaged module copies can still answer until rebuilt.",
-    "action": "Reopen the view and verify the actual loaded configuration; build a packaged copy if needed.",
+    "status": "works",
+    "conditions": "Runs the native F4 cockpit-config reset in the owning tenant/session, rebuilding persisted configuration from module sources. This also resets configuration changed in the UI; widgets are not reset. Disable with backofficeConfigReset=false.",
+    "action": "Open a new view; disabled or failed resets report WARN instead of success.",
     "source": "agent/src/premium/java/com/onurkat/reclazz/hybris/backoffice/BackofficeConfigReloader.java"
   },
   {
@@ -704,11 +704,11 @@
   {
     "id": "sap-process",
     "category": "SAP Commerce",
-    "title": "Edit a registered local SAP process definition XML",
+    "title": "Edit an observed process XML or add a new process XML/resource bean",
     "status": "conditional",
-    "conditions": "The agent must observe the native initial resource load. With the SAP automation module and the standard native factory/cache/reader, a valid edit with the original name updates the active definition while preserving historical versions. Renames, duplicate names, active DynamicProcessDefinition rows, custom factories and missing startup observations are refused. Created/deleted resources still require restart.",
-    "action": "Start with the agent before definitions load. Verify a newly started process; already started processes keep their version within this JVM. Process restart, cache eviction, server restart and cluster propagation are outside this guarantee.",
-    "source": "docs/feature-evidence/sap-process-reload.json"
+    "conditions": "With the SAP automation module, a new name can be published into a warm standard native cache only from an exact resource singleton added by a watched, observed Spring source. Both save orders are supported. Unproven siblings, duplicate/existing names, dynamic definitions and replaced owners are refused. Each proven native owner is evaluated in its own tenant/session scope; failures and proof retirement stay local to that owner. Cold caches retain native lazy loading. Proven later edits preserve historical versions; deletion requires restart.",
+    "action": "Verify a newly started process. Already started processes keep their version within this JVM; no migration, replay, cache-eviction retention or cluster propagation.",
+    "source": "docs/usage.md#new-sap-process-definitions"
   },
   {
     "id": "dependency",

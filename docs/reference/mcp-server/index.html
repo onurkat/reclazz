@@ -15,7 +15,7 @@
 <script src="/docs/assets/theme.js?v=44ab3cc4ede7"></script>
 <link rel="stylesheet" href="/docs/assets/docs.css?v=1a3655f79ef4"><link rel="stylesheet" href="/assets/site.css?v=ff823a0eccc6">
 <script src="/docs/assets/docs.js?v=bd702e25fabd" defer></script><script src="/assets/site.js?v=cab0abf769a2" defer></script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Reclazz MCP server", "description": "Complete configuration, behavior and scope reference: Reclazz MCP server.", "url": "https://reclazz.com/docs/reference/mcp-server/", "dateModified": "2026-10-19", "version": "1.5.0"}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "TechArticle", "headline": "Reclazz MCP server", "description": "Complete configuration, behavior and scope reference: Reclazz MCP server.", "url": "https://reclazz.com/docs/reference/mcp-server/", "dateModified": "2026-10-19", "version": "1.6.0"}</script>
 </head>
 <body class="docs-page">
 <a class="skip-link" href="#main">Skip to content</a>
@@ -27,17 +27,22 @@
 <a class="header-install" href="/docs/quickstart/">Get started <span aria-hidden="true">↗</span></a>
 <details class="site-menu"><summary aria-label="Site navigation"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></summary><nav aria-label="Mobile main navigation"><a href="/docs/" aria-current="true">Docs</a><a href="/compare/">Compare</a><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="/docs/quickstart/">Get started ↗</a></nav></details>
 </header>
-<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
-<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.5.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav></details>
+<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>1.6.0</code></div><nav aria-label="Documentation"><div class="nav-group"><p>Start here</p><a href="/docs/"><span class="nav-icon" aria-hidden="true">↳</span>Overview</a><a href="/docs/quickstart/"><span class="nav-icon" aria-hidden="true">↳</span>Quickstart</a></div><div class="nav-group"><p>Reload reference</p><a href="/docs/support-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support matrix</a><a href="/docs/java/"><span class="nav-icon" aria-hidden="true">↳</span>Java &amp; JVM limits</a><a href="/docs/spring/"><span class="nav-icon" aria-hidden="true">↳</span>Spring &amp; MVC</a><a href="/docs/messaging/"><span class="nav-icon" aria-hidden="true">↳</span>Kafka, JMS &amp; RabbitMQ</a><a href="/docs/configuration/"><span class="nav-icon" aria-hidden="true">↳</span>Configuration &amp; resources</a></div><div class="nav-group"><p>Guides</p><a href="/docs/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce</a><a href="/docs/persistence/"><span class="nav-icon" aria-hidden="true">↳</span>Persistence &amp; caches</a></div><div class="nav-group"><p>Operations</p><a href="/docs/boundaries/"><span class="nav-icon" aria-hidden="true">↳</span>Reload timing</a><a href="/docs/configuration-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Agent options</a><a href="/docs/troubleshooting/"><span class="nav-icon" aria-hidden="true">↳</span>Troubleshooting</a></div><div class="nav-group"><p>Project</p><a href="/docs/evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Versions &amp; evidence</a></div><details class="nav-group reference-nav" open><summary>Technical reference</summary><a href="/docs/reference/"><span class="nav-icon" aria-hidden="true">↳</span>Reference library</a><a href="/docs/reference/agentic-evaluation/"><span class="nav-icon" aria-hidden="true">↳</span>Reproducible agentic workflow evaluation</a><a href="/docs/reference/client-matrix/"><span class="nav-icon" aria-hidden="true">↳</span>Agentic client acceptance matrix</a><a href="/docs/reference/feature-evidence/"><span class="nav-icon" aria-hidden="true">↳</span>Core JVM feature evidence</a><a href="/docs/reference/for-ai-agents/"><span class="nav-icon" aria-hidden="true">↳</span>For AI agents</a><a href="/docs/reference/gradle-plugin/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Gradle plugin</a><a href="/docs/reference/installation/"><span class="nav-icon" aria-hidden="true">↳</span>Installation</a><a href="/docs/reference/maven/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz with Maven</a><a href="/docs/reference/mcp-for-coding-agents/"><span class="nav-icon" aria-hidden="true">↳</span>MCP for coding agents: close the loop</a><a aria-current="page" href="/docs/reference/mcp-server/"><span class="nav-icon" aria-hidden="true">◈</span>Reclazz MCP server</a><a href="/docs/reference/product-reference/"><span class="nav-icon" aria-hidden="true">↳</span>Product technical reference</a><a href="/docs/reference/protocol/"><span class="nav-icon" aria-hidden="true">↳</span>The Status Socket</a><a href="/docs/reference/reload-support/"><span class="nav-icon" aria-hidden="true">↳</span>Reload support reference</a><a href="/docs/reference/sap-commerce/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz on SAP Commerce, for a coding agent</a><a href="/docs/reference/sap-commerce-live-tests/"><span class="nav-icon" aria-hidden="true">↳</span>SAP Commerce: what we test live</a><a href="/docs/reference/spring-boot-starter/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz Spring Boot starter</a><a href="/docs/reference/spring-constructor-dependencies/"><span class="nav-icon" aria-hidden="true">↳</span>Constructor dependency ownership during ordinary class refresh</a><a href="/docs/reference/superclass-feasibility/"><span class="nav-icon" aria-hidden="true">↳</span>Superclass changes without a custom classloader</a><a href="/docs/reference/test-guide/"><span class="nav-icon" aria-hidden="true">↳</span>Reclazz: Test Guide for SAP Commerce (Hybris)</a><a href="/docs/reference/usage/"><span class="nav-icon" aria-hidden="true">↳</span>Usage Guide</a></details><div class="nav-group"><p>Maintaining</p><a href="/docs/reference/documentation-workflow/"><span class="nav-icon" aria-hidden="true">↳</span>Documentation workflow</a><a href="/docs/reference/publishing/"><span class="nav-icon" aria-hidden="true">↳</span>Publishing Reclazz to the JetBrains Marketplace</a></div></nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
 <main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>Complete technical reference</span></div><article><div class="article-eyebrow">Complete technical reference</div><h1 id="reclazz-mcp-server">Reclazz MCP server</h1><div class="reference-content"><p>An <a href="https://modelcontextprotocol.io">MCP</a> server that turns the running Reclazz
 agent into tools a coding agent can call: check whether Reclazz is attached,
 nudge a scan after a build, ask what still needs a restart, or diagnose why a
-class did not reload. It is a thin, loopback-only client of the agent's status
-socket and asks the agent nothing beyond its own state.</p>
+class did not reload. Read-only resources expose the same status, pending and
+event queries, and a verification prompt guides the next authorized edit. It
+is a thin, loopback-only client of the agent's status socket and asks the agent
+nothing beyond its own state.</p>
 <p>It lives in <code>:mcp-server</code>, not the agent jar, because the agent's own tests
 forbid the shipped agent from opening a client socket.</p>
 <p>The <a href="/docs/reference/client-matrix/">client acceptance matrix</a> records independent SDK,
 real build-tool and OS coverage, with runnable tests and explicit untested lanes.</p>
+<p>For the developer workflow, read
+<a href="/docs/reference/mcp-for-coding-agents/">MCP for coding agents: close the loop</a>: each benefit
+has a recorded example and a limit, from target discovery to byte receipts.</p>
 <h2 id="running-it">Running it</h2>
 <p>The server requires Java 17 or newer and speaks JSON-RPC over stdio. It is a
 standalone jar containing its runtime dependencies; it does not need IntelliJ,
@@ -93,6 +98,82 @@ directory. Discovery checks only that directory's <code>.reclazz/agent.port</cod
 The port file may be absent at startup; the application can create it later.
 An absent, unreadable, malformed or unreachable explicit target never causes
 fallback to a different file or project.</p>
+<h3 id="claude-code">Claude Code</h3>
+<p>From the project whose application will run with Reclazz, register the packaged
+server with <a href="https://code.claude.com/docs/en/mcp">Claude Code's project scope</a>:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>claude mcp add --scope project --transport stdio reclazz -- \
+  &quot;/absolute/path/to/java&quot; -jar &quot;/absolute/path/to/reclazz-mcp-X.Y.Z.jar&quot; \
+  --project-dir &quot;/absolute/path/to/project&quot;
+</code></pre></div>
+<p>Replace all three paths first. This creates or updates the project's
+<code>.mcp.json</code>. Inspect the existing file before merging an entry named <code>reclazz</code>;
+do not overwrite other servers. The default <code>local</code> scope and the <code>user</code> scope
+instead store entries in <code>~/.claude.json</code>. Project scope is not an installation
+of the Java agent; start the application separately.</p>
+<p>Reconnect Claude Code and approve the project MCP server if the client asks.
+Use <code>/mcp</code> to inspect the connection, then ask it to call <code>reclazz_status</code> with
+<code>{}</code> using only this server. For an isolated print-mode check, the installed
+CLI also supports <code>--mcp-config /path/to/mcp.json --strict-mcp-config</code>; see the
+<a href="https://code.claude.com/docs/en/cli-reference">CLI reference</a>. A configured
+server or a model's description of it is not proof that the call ran.</p>
+<h3 id="codex">Codex</h3>
+<p>Merge this table into <code>~/.codex/config.toml</code>, preserving existing tables. Codex
+uses <a href="https://developers.openai.com/codex/mcp">TOML MCP configuration</a>, so the
+JSON <code>mcpServers</code> wrapper above is not a Codex configuration entry:</p>
+<div class="code-block"><div class="code-label">toml</div><pre><code>[mcp_servers.reclazz]
+command = &quot;/absolute/path/to/java&quot;
+args = [&quot;-jar&quot;, &quot;/absolute/path/to/reclazz-mcp-X.Y.Z.jar&quot;, &quot;--project-dir&quot;, &quot;/absolute/path/to/project&quot;]
+</code></pre></div>
+<p>Replace the executable, jar and project paths. Keep each argument as one TOML
+string, including paths with spaces. Do not add a second table with the same
+name. This local stdio server needs no API key, HTTP URL or MCP OAuth login.
+The Codex client can separately require its own provider authentication.</p>
+<p>Restart/reconnect Codex, inspect <code>/mcp</code>, and request one <code>reclazz_status</code> call
+with <code>{}</code>. <code>codex mcp list</code> lists configuration; it does not prove tool
+discovery or execution. A temporary CLI verification can use explicit <code>-c</code>
+overrides and <code>exec --ignore-user-config</code> where the installed version supports
+them, without editing the user's persistent config. The matrix identifies
+which route was actually exercised.</p>
+<h3 id="cursor">Cursor</h3>
+<p>Create or merge the <code>reclazz</code> entry in the project's <code>.cursor/mcp.json</code>:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;reclazz&quot;: {
+      &quot;type&quot;: &quot;stdio&quot;,
+      &quot;command&quot;: &quot;/absolute/path/to/java&quot;,
+      &quot;args&quot;: [&quot;-jar&quot;, &quot;/absolute/path/to/reclazz-mcp-X.Y.Z.jar&quot;,
+               &quot;--project-dir&quot;, &quot;/absolute/path/to/project&quot;]
+    }
+  }
+}
+</code></pre></div>
+<p><a href="https://cursor.com/docs/mcp">Cursor's MCP guide</a> also documents
+<code>~/.cursor/mcp.json</code> for global configuration. Use the project file when this
+server should target only that project. Reconnect the server in Cursor's MCP
+settings, inspect its available tools and ask Agent to call <code>reclazz_status</code>
+with <code>{}</code>. Do not count a registered entry as a completed call.</p>
+<p>The separate Cursor Agent CLI has its own installation. If it is already
+installed, its documented <code>agent mcp list-tools reclazz</code> command lists tools;
+see <a href="https://cursor.com/docs/cli/mcp">Cursor CLI MCP</a>. A desktop installation
+alone does not establish that CLI's availability. Some Cursor launchers
+automatically install or update it when <code>cursor agent</code> is invoked. Inspect
+availability before invoking that route during a no-install check.</p>
+<h3 id="check-the-connection-and-target">Check the connection and target</h3>
+<p>The current server exposes eleven tools, including <code>reclazz_await_reload</code> and
+<code>reclazz_events</code>. Compare the client's discovered tools with the table below.
+Then inspect the actual <code>reclazz_status</code> tool result, rather than the model's
+paraphrase. With a running, healthy target expect <code>attached:true</code> and health
+data. <code>attached:false</code> is an explicit diagnostic result, not a successful
+attachment. Even <code>attached:true</code> does not prove a reload or changed application
+behavior; use DOCTOR, exact-byte verification and an application check for that.</p>
+<p>If the client cannot start the server, check the absolute Java executable,
+Java version, readable packaged jar and its checksum. If it starts but cannot
+reach the application, check the selected project, the application's actual
+port file, and whether its launch directory satisfies the project check below.
+Client permission denial, missing provider authentication and an unreachable
+provider are separate from a server or target failure. Preserve the error and
+do not report an unexecuted tool call as verified. The
+<a href="/docs/reference/client-matrix/">client matrix</a> records observed versions and unverified lanes.</p>
 <h3 id="target-selection-and-overrides">Target selection and overrides</h3>
 <p>Startup accepts only <code>--project-dir PATH</code>, <code>--port-file PATH</code>, or <code>--help</code>.
 Unknown/duplicate options and missing/blank/invalid values fail before stdio
@@ -139,7 +220,7 @@ explicit project check; use matching agent/MCP builds.</p>
   | java -jar &quot;$MCP_JAR&quot;
 </code></pre></div>
 <p>Expect two JSON response lines: initialization reports <code>reclazz-mcp</code> and the
-jar's version; the tools list contains the nine tools below. The notification
+jar's version; the tools list contains the eleven tools below. The notification
 has no response. EOF closes the server. If Java cannot open the jar, check the
 absolute path; if it cannot load its classes, use the packaged jar from
 <code>build/distributions/mcp</code>, not the plain development jar. A missing attached
@@ -175,7 +256,7 @@ application is a separate condition: <code>reclazz_status</code> reports <code>a
 </tr>
 <tr>
 <td><code>reclazz_scan</code></td>
-<td>Ask the agent to look at the watched directories now and reload changed classes, instead of waiting for its next poll</td>
+<td>Wait for a correlated scan/enqueue receipt from the agent; reload completion remains separate</td>
 </tr>
 <tr>
 <td><code>reclazz_pending</code></td>
@@ -188,6 +269,14 @@ application is a separate condition: <code>reclazz_status</code> reports <code>a
 <tr>
 <td><code>reclazz_diagnose</code></td>
 <td>Why a given class did or did not reload last time (requires <code>className</code>)</td>
+</tr>
+<tr>
+<td><code>reclazz_await_reload</code></td>
+<td>Checkpoint received events before saving, then wait for an exact-owner event and same-session byte receipt; reports errors, holds and bounded timeouts</td>
+</tr>
+<tr>
+<td><code>reclazz_events</code></td>
+<td>List bounded received-event pages from that checkpoint with exact filters; observations never confirm a reload</td>
 </tr>
 </tbody>
 </table></div>
@@ -223,8 +312,11 @@ stdio session. An invalid initialization request does not change it.</p>
 <p>Following the <a href="https://modelcontextprotocol.io/specification/2025-06-18/basic/lifecycle#version-negotiation">MCP version negotiation rule</a>,
 a client that supports the returned version sends <code>notifications/initialized</code>
 and continues. A client that cannot support it should disconnect. This server
-advertises tools only. It does not implement HTTP transport, resources, prompts,
-sampling or elicitation. Full initialization-order enforcement is not added here;
+advertises <code>tools:{}</code>, <code>resources:{}</code> and <code>prompts:{}</code> in both supported
+versions. Existing tool definitions and negotiated result formats are unchanged.
+Resource subscriptions and list-change notifications are not advertised. HTTP
+transport, sampling and elicitation are not implemented. Full initialization-order
+enforcement is not added here;
 for compatibility, direct calls before initialization retain the legacy format.</p>
 <h2 id="structured-tool-contracts">Structured tool contracts</h2>
 <p>Sessions negotiating <code>2025-06-18</code> receive <code>outputSchema</code> and <code>annotations</code> from
@@ -255,7 +347,7 @@ these newer fields.</p>
 </tr>
 <tr>
 <td><code>reclazz_scan</code></td>
-<td><code>status:sent</code> or <code>unavailable</code>, <code>detail</code>, <code>reloadConfirmed:false</code></td>
+<td><code>status:queued</code> or <code>unavailable</code>, <code>enqueued</code> on success, <code>requestId</code>, <code>sessionId</code>, <code>detail</code>, <code>reloadConfirmed:false</code></td>
 </tr>
 <tr>
 <td><code>reclazz_build</code></td>
@@ -277,6 +369,14 @@ these newer fields.</p>
 <td><code>reclazz_verify</code></td>
 <td>Existing correlated receipt fields; <code>status:applied</code> alone is success, or the existing <code>unavailable</code> failure object</td>
 </tr>
+<tr>
+<td><code>reclazz_await_reload</code></td>
+<td><code>ready</code>, <code>applied</code>, <code>compile_error</code>, <code>refused</code>, <code>restart_required</code>, <code>held</code>, <code>timeout</code> or <code>unavailable</code>; explicit received-event correlation limits and a byte receipt for <code>applied</code></td>
+</tr>
+<tr>
+<td><code>reclazz_events</code></td>
+<td><code>observed</code> with ordered event pages, <code>nextCursor</code>, <code>snapshotHead</code> and <code>hasMore</code>, or <code>unavailable</code>; always <code>reloadConfirmed:false</code></td>
+</tr>
 </tbody>
 </table></div>
 <p><code>sent</code> confirms a socket write, <code>acknowledged</code> confirms the BUILD signal, and
@@ -284,7 +384,7 @@ these newer fields.</p>
 The diagnostic <code>complete:false</code> reflects the lack of a response end marker in
 the broadcast stream. VERIFY preserves its exact-byte checks, and application
 behavior still needs its own test.</p>
-<p>Status, doctor, pending, diagnose, verify and verify-batch advertise <code>readOnlyHint:true</code> and
+<p>Status, doctor, pending, diagnose, verify, verify-batch, await-reload and events advertise <code>readOnlyHint:true</code> and
 <code>openWorldHint:false</code>. Scan, build and reload-control advertise <code>readOnlyHint:false</code>,
 <code>destructiveHint:true</code>, <code>idempotentHint:false</code> and <code>openWorldHint:true</code>: live
 reload can replace behavior and invoke application callbacks with external
@@ -298,6 +398,181 @@ python3 mcp-server/src/test/python/check_tool_contracts.py
 <p>The Python checker validates the schemas, successful and failed results, and
 rejects deliberate missing fields, wrong types, invalid statuses and invented
 completion flags. It is an optional development check, not a runtime dependency.</p>
+<h2 id="read-only-resources">Read-only resources</h2>
+<p>Clients can use <code>resources/list</code> to discover two fixed resources and
+<code>resources/templates/list</code> to discover one parameterized event resource:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Name</th>
+<th>URI or URI template</th>
+<th>Data</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td><code>reclazz://status</code></td>
+<td>Same JSON as <code>reclazz_status</code>, including <code>attached:false</code> and any diagnostic reason</td>
+</tr>
+<tr>
+<td><code>pending</code></td>
+<td><code>reclazz://pending</code></td>
+<td>Same JSON as <code>reclazz_pending</code>, including <code>status</code>, <code>lines</code>, <code>detail</code> and <code>complete:false</code></td>
+</tr>
+<tr>
+<td><code>events</code></td>
+<td><code>reclazz://events/{session}/{subscription}?since={since}{&amp;limit}</code></td>
+<td>Same bounded received-event page as <code>reclazz_events</code>, including unavailable reasons and non-proof flags</td>
+</tr>
+</tbody>
+</table></div>
+<p>All three use <code>application/json</code>. A <code>resources/read</code> result has one <code>contents</code>
+entry with <code>uri</code>, <code>mimeType</code> and JSON serialized in <code>text</code>. Parse that text to
+obtain the data object. A resource result has neither a tool <code>isError</code> flag nor
+<code>structuredContent</code>. A successful JSON-RPC read can therefore contain
+<code>attached:false</code> or <code>status:&quot;unavailable&quot;</code>; inspect the data before proceeding.</p>
+<p>For example, these <code>resources/read</code> parameters were used in recorded packaged
+SDK acceptance:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;uri&quot;: &quot;reclazz://status&quot;
+}
+</code></pre></div>
+<p>Decoded <code>contents[0].text</code>, showing only the recorded attachment fields:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;attached&quot;: true,
+  &quot;agent&quot;: &quot;1.6.0&quot;,
+  &quot;protocol&quot;: 1
+}
+</code></pre></div>
+<p>The complete result also contains the target port and health observations.
+This excerpt is not an application-behavior or reload receipt.</p>
+<h3 id="event-resource-selectors">Event resource selectors</h3>
+<p>First obtain a <code>reclazz_await_reload</code> checkpoint with <code>status:&quot;ready&quot;</code> on this
+MCP server's startup target. Substitute its exact session, subscription and
+cursor into the template. For example, this is a parameter template, not a
+literal live identity:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;uri&quot;: &quot;reclazz://events/SESSION/SUBSCRIPTION?since=0&amp;limit=50&quot;
+}
+</code></pre></div>
+<p>Use the returned checkpoint cursor instead of <code>0</code> when it differs. Each session
+and subscription segment accepts 1 to 64 ASCII letters, digits, <code>_</code> or <code>-</code>.
+<code>since</code> is required: a nonnegative decimal cursor without leading zeros,
+fitting a Java <code>long</code>. <code>limit</code> is optional, defaults to 50 and accepts 1 to 100
+without leading zeros. Query order can vary. The URI is limited to 4,096 Java
+characters; percent escapes, controls, fragments, userinfo, ports, extra path
+segments and duplicate, unknown or empty query values are rejected.</p>
+<p>Resource reads always use the server's startup target and the same existing
+checkpoint history as the tools. A URI cannot override <code>projectDir</code>, <code>port</code>,
+<code>portFile</code>, <code>hybrisHome</code> or a file path. Project evidence is checked as for the
+corresponding tool. No resource URI is fetched as a filesystem or network URL.
+A read does not create a checkpoint or reconnect a stale subscription. A
+checkpoint made with a different tool target override is not silently retargeted.</p>
+<p>Use <code>nextCursor</code> to continue through the shared history. Stale identities,
+future or evicted cursors, target mismatch and transport failures retain the
+existing unavailable event-page result; they do not become healthy empty pages.
+The default event-read deadline is 5,000 ms. Filters and a custom timeout remain
+available through <code>reclazz_events</code>, not the resource URI. Events still confirm
+neither applied bytes, source paths/revisions nor application behavior.</p>
+<p>Both discovery methods return one bounded page without <code>nextCursor</code>; a
+continuation <code>cursor</code> is rejected. Listing them does not contact the agent.
+Event resource reads use the existing cancellable observation worker. Ping and
+pure tool/resource/prompt metadata remain responsive during that work; other
+execution receives busy rather than being queued. Status and pending retain
+their existing bounded synchronous socket behavior.</p>
+<h2 id="verification-prompt">Verification prompt</h2>
+<p><code>prompts/list</code> advertises one prompt, <code>verify_my_last_change</code>. Retrieve it using
+<code>prompts/get</code> with these parameters:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{
+  &quot;name&quot;: &quot;verify_my_last_change&quot;
+}
+</code></pre></div>
+<p>The result contains a description and one fixed <code>user</code> message with text
+content. No arguments are accepted; an absent or empty <code>arguments</code> object is
+valid. Listing or retrieving the prompt performs no agent query, build, edit,
+model call or application action, and grants no additional permission.</p>
+<p>The prompt guides the agent through doctor identity checks, a checkpoint before
+a new authorized edit, the real external BUILD lifecycle where applicable,
+awaiting an exact-owner reload, exact-byte verification and the application's
+own HTTP/UI/database check. A previously saved edit cannot gain retroactive
+checkpoint or source-revision proof. BUILD <code>ok</code> is sent with the same owner only
+after the complete build succeeds, never just to clear a hold. Automatic agent
+compilation remains a separate path. Failed, held, refused, restart-required or
+unavailable results must be reported instead of an automatic resume or restart.</p>
+<h3 id="resource-and-prompt-errors">Resource and prompt errors</h3>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Case</th>
+<th>JSON-RPC result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Missing/wrongly typed parameters, malformed selectors, unknown fields, invalid prompt name or nonempty prompt arguments</td>
+<td><code>-32602</code></td>
+</tr>
+<tr>
+<td>Well-formed unknown resource URI, such as <code>reclazz://unknown</code></td>
+<td><code>-32002</code></td>
+</tr>
+<tr>
+<td>Unexpected internal context-request failure</td>
+<td><code>-32603</code></td>
+</tr>
+<tr>
+<td>Another execution while the observation worker is active</td>
+<td><code>-32000</code></td>
+</tr>
+<tr>
+<td>Unsupported subscription or completion method</td>
+<td><code>-32601</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>New resource/prompt methods accept optional object <code>_meta</code> without interpreting
+it as a selector. No-ID notifications remain silent. A known resource with
+unavailable runtime evidence returns its diagnostic JSON, not an invented
+success or a resource-not-found error.</p>
+<h3 id="recorded-client-coverage">Recorded client coverage</h3>
+<p>Recorded locally on <strong>2026-11-10</strong>, with matching locally built agent/MCP 1.5.0:</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Client/check</th>
+<th>Observed</th>
+<th>Explicit limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Official TypeScript SDK 1.30.0, packaged real JVM</td>
+<td>Two resources, one template, prompt list/get; status, pending, observed and unavailable event reads</td>
+<td>Separate consumer acceptance, not an installed AI-client UI result</td>
+</tr>
+<tr>
+<td>Claude Code 2.1.321, constrained print run against temporary Spring sample</td>
+<td>Actual <code>resources/list</code> with both resources and <code>prompts/list</code> with the verification prompt</td>
+<td><code>resources/templates/list</code>, <code>resources/read</code> and <code>prompts/get</code> were not requested with built-in tools disabled; no read/UI claim</td>
+</tr>
+<tr>
+<td>Independent protocol client against clean SAP Commerce</td>
+<td>Two resources, one template, status/pending read, prompt list/get and expected URI errors</td>
+<td>Protocol acceptance, not Claude Code or a new SAP operation receipt</td>
+</tr>
+</tbody>
+</table></div>
+<p>The client decides how resources/prompts appear. The earlier Codex/Claude
+eleven-tool acceptance and documented Cursor setup do not establish these new
+client lanes; see the <a href="/docs/reference/client-matrix/#installed-coding-clients">dated client matrix</a>.</p>
+<p>Executable contracts: <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpResourcesTest.java">resource tests</a>,
+<a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/java/com/onurkat/reclazz/mcp/McpPromptsTest.java">prompt tests</a>
+and the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/client/acceptance.test.mjs">packaged SDK acceptance</a>.
+After <code>:mcp-server:test</code>, the optional independent JSON Schema check uses the
+same existing tool output schemas against actual resource data:</p>
+<div class="code-block"><div class="code-label">sh</div><pre><code>python3 mcp-server/src/test/python/check_resource_contracts.py
+</code></pre></div>
 <h2 id="input-validation">Input validation</h2>
 <p>Each stdio line carries one JSON-RPC 2.0 object. Requests have a string method,
 a string or integer ID (not null), and optional object params. Notifications
@@ -310,8 +585,9 @@ line is drained and rejected before the next line is read. Known tool arguments
 must be strings, at most 4,096 Java characters, without control characters.
 <code>className</code> for diagnose/verify must be a binary Java name of at most 256
 characters (Unicode identifiers and <code>$</code> inner classes are supported).
-<code>timeoutMs</code> is an integer string in 1–60,000, with defaults of 5,000 for
-build/verify and 2,000 for other tools. Paths with spaces are supported.
+<code>timeoutMs</code> is an integer string in 1–60,000, with defaults of 5,000 for build,
+verify, doctor, reload_control, verify_batch, await_reload and events, and 2,000 for status, scan,
+pending and diagnose. Paths with spaces are supported.
 Invalid numeric ports produce tool errors for scan/pending/diagnose; status
 reports them as <code>attached:false</code>.</p>
 <p>Diagnose rejects invalid names before connecting. The socket writer additionally
@@ -380,7 +656,7 @@ Missing or malformed owner is an invalid argument. Ownership rejection or an
 old/wrong-owner receipt is a tool error. Use the retained owner for started,
 failed and successful recovery; a disconnected MCP call does not release it.</p>
 <h2 id="verifying-the-compiled-change">Verifying the compiled change</h2>
-<p>For a concrete first installation, use the <a href="https://github.com/onurkat/reclazz/blob/main/examples/maven-spring-boot/README.md#verify-the-installation">Maven verification recipe</a>:
+<p>For a concrete first installation, use the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/examples/maven-spring-boot/README.md#verify-the-installation">Maven verification recipe</a>:
 it combines DOCTOR identity, class-file hashing, this receipt and an observable
 response, with next steps for wrong targets, stale sessions and unwatched output.</p>
 <p>Build and attach matching current agent/MCP jars; older published agents may not
@@ -454,7 +730,8 @@ version while it runs. Existing non-batch tools retain synchronous behavior.</p>
 <p>Cancellation closes the batch socket, including during handshake or reply waits,
 and suppresses its response if cancellation wins the completion race. Numeric and
 string IDs are distinct. Unknown, completed and malformed cancellations are
-ignored. Initialize and non-batch tools are not cancellable. End of stdin also
+ignored. Await-reload uses this same worker and cancellation mechanism;
+initialize and other tools are not cancellable. End of stdin also
 cancels the active batch and frees its socket; keep stdin open while awaiting a
 batch result. Cancelling observation does not cancel application reload, undo
 changes, release a build hold or reclaim its owner. A result already sent may
@@ -499,7 +776,289 @@ may finish. The switch is shared by all clients of this agent, survives client
 disconnect, and is not a per-client ownership lock. Repeated pause/resume does
 not discard pending changes. See <a href="/docs/reference/protocol/#pausing-automatic-reload">the socket contract</a>
 for admission and count boundaries. No IDE control or automatic rollback is added.</p>
-</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/main/docs/mcp-server.md">docs/mcp-server.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/maven/"><span>← Previous</span><strong>Reclazz with Maven</strong></a><a href="/docs/reference/product-reference/"><span>Next →</span><strong>Product technical reference</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#running-it">Running it</a><a href="#tools">Tools</a><a href="#tool-execution-errors">Tool execution errors</a><a href="#protocol-version-negotiation">Protocol version negotiation</a><a href="#structured-tool-contracts">Structured tool contracts</a><a href="#input-validation">Input validation</a><a href="#what-it-does-not-do">What it does not do</a><a href="#protecting-terminal-builds">Protecting terminal builds</a><a href="#protecting-a-build-through-mcp">Protecting a build through MCP</a><a href="#verifying-the-compiled-change">Verifying the compiled change</a><a href="#check-the-target-before-an-agentic-build">Check the target before an agentic build</a><a href="#bounded-batch-verification-and-cancellation">Bounded batch verification and cancellation</a><a href="#pause-and-resume-automatic-reload">Pause and resume automatic reload</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+<h2 id="waiting-for-a-reload">Waiting for a reload</h2>
+<p><code>reclazz_await_reload</code> keeps a bounded event subscription in this MCP process.
+Take a checkpoint <strong>before</strong> editing or compiling, retain the returned
+<code>sessionId</code>, <code>subscriptionId</code> and <code>cursor</code>, then wait on that same target:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_await_reload&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;checkpoint&quot;,&quot;timeoutMs&quot;:&quot;5000&quot;}}
+</code></pre></div>
+<p>After saving, copy the returned identities into the wait call. The following
+identities are placeholders, not a receipt from a running application:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_await_reload&quot;,&quot;arguments&quot;:{&quot;action&quot;:&quot;wait&quot;,&quot;sessionId&quot;:&quot;returned-session&quot;,&quot;subscriptionId&quot;:&quot;returned-subscription&quot;,&quot;afterCursor&quot;:&quot;0&quot;,&quot;filePath&quot;:&quot;/project/src/main/java/com/example/Service.java&quot;,&quot;ownerClassName&quot;:&quot;com.example.Service&quot;,&quot;timeoutMs&quot;:&quot;10000&quot;}}
+</code></pre></div>
+<p>Source mode accepts an absolute normalized <code>.java</code> path and requires an explicit
+<code>ownerClassName</code> to produce a useful result. Without the owner it returns
+<code>unavailable</code> with <code>reasonCode:owner_required</code>. It observes <code>Compiled &lt;basename&gt;</code>
+followed by an exact-owner reload, excluding inner-class-only events. The agent
+does not include the full source path in that compile event. Visible ambiguous
+same-basename sequences fail closed; this does not detect every path collision.</p>
+<p>Alternatively, select <code>className</code> instead of <code>filePath</code>/<code>ownerClassName</code> for
+externally compiled output. Class mode requires a new exact binary-owner reload
+event after the checkpoint, without inventing a COMPILE event. Both modes accept
+optional lower-case compiled-owner <code>sha256</code>. Pass the expected compiled hash
+when available. Without it, the tool discovers the latest observed hash with
+one VERIFY query and checks that hash again; discovery alone never confirms a
+reload. <code>hashSource:caller</code> distinguishes supplied bytes from <code>hashSource:receipt</code>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Field or result</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>correlationScope:received_events</code></td>
+<td>The cursor orders events received on this unbroken MCP subscription, not agent attempt starts</td>
+</tr>
+<tr>
+<td><code>sourcePathConfirmed:false</code></td>
+<td>The compile event cannot prove a full source path</td>
+</tr>
+<tr>
+<td><code>editRevisionConfirmed:false</code></td>
+<td>A previous in-flight attempt can finish after checkpoint; the tool does not prove an arbitrary source revision was compiled</td>
+</tr>
+<tr>
+<td><code>ready</code></td>
+<td>Checkpoint established; no reload is confirmed</td>
+</tr>
+<tr>
+<td><code>applied</code></td>
+<td>Exact-owner reload observed and a completed exact-byte VERIFY receipt validated in the same JVM session; <code>reloadConfirmed:true</code></td>
+</tr>
+<tr>
+<td><code>compile_error</code></td>
+<td>A new compiler-error block names that source basename and line; bounded diagnostic lines retained</td>
+</tr>
+<tr>
+<td><code>refused</code></td>
+<td>Exact-owner hot-swap failure with a compatible failed byte receipt</td>
+</tr>
+<tr>
+<td><code>restart_required</code></td>
+<td>The observed owner reports a superclass change that was not applied; independently salvageable bodies may have changed</td>
+</tr>
+<tr>
+<td><code>held</code></td>
+<td>Agent-wide pause or BUILD hold observed; it does not prove this target was pending, and admitted work may finish</td>
+</tr>
+<tr>
+<td><code>timeout</code></td>
+<td>No qualifying evidence within the total deadline; never success</td>
+</tr>
+<tr>
+<td><code>unavailable</code></td>
+<td>Missing owner, lost/foreign cursor, changed session/target, malformed or contradictory receipt, or unavailable connection; inspect <code>reasonCode</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>Only <code>ready</code> and <code>applied</code> return <code>isError:false</code>. All outcomes carry the three
+correlation-limit fields above. <code>applied</code> proves a point-in-time completed byte
+receipt, not application behavior, source revision, atomic reload or retained
+bean state. Exercise the live endpoint/test afterward. Typed restart diagnosis
+currently recognizes the agent's superclass-change warning; unknown failures
+cannot become success through an unverified receipt. This is not an exhaustive
+classifier for SAP resource operations.</p>
+<p>BUILD ok acknowledges scheduling. A subsequent await can still report <code>held</code>
+before the agent accepts the queued build output. Reuse the same checkpoint
+and recheck after the caller's successful BUILD sequence; await never sends
+BUILD, SCAN, pause, resume, compilation or restart commands.</p>
+<p>Timeout covers the entire call, including connection, handshake, target checks
+and receipt queries, with the usual 5000ms default and 60000ms maximum. This MCP
+process retains at most two target subscriptions, each with at most 2,048 events
+and 1,048,576 retained Java characters. Returned diagnostics contain at most 16 lines of
+512 characters, with <code>diagnosticsTruncated</code> when clipped. Old or evicted cursors
+return unavailable. A new connection has a new subscription identity even if
+the application session is unchanged; obtain a new checkpoint instead of
+silently reusing the old cursor.</p>
+<p>Await and events use the same bounded worker slot as verify-batch. Ping and tools/list
+remain available during a wait. Cancellation closes the observation socket,
+invalidates its cursor and suppresses a late response; it does not undo an
+application reload. A later checkpoint can connect again. EOF closes all MCP
+subscriptions, and idle target eviction never discards an active wait.</p>
+<h2 id="inspecting-a-batch-of-events">Inspecting a batch of events</h2>
+<p>Call <code>reclazz_await_reload</code> with <code>action:checkpoint</code> before editing. Keep that
+response's <code>sessionId</code>, <code>subscriptionId</code> and <code>cursor</code>. The read-only
+<code>reclazz_events</code> tool lists received observations from this same persistent
+subscription; it has no separate checkpoint action.</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;limit&quot;:&quot;50&quot;}}
+</code></pre></div>
+<p>Replace <code>sinceCursor</code> with the checkpoint's cursor on the first call, then use
+each page's <code>nextCursor</code>. Reuse the same target arguments. Pages contain at most
+<code>limit</code> matching events, an integer string from <code>1</code> to <code>100</code>, default <code>50</code>.
+An empty healthy page returns immediately. <code>timeoutMs</code> is the total call budget,
+including target and session checks, default <code>5000</code>, maximum <code>60000</code>.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Page field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>events</code></td>
+<td>Received events in ascending local sequence order</td>
+</tr>
+<tr>
+<td><code>nextCursor</code></td>
+<td>Last inspected event, including excluded events; feed it into the next <code>sinceCursor</code></td>
+</tr>
+<tr>
+<td><code>snapshotHead</code></td>
+<td>Head captured together with this page's input history; later arrivals belong to subsequent queries</td>
+</tr>
+<tr>
+<td><code>hasMore</code></td>
+<td>Uninspected events remain through that head; they may not match your filters</td>
+</tr>
+<tr>
+<td><code>correlationScope:received_events</code></td>
+<td>Local receive order, not a durable agent history or attempt identifier</td>
+</tr>
+<tr>
+<td><code>sourcePathConfirmed:false</code>, <code>editRevisionConfirmed:false</code></td>
+<td>No full source path or source revision attribution</td>
+</tr>
+<tr>
+<td><code>reloadConfirmed:false</code></td>
+<td>Listing an event never validates an applied byte receipt or application behavior</td>
+</tr>
+</tbody>
+</table></div>
+<p>For example, if events <code>2</code>, <code>4</code> and <code>6</code> match and <code>limit</code> is <code>2</code>, page one
+returns <code>2</code> and <code>4</code>, with <code>nextCursor:&quot;4&quot;</code>. The next page can return <code>6</code>.
+A page with no matches still advances through its inspected snapshot. Reading
+the same input cursor again deliberately replays retained history; only
+traversal through <code>nextCursor</code> avoids duplicates. If you change filters after
+advancing, previously excluded events are not replayed. Keep an earlier valid
+cursor for another view.</p>
+<p>Optional filters are exact <code>level</code>, binary <code>ownerClassName</code>, and literal Java
+<code>fileBasename</code>, for example <code>Service.java</code>. Levels are INFO, OK, WARN, ERROR,
+COMPILE, RELOAD and STRUCTURAL_RELOAD. Filenames have no directory separators and are matched literally,
+without glob or regular-expression matching. Filters combine with AND on <strong>one event</strong>. A COMPILE
+usually has a filename but no owner; a RELOAD has an owner but no filename.
+Combining these filters does not link adjacent events. Query them separately
+from the same checkpoint when inspecting both kinds of evidence:</p>
+<div class="code-block"><div class="code-label">json</div><pre><code>{&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;fileBasename&quot;:&quot;Service.java&quot;}}
+{&quot;name&quot;:&quot;reclazz_events&quot;,&quot;arguments&quot;:{&quot;sessionId&quot;:&quot;COPY_SESSION&quot;,&quot;subscriptionId&quot;:&quot;COPY_SUBSCRIPTION&quot;,&quot;sinceCursor&quot;:&quot;0&quot;,&quot;ownerClassName&quot;:&quot;com.example.Service&quot;}}
+</code></pre></div>
+<p>Each row carries <code>sequence</code>, <code>level</code>, <code>timestamp</code>, <code>message</code>, <code>messageTruncated</code>
+and a parsed <code>type</code>. The timestamp comes from the agent's broadcast; missing
+or invalid timestamps are explicit <code>null</code>. Sequence orders rows even when
+clock times repeat or move backwards. Messages retain at most 512 Java
+characters, with <code>messageTruncated:true</code> when clipped. Parsing uses the full
+bounded received message, and optional filename/owner fields appear only when
+that event explicitly admits them. An inner-class display folded to
+<code>Outer (inner class)</code> cannot identify an exact binary owner.</p>
+<p>Types are <code>compile</code>, <code>reload</code>, <code>structural_reload</code>, <code>compile_error</code>,
+<code>compiler_diagnostic</code>, <code>refused</code>, <code>framework_failure</code>, <code>restart_required</code>, <code>sap_operation</code> and
+<code>unknown</code>. These describe emitted text; even <code>reload</code> confirms no completed
+receipt. A compiler diagnostic identifies a basename, not a full source path
+or a reconstructed compile batch. Unknown events remain visible. Known SAP producer messages have the typed observations described below;
+unrecognized messages remain <code>unknown</code>. Use <code>await_reload</code>/<code>verify</code> and
+an endpoint or application test to confirm a change.</p>
+<p>The two-target registry and each 2048-event/1,048,576-character ring are shared
+with await. Timestamp characters count toward retention. Evicted input cursors
+return <code>unavailable/cursor_evicted</code>; future cursors return <code>invalid_cursor</code>.
+Disconnect, changed target/session, idle eviction or cancellation invalidates
+the subscription. The tool returns no partial page or advanced cursor on
+failure and never reconnects silently. Obtain an explicit new checkpoint;
+it cannot recover history lost before connection or after eviction. An
+unavailable result is a tool error, not a healthy empty page. Cancellation
+closes the shared stream, invalidating its await cursors too; ping and tools/list
+remain available during a blocked read. No BUILD, SCAN, pause, resume,
+compilation or restart command is sent by event listing.</p>
+<h2 id="typed-sap-operation-observations">Typed SAP operation observations</h2>
+<p><code>reclazz_events</code> and the event resource expose recognized SAP messages as
+<code>type:sap_operation</code> with a nested <code>sap</code> object. Each row is an <strong>agent message,
+not a request receipt</strong>. Matching uses the complete received message and its
+level before display clipping. Unknown or malformed formats remain <code>unknown</code>.</p>
+<p>The nested fields <code>operation</code>, <code>reportedOutcome</code> and <code>reasonCode</code> describe that
+single message. Every SAP observation has <code>evidenceScope:&quot;agent_message&quot;</code> and
+<code>applicationBehaviorConfirmed:false</code>. Explicit resource basenames, counts or
+anonymous Solr target tags appear only where the message supplies them. Rows
+carry no operation request ID, edit revision or inferred link to adjacent events.</p>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Recognized reported outcomes</th>
+<th>Observed live in recorded acceptance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>impex_import</code></td>
+<td>applied, refused, error, skipped, unavailable, warning</td>
+<td>applied, refused, skipped</td>
+</tr>
+<tr>
+<td><code>codegen</code></td>
+<td>generated, error</td>
+<td>generated</td>
+</tr>
+<tr>
+<td><code>items_schema</code></td>
+<td>applied, manual_required, unavailable, error</td>
+<td>applied</td>
+</tr>
+<tr>
+<td><code>backoffice_reset</code></td>
+<td>applied, disabled, error</td>
+<td>applied</td>
+</tr>
+<tr>
+<td><code>solr_reindex</code></td>
+<td>finished, finished_unverified, failed, skipped</td>
+<td>finished, failed</td>
+</tr>
+</tbody>
+</table></div>
+<p>The remaining outcomes have unit/fake-agent evidence only. Live acceptance used
+synthetic fixtures on a clean SAP Commerce installation: real ImpEx data checks,
+generated accessors and OCC responses, persisted schema/model checks, stored
+Solr document checks, and Backoffice configuration media changes. Profile
+restoration checks passed, followed by five default-suite runs on one boot and
+one on a fresh boot, each 46/46 with no failures or skips. These are recorded
+local acceptance results, not a claim that CI runs the native suite.</p>
+<p>Interpret the families separately:</p>
+<ul>
+<li>Codegen <code>generated</code> reports regeneration/compilation. Verify the generated
+owners' applied bytes and then exercise the application.</li>
+<li>Items warnings can report manual work or an unavailable automatic update;
+the shared warning cannot distinguish every underlying disabled/error cause.</li>
+<li>ImpEx <code>warning/remove_allowed</code> means importing with REMOVE allowed, not a
+refusal. Check the import result separately.</li>
+<li>Backoffice <code>applied</code> includes <code>uiConfigurationReset:true</code>; it reports an F4
+configuration reset. Browser rendering and widget/socket behavior require
+their own checks.</li>
+<li>Solr keeps <code>finished_unverified</code> distinct from <code>finished</code>. Every Solr row
+has <code>fieldFreshnessConfirmed:false</code>; inspect actual stored documents. Mixed
+owner results remain separate observations, without an aggregate success.</li>
+</ul>
+<p><code>reclazz_await_reload</code> adds <code>sapOutcomes</code> containing the latest at most 16 SAP
+rows after the supplied cursor, with <code>sapOutcomesTruncated</code> when older matching
+rows are omitted. The returned cursor comes from the same checked snapshot.
+Checkpoint results start empty; invalid history, session, target or transport
+clears the annotations. These rows do not select a SAP wait target or change
+Java await status: a SAP <code>applied</code> row alone cannot yield top-level <code>applied</code>
+or <code>reloadConfirmed:true</code>. Use event pages to inspect retained observations
+and the application's own tests to establish behavior.</p>
+<p>See the <a href="/docs/reference/mcp-for-coding-agents/#read-sap-operation-outcomes-with-their-limits">SAP observation benefit</a>
+and the <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/mcp-server/src/test/java/com/onurkat/reclazz/mcp/SapOperationObservationTest.java">parser contract tests</a>.</p>
+<h3 id="scan-completion-support">Scan completion support</h3>
+<p><code>reclazz_scan</code> checks DOCTOR's additive <code>scanCompletionSupported</code> capability and
+waits on that same connection for its token/session-matched SCAN_RESULT. It
+returns queued only after file events were delivered to the agent callback.
+Zero is a valid unchanged scan; coalesced requests share a pass count. This
+neither clears BUILD/pause holds nor proves compilation or reload success.
+Unsupported older agents, missing/malformed receipts, session changes, stopped
+watchers, disconnects and timeouts return unavailable; no retry or reconnect
+silently turns an unknown result into success. Older IDE/wire clients retain
+bare SCAN behavior. Use matching agent/MCP versions for completion receipts.</p>
+</div><details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/75df861f844780774cfe9209d30abdc730115480/docs/mcp-server.md">docs/mcp-server.md</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details><nav class="page-pager" aria-label="Documentation pages"><a href="/docs/reference/mcp-for-coding-agents/"><span>← Previous</span><strong>MCP for coding agents: close the loop</strong></a><a href="/docs/reference/product-reference/"><span>Next →</span><strong>Product technical reference</strong></a></nav></article></main><aside class="page-toc"><nav aria-label="On this page"><p class="toc-label">On this page</p><a href="#running-it">Running it</a><a href="#tools">Tools</a><a href="#tool-execution-errors">Tool execution errors</a><a href="#protocol-version-negotiation">Protocol version negotiation</a><a href="#structured-tool-contracts">Structured tool contracts</a><a href="#read-only-resources">Read-only resources</a><a href="#verification-prompt">Verification prompt</a><a href="#input-validation">Input validation</a><a href="#what-it-does-not-do">What it does not do</a><a href="#protecting-terminal-builds">Protecting terminal builds</a><a href="#protecting-a-build-through-mcp">Protecting a build through MCP</a><a href="#verifying-the-compiled-change">Verifying the compiled change</a><a href="#check-the-target-before-an-agentic-build">Check the target before an agentic build</a><a href="#bounded-batch-verification-and-cancellation">Bounded batch verification and cancellation</a><a href="#pause-and-resume-automatic-reload">Pause and resume automatic reload</a><a href="#waiting-for-a-reload">Waiting for a reload</a><a href="#inspecting-a-batch-of-events">Inspecting a batch of events</a><a href="#typed-sap-operation-observations">Typed SAP operation observations</a></nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
 <footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p>Make the next edit count.</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p>Product</p><a href="/docs/">Documentation</a><a href="/docs/quickstart/">Quickstart</a><a href="/docs/support-matrix/">Reload support</a><a href="/compare/">Compare</a></nav>

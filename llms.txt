@@ -7,7 +7,7 @@ Edit, compile and see supported changes in the running JVM.
 
 ## Documentation scope
 
-Source version 1.5.0; evidence baseline 75535bd739d7eefd43523dcc63799436c472fe12; reviewed 2026-10-19.
+Source version 1.6.0; evidence baseline 75535bd739d7eefd43523dcc63799436c472fe12; reviewed 2026-10-19.
 Source presence does not establish release availability or acceptance on every runtime.
 Read each support condition and verify the running application.
 
@@ -35,12 +35,14 @@ Read each support condition and verify the running application.
 - [Reclazz Gradle plugin](https://reclazz.com/docs/reference/gradle-plugin/): Complete configuration, behavior and scope reference: Reclazz Gradle plugin.
 - [Installation](https://reclazz.com/docs/reference/installation/): Complete configuration, behavior and scope reference: Installation.
 - [Reclazz with Maven](https://reclazz.com/docs/reference/maven/): Complete configuration, behavior and scope reference: Reclazz with Maven.
+- [MCP for coding agents: close the loop](https://reclazz.com/docs/reference/mcp-for-coding-agents/): Complete configuration, behavior and scope reference: MCP for coding agents: close the loop.
 - [Reclazz MCP server](https://reclazz.com/docs/reference/mcp-server/): Complete configuration, behavior and scope reference: Reclazz MCP server.
 - [Product technical reference](https://reclazz.com/docs/reference/product-reference/): Complete configuration, behavior and scope reference: Product technical reference.
 - [The Status Socket](https://reclazz.com/docs/reference/protocol/): Complete configuration, behavior and scope reference: The Status Socket.
 - [Publishing Reclazz to the JetBrains Marketplace](https://reclazz.com/docs/reference/publishing/): Complete configuration, behavior and scope reference: Publishing Reclazz to the JetBrains Marketplace.
 - [Reload support reference](https://reclazz.com/docs/reference/reload-support/): Complete configuration, behavior and scope reference: Reload support reference.
 - [Reclazz on SAP Commerce, for a coding agent](https://reclazz.com/docs/reference/sap-commerce/): Complete configuration, behavior and scope reference: Reclazz on SAP Commerce, for a coding agent.
+- [SAP Commerce: what we test live](https://reclazz.com/docs/reference/sap-commerce-live-tests/): Complete configuration, behavior and scope reference: SAP Commerce: what we test live.
 - [Reclazz Spring Boot starter](https://reclazz.com/docs/reference/spring-boot-starter/): Complete configuration, behavior and scope reference: Reclazz Spring Boot starter.
 - [Constructor dependency ownership during ordinary class refresh](https://reclazz.com/docs/reference/spring-constructor-dependencies/): Complete configuration, behavior and scope reference: Constructor dependency ownership during ordinary class refresh.
 - [Superclass changes without a custom classloader](https://reclazz.com/docs/reference/superclass-feasibility/): Complete configuration, behavior and scope reference: Superclass changes without a custom classloader.
