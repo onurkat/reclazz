@@ -50,7 +50,7 @@ class OperationMetadataLedgerTest {
     @Test void repairQueueFailureIsRememberedAndLaterMatchResolvesIt() {
         try(Rig r=new Rig()) {
             r.reloader.setScheduler((work,delay)->{r.timers.add(work);return ()->{};},work->{throw new IllegalStateException("closed queue");});
-            r.reload(A.class);r.timers.getLast().run();assertTrue(digest().contains("repair queue unavailable"),digest());
+            r.reload(A.class);r.timers.get(r.timers.size()-1).run();assertTrue(digest().contains("repair queue unavailable"),digest());
             r.reloader.setScheduler((work,delay)->{r.timers.add(work);return ()->{};},r.queue::add);
             r.reload(A.class);r.fire();assertFalse(digest().contains("repair queue unavailable"),digest());
         }

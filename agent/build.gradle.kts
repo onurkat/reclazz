@@ -74,6 +74,7 @@ java {
 // fail with "unmappable character".
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+    options.release.set(17)
 }
 
 // The javadoc jar exists to satisfy the Central Portal, not to be exhaustive,

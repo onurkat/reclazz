@@ -72,7 +72,7 @@ class BackofficeConfigReloaderTest {
             add(ctx,"cockpitConfigurationService",active);add(ctx,"unused",unused);var boundary=scope(loader);
             var messages=capture(()->{var result=BackofficeConfigReloader.reload("example-backoffice-config.xml",List.of(ctx,ctx),true,boundary);assertEquals(1,result.services());assertEquals(0,result.failures());});
             assertEquals(1,count(active,"defaults"));assertEquals(0,count(unused,"defaults"));
-            assertEquals(1,messages.size());assertTrue(messages.getFirst().startsWith("OK:"));assertTrue(messages.getFirst().contains("as with F4 (1 service)"));assertTrue(messages.getFirst().contains("UI was reset too"));
+            assertEquals(1,messages.size());assertTrue(messages.get(0).startsWith("OK:"));assertTrue(messages.get(0).contains("as with F4 (1 service)"));assertTrue(messages.get(0).contains("UI was reset too"));
             assertThrows(Exception.class,()->active.getClass().getMethod("resetToDefaults").invoke(active));
         }
     }
@@ -90,7 +90,7 @@ class BackofficeConfigReloaderTest {
             Object ctx=make(loader,"Context"),service=make(loader,"Service");add(ctx,"cockpitConfigurationService",service);
             for(var boundary:List.<BackofficeConfigReloader.OwnerScope>of((c,a)->a.call(),(c,a)->{throw new IllegalStateException("owner unavailable");})) {
                 var messages=capture(()->{var result=BackofficeConfigReloader.reload("example.xml",List.of(ctx),true,boundary);assertEquals(1,result.failures());assertEquals(0,result.services());});
-                assertEquals(0,count(service,"defaults"));assertEquals(1,messages.size());assertTrue(messages.getFirst().startsWith("WARN:"));
+                assertEquals(0,count(service,"defaults"));assertEquals(1,messages.size());assertTrue(messages.get(0).startsWith("WARN:"));
             }
         }
     }
@@ -98,7 +98,7 @@ class BackofficeConfigReloaderTest {
         try(var loader=fixture(dir)) {
             Object ctx=make(loader,"Context");
             var messages=capture(()->assertTrue(BackofficeConfigReloader.reload("example.xml",List.of(ctx),false,(c,a)->{throw new AssertionError("disabled scope");}).disabled()));
-            assertEquals(0,count(ctx,"lookups"));assertEquals(1,messages.size());assertTrue(messages.getFirst().startsWith("WARN:"));assertTrue(messages.getFirst().contains("saved, not applied; press F4"));
+            assertEquals(0,count(ctx,"lookups"));assertEquals(1,messages.size());assertTrue(messages.get(0).startsWith("WARN:"));assertTrue(messages.get(0).contains("saved, not applied; press F4"));
         }
     }
     @Test void noCockpitTypesIsAbsenceButMissingActiveBeanIsFailure(@TempDir Path dir) throws Exception {
@@ -106,7 +106,7 @@ class BackofficeConfigReloaderTest {
         try(var loader=fixture(dir)) {
             Object ctx=make(loader,"Context");var boundary=scope(loader);
             var messages=capture(()->assertEquals(1,BackofficeConfigReloader.reload("example.xml",List.of(ctx),true,boundary).failures()));
-            assertTrue(messages.getFirst().contains("incompatible type"));assertTrue(messages.stream().noneMatch(m->m.startsWith("OK:")));
+            assertTrue(messages.get(0).contains("incompatible type"));assertTrue(messages.stream().noneMatch(m->m.startsWith("OK:")));
         }
     }
 }
