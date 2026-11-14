@@ -50,11 +50,11 @@ jobs:
     # it had ever been exercised on a platform with a different separator. The
     # verifier only runs once, on Linux: it downloads whole IDEs and the answer
     # does not depend on the host.
-    # Two JDKs on Linux, because the agent runs on 17 through 25 and the two
+    # Two build JDKs on Linux, because the agent runs on 17 through 25 and the two
     # javacs compile the same source differently: an enum switch test passed
     # for weeks on the maintainer's 21 while every CI run on 17 failed. Windows
     # stays on one JDK; it is here for the path handling, which does not
-    # depend on the compiler.
+    # depend on the compiler. The include-only runtime25 lane builds on21.
     strategy:
       fail-fast: false
       matrix:
@@ -63,15 +63,38 @@ jobs:
         exclude:
           - os: windows-latest
             jdk: '21'
+        include:
+          - os: ubuntu-latest
+            jdk: '17'
+            build: '17'
+          - os: ubuntu-latest
+            jdk: '21'
+            build: '21'
+          - os: windows-latest
+            jdk: '17'
+            build: '17'
+          - os: ubuntu-latest
+            jdk: '25'
+            build: '21'
     runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v7
 
-      - name: Set up JDK ${{ matrix.jdk }}
+      - name: Set up JDK 25 test runtime
+        if: matrix.jdk == '25'
         uses: actions/setup-java@v6
         with:
-          java-version: ${{ matrix.jdk }}
+          java-version: '25'
+          distribution: 'temurin'
+          architecture: 'x64'
+
+      # setup-java leaves JAVA_HOME_25_X64 available; the last install is the
+      # default, so Gradle still runs on the supported build JDK21 in that lane.
+      - name: Set up build JDK ${{ matrix.build }}
+        uses: actions/setup-java@v6
+        with:
+          java-version: ${{ matrix.build }}
           distribution: 'temurin'
 
       - name: Setup Gradle
@@ -85,8 +108,12 @@ jobs:
         run: docker pull rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd
 
       - name: Build and test, then package the plugin
-        if: matrix.os == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest' && matrix.jdk != '25'
         run: ./gradlew build buildPlugin
+
+      - name: Test agent on JDK 25 with build JDK 21
+        if: matrix.os == 'ubuntu-latest' && matrix.jdk == '25'
+        run: ./gradlew :agent:unitTest :agent:e2eTest :agent:springSixTest -Preclazz.testJava=25 -Porg.gradle.java.installations.fromEnv=JAVA_HOME_25_X64
 
       - name: Build and test on Windows (Linux RabbitMQ broker suite explicitly omitted)
         if: matrix.os == 'windows-latest'

@@ -22,6 +22,12 @@ Finish with [your first reload](#your-first-reload).
 - The agent and MCP server target **Java 17+**. JDK 17/21 are the baseline test
   lanes; [the client matrix](client-matrix.md) records narrower OS/framework
   coverage. This is not a guarantee for every later JDK or framework version.
+- **JDK 25 runtime:** unit, end-to-end and Spring 6 suites passed locally on
+  macOS on **2026-11-14**, with Spring 5/6 process fixtures targeting Java 21.
+  Gradle builds on JDK 21 and launches tests on 25. The Ubuntu/JDK25 CI lane is
+  configured; **Linux CI is pending**. Spring 7 was exercised with application
+  classes targeting 25, with two first-`@Bean` cases still in independent audit;
+  this is not a full Spring 7/JDK25 pass. See the [runtime matrix](client-matrix.md#jdk-25-agent-runtime).
 - The IDE plugin declares IntelliJ builds **233 through 262.\*** (2023.3–2026.2).
   IDE compatibility and application-JVM compatibility are separate.
 - SAP Commerce is needed only for the SAP route; see its [guide](sap-commerce.md).

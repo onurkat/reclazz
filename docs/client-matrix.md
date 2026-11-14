@@ -136,6 +136,27 @@ directory while the app ran from the selected consumer project. All nine tools
 worked with startup defaults; seven evaluation scenarios passed with zero false
 completions or restarts. Hosted and Windows runs for this extension remain unrun.
 
+## JDK 25 agent runtime
+
+Observed locally on **2026-11-14**, macOS, JDK 25.0.5.0.3 test workers
+with a JDK 21 build JVM. These are agent/framework suites, separate from the
+independent SDK/MCP client acceptance above.
+
+| Runtime / application fixtures | Observed result | Scope |
+| --- | --- | --- |
+| JDK25 / Spring 5/6 process fixtures target21 | PASS locally | `unitTest` 2691, `e2eTest` 333 and `springSixTest` 393, no failures |
+| JDK25 / Spring 7 fixtures target25 | Partial:391/393 | Two first-`@Bean` cases remain in the separate C3 audit; no full Spring7/JDK25 pass claimed |
+| Ubuntu/JDK25, build JDK21 | Configured; Linux CI pending | Agent unit/e2e/Spring6 only; no hosted run dispatched or observed |
+| Windows/JDK25 and independent SDK/MCP on25 | Not run | Neither is implied by the local agent suites |
+
+The workflow installs the 25 runtime first and 21 last so Gradle8.10.2 stays
+on21. `-Preclazz.testJava=25` selects the test JVM through the opt-in launcher.
+Spring 5/6 fixtures compiled by the shared process harness default to target21
+on newer runtimes because their native scanners cannot read major69; the
+Spring 7 run explicitly uses `-Dreclazz.fixtureRelease=25`. Core lambda checks
+separately exercised original and rewritten major69 classes. Source/tooling
+acceptance does not establish a hosted CI or all-client compatibility result.
+
 ## Installed coding clients
 
 Observed locally on **2026-11-10**, macOS arm64, Java 21, matching locally built

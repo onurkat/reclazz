@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
+### Added
+
+- JDK 25 runtime validation on macOS for agent unit, end-to-end and Spring 6 suites, with Spring 5/6 process fixtures targeting Java 21. An Ubuntu/JDK25 CI lane builds on JDK21; hosted Linux results are pending. Spring7 target25 coverage remains partial while two first-`@Bean` cases are audited separately.
+
 ### Fixed
 
 - Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
