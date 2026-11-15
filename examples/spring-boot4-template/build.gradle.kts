@@ -3,7 +3,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 plugins {
     java
     id("org.springframework.boot") version "4.1.2"
-    id("com.onurkat.reclazz") version "1.6.0" apply false
+    id("com.onurkat.reclazz") version "1.7.0" apply false
 }
 
 group = "com.example"
@@ -31,10 +31,10 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     if (reclazzMode == "starter" || reclazzMode == "absent") {
-        developmentOnly("com.onurkat.reclazz:reclazz-spring-boot-starter:1.6.0")
+        developmentOnly("com.onurkat.reclazz:reclazz-spring-boot-starter:1.7.0")
     }
     if (reclazzMode == "manual" || reclazzMode == "starter") {
-        manualReclazzAgent("com.onurkat.reclazz:reclazz-agent:1.6.0")
+        manualReclazzAgent("com.onurkat.reclazz:reclazz-agent:1.7.0")
     }
 }
 

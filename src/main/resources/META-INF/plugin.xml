@@ -110,6 +110,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
+        <h3>1.7.0</h3>
+        <ul>
+            <li><b>Spring Boot 4 and Spring 7.</b> A new controller endpoint appears without a restart when Boot's actuator is on the classpath. Getters added to a JSON DTO show up under Jackson 3. <code>@Value</code> fields that read a relaxed property name pick up the new value. Spring 7 property, MVC, security and constructor changes reload on the same paths as Spring 6.</li>
+            <li><b>First <code>@Bean</code> in an empty configuration.</b> On Spring 7 you can add the first <code>@Bean</code> method to a configuration class that had none, while the app is running.</li>
+            <li><b>JDK 25 and IntelliJ IDEA 2026.2.</b> The agent is tested on JDK 25, and the plugin passes JetBrains' Plugin Verifier on every version from 2023.3 to 2026.2.</li>
+            <li><b>New documentation.</b> A quickstart with one tab per setup, a searchable "what reloads" table, troubleshooting by symptom, and guides that open with what you can change and when a restart is needed.</li>
+            <li><b>Fixes.</b> A Backoffice configuration save resets Backoffice once instead of twice, reloaded lambdas keep marker interfaces such as <code>Serializable</code>, Spring Integration 7 file pollers keep their source, and the unmatched <code>.properties</code> warning names the files involved.</li>
+        </ul>
         <h3>1.6.0</h3>
         <ul>
             <li><b>Pause automatic reload.</b> Pause Automatic Reload in the Tools menu and the Reclazz tool window keeps saved changes waiting during a refactor or branch switch and applies them on resume. The status bar shows Paused and how many changes are waiting.</li>

@@ -6,7 +6,52 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## [Unreleased]
 
-### Added
+## [1.7.0] - 2026-11-16
+
+### Highlights
+
+- **Spring Boot 4 and Spring 7.** A new controller endpoint now appears without
+  a restart when Boot's actuator is on the classpath. Getters you add to a JSON
+  DTO show up under Jackson 3. `@Value` fields that read a relaxed property
+  name (`a.b-c` written as `a.bC`) pick up the new value. Spring 7 property,
+  MVC, security and constructor changes reload on the same paths as Spring 6.
+- **First `@Bean` in an empty `@Configuration` (Spring 7).** You can add the
+  first `@Bean` method to a configuration class that had none, while the app
+  is running.
+- **JDK 25.** The agent is tested on JDK 25 for unit, end-to-end and Spring 6
+  and 7 suites. JDK 17 and 21 remain the main supported versions.
+- **IntelliJ IDEA 2026.2.** The plugin passes JetBrains' Plugin Verifier on
+  every version from 2023.3 to 2026.2, and was checked by hand on 2026.2.5.
+- **New documentation and website.** Quickstart with one tab per setup
+  (IntelliJ, IntelliJ + SAP Commerce, Gradle, Maven, plain Java agent), a
+  "what reloads" table you can search, troubleshooting by symptom, and guides
+  that open with what you can change and when a restart is needed. Old links
+  keep working, and no page loads anything from another site.
+
+### Fixed
+
+- Saving a Backoffice configuration file reset Backoffice twice in some
+  cases. It now resets once per save.
+- A lambda reloaded with a structural change lost marker interfaces such as
+  `Serializable`. They are kept now (serializing the lambda is still not
+  supported).
+- Spring Integration 7 file polling adapters keep their running source after
+  a reload.
+- The warning for a `.properties` file Reclazz cannot match to a loaded copy
+  now names the edited file and the loaded files with the same name.
+- The agent is built against the Java 17 API, so it cannot call a method that
+  only exists on newer JDKs.
+
+### Notes
+
+- A Jackson 3 DTO keeps the shape it had when a reader or writer was first
+  created; create a new reader/writer after adding fields or setters.
+- A managed configuration that was closed or replaced still needs a restart
+  to gain its first `@Bean`.
+
+### Details
+
+#### Added
 
 - JDK 25 runtime validation on macOS for agent unit, end-to-end and Spring 6 suites, with Spring 5/6 process fixtures targeting Java 21. An Ubuntu/JDK25 CI lane builds on JDK21; hosted Linux results are pending. The Spring 7 suite also passes on JDK 25 with application classes compiled for Java 25.
 - A stateless empty full configuration on Spring 7.0.10 can gain its first
@@ -14,7 +59,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   per-context singleton calls. Closed or replaced managed raw receivers require
   a restart; manual configurations retain ordinary Java calls.
 
-### Changed
+#### Changed
 
 - Simplify the homepage and generate sourced comparisons, bilingual claims and FAQs from shared contracts.
 
@@ -29,7 +74,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 - Group website documentation by task, keep maintainer references on GitHub, and preserve legacy links through clean URL redirects.
 - Clarify unowned `.properties` warnings with the edited path and verified loaded files of the same name. Every warning remains visible; matching names do not establish a resource copy relationship.
 
-### Fixed
+#### Fixed
 
 - Avoid repeating a Backoffice configuration reset when a late watcher notification reports the file version already delivered by the hot scan. Distinct edits, reverts and explicit resaves remain eligible.
 
