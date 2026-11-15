@@ -21,6 +21,10 @@
     button.textContent = 'Copy';
     button.setAttribute('aria-label', `Copy ${block.querySelector('.code-label').textContent} example`);
     block.append(button);
+    const wrap = document.createElement('button');
+    wrap.type='button'; wrap.className='wrap-button'; wrap.textContent='Wrap'; wrap.setAttribute('aria-pressed','false');
+    wrap.addEventListener('click',()=>{const on=block.classList.toggle('is-wrapped');wrap.setAttribute('aria-pressed',String(on));});
+    block.append(wrap);
     button.addEventListener('click', async () => {
       const text = block.querySelector('code').textContent;
       try {
@@ -90,6 +94,41 @@
     window.addEventListener('hashchange', revealHash);
   }
 
+  const mobileNav = document.querySelector('.mobile-nav');
+  if (mobileNav && typeof HTMLDialogElement !== 'undefined' && 'showModal' in HTMLDialogElement.prototype) {
+    const drawer=document.getElementById('docs-drawer');
+    const close=drawer.querySelector('.drawer-close');
+    drawer.append(mobileNav.querySelector('nav').cloneNode(true));
+    const open=document.querySelector('.drawer-open');
+    const end=()=>drawer.close();close.addEventListener('click',end);
+    open.addEventListener('click',()=>{drawer.showModal();root.classList.add('drawer-active');open.setAttribute('aria-expanded','true');close.focus();});
+    drawer.addEventListener('keydown',event=>{
+      if(event.key!=='Tab')return;
+      const items=[...drawer.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')];
+      const first=items[0],last=items[items.length-1];
+      if(event.shiftKey&&(document.activeElement===first||document.activeElement===drawer)){event.preventDefault();last.focus();}
+      else if(!event.shiftKey&&(document.activeElement===last||document.activeElement===drawer)){event.preventDefault();first.focus();}
+    });
+    drawer.addEventListener('close',()=>{root.classList.remove('drawer-active');open.setAttribute('aria-expanded','false');open.focus();});
+    drawer.querySelectorAll('a').forEach(link=>link.addEventListener('click',end));
+    drawer.addEventListener('click',event=>{if(event.target===drawer){const r=drawer.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)end();}});
+    matchMedia('(min-width:960px)').addEventListener('change',event=>{if(event.matches&&drawer.open)end();});
+  }
+  document.querySelectorAll('[role=tablist]').forEach(list=>{
+    const tabs=[...list.querySelectorAll('[role=tab]')];if(!tabs.length)return;
+    const activate=(tab,focus=false)=>{
+      tabs.forEach(item=>{const on=item===tab;item.setAttribute('aria-selected',String(on));item.tabIndex=on?0:-1;const panel=document.getElementById(item.getAttribute('aria-controls'));if(panel)panel.hidden=!on;});
+      if(focus)tab.focus();
+      try{if(list.dataset.preference)localStorage.setItem('reclazz-tabs-'+list.dataset.preference,tab.dataset.choice||tab.id);}catch(_){}
+    };
+    tabs.forEach((tab,i)=>{
+      tab.addEventListener('click',()=>{activate(tab);try{history.replaceState(null,'','#'+tab.id);}catch(_){}});
+      tab.addEventListener('keydown',event=>{let next;if(event.key==='ArrowRight')next=(i+1)%tabs.length;else if(event.key==='ArrowLeft')next=(i+tabs.length-1)%tabs.length;else if(event.key==='Home')next=0;else if(event.key==='End')next=tabs.length-1;else return;event.preventDefault();activate(tabs[next],true);});
+    });
+    const restore=()=>{let selected=tabs.find(t=>'#'+t.id===location.hash);try{if(!selected&&list.dataset.preference){const choice=localStorage.getItem('reclazz-tabs-'+list.dataset.preference);selected=tabs.find(t=>(t.dataset.choice||t.id)===choice);}}catch(_){}activate(selected||tabs[0]);};
+    restore();addEventListener('hashchange',restore);
+  });
+
   const dialog = document.getElementById('search-dialog');
   const openButton = document.getElementById('search-open');
   const searchInput = document.getElementById('docs-search');
@@ -150,7 +189,12 @@
     }).filter(item => item.matchesAll).sort((a, b) => b.score - a.score);
     const shown = terms.length ? matches.slice(0, 10) : data.filter(record => record.url === '/docs/quickstart/' || record.url === '/docs/support-matrix/' || record.url === '/docs/troubleshooting/').map(record => ({record}));
     results.replaceChildren();
-    for (const {record} of shown) {
+    const groups=new Map();
+    shown.forEach(item=>{const key=item.record.url.split('#')[0];if(!groups.has(key))groups.set(key,[]);groups.get(key).push(item);});
+    let previousGroup='';
+    for (const {record} of [...groups.values()].flat()) {
+      const group=record.url.split('#')[0];
+      if(group!==previousGroup){const heading=document.createElement('div'); heading.className='search-group';heading.textContent=record.section;results.append(heading);previousGroup=group;}
       const link = document.createElement('a');
       link.className = 'search-result'; link.href = record.url;
       const section = document.createElement('small'); section.textContent = record.section;

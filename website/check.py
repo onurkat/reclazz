@@ -30,7 +30,7 @@ class Document(HTMLParser):
         if tag in ('img','script') and a.get('src'): self.links.append(a['src'])
         if tag == 'img': self.images.append(a)
         if tag == 'a' and a.get('aria-current') == 'page': self.active += 1
-        if tag in ('h1','h2','h3','h4'): self.headings.append(int(tag[1]))
+        if tag in ('h1','h2','h3','h4','h5','h6'): self.headings.append(int(tag[1]))
         if tag == 'main': self.mains += 1
         if tag == 'header': self.headers += 1
         if tag == 'footer': self.footers += 1
@@ -67,14 +67,14 @@ def publication_errors(output, manifest):
     """Check delivered routing data independently from stale-output comparison."""
     output = Path(output); errors = []
     redirects = manifest['redirects']; real_files = set(manifest['site_pages'])
-    real_routes = {'/' + name[:-len('index.html')] for name in real_files}
+    real_routes = {'/' + name[:-len('index.html')] for name in real_files if name.endswith('index.html')}
     index = json.loads((output/'docs/assets/search-index.json').read_text())
     locations = {node.text for node in ET.parse(output/'sitemap.xml').findall('.//{*}loc')}
     for name in real_files:
         text = (output/name).read_text()
         for href in Document(text).links:
             parsed = urlsplit(href)
-            if (not parsed.netloc or parsed.netloc == 'reclazz.com') and parsed.path.endswith('.html'):
+            if (not parsed.netloc or parsed.netloc == 'reclazz.com') and parsed.path.endswith('.html') and not (name == '404.html' and href == 'https://reclazz.com/404.html'):
                 errors.append('Internal HTML link: ' + name + ': ' + href)
     for route, record in redirects.items():
         path = output/build.route_file(route)
@@ -126,7 +126,7 @@ def check_site(output, revision='main'):
     index = json.loads((output/'docs/assets/search-index.json').read_text())
     redirects = manifest['redirects']
     redirect_files = {build.route_file(route) for route in redirects}
-    documents = {p: Document(p.read_text()) for p in output.rglob('index.html') if p.relative_to(output).as_posix() not in redirect_files}
+    documents = {p: Document(p.read_text()) for p in output.rglob('*.html') if (p.name == 'index.html' or p.relative_to(output).as_posix() == '404.html') and p.relative_to(output).as_posix() not in redirect_files}
     for error in publication_errors(output,manifest): check(False,error)
     docs = {p:d for p,d in documents.items() if p.is_relative_to(output/'docs')}
     check(len(documents) == len(manifest['site_pages']), 'Whole-site page count drift')
@@ -138,7 +138,10 @@ def check_site(output, revision='main'):
             check((output/build.route_file(record['publish'])).is_file(), 'Source has no public page: ' + source)
         else:
             check(record.get('external') == source, 'External source disposition drift: ' + source)
+    # Redirect stubs retain their separate minimal navigation contract.
+    for error in contrast_errors((output/'assets/tokens.css').read_text()): check(False,error)
     for path, doc in documents.items():
+        for error in page_quality_errors(output,path): check(False,str(path.relative_to(output))+': '+error)
         check(doc.lang == 'en', str(path) + ': missing language')
         check(doc.headings.count(1) == 1 and doc.mains == 1 and doc.title_count == 1, str(path) + ': require one H1/main/title')
         check(len(doc.ids) == len(set(doc.ids)), str(path) + ': duplicate IDs')
@@ -181,7 +184,11 @@ def check_site(output, revision='main'):
     sitemap = ET.parse(output/'sitemap.xml')
     locations = [node.text for node in sitemap.findall('.//s:loc',ns)]
     check(len(locations) == len(set(locations)), 'Duplicate sitemap entry')
-    for doc in documents.values(): check(doc.canonical[0] in locations, 'Missing sitemap page: ' + doc.canonical[0])
+    for path,doc in documents.items():
+        if path.name == '404.html':
+            check(doc.canonical[0] not in locations, '404 must not appear in sitemap')
+            check(not any(record['url'].startswith('/404') for record in index), '404 must not appear in search')
+        else: check(doc.canonical[0] in locations, 'Missing sitemap page: ' + doc.canonical[0])
     # Existing feature evidence remains a checked source contract after README relocation.
     for path in (build.REPO/'docs/feature-evidence').glob('*.json'):
         registry = json.loads(path.read_text())
@@ -215,3 +222,127 @@ def main():
     print('PASS: ' + str(stats['checks']) + ' checks; ' + str(stats['site_pages']) + ' total site pages; ' + str(stats['pages']) + ' pages; ' + str(stats['references']) + ' complete Markdown references; ' + str(stats['support']) + ' support entries; ' + str(stats['search']) + ' search destinations')
 
 if __name__ == '__main__': main()
+
+class AssetDocument(HTMLParser):
+    """Request positions and executable scripts, excluding JSON data/schema."""
+    def __init__(self, text):
+        super().__init__(convert_charrefs=True)
+        self.requests=[];self.css=[];self.scripts=[];self.inline=[];self.in_script=False
+        self.feed(text)
+    def handle_starttag(self, tag, attrs):
+        a=dict(attrs)
+        for key in ('src','poster'):
+            if a.get(key): self.requests.append(a[key])
+        if a.get('srcset'):
+            self.requests.extend(item.strip().split()[0] for item in a['srcset'].split(',') if item.strip())
+        if tag=='link' and set(a.get('rel','').split()) & {'stylesheet','preload','preconnect','prefetch','icon','modulepreload'}:
+            if a.get('href'):self.requests.append(a['href'])
+            if a.get('rel')=='stylesheet' and a.get('href'):self.css.append(a['href'])
+        if tag=='script':
+            executable=a.get('type','') in ('','module','text/javascript','application/javascript')
+            if executable and a.get('src'):self.scripts.append(a['src'])
+            self.in_script=executable and not a.get('src')
+    def handle_endtag(self,tag):
+        if tag=='script':self.in_script=False
+    def handle_data(self,data):
+        if self.in_script:self.inline.append(data)
+
+
+def resource_path(output, page, href):
+    parsed=urlsplit(href)
+    if parsed.netloc and parsed.netloc!='reclazz.com':return None
+    return (output/unquote(parsed.path).lstrip('/')) if parsed.path.startswith('/') else (page.parent/unquote(parsed.path))
+
+
+def automatic_request_errors(text, kind='html'):
+    """Reject external request positions; outbound anchors and schema URLs are inert."""
+    requests=[]
+    if kind=='html':
+        doc=AssetDocument(text);requests.extend(doc.requests)
+        # Inline CSS and executable JS are checked too.
+        requests.extend(re.findall(r'''url\(\s*["']?([^\s)'";]+)''',text,re.I))
+        text='\n'.join(doc.inline)
+    if kind=='css':
+        requests.extend(re.findall(r'''url\(\s*["']?([^\s)'";]+)''',text,re.I))
+        requests.extend(re.findall(r'''@import\s+["']([^"']+)''',text,re.I))
+    requests.extend(re.findall(r'''(?:fetch|open|sendBeacon|EventSource|WebSocket|importScripts)\s*\(\s*["']([^"']+)''',text))
+    requests.extend(re.findall(r'''\.open\s*\(\s*["'][A-Z]+["']\s*,\s*["']([^"']+)''',text))
+    return ['Automatic third-party request: '+url for url in requests if urlsplit(url).netloc and urlsplit(url).netloc!='reclazz.com']
+
+
+def scroll_region_errors(text):
+    """Validate keyboard access in delivered HTML, without relying on JS or axe."""
+    from website.layout import is_scroll_region
+    class Regions(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=True);self.stack=[];self.errors=[]
+        def handle_starttag(self,tag,attrs):
+            a=dict(attrs);parents={c for _,cs in self.stack for c in cs}
+            if is_scroll_region(tag,a,parents):
+                if a.get('tabindex')!='0' or a.get('role')!='region' or not a.get('aria-label','').strip():
+                    self.errors.append('Scrollable region needs tabindex=0, role=region and aria-label: '+tag+' '+a.get('class',''))
+            if tag not in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}:
+                self.stack.append((tag,set(a.get('class','').split())))
+        def handle_endtag(self,tag):
+            for i in range(len(self.stack)-1,-1,-1):
+                if self.stack[i][0]==tag:del self.stack[i:];break
+    parser=Regions();parser.feed(text);return parser.errors
+
+
+def page_quality_errors(output, page):
+    output=Path(output);page=Path(page);text=page.read_text();doc=AssetDocument(text);errors=automatic_request_errors(text)+scroll_region_errors(text)
+    js=sum(len(part.encode('utf-8')) for part in doc.inline);css=0;fonts=set()
+    for kind,links in [('js',doc.scripts),('css',doc.css)]:
+        for href in set(links):
+            p=resource_path(output,page,href)
+            if p is None or not p.is_file():continue # generic missing-link gate reports this
+            data=p.read_bytes();source=data.decode('utf-8');errors.extend(automatic_request_errors(source,kind))
+            if kind=='js':js+=len(data)
+            else:
+                css+=len(data)
+                for font in re.findall(r'''url\(\s*["']?([^\s)'";]+\.woff2)["']?\s*\)''',source):
+                    target=resource_path(output,p,font)
+                    if target and target.is_file():fonts.add(target)
+    if js>45000:errors.append('Page JS budget exceeded: '+str(js))
+    if css>70000:errors.append('Page CSS budget exceeded: '+str(css))
+    font_bytes=sum(p.stat().st_size for p in fonts)
+    if font_bytes>250000:errors.append('Page font budget exceeded: '+str(font_bytes))
+    d=Document(text)
+    for a,b in zip(d.headings,d.headings[1:]):
+        if b>a+1:errors.append('Heading level skipped: '+str(a)+' -> '+str(b))
+    for img in d.images:
+        if any(not img.get(key) for key in ('width','height')) or 'alt' not in img:errors.append('Image dimensions/alt missing')
+    if page.name=='404.html':
+        if d.headers!=1 or d.footers!=1 or d.mains!=1 or d.headings.count(1)!=1 or 'search-dialog' not in d.ids:errors.append('404 shared shell missing')
+        for href in doc.requests+[h for h in d.links if not urlsplit(h).netloc]:
+            if href and not href.startswith(('/','#','data:')):errors.append('404 relative asset/link: '+href)
+        if not re.search(r'<meta[^>]+name="robots"[^>]+content="noindex"',text):errors.append('404 must be noindex')
+    return errors
+
+
+def contrast_ratio(first,second):
+    def luminance(color):
+        parts=[int(color.lstrip('#')[i:i+2],16)/255 for i in (0,2,4)]
+        linear=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in parts]
+        return sum(v*c for v,c in zip(linear,(.2126,.7152,.0722)))
+    a,b=sorted((luminance(first),luminance(second)))
+    return (b+.05)/(a+.05)
+
+
+def contrast_errors(css):
+    dark=re.search(r':root\{([^}]+)\}',css)[1]
+    light=re.search(r'html\[data-theme=light\]\{([^}]+)\}',css)[1]
+    base=dict(re.findall(r'--([\w-]+):([^;{}]+)',dark));errors=[]
+    for theme,override in [('dark',''),('light',light)]:
+        colors={**base,**dict(re.findall(r'--([\w-]+):([^;{}]+)',override))}
+        def color(key):
+            value=colors[key]
+            if value.startswith('var('):return color(value[6:-1])
+            return value
+        for fg in ('text','muted','dim','accent','green','gold','rose','works','conditional','restart','unverified','not-reloaded'):
+            for bg in ('bg','surface','surface-hover','surface-alt'):
+                if contrast_ratio(color(fg),color(bg))<4.5:errors.append('Contrast below 4.5: '+theme+' '+fg+'/'+bg)
+        if contrast_ratio(color('on-accent'),color('accent-fill'))<4.5:errors.append('Button contrast below 4.5: '+theme)
+        for bg in ('bg','surface','surface-hover','surface-alt'):
+            if contrast_ratio(color('border'),color(bg))<3:errors.append('UI contrast below 3: '+theme+' border/'+bg)
+    return errors

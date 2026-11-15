@@ -308,26 +308,20 @@ class DocumentationBuildTest(unittest.TestCase):
         html=output['docs/index.html']
         for match in re.finditer(r'<a\b[^>]*href="(/[^"]*)"[^>]*>(.*?)</a>',html,re.S):
             self.assertNotIn('↗',match[2])
-        self.assertIn('Edit on GitHub ↗',output['docs/reference/first/index.html'])
+        self.assertRegex(output['docs/reference/first/index.html'],r'Edit on GitHub <!-- @license lucide-static[^<]*-->\s*<svg class="icon ')
         self.assertNotIn('Sources &amp; version scope',html)
         self.assertIn('Docs for</span> 9.8.7',html)
 
     def test_small_text_and_primary_button_colors_keep_minimum_contrast(self):
-        css=(Path(__file__).resolve().parents[1]/'website/static/docs/assets/docs.css').read_text()
+        css=(Path(__file__).resolve().parents[1]/'website/static/assets/tokens.css').read_text()
         def luminance(value):
             channels=[int(value[i:i+2],16)/255 for i in (0,2,4)]
             linear=[v/12.92 if v<=.04045 else ((v+.055)/1.055)**2.4 for v in channels]
             return sum(v*w for v,w in zip(linear,[.2126,.7152,.0722]))
         def ratio(a,b):
             low,high=sorted([luminance(a),luminance(b)]);return (high+.05)/(low+.05)
-        for theme,block in zip(('dark','light'),css.splitlines()[:2]):
-            colors=dict(re.findall(r'--([a-z-]+):#([a-fA-F0-9]{6})',block))
-            for foreground in ('text','muted','dim','accent','green','gold','rose'):
-                for background in ('bg','surface','surface-hover','surface-alt'):
-                    self.assertGreaterEqual(ratio(colors[foreground],colors[background]),4.5,(theme,foreground,background))
-            self.assertGreaterEqual(ratio('ffffff',colors['accent-fill']),4.5,theme+' button')
-            hover=''.join(format(min(255,round(int(colors['accent-fill'][i:i+2],16)*1.12)),'02x') for i in (0,2,4))
-            self.assertGreaterEqual(ratio('ffffff',hover),4.5,theme+' button hover')
+        from website.check import contrast_errors
+        self.assertEqual([],contrast_errors(css))
 
     def public_fixture(self):
         self.site_fixture()
@@ -374,5 +368,94 @@ class DocumentationBuildTest(unittest.TestCase):
     def test_stale_human_readable_evidence_digest_is_rejected(self):
         self.write('docs/feature-evidence.md','**Shipped surfaces:** `docs/first.md:1` (SHA-256 `'+('0'*64)+'`)\n')
         self.assertEqual(['Human-readable evidence digest drift: docs/first.md:1'],readable_surface_errors(self.root))
+
+
+class DesignGateTest(unittest.TestCase):
+    def test_automatic_requests_cover_script_image_css_and_preconnect(self):
+        from website.check import automatic_request_errors
+        cases=[('js',"fetch('https://api.example.com')"),('html','<img src="https://example.com/a.svg">'),('css','a{background:url(https://example.com/a.png)}'),('html','<link rel="preconnect" href="https://fonts.googleapis.com">')]
+        for kind,text in cases:
+            with self.subTest(kind=kind,text=text):self.assertTrue(automatic_request_errors(text,kind))
+        self.assertEqual([],automatic_request_errors('<a href="https://example.com">External navigation</a>'))
+    def test_total_scripts_and_styles_are_budgeted_per_page(self):
+        from website.check import page_quality_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            for ext,size in [('js',23000),('css',36000)]:
+                for name in ['a','b']:(root/(name+'.'+ext)).write_text(' '*size)
+            p=root/'index.html';p.write_text('<script src="a.js"></script><script src="b.js"></script><link rel="stylesheet" href="a.css"><link rel="stylesheet" href="b.css">')
+            errors=page_quality_errors(root,p)
+            self.assertTrue(any('JS budget' in e for e in errors));self.assertTrue(any('CSS budget' in e for e in errors))
+            (root/'b.js').write_text('');(root/'b.css').write_text('')
+            self.assertEqual([],page_quality_errors(root,p))
+    def test_404_is_checked_and_relative_assets_rejected(self):
+        from website.check import page_quality_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);p=root/'404.html';p.write_text('<script src="assets/x.js"></script>')
+            errors=page_quality_errors(root,p)
+            self.assertIn('404 shared shell missing',errors)
+            self.assertIn('404 relative asset/link: assets/x.js',errors)
+    def test_heading_skip_is_rejected_at_every_level(self):
+        from website.check import page_quality_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);p=root/'index.html'
+            for level in (3,4,5,6):
+                p.write_text('<h1>Title</h1><h'+str(level)+'>Skipped</h'+str(level)+'>')
+                self.assertTrue(any('Heading level skipped' in e for e in page_quality_errors(root,p)),level)
+    def test_scroll_wrappers_require_keyboard_access_in_delivered_html(self):
+        from website.check import page_quality_errors
+        from website.layout import accessible_scroll_regions
+        cases=['<pre><code>long code</code></pre>', '<div class="table-scroll"><table><caption>Results</caption><tr><td>Value</td></tr></table></div>', '<div class="terminal-body">Example</div>', '<div class="comparison-wrapper"><table></table></div>', '<aside class="sidebar"><nav><a href="/">Home</a></nav></aside>']
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);p=root/'index.html'
+            for markup in cases:
+                with self.subTest(markup=markup):
+                    p.write_text(markup)
+                    self.assertTrue(any('Scrollable region' in e for e in page_quality_errors(root,p)))
+                    fixed=accessible_scroll_regions(markup);p.write_text(fixed)
+                    self.assertEqual([],page_quality_errors(root,p))
+                    for attribute in ['tabindex="0"','role="region"','aria-label=']:
+                        p.write_text(fixed.replace(attribute, 'data-removed=' if attribute.endswith('=') else '',1))
+                        self.assertTrue(any('Scrollable region' in e for e in page_quality_errors(root,p)),attribute)
+    def test_mobile_menu_is_built_before_progressive_enhancement(self):
+        output=build.generate()
+        page=output['docs/quickstart/index.html']
+        self.assertIn('class="docs-menu-bar"',page)
+        self.assertIn('class="drawer-open" aria-controls="docs-drawer"',page)
+        self.assertIn('<dialog class="drawer-dialog" id="docs-drawer"',page)
+        self.assertIn('class="mobile-toc"',page)
+        self.assertIn('class="mobile-nav"',page)
+    def test_low_contrast_mutation_is_rejected(self):
+        from website.check import contrast_errors
+        css=(build.ROOT/'assets/tokens.css').read_text()
+        self.assertTrue(contrast_errors(css.replace('--muted:#b8c3d4','--muted:#1d2635')))
+    def test_preview_nested_missing_route_serves_404_with_working_assets(self):
+        from http.server import SimpleHTTPRequestHandler,ThreadingHTTPServer
+        from threading import Thread
+        from urllib.request import urlopen
+        from urllib.error import HTTPError
+        from website.check import AssetDocument
+        output=build.generate()
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            for name,value in output.items():
+                p=root/name;p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(value if isinstance(value,bytes) else value.encode())
+            class Handler(SimpleHTTPRequestHandler):
+                def __init__(self,*args,**kw):super().__init__(*args,directory=str(root),**kw)
+                def log_message(self,*args):pass
+                def send_error(self,code,message=None,explain=None):
+                    if code!=404:return super().send_error(code,message,explain)
+                    self.send_response(404);self.send_header('Content-Type','text/html');self.end_headers();self.wfile.write((root/'404.html').read_bytes())
+            server=ThreadingHTTPServer(('127.0.0.1',0),Handler);thread=Thread(target=server.serve_forever,daemon=True);thread.start()
+            try:
+                base='http://127.0.0.1:'+str(server.server_port)
+                with self.assertRaises(HTTPError) as failure:urlopen(base+'/docs/reference/does/not/exist/')
+                self.assertEqual(404,failure.exception.code);text=failure.exception.read().decode()
+                self.assertIn('We couldn’t find that page.',text)
+                self.assertIn('id="search-dialog"',text)
+                for asset in AssetDocument(text).requests:
+                    if asset.startswith('/'):
+                        with urlopen(base+asset) as response:self.assertEqual(200,response.status,asset)
+            finally:server.shutdown();server.server_close();thread.join()
 
 if __name__=='__main__':unittest.main(verbosity=2)

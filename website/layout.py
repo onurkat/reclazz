@@ -1,9 +1,18 @@
 """One public navigation, footer and search shell for docs and marketing pages."""
-from html import escape
+from html import escape, unescape
+from html.parser import HTMLParser
 import re
+from pathlib import Path
 
 PUBLIC_PAGES = {'index.html': 'home', 'compare/index.html': 'compare',
-                'privacy/index.html': 'privacy', 'license/index.html': 'license'}
+                'privacy/index.html': 'privacy', 'license/index.html': 'license', '404.html': '404'}
+
+
+def icon(name, css=''):
+    """Unmodified Lucide paths from the licensed vendored subset."""
+    source = (Path(__file__).parent/'static/assets/icons'/(name+'.svg')).read_text()
+    source = re.sub(r'<svg\b[^>]*>', '<svg class="icon '+css+'" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">', source, count=1)
+    return source
 
 
 def header(active='docs', bilingual=False):
@@ -43,12 +52,14 @@ def utilities():
 
 
 def head(marketing=False):
-    return '''<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    return '''<link rel="preload" href="/assets/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/tokens.css">
 <script>if(location.pathname.endsWith('/index.html'))location.replace(location.pathname.slice(0,-10)+location.search+location.hash);</script>
 <script src="/docs/assets/theme.js"></script>
 <link rel="stylesheet" href="/docs/assets/docs.css"><link rel="stylesheet" href="/assets/site.css">''' + ('<link rel="stylesheet" href="/assets/marketing.css">' if marketing else '') + '''
+<link rel="stylesheet" href="/assets/components.css">
 <script src="/docs/assets/docs.js" defer></script><script src="/assets/site.js" defer></script>'''
+
 
 
 def render_public(text, page, year, version=None):
@@ -60,3 +71,93 @@ def render_public(text, page, year, version=None):
                           ('SITE_FOOTER',footer(year,bilingual,version)),('SITE_UTILITIES',utilities())]:
         text = text.replace('{{'+marker+'}}',value)
     return text
+
+
+def mobile_navigation(nav):
+    """Reserve the same menu space before and after progressive enhancement."""
+    return ('<div class="docs-menu-bar"><button type="button" class="drawer-open" aria-controls="docs-drawer" aria-expanded="false">Documentation menu</button>'
+            '<details class="mobile-nav"><summary>Documentation menu</summary><nav aria-label="Mobile documentation">'+nav+'</nav></details></div>'
+            '<dialog class="drawer-dialog" id="docs-drawer" aria-label="Documentation menu"><button type="button" class="drawer-close">Close menu</button></dialog>')
+
+
+SCROLL_CLASSES = {'table-scroll', 'comparison-wrapper', 'cmp-wrap', 'terminal-body',
+                  'demo-body', 'demo-code', 'architecture-diagram', 'sidebar', 'page-toc'}
+
+
+def is_scroll_region(tag, attrs, parents=()):
+    classes = set(attrs.get('class', '').split())
+    return (tag == 'pre' or bool(classes & SCROLL_CLASSES)
+            or (tag == 'nav' and 'mobile-nav' in parents)
+            or ('container' in classes and 'section-nav' in parents))
+
+
+def accessible_scroll_regions(document):
+    """Annotate the actual scroller, including source HTML and Markdown output."""
+    lines = document.splitlines(keepends=True)
+    offsets = [0]
+    for line in lines: offsets.append(offsets[-1]+len(line))
+    class Regions(HTMLParser):
+        def __init__(self):
+            super().__init__(convert_charrefs=True)
+            self.stack=[];self.edits=[]
+        def handle_starttag(self, tag, attrs):
+            a=dict(attrs);parents={c for _,cs in self.stack for c in cs}
+            if is_scroll_region(tag,a,parents):
+                line,col=self.getpos();start=offsets[line-1]+col;end=start+len(self.get_starttag_text())
+                label=a.get('aria-label')
+                if not label:
+                    if tag=='pre':
+                        labels=re.findall(r'<div class="code-label">(.*?)</div>',document[:start],re.S)
+                        label=(re.sub('<[^>]+>','',labels[-1])+' example') if labels else 'Code example'
+                    elif set(a.get('class','').split()) & {'table-scroll','comparison-wrapper','cmp-wrap'}:
+                        table=document[end:].split('</table>',1)[0]
+                        caption=re.search(r'<caption[^>]*>(.*?)</caption>',table,re.S)
+                        label=re.sub('<[^>]+>','',caption[1]) if caption else 'Data table'
+                    else:
+                        label=next((v for k,v in [('sidebar','Documentation navigation'),('page-toc','On this page'),('terminal-body','Terminal example'),('demo-code','Code example'),('demo-body','Reload demonstration'),('architecture-diagram','Architecture diagram')] if k in a.get('class','').split()),'Navigation links')
+                values={**a,'tabindex':'0','role':'region','aria-label':' '.join(unescape(label).split())}
+                opening='<'+tag+''.join(' '+key+('="'+escape(value,quote=True)+'"' if value is not None else '') for key,value in values.items())+'>'
+                self.edits.append((start,end,opening))
+            if tag not in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}:
+                self.stack.append((tag,set(a.get('class','').split())))
+        def handle_endtag(self,tag):
+            for i in range(len(self.stack)-1,-1,-1):
+                if self.stack[i][0]==tag:
+                    del self.stack[i:];break
+    parser=Regions();parser.feed(document)
+    for start,end,value in reversed(parser.edits):document=document[:start]+value+document[end:]
+    return document
+
+
+def enhance_document(document):
+    """Apply shared presentation without editing source prose or fragment IDs."""
+    for glyph, name in [('↳','chevron-right'),('◈','book-open')]:
+        document = document.replace(glyph, icon(name))
+    # External-link and pager glyphs are chrome; marketing emoji remain Stage 4.
+    document = re.sub(r'(<a\b[^>]*>)(.*?)(</a>)', lambda m: m[1]+m[2].replace('↗',icon('external-link')).replace('→',icon('arrow-right')).replace('←',icon('arrow-left'))+m[3], document, flags=re.S)
+    document = re.sub(r'(<button[^>]*id="search-open"[^>]*>)<svg.*?</svg>', lambda m:m[1]+icon('search'),document,flags=re.S)
+    document = re.sub(r'(<button[^>]*id="theme-toggle"[^>]*>)<svg.*?</svg>', lambda m:m[1]+icon('moon'),document,flags=re.S)
+    document = re.sub(r'(<summary aria-label="Site navigation">)<svg.*?</svg>',lambda m:m[1]+icon('menu'),document,flags=re.S)
+    for glyph, name in [('&#10003;','check'),('✓','check'),('&#9888;','triangle-alert'),('⚠','triangle-alert'),('&#10007;','x'),('✗','x')]:
+        document = re.sub(r'(<span class="(?:icon|check|cross)"[^>]*>)'+re.escape(glyph)+r'(</span>)',lambda m:m[1]+icon(name)+m[2],document)
+    document = re.sub(r'(<span class="faq-arrow"[^>]*>)\s*\+\s*(</span>)',lambda m:m[1]+icon('chevron-down')+m[2],document)
+    document = document.replace('&larr; Back to Reclazz',icon('arrow-left')+' Back to Reclazz')
+    # Native details remains the no-JS mobile navigation. A modal drawer is added by JS.
+    toc = re.search(r'<aside class="page-toc"><nav aria-label="On this page">(.*?)</nav>',document,re.S)
+    if toc:
+        links = toc[1]
+        links = re.sub(r'^<p>.*?</p>','',links,flags=re.S)
+        document = document.replace('<article>', '<details class="mobile-toc"><summary>On this page</summary><nav aria-label="On this page">'+links+'</nav></details><article>',1)
+    # Existing guide/source heading levels are semantic markup, never text/anchor edits.
+    previous = [0]
+    def heading(match):
+        level = min(int(match[1]), previous[0]+1) if previous[0] else int(match[1])
+        previous[0] = level
+        return '<h'+str(level)+match[2]+'>'+match[3]+'</h'+str(level)+'>'
+    document = re.sub(r'<h([1-6])([^>]*)>(.*?)</h\1>',heading,document,flags=re.S)
+    document = re.sub(r'(font-size\s*:\s*)([0-9.]+)px',lambda m:m[1]+str(max(13,float(m[2]))).removesuffix('.0')+'px',document)
+    # Render only trusted, non-code blockquote notes as the callout component.
+    document = re.sub(r'<blockquote>\s*<p>(?:<strong>)?(Note|Tip|Warning|Restart):(?:</strong>)?\s*(.*?)</p>\s*</blockquote>', lambda m:'<aside class="callout" data-kind="'+m[1].lower()+'"><div class="callout-label">'+icon('info' if m[1] in ('Note','Tip') else 'triangle-alert')+m[1]+'</div><p>'+m[2]+'</p></aside>', document, flags=re.S)
+    document = re.sub(r'(<span class="badge (works|conditional|restart|unverified|not-reloaded)">)', lambda m:m[1]+icon({'works':'check','conditional':'triangle-alert','restart':'rotate-cw','unverified':'circle-help','not-reloaded':'circle-minus'}[m[2]]),document)
+    document = re.sub(r'(<a\b[^>]*class="path-card"[^>]*>)',lambda m:m[1]+icon('book-open'),document)
+    return accessible_scroll_regions(document)

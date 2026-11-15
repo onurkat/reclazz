@@ -197,7 +197,7 @@ def generate(revision='main'):
 </head>
 <body class="docs-page''' + (' matrix-page' if slug == 'support-matrix' else '') + '''">
 ''' + layout.header('docs') + '''
-<details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation">''' + nav + '''</nav></details>
+''' + layout.mobile_navigation(nav) + '''
 <div class="docs-shell"><aside class="sidebar"><nav aria-label="Documentation">''' + nav + '''</nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
 <main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>''' + escape(page['group'] if page['group'] != 'Footer' else 'Project') + '''</span><span aria-hidden="true">/</span><span>''' + escape(page['title'] if slug else 'Overview') + '''</span></div><article><div class="article-eyebrow">''' + escape(page['eyebrow']) + '''</div>''' + heading + body + sources + pager + '''</article></main><aside class="page-toc"><nav aria-label="On this page">''' + toc + '''</nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
 ''' + layout.footer(manifest['reviewed'][:4],version=manifest['source_version']) + layout.utilities() + '''
@@ -216,14 +216,14 @@ def generate(revision='main'):
     redirects = redirect_records(REPO,real_routes,revision)
     for route, record in redirects.items(): output[route_file(route)] = redirect_html(record)
     for name, value in list(output.items()):
-        if not name.endswith('index.html') or '/' + name[:-len('index.html')] in redirects: continue
+        if not (name.endswith('index.html') or name == '404.html') or (name != '404.html' and '/' + name[:-len('index.html')] in redirects): continue
         document = value.decode('utf-8') if isinstance(value,bytes) else value
         for asset_name, asset_value in output.items():
             if not asset_name.endswith(('.css','.js')): continue
             data = asset_value if isinstance(asset_value,bytes) else asset_value.encode('utf-8')
             digest = hashlib.sha256(data).hexdigest()[:12]
             document = document.replace('/'+asset_name+'"','/'+asset_name+'?v='+digest+'"')
-        output[name] = document
+        output[name] = layout.enhance_document(document)
     output['llms.txt'] = ai_index(REPO,pages,manifest)
     output['docs/assets/search-index.json'] = json.dumps(index, ensure_ascii=False, separators=(',', ':')) + '\n'
     output['docs/assets/support.json'] = json.dumps(support, indent=2) + '\n'
@@ -237,7 +237,8 @@ def generate(revision='main'):
     output['docs/assets/build-manifest.json'] = json.dumps({
         'source_commit': manifest['source_commit'], 'source_version': manifest['source_version'],
         'reviewed': manifest['reviewed'], 'build_revision': revision, 'pages': len(pages),
-        'site_pages':sorted(route_file(route) for route in real_routes),
+        'site_pages':sorted([route_file(route) for route in real_routes] + (['404.html'] if '404.html' in output else [])),
+        'on_demand_data': {name:len(value if isinstance(value,bytes) else value.encode('utf-8')) for name,value in output.items() if name in ('docs/assets/search-index.json','assets/i18n/tr.json')},
         'redirects':redirects,
         'curated_pages': len(manifest['pages']), 'reference_pages': len(pages) - len(manifest['pages']),
         'support_entries': len(support), 'options': len(options), 'search_entries':len(index),
@@ -245,6 +246,30 @@ def generate(revision='main'):
         'inputs': {p.relative_to(REPO).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(set(inputs))}
     }, indent=2) + '\n'
     return output
+
+def styleguide(output):
+    """Audit-only artifact: sibling of the published site, never in generate()."""
+    destination=Path(output);destination.mkdir(parents=True,exist_ok=True)
+    examples='''<nav class="breadcrumb" aria-label="Breadcrumb"><a href="/docs/">Documentation</a><span>/</span><span>Design system</span></nav><h1>Design system</h1><p>Audit reference for both themes. Use the theme button to compare states.</p><h2>Typography and surfaces</h2><p>Body 17px · Small 15px · Caption 13px. Aa Ğğ İı Şş Çç Öö Üü 0123456789.</p><div class="token-swatches">'''
+    for name in ('bg','surface','surface-hover','surface-alt','text','muted','dim','accent','green','gold','rose'):
+        examples+='<p style="border-left:24px solid var(--'+name+');padding-left:16px">'+name+'</p>'
+    examples+='''</div><h2>Actions and cards</h2><p><a class="btn btn-primary" href="/docs/">Primary</a> <a class="btn btn-secondary" href="/docs/">Secondary</a> <a class="btn btn-ghost" href="/docs/">Ghost</a></p><a class="path-card" href="/docs/quickstart/">Read the quickstart</a><h2>Outcomes</h2>'''
+    for key,label in LABELS.items():examples+='<span class="badge '+key+'">'+layout.icon('check' if key=='works' else 'circle-help')+label+'</span> '
+    examples+='<h2>Scales and elevation</h2>'
+    for prefix,count in [('neutral',12),('brand',5)]:
+        for i in range(0 if prefix=='neutral' else 1,count if prefix=='neutral' else count+1):examples+='<span style="display:inline-block;width:72px;height:48px;background:var(--'+prefix+'-'+str(i)+');border:1px solid var(--border)" aria-label="'+prefix+' '+str(i)+'"></span>'
+    for size in (13,15,17,20,24,30,38,48,60):examples+='<p style="font-size:'+str(size)+'px">Type '+str(size)+'</p>'
+    for kind in ('sm','md','lg'):examples+='<p style="padding:24px;border:1px solid var(--border);border-radius:var(--radius-'+kind+');box-shadow:var(--shadow-'+kind+')">Radius and shadow '+kind+'</p>'
+    examples+='<h2>Callouts</h2>'
+    for key in ('note','tip','warning','restart'):examples+='<aside class="callout" data-kind="'+key+'"><div class="callout-label">'+layout.icon('info')+key.title()+'</div><p>Visible text explains the outcome independently of color.</p></aside>'
+    examples+='''<h2>Tabs and code</h2><div role="tablist" aria-label="Build tool" data-preference="build-tool"><button role="tab" id="gradle-tab" aria-controls="gradle-panel" data-choice="gradle">Gradle</button><button role="tab" id="maven-tab" aria-controls="maven-panel" data-choice="maven">Maven</button></div><div role="tabpanel" id="gradle-panel" aria-labelledby="gradle-tab"><div class="code-block"><div class="code-label">shell</div><pre><code>./gradlew classes</code></pre></div></div><div role="tabpanel" id="maven-panel" aria-labelledby="maven-tab"><div class="code-block"><div class="code-label">shell</div><pre><code>mvn compile</code></pre></div></div><h2>Steps, table and disclosure</h2><ol class="steps"><li>Make an edit.</li><li>Compile and check the outcome.</li></ol><div class="table-scroll"><table><thead><tr><th>State</th><th>Meaning</th></tr></thead><tbody><tr><td>Ready</td><td>Continue your session.</td></tr></tbody></table></div><details><summary>Tested with</summary><p>Component demonstration only.</p></details><figure><div class="figure-chrome" aria-hidden="true">Preview</div><img src="/og-image.png" alt="Reclazz project artwork" width="1200" height="630"><figcaption>Figure and caption</figcaption></figure>'''
+    html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Design system audit</title>'+layout.head()+'</head><body>'+layout.header()+layout.mobile_navigation('<a href="/docs/">Overview</a><a href="/docs/quickstart/">Quickstart</a>')+'<main id="main" tabindex="-1" style="max-width:808px;padding:48px 24px"><article>'+examples+'<nav class="page-pager" aria-label="Documentation pages"><a href="/docs/"><span>Previous</span><strong>Overview</strong></a><a href="/docs/quickstart/"><span>Next</span><strong>Quickstart</strong></a></nav></article></main>'+layout.footer()+layout.utilities()+'</body></html>'
+    (destination/'index.html').write_text(layout.enhance_document(html))
+    for p in ROOT.rglob('*'):
+        if p.is_file() and (p.suffix in ('.css','.js','.woff2','.svg','.png') or p.name=='tr.json'):
+            target=destination/p.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(p.read_bytes())
+    (destination/'docs/assets/search-index.json').write_text('[]')
+
 
 def main():
     args = argparse.ArgumentParser(description=__doc__)
@@ -273,6 +298,7 @@ def main():
     else:
         for path in extras: path.unlink()
     if stale: raise SystemExit('Stale generated documentation: ' + ', '.join(stale))
+    if not options.check: styleguide(REPO/'build/styleguide')
     stats = json.loads(output['docs/assets/build-manifest.json'])
     print(('CHECK OK' if options.check else 'BUILT') + ': ' + str(stats['pages']) + ' pages (' + str(stats['reference_pages']) + ' full source references), ' + str(stats['support_entries']) + ' support entries, ' + str(stats['options']) + ' derived options')
 
