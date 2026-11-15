@@ -11,7 +11,7 @@ from urllib.parse import urlsplit, unquote, quote
 
 from website import layout
 from website.markdown import MarkdownRenderer, reference_pages, source_dispositions, github_anchor_map
-from website.content import NOTE_IDS, OVERVIEW_IDS, COMMON_IDS, LABELS, metadata, support_records, expand_guide, ai_index
+from website.content import NOTE_IDS, OVERVIEW_IDS, COMMON_IDS, LABELS, metadata, support_records, expand_guide, ai_index, marketing_claims, expand_claims, marketing_cards, marketing_faq, comparison_table
 
 REPO = Path(__file__).resolve().parents[1]
 ROOT = REPO / 'website' / 'static'
@@ -219,6 +219,15 @@ def generate(revision='main'):
     for name, kind in layout.PUBLIC_PAGES.items():
         if name in output:
             output[name] = link_chrome(layout.render_public(output[name].decode('utf-8'),kind,manifest['reviewed'][:4],manifest['source_version']))
+    if (REPO/'website/claims.json').is_file():
+        values=marketing_claims(REPO)
+        faq, schema=marketing_faq(values)
+        for name in ('index.html','compare/index.html','assets/i18n/tr.json'):
+            if name not in output: continue
+            text=output[name].decode('utf-8') if isinstance(output[name],bytes) else output[name]
+            text=text.replace('{{HOME_CARDS}}',marketing_cards(support,renderer)).replace('{{HOME_FAQ}}',faq).replace('{{HOME_FAQ_SCHEMA}}',schema)
+            text=text.replace('{{COMPARE_SUMMARY}}',comparison_table(REPO,renderer,values,True)).replace('{{COMPARE_TABLE}}',comparison_table(REPO,renderer,values))
+            output[name]=expand_claims(text,values,'tr' if name=='assets/i18n/tr.json' else 'en')
     index = []
     for page in pages:
         slug = page['slug']

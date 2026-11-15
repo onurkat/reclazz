@@ -1,0 +1,27 @@
+{
+  "sap_scenarios": {
+    "source": "docs/sap-commerce-live-tests.md",
+    "extractor": "sap_scenarios",
+    "value": "64"
+  },
+  "intellij_builds": {
+    "source": "build.gradle.kts",
+    "extractor": "intellij_builds",
+    "value": "2023.3 to 2026.2"
+  },
+  "agent_java_min": {
+    "source": "docs/installation.md",
+    "extractor": "agent_java_min",
+    "value": "17"
+  },
+  "jdk_tested": {
+    "source": "docs/installation.md",
+    "extractor": "jdk_tested",
+    "value": "17/21; JDK 25 runtime tested locally"
+  },
+  "version": {
+    "source": "gradle.properties",
+    "extractor": "version",
+    "value": "1.6.0"
+  }
+}

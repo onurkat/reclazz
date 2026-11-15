@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Simplify the homepage and generate sourced comparisons, bilingual claims and FAQs from shared contracts.
+
 - Organize the usage manual by launch mode and framework while preserving existing section text and website bookmarks.
 
 - Explain framework edits with source-derived result tables, grouped agent options and preserved messaging and reload-timing links.

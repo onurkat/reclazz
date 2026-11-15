@@ -1,0 +1,668 @@
+{
+  "products": {
+    "reclazz": "Reclazz",
+    "jrebel": "JRebel",
+    "devtools": "Spring Boot DevTools",
+    "hotswap": "HotswapAgent / DCEVM"
+  },
+  "home": [
+    "price",
+    "reload-mechanism",
+    "state",
+    "structural-stock-jdk",
+    "sap-model-xml"
+  ],
+  "sources": {
+    "jr-price": {
+      "url": "https://www.jrebel.com/products/jrebel/chat-pricing-request",
+      "quote": "personalized quote",
+      "version": "Unversioned pricing page",
+      "read": "2026-11-15",
+      "key": "https://www.jrebel.com/products/jrebel/chat-pricing-request#7d6fda767402099c"
+    },
+    "jr-sap": {
+      "url": "https://manuals.jrebel.com/jrebel/advanced/hybris.html",
+      "quote": "reloaded on the fly",
+      "version": "Manual 2026.4.x",
+      "read": "2026-11-15",
+      "key": "https://manuals.jrebel.com/jrebel/advanced/hybris.html#2e5a8fad9d02dad7"
+    },
+    "jr-int": {
+      "url": "https://manuals.jrebel.com/jrebel/misc/integrations.html",
+      "quote": "Framework integrations",
+      "version": "Manual 2026.4.x",
+      "read": "2026-11-15",
+      "key": "https://manuals.jrebel.com/jrebel/misc/integrations.html#6025c384e911c7d1"
+    },
+    "jr-act": {
+      "url": "https://manuals.jrebel.com/jrebel/standalone/activate.html",
+      "quote": "three activation options",
+      "version": "Manual 2026.4.x",
+      "read": "2026-11-15",
+      "key": "https://manuals.jrebel.com/jrebel/standalone/activate.html#d06232e91b288aa3"
+    },
+    "jr-faq": {
+      "url": "https://jrebel.com/software/jrebel/learn/faq/",
+      "quote": "existing instances",
+      "version": "Unversioned vendor FAQ",
+      "read": "2026-11-15",
+      "key": "https://jrebel.com/software/jrebel/learn/faq/#74da91895d2faf3e"
+    },
+    "jr-blog": {
+      "url": "https://www.jrebel.com/blog/what-is-jrebel",
+      "quote": "class structure",
+      "version": "Vendor article 2021-03-29",
+      "read": "2026-11-15",
+      "key": "https://www.jrebel.com/blog/what-is-jrebel#46246325c4945f59"
+    },
+    "jr-lic": {
+      "url": "https://manuals.jrebel.com/zt-license-management/",
+      "quote": "always online",
+      "version": "Rebel Licenses 1.0",
+      "read": "2026-11-15",
+      "key": "https://manuals.jrebel.com/zt-license-management/#8f44099ade7a574c"
+    },
+    "sb": {
+      "url": "https://docs.spring.io/spring-boot/reference/using/devtools.html",
+      "quote": "restart classloader",
+      "version": "Spring Boot 4.1.2",
+      "read": "2026-11-15",
+      "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+    },
+    "sb-license": {
+      "url": "https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt",
+      "quote": "Apache License",
+      "version": "Spring Boot repository",
+      "read": "2026-11-15",
+      "key": "https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt#b142bb415e882507"
+    },
+    "ha": {
+      "url": "https://github.com/HotswapProjects/HotswapAgent",
+      "quote": "changing the superclass",
+      "version": "HotswapAgent README, read 2026-11-15",
+      "read": "2026-11-15",
+      "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+    },
+    "ha-license": {
+      "url": "https://github.com/HotswapProjects/HotswapAgent/blob/master/LICENSE",
+      "quote": "GNU GENERAL PUBLIC LICENSE",
+      "version": "HotswapAgent repository",
+      "read": "2026-11-15",
+      "key": "https://github.com/HotswapProjects/HotswapAgent/blob/master/LICENSE#77e79ead261b00cd"
+    }
+  },
+  "rows": [
+    {
+      "id": "price",
+      "label": "Price and licence",
+      "cells": {
+        "reclazz": {
+          "text": "Free, Apache 2.0",
+          "verdict": "yes",
+          "source": {
+            "doc": "README.md#license-and-support"
+          }
+        },
+        "jrebel": {
+          "text": "Commercial; price by quote",
+          "verdict": "no",
+          "source": {
+            "key": "https://www.jrebel.com/products/jrebel/chat-pricing-request#7d6fda767402099c"
+          }
+        },
+        "devtools": {
+          "text": "Free, Apache 2.0 (part of Spring Boot)",
+          "verdict": "yes",
+          "source": {
+            "key": "https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt#b142bb415e882507"
+          }
+        },
+        "hotswap": {
+          "text": "Free, GPL-2.0",
+          "verdict": "yes",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent/blob/master/LICENSE#77e79ead261b00cd"
+          }
+        }
+      }
+    },
+    {
+      "id": "reload-mechanism",
+      "label": "How a change is applied",
+      "cells": {
+        "reclazz": {
+          "text": "Redefines classes in the running JVM",
+          "verdict": "yes",
+          "source": {
+            "record": "method-body"
+          }
+        },
+        "jrebel": {
+          "text": "Reloads classes in the running JVM",
+          "verdict": "yes",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/advanced/hybris.html#2e5a8fad9d02dad7"
+          }
+        },
+        "devtools": {
+          "text": "Restarts the application in a fresh classloader",
+          "verdict": "no",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Redefines classes in the running JVM",
+          "verdict": "yes",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    },
+    {
+      "id": "state",
+      "label": "What survives a change",
+      "cells": {
+        "reclazz": {
+          "text": "Method edits keep object fields; a refreshed Spring bean is recreated and can reset its state",
+          "verdict": "partial",
+          "source": {
+            "record": "bean"
+          }
+        },
+        "jrebel": {
+          "text": "Existing instances kept; added fields are not initialized in them",
+          "verdict": "yes",
+          "source": {
+            "key": "https://jrebel.com/software/jrebel/learn/faq/#74da91895d2faf3e"
+          }
+        },
+        "devtools": {
+          "text": "Application state resets with the application classloader (inferred from restart mechanism)",
+          "verdict": "no",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "JVM keeps running; object state not described",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "structural-stock-jdk",
+      "label": "Add or remove methods and fields on a stock JDK",
+      "cells": {
+        "reclazz": {
+          "text": "Yes on supported JDK 17+ paths, through hot-compiled callers; new members are not visible to plain reflection",
+          "verdict": "partial",
+          "source": {
+            "record": "added-method"
+          }
+        },
+        "jrebel": {
+          "text": "Class structure changes on standard JVMs; vendor article describes the mechanism",
+          "verdict": "yes",
+          "source": {
+            "key": "https://www.jrebel.com/blog/what-is-jrebel#46246325c4945f59"
+          }
+        },
+        "devtools": {
+          "text": "Picked up by a restart",
+          "verdict": "no",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Needs an enhanced JVM such as JetBrains Runtime (DCEVM)",
+          "verdict": "no",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    },
+    {
+      "id": "jvm-required",
+      "label": "Special JVM required for structural changes",
+      "cells": {
+        "reclazz": {
+          "text": "No; supported stock JDK 17+ paths",
+          "verdict": "yes",
+          "source": {
+            "doc": "docs/installation.md#versions-and-requirements"
+          }
+        },
+        "jrebel": {
+          "text": "No; listed JVMs include OpenJDK and SapMachine",
+          "verdict": "yes",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/misc/integrations.html#6025c384e911c7d1"
+          }
+        },
+        "devtools": {
+          "text": "No; add a build dependency",
+          "verdict": "yes",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Yes: JetBrains Runtime for Java 17/21/25",
+          "verdict": "no",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    },
+    {
+      "id": "superclass",
+      "label": "Change a superclass",
+      "cells": {
+        "reclazz": {
+          "text": "Needs a restart",
+          "verdict": "no",
+          "source": {
+            "record": "superclass"
+          }
+        },
+        "jrebel": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "devtools": {
+          "text": "Picked up by a restart",
+          "verdict": "no",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Not supported",
+          "verdict": "no",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    },
+    {
+      "id": "spring-framework",
+      "label": "Spring beans and MVC mappings after a class change",
+      "cells": {
+        "reclazz": {
+          "text": "Affected beans refreshed, MVC mappings re-scanned",
+          "verdict": "partial",
+          "source": {
+            "record": "mvc"
+          }
+        },
+        "jrebel": {
+          "text": "Spring Bean, MVC, Security and Tx integrations listed",
+          "verdict": "yes",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/misc/integrations.html#6025c384e911c7d1"
+          }
+        },
+        "devtools": {
+          "text": "Whole context restarted",
+          "verdict": "no",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Spring plugin; README lists Spring 3.2.x to 5.x",
+          "verdict": "partial",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    },
+    {
+      "id": "spring-added-members",
+      "label": "Spring callbacks and advice on members added after startup",
+      "cells": {
+        "reclazz": {
+          "text": "Yes, on documented shapes",
+          "verdict": "partial",
+          "source": {
+            "record": "service-advice"
+          }
+        },
+        "jrebel": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "devtools": {
+          "text": "Picked up by a restart",
+          "verdict": "no",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "framework-breadth",
+      "label": "Framework integrations",
+      "cells": {
+        "reclazz": {
+          "text": "Spring, Spring Boot and SAP Commerce",
+          "verdict": "partial",
+          "source": {
+            "doc": "docs/usage.md#spring-beans-and-components"
+          }
+        },
+        "jrebel": {
+          "text": "About 100 integrations, plus application servers",
+          "verdict": "yes",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/misc/integrations.html#6025c384e911c7d1"
+          }
+        },
+        "devtools": {
+          "text": "Spring Boot development tools",
+          "verdict": "partial",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Plugin set includes Spring, Hibernate, CDI, Jackson and servers",
+          "verdict": "yes",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    },
+    {
+      "id": "sap-java",
+      "label": "SAP Commerce: a changed Java class",
+      "cells": {
+        "reclazz": {
+          "text": "Yes",
+          "verdict": "yes",
+          "source": {
+            "record": "method-body"
+          }
+        },
+        "jrebel": {
+          "text": "Reloads changed classes in the running JVM",
+          "verdict": "yes",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/advanced/hybris.html#2e5a8fad9d02dad7"
+          }
+        },
+        "devtools": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "hotswap": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "sap-model-xml",
+      "label": "SAP Commerce: items.xml / beans.xml change",
+      "cells": {
+        "reclazz": {
+          "text": "Regenerates and reloads model/DTO classes; schema update still separate",
+          "verdict": "partial",
+          "source": {
+            "record": "items"
+          }
+        },
+        "jrebel": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "devtools": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "hotswap": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "sap-impex",
+      "label": "SAP Commerce: ImpEx file applied on save",
+      "cells": {
+        "reclazz": {
+          "text": "Opt-in import on save (autoImpex=true)",
+          "verdict": "partial",
+          "source": {
+            "record": "impex"
+          }
+        },
+        "jrebel": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "devtools": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "hotswap": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "sap-config",
+      "label": "SAP Commerce: properties, log levels, localization and Backoffice labels",
+      "cells": {
+        "reclazz": {
+          "text": "Applied to the running server, within documented scope",
+          "verdict": "partial",
+          "source": {
+            "record": "sap-config"
+          }
+        },
+        "jrebel": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "devtools": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "hotswap": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "sap-interceptor",
+      "label": "SAP Commerce: interceptor change",
+      "cells": {
+        "reclazz": {
+          "text": "Interceptor refreshed and re-registered",
+          "verdict": "partial",
+          "source": {
+            "record": "interceptor"
+          }
+        },
+        "jrebel": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "devtools": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "hotswap": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "setup",
+      "label": "What you install",
+      "cells": {
+        "reclazz": {
+          "text": "IntelliJ plugin, or agent via Gradle, Maven or -javaagent",
+          "verdict": "yes",
+          "source": {
+            "doc": "docs/installation.md#installation"
+          }
+        },
+        "jrebel": {
+          "text": "Agent plus licence activation; rebel.xml on SAP (Backoffice generation available)",
+          "verdict": "partial",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/advanced/hybris.html#2e5a8fad9d02dad7"
+          }
+        },
+        "devtools": {
+          "text": "One build dependency",
+          "verdict": "yes",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "JetBrains Runtime, agent jar and JVM flags",
+          "verdict": "partial",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    },
+    {
+      "id": "licence-activation",
+      "label": "Licence activation",
+      "cells": {
+        "reclazz": {
+          "text": "None",
+          "verdict": "yes",
+          "source": {
+            "doc": "README.md#license-and-support"
+          }
+        },
+        "jrebel": {
+          "text": "Required: code, licence file or licence server URL",
+          "verdict": "no",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/standalone/activate.html#d06232e91b288aa3"
+          }
+        },
+        "devtools": {
+          "text": "None",
+          "verdict": "yes",
+          "source": {
+            "key": "https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt#b142bb415e882507"
+          }
+        },
+        "hotswap": {
+          "text": "None",
+          "verdict": "yes",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent/blob/master/LICENSE#77e79ead261b00cd"
+          }
+        }
+      }
+    },
+    {
+      "id": "network",
+      "label": "Network traffic from the tool",
+      "cells": {
+        "reclazz": {
+          "text": "No telemetry; local development tools",
+          "verdict": "yes",
+          "source": {
+            "doc": "docs/for-ai-agents.md#for-ai-agents"
+          }
+        },
+        "jrebel": {
+          "text": "Optional usage statistics; online licence service available",
+          "verdict": "partial",
+          "source": {
+            "key": "https://jrebel.com/software/jrebel/learn/faq/#74da91895d2faf3e"
+          }
+        },
+        "devtools": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        },
+        "hotswap": {
+          "text": "Not documented",
+          "verdict": "not-documented",
+          "source": {}
+        }
+      }
+    },
+    {
+      "id": "ide",
+      "label": "IDE",
+      "cells": {
+        "reclazz": {
+          "text": "IntelliJ IDEA {{CLAIM:intellij_builds}}; no IDE needed with Gradle/Maven/agent",
+          "verdict": "partial",
+          "source": {
+            "doc": "docs/installation.md#versions-and-requirements"
+          }
+        },
+        "jrebel": {
+          "text": "IntelliJ 2022.1+, Eclipse 4.15+, NetBeans 8.2+, MyEclipse and VS Code 1.57+",
+          "verdict": "yes",
+          "source": {
+            "key": "https://manuals.jrebel.com/jrebel/misc/integrations.html#6025c384e911c7d1"
+          }
+        },
+        "devtools": {
+          "text": "Any IDE or build tool that updates the classpath",
+          "verdict": "yes",
+          "source": {
+            "key": "https://docs.spring.io/spring-boot/reference/using/devtools.html#958ae09e7d072774"
+          }
+        },
+        "hotswap": {
+          "text": "Any IDE; optional IntelliJ HotSwapHelper plugin",
+          "verdict": "yes",
+          "source": {
+            "key": "https://github.com/HotswapProjects/HotswapAgent#ee236ca61bc7921c"
+          }
+        }
+      }
+    }
+  ]
+}

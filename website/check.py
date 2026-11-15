@@ -114,10 +114,11 @@ def publication_errors(output, manifest):
 def check_site(output, revision='main'):
     output = Path(output).resolve()
     errors = source_index_errors(build.REPO) + source_link_errors(build.REPO) + readable_surface_errors(build.REPO)
-    if build.metadata(build.REPO).get('content_contract') in ('3a','3b','3c'): errors.extend(stage3_contract_errors(build.REPO,output))
-    if build.metadata(build.REPO).get('content_contract')=='3c':
+    if build.metadata(build.REPO).get('content_contract') in ('3a','3b','3c','4'): errors.extend(stage3_contract_errors(build.REPO,output))
+    if build.metadata(build.REPO).get('content_contract') in ('3c','4'):
         usage_page=output/'docs/reference/usage/index.html'
         errors.extend(usage_contract_errors(build.REPO,rendered=usage_page.read_text() if usage_page.is_file() else ''))
+    if build.metadata(build.REPO).get('content_contract')=='4': errors.extend(marketing_contract_errors(build.REPO,output))
     expected = build.generate(revision)
     errors.extend(output_differences(output, expected))
     # Invalid/missing output must fail before attempting to parse a partial tree.
@@ -416,7 +417,7 @@ def stage3_contract_errors(repo,output):
     if not p.is_file():errors.append('Missing support status lock')
     elif json.loads(p.read_text())!={r['id']:r['status'] for r in records}:errors.append('Support status lock drift')
     errors.extend(frozen_fragment_errors(repo,output))
-    if build.metadata(repo).get('content_contract') in ('3b','3c'):errors.extend(stage3b_contract_errors(repo,output,records))
+    if build.metadata(repo).get('content_contract') in ('3b','3c','4'):errors.extend(stage3b_contract_errors(repo,output,records))
     for name,summary in [('docs/support-matrix/index.html',False),('docs/index.html',True)]:
         p=output/name
         if p.is_file():errors.extend(rendered_records_errors(p.read_text(),records,summary))
@@ -559,4 +560,112 @@ def usage_contract_errors(repo,text=None,rendered=None):
                 matches=[n for n in tree.nodes if n['tag']=='h1' and n['attrs'].get('id')==e['id']]
             else:matches=[n for n in nodes if n['attrs']['data-section-key']==e['key'] and n['attrs'].get('id')==e['id']]
             if len(matches)!=1:errors.append('C1 rendered usage id/identity mismatch: '+e['key'])
+    return errors
+
+
+COMPARISON_ROWS = ['price','reload-mechanism','state','structural-stock-jdk','jvm-required','superclass','spring-framework','spring-added-members','framework-breadth','sap-java','sap-model-xml','sap-impex','sap-config','sap-interceptor','setup','licence-activation','network','ide']
+VENDOR_DOMAINS = {'www.jrebel.com','jrebel.com','manuals.jrebel.com','docs.spring.io','github.com'}
+
+
+def comparison_model_errors(repo, model=None):
+    from website.content import support_records, compare_source_key, heading_ids
+    repo=Path(repo);errors=[]
+    model=json.loads((repo/'website/compare.json').read_text()) if model is None else model
+    contract=json.loads((repo/'website/compare-contract.json').read_text())
+    raw=json.dumps(model)+json.dumps(contract)
+    if any(x in raw for x in ('/Users/','.collab','publish_measured','"measured": {"payload"')):errors.append('Private or hidden comparison payload')
+    if [x['id'] for x in model['rows']] != COMPARISON_ROWS:errors.append('Comparison row inventory')
+    if model['home'] != contract['home']:errors.append('Comparison home subset')
+    records={x['id']:x for x in support_records(repo)}
+    sources={x['key']:x for x in model['sources'].values()}
+    for source in sources.values():
+        url=urlsplit(source['url'])
+        if url.scheme!='https' or url.netloc not in VENDOR_DOMAINS or (url.netloc=='github.com' and not url.path.startswith(('/HotswapProjects/','/spring-projects/','/JetBrains/'))):errors.append('Non-allowlisted comparison source')
+        if not source.get('quote') or not source.get('read') or not source.get('version'):errors.append('Missing comparison provenance')
+        expected=source['url']+'#'+hashlib.sha256(source['quote'].encode()).hexdigest()[:16]
+        if source['key']!=expected:errors.append('Comparison source witness mismatch')
+    if any(c['source_key'].startswith('measured:') for c in contract['cells']):errors.append('Measured comparison sources are not allowed')
+    actual=[]
+    for row in model['rows']:
+        if set(row['cells'])!={'reclazz','jrebel','devtools','hotswap'}:errors.append('Comparison product inventory')
+        for product,c in row['cells'].items():
+            source=c['source'];key=compare_source_key(source)
+            actual.append(dict(row=row['id'],product=product,text=c['text'],verdict=c['verdict'],source_key=key))
+            if not source and c['verdict']!='not-documented':errors.append('Missing comparison source')
+            if 'key' in source and source['key'] not in sources:errors.append('Unknown comparison source')
+            if 'record' in source:
+                rec=records.get(source['record'])
+                if not rec:errors.append('Unknown comparison record')
+                elif c['verdict'] not in {'works':{'yes','partial'},'conditional':{'partial'},'restart':{'no'},'unverified':{'not-documented'},'not-reloaded':{'no','not-documented'}}[rec['status']]:errors.append('Comparison record status upgraded')
+            if 'doc' in source:
+                name,_,fragment=source['doc'].partition('#');path=repo/name
+                if not path.is_file() or fragment not in heading_ids(path):errors.append('Missing comparison document anchor: '+source['doc'])
+            if 'measured' in source:errors.append('Measured comparison sources are not allowed')
+    if actual != contract['cells']:errors.append('Comparison differs from approved cell contract')
+    return errors
+
+
+def marketing_render_errors(repo,home,compare,tr):
+    from website.content import marketing_claims, expand_claims, HOME_FAQ, LABELS, OVERVIEW_IDS, support_records
+    from html import unescape
+    errors=[];values=marketing_claims(repo)
+    keys=set(re.findall(r'data-i18n="([^"]+)"',home))
+    if keys!=set(tr) or any(not v for v in tr.values()):errors.append('English/Turkish key mismatch')
+    for text in (home,compare,json.dumps(tr,ensure_ascii=False)):
+        if '{{' in text:errors.append('Unexpanded marketing token')
+        if '\u2014' in text:errors.append('Em dash in marketing copy')
+    # Generated output must contain source-derived claim-bearing sentences in both languages.
+    for k in ('sap_scenarios','intellij_builds','agent_java_min','jdk_tested','version'):
+        if values[k] not in unescape(home):errors.append('Missing rendered marketing claim: '+k)
+    if not re.search(r'default live suite defines '+re.escape(values['sap_scenarios'])+r' required scenarios',home):errors.append('Rendered scenario claim mismatch')
+    faq_schemas=0
+    for page in (home,compare):
+        for n in re.findall(r'<script type="application/ld\+json">(.*?)</script>',page,re.S):
+            schema=json.loads(n)
+            if schema.get('@type')!='FAQPage':continue
+            faq_schemas+=1
+            tree=ContentTree(page);faq=[]
+            for d in descendants(tree.root):
+                if d['tag']=='details' and 'marketing-faq' in d['attrs'].get('class',''):
+                    q=next(x for x in descendants(d) if x['tag']=='summary');a=next(x for x in descendants(d) if x['tag']=='p')
+                    faq.append((node_text(q).strip(),node_text(a).strip()))
+            structured=[(x['name'],x['acceptedAnswer']['text']) for x in schema['mainEntity']]
+            if faq!=structured or len(faq)!=5:errors.append('Visible FAQ differs from JSON-LD')
+    if faq_schemas!=1:errors.append('Missing or duplicate FAQ schema')
+    if 'class="measured-note"' in home+compare:errors.append('Measured comparison content is not allowed')
+    def cells(text):
+        result={};tree=ContentTree(text)
+        for row in descendants(tree.root):
+            if 'data-compare-row' not in row['attrs']:continue
+            for td in row['children']:
+                if isinstance(td,dict) and td['tag']=='td':result[(row['attrs']['data-compare-row'],td['attrs'].get('data-product'))]=(td['attrs'].get('data-verdict'),node_text(td))
+        return result
+    summary=cells(home);full=cells(compare)
+    if len(summary)!=20 or any(full.get(k)!=v for k,v in summary.items()):errors.append('Home/full comparison mismatch')
+    model=json.loads((Path(repo)/'website/compare.json').read_text())
+    for row in model['rows']:
+        for product,c in row['cells'].items():
+            rendered=full.get((row['id'],product))
+            expected=unescape(expand_claims(c['text'],values))
+            if not rendered or rendered[0]!=c['verdict'] or expected not in rendered[1]:errors.append('Rendered comparison cell mismatch')
+    records={x['id']:x for x in support_records(repo)};cards=[]
+    for n in descendants(ContentTree(home).root):
+        if 'data-support-id' not in n['attrs']:continue
+        key=n['attrs']['data-support-id'];cards.append(key)
+        if key not in records or n['attrs'].get('data-support-status')!=records[key]['status'] or LABELS[records[key]['status']] not in node_text(n):errors.append('Home card status mismatch')
+    if cards!=OVERVIEW_IDS:errors.append('Home card inventory')
+    return errors
+
+
+def marketing_contract_errors(repo,output):
+    repo=Path(repo);output=Path(output);errors=comparison_model_errors(repo)
+    from website.content import marketing_claims
+    try:marketing_claims(repo)
+    except ValueError as e:errors.append(str(e));return errors
+    for name in ('index.html','compare/index.html'):
+        source=(repo/'website/static'/name).read_text()
+        if re.search(r'\b\d+ of \d+ (?:integration )?scenarios|\b\d+ required scenarios|IntelliJ IDEA 20\d\d\.\d',source):errors.append('Hard-coded marketing claim')
+    if all((output/n).is_file() for n in ('index.html','compare/index.html','assets/i18n/tr.json')):
+        errors.extend(marketing_render_errors(repo,(output/'index.html').read_text(),(output/'compare/index.html').read_text(),json.loads((output/'assets/i18n/tr.json').read_text())))
+    else:errors.append('Missing marketing output')
     return errors

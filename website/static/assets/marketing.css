@@ -86,3 +86,21 @@
 @media(max-width:760px) { .marketing .hero { padding:44px 24px; }.hero-inner { display:block; }.marketing .hero h1 { max-width:560px;font-size:clamp(38px,7vw,52px);letter-spacing:-1.8px; }.marketing .hero-subtitle { max-width:620px;font-size:15px; }.hero-inner>.terminal { margin-top:34px; }.terminal-body { font-size:13px;padding:20px; }.hero-badge { margin-bottom:18px; }.marketing .section { padding:48px 24px; }.marketing .section-header { margin-bottom:28px; }.features-grid,.install-steps,.jdk-grid,.limitations-grid,.terms-grid { grid-template-columns:1fr; }.feature-card { padding:24px; }.marketing .feature-card p { font-size:13px; }.marketing .license-page { padding:34px 24px 48px; }.marketing .license-page h1 { letter-spacing:-1.3px; }.section-nav .container { margin:0;padding:12px 24px;gap:24px; }.marketing .cta-section { padding:48px 24px; }.license-text-body pre { padding:20px;font-size:13px; }.tldr-card,.attribution-callout,.liability-callout { padding:22px; }.faq-question { padding:18px 20px; }.faq-answer-inner { padding:0 20px 20px; } }
 @media(prefers-reduced-motion:reduce) { .marketing *, .marketing *::before,.marketing *::after { transition:none!important;animation:none!important;scroll-behavior:auto; } }
 @media print { .section-nav,.hero-actions,.cta-section,.community-link { display:none; }.marketing .section { padding:20px 0; }.features-grid { grid-template-columns:1fr 1fr; }.home-page .faq-answer { display:block!important; }.comparison-wrapper,.cmp-wrap { overflow:visible; }.cmp,.comparison-table { min-width:0; }.marketing .license-page { padding:0; } }
+
+/* Outcome-first marketing sections use the shared site components. */
+.hero-workflow { grid-column:2;grid-row:1 / span 4;padding:32px;border:1px solid var(--border);border-radius:12px;background:var(--surface-alt); }
+.hero-workflow ol { padding-left:24px;line-height:2.2;margin:16px 0 24px; }
+.marketing .feature-card .status { display:inline-block;margin-bottom:18px; }
+.marketing .feature-card p { margin-bottom:16px; }
+.marketing .feature-card a { font-size:15px; }
+.cmp caption { padding:18px;text-align:left;color:var(--text);font-weight:600; }
+.comparison-source { display:inline-block;font-size:13px; }
+.marketing-faq { border:1px solid var(--border);border-radius:8px;padding:20px 24px;background:var(--surface);margin:12px 0; }
+.marketing-faq summary { cursor:pointer;font-weight:600;color:var(--text);line-height:1.6; }
+.marketing-faq p { margin:16px 0 0; }
+.fragment-alias { scroll-margin-top:100px; }
+@media(max-width:760px) { .hero-workflow { margin-top:32px;padding:24px; }.cmp td,.cmp th { min-width:190px; }.cmp th:first-child { min-width:160px; } }
+
+.marketing .cmp { table-layout:fixed;min-width:1000px; }
+.marketing .cmp th:first-child { width:22%; }
+.marketing .cmp th,.marketing .cmp td { font-size:14px;overflow-wrap:anywhere; }

@@ -158,3 +158,103 @@ def readable_surface_errors(repo):
             if digests[path] != recorded:
                 errors.append('Human-readable evidence digest drift: '+name+':'+number)
     return errors
+
+
+# Marketing facts are extracted from repository sources, never from saved output.
+def marketing_claims(repo):
+    repo = Path(repo)
+    specs = json.loads((repo/'website/claims.json').read_text())
+    installation = (repo/'docs/installation.md').read_text()
+    gradle = (repo/'build.gradle.kts').read_text()
+    def match(pattern, text):
+        result = re.search(pattern, text, re.M)
+        if not result: raise ValueError('Marketing source extractor did not match: '+pattern)
+        return result
+    first = match(r'sinceBuild = "(\d+)"', gradle)[1]
+    last = match(r'untilBuild = "(\d+)\.\*"', gradle)[1]
+    def idea(value): return '20'+value[:2]+'.'+value[2:]
+    values = {
+        'sap_scenarios': match(r'default suite now contains \*\*(\d+) scenarios', (repo/'docs/sap-commerce-live-tests.md').read_text())[1],
+        'intellij_builds': idea(first)+' to '+idea(last),
+        'agent_java_min': match(r'target \*\*Java (\d+)\+', installation)[1],
+        'jdk_tested': match(r'JDK (\d+/\d+) are the baseline test', installation)[1]+'; JDK '+match(r'\*\*JDK (\d+) runtime:\*\*', installation)[1]+' runtime tested locally',
+        'version': match(r'^pluginVersion=(.+)$', (repo/'gradle.properties').read_text())[1].strip(),
+    }
+    if set(specs) != set(values): raise ValueError('Unknown or missing marketing claim')
+    for k, value in values.items():
+        if specs[k]['value'] != value: raise ValueError('Marketing claim mismatch: '+k)
+    return values
+
+
+def expand_claims(text, values, locale="en"):
+    def replace(m):
+        if m[1] not in values: raise ValueError('Unknown marketing claim: '+m[1])
+        value=values[m[1]]
+        if locale=='tr' and m[1]=='jdk_tested': value=value.replace('runtime tested locally','çalışma zamanı yerel olarak test edildi')
+        if locale=='tr' and m[1]=='intellij_builds': value=value.replace(' to ',' ile ')
+        return escape(value, quote=True)
+    return re.sub(r'\{\{CLAIM:([^}]+)\}\}', replace, text)
+
+
+HOME_FAQ = [
+ ('Which changes can I reload?', 'Start with a method-body edit. Added methods, Spring beans, endpoints, properties and SAP generated classes have documented conditions. Check the reload matrix before a larger change.',
+  'Hangi değişiklikleri yenileyebilirim?', 'Bir metot gövdesi değişikliğiyle başlayın. Eklenen metotların, Spring bean ve endpoint değişikliklerinin, property dosyalarının ve SAP sınıflarının belgelenmiş koşulları vardır. Daha büyük bir değişiklikten önce reload tablosuna bakın.'),
+ ('Will my application state survive?', 'Method-body edits keep existing object fields on the JVM-only path. A refreshed Spring bean is destroyed and recreated, so its mutable state can reset.',
+  'Uygulama durumum korunur mu?', 'Yalnız JVM yolundaki metot gövdesi değişiklikleri mevcut nesne alanlarını korur. Yenilenen Spring bean yok edilip yeniden oluşturulur; değişebilir durumu sıfırlanabilir.'),
+ ('Do I need a special JVM?', 'Supported structural changes work on stock JDK {{CLAIM:agent_java_min}}+ through hot-compiled callers. Plain reflection cannot see added members on that path. JetBrains Runtime or DCEVM provides enhanced redefinition; a superclass change still needs a restart.',
+  'Özel bir JVM gerekli mi?', 'Desteklenen yapısal değişiklikler standart JDK {{CLAIM:agent_java_min}}+ üzerinde yeniden derlenen çağıranlar üzerinden çalışır. Bu yolda sıradan reflection eklenen üyeleri göremez. JetBrains Runtime veya DCEVM gelişmiş yeniden tanımlama sağlar; üst sınıf değişikliği yine restart gerektirir.'),
+ ('What happens after an items.xml save?', 'Reclazz runs platform generation and reloads the generated classes within the documented SAP scope. A new database column still needs a schema update. Follow the SAP Commerce guide for setup and opt-ins.',
+  'items.xml kaydından sonra ne olur?', 'Reclazz belgelenmiş SAP kapsamı içinde platform kod üretimini çalıştırır ve üretilen sınıfları yeniler. Yeni bir veritabanı sütunu hâlâ şema güncellemesi gerektirir. Kurulum ve isteğe bağlı ayarlar için SAP Commerce rehberini izleyin.'),
+ ('Can I use Gradle or Maven instead of IntelliJ?', 'Yes. Attach the agent through one launcher: IntelliJ, the Gradle plugin, Maven or a standalone Java command. Build your edit into a watched output and verify the changed application behaviour.',
+  'IntelliJ yerine Gradle veya Maven kullanabilir miyim?', 'Evet. Agent için tek başlatma yolu seçin: IntelliJ, Gradle eklentisi, Maven veya bağımsız Java komutu. Değişikliği izlenen çıktıya derleyin ve uygulamanın değişen davranışını doğrulayın.'),
+]
+
+
+def marketing_faq(values):
+    from html import unescape
+    visible=[]; schema=[]
+    for i,(q,a,_,_) in enumerate(HOME_FAQ):
+        q=expand_claims(q,values);a=expand_claims(a,values)
+        visible.append('<details class="marketing-faq"><summary data-i18n="faq.q'+str(i)+'">'+q+'</summary><p data-i18n="faq.a'+str(i)+'">'+a+'</p></details>')
+        schema.append({'@type':'Question','name':unescape(q),'acceptedAnswer':{'@type':'Answer','text':unescape(a)}})
+    return ''.join(visible), '<script type="application/ld+json">'+json.dumps({'@context':'https://schema.org','@type':'FAQPage','mainEntity':schema},ensure_ascii=False).replace('<','\\u003c')+'</script>'
+
+
+def marketing_cards(records, renderer):
+    by_id={x['id']:x for x in records}; result=[]
+    for key in OVERVIEW_IDS:
+        row=by_id[key];href=renderer.resolve_link('README.md',row['source'])
+        result.append('<article class="feature-card" data-support-id="'+key+'" data-support-status="'+row['status']+'"><span class="status status-'+row['status']+'" data-i18n="card.'+key+'.status">'+LABELS[row['status']]+'</span><h3 data-i18n="card.'+key+'.title">'+escape(row['title'])+'</h3><p data-i18n="card.'+key+'.body">'+escape(row['conditions'])+'</p><a href="'+escape(href,quote=True)+'" data-i18n="card.'+key+'.link">Conditions and next step</a></article>')
+    return ''.join(result)
+
+
+def compare_source_key(source):
+    if 'key' in source: return source['key']
+    if 'record' in source: return 'record:'+source['record']
+    if 'doc' in source: return 'doc:'+source['doc']
+    return ''
+
+
+def comparison_table(repo, renderer, values, summary=False):
+    model=json.loads((Path(repo)/'website/compare.json').read_text()); products=model['products']
+    rows=[x for x in model['rows'] if not summary or x['id'] in model['home']]
+    def translated(key,text):
+        return (' data-i18n="'+key+'"' if summary else '')+'>'+escape(text)
+    out='<div class="cmp-wrap" tabindex="0" role="region" aria-label="Hot reload comparison"><table class="cmp"><caption'+translated('cmp.caption','Compare the development workflow')+'</caption><thead><tr><th scope="col"'+translated('cmp.capability','Capability')+'</th>'
+    out+=''.join('<th scope="col">'+escape(p)+'</th>' for p in products.values())+'</tr></thead><tbody>'
+    for row in rows:
+        out+='<tr data-compare-row="'+row['id']+'"><th scope="row"'+translated('cmp.'+row['id']+'.label',row['label'])+'</th>'
+        for product,c in row['cells'].items():
+            source=c['source'];href=''
+            if 'key' in source: href=next(s['url'] for s in model['sources'].values() if s['key']==source['key'])
+            elif 'record' in source: href='/docs/support-matrix/#'+source['record']
+            elif 'doc' in source: href='/license/' if source['doc']=='README.md#license-and-support' else renderer.resolve_link('README.md',source['doc'])
+            elif 'measured' in source:
+                raise ValueError('Measured comparison sources are not allowed')
+            key='cmp.'+row['id']+'.'+product
+            text=expand_claims(c['text'],values)
+            out+='<td data-product="'+product+'" data-verdict="'+c['verdict']+'"><span'+translated(key,text)+'</span>'
+            if href: out+=' <a class="comparison-source" href="'+escape(href,quote=True)+'"'+translated('cmp.source','Source')+'</a>'
+            out+='</td>'
+        out+='</tr>'
+    return out+'</tbody></table></div>'

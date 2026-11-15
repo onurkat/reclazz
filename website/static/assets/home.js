@@ -1,23 +1,5 @@
-/* Homepage FAQ, public star count and retained English/Turkish copy. */
+/* On-demand English/Turkish homepage copy. */
 (() => {
-// FAQ accordion
-document.querySelectorAll('.faq-question').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const item = btn.parentElement;
-        document.querySelectorAll('.faq-item').forEach(other => {
-            if (other !== item) {
-                other.classList.remove('open');
-                other.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
-            }
-        });
-        item.classList.toggle('open');
-        btn.setAttribute('aria-expanded', item.classList.contains('open') ? 'true' : 'false');
-    });
-});
-
-
-document.documentElement.classList.add('home-interactive');
-
 // i18n
 let translations = {tr:{}};
 let translationsReady;

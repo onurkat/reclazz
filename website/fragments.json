@@ -447,5 +447,21 @@
     "search-status",
     "search-results",
     "copy-status"
+  ],
+  "index.html": [
+    "main",
+    "home",
+    "sap",
+    "sap-comparison",
+    "features",
+    "comparison",
+    "jdk",
+    "how-it-works",
+    "limitations",
+    "install",
+    "faq"
+  ],
+  "compare/index.html": [
+    "main"
   ]
 }

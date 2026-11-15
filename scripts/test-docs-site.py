@@ -644,4 +644,100 @@ class UsageStructureContractTest(unittest.TestCase):
         target='## Spring messaging\n';bad=self.source.replace(chunk,'',1).replace(target,chunk+target,1)
         self.assertTrue(any('C3 usage membership' in e for e in usage_contract_errors(build.REPO,text=bad)))
 
+
+class MarketingContractTest(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from website.content import marketing_claims
+        cls.repo=Path(__file__).resolve().parents[1]
+        cls.output=build.generate()
+        cls.home=cls.output['index.html'];cls.compare=cls.output['compare/index.html']
+        cls.tr=json.loads(cls.output['assets/i18n/tr.json'])
+        cls.values=marketing_claims(cls.repo)
+    def test_T16_claim_source_and_rendered_mismatch_and_literal(self):
+        from website.content import marketing_claims
+        from website.check import marketing_render_errors
+        import shutil
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            for n in ('website/claims.json','gradle.properties','build.gradle.kts','docs/installation.md','docs/sap-commerce-live-tests.md'):
+                target=root/n;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(self.repo/n,target)
+            target=root/'docs/sap-commerce-live-tests.md';target.write_text(target.read_text().replace('**64 scenarios','**65 scenarios'))
+            with self.assertRaisesRegex(ValueError,'claim mismatch'):marketing_claims(root)
+        self.assertIn('Rendered scenario claim mismatch',marketing_render_errors(self.repo,self.home.replace('defines 64 required','defines 65 required'),self.compare,self.tr))
+        # The source guard is exercised through the real checker in an isolated source fixture.
+        from website.check import marketing_contract_errors
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            shutil.copytree(self.repo/'website',root/'website',ignore=shutil.ignore_patterns('static','__pycache__'))
+            shutil.copytree(self.repo/'docs',root/'docs');shutil.copy2(self.repo/'README.md',root/'README.md')
+            for n in ('gradle.properties','build.gradle.kts'):shutil.copy2(self.repo/n,root/n)
+            (root/'website/static/compare').mkdir(parents=True)
+            (root/'website/static/index.html').write_text('64 required scenarios')
+            (root/'website/static/compare/index.html').write_text('')
+            self.assertIn('Hard-coded marketing claim',marketing_contract_errors(root,root/'absent'))
+    def test_T17_comparison_provenance_contract_and_shared_cells(self):
+        import copy
+        from website.check import comparison_model_errors,marketing_render_errors
+        model=json.loads((self.repo/'website/compare.json').read_text())
+        self.assertEqual([],comparison_model_errors(self.repo))
+        def mutated(fn):
+            candidate=copy.deepcopy(model);fn(candidate);self.assertTrue(comparison_model_errors(self.repo,candidate))
+        mutated(lambda m:m['rows'][1]['cells']['jrebel'].update(source={}))
+        mutated(lambda m:m['rows'][0]['cells']['jrebel'].update(text='Free',verdict='yes'))
+        mutated(lambda m:m['rows'][2]['cells']['reclazz'].update(verdict='yes'))
+        mutated(lambda m:m['rows'][2]['cells']['reclazz']['source'].update(record='missing-record'))
+        mutated(lambda m:m['sources']['jr-price'].update(url='https://example.com/unsupported'))
+        for index,product in ((0,'reclazz'),(10,'jrebel'),(2,'devtools')):
+            candidate=copy.deepcopy(model)
+            candidate['rows'][index]['cells'][product]['source']={'measured':{'result':'synthetic'}}
+            self.assertIn('Measured comparison sources are not allowed',comparison_model_errors(self.repo,candidate))
+            # Building cannot publish a measured cell even when the checker is skipped.
+            from website.content import comparison_table
+            from unittest.mock import patch
+            with patch('website.content.json.loads',return_value=candidate):
+                with self.assertRaisesRegex(ValueError,'Measured comparison sources are not allowed'):
+                    comparison_table(self.repo,type('Renderer',(),{'resolve_link':lambda self,*args:'/docs/'})(),self.values)
+        mutated(lambda m:m.update(publish_measured=False))
+        mutated(lambda m:m['sources']['jr-price'].update(local='/Users/example/private'))
+        # The independent frozen contract must not become a hidden publication channel.
+        import shutil
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);(root/'website').mkdir()
+            shutil.copytree(self.repo/'docs',root/'docs');shutil.copy2(self.repo/'README.md',root/'README.md')
+            contract=json.loads((self.repo/'website/compare-contract.json').read_text());contract['private_note']='/Users/example/private'
+            (root/'website/compare-contract.json').write_text(json.dumps(contract))
+            self.assertIn('Private or hidden comparison payload',comparison_model_errors(root,model))
+
+        self.assertEqual([],marketing_render_errors(self.repo,self.home,self.compare,self.tr))
+        self.assertIn('Home/full comparison mismatch',marketing_render_errors(self.repo,self.home.replace('Commercial; price by quote','Invented price'),self.compare,self.tr))
+        self.assertIn('Measured comparison content is not allowed',marketing_render_errors(self.repo,self.home,self.compare+'<p class="measured-note">Synthetic result</p>',self.tr))
+    def test_T18_translation_keys_are_complete_without_orphans(self):
+        from website.check import marketing_render_errors
+        tr=dict(self.tr);tr.pop('hero.title')
+        self.assertIn('English/Turkish key mismatch',marketing_render_errors(self.repo,self.home,self.compare,tr))
+        tr=dict(self.tr);tr['unused']='Orphan'
+        self.assertIn('English/Turkish key mismatch',marketing_render_errors(self.repo,self.home,self.compare,tr))
+    def test_T19_visible_FAQ_matches_structured_data(self):
+        from website.check import marketing_render_errors
+        changed=self.home.replace('Which changes can I reload?</summary>','Changed question?</summary>')
+        self.assertNotEqual(changed,self.home)
+        self.assertIn('Visible FAQ differs from JSON-LD',marketing_render_errors(self.repo,changed,self.compare,self.tr))
+        no_schema=re.sub(r'<script type="application/ld\+json">[^<]*FAQPage.*?</script>','',self.home,flags=re.S)
+        self.assertIn('Missing or duplicate FAQ schema',marketing_render_errors(self.repo,no_schema,self.compare,self.tr))
+    def test_T20_home_badges_follow_the_six_source_records(self):
+        from website.check import marketing_render_errors
+        changed=self.home.replace('data-support-status="conditional"','data-support-status="works"',1)
+        self.assertIn('Home card status mismatch',marketing_render_errors(self.repo,changed,self.compare,self.tr))
+    def test_T21_home_and_compare_frozen_fragments_resolve(self):
+        from website.check import Document,frozen_fragment_errors
+        import shutil
+        frozen=json.loads((self.repo/'website/fragments.json').read_text())
+        for name in ('index.html','compare/index.html'):
+            self.assertFalse(set(frozen[name])-set(Document(self.output[name]).ids))
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);(root/'website').mkdir();(root/'website/fragments.json').write_text(json.dumps({'index.html':frozen['index.html']}))
+            out=root/'out';out.mkdir();(out/'index.html').write_text(self.home.replace('id="sap-comparison"','id="removed"'))
+            self.assertTrue(frozen_fragment_errors(root,out))
+
 if __name__=='__main__':unittest.main(verbosity=2)
