@@ -12,7 +12,7 @@ from unittest.mock import patch
 from website import build, layout
 from website.content import expand_guide, metadata, support_records, source_link_errors, readable_surface_errors
 from website.markdown import MarkdownRenderer, reference_pages
-from website.check import Document, output_differences, source_index_errors
+from website.check import Document, output_differences, source_index_errors, publication_errors
 
 class DocumentationBuildTest(unittest.TestCase):
     def setUp(self):
@@ -21,9 +21,30 @@ class DocumentationBuildTest(unittest.TestCase):
         self.write('docs/index.md','# Source index\n\n[First](first.md)\n[Second](second.md)\n')
         self.write('docs/first.md','# First\n\n## Same\nOne\n\n## Same\nTwo\n')
         self.write('docs/second.md','# Second\n\n## Destination\nText.\n')
+        self.disposition({p.relative_to(self.root).as_posix():{'publish':'/docs/reference/'+('' if p.stem=='index' else p.stem+'/')} for p in (self.root/'docs').glob('*.md')})
     def write(self,path,text):
         p=self.root/path;p.parent.mkdir(parents=True,exist_ok=True);p.write_text(text)
     def renderer(self):return MarkdownRenderer(self.root,reference_pages(self.root))
+    def disposition(self, entries):
+        self.write('docs/site/manifest.json',json.dumps({'sources':entries}))
+    def test_unclassified_source_is_rejected(self):
+        self.disposition({'docs/index.md':{'publish':'/docs/reference/'}})
+        with self.assertRaisesRegex(ValueError,'Unclassified source'):reference_pages(self.root)
+    def test_external_source_is_not_published(self):
+        self.disposition({
+            'docs/index.md':{'publish':'/docs/reference/'},
+            'docs/first.md':{'publish':'/docs/reference/first/'},
+            'docs/second.md':{'external':'docs/second.md'}})
+        self.assertNotIn('docs/second.md',{p['markdown'] for p in reference_pages(self.root)})
+        result=self.renderer().render_inline('docs/first.md','[Read](second.md#destination)')
+        self.assertIn('https://github.com/onurkat/reclazz/blob/main/docs/second.md#destination',result)
+    def test_external_bad_fragment_is_rejected(self):
+        self.disposition({
+            'docs/index.md':{'publish':'/docs/reference/'},
+            'docs/first.md':{'publish':'/docs/reference/first/'},
+            'docs/second.md':{'external':'docs/second.md'}})
+        with self.assertRaisesRegex(ValueError,'Missing external source anchor'):
+            self.renderer().render_inline('docs/first.md','[Read](second.md#absent)')
     def test_complete_reference_preserves_duplicate_heading_anchors(self):
         rendered=self.renderer().render('docs/first.md')
         self.assertIn('id="same"',rendered);self.assertIn('id="same-1"',rendered)
@@ -77,6 +98,10 @@ class DocumentationBuildTest(unittest.TestCase):
         self.assertEqual([],source_index_errors(self.root))
         self.write('docs/forgotten.md','# Forgotten\n')
         self.assertEqual(['Unindexed source document: forgotten.md'],source_index_errors(self.root))
+        with self.assertRaisesRegex(ValueError,'Unclassified source'): reference_pages(self.root)
+        data=json.loads((self.root/'docs/site/manifest.json').read_text())
+        data['sources']['docs/forgotten.md']={'publish':'/docs/reference/forgotten/'}
+        self.write('docs/site/manifest.json',json.dumps(data))
         self.assertIn('docs/forgotten.md',{p['markdown'] for p in reference_pages(self.root)})
     def test_one_source_edit_changes_rendered_output_and_stale_output_fails(self):
         renderer=self.renderer();before=renderer.render('docs/first.md')
@@ -114,6 +139,11 @@ class DocumentationBuildTest(unittest.TestCase):
         self.write('website/static/sitemap.xml','<urlset></urlset>')
         for asset in ('site.css','site.js','marketing.css'):
             self.write('website/static/assets/'+asset,'/* fixture */')
+        p=self.root/'docs/site/manifest.json';data=json.loads(p.read_text())
+        data['sources']={p.relative_to(self.root).as_posix():{'publish':'/docs/reference/'+('' if p.stem=='index' else p.stem+'/')} for p in (self.root/'docs').glob('*.md')}
+        p.write_text(json.dumps(data))
+        self.write('website/routes.json','{}')
+        self.write('website/legacy-routes.txt','/docs/')
     def generate(self):
         with patch.object(build,'REPO',self.root),patch.object(build,'SOURCE',self.root/'docs/site'),patch.object(build,'ROOT',self.root/'website/static'):
             return build.generate('fixture-revision')
@@ -165,15 +195,19 @@ class DocumentationBuildTest(unittest.TestCase):
         self.write('README.md','# Reclazz\n\nUpdated introduction.\n\n## Why Reclazz?\n')
         after=self.generate()
         self.assertIn('9.8.8',after['docs/index.html']);self.assertNotIn('9.8.7',after['docs/index.html'])
-        self.assertEqual('9.8.8',re.search(r'Source snapshot <code>(.*?)</code>',after['docs/index.html'])[1])
+        self.assertIn('Docs for</span> 9.8.8',after['docs/index.html'])
         self.assertIn('Updated introduction.',after['llms.txt']);self.assertNotIn('Canonical introduction.',after['llms.txt'])
         self.assertIn('9.8.8',after['llms.txt'])
     def test_search_targets_sections_without_repeating_evidence_registry(self):
         self.site_fixture();self.write('docs/feature-evidence.md','# Evidence\n\n## Proof\n'+'LONG_REGISTRY '*20000)
+        p=self.root/'docs/site/manifest.json';data=json.loads(p.read_text());data['sources']['docs/feature-evidence.md']={'external':'docs/feature-evidence.md'};p.write_text(json.dumps(data))
+        from website.markdown import github_anchor_map
+        self.write('website/routes.json',json.dumps({'/docs/reference/feature-evidence/':{'destination':'https://github.com/onurkat/reclazz/blob/{revision}/docs/feature-evidence.md','source':'docs/feature-evidence.md','fragments':github_anchor_map(self.root/'docs/feature-evidence.md')}}))
         output=self.generate();index=json.loads(output['docs/assets/search-index.json'])
         self.assertTrue(any(x['url']=='/docs/reference/second/#destination' for x in index))
         evidence=[x for x in index if x['url'].startswith('/docs/reference/feature-evidence/')]
-        self.assertEqual(1,len(evidence));self.assertLess(len(evidence[0]['text']),1500)
+        self.assertEqual([],evidence)
+        self.assertNotIn('LONG_REGISTRY',json.dumps(index))
 
     def test_authored_github_reading_link_cannot_bypass_canonical_routes(self):
         self.site_fixture()
@@ -183,6 +217,101 @@ class DocumentationBuildTest(unittest.TestCase):
         self.site_fixture();p=self.root/'docs/site/manifest.json';data=json.loads(p.read_text())
         data['source_version']='stale';p.write_text(json.dumps(data))
         with self.assertRaisesRegex(ValueError,'gradle.properties'):metadata(self.root)
+    def test_missing_external_file_and_double_disposition_are_rejected(self):
+        data=json.loads((self.root/'docs/site/manifest.json').read_text())
+        data['sources']['docs/missing.md']={'external':'docs/missing.md'}
+        self.disposition(data['sources'])
+        with self.assertRaisesRegex(ValueError,'Missing disposition source'):reference_pages(self.root)
+        del data['sources']['docs/missing.md']
+        data['sources']['docs/second.md']['external']='docs/second.md'
+        self.disposition(data['sources'])
+        with self.assertRaisesRegex(ValueError,'exactly one disposition'):reference_pages(self.root)
+    def test_missing_legacy_route_and_redirect_chains_are_rejected(self):
+        self.site_fixture()
+        self.write('website/legacy-routes.txt','/retired/')
+        with self.assertRaisesRegex(ValueError,'Legacy route without'):self.generate()
+        self.write('website/legacy-routes.txt','')
+        self.write('website/routes.json',json.dumps({'/old/':{'destination':'/other/'},'/other/':{'destination':'/docs/'}}))
+        with self.assertRaisesRegex(ValueError,'Redirect loop, chain'):self.generate()
+        self.write('website/routes.json',json.dumps({'/old/':{'destination':'/old/'}}))
+        with self.assertRaisesRegex(ValueError,'Redirect loop, chain'):self.generate()
+    def external_fixture(self):
+        self.public_fixture()
+        from website.markdown import github_anchor_map
+        p=self.root/'docs/site/manifest.json';data=json.loads(p.read_text())
+        data['sources']['docs/second.md']={'external':'docs/second.md'};p.write_text(json.dumps(data))
+        self.write('website/routes.json',json.dumps({'/docs/reference/second/':{
+            'source':'docs/second.md','destination':'https://github.com/onurkat/reclazz/blob/{revision}/docs/second.md',
+            'fragments':github_anchor_map(self.root/'docs/second.md')}}))
+    def test_removed_clean_route_and_html_alias_go_directly_to_github(self):
+        self.external_fixture();output=self.generate()
+        a=self.markup(output['docs/reference/second/index.html'])
+        b=self.markup(output['docs/reference/second.html'])
+        self.assertEqual(a,b)
+        self.assertIn('/blob/fixture-revision/docs/second.md',a)
+        self.assertIn('"destination": "destination"',a)
+        self.assertIn('target.search = location.search',a)
+        self.assertIn('data.fragments[fragment]',a)
+        self.assertIn('location.replace(target.href)',a)
+        self.assertIn('http-equiv="refresh"',a)
+        self.assertIn('name="robots" content="noindex"',a)
+        self.assertNotIn('/docs/reference/second/',output['sitemap.xml'])
+        self.assertNotIn('/docs/reference/second/',output['docs/assets/search-index.json'])
+        self.assertIn('<h1>Retained content</h1>',self.markup(output['index.html']))
+        record=json.loads(output['docs/assets/build-manifest.json'])['documents']['docs/second.md']
+        self.assertIn('sha256',record);self.assertEqual('docs/second.md',record['external'])
+    def test_missing_moved_fragment_mapping_is_rejected(self):
+        self.external_fixture()
+        p=self.root/'website/routes.json';data=json.loads(p.read_text())
+        del data['/docs/reference/second/']['fragments']['destination'];p.write_text(json.dumps(data))
+        with self.assertRaisesRegex(ValueError,'Moved fragment missing'):self.generate()
+    def delivered_fixture(self):
+        self.external_fixture();generated=self.generate();folder=self.root/'delivered'
+        for name,value in generated.items():
+            p=folder/name;p.parent.mkdir(parents=True,exist_ok=True)
+            p.write_bytes(value if isinstance(value,bytes) else value.encode())
+        return folder,json.loads(generated['docs/assets/build-manifest.json'])
+    def delivered_errors(self,folder,manifest):
+        with patch.object(build,'REPO',self.root):return publication_errors(folder,manifest)
+    def test_delivered_internal_html_link_and_missing_stub_are_rejected(self):
+        folder,manifest=self.delivered_fixture()
+        self.assertEqual([],self.delivered_errors(folder,manifest))
+        p=folder/'docs/quickstart/index.html';p.write_text(p.read_text()+'<a href="/privacy.html?lang=en#policy">Policy</a>')
+        self.assertTrue(any('Internal HTML link' in e for e in self.delivered_errors(folder,manifest)))
+        (folder/'docs/quickstart.html').unlink()
+        self.assertIn('Missing redirect stub: /docs/quickstart.html',self.delivered_errors(folder,manifest))
+    def test_stale_external_digest_and_unpublished_search_are_rejected(self):
+        folder,manifest=self.delivered_fixture()
+        manifest['documents']['docs/second.md']['sha256']='0'*64
+        p=folder/'docs/assets/search-index.json';data=json.loads(p.read_text());data.append({'url':'/docs/reference/second/#destination'})
+        p.write_text(json.dumps(data))
+        errors=self.delivered_errors(folder,manifest)
+        self.assertIn('Wrong canonical source digest: docs/second.md',errors)
+        self.assertIn('Search points to unpublished page: /docs/reference/second/#destination',errors)
+    def test_external_github_anchors_keep_duplicates_and_inline_formatting(self):
+        from website.markdown import github_anchor_map
+        self.write('docs/second.md',"# Second\n\n## This'll be a _Helpful_ Section About the Greek Letter Θ!\n\n## Same\n\n## Same\n\n## Same-1\n")
+        anchors=github_anchor_map(self.root/'docs/second.md')
+        self.assertIn('thisll-be-a-helpful-section-about-the-greek-letter-θ',anchors.values())
+        self.assertEqual({'same','same-1','same-1-1'},{value for value in anchors.values() if value.startswith('same')})
+    def test_footer_only_page_is_not_in_sidebar_or_previous_next_navigation(self):
+        self.site_fixture()
+        p=self.root/'docs/site/manifest.json';data=json.loads(p.read_text())
+        data['pages'].append(dict(slug='evidence',title='Evidence',description='Evidence',group='Footer',eyebrow='Evidence',nav_title='Evidence',sources=['docs/first.md']))
+        p.write_text(json.dumps(data));self.write('docs/site/evidence.html','<h2 id="proof">Proof</h2>')
+        for name,html in self.generate().items():
+            if not name.startswith('docs/') or not name.endswith('/index.html') or name=='docs/evidence/index.html':continue
+            for nav in re.findall(r'<nav[^>]*(?:aria-label="Documentation"|aria-label="Mobile documentation"|class="page-pager")[^>]*>(.*?)</nav>',html,re.S):
+                self.assertNotIn('href="/docs/evidence/"',nav,name)
+    def test_internal_links_do_not_show_external_arrows(self):
+        self.public_fixture();output=self.generate()
+        html=output['docs/index.html']
+        for match in re.finditer(r'<a\b[^>]*href="(/[^"]*)"[^>]*>(.*?)</a>',html,re.S):
+            self.assertNotIn('↗',match[2])
+        self.assertIn('Edit on GitHub ↗',output['docs/reference/first/index.html'])
+        self.assertNotIn('Sources &amp; version scope',html)
+        self.assertIn('Docs for</span> 9.8.7',html)
+
     def test_small_text_and_primary_button_colors_keep_minimum_contrast(self):
         css=(Path(__file__).resolve().parents[1]/'website/static/docs/assets/docs.css').read_text()
         def luminance(value):

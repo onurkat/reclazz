@@ -42,7 +42,12 @@ fetch('https://api.github.com/repos/onurkat/reclazz')
 // i18n
 const translations = {
     tr: {
-        "site.start": "Başla ↗",
+        "site.start": "Başla",
+        "site.docsVersion": "Sürüm",
+        "site.evidence": "Test kapsamı ve sürümler",
+        "site.changelog": "Değişiklikler ↗",
+        "site.contributing": "Katkıda bulunma ↗",
+        "site.security": "Güvenlik ↗",
         "site.tagline": "Bir sonraki değişikliğe odaklanın.",
         "site.product": "Ürün",
         "site.documentation": "Dokümantasyon",

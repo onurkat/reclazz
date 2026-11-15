@@ -2,6 +2,8 @@
 from collections import Counter
 from html import escape
 from pathlib import Path
+import json
+import unicodedata
 import posixpath
 import re
 from urllib.parse import urlsplit, urlunsplit, quote, unquote
@@ -13,18 +15,71 @@ def slug(text):
     return re.sub(r'[^\w\- ]', '', text.lower()).replace(' ', '-')
 
 
+def source_dispositions(repo):
+    repo = Path(repo)
+    sources = json.loads((repo/'docs/site/manifest.json').read_text()).get('sources', {})
+    actual = {p.relative_to(repo).as_posix() for p in (repo/'docs').glob('*.md')}
+    missing = actual - sources.keys()
+    if missing: raise ValueError('Unclassified source: ' + ', '.join(sorted(missing)))
+    if sources.keys() - actual: raise ValueError('Missing disposition source: ' + ', '.join(sorted(sources.keys() - actual)))
+    routes = set()
+    for name, spec in sources.items():
+        if set(spec) == {'external'}:
+            if spec['external'] != name or not (repo/name).is_file():
+                raise ValueError('Missing or mismatched external source: ' + name)
+        elif set(spec) == {'publish'}:
+            route = spec['publish']
+            if not re.fullmatch(r'/docs/(?:[a-z0-9-]+/)*',route) or route in routes:
+                raise ValueError('Invalid or duplicate published route: ' + route)
+            routes.add(route)
+        else: raise ValueError('Source needs exactly one disposition: ' + name)
+    return sources
+
+
+def github_slug(text):
+    # GitHub section-link rules: lowercase, spaces -> hyphens, remove punctuation.
+    # Keep underscores/hyphens, which are valid in GitHub heading fragments.
+    return ''.join('-' if c == ' ' else c for c in text.lower()
+                   if c in ' -_' or (not c.isspace() and unicodedata.category(c)[0] not in 'PSZC'))
+
+
+def github_anchor_map(path):
+    tokens = MarkdownIt('commonmark', {'html':True}).parse(Path(path).read_text())
+    result = {}; site_seen = Counter(); github_seen = set()
+    for i, token in enumerate(tokens):
+        if token.type == 'heading_open':
+            text = ''.join(c.content for c in tokens[i+1].children or [] if c.type in ('text','code_inline'))
+            base = github_slug(text); anchor = base; n = 0
+            while anchor in github_seen:
+                n += 1; anchor = base + '-' + str(n)
+            github_seen.add(anchor)
+            key = slug(text); count = site_seen[key]; site_seen[key] += 1
+            result.setdefault(key + ('-'+str(count) if count else ''), anchor)
+            result.setdefault(anchor, anchor)
+        if token.type in ('html_block','inline'):
+            for anchor in re.findall(r'<a (?:id|name)="([A-Za-z0-9_-]+)"',token.content):
+                result[anchor] = anchor
+    return result
+
+
+REFERENCE_TITLES = {'index': 'Reference library', 'installation': 'Installation', 'usage': 'Usage manual', 'gradle-plugin': 'Gradle plugin', 'maven': 'Maven plugin', 'spring-boot-starter': 'Spring Boot starter', 'for-ai-agents': 'IntelliJ + coding agents', 'mcp-for-coding-agents': 'MCP for coding agents', 'mcp-server': 'MCP server reference', 'sap-commerce': 'SAP Commerce reference', 'test-guide': 'SAP test guide', 'reload-support': 'What reloads source table', 'product-reference': 'Product reference', 'protocol': 'Status socket protocol'}
+
+
 def reference_pages(repo):
-    pages = []
+    pages = []; dispositions = source_dispositions(repo)
     for path in sorted((repo / 'docs').glob('*.md')):
+        spec = dispositions[path.relative_to(repo).as_posix()]
+        if 'publish' not in spec: continue
         parsed = MarkdownIt('commonmark').parse(path.read_text(encoding='utf-8'))
         first = next((parsed[i + 1].content for i, token in enumerate(parsed[:-1])
                       if token.type == 'heading_open' and token.tag == 'h1'), path.stem)
-        pages.append({'slug': 'reference' if path.stem == 'index' else 'reference/' + path.stem,
-                      'title': 'Technical reference library' if path.stem == 'index' else first,
+        title = REFERENCE_TITLES.get(path.stem, first)
+        pages.append({'slug': spec['publish'].removeprefix('/docs/').strip('/'),
+                      'title': title,
                       'description': 'Complete configuration, behavior and scope reference: ' + first + '.',
-                      'group': 'Maintaining' if path.stem in ('documentation-workflow','publishing') else 'Technical reference', 'eyebrow': 'Maintaining the project' if path.stem in ('documentation-workflow','publishing') else 'Complete technical reference',
+                      'group': 'Reference', 'eyebrow': 'Maintaining the project' if path.stem in ('documentation-workflow','publishing') else 'Complete technical reference',
                       'sources': [path.relative_to(repo).as_posix()], 'markdown': path.relative_to(repo).as_posix(),
-                      'nav_title': 'Reference library' if path.stem == 'index' else first,
+                      'nav_title': title,
                       'heading_id': slug(first)})
     return sorted(pages, key=lambda p: (p['slug'] != 'reference', p['slug']))
 
@@ -33,6 +88,7 @@ class MarkdownRenderer:
     def __init__(self, repo, pages, revision='main'):
         self.repo = Path(repo).resolve()
         self.routes = {p['markdown']: '/docs/' + p['slug'] + '/' for p in pages if 'markdown' in p}
+        self.dispositions = source_dispositions(self.repo)
         self.revision = revision
         self.assets = {}
         self.source_links = []
@@ -69,6 +125,11 @@ class MarkdownRenderer:
         target = (self.repo / relative).resolve()
         if not target.is_relative_to(self.repo):
             raise ValueError('Escaping documentation link: ' + source + ' -> ' + link)
+        if relative in self.dispositions and 'external' in self.dispositions[relative]:
+            fragments = github_anchor_map(target)
+            if parsed.fragment and unquote(parsed.fragment) not in fragments:
+                raise ValueError('Missing external source anchor: ' + relative + '#' + parsed.fragment)
+            return urlunsplit(('https', 'github.com', '/onurkat/reclazz/blob/' + self.revision + '/' + quote(relative), parsed.query, fragments.get(unquote(parsed.fragment), '')))
         if relative in self.routes:
             return urlunsplit(('', '', self.routes[relative], parsed.query, parsed.fragment))
         if relative == 'README.md':

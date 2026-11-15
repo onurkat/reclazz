@@ -6,7 +6,7 @@
       "slug": "",
       "title": "The development loop, uninterrupted.",
       "description": "Make a change. Compile it. Keep the JVM running. Learn what Reclazz reloads, where the limits are, and how to verify the result.",
-      "group": "Start here",
+      "group": "Get started",
       "eyebrow": "Reclazz documentation",
       "sources": [
         "docs/product-reference.md",
@@ -19,7 +19,7 @@
       "slug": "quickstart",
       "title": "Your first reload",
       "description": "Start with the route that launches your application JVM, then prove a changed response without restarting.",
-      "group": "Start here",
+      "group": "Get started",
       "eyebrow": "Tutorial",
       "sources": [
         "docs/installation.md",
@@ -32,7 +32,7 @@
       "slug": "java",
       "title": "Java changes & JVM limits",
       "description": "Understand method bodies, structural reload, field initialization, enum edits and reflective visibility.",
-      "group": "Reload reference",
+      "group": "Guides",
       "eyebrow": "Core JVM",
       "sources": [
         "docs/usage.md#known-limitations",
@@ -45,7 +45,7 @@
       "slug": "spring",
       "title": "Spring beans & web behavior",
       "description": "Follow bean recreation, newly added components, MVC callbacks, advice, Jackson and constructor dependency boundaries.",
-      "group": "Reload reference",
+      "group": "Guides",
       "eyebrow": "Spring integration",
       "sources": [
         "docs/usage.md",
@@ -59,21 +59,21 @@
       "slug": "messaging",
       "title": "Messaging without blind spots",
       "description": "Understand listener additions, consumer retirement, routing changes and the difference between direct saves and dependency cascades.",
-      "group": "Reload reference",
-      "eyebrow": "Kafka \u00b7 JMS \u00b7 RabbitMQ",
+      "group": "Guides",
+      "eyebrow": "Kafka · JMS · RabbitMQ",
       "sources": [
         "docs/usage.md#kafka-listeners-added-after-startup",
         "docs/usage.md#jms-listeners-added-after-startup",
         "docs/usage.md#rabbit-listeners-added-after-startup",
         "docs/feature-evidence/p4-messaging.json"
       ],
-      "nav_title": "Kafka, JMS & RabbitMQ"
+      "nav_title": "Messaging"
     },
     {
       "slug": "configuration",
       "title": "Configuration, XML & resources",
       "description": "Know which physical files are watched, how validation works, and when a configuration edit needs a restart.",
-      "group": "Reload reference",
+      "group": "Guides",
       "eyebrow": "Files & runtime state",
       "sources": [
         "docs/usage.md#property-changes-keep-the-last-working-values",
@@ -114,7 +114,7 @@
       "slug": "boundaries",
       "title": "Reload timing & build safety",
       "description": "Choose immediate or request-boundary application, and understand pause, build holds and partial failures.",
-      "group": "Operations",
+      "group": "When it doesn't work",
       "eyebrow": "Execution model",
       "sources": [
         "docs/usage.md#reload-between-requests",
@@ -127,7 +127,7 @@
       "slug": "troubleshooting",
       "title": "Find the cause. Keep the evidence.",
       "description": "Diagnose the right process, watched output, pending restart and framework follow-up without guessing.",
-      "group": "Operations",
+      "group": "When it doesn't work",
       "eyebrow": "Troubleshooting",
       "sources": [
         "docs/protocol.md",
@@ -140,7 +140,7 @@
       "slug": "configuration-reference",
       "title": "Agent configuration reference",
       "description": "Find every source-supported startup option, its default and the consequence of enabling it.",
-      "group": "Operations",
+      "group": "Reference",
       "eyebrow": "Reference",
       "sources": [
         "docs/usage.md#agent-arguments",
@@ -152,7 +152,7 @@
       "slug": "evidence",
       "title": "Versions, evidence & contributing",
       "description": "Read support claims with their exact boundaries, inspect source and help keep the documentation honest.",
-      "group": "Project",
+      "group": "Footer",
       "eyebrow": "Open source, explicit scope",
       "sources": [
         "docs/installation.md",
@@ -166,14 +166,82 @@
       "slug": "support-matrix",
       "title": "Will your change reload?",
       "description": "Find the outcome, exact conditions and next action for the edit you want to make.",
-      "group": "Reload reference",
+      "group": "Get started",
       "eyebrow": "Reload support matrix",
       "sources": [
         "docs/usage.md",
         "docs/feature-evidence.md",
         "docs/superclass-feasibility.md"
       ],
-      "nav_title": "Reload support matrix"
+      "nav_title": "What reloads"
     }
-  ]
+  ],
+  "sources": {
+    "docs/agentic-evaluation.md": {
+      "external": "docs/agentic-evaluation.md"
+    },
+    "docs/client-matrix.md": {
+      "external": "docs/client-matrix.md"
+    },
+    "docs/documentation-workflow.md": {
+      "external": "docs/documentation-workflow.md"
+    },
+    "docs/feature-evidence.md": {
+      "external": "docs/feature-evidence.md"
+    },
+    "docs/for-ai-agents.md": {
+      "publish": "/docs/reference/for-ai-agents/"
+    },
+    "docs/gradle-plugin.md": {
+      "publish": "/docs/reference/gradle-plugin/"
+    },
+    "docs/index.md": {
+      "publish": "/docs/reference/"
+    },
+    "docs/installation.md": {
+      "publish": "/docs/reference/installation/"
+    },
+    "docs/maven.md": {
+      "publish": "/docs/reference/maven/"
+    },
+    "docs/mcp-for-coding-agents.md": {
+      "publish": "/docs/reference/mcp-for-coding-agents/"
+    },
+    "docs/mcp-server.md": {
+      "publish": "/docs/reference/mcp-server/"
+    },
+    "docs/product-reference.md": {
+      "publish": "/docs/reference/product-reference/"
+    },
+    "docs/protocol.md": {
+      "publish": "/docs/reference/protocol/"
+    },
+    "docs/publishing.md": {
+      "external": "docs/publishing.md"
+    },
+    "docs/reload-support.md": {
+      "publish": "/docs/reference/reload-support/"
+    },
+    "docs/sap-commerce-live-tests.md": {
+      "external": "docs/sap-commerce-live-tests.md"
+    },
+    "docs/sap-commerce.md": {
+      "publish": "/docs/reference/sap-commerce/"
+    },
+    "docs/spring-boot-starter.md": {
+      "publish": "/docs/reference/spring-boot-starter/"
+    },
+    "docs/spring-constructor-dependencies.md": {
+      "external": "docs/spring-constructor-dependencies.md"
+    },
+    "docs/superclass-feasibility.md": {
+      "external": "docs/superclass-feasibility.md"
+    },
+    "docs/test-guide.md": {
+      "publish": "/docs/reference/test-guide/"
+    },
+    "docs/usage.md": {
+      "publish": "/docs/reference/usage/"
+    }
+  }
 }

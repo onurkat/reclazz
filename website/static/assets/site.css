@@ -31,3 +31,5 @@
 @media(max-width:600px) { .site-header { padding:0 16px;gap:10px; }.site-header .header-divider { display:none; }.site-header .brand { font-size:18px; }.site-header .search-trigger { width:34px; }.site-header .theme-button { min-width:32px; }.site-menu summary { min-width:32px; }.site-language { min-width:32px; }.site-header .header-install { display:none; } }
 @media(max-width:360px) { .site-header { gap:6px;padding:0 12px; }.site-header .brand { gap:6px;font-size:16px; }.site-header .brand img { width:25px;height:25px; }.site-footer-inner { grid-template-columns:1fr 1fr; }.footer-bottom { flex-wrap:wrap; } }
 @media print { .site-header,.site-footer { display:none; } }
+
+.footer-version{grid-column:1/-1;font-size:.875rem;color:var(--muted)}

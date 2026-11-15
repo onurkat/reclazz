@@ -7,16 +7,19 @@ import argparse
 import hashlib
 import json
 import re
+from urllib.parse import urlsplit, unquote, quote
 
 from website import layout
-from website.markdown import MarkdownRenderer, reference_pages
+from website.markdown import MarkdownRenderer, reference_pages, source_dispositions, github_anchor_map
 from website.content import LABELS, metadata, support_records, expand_guide, ai_index
 
 REPO = Path(__file__).resolve().parents[1]
 ROOT = REPO / 'website' / 'static'
 SOURCE = REPO / 'docs' / 'site'
-ORDER = ['', 'quickstart', 'support-matrix', 'java', 'spring', 'messaging', 'configuration', 'sap-commerce', 'persistence', 'boundaries', 'configuration-reference', 'troubleshooting', 'evidence']
-GROUPS = ['Start here', 'Reload reference', 'Guides', 'Operations', 'Project', 'Technical reference', 'Maintaining']
+ORDER = ['', 'quickstart', 'support-matrix', 'sap-commerce', 'spring', 'messaging', 'configuration', 'persistence', 'java', 'troubleshooting', 'boundaries', 'configuration-reference', 'evidence']
+GROUPS = ['Get started', 'Guides', "When it doesn't work", 'Reference']
+REFERENCE_ORDER = ['reference/installation','reference/usage','reference/gradle-plugin','reference/maven','reference/spring-boot-starter','reference/for-ai-agents','reference/mcp-for-coding-agents','reference/mcp-server','reference/sap-commerce','reference/test-guide','reference/reload-support','reference/product-reference','reference/protocol','reference']
+
 
 class ContentParser(HTMLParser):
     def __init__(self):
@@ -50,6 +53,79 @@ class ContentParser(HTMLParser):
 def url(slug):
     return '/docs/' + (slug + '/' if slug else '')
 
+def route_file(route):
+    if not route.startswith('/') or '..' in route or '?' in route or '#' in route:
+        raise ValueError('Invalid route: ' + route)
+    if route.endswith('/'): return route.lstrip('/') + 'index.html'
+    if route.endswith('.html'): return route.lstrip('/')
+    raise ValueError('Route must be clean or a legacy HTML alias: ' + route)
+
+
+def redirect_records(repo, real_routes, revision):
+    repo = Path(repo)
+    records = json.loads((repo/'website/routes.json').read_text())
+    for old, record in list(records.items()):
+        route_file(old)
+        if old in real_routes: raise ValueError('Redirect shadows real page: ' + old)
+        record['destination'] = record['destination'].replace('{revision}',revision)
+        source = record.get('source')
+        if source:
+            expected = github_anchor_map(repo/source)
+            if record.get('fragments') != expected:
+                raise ValueError('Moved fragment missing or incorrect in map: ' + old)
+    for old, record in records.items():
+        parsed = urlsplit(record['destination'])
+        if parsed.scheme or parsed.netloc:
+            allowed = 'https://github.com/onurkat/reclazz/blob/' + revision + '/'
+            if not record['destination'].startswith(allowed): raise ValueError('Redirect target not allowed: ' + old)
+            source = record.get('source')
+            if not source or parsed.path != '/onurkat/reclazz/blob/' + revision + '/' + source or not (repo/source).is_file():
+                raise ValueError('Missing external redirect source: ' + old)
+        elif parsed.path in records or parsed.path not in real_routes:
+            raise ValueError('Redirect loop, chain or missing destination: ' + old)
+    # Aliases point directly at final destinations, never at another redirect.
+    for route in sorted(set(real_routes) | set(records)):
+        if route == '/': continue  # /index.html is already the real root document.
+        alias = '/index.html' if route == '/' else route.rstrip('/') + '.html'
+        if alias in records: raise ValueError('Duplicate HTML alias: ' + alias)
+        records[alias] = dict(records[route]) if route in records else {'destination':route,'fragments':{}}
+    legacy = (repo/'website/legacy-routes.txt').read_text().splitlines()
+    for route in (line.strip() for line in legacy):
+        if route and not route.startswith('#') and route not in real_routes and route not in records:
+            raise ValueError('Legacy route without page or stub: ' + route)
+    return records
+
+
+def redirect_html(record):
+    destination = record['destination']; fragments = record.get('fragments',{})
+    # The same mapping is data for the checker and input for browser navigation.
+    data = json.dumps({'destination':destination,'fragments':fragments},ensure_ascii=False).replace('<','\\u003c')
+    return ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
+            '<title>Page moved | Reclazz</title><meta name="robots" content="noindex">'
+            '<link rel="canonical" href="'+escape(destination,quote=True)+'">'
+            '<meta http-equiv="refresh" content="0; url='+escape(destination,quote=True)+'">'
+            '<script id="redirect-data" type="application/json">'+data+'</script>'
+            '<script>(() => { const data = JSON.parse(document.getElementById("redirect-data").textContent);'
+            'const target = new URL(data.destination, location.origin);'
+            'target.search = location.search || target.search;'
+            'let fragment; try { fragment = decodeURIComponent(location.hash.slice(1)); } catch (_) { fragment = location.hash.slice(1); }'
+            'if (fragment) target.hash = Object.prototype.hasOwnProperty.call(data.fragments, fragment) ? data.fragments[fragment] : fragment;'
+            'location.replace(target.href); })();</script></head><body><p>This page has moved. '
+            '<a href="'+escape(destination,quote=True)+'">Continue to the page</a>.</p></body></html>')
+
+
+def link_chrome(document):
+    def arrow(match):
+        start, body = match[1], match[2]
+        href = re.search(r'href="([^"]+)"',start)
+        if href:
+            parsed = urlsplit(href[1])
+            if not parsed.netloc or parsed.netloc == 'reclazz.com':
+                body = re.sub(r'<span[^>]*>\s*↗\s*</span>','',body).replace('↗','')
+        return start + body + '</a>'
+    return re.sub(r'(<a\b[^>]*>)(.*?)</a>',arrow,document,flags=re.S)
+
+
 def generate(revision='main'):
     manifest = metadata(REPO)
     base = 'https://github.com/onurkat/reclazz/blob/' + revision + '/'
@@ -63,23 +139,20 @@ def generate(revision='main'):
         if line.startswith('| `'):
             cells = [cell.strip() for cell in line.strip('|').split('|')]
             options.append({'name': cells[0].strip('`'), 'default': cells[1], 'description': '|'.join(cells[2:])})
-    pages.extend(reference_pages(REPO))
+    pages.extend(sorted(reference_pages(REPO),key=lambda p: REFERENCE_ORDER.index(p['slug']) if p['slug'] in REFERENCE_ORDER else len(REFERENCE_ORDER)))
     renderer = MarkdownRenderer(REPO, pages, revision)
 
     output = {p.relative_to(ROOT).as_posix(): p.read_bytes() for p in ROOT.rglob('*') if p.is_file()}
     for name, kind in layout.PUBLIC_PAGES.items():
         if name in output:
-            output[name] = layout.render_public(output[name].decode('utf-8'),kind,manifest['reviewed'][:4])
+            output[name] = link_chrome(layout.render_public(output[name].decode('utf-8'),kind,manifest['reviewed'][:4],manifest['source_version']))
     index = []
     for page in pages:
         slug = page['slug']
         nav = ''
         for group in GROUPS:
             links = ''.join('<a' + (' aria-current="page"' if p['slug'] == slug else '') + ' href="' + url(p['slug']) + '">' + ('<span class="nav-icon" aria-hidden="true">↳</span>' if p['slug'] != slug else '<span class="nav-icon" aria-hidden="true">◈</span>') + escape(p['nav_title']) + '</a>' for p in pages if p['group'] == group)
-            if group == 'Technical reference':
-                nav += '<details class="nav-group reference-nav"' + (' open' if page.get('markdown') else '') + '><summary>Technical reference</summary>' + links + '</details>'
-            else:
-                nav += '<div class="nav-group"><p>' + group + '</p>' + links + '</div>' 
+            if links: nav += '<div class="nav-group"><p>' + escape(group) + '</p>' + links + '</div>'
         body = renderer.render(page['markdown']) if page.get('markdown') else expand_guide((SOURCE / ((slug or 'overview') + '.html')).read_text(encoding='utf-8'), renderer, manifest)
         if '{{MATRIX}}' in body:
             cats = sorted({r['category'] for r in support})
@@ -97,12 +170,13 @@ def generate(revision='main'):
         parser = ContentParser()
         parser.feed(body)
         toc = '<p class="toc-label">On this page</p>' + ''.join('<a href="#' + str(id) + '">' + escape(title) + '</a>' for id, title in parser.headings)
-        sources = '<details class="page-sources"><summary>Sources &amp; version scope</summary><p>Documentation source ' + escape(manifest['source_version']) + ' · evidence baseline <a href="https://github.com/onurkat/reclazz/tree/' + manifest['source_commit'] + '"><code>' + manifest['source_commit'][:7] + '</code></a> · reviewed ' + escape(manifest['reviewed_label']) + '. Check your installed artifact; source features may postdate a release.</p><ul>' + ''.join('<li><a href="' + base + path + '">' + escape(path) + ' ↗</a></li>' for path in page['sources']) + '</ul></details>'
+        sources = ''
         if page.get('markdown'):
-            sources = '<details class="page-sources"><summary>Canonical source</summary><p>This full page is generated from <a href="https://github.com/onurkat/reclazz/blob/' + revision + '/' + page['markdown'] + '">' + page['markdown'] + '</a>. Edit the repository source and rebuild; do not edit generated HTML.</p></details>'
-        i = pages.index(page)
-        previous = pages[i - 1] if i else None
-        following = pages[i + 1] if i + 1 < len(pages) else None
+            sources = '<p class="source-link"><a href="https://github.com/onurkat/reclazz/blob/' + revision + '/' + page['markdown'] + '">Edit on GitHub ↗</a></p>'
+        pager_pages = [p for p in pages if p['group'] != 'Footer']
+        i = pager_pages.index(page) if page in pager_pages else None
+        previous = pager_pages[i - 1] if i is not None and i else None
+        following = pager_pages[i + 1] if i is not None and i + 1 < len(pager_pages) else None
         pager = '<nav class="page-pager" aria-label="Documentation pages">' + ('<a href="' + url(previous['slug']) + '"><span>← Previous</span><strong>' + escape(previous['title'] if previous['slug'] else 'Overview') + '</strong></a>' if previous else '<span></span>') + ('<a href="' + url(following['slug']) + '"><span>Next →</span><strong>' + escape(following['title']) + '</strong></a>' if following else '') + '</nav>'
         schema = {'@context': 'https://schema.org', '@type': 'TechArticle', 'headline': page['title'], 'description': page['description'], 'url': 'https://reclazz.com' + url(slug), 'dateModified': manifest['reviewed'], 'version': manifest['source_version']}
         heading = '' if not slug else '<h1' + (' id="' + page['heading_id'] + '"' if page.get('heading_id') else '') + '>' + escape(page['title']) + '</h1>' + ('' if page.get('markdown') else '<p class="lead">' + escape(page['description']) + '</p>')
@@ -124,13 +198,13 @@ def generate(revision='main'):
 <body class="docs-page''' + (' matrix-page' if slug == 'support-matrix' else '') + '''">
 ''' + layout.header('docs') + '''
 <details class="mobile-nav"><summary>Documentation menu <span aria-hidden="true">⌄</span></summary><nav aria-label="Mobile documentation">''' + nav + '''</nav></details>
-<div class="docs-shell"><aside class="sidebar"><div class="snapshot-label"><span class="live-dot"></span> Source snapshot <code>''' + escape(manifest['source_version']) + '''</code></div><nav aria-label="Documentation">''' + nav + '''</nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
-<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>''' + escape(page['eyebrow']) + '''</span></div><article><div class="article-eyebrow">''' + escape(page['eyebrow']) + '''</div>''' + heading + body + sources + pager + '''</article></main><aside class="page-toc"><nav aria-label="On this page">''' + toc + '''</nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
-''' + layout.footer(manifest['reviewed'][:4]) + layout.utilities() + '''
+<div class="docs-shell"><aside class="sidebar"><nav aria-label="Documentation">''' + nav + '''</nav><a class="sidebar-source" href="https://github.com/onurkat/reclazz"><span>Built in the open.</span><strong>Explore the source ↗</strong></a></aside>
+<main id="main" tabindex="-1"><div class="breadcrumb"><a href="/docs/">Documentation</a><span aria-hidden="true">/</span><span>''' + escape(page['group'] if page['group'] != 'Footer' else 'Project') + '''</span><span aria-hidden="true">/</span><span>''' + escape(page['title'] if slug else 'Overview') + '''</span></div><article><div class="article-eyebrow">''' + escape(page['eyebrow']) + '''</div>''' + heading + body + sources + pager + '''</article></main><aside class="page-toc"><nav aria-label="On this page">''' + toc + '''</nav><div class="toc-help"><span>Choosing an edit?</span><a href="/docs/support-matrix/">Check the reload matrix ↗</a></div></aside></div>
+''' + layout.footer(manifest['reviewed'][:4],version=manifest['source_version']) + layout.utilities() + '''
 </body></html>
 '''
         target = 'docs/' + (slug + '/' if slug else '') + 'index.html'
-        output[target] = document
+        output[target] = link_chrome(document)
         index.append({'title': page['title'], 'section': page['eyebrow'], 'url': url(slug), 'text': ' '.join(' '.join(parser.text).split())[:1200]})
         # The complete evidence registry remains readable/downloadable; avoid copying
         # its thousands of provenance lines into every visitor's search download.
@@ -138,8 +212,11 @@ def generate(revision='main'):
             for section in parser.sections + ([parser.section] if parser.section else []):
                 index.append({'title': ''.join(section['title']), 'section':page['nav_title'],
                               'url':url(slug)+'#'+section['id'], 'text':' '.join(' '.join(section['text']).split())})
+    real_routes = {'/' + name[:-len('index.html')] for name in output if name.endswith('index.html')}
+    redirects = redirect_records(REPO,real_routes,revision)
+    for route, record in redirects.items(): output[route_file(route)] = redirect_html(record)
     for name, value in list(output.items()):
-        if not name.endswith('index.html'): continue
+        if not name.endswith('index.html') or '/' + name[:-len('index.html')] in redirects: continue
         document = value.decode('utf-8') if isinstance(value,bytes) else value
         for asset_name, asset_value in output.items():
             if not asset_name.endswith(('.css','.js')): continue
@@ -156,14 +233,15 @@ def generate(revision='main'):
     sitemap = re.sub(r'\s*<url>\s*<loc>https://reclazz\.com/docs/.*?</url>', '', sitemap, flags=re.S)
     entries = ''.join('    <url><loc>https://reclazz.com' + url(p['slug']) + '</loc><lastmod>' + manifest['reviewed'] + '</lastmod><changefreq>monthly</changefreq><priority>' + ('0.8' if not p['slug'] else '0.7') + '</priority></url>\n' for p in pages)
     output['sitemap.xml'] = sitemap.replace('</urlset>', entries + '</urlset>')
-    inputs = [p for p in SOURCE.rglob('*') if p.is_file()] + list((REPO / 'docs').glob('*.md')) + list((REPO / 'docs/feature-evidence').glob('*')) + [p for p in ROOT.rglob('*') if p.is_file()] + list((REPO/'website').glob('*.py')) + [REPO/'requirements-docs.txt', REPO/'gradle.properties', REPO/'README.md', REPO/'SECURITY.md']
+    inputs = [p for p in SOURCE.rglob('*') if p.is_file()] + list((REPO / 'docs').glob('*.md')) + list((REPO / 'docs/feature-evidence').glob('*')) + [p for p in ROOT.rglob('*') if p.is_file()] + list((REPO/'website').glob('*.py')) + [REPO/'website/routes.json', REPO/'website/legacy-routes.txt', REPO/'requirements-docs.txt', REPO/'gradle.properties', REPO/'README.md', REPO/'SECURITY.md']
     output['docs/assets/build-manifest.json'] = json.dumps({
         'source_commit': manifest['source_commit'], 'source_version': manifest['source_version'],
         'reviewed': manifest['reviewed'], 'build_revision': revision, 'pages': len(pages),
-        'site_pages':sorted(name for name in output if name.endswith('index.html')),
+        'site_pages':sorted(route_file(route) for route in real_routes),
+        'redirects':redirects,
         'curated_pages': len(manifest['pages']), 'reference_pages': len(pages) - len(manifest['pages']),
         'support_entries': len(support), 'options': len(options), 'search_entries':len(index),
-        'documents': {p['markdown']: {'url': url(p['slug']), 'sha256': hashlib.sha256((REPO/p['markdown']).read_bytes()).hexdigest()} for p in pages if p.get('markdown')},
+        'documents': {name: {**spec, 'sha256':hashlib.sha256((REPO/name).read_bytes()).hexdigest()} for name,spec in source_dispositions(REPO).items()},
         'inputs': {p.relative_to(REPO).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(set(inputs))}
     }, indent=2) + '\n'
     return output

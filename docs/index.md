@@ -1,40 +1,47 @@
 # Documentation library
 
-Explore setup, reload behavior, integrations and tested limits. Start with the
-[task-oriented guides](https://reclazz.com/docs/) for a first reload; use these
-complete references for configuration, APIs and lifecycle details.
+Choose a reference for the task you are working on. Start with the [quickstart](https://reclazz.com/docs/quickstart/) for your first reload.
 
-## User and integration references
+<a id="user-and-integration-references"></a>
 
-| Guide | Read the reference |
-|---|---|
-| [Reproducible agentic workflow evaluation](agentic-evaluation.md) | Open guide → |
-| [Agentic client acceptance matrix](client-matrix.md) | Open guide → |
-| [Core JVM feature evidence](feature-evidence.md) | Open guide → |
-| [For AI agents](for-ai-agents.md) | Open guide → |
-| [Reclazz Gradle plugin](gradle-plugin.md) | Open guide → |
-| [Installation](installation.md) | Open guide → |
-| [Reclazz with Maven](maven.md) | Open guide → |
-| [Reclazz MCP server](mcp-server.md) | Open guide → |
-| [MCP for coding agents: close the loop](mcp-for-coding-agents.md) | Open guide → |
-| [Product technical reference](product-reference.md) | Open guide → |
-| [The Status Socket](protocol.md) | Open guide → |
-| [Reclazz on SAP Commerce, for a coding agent](sap-commerce.md) | Open guide → |
-| [SAP Commerce: what we test live](sap-commerce-live-tests.md) | Open guide → |
-| [Reclazz Spring Boot starter](spring-boot-starter.md) | Open guide → |
-| [Constructor dependency ownership during ordinary class refresh](spring-constructor-dependencies.md) | Open guide → |
-| [Superclass changes without a custom classloader](superclass-feasibility.md) | Open guide → |
-| [Reclazz: Test Guide for SAP Commerce (Hybris)](test-guide.md) | Open guide → |
-| [Usage Guide](usage.md) | Open guide → |
-| [Reload support reference](reload-support.md) | Open guide → |
+## Set up Reclazz
+
+- [Installation](installation.md): Choose an installation route.
+- [Gradle plugin](gradle-plugin.md): Configure the Gradle integration.
+- [Maven plugin](maven.md): Configure the Maven integration.
+- [Spring Boot starter](spring-boot-starter.md): Check startup configuration.
+
+## Use and troubleshoot
+
+- [Usage manual](usage.md): Look up setup, reload behavior and recovery.
+- [What reloads](reload-support.md): Check edit types and their conditions.
+- [Product reference](product-reference.md): Read runtime behavior and trust boundaries.
+
+## Work with SAP Commerce
+
+- [SAP Commerce reference](sap-commerce.md): Look up platform integrations and reload outcomes.
+- [SAP test guide](test-guide.md): Try the SAP Commerce evaluation workflow.
+
+## Integrate tools and coding agents
+
+- [IntelliJ + coding agents](for-ai-agents.md): Set up an agent-assisted edit workflow.
+- [MCP for coding agents](mcp-for-coding-agents.md): Connect a coding agent to a running application.
+- [MCP server reference](mcp-server.md): Look up MCP tools and targeting.
+- [Status socket protocol](protocol.md): Integrate diagnostic and reload commands.
 
 ## Maintaining and contributing
 
-- [Documentation editing and publication](documentation-workflow.md)
+These references are available in the repository.
+
+- [Feature evidence](feature-evidence.md)
+- [SAP live test details](sap-commerce-live-tests.md)
+- [Constructor dependency research](spring-constructor-dependencies.md)
+- [Superclass research](superclass-feasibility.md)
+- [Client acceptance matrix](client-matrix.md)
+- [Agentic workflow evaluation](agentic-evaluation.md)
+- [Documentation workflow](documentation-workflow.md)
 - [Release and Marketplace publishing](publishing.md)
 
 ## Project policies
 
-[Contributing](../CONTRIBUTING.md) · [Security](../SECURITY.md) · [Changelog](../CHANGELOG.md) · [Licence](../LICENSE)
-
-For documentation contributions, follow the [editing and publishing workflow](documentation-workflow.md).
+[Contributing](../CONTRIBUTING.md) · [Security](../SECURITY.md) · [Changelog](../CHANGELOG.md) · [License](../LICENSE)

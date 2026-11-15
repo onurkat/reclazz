@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Group website documentation by task, keep maintainer references on GitHub, and preserve legacy links through clean URL redirects.
 - Clarify unowned `.properties` warnings with the edited path and verified loaded files of the same name. Every warning remains visible; matching names do not establish a resource copy relationship.
 
 ### Fixed

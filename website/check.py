@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET
 
 from markdown_it import MarkdownIt
 from website import build
+from website.markdown import github_anchor_map, source_dispositions
 from website.content import source_link_errors, readable_surface_errors
 
 class Document(HTMLParser):
@@ -62,6 +63,54 @@ def output_differences(output, expected):
     return differences
 
 
+def publication_errors(output, manifest):
+    """Check delivered routing data independently from stale-output comparison."""
+    output = Path(output); errors = []
+    redirects = manifest['redirects']; real_files = set(manifest['site_pages'])
+    real_routes = {'/' + name[:-len('index.html')] for name in real_files}
+    index = json.loads((output/'docs/assets/search-index.json').read_text())
+    locations = {node.text for node in ET.parse(output/'sitemap.xml').findall('.//{*}loc')}
+    for name in real_files:
+        text = (output/name).read_text()
+        for href in Document(text).links:
+            parsed = urlsplit(href)
+            if (not parsed.netloc or parsed.netloc == 'reclazz.com') and parsed.path.endswith('.html'):
+                errors.append('Internal HTML link: ' + name + ': ' + href)
+    for route, record in redirects.items():
+        path = output/build.route_file(route)
+        if not path.is_file():
+            errors.append('Missing redirect stub: ' + route); continue
+        text = path.read_text(); doc = Document(text)
+        data = re.search(r'<script id="redirect-data" type="application/json">(.*?)</script>',text,re.S)
+        if data is None or json.loads(data[1]) != {k:record.get(k,{}) for k in ('destination','fragments')}:
+            errors.append('Redirect data drift: ' + route)
+        if doc.canonical != [record['destination']] or 'name="robots" content="noindex"' not in text or 'location.replace(target.href)' not in text or 'http-equiv="refresh"' not in text:
+            errors.append('Invalid redirect stub: ' + route)
+        target = urlsplit(record['destination'])
+        if not target.netloc and (target.path not in real_routes or target.path in redirects):
+            errors.append('Redirect loop, chain or missing destination: ' + route)
+        if 'https://reclazz.com' + route in locations:
+            errors.append('Redirect in sitemap: ' + route)
+    for item in index:
+        parsed = urlsplit(item['url'])
+        if parsed.path in redirects or parsed.path not in real_routes:
+            errors.append('Search points to unpublished page: ' + item['url'])
+    if set(manifest['documents']) != set(source_dispositions(build.REPO)):
+        errors.append('Canonical Markdown coverage mismatch')
+    for source, record in manifest['documents'].items():
+        if hashlib.sha256((build.REPO/source).read_bytes()).hexdigest() != record['sha256']:
+            errors.append('Wrong canonical source digest: ' + source)
+        if 'external' in record:
+            route = '/docs/reference/' + Path(source).stem + '/'
+            if route in real_routes or 'https://reclazz.com'+route in locations:
+                errors.append('External source published locally: ' + source)
+    for location in locations:
+        parsed = urlsplit(location)
+        if parsed.netloc != 'reclazz.com' or parsed.path not in real_routes:
+            errors.append('Sitemap points to unpublished page: ' + str(location))
+    return errors
+
+
 def check_site(output, revision='main'):
     output = Path(output).resolve()
     errors = source_index_errors(build.REPO) + source_link_errors(build.REPO) + readable_surface_errors(build.REPO)
@@ -75,19 +124,25 @@ def check_site(output, revision='main'):
         if not ok: errors.append(message)
     manifest = json.loads((output/'docs/assets/build-manifest.json').read_text())
     index = json.loads((output/'docs/assets/search-index.json').read_text())
-    documents = {p: Document(p.read_text()) for p in output.rglob('index.html')}
+    redirects = manifest['redirects']
+    redirect_files = {build.route_file(route) for route in redirects}
+    documents = {p: Document(p.read_text()) for p in output.rglob('index.html') if p.relative_to(output).as_posix() not in redirect_files}
+    for error in publication_errors(output,manifest): check(False,error)
     docs = {p:d for p,d in documents.items() if p.is_relative_to(output/'docs')}
     check(len(documents) == len(manifest['site_pages']), 'Whole-site page count drift')
     check(len(docs) == manifest['pages'], 'Page count disagrees with provenance manifest')
     check(len(manifest['documents']) == len(list((build.REPO/'docs').glob('*.md'))), 'Canonical Markdown coverage mismatch')
     for source, record in manifest['documents'].items():
         check(hashlib.sha256((build.REPO/source).read_bytes()).hexdigest() == record['sha256'], 'Wrong canonical source digest: ' + source)
-        check((output/record['url'].lstrip('/')/'index.html').is_file(), 'Source has no public page: ' + source)
+        if 'publish' in record:
+            check((output/build.route_file(record['publish'])).is_file(), 'Source has no public page: ' + source)
+        else:
+            check(record.get('external') == source, 'External source disposition drift: ' + source)
     for path, doc in documents.items():
         check(doc.lang == 'en', str(path) + ': missing language')
         check(doc.headings.count(1) == 1 and doc.mains == 1 and doc.title_count == 1, str(path) + ': require one H1/main/title')
         check(len(doc.ids) == len(set(doc.ids)), str(path) + ': duplicate IDs')
-        if path in docs: check(doc.active == 2, str(path) + ': desktop/mobile active navigation mismatch')
+        if path in docs: check(doc.active == (0 if path == output/'docs/evidence/index.html' else 2), str(path) + ': desktop/mobile active navigation mismatch')
         check(doc.headers == 1 and doc.footers == 1, str(path) + ': require one shared header/footer')
         for control in ('theme-toggle','search-open','search-dialog'):
             check(control in doc.ids, str(path)+': missing shared '+control)
@@ -97,6 +152,11 @@ def check_site(output, revision='main'):
         check('Skip to content' in path.read_text(), str(path) + ': missing skip link')
         for href in doc.links:
             parsed = urlsplit(href)
+            if parsed.netloc == 'github.com' and '/docs/' in parsed.path and parsed.fragment:
+                name = 'docs/' + parsed.path.split('/docs/',1)[1]
+                spec = manifest['documents'].get(name,{})
+                if 'external' in spec:
+                    check(unquote(parsed.fragment) in github_anchor_map(build.REPO/name).values(), 'Missing external source anchor: ' + href)
             if parsed.scheme or parsed.netloc: continue
             dest = output / unquote(parsed.path).lstrip('/') if parsed.path.startswith('/') else path.parent / unquote(parsed.path)
             if not parsed.path: dest = path

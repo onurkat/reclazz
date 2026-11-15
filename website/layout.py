@@ -26,15 +26,16 @@ def header(active='docs', bilingual=False):
 </header>'''
 
 
-def footer(year='2026', bilingual=False):
+def footer(year='2026', bilingual=False, version=None):
     def label(key, text):
         return (' data-i18n="site.'+key+'"' if bilingual else '') + '>'+text
+    version_line = ('<p class="footer-version"><span' + label('docsVersion','Docs for') + '</span> ' + escape(version) + ' · <a href="/docs/evidence/"' + label('evidence','Test coverage &amp; versions') + '</a></p>') if version else ''
     return '''<footer class="site-footer"><div class="site-footer-inner">
 <div class="footer-brand"><a class="brand" href="/" aria-label="Reclazz home"><img src="/favicon.svg" width="28" height="28" alt=""><span>Reclazz</span></a><p''' + label('tagline','Make the next edit count.') + '''</p><span class="footer-license">Apache 2.0 · Built in the open.</span></div>
 <nav aria-label="Product links"><p''' + label('product','Product') + '''</p><a href="/docs/"''' + label('documentation','Documentation') + '''</a><a href="/docs/quickstart/"''' + label('quickstart','Quickstart') + '''</a><a href="/docs/support-matrix/"''' + label('support','Reload support') + '''</a><a href="/compare/"''' + label('compare','Compare') + '''</a></nav>
-<nav aria-label="Project links"><p''' + label('project','Project') + '''</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/releases"''' + label('releases','Releases ↗') + '''</a><a href="https://github.com/onurkat/reclazz/issues"''' + label('issues','Report an issue ↗') + '''</a></nav>
+<nav aria-label="Project links"><p''' + label('project','Project') + '''</p><a href="https://github.com/onurkat/reclazz">GitHub ↗</a><a href="https://github.com/onurkat/reclazz/blob/main/CHANGELOG.md"''' + label('changelog','Changelog ↗') + '''</a><a href="https://github.com/onurkat/reclazz/blob/main/CONTRIBUTING.md"''' + label('contributing','Contributing ↗') + '''</a><a href="https://github.com/onurkat/reclazz/blob/main/SECURITY.md"''' + label('security','Security ↗') + '''</a><a href="https://github.com/onurkat/reclazz/releases"''' + label('releases','Releases ↗') + '''</a><a href="https://github.com/onurkat/reclazz/issues"''' + label('issues','Report an issue ↗') + '''</a></nav>
 <nav aria-label="Legal links"><p''' + label('legal','Legal') + '''</p><a href="/license/"''' + label('license','License') + '''</a><a href="/privacy/"''' + label('privacy','Privacy') + '''</a></nav>
-<div class="footer-bottom"><span>© ''' + escape(year) + ''' Onur Kat</span><a href="https://github.com/sponsors/onurkat"''' + label('sponsor','Support development ↗') + '''</a></div></div></footer>'''
+''' + version_line + '''<div class="footer-bottom"><span>© ''' + escape(year) + ''' Onur Kat</span><a href="https://github.com/sponsors/onurkat"''' + label('sponsor','Support development ↗') + '''</a></div></div></footer>'''
 
 
 def utilities():
@@ -44,17 +45,18 @@ def utilities():
 def head(marketing=False):
     return '''<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;550;600;650;700;750;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>if(location.pathname.endsWith('/index.html'))location.replace(location.pathname.slice(0,-10)+location.search+location.hash);</script>
 <script src="/docs/assets/theme.js"></script>
 <link rel="stylesheet" href="/docs/assets/docs.css"><link rel="stylesheet" href="/assets/site.css">''' + ('<link rel="stylesheet" href="/assets/marketing.css">' if marketing else '') + '''
 <script src="/docs/assets/docs.js" defer></script><script src="/assets/site.js" defer></script>'''
 
 
-def render_public(text, page, year):
+def render_public(text, page, year, version=None):
     for marker in ('SITE_HEAD','SITE_HEADER','SITE_FOOTER','SITE_UTILITIES'):
         if text.count('{{'+marker+'}}') != 1:
             raise ValueError('Public page needs one '+marker+' marker: '+page)
     bilingual = page == 'home'
     for marker, value in [('SITE_HEAD',head(marketing=True)),('SITE_HEADER',header(page,bilingual)),
-                          ('SITE_FOOTER',footer(year,bilingual)),('SITE_UTILITIES',utilities())]:
+                          ('SITE_FOOTER',footer(year,bilingual,version)),('SITE_UTILITIES',utilities())]:
         text = text.replace('{{'+marker+'}}',value)
     return text
