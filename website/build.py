@@ -16,7 +16,7 @@ from website.content import NOTE_IDS, OVERVIEW_IDS, COMMON_IDS, LABELS, metadata
 REPO = Path(__file__).resolve().parents[1]
 ROOT = REPO / 'website' / 'static'
 SOURCE = REPO / 'docs' / 'site'
-ORDER = ['', 'quickstart', 'support-matrix', 'sap-commerce', 'spring', 'messaging', 'configuration', 'persistence', 'java', 'troubleshooting', 'boundaries', 'configuration-reference', 'evidence']
+ORDER = ['', 'quickstart', 'support-matrix', 'sap-commerce', 'spring', 'configuration', 'persistence', 'java', 'troubleshooting', 'configuration-reference', 'evidence']
 GROUPS = ['Get started', 'Guides', "When it doesn't work", 'Reference']
 REFERENCE_ORDER = ['reference/installation','reference/usage','reference/gradle-plugin','reference/maven','reference/spring-boot-starter','reference/for-ai-agents','reference/mcp-for-coding-agents','reference/mcp-server','reference/sap-commerce','reference/test-guide','reference/reload-support','reference/product-reference','reference/protocol','reference']
 
@@ -159,6 +159,46 @@ def support_matrix(records,renderer):
     return form+notes+table+'</tbody></table></div><p id="matrix-empty" class="empty-state" hidden>No matching change or scope note. Reset the filters to see everything.</p>'
 
 
+def guide_rows(keys, records, renderer):
+    by_id={r['id']:r for r in records}; selected=[]
+    for key in keys:
+        if key not in by_id:raise ValueError('Unknown guide support ID: '+key)
+        selected.append(by_id[key])
+    rows='<div class="table-scroll matrix-table"><table><caption>Your changes and their conditions</caption><thead><tr><th scope="col">Your change</th><th scope="col">Result</th><th scope="col">Before you try it</th></tr></thead><tbody>'
+    notes=''
+    for row in selected:
+        key=row['id'];attrs=' data-guide-id="'+key+'" data-status="'+row['status']+'" data-presentation="'+row['presentation']+'"'
+        title='<a href="/docs/support-matrix/#'+key+'">'+escape(row['title'])+'</a>'
+        detail='<p>'+escape(row['conditions'])+'</p><p><strong>Next:</strong> '+escape(row['action'])+'</p>'
+        if row['presentation']=='note':
+            notes+='<aside class="callout"'+attrs+'><p><strong>'+title+'</strong></p>'+support_badge(row)+detail+'</aside>'
+        else:rows+='<tr'+attrs+'><th scope="row">'+title+'</th><td>'+support_badge(row)+'</td><td>'+detail+'</td></tr>'
+    return rows+'</tbody></table></div>'+notes
+
+
+def grouped_options(options,renderer):
+    from website.content import OPTION_GROUPS
+    keys=[key for values in OPTION_GROUPS.values() for key in values]
+    names=[o['name'] for o in options]
+    if len(keys)!=len(set(keys)) or set(names)-set(keys) or len(names)!=len(set(names)):
+        raise ValueError('Options must be grouped exactly once')
+    body='<section aria-labelledby="all-options"><h2 id="all-options">Startup options</h2>'
+    intros={
+        'Common':'In IntelliJ, open Settings → Tools → Reclazz for structural reload, exclusions and timing. Other keys use the startup argument below.',
+        'SAP Commerce':'In IntelliJ, open Settings → Tools → Reclazz. The SAP Commerce controls appear for a detected SAP project. Use its Install Agent action for server startup configuration.',
+        'Opt-in behaviour':'In IntelliJ, open Settings → Tools → Reclazz for JPA refresh, static initialization and reload timing. Custom cache-owner rules use the startup argument.',
+        'Diagnostics':'In IntelliJ, open Settings → Tools → Reclazz for verbose logging and connection settings. Output, dump and session-log keys use the startup argument.'}
+    examples={'Common':'startupDelaySec=30','SAP Commerce':'autoImpex=false','Opt-in behaviour':'jpaRefresh=false','Diagnostics':'verbose=true'}
+    for group,keys in OPTION_GROUPS.items():
+        group_id='options-'+group.lower().replace(' ','-')
+        body+='<section aria-labelledby="'+group_id+'"><h3 id="'+group_id+'">'+group+'</h3><p>'+intros[group]+'</p><div class="code-block"><div class="code-label">Application JVM argument</div><pre><code>-javaagent:/absolute/tools/reclazz-agent-X.Y.Z.jar='+examples[group]+'</code></pre></div><div class="table-scroll matrix-table"><table class="options-table"><caption>'+group+' options</caption><thead><tr><th scope="col">Option</th><th scope="col">Default</th><th scope="col">Behavior and scope</th></tr></thead><tbody>'
+        for option in options:
+            if option['name'] not in keys:continue
+            body+='<tr id="option-'+escape(option['name'])+'" data-option="'+escape(option['name'])+'" data-option-group="'+group+'"><th scope="row"><code>'+escape(option['name'])+'</code></th><td>'+renderer.engine.renderInline(option['default'])+'</td><td>'+renderer.render_inline('docs/usage.md',option['description'])+'</td></tr>'
+        body+='</tbody></table></div></section>'
+    return body+'</section>'
+
+
 def generate(revision='main'):
     manifest = metadata(REPO)
     base = 'https://github.com/onurkat/reclazz/blob/' + revision + '/'
@@ -188,15 +228,13 @@ def generate(revision='main'):
             if links: nav += '<div class="nav-group"><p>' + escape(group) + '</p>' + links + '</div>'
         body = renderer.render(page['markdown']) if page.get('markdown') else expand_guide((SOURCE / ((slug or 'overview') + '.html')).read_text(encoding='utf-8'), renderer, manifest)
         body=body.replace('{{SUPPORT_SUMMARY}}',support_summary(support,renderer)) if '{{SUPPORT_SUMMARY}}' in body else body
+        body=re.sub(r'\{\{ROWS:([^}]+)\}\}',lambda m:guide_rows([x.strip() for x in m[1].split(',')],support,renderer),body)
         if '{{MATRIX}}' in body:
             body=body.replace('{{MATRIX}}',support_matrix(support,renderer))
             for row in support:
                 index.append({'title':row['title'],'section':row['category']+' · '+LABELS[row['status']],'url':url(slug)+'#'+row['id'],'text':row['conditions']+' '+row['action']})
         if '{{OPTIONS}}' in body:
-            table = '<section aria-labelledby="all-options"><h2 id="all-options">Startup options</h2><div class="table-scroll"><table class="options-table"><caption>Accepted keys and documented defaults at ' + escape(manifest['source_version']) + '</caption><thead><tr><th scope="col">Option</th><th scope="col">Default</th><th scope="col">Behavior and scope</th></tr></thead><tbody>'
-            for option in options:
-                table += '<tr id="option-' + escape(option['name']) + '"><th scope="row"><code>' + escape(option['name']) + '</code></th><td>' + renderer.engine.renderInline(option['default']) + '</td><td>' + renderer.render_inline('docs/usage.md',option['description']) + '</td></tr>'
-            body = body.replace('{{OPTIONS}}', table + '</tbody></table></div></section>')
+            body=body.replace('{{OPTIONS}}',grouped_options(options,renderer))
         parser = ContentParser()
         parser.feed(body)
         toc = '<p class="toc-label">On this page</p>' + ''.join('<a href="#' + str(id) + '">' + escape(title) + '</a>' for id, title in parser.headings)

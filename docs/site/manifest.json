@@ -30,8 +30,8 @@
     },
     {
       "slug": "java",
-      "title": "Java changes & JVM limits",
-      "description": "Understand method bodies, structural reload, field initialization, enum edits and reflective visibility.",
+      "title": "Java changes and JVM limits",
+      "description": "Find your edit and understand the runtime it needs.",
       "group": "Guides",
       "eyebrow": "Core JVM",
       "sources": [
@@ -43,8 +43,8 @@
     },
     {
       "slug": "spring",
-      "title": "Spring beans & web behavior",
-      "description": "Follow bean recreation, newly added components, MVC callbacks, advice, Jackson and constructor dependency boundaries.",
+      "title": "Spring, web and messaging changes",
+      "description": "Check beans, endpoints and listener delivery after a save.",
       "group": "Guides",
       "eyebrow": "Spring integration",
       "sources": [
@@ -56,23 +56,9 @@
       "nav_title": "Spring & MVC"
     },
     {
-      "slug": "messaging",
-      "title": "Messaging without blind spots",
-      "description": "Understand listener additions, consumer retirement, routing changes and the difference between direct saves and dependency cascades.",
-      "group": "Guides",
-      "eyebrow": "Kafka · JMS · RabbitMQ",
-      "sources": [
-        "docs/usage.md#kafka-listeners-added-after-startup",
-        "docs/usage.md#jms-listeners-added-after-startup",
-        "docs/usage.md#rabbit-listeners-added-after-startup",
-        "docs/feature-evidence/p4-messaging.json"
-      ],
-      "nav_title": "Messaging"
-    },
-    {
       "slug": "configuration",
-      "title": "Configuration, XML & resources",
-      "description": "Know which physical files are watched, how validation works, and when a configuration edit needs a restart.",
+      "title": "Properties, XML and templates",
+      "description": "Find the runtime resource and verify its current value.",
       "group": "Guides",
       "eyebrow": "Files & runtime state",
       "sources": [
@@ -85,8 +71,8 @@
     },
     {
       "slug": "sap-commerce",
-      "title": "SAP Commerce: keep the server warm",
-      "description": "Separate Java reload, platform generation, type-system updates and runtime configuration in the SAP development loop.",
+      "title": "SAP Commerce: your daily edit loop",
+      "description": "Set up once, find your edit and verify the running server.",
       "group": "Guides",
       "eyebrow": "SAP Commerce / Hybris",
       "sources": [
@@ -99,8 +85,8 @@
     },
     {
       "slug": "persistence",
-      "title": "Persistence & cache boundaries",
-      "description": "Keep class replacement, ORM mapping, database schema and cached results separate when verifying a reload.",
+      "title": "Entities, repositories and caches",
+      "description": "Check mappings, schema and cached results separately.",
       "group": "Guides",
       "eyebrow": "Data & application state",
       "sources": [
@@ -111,21 +97,8 @@
       "nav_title": "Persistence & caches"
     },
     {
-      "slug": "boundaries",
-      "title": "Reload timing & build safety",
-      "description": "Choose immediate or request-boundary application, and understand pause, build holds and partial failures.",
-      "group": "When it doesn't work",
-      "eyebrow": "Execution model",
-      "sources": [
-        "docs/usage.md#reload-between-requests",
-        "docs/protocol.md#holding-a-build-until-it-succeeds",
-        "docs/protocol.md#pausing-automatic-reload"
-      ],
-      "nav_title": "Reload timing"
-    },
-    {
       "slug": "troubleshooting",
-      "title": "When a change doesn’t reload",
+      "title": "When a change doesn\u2019t reload",
       "description": "Start with the symptom, check the IDE diagnostic and recover safely.",
       "group": "When it doesn't work",
       "eyebrow": "Troubleshooting",
@@ -138,8 +111,8 @@
     },
     {
       "slug": "configuration-reference",
-      "title": "Agent configuration reference",
-      "description": "Find every source-supported startup option, its default and the consequence of enabling it.",
+      "title": "Agent options",
+      "description": "Set common options in IntelliJ or the application JVM argument.",
       "group": "Reference",
       "eyebrow": "Reference",
       "sources": [
@@ -244,5 +217,5 @@
       "publish": "/docs/reference/usage/"
     }
   },
-  "content_contract": "3a"
+  "content_contract": "3b"
 }

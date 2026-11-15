@@ -656,5 +656,48 @@
       "production-reload-reporting": "production-reload-reporting",
       "decision-and-remaining-limits": "decision-and-remaining-limits"
     }
+  },
+  "/docs/messaging/": {
+    "destination": "/docs/spring/#messaging",
+    "fragments": {
+      "search-open": "search-open",
+      "theme-toggle": "theme-toggle",
+      "docs-drawer": "docs-drawer",
+      "main": "main",
+      "shared-contract": "shared-contract",
+      "kafka": "kafka",
+      "jms": "jms",
+      "rabbit": "rabbit",
+      "indirect-changes": "indirect-changes",
+      "verify-delivery": "verify-delivery",
+      "search-dialog": "search-dialog",
+      "search-title": "search-title",
+      "search-close": "search-close",
+      "docs-search": "docs-search",
+      "search-status": "search-status",
+      "search-results": "search-results",
+      "copy-status": "copy-status"
+    }
+  },
+  "/docs/boundaries/": {
+    "destination": "/docs/troubleshooting/#reload-timing",
+    "fragments": {
+      "search-open": "search-open",
+      "theme-toggle": "theme-toggle",
+      "docs-drawer": "docs-drawer",
+      "main": "main",
+      "immediate": "immediate",
+      "request": "request",
+      "build-holds": "build-holds",
+      "pause": "pause",
+      "partial": "partial",
+      "search-dialog": "search-dialog",
+      "search-title": "search-title",
+      "search-close": "search-close",
+      "docs-search": "docs-search",
+      "search-status": "search-status",
+      "search-results": "search-results",
+      "copy-status": "copy-status"
+    }
   }
 }

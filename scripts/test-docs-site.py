@@ -539,4 +539,58 @@ class Stage3ContractTest(unittest.TestCase):
             q.write_text(q.read_text().replace('`code — kept`','prose — rejected'))
             self.assertTrue(rewritten_prose_errors(root))
 
+class Stage3bContractTest(unittest.TestCase):
+    def setUp(self):
+        self.records=support_records(build.REPO)
+        class Renderer:
+            def resolve_link(self,*args):return '/docs/reference/'
+        self.renderer=Renderer()
+    def test_T8_guide_rows_badges_links_and_unknown_ids(self):
+        from website.check import guide_records_errors
+        rows=build.guide_rows([r['id'] for r in self.records],self.records,self.renderer)
+        assignment={'guide':[r['id'] for r in self.records]}
+        rows=rows.replace('>Reloads<','>\n Reloads \n<') # SVG whitespace in delivered badges
+        self.assertEqual([],guide_records_errors(self.records,{'guide':rows},assignment))
+        for mutation in [rows.replace('class="badge works"','class="badge restart"',1),rows.replace('/docs/support-matrix/#method-body','/docs/support-matrix/#missing',1),rows.replace(self.records[0]['conditions'],'drift',1)]:
+            self.assertTrue(guide_records_errors(self.records,{'guide':mutation},assignment))
+        with self.assertRaisesRegex(ValueError,'Unknown guide support ID'):build.guide_rows(['absent'],self.records,self.renderer)
+    def test_T9_all_83_records_have_their_assigned_guide(self):
+        from website.content import GUIDE_IDS
+        from website.check import guide_records_errors
+        lock=json.loads((build.REPO/'website/support-status.lock.json').read_text())
+        self.assertEqual(83,len(lock));self.assertEqual(set(lock),{x for keys in GUIDE_IDS.values() for x in keys})
+        self.assertIn('constructor-helper',GUIDE_IDS['spring'])
+        pages={name:build.guide_rows(keys,self.records,self.renderer) for name,keys in GUIDE_IDS.items()}
+        self.assertEqual([],guide_records_errors(self.records,pages,GUIDE_IDS))
+        pages['spring']=pages['spring'].replace('data-guide-id="constructor-helper"','data-omitted="constructor-helper"')
+        self.assertTrue(guide_records_errors(self.records,pages,GUIDE_IDS))
+    def test_T10_frozen_redirect_fragment_must_exist_on_destination(self):
+        from website.check import frozen_fragment_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'website').mkdir();out=root/'output';(out/'docs/spring').mkdir(parents=True)
+            (root/'website/fragments.json').write_text(json.dumps({'docs/messaging/index.html':['kafka']}))
+            (root/'website/routes.json').write_text(json.dumps({'/docs/messaging/':{'destination':'/docs/spring/#messaging','fragments':{'kafka':'kafka'}}}))
+            p=out/'docs/spring/index.html';p.write_text('<h2 id="kafka">Kafka</h2>')
+            self.assertEqual([],frozen_fragment_errors(root,out));p.write_text('<h2>Kafka</h2>')
+            self.assertTrue(frozen_fragment_errors(root,out))
+            p.write_text('<h2 id="kafka">Kafka</h2>');(root/'website/routes.json').write_text(json.dumps({'/docs/messaging/':{'destination':'/docs/spring/','fragments':{}}}))
+            self.assertTrue(frozen_fragment_errors(root,out))
+    def test_T11_links_to_folded_guides_are_rejected(self):
+        from website.check import stage3b_contract_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            out=Path(tmp);p=out/'test.html';p.write_text('<a href="/docs/messaging/#kafka">Kafka</a>')
+            self.assertTrue(any('Link to folded guide' in e for e in stage3b_contract_errors(build.REPO,out,self.records)))
+            p.write_text('<a href="docs/boundaries/#pause">Pause</a>')
+            self.assertTrue(any('Link to folded guide' in e for e in stage3b_contract_errors(build.REPO,out,self.records)))
+            p.write_text('<a href="/docs/spring/#kafka">Kafka</a>')
+            self.assertFalse(any('Link to folded guide' in e for e in stage3b_contract_errors(build.REPO,out,self.records)))
+    def test_T12_every_option_is_grouped_exactly_once(self):
+        from website.content import OPTION_GROUPS
+        from website.check import option_group_errors
+        options=[x for values in OPTION_GROUPS.values() for x in values]
+        html=''.join('<tr data-option="'+key+'" data-option-group="'+group+'"></tr>' for group,keys in OPTION_GROUPS.items() for key in keys)
+        self.assertEqual([],option_group_errors(html,options,OPTION_GROUPS))
+        for bad in [html.replace('data-option="hybrisHome"','data-omitted="hybrisHome"',1),html+html,html.replace('data-option-group="Common"','data-option-group="Diagnostics"',1)]:self.assertTrue(option_group_errors(bad,options,OPTION_GROUPS))
+        with self.assertRaisesRegex(ValueError,'grouped exactly once'):build.grouped_options([{'name':'unknown'}],None)
+
 if __name__=='__main__':unittest.main(verbosity=2)

@@ -2,7 +2,7 @@
 from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
-from urllib.parse import urlsplit, unquote
+from urllib.parse import urlsplit, unquote, urljoin
 import argparse
 import hashlib
 import json
@@ -114,7 +114,7 @@ def publication_errors(output, manifest):
 def check_site(output, revision='main'):
     output = Path(output).resolve()
     errors = source_index_errors(build.REPO) + source_link_errors(build.REPO) + readable_surface_errors(build.REPO)
-    if build.metadata(build.REPO).get('content_contract')=='3a': errors.extend(stage3_contract_errors(build.REPO,output))
+    if build.metadata(build.REPO).get('content_contract') in ('3a','3b'): errors.extend(stage3_contract_errors(build.REPO,output))
     expected = build.generate(revision)
     errors.extend(output_differences(output, expected))
     # Invalid/missing output must fail before attempting to parse a partial tree.
@@ -376,7 +376,7 @@ def descendants(node):
 
 def rewritten_prose_errors(repo):
     repo=Path(repo);errors=[]
-    for name in ['overview','quickstart','support-matrix','troubleshooting']:
+    for name in ['overview','quickstart','support-matrix','troubleshooting','sap-commerce','spring','configuration','persistence','java','configuration-reference']:
         p=repo/'docs/site'/(name+'.html')
         if p.is_file() and '—' in node_text(ContentTree(p.read_text()).root,('pre','code','script','style')):errors.append('Em dash in rewritten prose: '+name)
     p=repo/'docs/reload-support.md'
@@ -412,13 +412,8 @@ def stage3_contract_errors(repo,output):
     p=repo/'website/support-status.lock.json'
     if not p.is_file():errors.append('Missing support status lock')
     elif json.loads(p.read_text())!={r['id']:r['status'] for r in records}:errors.append('Support status lock drift')
-    p=repo/'website/fragments.json'
-    if not p.is_file():errors.append('Missing frozen fragments')
-    else:
-        for name,ids in json.loads(p.read_text()).items():
-            f=output/name
-            if not f.is_file():errors.append('Missing frozen page: '+name);continue
-            for key in set(ids)-set(Document(f.read_text()).ids):errors.append('Missing frozen fragment: '+name+'#'+key)
+    errors.extend(frozen_fragment_errors(repo,output))
+    if build.metadata(repo).get('content_contract')=='3b':errors.extend(stage3b_contract_errors(repo,output,records))
     for name,summary in [('docs/support-matrix/index.html',False),('docs/index.html',True)]:
         p=output/name
         if p.is_file():errors.extend(rendered_records_errors(p.read_text(),records,summary))
@@ -441,4 +436,73 @@ def quickstart_panel_errors(text):
     for panel in panels:
         a=panel['attrs']
         if not a.get('id') or 'hidden' in a or not any(n['tag'] in ('h2','h3','h4') for n in descendants(panel)):errors.append('Quickstart panel must be visible and headed in static HTML')
+    return errors
+
+
+def frozen_fragment_errors(repo,output):
+    repo=Path(repo);output=Path(output);p=repo/'website/fragments.json';errors=[]
+    if not p.is_file():return ['Missing frozen fragments']
+    redirects=json.loads((repo/'website/routes.json').read_text()) if (repo/'website/routes.json').is_file() else {}
+    for name,ids in json.loads(p.read_text()).items():
+        route='/'+name.removesuffix('index.html')
+        moved=redirects.get(route)
+        if moved:
+            target=urlsplit(moved['destination']).path
+            path=output/target.lstrip('/')/'index.html';mapping=moved.get('fragments',{})
+            targetids=set(Document(path.read_text()).ids) if path.is_file() else set()
+            for key in ids:
+                if key not in mapping or mapping[key] not in targetids:errors.append('Missing frozen fragment: '+name+'#'+key)
+        else:
+            path=output/name
+            if not path.is_file():errors.append('Missing frozen page: '+name);continue
+            for key in set(ids)-set(Document(path.read_text()).ids):errors.append('Missing frozen fragment: '+name+'#'+key)
+    return errors
+
+
+def guide_records_errors(records,pages,assignments):
+    from website.content import LABELS
+    by_id={r['id']:r for r in records};seen=set();errors=[]
+    for page,expected in assignments.items():
+        tree=ContentTree(pages.get(page,''));nodes=[n for n in tree.nodes if 'data-guide-id' in n['attrs']]
+        keys=[n['attrs']['data-guide-id'] for n in nodes];seen.update(keys)
+        if Counter(keys)!=Counter(expected):errors.append('Guide coverage mismatch: '+page)
+        for node in nodes:
+            key=node['attrs']['data-guide-id'];row=by_id.get(key)
+            if row is None:errors.append('Unknown guide support ID: '+key);continue
+            badges=[n for n in descendants(node) if 'badge' in n['attrs'].get('class','').split()]
+            if len(badges)!=1 or row['status'] not in badges[0]['attrs'].get('class','').split() or ' '.join(node_text(badges[0]).split())!=LABELS[row['status']]:errors.append('Guide badge mismatch: '+key)
+            if node['attrs'].get('data-status')!=row['status'] or node['attrs'].get('data-presentation')!=row['presentation']:errors.append('Guide presentation mismatch: '+key)
+            if row['conditions'] not in node_text(node) or row['action'] not in node_text(node):errors.append('Guide conditions drift: '+key)
+            if not any(n['attrs'].get('href')=='/docs/support-matrix/#'+key for n in descendants(node)):errors.append('Guide row link missing: '+key)
+    if seen!=set(by_id):errors.append('Guide inventory must cover all support records')
+    return errors
+
+
+def option_group_errors(text,options,groups):
+    nodes=[n for n in ContentTree(text).nodes if 'data-option' in n['attrs']];errors=[]
+    keys=[n['attrs']['data-option'] for n in nodes]
+    expected=[key for values in groups.values() for key in values]
+    if len(expected)!=len(set(expected)) or set(expected)!=set(options) or Counter(keys)!=Counter(options):errors.append('Option grouping coverage mismatch')
+    for node in nodes:
+        key=node['attrs']['data-option'];group=node['attrs'].get('data-option-group')
+        if key not in groups.get(group,[]):errors.append('Option group mismatch: '+key)
+    return errors
+
+
+def stage3b_contract_errors(repo,output,records):
+    from website.content import GUIDE_IDS,OPTION_GROUPS
+    repo=Path(repo);output=Path(output);errors=[];pages={}
+    for name in GUIDE_IDS:
+        p=output/'docs'/name/'index.html';pages[name]=p.read_text() if p.is_file() else ''
+    errors.extend(guide_records_errors(records,pages,GUIDE_IDS))
+    usage=(repo/'docs/usage.md').read_text();table=usage.split('| Argument | Default | Description |',1)[1].split('\n\n',1)[0]
+    options=re.findall(r'^\| `([^`]+)`',table,re.M)
+    p=output/'docs/configuration-reference/index.html'
+    errors.extend(option_group_errors(p.read_text() if p.is_file() else '',options,OPTION_GROUPS))
+    for p in output.rglob('*.html'):
+        text=p.read_text()
+        if 'id="redirect-data"' in text:continue
+        for link in Document(text).links:
+            parsed=urlsplit(urljoin('https://reclazz.com/'+p.relative_to(output).as_posix(),link))
+            if parsed.netloc in ('','reclazz.com') and parsed.path in ('/docs/messaging/','/docs/boundaries/','/docs/messaging.html','/docs/boundaries.html'):errors.append('Link to folded guide: '+str(p.relative_to(output))+': '+link)
     return errors
