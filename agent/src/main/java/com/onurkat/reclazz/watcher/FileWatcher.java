@@ -133,7 +133,7 @@ public class FileWatcher {
      * What the watcher remembers about one watched file.
      *
      * <p>Class baseline and delivery metadata share one object rather than
-     * separate maps of boxed longs. Java sources also remember the timestamp
+     * separate maps of boxed longs. Java sources and Backoffice config files also remember the timestamp
      * actually delivered, so inventory sightings and late JDK notifications
      * cannot be mistaken for a new source save.
      *
@@ -160,7 +160,7 @@ public class FileWatcher {
     private static final class FileState {
         /** CRC32 of the bytes last dispatched or baselined, or -1 for none. */
         long contentHash = -1L;
-        /** Java disk version already delivered; independent of inventory/scan sightings. */
+        /** Source/config disk version already delivered; independent of inventory/scan sightings. */
         long deliveredSourceMtime;
         /** The baseline's mtime, or 0 once consumed or never taken. */
         long baselineMtime;
@@ -1158,6 +1158,8 @@ public class FileWatcher {
 
     /** The event a due file becomes, or null when it is a repeat or its bytes did not change. */
     private ChangeEvent toChangeEvent(PendingEvent pending) {
+        ChangeKind kind = ChangeKind.of(pending.path.getFileName().toString());
+        boolean versionedSource = kind == ChangeKind.JAVA_SOURCE || kind == ChangeKind.BACKOFFICE_CONFIG;
         Long lastMod = lastModifiedMap.get(pending.path);
         long now = System.currentTimeMillis();
         if (lastMod != null && (now - lastMod) < 100) {
@@ -1173,20 +1175,19 @@ public class FileWatcher {
             FileState state = fileStates.get(pending.path);
             if (state != null) {
                 state.seenMtime = 0;
-                if (pending.path.getFileName().toString().endsWith(".java")) {
+                if (versionedSource) {
                     state.deliveredSourceMtime = 0;
                     state.contentHash = -1L;
                 }
             }
         }
 
-        // The hot scan can deliver a source save before the JDK poll reports
-        // the same write. Recompiling that late duplicate recreates singletons
-        // after their accepted RELOAD. A deliberate resave (new mtime) remains
-        // a compile/retry even with identical bytes; changed same-mtime bytes
+        // The hot scan can deliver a source/config save before the JDK poll
+        // reports the same write. Repeating it recompiles Java or resets the
+        // Backoffice configuration again. A deliberate resave (new mtime)
+        // remains a retry even with identical bytes; changed same-mtime bytes
         // also remain visible. Inventory sightings are not delivery evidence.
-        if (pending.type != ChangeEvent.Type.DELETED
-                && pending.path.getFileName().toString().endsWith(".java")) {
+        if (pending.type != ChangeEvent.Type.DELETED && versionedSource) {
             long mtime = lastModifiedMillis(pending.path);
             long hash = computeContentHash(pending.path);
             if (mtime > 0 && hash != -1L) {

@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
+- Avoid repeating a Backoffice configuration reset when a late watcher notification reports the file version already delivered by the hot scan. Distinct edits, reverts and explicit resaves remain eligible.
+
 - Refresh relaxed-name `@Value` dependencies with the native resolver on Spring Boot versions that provide `ConfigurationPropertySources.createPropertyResolver` and `attach`. Retain the existing raw placeholder path when those public methods are absent. Preserve file precedence, trace deleted keys against accepted file values, and carry validated selection into field and constructor/factory refresh. Unknown resolver policies remain refused.
 
 - Refresh Jackson 3.1.7 mapper caches and route added getters through its method-handle accessor path, preserving lookup access and getter exceptions. Retained writers/readers keep their prefetched shape; fresh instances are needed for shape changes. Added setters/fields and relocated databind annotations are outside this coverage.
