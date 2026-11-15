@@ -114,7 +114,10 @@ def publication_errors(output, manifest):
 def check_site(output, revision='main'):
     output = Path(output).resolve()
     errors = source_index_errors(build.REPO) + source_link_errors(build.REPO) + readable_surface_errors(build.REPO)
-    if build.metadata(build.REPO).get('content_contract') in ('3a','3b'): errors.extend(stage3_contract_errors(build.REPO,output))
+    if build.metadata(build.REPO).get('content_contract') in ('3a','3b','3c'): errors.extend(stage3_contract_errors(build.REPO,output))
+    if build.metadata(build.REPO).get('content_contract')=='3c':
+        usage_page=output/'docs/reference/usage/index.html'
+        errors.extend(usage_contract_errors(build.REPO,rendered=usage_page.read_text() if usage_page.is_file() else ''))
     expected = build.generate(revision)
     errors.extend(output_differences(output, expected))
     # Invalid/missing output must fail before attempting to parse a partial tree.
@@ -413,7 +416,7 @@ def stage3_contract_errors(repo,output):
     if not p.is_file():errors.append('Missing support status lock')
     elif json.loads(p.read_text())!={r['id']:r['status'] for r in records}:errors.append('Support status lock drift')
     errors.extend(frozen_fragment_errors(repo,output))
-    if build.metadata(repo).get('content_contract')=='3b':errors.extend(stage3b_contract_errors(repo,output,records))
+    if build.metadata(repo).get('content_contract') in ('3b','3c'):errors.extend(stage3b_contract_errors(repo,output,records))
     for name,summary in [('docs/support-matrix/index.html',False),('docs/index.html',True)]:
         p=output/name
         if p.is_file():errors.extend(rendered_records_errors(p.read_text(),records,summary))
@@ -505,4 +508,55 @@ def stage3b_contract_errors(repo,output,records):
         for link in Document(text).links:
             parsed=urlsplit(urljoin('https://reclazz.com/'+p.relative_to(output).as_posix(),link))
             if parsed.netloc in ('','reclazz.com') and parsed.path in ('/docs/messaging/','/docs/boundaries/','/docs/messaging.html','/docs/boundaries.html'):errors.append('Link to folded guide: '+str(p.relative_to(output))+': '+link)
+    return errors
+
+
+def usage_contract_errors(repo,text=None,rendered=None):
+    """C1-C3: frozen section bodies/ids, exact additions and group membership."""
+    from website.markdown import usage_heading_blocks
+    repo=Path(repo);a=repo/'website/usage-anchors.json';p=repo/'website/usage-structure.json'
+    if not a.is_file() or not p.is_file():return ['Missing usage preservation contract']
+    frozen=json.loads(a.read_text())['headings'];structure=json.loads(p.read_text());errors=[]
+    text=(repo/'docs/usage.md').read_text() if text is None else text
+    blocks=usage_heading_blocks(text);signatures={(e['title'],e['body_sha256']):e for e in frozen}
+    if len(signatures)!=len(frozen):errors.append('C1 ambiguous frozen usage identity')
+    found={};actual_groups={};h2_order=[];parent=None
+    groups={g['heading']:g for g in structure['groups']};group_counts=Counter()
+    for b in blocks:
+        if b['level']==2:parent=b['title'];h2_order.append(parent)
+        e=signatures.get((b['title'],b['body_sha256']))
+        if e:
+            key=e['key']
+            if key in found:errors.append('C1 duplicate usage section: '+key)
+            found[key]=b
+            expected_level=structure.get('allowed_level_changes',{}).get(key,e['level'])
+            if b['level']!=expected_level:errors.append('C2 unlisted heading level: '+key)
+            if b['heading']!=('#'*expected_level+e['heading'].lstrip('#')):errors.append('C2 changed frozen heading line: '+key)
+            if e['level']==3:actual_groups.setdefault(parent,[]).append(key)
+        elif b['title'] in groups and b['level']==2:
+            g=groups[b['title']];group_counts[b['title']]+=1
+            if b['heading']!='## '+g['heading']+'\n' or b['body']!='\n'+g['intro']+'\n\n':errors.append('C2 unlisted usage intro/body: '+b['title'])
+        else:errors.append('C2 unknown or changed usage block: '+b['title'])
+    for e in frozen:
+        if e['key'] not in found:errors.append('C1 missing or changed usage body: '+e['key'])
+    if text and (not blocks or blocks[0]['line']!=0):errors.append('C2 unlisted usage preamble')
+    for title in groups:
+        if group_counts[title]!=1:errors.append('C3 missing or duplicated usage group: '+title)
+    if h2_order!=structure['h2_order']:errors.append('C3 usage H2 order mismatch')
+    expected_assignments={'Option 1: Manual Setup':structure['manual_keys'],**{g['heading']:g['keys'] for g in structure['groups']}}
+    assigned=[k for keys in expected_assignments.values() for k in keys]
+    old_manual=[e['key'] for e in frozen if e['level']==3 and e['identity'][:-1]==['Option 1: Manual Setup']]
+    if Counter(assigned)!=Counter(old_manual):errors.append('C3 original Manual sections not assigned exactly once')
+    for parent,keys in expected_assignments.items():
+        if actual_groups.get(parent,[])!=keys:errors.append('C3 usage membership/order mismatch: '+parent)
+    for e in frozen:
+        b=found.get(e['key'])
+        if b and e['key'] not in assigned and b['identity']!=e['identity']:errors.append('C3 moved unassigned usage section: '+e['key'])
+    if rendered is not None:
+        tree=ContentTree(rendered);nodes=[n for n in tree.nodes if 'data-section-key' in n['attrs']]
+        for e in frozen:
+            if e['level']==1:
+                matches=[n for n in tree.nodes if n['tag']=='h1' and n['attrs'].get('id')==e['id']]
+            else:matches=[n for n in nodes if n['attrs']['data-section-key']==e['key'] and n['attrs'].get('id')==e['id']]
+            if len(matches)!=1:errors.append('C1 rendered usage id/identity mismatch: '+e['key'])
     return errors

@@ -4,6 +4,203 @@ Reclazz supports four modes of operation. You can use them independently or comb
 
 ---
 
+## Choosing the Right Mode
+
+| Scenario | Recommended Mode |
+|---|---|
+| Server runs from terminal (`./hybrisserver.sh`) | [Manual Setup](#option-1-manual-setup) |
+| Server runs from IntelliJ, compile with `ant build` | [IntelliJ Auto + ant build](#workflow-with-ant-build) |
+| Server runs from IntelliJ, want instant feedback | [IntelliJ Auto + AutoCompile](#workflow-with-intellij-build-autocompile-mode) |
+| Rapid iteration on single files | [Auto-Build on Idle](#option-3-auto-build-on-idle-optional) |
+| Server already running without agent | [Attach to Running Server](#option-4-attach-to-running-server) |
+| CI/CD or headless environments | [Manual Setup](#option-1-manual-setup) with standalone agent |
+
+---
+
+## Option 2: IntelliJ Automatic Mode (Recommended)
+
+Use this option when you run the SAP Commerce server **from IntelliJ IDEA** using a Run/Debug configuration. The plugin handles everything automatically.
+
+### How It Works
+
+When you launch a Run/Debug configuration in IntelliJ IDEA, the Reclazz plugin:
+
+1. **Detects** that the project is an SAP Commerce (Hybris) project
+2. **Injects** the `-javaagent` flag into the JVM arguments automatically
+3. **Detects** your JDK version (17 or 21) and whether you are using JetBrains Runtime
+4. **Adds** recommended JVM flags (e.g., `-XX:+AllowEnhancedClassRedefinition` for JBR)
+5. **Connects** to the agent after the server starts
+6. **Watches** for file changes and shows reload status in the IDE
+
+You do not need to edit any properties files or manage the agent JAR path.
+
+### Setup
+
+1. Enable the plugin: **Settings** > **Tools** > **Reclazz** > check **Enable Reclazz**
+2. That's it. Run your Hybris server from IntelliJ as usual.
+
+### Project settings and managed SAP startup
+
+**Settings > Tools > Reclazz** stores agent choices per project. Changes reach the
+next IDE launch or dynamic attach. For a server started outside the IDE, use
+**Install Agent** or **Reinstall** to apply the current form and regenerate
+its managed startup block, then regenerate the server config and restart as the
+installation message describes.
+
+| Control | Default | Scope |
+|---|---|---|
+| Import ImpEx files on save | Off | SAP Commerce; imports a saved watched ImpEx file |
+| Allow REMOVE statements | Off | Available only when ImpEx import on save is on; permits live row deletion on save |
+| Reset Backoffice configuration on save | On | SAP Commerce; the native F4 reset, which also resets configuration made in the Backoffice UI. Off sends `backofficeConfigReset=false` |
+| Update the running system after items.xml changes | Off | SAP Commerce development only; opt-in schema additions and keyed localization writes to the live database |
+| Update Solr documents after a provider reloads | Off | SAP Commerce development only; bounded native updates with normal listeners/bookkeeping, no proof of field freshness |
+| Apply reloads | Immediately | At the next request boundary requires the agent at JVM startup; dynamic attach explicitly warns and applies immediately |
+| Reload added and removed members (Advanced) | On | Off limits reloads to method bodies |
+| Re-run changed static initializers (Advanced) | Off | Applies on the next launch; eligible static finals become non-final. Existing captured copies retain the old object |
+| Exclude classes (Advanced) | Empty | Semicolon-separated class-name globs the agent never instruments |
+| Ignore files (Advanced) | Empty | Semicolon-separated globs; matching changed files are not reloaded |
+
+**Pause Automatic Reload** (Tools menu and the Reclazz tool window) holds
+automatic reload in the running agent. Saves made while paused are kept and
+applied on resume; the status bar shows `Paused` and the number of waiting
+changes until then. It is a session switch, not a stored setting, and an agent
+older than 1.4.0 does not answer it.
+
+Existing JPA refresh remains opt-in. Its scope includes new entities on stock
+JDKs with a prepared schema; existing field changes require enhanced redefinition.
+See the [JPA scope](#new-jpa-entities-with-a-prepared-schema).
+
+The installer regenerates only its marked block from Settings; manual edits
+inside it are overwritten. Unrelated JVM options outside the block are retained.
+An existing Reclazz agent outside the managed block or in another properties
+layer is refused with its file and line before writing; remove that manual
+option before installing through Settings. This also applies to normal and debug
+startup options. A failed verification restores the previous managed file rather
+than deleting a prior installation. A project without an optional config
+directory uses `local.properties` with its managed block excluded from base-value
+verification.
+
+The log retains the agent's raw INFO lines for Solr FINISHED,
+FINISHED_UNVERIFIED and FAILED outcomes. Unverified indexing outcomes receive
+bold amber warning emphasis; failed indexing outcomes use the IDE's error colour.
+Ordinary WARN lines share the visible warning style. Solr outcomes do not change
+the independent class reload counter or mean that a successful class reload was
+undone.
+
+Platform/home/watch-directory/port discovery remains automatic. Diagnostic
+`platform`, `wrapOutput`, `transformDumpDir`, `verifyTransform`, `sessionLog` and
+structured `refreshOwnersOnHelper` arguments remain manual expert options (see
+[Agent Arguments](#agent-arguments)); the IDE does not expose fields for them.
+The custom port/file controls choose which agent the IDE connects to, while its
+own launches use an automatically assigned port and project port file.
+
+### Workflow with `ant build`
+
+This is the default and safest workflow. The IntelliJ plugin injects the agent, but compilation is still handled by `ant`:
+
+```
+1. Start the SAP Commerce server from IntelliJ (Run/Debug)
+   └── Reclazz agent is automatically injected
+   └── Plugin connects to the agent
+   └── Status bar shows "Reclazz: Connected"
+
+2. Edit your Java source files in IntelliJ
+
+3. Compile with ant (from terminal or IntelliJ terminal):
+   cd hybris/bin/platform
+   ant build
+
+4. Reclazz detects the new .class files and hot-swaps them
+   └── Reclazz tool window shows reload details
+   └── Status bar updates: "Reclazz: 1 reloads"
+
+5. Test your changes immediately
+```
+
+### Workflow with IntelliJ Build (AutoCompile mode)
+
+If you prefer to skip `ant build` entirely, enable **AutoCompile**. In this mode, Reclazz watches `.java` source files and compiles them internally using the JDK compiler API (`javax.tools`):
+
+1. Go to **Settings** > **Tools** > **Reclazz**
+2. Check **AutoCompile (compile .java files internally instead of using ant)**
+3. Start the server from IntelliJ
+
+```
+1. Start the SAP Commerce server from IntelliJ (Run/Debug)
+   └── Reclazz agent is injected with autoCompile=true
+
+2. Edit a Java source file in IntelliJ
+
+3. Save the file (Ctrl+S / Cmd+S)
+   └── Reclazz detects the .java change
+   └── Compiles it internally using javax.tools
+   └── Hot-swaps the resulting bytecode
+   └── "Compiled: MyService.java (45ms) → Hot-swapped: com.example.MyService (8ms)"
+
+4. Test your changes immediately, no ant build, no server restart
+```
+
+AutoCompile treats the sources collected in one attempt as a package. All
+modules compile into a temporary directory, in dependency order, before any
+output is published. If compilation fails, the output directories stay
+unchanged and the running classes keep their previous version. The log
+names the compiler error and the number of held source files. Fixing any
+source retries the held sources together with the new save. Deleting a
+blocking source removes it and retries the remaining sources.
+
+While one source is broken, other saves join its held package. Two saves
+collected in separate attempts are separate packages. This is not an
+editor-wide refactoring transaction. Use the normal build tool for generated
+code and resources that depend on build tasks or annotation-processor setup.
+Do not run AutoCompile and an external compiler against the same output tree
+at the same time.
+
+Each successful output file is replaced through a temporary file and rename.
+If publication fails partway through, no agent reload starts, but earlier
+replacements remain on disk. The error names the failed file; fixing the I/O
+problem and saving again retries the package. Class loaders can observe mixed
+old and new files during publication. Reload and framework operations still
+have their existing per-class failure behavior.
+
+For external builds, the IntelliJ plugin holds class changes from build start
+until successful compilation. Errors or cancellation keep them held until the
+next successful build. A lost connection never implies success. `HEALTH`
+reports the held count and time; a missing result produces a warning after
+five minutes. The [BUILD protocol](protocol.md#holding-a-build-until-it-succeeds)
+explains recovery and a Gradle/Maven wrapper. Without BUILD signals, the
+existing file-watching behavior continues.
+
+### What the Plugin Shows
+
+- **Status bar widget:** Bottom-right corner shows connection status and reload count
+  - `Reclazz: Idle`, Plugin enabled, server not running
+  - `Reclazz: Connected`, Agent connected, watching for changes
+  - `Reclazz: 5 reloads`, Number of successful hot-swaps in this session
+  - `Reclazz: Error`, Last reload failed (check tool window for details)
+
+- **Tool window:** Bottom panel labeled "Reclazz" shows a detailed log of all events:
+  - Compilation results (autoCompile mode)
+  - One line per reload, with the timing and what the save touched:
+    `Reloaded com.acme.OrderService (12ms): bean orderService re-created,
+    mappings re-scanned, caches evicted`. When the save added something that
+    only a restart completes, the line ends with `1 thing now waits on a
+    restart, ask PENDING`. The same line is the status bar widget's tooltip.
+  - Each framework step's own sentence, under `verbose=true`
+  - Errors and warnings
+
+  **Export Log** saves the latest **500 events received by this panel**, oldest
+  first in arrival order. This includes warnings, information, compilation and
+  connection/disconnection events as well as reloads and errors. Each new event
+  beyond the limit evicts the oldest, regardless of level; the export header
+  states the retained count and limit. Export takes a consistent snapshot while
+  new events arrive. This is in-memory history for the panel's lifetime, not a
+  durable record of the whole session: it does not replay events from before the
+  panel opened, the initial waiting/connection banner, or filtered heartbeats.
+
+- **Notifications:** Balloon notifications for important events (JDK detection, connection status)
+
+---
+
 ## Option 1: Manual Setup
 
 Use this option when you run the SAP Commerce server **outside of IntelliJ** (e.g., from the terminal with `./hybrisserver.sh`) or when you want full control over JVM arguments.
@@ -116,333 +313,144 @@ test (`AgentArgumentContractTest`) keeps what it passes inside this table, and
 the agent's (`AgentArgumentsAreDocumentedTest`) keeps this table equal to what
 the agent accepts.
 
-### Message bundles and cached templates
-
-Reclazz invalidates the cached text when a recognized physical resource is saved
-in a watched directory. Current P5 observes actual formatted message lookups with
-`ResourceBundleMessageSource` and `ReloadableResourceBundleMessageSource` on
-Spring 5.3.39 and isolated Spring 6.1.14. The tests warm permanent caches, edit
-`messages_tr.properties`, then read new UTF-8 text through the existing context
-and retain fallback keys from `messages.properties`. Both ordinary and child
-application loaders are exercised. Arbitrary custom message basenames are not
-automatically discovered by the filename classifier. Mock ancestor-reset method
-preference is component evidence; a real parent/child source watcher is unverified.
-
-Current P5 also observes FreeMarker 2.3.34 file-template rendering and Thymeleaf
-3.1.3.RELEASE HTML rendering with `FileTemplateResolver` and the standard dialect.
-Caches remain enabled; native controls show a file edit alone still serves the
-old result until explicit invalidation. Repeated watched saves change the rendered
-output. A malformed template produces a native rendering error; fixing the file
-recovers. This does not promise retention of the last valid template on errors.
-The child-loader case places the application in a child loader; engine jars stay
-in the parent. Child-isolated engines and arbitrary custom resolvers/dialects,
-Spring MVC view-resolver integration and packaged JAR/WAR resource edits have no
-current acceptance proof. The tests edit the actual runtime file; automatic
-source-resource copying is not established by these observations.
-
-These observations use stock SapMachine JDK 17/21 on macOS arm64 and startup
-agent attachment. They do not certify other versions, operating systems, late
-attachment or native SAP tenant behavior. Engine libraries are test-only and are
-not packaged with the production agent. See the [P5 registry](feature-evidence.md#p5-properties-xml-messages-and-templates)
-for separate watcher, component, refusal and unverified claims.
-
-### Loaded Spring XML resources
-
-Alongside `*-spring.xml`, Reclazz recognizes local `.xml` resources that Spring's
-XML reader successfully loaded for an active application context after agent
-startup. This includes nested imports and files such as `spring-mvc-config.xml`
-and `web-application-config.xml`, including files with no bean definitions of their
-own. It uses the resolved file path and owning context, not a basename match or
-inspection of arbitrary XML content.
-
-Files under existing watch roots use the normal watcher. Other captured local
-XML files are checked once per second without watching their neighbouring files;
-module and filename exclusions still apply. Closed contexts and temporary parser
-factories do not grant resource ownership. JAR entries, remote resources and XML
-loaded before the agent's reader hook are not covered by this discovery path.
-Reserved logging, code-generation and backoffice filename rules retain priority.
-
-Recognition routes supported bean changes through the existing XML safety checks;
-it does not promise arbitrary MVC/security/filter-chain rebuilding or a context
-refresh. Import-topology changes are not a full live configuration reload: a new
-import seen only by the temporary parser does not become a captured live resource.
-Unsupported bean changes still require the reported restart. Use the actual
-loaded file; editing a different source copy with the same name does not update it.
-
-For an already-instantiated ordinary bean, a failed property resolution, conversion
-or setter call keeps the previous raw property in its bean definition and reports
-the failure. Other supported properties and beans can still update. A setter may
-change application state before throwing; those side effects are not rolled back.
-Uninstantiated lazy beans retain native deferred validation: their requested
-metadata is updated without creating them, and invalid values can fail when Spring
-later creates the bean. Only that bean's cached merged definition is invalidated
-so native creation reads the requested metadata; other beans' caches stay intact.
-
-For existing ordinary XML beans, changes to `depends-on`, `primary`, `autowire`,
-`autowire-candidate` or the effective `lazy-init` flag require restart. Spring's
-parsed flag determines equivalence, including `default-lazy-init` and explicit
-defaults. Changing the flag does not create a cold bean or undo an already
-created instance. The affected bean's properties and
-raw definition stay unchanged, including for a lazy bean; supported changes to
-independent beans can still apply. Unchanged declarations continue to allow
-property edits. This diagnostic does not rebuild initialization order or reinject
-existing consumers; new beans retain Spring's native metadata handling and the
-existing guidance for consumers created before their addition.
-
-Ordinary XML property values are compared by their declared configuration,
-including inner bean properties/constructor values and local versus parent bean
-references. An unchanged inner bean keeps its live identity; generated inner
-names, source locations and resolved type caches do not trigger reconstruction.
-Changed simple inner beans still use Spring's native value resolution. Changes
-that would reconstruct resource, lifecycle, factory or otherwise unsupported inner
-compositions require restart before any property of that owner is updated;
-independent supported beans can still update. Comparison has bounded depth and
-size and refuses unknown raw values. This does not destroy or rewire arbitrary
-nested live objects, and user constructor/setter side effects are not rolled back.
-
-Existing unsupported XML definitions do not report restart merely because the
-file was saved again: a standard definition proven unchanged is left alone,
-including abstract templates and prototype beans. Real edits, new or removed
-unsupported definitions still require the existing restart or recreation checks.
-This proof includes declared values, property order and alias sets and refuses custom definition
-subclasses, instance suppliers or unverifiable nested metadata; their prior
-conservative diagnostics remain. It does not make unsupported shapes reloadable
-or reconstruct XML that arbitrary post-processors have rewritten.
-
-### OCC field-set mappings
-
-For existing SAP Commerce `FieldSetLevelMapping` beans, supported XML property
-edits now refresh the standard `DefaultFieldSetLevelHelper` consumers and their
-manager-backed `fieldSetCache`. BASIC/DEFAULT/FULL selections can add or remove
-existing DTO fields. Descendant contexts that see the changed mapping are included;
-unrelated contexts and other named caches are left alone, and nothing is created in
-them: SAP's lazy web beans stay uncreated. The edited file is parsed again with the
-document reader its context used, so SAP's lazy web singletons do not read as a
-`lazy-init` change, and a file under a symlinked extension (`bin/custom` linked to a
-checkout) is matched to the context that loaded it through its target. Repeated unchanged saves
-do not rebuild the table. Multiple declarations for one DTO are rebuilt from fresh
-copies of their inline `levelMapping` maps, avoiding accumulated merges.
-
-This requires the standard helper and mapping implementation and an existing
-`fieldSetCache` exposed by a Spring `CacheManager`. Custom helpers, custom mappings,
-referenced/inherited/programmatic maps or unavailable cache invalidation report restart guidance.
-Custom cache resolvers, asynchronous cache loading and arbitrary inherited/programmatic
-mapping configuration are outside this acceptance. Fields a DTO gains are the next
-section's. An XML property may have changed even when consumer refresh reports a
-restart requirement; follow that diagnostic.
-
-### WsDTO properties added in beans.xml
-
-A property added to a data class and its WsDTO in `*-beans.xml` reaches OCC responses
-once the DTOs regenerate (`autoCompile=true`). Orika's mapping for the pair is
-refreshed with the added property; the mapper it generates is compiled against the
-class file the reload applied, because SAP's loader finds `models.jar`, which holds
-the class as it was at startup, before the directory the regen writes. The JAXB
-(EclipseLink MOXy) contexts the OCC message converters cached for a changed class,
-or for a response type that maps it, are dropped and built again on the next
-response, JSON and XML alike. `?fields=` and field-set levels can then name the
-property. Removing it again makes `?fields=` that name it answer as they would on a
-fresh server. Retained default plans also drop the implicit mapping when the
-last added property is removed, so ordinary responses work again after rollback.
-Application-defined mappings are preserved; if they still name a removed accessor,
-Reclazz warns and records that the mapping configuration needs updating.
-
-### OCC request mappings and overrides
-
-For SAP Commerce `CommerceHandlerMapping`, saving a controller rebuilds the
-override-priority table and bean-discovered handler registrations together. Existing
-or JVM-visible methods can change paths or `@RequestMappingOverride` annotations;
-removing or lowering the winning override makes the remaining eligible handler
-available. SDK API-version filtering remains in charge. Request lookups wait under
-the mapping registry's write lock while the complete registry is rebuilt. A changed priority
-property (`priorityProperty`, or the derived `requestMappingOverride.<class>.<method>.priority`)
-in `local.properties` rebuilds the registries whose handlers read it, so the handler it
-now favours answers without a restart.
-
-On a registration failure, Reclazz attempts to restore the previous mappings and
-priority table and reports a restart requirement. This restores routing registrations,
-not the already redefined controller class or bean state. Missing reflection hooks
-or the registry lock cause refusal before registrations change.
-
-Synthetic endpoints added through companion methods are outside this support. Such
-an attempt leaves the registry unchanged, reports `SAP OCC mappings need a restart`,
-and prevents further rebuilds of that registry until its context is replaced or the
-application restarts. Existing instance registrations, including generated endpoint
-adapters, also cause refusal. Acceptance covers SDK bean discovery; custom handler
-mapping lifecycle overrides and programmatic bean-name registrations are outside it.
-There is no new property-file hot reload: priority values must already be available
-through the application's configuration service. Ordinary Spring MVC retains its
-existing controller rescan and added-endpoint behavior.
-
-### SAP populator and list-merge directives
-
-Changing which populator an existing `ModifyPopulatorList` adds or removes
-(its `add` or `remove` reference) applies to the running converter: Reclazz takes
-the old `add` out of the target list, puts the old `remove` back, then removes the
-new `remove` and appends the new `add`, the same way SAP applies a directive at
-startup. A populator bean added in the same save can be the new `add`. A populator
-that comes back this way is appended, so when several directives touch one list
-its order can differ from a fresh start. If the edit cannot be applied, the list
-and the directive stay as they were and the save reports a restart.
-
-Other edits to existing `ModifyPopulatorList` and `ListMergeDirective` XML
-definitions require restart: a changed `list` target, subclasses, inherited or
-lazy directives, and every `ListMergeDirective` edit. Reclazz rejects these
-before changing the live definition or directive and reports that the effective
-target lists were not refreshed. This includes property,
-ordering and `depends-on` edits, inherited definitions and subclasses. Lazy directives
-are not instantiated by the check, and unchanged definitions do not generate a warning.
-
-Unrelated ordinary XML edits in the same resource can still apply. Newly added
-directives retain the existing bean-addition behavior; this diagnostic does not
-promise automatic list reconstruction or broaden support for new directives.
-
-### Refreshing a custom cache after a helper reload
-
-A reloaded method body takes effect wherever it runs, but a value a bean already
-computed and kept in its own cache, a Guava cache or a plain field, does not
-recompute on its own. When the logic lives in a plain helper class that is not a
-Spring bean, editing the helper updates its code yet leaves that cached value as it
-was, because the agent has no way to know which bean's cache a given helper feeds and
-will not guess a cache field or empty every cache.
-
-`refreshOwnersOnHelper` lets you say so explicitly. Map a helper class to the Spring
-singleton cache-owner beans it feeds:
+### Workflow
 
 ```
--javaagent:reclazz-agent.jar=refreshOwnersOnHelper=com.acme.PriceHelper>com.acme.PriceCache;com.acme.QuoteCache
+1. Start the SAP Commerce server (with agent in JVM args)
+   └── Reclazz banner appears in the console output
+
+2. Edit your Java source files in IntelliJ or any editor
+
+3. Compile with ant:
+   cd hybris/bin/platform
+   ant build
+
+4. Reclazz detects the new .class files and hot-swaps them instantly
+   └── "Hot-swapped: com.example.MyService (12ms)" appears in the console
+
+5. Test your changes, no server restart needed
 ```
 
-After `com.acme.PriceHelper` reloads, each listed owner is recreated through the same
-guarded lifecycle an ordinary bean reload uses, so its cache is rebuilt and the next
-read runs the fresh helper logic. Separate several mappings with `|`. An owner is
-resolved in the reloaded helper's own classloader, so the same class name in another
-context is never touched. Owners that are not recreatable singletons, FactoryBeans or
-event listeners are declined with a message rather than refreshed, and the feature is
-off until you set the mapping. It recreates the owner; externally held references to
-the old instance and in-flight work are the owner's own concern, the same as any bean
-reload.
+---
 
-### XML singleton recreation
+## Option 3: Auto-Build on Idle (Optional)
 
-For instantiated ordinary beans, simple physical XML properties use Spring's
-write-method descriptor and generic method metadata. Admitted scalar conversions
-include strings, primitives/wrappers, `Class`, enum, decimal/integer numbers and
-`URI`; typed list/set/map compositions of admitted scalars use the live factory's
-standard `SimpleTypeConverter`. Generic inheritance uses the resolved target
-type, and setter selection does not execute a getter body. Registered editors
-and conversion services participate on admitted targets; their own side effects,
-like setter/resolver side effects, are not rolled back. A failed conversion or
-setter leaves the previous raw definition value intact, while independent
-supported properties can still apply.
+> **This feature is off by default and must be explicitly enabled.** It can increase CPU usage because it triggers a build every time you stop typing, even for incomplete changes.
 
-Whole bean references compatible with the resolved runtime target retain their
-identity, including custom collection beans, without newly iterating/converting
-them. Compatible custom elements, existing arrays and raw/wildcard collection
-elements retain direct assignment; resolved generic element types are checked.
-New custom-object/array conversions, conversions of unresolved generic elements
-and lazy custom collection carriers are outside this support. New native
-conversion is limited to bounded literal compositions with standard JDK
-collection carriers. The new conversion route refuses unknown custom
-`TypeConverter` implementations. Resource/stream/path/URL target
-properties and unsupported explicit XML type conversions are refused before
-value resolution; explicit arrays of admitted scalar types retain their prior
-native resolution. This does not prevent application code in a supported
-resolver, editor, converter or setter from producing its own side effects.
+### How It Works
 
-Non-public unambiguous physical setters and proxies retain only the earlier
-primitive/string/compatible-value assignment boundary, with declared generic
-type validation; no proxy targets are unwrapped. Nested/indexed paths and
-logical companion-only setters are not newly supported. Uninstantiated lazy
-beans retain native deferred creation/validation, and the lifecycle, FactoryBean,
-merge and explicit singleton recreation guards below still apply.
+When enabled, Reclazz monitors your editing activity. After you stop typing for a configurable threshold, it automatically triggers a build. Combined with the hot-swap pipeline, this means your changes are compiled and reloaded without any manual action.
 
-Ordinary XML beans implementing Spring `InitializingBean`, `DisposableBean`,
-`BeanPostProcessor` or `BeanFactoryPostProcessor` require restart when their
-declarations change. Safety checks keep Spring's already-resolved merged class,
-or resolve its name through the live factory's application loader, and also
-inspect an existing singleton's type,
-so application classes invisible to the watcher and lifecycle interfaces hidden
-by a JDK proxy are not treated as ordinary mutable beans. Inherited lazy classes
-are resolved without initialization or bean creation; unavailable type metadata
-requires restart. The affected bean and definition remain unchanged, proven
-unchanged standard declarations stay quiet, and supported sibling edits can
-still apply. This does not replay lifecycle callbacks or extend the existing
-constructor/factory/explicit-lifecycle recreation rules below.
+### Setup
 
-Existing ordinary XML `FactoryBean` definition changes require restart before
-factory properties or definition metadata are updated. A setter on the factory
-does not refresh Spring's cached product or references already held by consumers.
-The refusal also covers unwarmed/lazy factories and nonsingleton products: Reclazz
-does not infer that those products have no consumers. It does not query or create
-the product to make this decision. Proven unchanged standard definitions remain
-quiet, new definitions retain native creation, and independent ordinary bean
-updates can still apply. Product eviction, factory close and consumer rewiring are
-outside this support; constructor/factory/lifecycle and prototype guards retain
-their existing restrictions.
+1. Go to **Settings** > **Tools** > **Reclazz**
+2. Check **AutoCompile**, this is required for auto-build to work
+3. The debounce timer controls how long Reclazz waits after your last edit before triggering compilation
 
-An edited Spring Integration consumer endpoint in XML (`service-activator`,
-`transformer`, `filter`, `router` and similar) is replaced in place: the old
-endpoint is stopped and unsubscribed, the new one is created and started, and
-the next message goes to the new handler. A new handler that fails to build
-leaves the old endpoint running. The endpoint needs an explicit `id`; one
-without an id is reported for a restart. Adding or removing endpoints, channels,
-pollers and gateways still needs a restart.
+### How the Debounce Timer Works
 
-For an existing bean in a watched Spring XML resource, edits to constructor arguments,
-a public static or instance factory method, or explicit `init-method` and
-`destroy-method` metadata can recreate the singleton without restarting:
+The **Debounce (ms)** setting (default: 500ms) controls the delay:
 
-```xml
-<bean id="client" class="example.Client" init-method="start" destroy-method="stop">
-    <constructor-arg value="30"/>
-</bean>
+```
+You type... type... type... [stop]
+                                  |
+                                  ├── 500ms timer starts
+                                  |
+                                  └── No more edits detected
+                                      └── Reclazz compiles the changed file
+                                          └── Hot-swaps the result
 ```
 
-Changing `30` to `60` replaces the definition and lets Spring create and initialize
-the new product. The old product receives its old destroy callback; the new
-definition controls subsequent destruction. Arguments and properties support
-scalar values, bean references and the live factory's placeholder resolution.
-Unchanged definitions do not recreate products. A lazy singleton that has not
-been created stays lazy. Ordinary setter-only edits retain the existing in-place
-path and bean identity.
+If you resume typing before the timer expires, it resets. This prevents unnecessary compilations while you are still editing.
 
-Reclazz snapshots Spring's dependent graph before replacement. Supported plain
-dependents are recreated too. Writable direct fields in known singleton holders
-are updated by identity, including previously replaced plain holders still held
-by application code. These old holders are remembered weakly across saves.
-Their own state is not reset or globally copied from the new holder.
+### Adjusting the Timer
 
-Preflight requires exact file ownership, the same concrete product type, stable
-class/factory-bean/alias metadata and an ordinary singleton definition. An instance
-factory must already be a local singleton; factory methods must be public and
-unambiguous with a concrete return type. Scalar/reference argument and property
-edits, factory-method selection and explicit init/destroy names are the allowed
-metadata changes. Scope, parent, autowire policy, depends-on, method overrides,
-custom suppliers, infrastructure metadata and other definition changes are refused.
+| Setting | Effect |
+|---|---|
+| **100ms** | Very aggressive, compiles almost instantly after every pause. High CPU usage. |
+| **500ms** (default) | Good balance, compiles after a brief pause. Suitable for most workflows. |
+| **1000-2000ms** | Conservative, waits for a longer pause. Lower CPU usage, but slower feedback. |
+| **3000-5000ms** | Very conservative, only compiles after you clearly stop editing. |
 
-New constructor/factory/lifecycle definitions and bean removal still require a
-restart. Recreated definitions cannot use nested beans or managed collections.
-FactoryBean, proxies, AutoCloseable, Thread, Executor, DataSource, Spring lifecycle
-interfaces and infrastructure types are excluded. Dependents must have plain
-definitions without constructor/factory/lifecycle metadata or lifecycle annotations.
-Known direct final fields and collection/map/array holders referencing replaced
-beans are refused before destruction. Local variables, static fields, nested
-object graphs, inaccessible fields and holders outside the owning factory are
-not repaired; a raw reference to the old target remains the old object.
+Adjust the timer in **Settings** > **Tools** > **Reclazz** > **Debounce (ms)**.
 
-If creation fails, Reclazz attempts to restore the previous definitions, recreate
-the affected instances and repair holders. Both the original failure and a failed
-restoration are reported. Fix the input or dependency and save again to retry.
-This is not rollback of constructor or callback side effects; restoration can run
-callbacks again. Spring retains its own callback-error handling. Replacement is
-not a transaction with concurrent requests, registry edits or external resources.
+### Performance Considerations
 
-Verified with Spring 5.3.39 and SapMachine 21, including startup-agent reloads in
-ordinary and child classloaders, factory edits, callback counts and repeated saves.
-Multiple owning contexts resolve placeholders independently, using the same Spring
-classes. Other Spring versions, separate Spring installations, SAP Commerce runtime
-integration and a JDK 17 runtime have not been verified for this extension.
+- **CPU:** Each compilation invokes the JDK compiler. Frequent compilations can increase CPU usage, especially on large files or slow machines.
+- **File descriptors:** The file watcher opens file descriptors for every watched directory. On large Hybris installations with many extensions, this can approach OS limits. The **Startup delay** setting (default: 30s) helps by delaying the watcher until the server has finished starting.
+- **Incomplete code:** If you pause mid-edit, Reclazz may try to compile syntactically invalid code. Compilation errors are shown in the tool window but do not affect the running server.
+
+### Recommendation
+
+Use auto-build for rapid iteration on small changes (fixing a service method, tweaking business logic). For larger changes involving multiple files, use `ant build` or IntelliJ's Build Project (Ctrl+F9 / Cmd+F9) instead.
+
+---
+
+## Option 4: Attach to Running Server
+
+Use this option when the SAP Commerce server is **already running** without the `-javaagent` flag, for example, started from a terminal or by another team member. Reclazz uses the JVM Attach API to load the agent into the running process without restarting it.
+
+### How It Works
+
+The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (by detecting the Tanuki wrapper or Hybris bootstrap loader), and dynamically loads `reclazz-agent.jar` into the selected process. The agent initializes inside the running JVM and begins watching for class changes.
+
+### Requirements
+
+- IntelliJ IDEA and the Hybris server must run as the **same OS user** (JVM Attach API restriction)
+- JDK 17+ (the `jdk.attach` module must be available)
+
+### Usage
+
+**From the menu:**
+
+1. Go to **Tools** > **Attach Reclazz to Running Server**
+2. If multiple SAP Commerce processes are detected, pick the one you want
+3. The agent loads and the plugin connects automatically
+4. Status bar shows "Reclazz: Connected"
+
+**From settings:**
+
+1. Go to **Settings** > **Tools** > **Reclazz**
+2. In the **Connection** group, click **Attach to Running Server...**
+
+### Workflow
+
+```
+1. Start SAP Commerce from terminal (without -javaagent)
+   ./hybrisserver.sh
+
+2. In IntelliJ: Tools > Attach Reclazz to Running Server
+   └── Plugin detects the running JVM
+   └── Agent is loaded dynamically
+   └── Reclazz banner appears in the server console
+   └── Status bar shows "Reclazz: Connected"
+
+3. Edit Java source files
+
+4. Compile with ant:
+   cd hybris/bin/platform
+   ant build
+
+5. Reclazz detects the new .class files and hot-swaps them
+   └── No server restart needed
+```
+
+### Limitations
+
+- **JBR flags cannot be added retroactively**: If the server was started without `-XX:+AllowEnhancedClassRedefinition`, the JVM cannot switch to enhanced redefinition mid-run. The companion-class reloader still works on the attached JVM, so structural changes are still applied, but reflective access to the new members carries the standard-JVM caveat (see below).
+- **Startup delay is skipped**: Since the server is already running, the agent starts watching immediately (no `startupDelaySec` wait).
+
+### Troubleshooting
+
+- **"No running SAP Commerce JVM found"**: The server must be running before you attach. Reclazz looks for processes containing `org.tanukisoftware.wrapper.WrapperSimpleApp`, `-Dplatform.home=`, `-DHYBRIS_BIN_DIR=`, or `de.hybris.bootstrap.loader.Loader`.
+- **"Permission denied"**: IntelliJ and the server must run as the same OS user. If the server runs as `hybris` and IntelliJ runs as your user, the attach will be refused.
+- **"Agent is already loaded"**: The agent was already attached. The plugin will reconnect to the existing agent instance.
+
+---
+
+## Spring beans and components
+
+Read the [component registration](#new-component-classes-after-startup) and web integration sections below.
 
 ### New component classes after startup
 
@@ -1036,384 +1044,154 @@ Start with `-javaagent` before MVC loads. Late attach, other Spring versions and
 native servlet-container deployment remain unverified. No production dependency
 is added.
 
-### Kafka listeners added after startup
+### Edited aspect pointcuts
 
-Current broker observations, component-only contracts and unverified variants are
-listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
-
-With Spring Kafka already configured, compile a new listener method on a
-running plain singleton `@Component` / `@Service` / `@Repository`:
+Change the expression on an existing advice method and compile the aspect:
 
 ```java
-@KafkaListener(id = "orders-created", topics = "orders", groupId = "orders-service")
-public void onOrder(String payload) {
-    processOrder(payload);
+@Around("execution(* com.example.OrderService.submit(..))")
+public Object observe(ProceedingJoinPoint call) throws Throwable {
+    return call.proceed();
 }
 ```
 
-The saved metadata is passed to the application's Kafka listener processor and
-container factory. Spring performs message conversion and argument resolution;
-`@Payload`, `@Header`, `@Headers` and concrete generic parameter signatures such
-as `ConsumerRecord<Integer, String>` are carried. Public and private void
-instance methods with one or more arguments are supported. Calls delegate to
-the current plain singleton; a missing or proxied replacement throws instead
-of silently treating the message as handled.
+If `OrderService` already has a supported Spring proxy, previously injected
+references now use the edited pointcut. The same proxy and target remain alive:
+service fields are not reset and the service is not destroyed/recreated by this
+AOP step. An existing proxy can gain this aspect's advice even if it previously
+carried only another advisor. Widening, narrowing, removing all matches and
+restoring matches update the chain without duplicating advice.
 
-Unsupported Kafka infrastructure does not block unrelated bean reloads.
-Before the edited bean is recreated, Reclazz identifies its standard Kafka
-record adapters, requests consumer stop and waits for the stop callbacks before
-unregistering their container IDs. Normal Spring initialization can then
-re-register existing methods without ID collisions. The new methods register
-afterward. Later saves update bodies/topics, remove listeners or annotations,
-and restore them. Unrelated containers retain their identity. A duplicate ID
-belonging to another container is refused. A failed registration attempt cleans
-up the containers it created; failures are reported in the restart ledger.
+Spring resolves matching with the bean name, supplies its AspectJ invocation
+context and orders the changed advice. Unrelated advisors retain their identity
+and relative order. If Spring's sorting would reorder those advisors, the bean
+is declined with a reason. All captured contexts are checked, including child
+contexts using an aspect defined in a parent. Aspects registered by factories or
+programmatically reach this path even without `@Component`.
 
-The supported addition uses a literal nonempty `id`, and `topics` that are each a
-literal, `${property}` placeholder or `#{SpEL}` expression resolved by the
-application's native processor. Topic expressions may return a String, String
-array or iterable of strings; `groupId` expressions must resolve to a String
-(native null/default behavior is retained). Optional literal
-`containerFactory`, `idIsGroup`, `autoStartup` and positive integer
-`concurrency` are accepted. Measured Kafka2.9.13 late registration follows the
-native registry policy: `autoStartup=false` can still start when
-`alwaysStartAfterRefresh=true` (the native default); setting that registry policy
-to false preserves the annotation's start flag. Omitted `groupId` and `#{null}`
-fall back to the literal listener ID when `idIsGroup=true`, otherwise to the
-configured consumer-factory group. An explicit nonempty group overrides that
-choice. Exact `groupId=""` now follows the same native fallback after watched
-addition and body/topic edits, with both `idIsGroup` values measured against
-ordinary native listeners. Whitespace-only group literals remain unsupported;
-this proof applies to the named Kafka2.9.13/Spring5.3.39 and JDK17/21 fixture.
-Other explicitly supplied `@KafkaListener` options
-are refused. The class directly extends `Object`, has no interfaces/type
-variables and carries only the component stereotypes above or `@Deprecated`.
-Callback annotations are direct `@KafkaListener` and optional `@Deprecated`;
-extra advice annotations, non-void/static/abstract/native/bridge/synthetic
-methods and type-variable signatures are refused. Parameter names require
-explicit annotation names or compilation with `-parameters`.
+The supported shape is a mutable JDK or CGLIB singleton proxy with a direct
+`SingletonTargetSource`, and one standard
+`AnnotationAwareAspectJAutoProxyCreator` in that context. Previously unproxied
+singletons cannot acquire a proxy in place; matching beans are named in the log
+and restart ledger. Frozen, opaque, nested and dynamic/custom-target proxies,
+custom/multiple auto-proxy creators, per-clause aspects and introductions are
+outside this path. The scan does not instantiate lazy/prototype service beans;
+already-issued prototype/scoped instances and FactoryBean products are not
+tracked. Adding new advice methods on a stock JDK, changing proxy interfaces or
+removing the `@Aspect` annotation is not covered.
 
-`topics = "#{__listener.topics}"` and `groupId = "#{__listener.group}"` read
-properties on the real listener singleton, while messages still invoke the saved
-callback through its delegate. Named application beans and property/expression
-combinations also use the native resolver. The temporary listener binding is
-restored after registration, including expression errors. Custom `beanRef`
-options remain unsupported. A later listener save re-evaluates current topic/group
-values; property or bean changes alone do not reroute an existing consumer.
-Expression syntax/type errors occur during registration after old consumers have
-retired. Partial additions are removed and a valid save retries, but old consumers
-and user expression side effects are not rolled back. A different group may replay
-retained messages according to the application's offset policy.
+Invalid pointcut syntax is detected before changing living chains; a corrected
+save can recover. This is not an atomic update across concurrent invocations:
+Spring's advisor mutation API clears method-chain caches, but an invocation
+already running can finish with its old chain. Calls overlapping the mutation
+can observe an intermediate chain, including both old and new aspect advisors;
+concurrent refresh is not covered by the single-call correctness tests. The existing request-boundary mode has its own
+[documented scope](#reload-between-requests). The aspect's ordinary bean refresh,
+when applicable, retains its existing lifecycle effects.
 
-Use the standard `KafkaListenerAnnotationBeanPostProcessor`,
-`KafkaListenerEndpointRegistry` and `ConcurrentKafkaListenerContainerFactory`
-in record mode. Added listeners refuse annotation enhancers, retry-topic
-configuration, filtered/retry-template/batch factories and container
-customizers. Proxy/subclass receivers are not unwrapped past advice. This
-scope does not cover class-level or repeatable listeners, expressions/placeholders
-in other listener attributes, container groups, arbitrary wrapper/container types,
-scoped/prototype beans or sharing one registry between multiple contexts.
+Verified with Spring Framework 5.3.39, AspectJ 1.9.22.1 and a stock JDK 21 using
+real JDK/CGLIB proxies and HTTP calls across four aspect saves. Other Spring/
+AspectJ versions and a JDK 17 runtime were not exercised for this feature.
+AspectJ is only a test dependency of Reclazz; the production agent ships neither
+Spring nor AspectJ and does not enable AspectJ weaving.
 
-If consumer stop does not complete within 30 seconds, container entries remain
-registered and this class's bean refresh/framework follow-up is deferred with
-a diagnostic. Already reloaded method bodies are not rolled back. The direct-listener coordination here runs through the Spring orchestrator.
-A separately bounded [Kafka helper/property transaction](spring-constructor-dependencies.md#kafka-helper-and-constructor-property-changes)
-recreates one plain local leaf listener after helper-body or scalar constructor
-property saves, including a same-key scalar on the listener constructor. It is
-measured on Framework5.3.39/Kafka2.9.13 and Framework6.1.14/Kafka3.2.4,
-JDK17/21, with nontransactional RECORD and native-default BATCH acknowledgment.
-BATCH acknowledgment is distinct from batch-listener callbacks; other
-reconstruction paths and broader closures remain outside this transaction. Existing Spring bean recreation/lifecycle effects remain. The hidden
-method's declaring class differs from the original, so custom conversion or
-argument factories depending on exact declaring-class identity are outside the
-verified scope. This is not an atomic reload transaction or a Kafka exactly-once
-delivery guarantee; application acknowledgments, retries and offset policy
-continue to determine redelivery.
+<a id="jackson-getters-added-after-startup"></a>
 
-Verified with Spring Kafka 2.9.13, Spring Framework 5.3.39 and a real embedded
-Kafka 3.2.3 broker on stock JDK 17 and 21 on macOS arm64. Real-agent tests cover both the first listener
-on an already used bean and addition beside an existing listener, unique test
-message delivery across six saves, topic changes, retired consumer state,
-unrelated container identity and context close. Expression tests on normal and
-child classloaders cover self-referencing topics/groups, expression failure,
-multiple-topic recovery, group replay and removal. Native startup comparison
-also covers named beans and property/expression arrays. Start with `-javaagent` before
-application classes load. Beyond the named legacy and modern lanes, other
-broker/framework versions, external clusters, transactions and rebalance/failure
-delivery guarantees were not exercised. Kafka libraries and the embedded broker are test dependencies
-only. Beans mixing Rabbit, JMS or Kafka listeners require a restart before
-any of their consumers are retired.
+### Jackson properties added after startup
 
-Modern compatibility is also measured with **Spring Kafka 3.2.4**, Spring Framework
-6.1.14 and an embedded Kafka 3.7.1 broker on stock JDK17/21. This exact version
-uses native endpoint-ID preparation before registration and no longer has the
-factory `retryTemplate` field. Added listeners follow six saves, including topic
-changes, private restoration, removal, retired consumers and unrelated container
-identity. Native startup controls precede each watcher observer. The factory
-absence exception and endpoint-ID preparation apply only to package version
-3.2.4; this does not certify every Kafka 3.x release. Filtered, batch and custom
-factories retain their restart requirements. Native owner-expression controls
-verify context separation, prior-binding restoration and failed-registration
-cleanup. Modern Kafka reply, transactions, rebalance, late attach, hosted clusters
-and direct child-loader watcher behavior remain outside this measured scope.
-
-### JMS listeners added after startup
-
-Current broker observations, component-only contracts and unverified variants are
-listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
-
-With Spring JMS already configured, add a listener to a running plain singleton
-`@Component`, `@Service` or `@Repository` and compile:
+Start with `-javaagent`, then add a getter to an already loaded DTO and compile:
 
 ```java
-@JmsListener(id = "orders-created", destination = "orders")
-public void onOrder(@Payload String payload, @Header("tenant") String tenant) {
-    processOrder(tenant, payload);
-}
+private int count = 7;
+public int getCount() { return count; }
 ```
 
-Spring's actual listener processor and container factory register the saved
-metadata. Public/private instance methods with arguments may declare `void`,
-`String`, `byte[]`, `java.util.Map`, `javax.jms.Message` or
-`org.springframework.messaging.Message` as their return type.
-Spring resolves the payload, headers and JMS message/session arguments. Calls
-reach the current plain singleton; a missing/proxied replacement throws rather
-than silently consuming a message. Later saves can edit bodies or queue
-destinations, remove a method or its annotation, and restore it. Original
-listeners on the same bean are registered again after recreation. Containers
-belonging to unrelated beans keep their identity.
-
-For request/reply, return a supported value and optionally declare a default
-reply queue directly on the method:
+The next JSON response from a Spring-managed Jackson mapper includes `"count":7`,
+including when the endpoint returns an object created before the edit and the
+field has a supported [initialiser](#new-field-values-on-objects-that-already-existed).
+Add a setter too and a JSON request can populate the new property:
 
 ```java
-@JmsListener(id = "order-status", destination = "order-status-requests")
-@SendTo("${order.status.replies}")
-public String status(String orderId) {
-    return findOrderStatus(orderId);
-}
+public void setCount(int count) { this.count = count; }
 ```
 
-Spring's native adapter converts the result and sends the reply. The request's
-`JMSReplyTo` takes precedence over `@SendTo`; without `@SendTo`, the caller must
-supply `JMSReplyTo` for a non-null result. Reply correlation uses the incoming
-`JMSCorrelationID`, or its `JMSMessageID` when no correlation ID was supplied.
-A null result sends no reply. Direct method `@SendTo` accepts one destination,
-including an application-resolved `${property}` placeholder. Later class saves
-can change it; property-only reply-route refresh is outside this scope.
-The application's converter remains responsible for payload support, including
-Map entries and Spring Message payloads. Arbitrary DTO/`Object`, concrete message
-subtype declarations, primitive, Future and reactive return types are excluded.
-Class-level or composed `@SendTo` is not supported.
-
-Use a literal nonempty `id` and a `destination` that is a literal or a
-`${property}` placeholder resolved by the application's own value resolver (a
-`#{SpEL}` expression stays out of scope). An optional `selector` may also be a
-literal or `${property}` placeholder; optional literal `containerFactory` and
-positive `concurrency` (a number or ascending range) are supported.
-The class must directly extend `Object`, have no interfaces/type variables, and
-carry only the stereotypes above or `@Deprecated`. Added callback annotations
-are direct `@JmsListener`, optional direct `@SendTo` and `@Deprecated`; parameter
-annotations are `@Payload`, `@Header` and `@Headers`. Extra advice, static/synthetic
-methods, type-variable signatures and other explicitly supplied listener
-options are refused. Parameter names require explicit annotation names or
-compilation with `-parameters`.
-
-The verified infrastructure is the standard `JmsListenerAnnotationBeanPostProcessor`,
-`JmsListenerEndpointRegistry`, `DefaultJmsListenerContainerFactory` and
-`DefaultMessageListenerContainer` with Spring's `MessagingMessageListenerAdapter`.
-The application factory retains its conversion, selector and local session
-transaction settings. Added listeners refuse custom factories/executors,
-external transaction managers and topic/durable/shared subscription factories.
-Proxies and subclass receivers are not unwrapped. Repeatable/composed listeners,
-scoped/prototype beans and registries shared between contexts are
-outside this scope. Custom argument factories that depend on the exact original
-declaring class are not verified: the added method is reflected on a hidden
-metadata delegate.
-
-Before singleton recreation, Reclazz identifies owned containers and waits for
-complete destruction, including their consumers, sessions and connection.
-Spring 5.3 has no registry unregister API; matching entries are removed under
-the registry's registration lock only after destruction finishes. A duplicate
-ID on another container is refused. Failed registration cleans up containers
-registered by that attempt. The direct-listener preflight leaves unrelated bean reloads on their ordinary
-path when optional JMS infrastructure is unsupported. The indirect helper
-transaction conservatively refuses uninspectable JMS ownership. A bean mixing Kafka and JMS consumers, or
-a JMS bean with uninspectable Kafka ownership, is deferred before shutdown.
-
-Shutdown waits up to 30 seconds. On timeout or interruption, registry ownership
-is retained and bean recreation/framework follow-up is deferred with a restart
-ledger diagnostic. Destruction continues in the background; a later save waits
-for that same operation before releasing the ID. Retained entries may therefore
-refer to already stopped containers until retry or application restart. Already
-reloaded bodies are not rolled back. This coordination covers direct class
-reloads through the Spring orchestrator. A separately bounded helper/property
-JMS transaction is described in [constructor dependency refresh](spring-constructor-dependencies.md#jms-helper-and-constructor-property-changes);
-other indirect recreation paths remain outside scope. The indirect transaction
-refuses a still-retiring consumer on a later save and requires restart, rather
-than using the direct path's same-operation retry. It does not make a reload atomic or promise
-global exactly-once delivery. Broker and application acknowledgment/redelivery
-policies still apply.
-
-Verified with Spring JMS 5.3.39 (`javax.jms`), a real embedded ActiveMQ Classic
-5.19.11 broker, and stock JDK 17 and 21 on macOS arm64 using startup `-javaagent`. Tests cover the first
-listener on an already used bean, addition beside an original listener, six
-saves, payload/header/message conversion, local transaction rollback/redelivery,
-selector filtering, consumer retirement, and context close. A deliberately
-blocked real consumer proves timeout/interruption and retry using a shorter
-internal test wait. Request/reply tests cover native Spring controls, text/bytes/
-map/native and Spring messages, correlation, `JMSReplyTo` priority, null results,
-rollback followed by a reply on redelivery, and invalid `@SendTo` recovery.
-Actual-agent reply tests cover normal/child class loaders, repeated saves,
-private restoration and reply queue changes. Other JMS providers and Spring versions,
-late attach, XA and durable topics were not exercised in that legacy lane.
-
-A separate modern lane measures Spring JMS **6.1.14**, Jakarta Messaging **3.1.0**
-and ActiveMQ Classic **6.1.3** on stock JDK17/21. Added callbacks returning a
-native `jakarta.jms.Message`, String or void follow six saves. Native-message
-and String reply tests observe actual replies, correlation, `JMSReplyTo` priority,
-rollback/redelivery, private restoration and retired containers on normal and
-child classloaders; void delivery also runs on both loader shapes. Each watcher
-observer first checks fresh agentless native delivery. Unsupported return/advice
-shapes remain refused. The existing `javax.jms.Message` support is retained.
-This does not establish XA, durable/shared topics, other JMS providers or
-property/dependency-cascade consumer recreation.
-
-Spring JMS and ActiveMQ are isolated test dependencies. Existing tests retain
-their Jackson/SLF4J versions. `:agent:unitTest`, `:agent:e2eTest` and `:agent:test`
-also run the matching isolated JMS suites; those results have separate XML
-reports under `jmsUnitTest`, `jmsE2eTest` and `jmsTest`. Run just JMS with
-`./gradlew :agent:jmsTest --rerun`. No JMS/broker classes enter the production JAR.
-
-### Rabbit listeners added after startup
-
-Current broker observations, component-only contracts and unverified variants are
-listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
-
-With Spring Rabbit already configured, add a method to a running plain singleton
-`@Component`, `@Service` or `@Repository`, then compile:
+Direct instance fields work as well, including private annotated fields:
 
 ```java
-@RabbitListener(id = "orders-created", queues = "orders")
-public void onOrder(@Payload String payload, @Header("tenant") String tenant) {
-    processOrder(tenant, payload);
-}
+@JsonProperty("display_name")
+@JsonAlias("label")
+private String displayName;
 ```
 
-The application’s real processor and `SimpleRabbitListenerContainerFactory`
-register the saved metadata. Spring converts payloads/headers and supplies the
-AMQP message. The callback uses the current plain singleton; missing or proxied
-receivers fail explicitly. Public/private instance `void` methods with arguments
-are supported. Later saves can edit bodies and queues, remove methods or their
-annotations, and restore them. Original listeners are registered again after
-bean recreation; unrelated containers retain their identity.
+Jackson writes the same added-field storage that application code reads. Both
+deserializing a new mutable DTO and `readerForUpdating` an object created before
+the reload are covered. Repeated saves update metadata and bodies; renaming,
+removing and restoring a property changes fresh mapper discovery in both directions.
 
-For newly added methods, use an explicit nonempty literal `id` and `queues` that
-are each a literal, `${property}` placeholder or `#{SpEL}` expression resolved by
-the application's own Spring processor. Expressions may produce queue names,
-Spring AMQP `Queue` objects, String arrays or iterables of those supported values,
-naming existing queues. For example, `queues = "#{@routing.queues}"` reads an
-application bean's queue list; `queues = "#{'${orders.queues}'.split(',')}"`
-combines a property with an expression. Saving the listener again resolves the
-current values and replaces its consumers. Changing a routing bean or property
-alone does not move existing consumers. Resolution errors leave the failed added
-registration absent and clean up partial registrations from that pass; unrelated
-container IDs remain. A later valid save retries. Old containers and expression
-side effects are not rolled back. Optional literal `containerFactory` and positive `concurrency` (number or ascending
-range) are accepted. Explicit `autoStartup` is outside this stage: Spring's late
-registration can start a container even when that flag is false. The class directly extends
-`Object`, has no interfaces/type variables, and uses only the stereotypes above
-and optional `@Deprecated`. Callback annotations are direct `@RabbitListener`
-and optional `@Deprecated`; parameter annotations are `@Payload`, `@Header` and
-`@Headers`. Composed/repeatable/class-level handlers,
-expression IDs/factories/concurrency, inline queue/exchange/binding declarations, return/reply/async methods,
-proxies, method advice and inheritance are outside this support.
+Jackson still decides which properties to read and write. Reclazz supplies saved
+field/method metadata and routes calls to the current companion or field storage.
+`@JsonProperty`, `@JsonGetter`, `@JsonSetter`, `@JsonAlias`, `@JsonIgnore`, read/write-only
+access, null policies, inclusion, naming and field/method mix-ins reach the normal
+discovery path. Concrete generic collections retain their element types. Private
+members follow each mapper's access-override policy; one mapper granting access
+does not grant it to another. Custom DTO and property serializers/deserializers
+remain in charge. Invalid input conversions and throwing setters/getters retain
+Jackson's mapping-error path. An ignored field can suppress its associated getter.
 
-Existing methods are re-scanned by Spring and do not use the added-method option
-allowlist: an existing `@RabbitListener(queues="orders")` keeps working with
-Spring-generated IDs, including beside a new listener. Existing `ackMode="AUTO"`
-and `autoStartup` metadata also stay on Spring's ordinary registration path.
-Spring's late registration may start an existing `autoStartup="false"` container;
-Reclazz preserves that framework behavior.
+This covers concrete, non-static, no-argument, non-void methods named `getX`, boolean
+`isX`, or directly annotated with `@JsonProperty`/`@JsonGetter`. Synthetic/bridge
+methods are excluded. Added setters must be nonstatic, concrete, single-argument
+`void` methods named `setX` or directly annotated with `@JsonProperty`/`@JsonSetter`.
+Nonstatic, nonsynthetic fields carry their saved annotations, type annotations
+and generic signature. Jackson retains its normal visibility/transient filtering.
+Final added fields can be read but cannot be written, even with access overriding
+enabled. Fluent setters, new constructor/record creators and builder mutation are
+outside this addition. The original class's ordinary reflection still cannot see
+the added members. The Jackson hook must load before Jackson databind; attaching
+after Jackson loaded does not install it retroactively.
 
-Both original and added consumers require the standard
-`RabbitListenerAnnotationBeanPostProcessor`, `RabbitListenerEndpointRegistry`,
-`MessagingMessageListenerAdapter`, a plain receiver and
-`SimpleMessageListenerContainer`, with AUTO acknowledgment and the default
-`SimpleAsyncTaskExecutor`. Newly added consumers additionally require the standard
-simple factory without a customizer. Local channel transactions are preserved.
-Manual/automatic-without-ack modes, external transaction managers, container
-advice, custom executors, direct/stream/batch containers and custom listener
-adapters are refused for retirement of either original or added consumers.
-Unsupported static metadata shapes, foreign added IDs and mixed Rabbit/JMS/Kafka
-owners are checked before owned consumers are retired. Queue expression parsing
-and evaluation occur later during native registration, after retirement; an
-expression failure does not restore the old consumers. Original consumers are
-checked against the runtime lifecycle restrictions above, not the added-method
-metadata restrictions. Unknown broker ownership also requires a restart. Unsupported Rabbit infrastructure does not block unrelated
-beans.
+Cache refresh discovers ObjectMapper beans in captured Spring contexts and
+mappers tracked at construction. A mapper missed by both discovery routes can
+retain its previous shape. An
+ObjectWriter retained from before a change can retain its property list, while its
+added getters dispatch to updated bodies; obtain a new writer after reload for
+the new shape. Retained ObjectReaders can likewise keep an earlier input shape;
+obtain a fresh reader after reload. In-flight conversion is not paused or rolled
+back. Application setter side effects are not a transaction: an error in a later
+property does not undo earlier writes to an object being updated.
 
-Start with `-javaagent`. The agent tracks each actual simple-container worker
-from construction through its complete `run()` exit, including queued tasks and
-channel/transaction cleanup. Before recreation it prevents new workers on the
-retired container, starts destruction, and waits up to 30 seconds for both
-destruction and worker completion. A zero Spring consumer count alone is not
-accepted: channel shutdown can release that counter while a callback still runs.
-An unavailable startup hook, timeout or interruption retains registry ownership,
-defers bean recreation and records a restart diagnostic. A later save waits for
-the same retirement; it may find stopped containers still holding their IDs.
+Historical acceptance used stock JDK 21 with Jackson 2.13.5 and Spring 5.3.39: real loopback HTTP,
+old/new DTO objects, three mapper policies, nested/generic values, private getters,
+null/empty inclusion, custom serializers and four successive edits. Input/field
+regressions additionally cover four saves with real HTTP JSON, ordinary and child
+application classloaders, alias/name changes, removal/restoration, private setters
+and fields, generic conversion, null skipping, custom deserializers and original
+reflection staying unchanged. Current [P3b acceptance](feature-evidence.md#p3b-jackson-in)
+uses Jackson 2.22.3 with Spring 5.3.39 and 6.1.14 on stock SapMachine JDK 17/21.
+It sends loopback HTTP directly to Spring-managed ObjectMappers; it does not
+prove every MVC message-converter configuration. Getter-output policies run on
+normal loaders; setter/field input-output runs on normal and child loaders.
+Mix-ins, mapper access restrictions, final-write refusal and retained-writer
+behavior have separately labelled component-only observations.
 
-This direct-listener path runs through the Spring orchestrator. A separately
-bounded [Rabbit helper/property transaction](spring-constructor-dependencies.md#rabbit-helper-and-constructor-property-changes)
-recreates one plain local leaf listener after helper-body or scalar constructor
-property saves, including a same-key scalar on the listener constructor. That
-indirect path is measured on Framework5.3.39/AMQP2.4.17 and
-Framework6.1.14/AMQP3.1.7, JDK17/21, with native default AUTO acknowledgment
-and nontransacted channels. It does not extend the direct path's local-channel
-transaction support to helper/property reconstruction. Already reloaded bodies
-are not rolled back, and this does not make reload atomic or promise exactly-once
-delivery. Broker/application acknowledgment and redelivery policies still apply.
-Custom conversion depending on the callback’s exact declaring-class identity is
-outside the verified scope because added callbacks use a hidden delegate.
+Jackson 3.1.7 getter output is separately covered on stock JDK 17/21, both with
+Jackson 2 hidden and with both namespaces present: getter addition, body changes,
+annotation rename/ignore, removal/restoration, naming and generic values, access
+restrictions and exception propagation. A Spring-free process and the Boot 4.1.2
+sample's manual-agent mode also serve an added getter and its changed body over
+HTTP without restarting. The Jackson 3 hook routes its method-handle getter path
+and clears mapper caches through the public API; constructor tracking includes
+standalone and rebuilt mappers. Already-prefetched ObjectWriters keep their
+property list while added getter bodies remain live; retained ObjectReaders
+keep their prefetched deserializer. Obtain fresh writers/readers for a new shape.
+This Jackson 3 coverage does not establish added setters or fields for input
+or output, new constructor/record creators, or annotations relocated to
+`tools.jackson.databind.annotation`. Other unlisted Jackson versions and
+accessor-generating extensions such as Afterburner remain unverified.
 
-Verified locally with Spring Rabbit 2.4.17, Spring Framework 5.3.39, RabbitMQ
-4.3.5 and stock JDK 17 and 21 on macOS arm64. Real-agent tests cover six saves both on an already used
-bean with no listeners and beside both explicitly named and ID-less original
-listeners, including payload/header
-conversion, rollback/redelivery and context close. Queue-expression tests on
-normal and child classloaders cover bean-driven rerouting, invalid result types,
-recovery to multiple queues and removal, with real message delivery. Native
-annotation comparison also covers `Queue` values, mixed lists and property/expression
-composition. A blocked real original
-callback checks force-close, timeout, repeat, interruption and retry. Beyond
-the named legacy and modern lanes, other framework/broker versions and late attach
-were not verified locally. Linux CI is configured for JDK 17/21; those runs are separate evidence.
+## Spring service methods, scheduling and events
 
-A separate modern lane measures Spring Rabbit **3.1.7** with Spring Framework
-6.1.14 and the same pinned RabbitMQ4.3.5 broker on stock JDK17/21. Direct first,
-existing and ID-less listener additions follow the six-save delivery/retirement
-sequence, with fresh agentless public/private/routing controls before each
-watcher observer. This is evidence of existing behavior and requires no Rabbit
-runtime repair. Modern Rabbit reply/async, direct child-loader watcher behavior
-and property/dependency-cascade consumer recreation are not established here.
-
-Spring Rabbit is a test dependency; no AMQP/framework/broker classes ship in the
-agent. The `:agent:rabbitTest` suite requires Docker with Linux containers and a
-pre-pulled official image. Prepare and run it with:
-
-```bash
-docker pull rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd
-./gradlew :agent:rabbitTest --rerun
-```
-
-Tests create uniquely named temporary containers, bind random loopback ports and
-remove their own resources on completion. Missing Docker/image fails the suite.
-`:agent:test` and `:agent:e2eTest` include it and report results separately under
-`agent/build/test-results/rabbitTest`. Count these alongside `test` and `jmsTest`
-for the full gate. Portable Rabbit checks run in `:agent:unitTest`; the blocked
-broker test belongs to `rabbitTest`. Windows CI explicitly omits only this Linux
-broker suite with `-Preclazz.skipRabbitBroker=true`, retaining portable tests.
-That option reports NOT RUN and is not a complete broker validation.
+Read the [service operation](#operations-on-added-service-methods), scheduling and event reference sections below.
 
 ### Operations on added service methods
 
@@ -1687,151 +1465,6 @@ condition/unless checks, before-invocation eviction on a throwing body and group
 cache operations. Real agent tests run seven saves through a held CGLIB proxy with
 normal and child classloaders. No broader Spring-version compatibility is claimed
 for composed cache operations here.
-
-### Edited aspect pointcuts
-
-Change the expression on an existing advice method and compile the aspect:
-
-```java
-@Around("execution(* com.example.OrderService.submit(..))")
-public Object observe(ProceedingJoinPoint call) throws Throwable {
-    return call.proceed();
-}
-```
-
-If `OrderService` already has a supported Spring proxy, previously injected
-references now use the edited pointcut. The same proxy and target remain alive:
-service fields are not reset and the service is not destroyed/recreated by this
-AOP step. An existing proxy can gain this aspect's advice even if it previously
-carried only another advisor. Widening, narrowing, removing all matches and
-restoring matches update the chain without duplicating advice.
-
-Spring resolves matching with the bean name, supplies its AspectJ invocation
-context and orders the changed advice. Unrelated advisors retain their identity
-and relative order. If Spring's sorting would reorder those advisors, the bean
-is declined with a reason. All captured contexts are checked, including child
-contexts using an aspect defined in a parent. Aspects registered by factories or
-programmatically reach this path even without `@Component`.
-
-The supported shape is a mutable JDK or CGLIB singleton proxy with a direct
-`SingletonTargetSource`, and one standard
-`AnnotationAwareAspectJAutoProxyCreator` in that context. Previously unproxied
-singletons cannot acquire a proxy in place; matching beans are named in the log
-and restart ledger. Frozen, opaque, nested and dynamic/custom-target proxies,
-custom/multiple auto-proxy creators, per-clause aspects and introductions are
-outside this path. The scan does not instantiate lazy/prototype service beans;
-already-issued prototype/scoped instances and FactoryBean products are not
-tracked. Adding new advice methods on a stock JDK, changing proxy interfaces or
-removing the `@Aspect` annotation is not covered.
-
-Invalid pointcut syntax is detected before changing living chains; a corrected
-save can recover. This is not an atomic update across concurrent invocations:
-Spring's advisor mutation API clears method-chain caches, but an invocation
-already running can finish with its old chain. Calls overlapping the mutation
-can observe an intermediate chain, including both old and new aspect advisors;
-concurrent refresh is not covered by the single-call correctness tests. The existing request-boundary mode has its own
-[documented scope](#reload-between-requests). The aspect's ordinary bean refresh,
-when applicable, retains its existing lifecycle effects.
-
-Verified with Spring Framework 5.3.39, AspectJ 1.9.22.1 and a stock JDK 21 using
-real JDK/CGLIB proxies and HTTP calls across four aspect saves. Other Spring/
-AspectJ versions and a JDK 17 runtime were not exercised for this feature.
-AspectJ is only a test dependency of Reclazz; the production agent ships neither
-Spring nor AspectJ and does not enable AspectJ weaving.
-
-<a id="jackson-getters-added-after-startup"></a>
-
-### Jackson properties added after startup
-
-Start with `-javaagent`, then add a getter to an already loaded DTO and compile:
-
-```java
-private int count = 7;
-public int getCount() { return count; }
-```
-
-The next JSON response from a Spring-managed Jackson mapper includes `"count":7`,
-including when the endpoint returns an object created before the edit and the
-field has a supported [initialiser](#new-field-values-on-objects-that-already-existed).
-Add a setter too and a JSON request can populate the new property:
-
-```java
-public void setCount(int count) { this.count = count; }
-```
-
-Direct instance fields work as well, including private annotated fields:
-
-```java
-@JsonProperty("display_name")
-@JsonAlias("label")
-private String displayName;
-```
-
-Jackson writes the same added-field storage that application code reads. Both
-deserializing a new mutable DTO and `readerForUpdating` an object created before
-the reload are covered. Repeated saves update metadata and bodies; renaming,
-removing and restoring a property changes fresh mapper discovery in both directions.
-
-Jackson still decides which properties to read and write. Reclazz supplies saved
-field/method metadata and routes calls to the current companion or field storage.
-`@JsonProperty`, `@JsonGetter`, `@JsonSetter`, `@JsonAlias`, `@JsonIgnore`, read/write-only
-access, null policies, inclusion, naming and field/method mix-ins reach the normal
-discovery path. Concrete generic collections retain their element types. Private
-members follow each mapper's access-override policy; one mapper granting access
-does not grant it to another. Custom DTO and property serializers/deserializers
-remain in charge. Invalid input conversions and throwing setters/getters retain
-Jackson's mapping-error path. An ignored field can suppress its associated getter.
-
-This covers concrete, non-static, no-argument, non-void methods named `getX`, boolean
-`isX`, or directly annotated with `@JsonProperty`/`@JsonGetter`. Synthetic/bridge
-methods are excluded. Added setters must be nonstatic, concrete, single-argument
-`void` methods named `setX` or directly annotated with `@JsonProperty`/`@JsonSetter`.
-Nonstatic, nonsynthetic fields carry their saved annotations, type annotations
-and generic signature. Jackson retains its normal visibility/transient filtering.
-Final added fields can be read but cannot be written, even with access overriding
-enabled. Fluent setters, new constructor/record creators and builder mutation are
-outside this addition. The original class's ordinary reflection still cannot see
-the added members. The Jackson hook must load before Jackson databind; attaching
-after Jackson loaded does not install it retroactively.
-
-Cache refresh discovers ObjectMapper beans in captured Spring contexts and
-mappers tracked at construction. A mapper missed by both discovery routes can
-retain its previous shape. An
-ObjectWriter retained from before a change can retain its property list, while its
-added getters dispatch to updated bodies; obtain a new writer after reload for
-the new shape. Retained ObjectReaders can likewise keep an earlier input shape;
-obtain a fresh reader after reload. In-flight conversion is not paused or rolled
-back. Application setter side effects are not a transaction: an error in a later
-property does not undo earlier writes to an object being updated.
-
-Historical acceptance used stock JDK 21 with Jackson 2.13.5 and Spring 5.3.39: real loopback HTTP,
-old/new DTO objects, three mapper policies, nested/generic values, private getters,
-null/empty inclusion, custom serializers and four successive edits. Input/field
-regressions additionally cover four saves with real HTTP JSON, ordinary and child
-application classloaders, alias/name changes, removal/restoration, private setters
-and fields, generic conversion, null skipping, custom deserializers and original
-reflection staying unchanged. Current [P3b acceptance](feature-evidence.md#p3b-jackson-in)
-uses Jackson 2.22.3 with Spring 5.3.39 and 6.1.14 on stock SapMachine JDK 17/21.
-It sends loopback HTTP directly to Spring-managed ObjectMappers; it does not
-prove every MVC message-converter configuration. Getter-output policies run on
-normal loaders; setter/field input-output runs on normal and child loaders.
-Mix-ins, mapper access restrictions, final-write refusal and retained-writer
-behavior have separately labelled component-only observations.
-
-Jackson 3.1.7 getter output is separately covered on stock JDK 17/21, both with
-Jackson 2 hidden and with both namespaces present: getter addition, body changes,
-annotation rename/ignore, removal/restoration, naming and generic values, access
-restrictions and exception propagation. A Spring-free process and the Boot 4.1.2
-sample's manual-agent mode also serve an added getter and its changed body over
-HTTP without restarting. The Jackson 3 hook routes its method-handle getter path
-and clears mapper caches through the public API; constructor tracking includes
-standalone and rebuilt mappers. Already-prefetched ObjectWriters keep their
-property list while added getter bodies remain live; retained ObjectReaders
-keep their prefetched deserializer. Obtain fresh writers/readers for a new shape.
-This Jackson 3 coverage does not establish added setters or fields for input
-or output, new constructor/record creators, or annotations relocated to
-`tools.jackson.databind.annotation`. Other unlisted Jackson versions and
-accessor-generating extensions such as Afterburner remain unverified.
 
 ### Scheduled methods added after startup
 
@@ -2233,6 +1866,607 @@ rollback, native phase/order comparison, pending events during replacement/remov
 restoration and ordinary/child classloaders. No production dependency was added.
 Other Spring versions, reactive transaction managers and a JDK 17 runtime have
 not been verified for this extension.
+
+## Spring messaging
+
+Read the existing [Kafka](#kafka-listeners-added-after-startup), [JMS](#jms-listeners-added-after-startup) and [RabbitMQ](#rabbit-listeners-added-after-startup) scopes.
+
+### Kafka listeners added after startup
+
+Current broker observations, component-only contracts and unverified variants are
+listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
+
+With Spring Kafka already configured, compile a new listener method on a
+running plain singleton `@Component` / `@Service` / `@Repository`:
+
+```java
+@KafkaListener(id = "orders-created", topics = "orders", groupId = "orders-service")
+public void onOrder(String payload) {
+    processOrder(payload);
+}
+```
+
+The saved metadata is passed to the application's Kafka listener processor and
+container factory. Spring performs message conversion and argument resolution;
+`@Payload`, `@Header`, `@Headers` and concrete generic parameter signatures such
+as `ConsumerRecord<Integer, String>` are carried. Public and private void
+instance methods with one or more arguments are supported. Calls delegate to
+the current plain singleton; a missing or proxied replacement throws instead
+of silently treating the message as handled.
+
+Unsupported Kafka infrastructure does not block unrelated bean reloads.
+Before the edited bean is recreated, Reclazz identifies its standard Kafka
+record adapters, requests consumer stop and waits for the stop callbacks before
+unregistering their container IDs. Normal Spring initialization can then
+re-register existing methods without ID collisions. The new methods register
+afterward. Later saves update bodies/topics, remove listeners or annotations,
+and restore them. Unrelated containers retain their identity. A duplicate ID
+belonging to another container is refused. A failed registration attempt cleans
+up the containers it created; failures are reported in the restart ledger.
+
+The supported addition uses a literal nonempty `id`, and `topics` that are each a
+literal, `${property}` placeholder or `#{SpEL}` expression resolved by the
+application's native processor. Topic expressions may return a String, String
+array or iterable of strings; `groupId` expressions must resolve to a String
+(native null/default behavior is retained). Optional literal
+`containerFactory`, `idIsGroup`, `autoStartup` and positive integer
+`concurrency` are accepted. Measured Kafka2.9.13 late registration follows the
+native registry policy: `autoStartup=false` can still start when
+`alwaysStartAfterRefresh=true` (the native default); setting that registry policy
+to false preserves the annotation's start flag. Omitted `groupId` and `#{null}`
+fall back to the literal listener ID when `idIsGroup=true`, otherwise to the
+configured consumer-factory group. An explicit nonempty group overrides that
+choice. Exact `groupId=""` now follows the same native fallback after watched
+addition and body/topic edits, with both `idIsGroup` values measured against
+ordinary native listeners. Whitespace-only group literals remain unsupported;
+this proof applies to the named Kafka2.9.13/Spring5.3.39 and JDK17/21 fixture.
+Other explicitly supplied `@KafkaListener` options
+are refused. The class directly extends `Object`, has no interfaces/type
+variables and carries only the component stereotypes above or `@Deprecated`.
+Callback annotations are direct `@KafkaListener` and optional `@Deprecated`;
+extra advice annotations, non-void/static/abstract/native/bridge/synthetic
+methods and type-variable signatures are refused. Parameter names require
+explicit annotation names or compilation with `-parameters`.
+
+`topics = "#{__listener.topics}"` and `groupId = "#{__listener.group}"` read
+properties on the real listener singleton, while messages still invoke the saved
+callback through its delegate. Named application beans and property/expression
+combinations also use the native resolver. The temporary listener binding is
+restored after registration, including expression errors. Custom `beanRef`
+options remain unsupported. A later listener save re-evaluates current topic/group
+values; property or bean changes alone do not reroute an existing consumer.
+Expression syntax/type errors occur during registration after old consumers have
+retired. Partial additions are removed and a valid save retries, but old consumers
+and user expression side effects are not rolled back. A different group may replay
+retained messages according to the application's offset policy.
+
+Use the standard `KafkaListenerAnnotationBeanPostProcessor`,
+`KafkaListenerEndpointRegistry` and `ConcurrentKafkaListenerContainerFactory`
+in record mode. Added listeners refuse annotation enhancers, retry-topic
+configuration, filtered/retry-template/batch factories and container
+customizers. Proxy/subclass receivers are not unwrapped past advice. This
+scope does not cover class-level or repeatable listeners, expressions/placeholders
+in other listener attributes, container groups, arbitrary wrapper/container types,
+scoped/prototype beans or sharing one registry between multiple contexts.
+
+If consumer stop does not complete within 30 seconds, container entries remain
+registered and this class's bean refresh/framework follow-up is deferred with
+a diagnostic. Already reloaded method bodies are not rolled back. The direct-listener coordination here runs through the Spring orchestrator.
+A separately bounded [Kafka helper/property transaction](spring-constructor-dependencies.md#kafka-helper-and-constructor-property-changes)
+recreates one plain local leaf listener after helper-body or scalar constructor
+property saves, including a same-key scalar on the listener constructor. It is
+measured on Framework5.3.39/Kafka2.9.13 and Framework6.1.14/Kafka3.2.4,
+JDK17/21, with nontransactional RECORD and native-default BATCH acknowledgment.
+BATCH acknowledgment is distinct from batch-listener callbacks; other
+reconstruction paths and broader closures remain outside this transaction. Existing Spring bean recreation/lifecycle effects remain. The hidden
+method's declaring class differs from the original, so custom conversion or
+argument factories depending on exact declaring-class identity are outside the
+verified scope. This is not an atomic reload transaction or a Kafka exactly-once
+delivery guarantee; application acknowledgments, retries and offset policy
+continue to determine redelivery.
+
+Verified with Spring Kafka 2.9.13, Spring Framework 5.3.39 and a real embedded
+Kafka 3.2.3 broker on stock JDK 17 and 21 on macOS arm64. Real-agent tests cover both the first listener
+on an already used bean and addition beside an existing listener, unique test
+message delivery across six saves, topic changes, retired consumer state,
+unrelated container identity and context close. Expression tests on normal and
+child classloaders cover self-referencing topics/groups, expression failure,
+multiple-topic recovery, group replay and removal. Native startup comparison
+also covers named beans and property/expression arrays. Start with `-javaagent` before
+application classes load. Beyond the named legacy and modern lanes, other
+broker/framework versions, external clusters, transactions and rebalance/failure
+delivery guarantees were not exercised. Kafka libraries and the embedded broker are test dependencies
+only. Beans mixing Rabbit, JMS or Kafka listeners require a restart before
+any of their consumers are retired.
+
+Modern compatibility is also measured with **Spring Kafka 3.2.4**, Spring Framework
+6.1.14 and an embedded Kafka 3.7.1 broker on stock JDK17/21. This exact version
+uses native endpoint-ID preparation before registration and no longer has the
+factory `retryTemplate` field. Added listeners follow six saves, including topic
+changes, private restoration, removal, retired consumers and unrelated container
+identity. Native startup controls precede each watcher observer. The factory
+absence exception and endpoint-ID preparation apply only to package version
+3.2.4; this does not certify every Kafka 3.x release. Filtered, batch and custom
+factories retain their restart requirements. Native owner-expression controls
+verify context separation, prior-binding restoration and failed-registration
+cleanup. Modern Kafka reply, transactions, rebalance, late attach, hosted clusters
+and direct child-loader watcher behavior remain outside this measured scope.
+
+### JMS listeners added after startup
+
+Current broker observations, component-only contracts and unverified variants are
+listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
+
+With Spring JMS already configured, add a listener to a running plain singleton
+`@Component`, `@Service` or `@Repository` and compile:
+
+```java
+@JmsListener(id = "orders-created", destination = "orders")
+public void onOrder(@Payload String payload, @Header("tenant") String tenant) {
+    processOrder(tenant, payload);
+}
+```
+
+Spring's actual listener processor and container factory register the saved
+metadata. Public/private instance methods with arguments may declare `void`,
+`String`, `byte[]`, `java.util.Map`, `javax.jms.Message` or
+`org.springframework.messaging.Message` as their return type.
+Spring resolves the payload, headers and JMS message/session arguments. Calls
+reach the current plain singleton; a missing/proxied replacement throws rather
+than silently consuming a message. Later saves can edit bodies or queue
+destinations, remove a method or its annotation, and restore it. Original
+listeners on the same bean are registered again after recreation. Containers
+belonging to unrelated beans keep their identity.
+
+For request/reply, return a supported value and optionally declare a default
+reply queue directly on the method:
+
+```java
+@JmsListener(id = "order-status", destination = "order-status-requests")
+@SendTo("${order.status.replies}")
+public String status(String orderId) {
+    return findOrderStatus(orderId);
+}
+```
+
+Spring's native adapter converts the result and sends the reply. The request's
+`JMSReplyTo` takes precedence over `@SendTo`; without `@SendTo`, the caller must
+supply `JMSReplyTo` for a non-null result. Reply correlation uses the incoming
+`JMSCorrelationID`, or its `JMSMessageID` when no correlation ID was supplied.
+A null result sends no reply. Direct method `@SendTo` accepts one destination,
+including an application-resolved `${property}` placeholder. Later class saves
+can change it; property-only reply-route refresh is outside this scope.
+The application's converter remains responsible for payload support, including
+Map entries and Spring Message payloads. Arbitrary DTO/`Object`, concrete message
+subtype declarations, primitive, Future and reactive return types are excluded.
+Class-level or composed `@SendTo` is not supported.
+
+Use a literal nonempty `id` and a `destination` that is a literal or a
+`${property}` placeholder resolved by the application's own value resolver (a
+`#{SpEL}` expression stays out of scope). An optional `selector` may also be a
+literal or `${property}` placeholder; optional literal `containerFactory` and
+positive `concurrency` (a number or ascending range) are supported.
+The class must directly extend `Object`, have no interfaces/type variables, and
+carry only the stereotypes above or `@Deprecated`. Added callback annotations
+are direct `@JmsListener`, optional direct `@SendTo` and `@Deprecated`; parameter
+annotations are `@Payload`, `@Header` and `@Headers`. Extra advice, static/synthetic
+methods, type-variable signatures and other explicitly supplied listener
+options are refused. Parameter names require explicit annotation names or
+compilation with `-parameters`.
+
+The verified infrastructure is the standard `JmsListenerAnnotationBeanPostProcessor`,
+`JmsListenerEndpointRegistry`, `DefaultJmsListenerContainerFactory` and
+`DefaultMessageListenerContainer` with Spring's `MessagingMessageListenerAdapter`.
+The application factory retains its conversion, selector and local session
+transaction settings. Added listeners refuse custom factories/executors,
+external transaction managers and topic/durable/shared subscription factories.
+Proxies and subclass receivers are not unwrapped. Repeatable/composed listeners,
+scoped/prototype beans and registries shared between contexts are
+outside this scope. Custom argument factories that depend on the exact original
+declaring class are not verified: the added method is reflected on a hidden
+metadata delegate.
+
+Before singleton recreation, Reclazz identifies owned containers and waits for
+complete destruction, including their consumers, sessions and connection.
+Spring 5.3 has no registry unregister API; matching entries are removed under
+the registry's registration lock only after destruction finishes. A duplicate
+ID on another container is refused. Failed registration cleans up containers
+registered by that attempt. The direct-listener preflight leaves unrelated bean reloads on their ordinary
+path when optional JMS infrastructure is unsupported. The indirect helper
+transaction conservatively refuses uninspectable JMS ownership. A bean mixing Kafka and JMS consumers, or
+a JMS bean with uninspectable Kafka ownership, is deferred before shutdown.
+
+Shutdown waits up to 30 seconds. On timeout or interruption, registry ownership
+is retained and bean recreation/framework follow-up is deferred with a restart
+ledger diagnostic. Destruction continues in the background; a later save waits
+for that same operation before releasing the ID. Retained entries may therefore
+refer to already stopped containers until retry or application restart. Already
+reloaded bodies are not rolled back. This coordination covers direct class
+reloads through the Spring orchestrator. A separately bounded helper/property
+JMS transaction is described in [constructor dependency refresh](spring-constructor-dependencies.md#jms-helper-and-constructor-property-changes);
+other indirect recreation paths remain outside scope. The indirect transaction
+refuses a still-retiring consumer on a later save and requires restart, rather
+than using the direct path's same-operation retry. It does not make a reload atomic or promise
+global exactly-once delivery. Broker and application acknowledgment/redelivery
+policies still apply.
+
+Verified with Spring JMS 5.3.39 (`javax.jms`), a real embedded ActiveMQ Classic
+5.19.11 broker, and stock JDK 17 and 21 on macOS arm64 using startup `-javaagent`. Tests cover the first
+listener on an already used bean, addition beside an original listener, six
+saves, payload/header/message conversion, local transaction rollback/redelivery,
+selector filtering, consumer retirement, and context close. A deliberately
+blocked real consumer proves timeout/interruption and retry using a shorter
+internal test wait. Request/reply tests cover native Spring controls, text/bytes/
+map/native and Spring messages, correlation, `JMSReplyTo` priority, null results,
+rollback followed by a reply on redelivery, and invalid `@SendTo` recovery.
+Actual-agent reply tests cover normal/child class loaders, repeated saves,
+private restoration and reply queue changes. Other JMS providers and Spring versions,
+late attach, XA and durable topics were not exercised in that legacy lane.
+
+A separate modern lane measures Spring JMS **6.1.14**, Jakarta Messaging **3.1.0**
+and ActiveMQ Classic **6.1.3** on stock JDK17/21. Added callbacks returning a
+native `jakarta.jms.Message`, String or void follow six saves. Native-message
+and String reply tests observe actual replies, correlation, `JMSReplyTo` priority,
+rollback/redelivery, private restoration and retired containers on normal and
+child classloaders; void delivery also runs on both loader shapes. Each watcher
+observer first checks fresh agentless native delivery. Unsupported return/advice
+shapes remain refused. The existing `javax.jms.Message` support is retained.
+This does not establish XA, durable/shared topics, other JMS providers or
+property/dependency-cascade consumer recreation.
+
+Spring JMS and ActiveMQ are isolated test dependencies. Existing tests retain
+their Jackson/SLF4J versions. `:agent:unitTest`, `:agent:e2eTest` and `:agent:test`
+also run the matching isolated JMS suites; those results have separate XML
+reports under `jmsUnitTest`, `jmsE2eTest` and `jmsTest`. Run just JMS with
+`./gradlew :agent:jmsTest --rerun`. No JMS/broker classes enter the production JAR.
+
+### Rabbit listeners added after startup
+
+Current broker observations, component-only contracts and unverified variants are
+listed separately in [P4 messaging evidence](feature-evidence.md#p4-messaging).
+
+With Spring Rabbit already configured, add a method to a running plain singleton
+`@Component`, `@Service` or `@Repository`, then compile:
+
+```java
+@RabbitListener(id = "orders-created", queues = "orders")
+public void onOrder(@Payload String payload, @Header("tenant") String tenant) {
+    processOrder(tenant, payload);
+}
+```
+
+The application’s real processor and `SimpleRabbitListenerContainerFactory`
+register the saved metadata. Spring converts payloads/headers and supplies the
+AMQP message. The callback uses the current plain singleton; missing or proxied
+receivers fail explicitly. Public/private instance `void` methods with arguments
+are supported. Later saves can edit bodies and queues, remove methods or their
+annotations, and restore them. Original listeners are registered again after
+bean recreation; unrelated containers retain their identity.
+
+For newly added methods, use an explicit nonempty literal `id` and `queues` that
+are each a literal, `${property}` placeholder or `#{SpEL}` expression resolved by
+the application's own Spring processor. Expressions may produce queue names,
+Spring AMQP `Queue` objects, String arrays or iterables of those supported values,
+naming existing queues. For example, `queues = "#{@routing.queues}"` reads an
+application bean's queue list; `queues = "#{'${orders.queues}'.split(',')}"`
+combines a property with an expression. Saving the listener again resolves the
+current values and replaces its consumers. Changing a routing bean or property
+alone does not move existing consumers. Resolution errors leave the failed added
+registration absent and clean up partial registrations from that pass; unrelated
+container IDs remain. A later valid save retries. Old containers and expression
+side effects are not rolled back. Optional literal `containerFactory` and positive `concurrency` (number or ascending
+range) are accepted. Explicit `autoStartup` is outside this stage: Spring's late
+registration can start a container even when that flag is false. The class directly extends
+`Object`, has no interfaces/type variables, and uses only the stereotypes above
+and optional `@Deprecated`. Callback annotations are direct `@RabbitListener`
+and optional `@Deprecated`; parameter annotations are `@Payload`, `@Header` and
+`@Headers`. Composed/repeatable/class-level handlers,
+expression IDs/factories/concurrency, inline queue/exchange/binding declarations, return/reply/async methods,
+proxies, method advice and inheritance are outside this support.
+
+Existing methods are re-scanned by Spring and do not use the added-method option
+allowlist: an existing `@RabbitListener(queues="orders")` keeps working with
+Spring-generated IDs, including beside a new listener. Existing `ackMode="AUTO"`
+and `autoStartup` metadata also stay on Spring's ordinary registration path.
+Spring's late registration may start an existing `autoStartup="false"` container;
+Reclazz preserves that framework behavior.
+
+Both original and added consumers require the standard
+`RabbitListenerAnnotationBeanPostProcessor`, `RabbitListenerEndpointRegistry`,
+`MessagingMessageListenerAdapter`, a plain receiver and
+`SimpleMessageListenerContainer`, with AUTO acknowledgment and the default
+`SimpleAsyncTaskExecutor`. Newly added consumers additionally require the standard
+simple factory without a customizer. Local channel transactions are preserved.
+Manual/automatic-without-ack modes, external transaction managers, container
+advice, custom executors, direct/stream/batch containers and custom listener
+adapters are refused for retirement of either original or added consumers.
+Unsupported static metadata shapes, foreign added IDs and mixed Rabbit/JMS/Kafka
+owners are checked before owned consumers are retired. Queue expression parsing
+and evaluation occur later during native registration, after retirement; an
+expression failure does not restore the old consumers. Original consumers are
+checked against the runtime lifecycle restrictions above, not the added-method
+metadata restrictions. Unknown broker ownership also requires a restart. Unsupported Rabbit infrastructure does not block unrelated
+beans.
+
+Start with `-javaagent`. The agent tracks each actual simple-container worker
+from construction through its complete `run()` exit, including queued tasks and
+channel/transaction cleanup. Before recreation it prevents new workers on the
+retired container, starts destruction, and waits up to 30 seconds for both
+destruction and worker completion. A zero Spring consumer count alone is not
+accepted: channel shutdown can release that counter while a callback still runs.
+An unavailable startup hook, timeout or interruption retains registry ownership,
+defers bean recreation and records a restart diagnostic. A later save waits for
+the same retirement; it may find stopped containers still holding their IDs.
+
+This direct-listener path runs through the Spring orchestrator. A separately
+bounded [Rabbit helper/property transaction](spring-constructor-dependencies.md#rabbit-helper-and-constructor-property-changes)
+recreates one plain local leaf listener after helper-body or scalar constructor
+property saves, including a same-key scalar on the listener constructor. That
+indirect path is measured on Framework5.3.39/AMQP2.4.17 and
+Framework6.1.14/AMQP3.1.7, JDK17/21, with native default AUTO acknowledgment
+and nontransacted channels. It does not extend the direct path's local-channel
+transaction support to helper/property reconstruction. Already reloaded bodies
+are not rolled back, and this does not make reload atomic or promise exactly-once
+delivery. Broker/application acknowledgment and redelivery policies still apply.
+Custom conversion depending on the callback’s exact declaring-class identity is
+outside the verified scope because added callbacks use a hidden delegate.
+
+Verified locally with Spring Rabbit 2.4.17, Spring Framework 5.3.39, RabbitMQ
+4.3.5 and stock JDK 17 and 21 on macOS arm64. Real-agent tests cover six saves both on an already used
+bean with no listeners and beside both explicitly named and ID-less original
+listeners, including payload/header
+conversion, rollback/redelivery and context close. Queue-expression tests on
+normal and child classloaders cover bean-driven rerouting, invalid result types,
+recovery to multiple queues and removal, with real message delivery. Native
+annotation comparison also covers `Queue` values, mixed lists and property/expression
+composition. A blocked real original
+callback checks force-close, timeout, repeat, interruption and retry. Beyond
+the named legacy and modern lanes, other framework/broker versions and late attach
+were not verified locally. Linux CI is configured for JDK 17/21; those runs are separate evidence.
+
+A separate modern lane measures Spring Rabbit **3.1.7** with Spring Framework
+6.1.14 and the same pinned RabbitMQ4.3.5 broker on stock JDK17/21. Direct first,
+existing and ID-less listener additions follow the six-save delivery/retirement
+sequence, with fresh agentless public/private/routing controls before each
+watcher observer. This is evidence of existing behavior and requires no Rabbit
+runtime repair. Modern Rabbit reply/async, direct child-loader watcher behavior
+and property/dependency-cascade consumer recreation are not established here.
+
+Spring Rabbit is a test dependency; no AMQP/framework/broker classes ship in the
+agent. The `:agent:rabbitTest` suite requires Docker with Linux containers and a
+pre-pulled official image. Prepare and run it with:
+
+```bash
+docker pull rabbitmq@sha256:3486d98205df3d6395ed70e7924baa13b561cbac54116c0ddae5b0b7382bbabd
+./gradlew :agent:rabbitTest --rerun
+```
+
+Tests create uniquely named temporary containers, bind random loopback ports and
+remove their own resources on completion. Missing Docker/image fails the suite.
+`:agent:test` and `:agent:e2eTest` include it and report results separately under
+`agent/build/test-results/rabbitTest`. Count these alongside `test` and `jmsTest`
+for the full gate. Portable Rabbit checks run in `:agent:unitTest`; the blocked
+broker test belongs to `rabbitTest`. Windows CI explicitly omits only this Linux
+broker suite with `-Preclazz.skipRabbitBroker=true`, retaining portable tests.
+That option reports NOT RUN and is not a complete broker validation.
+
+## Configuration, properties and XML
+
+Read the [property](#property-changes-keep-the-last-working-values), XML and resource reference sections below.
+
+### Message bundles and cached templates
+
+Reclazz invalidates the cached text when a recognized physical resource is saved
+in a watched directory. Current P5 observes actual formatted message lookups with
+`ResourceBundleMessageSource` and `ReloadableResourceBundleMessageSource` on
+Spring 5.3.39 and isolated Spring 6.1.14. The tests warm permanent caches, edit
+`messages_tr.properties`, then read new UTF-8 text through the existing context
+and retain fallback keys from `messages.properties`. Both ordinary and child
+application loaders are exercised. Arbitrary custom message basenames are not
+automatically discovered by the filename classifier. Mock ancestor-reset method
+preference is component evidence; a real parent/child source watcher is unverified.
+
+Current P5 also observes FreeMarker 2.3.34 file-template rendering and Thymeleaf
+3.1.3.RELEASE HTML rendering with `FileTemplateResolver` and the standard dialect.
+Caches remain enabled; native controls show a file edit alone still serves the
+old result until explicit invalidation. Repeated watched saves change the rendered
+output. A malformed template produces a native rendering error; fixing the file
+recovers. This does not promise retention of the last valid template on errors.
+The child-loader case places the application in a child loader; engine jars stay
+in the parent. Child-isolated engines and arbitrary custom resolvers/dialects,
+Spring MVC view-resolver integration and packaged JAR/WAR resource edits have no
+current acceptance proof. The tests edit the actual runtime file; automatic
+source-resource copying is not established by these observations.
+
+These observations use stock SapMachine JDK 17/21 on macOS arm64 and startup
+agent attachment. They do not certify other versions, operating systems, late
+attachment or native SAP tenant behavior. Engine libraries are test-only and are
+not packaged with the production agent. See the [P5 registry](feature-evidence.md#p5-properties-xml-messages-and-templates)
+for separate watcher, component, refusal and unverified claims.
+
+### Loaded Spring XML resources
+
+Alongside `*-spring.xml`, Reclazz recognizes local `.xml` resources that Spring's
+XML reader successfully loaded for an active application context after agent
+startup. This includes nested imports and files such as `spring-mvc-config.xml`
+and `web-application-config.xml`, including files with no bean definitions of their
+own. It uses the resolved file path and owning context, not a basename match or
+inspection of arbitrary XML content.
+
+Files under existing watch roots use the normal watcher. Other captured local
+XML files are checked once per second without watching their neighbouring files;
+module and filename exclusions still apply. Closed contexts and temporary parser
+factories do not grant resource ownership. JAR entries, remote resources and XML
+loaded before the agent's reader hook are not covered by this discovery path.
+Reserved logging, code-generation and backoffice filename rules retain priority.
+
+Recognition routes supported bean changes through the existing XML safety checks;
+it does not promise arbitrary MVC/security/filter-chain rebuilding or a context
+refresh. Import-topology changes are not a full live configuration reload: a new
+import seen only by the temporary parser does not become a captured live resource.
+Unsupported bean changes still require the reported restart. Use the actual
+loaded file; editing a different source copy with the same name does not update it.
+
+For an already-instantiated ordinary bean, a failed property resolution, conversion
+or setter call keeps the previous raw property in its bean definition and reports
+the failure. Other supported properties and beans can still update. A setter may
+change application state before throwing; those side effects are not rolled back.
+Uninstantiated lazy beans retain native deferred validation: their requested
+metadata is updated without creating them, and invalid values can fail when Spring
+later creates the bean. Only that bean's cached merged definition is invalidated
+so native creation reads the requested metadata; other beans' caches stay intact.
+
+For existing ordinary XML beans, changes to `depends-on`, `primary`, `autowire`,
+`autowire-candidate` or the effective `lazy-init` flag require restart. Spring's
+parsed flag determines equivalence, including `default-lazy-init` and explicit
+defaults. Changing the flag does not create a cold bean or undo an already
+created instance. The affected bean's properties and
+raw definition stay unchanged, including for a lazy bean; supported changes to
+independent beans can still apply. Unchanged declarations continue to allow
+property edits. This diagnostic does not rebuild initialization order or reinject
+existing consumers; new beans retain Spring's native metadata handling and the
+existing guidance for consumers created before their addition.
+
+Ordinary XML property values are compared by their declared configuration,
+including inner bean properties/constructor values and local versus parent bean
+references. An unchanged inner bean keeps its live identity; generated inner
+names, source locations and resolved type caches do not trigger reconstruction.
+Changed simple inner beans still use Spring's native value resolution. Changes
+that would reconstruct resource, lifecycle, factory or otherwise unsupported inner
+compositions require restart before any property of that owner is updated;
+independent supported beans can still update. Comparison has bounded depth and
+size and refuses unknown raw values. This does not destroy or rewire arbitrary
+nested live objects, and user constructor/setter side effects are not rolled back.
+
+Existing unsupported XML definitions do not report restart merely because the
+file was saved again: a standard definition proven unchanged is left alone,
+including abstract templates and prototype beans. Real edits, new or removed
+unsupported definitions still require the existing restart or recreation checks.
+This proof includes declared values, property order and alias sets and refuses custom definition
+subclasses, instance suppliers or unverifiable nested metadata; their prior
+conservative diagnostics remain. It does not make unsupported shapes reloadable
+or reconstruct XML that arbitrary post-processors have rewritten.
+
+### XML singleton recreation
+
+For instantiated ordinary beans, simple physical XML properties use Spring's
+write-method descriptor and generic method metadata. Admitted scalar conversions
+include strings, primitives/wrappers, `Class`, enum, decimal/integer numbers and
+`URI`; typed list/set/map compositions of admitted scalars use the live factory's
+standard `SimpleTypeConverter`. Generic inheritance uses the resolved target
+type, and setter selection does not execute a getter body. Registered editors
+and conversion services participate on admitted targets; their own side effects,
+like setter/resolver side effects, are not rolled back. A failed conversion or
+setter leaves the previous raw definition value intact, while independent
+supported properties can still apply.
+
+Whole bean references compatible with the resolved runtime target retain their
+identity, including custom collection beans, without newly iterating/converting
+them. Compatible custom elements, existing arrays and raw/wildcard collection
+elements retain direct assignment; resolved generic element types are checked.
+New custom-object/array conversions, conversions of unresolved generic elements
+and lazy custom collection carriers are outside this support. New native
+conversion is limited to bounded literal compositions with standard JDK
+collection carriers. The new conversion route refuses unknown custom
+`TypeConverter` implementations. Resource/stream/path/URL target
+properties and unsupported explicit XML type conversions are refused before
+value resolution; explicit arrays of admitted scalar types retain their prior
+native resolution. This does not prevent application code in a supported
+resolver, editor, converter or setter from producing its own side effects.
+
+Non-public unambiguous physical setters and proxies retain only the earlier
+primitive/string/compatible-value assignment boundary, with declared generic
+type validation; no proxy targets are unwrapped. Nested/indexed paths and
+logical companion-only setters are not newly supported. Uninstantiated lazy
+beans retain native deferred creation/validation, and the lifecycle, FactoryBean,
+merge and explicit singleton recreation guards below still apply.
+
+Ordinary XML beans implementing Spring `InitializingBean`, `DisposableBean`,
+`BeanPostProcessor` or `BeanFactoryPostProcessor` require restart when their
+declarations change. Safety checks keep Spring's already-resolved merged class,
+or resolve its name through the live factory's application loader, and also
+inspect an existing singleton's type,
+so application classes invisible to the watcher and lifecycle interfaces hidden
+by a JDK proxy are not treated as ordinary mutable beans. Inherited lazy classes
+are resolved without initialization or bean creation; unavailable type metadata
+requires restart. The affected bean and definition remain unchanged, proven
+unchanged standard declarations stay quiet, and supported sibling edits can
+still apply. This does not replay lifecycle callbacks or extend the existing
+constructor/factory/explicit-lifecycle recreation rules below.
+
+Existing ordinary XML `FactoryBean` definition changes require restart before
+factory properties or definition metadata are updated. A setter on the factory
+does not refresh Spring's cached product or references already held by consumers.
+The refusal also covers unwarmed/lazy factories and nonsingleton products: Reclazz
+does not infer that those products have no consumers. It does not query or create
+the product to make this decision. Proven unchanged standard definitions remain
+quiet, new definitions retain native creation, and independent ordinary bean
+updates can still apply. Product eviction, factory close and consumer rewiring are
+outside this support; constructor/factory/lifecycle and prototype guards retain
+their existing restrictions.
+
+An edited Spring Integration consumer endpoint in XML (`service-activator`,
+`transformer`, `filter`, `router` and similar) is replaced in place: the old
+endpoint is stopped and unsubscribed, the new one is created and started, and
+the next message goes to the new handler. A new handler that fails to build
+leaves the old endpoint running. The endpoint needs an explicit `id`; one
+without an id is reported for a restart. Adding or removing endpoints, channels,
+pollers and gateways still needs a restart.
+
+For an existing bean in a watched Spring XML resource, edits to constructor arguments,
+a public static or instance factory method, or explicit `init-method` and
+`destroy-method` metadata can recreate the singleton without restarting:
+
+```xml
+<bean id="client" class="example.Client" init-method="start" destroy-method="stop">
+    <constructor-arg value="30"/>
+</bean>
+```
+
+Changing `30` to `60` replaces the definition and lets Spring create and initialize
+the new product. The old product receives its old destroy callback; the new
+definition controls subsequent destruction. Arguments and properties support
+scalar values, bean references and the live factory's placeholder resolution.
+Unchanged definitions do not recreate products. A lazy singleton that has not
+been created stays lazy. Ordinary setter-only edits retain the existing in-place
+path and bean identity.
+
+Reclazz snapshots Spring's dependent graph before replacement. Supported plain
+dependents are recreated too. Writable direct fields in known singleton holders
+are updated by identity, including previously replaced plain holders still held
+by application code. These old holders are remembered weakly across saves.
+Their own state is not reset or globally copied from the new holder.
+
+Preflight requires exact file ownership, the same concrete product type, stable
+class/factory-bean/alias metadata and an ordinary singleton definition. An instance
+factory must already be a local singleton; factory methods must be public and
+unambiguous with a concrete return type. Scalar/reference argument and property
+edits, factory-method selection and explicit init/destroy names are the allowed
+metadata changes. Scope, parent, autowire policy, depends-on, method overrides,
+custom suppliers, infrastructure metadata and other definition changes are refused.
+
+New constructor/factory/lifecycle definitions and bean removal still require a
+restart. Recreated definitions cannot use nested beans or managed collections.
+FactoryBean, proxies, AutoCloseable, Thread, Executor, DataSource, Spring lifecycle
+interfaces and infrastructure types are excluded. Dependents must have plain
+definitions without constructor/factory/lifecycle metadata or lifecycle annotations.
+Known direct final fields and collection/map/array holders referencing replaced
+beans are refused before destruction. Local variables, static fields, nested
+object graphs, inaccessible fields and holders outside the owning factory are
+not repaired; a raw reference to the old target remains the old object.
+
+If creation fails, Reclazz attempts to restore the previous definitions, recreate
+the affected instances and repair holders. Both the original failure and a failed
+restoration are reported. Fix the input or dependency and save again to retry.
+This is not rollback of constructor or callback side effects; restoration can run
+callbacks again. Spring retains its own callback-error handling. Replacement is
+not a transaction with concurrent requests, registry edits or external resources.
+
+Verified with Spring 5.3.39 and SapMachine 21, including startup-agent reloads in
+ordinary and child classloaders, factory edits, callback counts and repeated saves.
+Multiple owning contexts resolve placeholders independently, using the same Spring
+classes. Other Spring versions, separate Spring installations, SAP Commerce runtime
+integration and a JDK 17 runtime have not been verified for this extension.
 
 ### Property changes keep the last working values
 
@@ -2659,6 +2893,36 @@ Spring 5.3.39 and isolated Spring 6.1.14 with stock SapMachine JDK 17/21 on
 macOS arm64. Boot 3 binding, indirect Boot configuration-properties and live SAP
 runtime compatibility remain unverified.
 
+## Data and caches
+
+Read the [prepared-schema](#new-jpa-entities-with-a-prepared-schema) and cache reference sections below.
+
+### Refreshing a custom cache after a helper reload
+
+A reloaded method body takes effect wherever it runs, but a value a bean already
+computed and kept in its own cache, a Guava cache or a plain field, does not
+recompute on its own. When the logic lives in a plain helper class that is not a
+Spring bean, editing the helper updates its code yet leaves that cached value as it
+was, because the agent has no way to know which bean's cache a given helper feeds and
+will not guess a cache field or empty every cache.
+
+`refreshOwnersOnHelper` lets you say so explicitly. Map a helper class to the Spring
+singleton cache-owner beans it feeds:
+
+```
+-javaagent:reclazz-agent.jar=refreshOwnersOnHelper=com.acme.PriceHelper>com.acme.PriceCache;com.acme.QuoteCache
+```
+
+After `com.acme.PriceHelper` reloads, each listed owner is recreated through the same
+guarded lifecycle an ordinary bean reload uses, so its cache is rebuilt and the next
+read runs the fresh helper logic. Separate several mappings with `|`. An owner is
+resolved in the reloaded helper's own classloader, so the same class name in another
+context is never touched. Owners that are not recreatable singletons, FactoryBeans or
+event listeners are declined with a message rather than refreshed, and the feature is
+off until you set the mapping. It recreates the owner; externally held references to
+the old instance and in-flight work are the owner's own concern, the same as any bean
+reload.
+
 ### Cache dependencies after reload
 
 Spring Cache observation is automatic when the companion engine instruments
@@ -2775,6 +3039,102 @@ javax persistence, enhanced existing-field edits, cold/lazy products, active
 transactions or retained open persistence contexts, other databases/providers,
 real-provider close failures and simultaneous swap/publication need separate proof.
 
+## SAP Commerce
+
+Read the [OCC mapping](#occ-field-set-mappings) and generated DTO reference sections below.
+
+### OCC field-set mappings
+
+For existing SAP Commerce `FieldSetLevelMapping` beans, supported XML property
+edits now refresh the standard `DefaultFieldSetLevelHelper` consumers and their
+manager-backed `fieldSetCache`. BASIC/DEFAULT/FULL selections can add or remove
+existing DTO fields. Descendant contexts that see the changed mapping are included;
+unrelated contexts and other named caches are left alone, and nothing is created in
+them: SAP's lazy web beans stay uncreated. The edited file is parsed again with the
+document reader its context used, so SAP's lazy web singletons do not read as a
+`lazy-init` change, and a file under a symlinked extension (`bin/custom` linked to a
+checkout) is matched to the context that loaded it through its target. Repeated unchanged saves
+do not rebuild the table. Multiple declarations for one DTO are rebuilt from fresh
+copies of their inline `levelMapping` maps, avoiding accumulated merges.
+
+This requires the standard helper and mapping implementation and an existing
+`fieldSetCache` exposed by a Spring `CacheManager`. Custom helpers, custom mappings,
+referenced/inherited/programmatic maps or unavailable cache invalidation report restart guidance.
+Custom cache resolvers, asynchronous cache loading and arbitrary inherited/programmatic
+mapping configuration are outside this acceptance. Fields a DTO gains are the next
+section's. An XML property may have changed even when consumer refresh reports a
+restart requirement; follow that diagnostic.
+
+### WsDTO properties added in beans.xml
+
+A property added to a data class and its WsDTO in `*-beans.xml` reaches OCC responses
+once the DTOs regenerate (`autoCompile=true`). Orika's mapping for the pair is
+refreshed with the added property; the mapper it generates is compiled against the
+class file the reload applied, because SAP's loader finds `models.jar`, which holds
+the class as it was at startup, before the directory the regen writes. The JAXB
+(EclipseLink MOXy) contexts the OCC message converters cached for a changed class,
+or for a response type that maps it, are dropped and built again on the next
+response, JSON and XML alike. `?fields=` and field-set levels can then name the
+property. Removing it again makes `?fields=` that name it answer as they would on a
+fresh server. Retained default plans also drop the implicit mapping when the
+last added property is removed, so ordinary responses work again after rollback.
+Application-defined mappings are preserved; if they still name a removed accessor,
+Reclazz warns and records that the mapping configuration needs updating.
+
+### OCC request mappings and overrides
+
+For SAP Commerce `CommerceHandlerMapping`, saving a controller rebuilds the
+override-priority table and bean-discovered handler registrations together. Existing
+or JVM-visible methods can change paths or `@RequestMappingOverride` annotations;
+removing or lowering the winning override makes the remaining eligible handler
+available. SDK API-version filtering remains in charge. Request lookups wait under
+the mapping registry's write lock while the complete registry is rebuilt. A changed priority
+property (`priorityProperty`, or the derived `requestMappingOverride.<class>.<method>.priority`)
+in `local.properties` rebuilds the registries whose handlers read it, so the handler it
+now favours answers without a restart.
+
+On a registration failure, Reclazz attempts to restore the previous mappings and
+priority table and reports a restart requirement. This restores routing registrations,
+not the already redefined controller class or bean state. Missing reflection hooks
+or the registry lock cause refusal before registrations change.
+
+Synthetic endpoints added through companion methods are outside this support. Such
+an attempt leaves the registry unchanged, reports `SAP OCC mappings need a restart`,
+and prevents further rebuilds of that registry until its context is replaced or the
+application restarts. Existing instance registrations, including generated endpoint
+adapters, also cause refusal. Acceptance covers SDK bean discovery; custom handler
+mapping lifecycle overrides and programmatic bean-name registrations are outside it.
+There is no new property-file hot reload: priority values must already be available
+through the application's configuration service. Ordinary Spring MVC retains its
+existing controller rescan and added-endpoint behavior.
+
+### SAP populator and list-merge directives
+
+Changing which populator an existing `ModifyPopulatorList` adds or removes
+(its `add` or `remove` reference) applies to the running converter: Reclazz takes
+the old `add` out of the target list, puts the old `remove` back, then removes the
+new `remove` and appends the new `add`, the same way SAP applies a directive at
+startup. A populator bean added in the same save can be the new `add`. A populator
+that comes back this way is appended, so when several directives touch one list
+its order can differ from a fresh start. If the edit cannot be applied, the list
+and the directive stay as they were and the save reports a restart.
+
+Other edits to existing `ModifyPopulatorList` and `ListMergeDirective` XML
+definitions require restart: a changed `list` target, subclasses, inherited or
+lazy directives, and every `ListMergeDirective` edit. Reclazz rejects these
+before changing the live definition or directive and reports that the effective
+target lists were not refreshed. This includes property,
+ordering and `depends-on` edits, inherited definitions and subclasses. Lazy directives
+are not instantiated by the check, and unchanged definitions do not generate a warning.
+
+Unrelated ordinary XML edits in the same resource can still apply. Newly added
+directives retain the existing bean-addition behavior; this diagnostic does not
+promise automatic list reconstruction or broaden support for new directives.
+
+## Reload timing
+
+Read the [request-boundary reference](#reload-between-requests) before choosing a reload timing mode.
+
 ### Reload between requests
 
 Add `reloadBoundary=request` to the agent arguments to keep a supported Spring
@@ -2847,325 +3207,6 @@ than silently running without protection. A missing or failed MVC hook keeps
 class edits deferred. A non-MVC application therefore should use `immediate`.
 An invalid `reloadBoundary` value refuses initialization. Application startup
 itself is not aborted.
-
-### Workflow
-
-```
-1. Start the SAP Commerce server (with agent in JVM args)
-   └── Reclazz banner appears in the console output
-
-2. Edit your Java source files in IntelliJ or any editor
-
-3. Compile with ant:
-   cd hybris/bin/platform
-   ant build
-
-4. Reclazz detects the new .class files and hot-swaps them instantly
-   └── "Hot-swapped: com.example.MyService (12ms)" appears in the console
-
-5. Test your changes, no server restart needed
-```
-
----
-
-## Option 2: IntelliJ Automatic Mode (Recommended)
-
-Use this option when you run the SAP Commerce server **from IntelliJ IDEA** using a Run/Debug configuration. The plugin handles everything automatically.
-
-### How It Works
-
-When you launch a Run/Debug configuration in IntelliJ IDEA, the Reclazz plugin:
-
-1. **Detects** that the project is an SAP Commerce (Hybris) project
-2. **Injects** the `-javaagent` flag into the JVM arguments automatically
-3. **Detects** your JDK version (17 or 21) and whether you are using JetBrains Runtime
-4. **Adds** recommended JVM flags (e.g., `-XX:+AllowEnhancedClassRedefinition` for JBR)
-5. **Connects** to the agent after the server starts
-6. **Watches** for file changes and shows reload status in the IDE
-
-You do not need to edit any properties files or manage the agent JAR path.
-
-### Setup
-
-1. Enable the plugin: **Settings** > **Tools** > **Reclazz** > check **Enable Reclazz**
-2. That's it. Run your Hybris server from IntelliJ as usual.
-
-### Project settings and managed SAP startup
-
-**Settings > Tools > Reclazz** stores agent choices per project. Changes reach the
-next IDE launch or dynamic attach. For a server started outside the IDE, use
-**Install Agent** or **Reinstall** to apply the current form and regenerate
-its managed startup block, then regenerate the server config and restart as the
-installation message describes.
-
-| Control | Default | Scope |
-|---|---|---|
-| Import ImpEx files on save | Off | SAP Commerce; imports a saved watched ImpEx file |
-| Allow REMOVE statements | Off | Available only when ImpEx import on save is on; permits live row deletion on save |
-| Reset Backoffice configuration on save | On | SAP Commerce; the native F4 reset, which also resets configuration made in the Backoffice UI. Off sends `backofficeConfigReset=false` |
-| Update the running system after items.xml changes | Off | SAP Commerce development only; opt-in schema additions and keyed localization writes to the live database |
-| Update Solr documents after a provider reloads | Off | SAP Commerce development only; bounded native updates with normal listeners/bookkeeping, no proof of field freshness |
-| Apply reloads | Immediately | At the next request boundary requires the agent at JVM startup; dynamic attach explicitly warns and applies immediately |
-| Reload added and removed members (Advanced) | On | Off limits reloads to method bodies |
-| Re-run changed static initializers (Advanced) | Off | Applies on the next launch; eligible static finals become non-final. Existing captured copies retain the old object |
-| Exclude classes (Advanced) | Empty | Semicolon-separated class-name globs the agent never instruments |
-| Ignore files (Advanced) | Empty | Semicolon-separated globs; matching changed files are not reloaded |
-
-**Pause Automatic Reload** (Tools menu and the Reclazz tool window) holds
-automatic reload in the running agent. Saves made while paused are kept and
-applied on resume; the status bar shows `Paused` and the number of waiting
-changes until then. It is a session switch, not a stored setting, and an agent
-older than 1.4.0 does not answer it.
-
-Existing JPA refresh remains opt-in. Its scope includes new entities on stock
-JDKs with a prepared schema; existing field changes require enhanced redefinition.
-See the [JPA scope](#new-jpa-entities-with-a-prepared-schema).
-
-The installer regenerates only its marked block from Settings; manual edits
-inside it are overwritten. Unrelated JVM options outside the block are retained.
-An existing Reclazz agent outside the managed block or in another properties
-layer is refused with its file and line before writing; remove that manual
-option before installing through Settings. This also applies to normal and debug
-startup options. A failed verification restores the previous managed file rather
-than deleting a prior installation. A project without an optional config
-directory uses `local.properties` with its managed block excluded from base-value
-verification.
-
-The log retains the agent's raw INFO lines for Solr FINISHED,
-FINISHED_UNVERIFIED and FAILED outcomes. Unverified indexing outcomes receive
-bold amber warning emphasis; failed indexing outcomes use the IDE's error colour.
-Ordinary WARN lines share the visible warning style. Solr outcomes do not change
-the independent class reload counter or mean that a successful class reload was
-undone.
-
-Platform/home/watch-directory/port discovery remains automatic. Diagnostic
-`platform`, `wrapOutput`, `transformDumpDir`, `verifyTransform`, `sessionLog` and
-structured `refreshOwnersOnHelper` arguments remain manual expert options (see
-[Agent Arguments](#agent-arguments)); the IDE does not expose fields for them.
-The custom port/file controls choose which agent the IDE connects to, while its
-own launches use an automatically assigned port and project port file.
-
-### Workflow with `ant build`
-
-This is the default and safest workflow. The IntelliJ plugin injects the agent, but compilation is still handled by `ant`:
-
-```
-1. Start the SAP Commerce server from IntelliJ (Run/Debug)
-   └── Reclazz agent is automatically injected
-   └── Plugin connects to the agent
-   └── Status bar shows "Reclazz: Connected"
-
-2. Edit your Java source files in IntelliJ
-
-3. Compile with ant (from terminal or IntelliJ terminal):
-   cd hybris/bin/platform
-   ant build
-
-4. Reclazz detects the new .class files and hot-swaps them
-   └── Reclazz tool window shows reload details
-   └── Status bar updates: "Reclazz: 1 reloads"
-
-5. Test your changes immediately
-```
-
-### Workflow with IntelliJ Build (AutoCompile mode)
-
-If you prefer to skip `ant build` entirely, enable **AutoCompile**. In this mode, Reclazz watches `.java` source files and compiles them internally using the JDK compiler API (`javax.tools`):
-
-1. Go to **Settings** > **Tools** > **Reclazz**
-2. Check **AutoCompile (compile .java files internally instead of using ant)**
-3. Start the server from IntelliJ
-
-```
-1. Start the SAP Commerce server from IntelliJ (Run/Debug)
-   └── Reclazz agent is injected with autoCompile=true
-
-2. Edit a Java source file in IntelliJ
-
-3. Save the file (Ctrl+S / Cmd+S)
-   └── Reclazz detects the .java change
-   └── Compiles it internally using javax.tools
-   └── Hot-swaps the resulting bytecode
-   └── "Compiled: MyService.java (45ms) → Hot-swapped: com.example.MyService (8ms)"
-
-4. Test your changes immediately, no ant build, no server restart
-```
-
-AutoCompile treats the sources collected in one attempt as a package. All
-modules compile into a temporary directory, in dependency order, before any
-output is published. If compilation fails, the output directories stay
-unchanged and the running classes keep their previous version. The log
-names the compiler error and the number of held source files. Fixing any
-source retries the held sources together with the new save. Deleting a
-blocking source removes it and retries the remaining sources.
-
-While one source is broken, other saves join its held package. Two saves
-collected in separate attempts are separate packages. This is not an
-editor-wide refactoring transaction. Use the normal build tool for generated
-code and resources that depend on build tasks or annotation-processor setup.
-Do not run AutoCompile and an external compiler against the same output tree
-at the same time.
-
-Each successful output file is replaced through a temporary file and rename.
-If publication fails partway through, no agent reload starts, but earlier
-replacements remain on disk. The error names the failed file; fixing the I/O
-problem and saving again retries the package. Class loaders can observe mixed
-old and new files during publication. Reload and framework operations still
-have their existing per-class failure behavior.
-
-For external builds, the IntelliJ plugin holds class changes from build start
-until successful compilation. Errors or cancellation keep them held until the
-next successful build. A lost connection never implies success. `HEALTH`
-reports the held count and time; a missing result produces a warning after
-five minutes. The [BUILD protocol](protocol.md#holding-a-build-until-it-succeeds)
-explains recovery and a Gradle/Maven wrapper. Without BUILD signals, the
-existing file-watching behavior continues.
-
-### What the Plugin Shows
-
-- **Status bar widget:** Bottom-right corner shows connection status and reload count
-  - `Reclazz: Idle`, Plugin enabled, server not running
-  - `Reclazz: Connected`, Agent connected, watching for changes
-  - `Reclazz: 5 reloads`, Number of successful hot-swaps in this session
-  - `Reclazz: Error`, Last reload failed (check tool window for details)
-
-- **Tool window:** Bottom panel labeled "Reclazz" shows a detailed log of all events:
-  - Compilation results (autoCompile mode)
-  - One line per reload, with the timing and what the save touched:
-    `Reloaded com.acme.OrderService (12ms): bean orderService re-created,
-    mappings re-scanned, caches evicted`. When the save added something that
-    only a restart completes, the line ends with `1 thing now waits on a
-    restart, ask PENDING`. The same line is the status bar widget's tooltip.
-  - Each framework step's own sentence, under `verbose=true`
-  - Errors and warnings
-
-  **Export Log** saves the latest **500 events received by this panel**, oldest
-  first in arrival order. This includes warnings, information, compilation and
-  connection/disconnection events as well as reloads and errors. Each new event
-  beyond the limit evicts the oldest, regardless of level; the export header
-  states the retained count and limit. Export takes a consistent snapshot while
-  new events arrive. This is in-memory history for the panel's lifetime, not a
-  durable record of the whole session: it does not replay events from before the
-  panel opened, the initial waiting/connection banner, or filtered heartbeats.
-
-- **Notifications:** Balloon notifications for important events (JDK detection, connection status)
-
----
-
-## Option 3: Auto-Build on Idle (Optional)
-
-> **This feature is off by default and must be explicitly enabled.** It can increase CPU usage because it triggers a build every time you stop typing, even for incomplete changes.
-
-### How It Works
-
-When enabled, Reclazz monitors your editing activity. After you stop typing for a configurable threshold, it automatically triggers a build. Combined with the hot-swap pipeline, this means your changes are compiled and reloaded without any manual action.
-
-### Setup
-
-1. Go to **Settings** > **Tools** > **Reclazz**
-2. Check **AutoCompile**, this is required for auto-build to work
-3. The debounce timer controls how long Reclazz waits after your last edit before triggering compilation
-
-### How the Debounce Timer Works
-
-The **Debounce (ms)** setting (default: 500ms) controls the delay:
-
-```
-You type... type... type... [stop]
-                                  |
-                                  ├── 500ms timer starts
-                                  |
-                                  └── No more edits detected
-                                      └── Reclazz compiles the changed file
-                                          └── Hot-swaps the result
-```
-
-If you resume typing before the timer expires, it resets. This prevents unnecessary compilations while you are still editing.
-
-### Adjusting the Timer
-
-| Setting | Effect |
-|---|---|
-| **100ms** | Very aggressive, compiles almost instantly after every pause. High CPU usage. |
-| **500ms** (default) | Good balance, compiles after a brief pause. Suitable for most workflows. |
-| **1000-2000ms** | Conservative, waits for a longer pause. Lower CPU usage, but slower feedback. |
-| **3000-5000ms** | Very conservative, only compiles after you clearly stop editing. |
-
-Adjust the timer in **Settings** > **Tools** > **Reclazz** > **Debounce (ms)**.
-
-### Performance Considerations
-
-- **CPU:** Each compilation invokes the JDK compiler. Frequent compilations can increase CPU usage, especially on large files or slow machines.
-- **File descriptors:** The file watcher opens file descriptors for every watched directory. On large Hybris installations with many extensions, this can approach OS limits. The **Startup delay** setting (default: 30s) helps by delaying the watcher until the server has finished starting.
-- **Incomplete code:** If you pause mid-edit, Reclazz may try to compile syntactically invalid code. Compilation errors are shown in the tool window but do not affect the running server.
-
-### Recommendation
-
-Use auto-build for rapid iteration on small changes (fixing a service method, tweaking business logic). For larger changes involving multiple files, use `ant build` or IntelliJ's Build Project (Ctrl+F9 / Cmd+F9) instead.
-
----
-
-## Option 4: Attach to Running Server
-
-Use this option when the SAP Commerce server is **already running** without the `-javaagent` flag, for example, started from a terminal or by another team member. Reclazz uses the JVM Attach API to load the agent into the running process without restarting it.
-
-### How It Works
-
-The IntelliJ plugin scans for running JVMs, identifies SAP Commerce processes (by detecting the Tanuki wrapper or Hybris bootstrap loader), and dynamically loads `reclazz-agent.jar` into the selected process. The agent initializes inside the running JVM and begins watching for class changes.
-
-### Requirements
-
-- IntelliJ IDEA and the Hybris server must run as the **same OS user** (JVM Attach API restriction)
-- JDK 17+ (the `jdk.attach` module must be available)
-
-### Usage
-
-**From the menu:**
-
-1. Go to **Tools** > **Attach Reclazz to Running Server**
-2. If multiple SAP Commerce processes are detected, pick the one you want
-3. The agent loads and the plugin connects automatically
-4. Status bar shows "Reclazz: Connected"
-
-**From settings:**
-
-1. Go to **Settings** > **Tools** > **Reclazz**
-2. In the **Connection** group, click **Attach to Running Server...**
-
-### Workflow
-
-```
-1. Start SAP Commerce from terminal (without -javaagent)
-   ./hybrisserver.sh
-
-2. In IntelliJ: Tools > Attach Reclazz to Running Server
-   └── Plugin detects the running JVM
-   └── Agent is loaded dynamically
-   └── Reclazz banner appears in the server console
-   └── Status bar shows "Reclazz: Connected"
-
-3. Edit Java source files
-
-4. Compile with ant:
-   cd hybris/bin/platform
-   ant build
-
-5. Reclazz detects the new .class files and hot-swaps them
-   └── No server restart needed
-```
-
-### Limitations
-
-- **JBR flags cannot be added retroactively**: If the server was started without `-XX:+AllowEnhancedClassRedefinition`, the JVM cannot switch to enhanced redefinition mid-run. The companion-class reloader still works on the attached JVM, so structural changes are still applied, but reflective access to the new members carries the standard-JVM caveat (see below).
-- **Startup delay is skipped**: Since the server is already running, the agent starts watching immediately (no `startupDelaySec` wait).
-
-### Troubleshooting
-
-- **"No running SAP Commerce JVM found"**: The server must be running before you attach. Reclazz looks for processes containing `org.tanukisoftware.wrapper.WrapperSimpleApp`, `-Dplatform.home=`, `-DHYBRIS_BIN_DIR=`, or `de.hybris.bootstrap.loader.Loader`.
-- **"Permission denied"**: IntelliJ and the server must run as the same OS user. If the server runs as `hybris` and IntelliJ runs as your user, the attach will be refused.
-- **"Agent is already loaded"**: The agent was already attached. The plugin will reconnect to the existing agent instance.
-
----
 
 ## When a Reload Goes Wrong
 
@@ -3369,19 +3410,6 @@ jfr print --events reclazz.Reload,reclazz.ReloadFailed reclazz.jfr
 In JDK Mission Control they appear under the **Reclazz** category in the event
 browser. A recording of a slow session, sent along with a report, shows what
 the agent did and when without the console log.
-
-## Choosing the Right Mode
-
-| Scenario | Recommended Mode |
-|---|---|
-| Server runs from terminal (`./hybrisserver.sh`) | [Manual Setup](#option-1-manual-setup) |
-| Server runs from IntelliJ, compile with `ant build` | [IntelliJ Auto + ant build](#workflow-with-ant-build) |
-| Server runs from IntelliJ, want instant feedback | [IntelliJ Auto + AutoCompile](#workflow-with-intellij-build-autocompile-mode) |
-| Rapid iteration on single files | [Auto-Build on Idle](#option-3-auto-build-on-idle-optional) |
-| Server already running without agent | [Attach to Running Server](#option-4-attach-to-running-server) |
-| CI/CD or headless environments | [Manual Setup](#option-1-manual-setup) with standalone agent |
-
----
 
 ## Supported JDK Providers
 

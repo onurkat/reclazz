@@ -1,0 +1,119 @@
+{
+  "baseline": "3327bc6",
+  "groups": [
+    {
+      "heading": "Spring beans and components",
+      "intro": "Read the [component registration](#new-component-classes-after-startup) and web integration sections below.",
+      "keys": [
+        "new-component-classes-after-startup",
+        "lifecycle-methods-added-after-startup",
+        "bean-methods-added-after-startup",
+        "exception-handlers-added-after-startup",
+        "registered-mvc-interceptors-current-singleton-routing",
+        "binding-and-model-methods-added-after-startup",
+        "edited-aspect-pointcuts",
+        "jackson-properties-added-after-startup"
+      ]
+    },
+    {
+      "heading": "Spring service methods, scheduling and events",
+      "intro": "Read the [service operation](#operations-on-added-service-methods), scheduling and event reference sections below.",
+      "keys": [
+        "operations-on-added-service-methods",
+        "authorization-on-added-service-methods",
+        "composed-security-annotations-on-added-services",
+        "composed-transaction-annotations-on-added-services",
+        "composed-cache-annotations-on-added-services",
+        "scheduled-methods-added-after-startup",
+        "event-listener-methods-added-after-startup",
+        "transaction-and-cache-advice-on-added-callbacks",
+        "async-scheduled-methods-added-after-startup",
+        "async-event-listeners-added-after-startup",
+        "async-service-methods-added-after-startup",
+        "transactional-event-listeners-added-after-startup"
+      ]
+    },
+    {
+      "heading": "Spring messaging",
+      "intro": "Read the existing [Kafka](#kafka-listeners-added-after-startup), [JMS](#jms-listeners-added-after-startup) and [RabbitMQ](#rabbit-listeners-added-after-startup) scopes.",
+      "keys": [
+        "kafka-listeners-added-after-startup",
+        "jms-listeners-added-after-startup",
+        "rabbit-listeners-added-after-startup"
+      ]
+    },
+    {
+      "heading": "Configuration, properties and XML",
+      "intro": "Read the [property](#property-changes-keep-the-last-working-values), XML and resource reference sections below.",
+      "keys": [
+        "message-bundles-and-cached-templates",
+        "loaded-spring-xml-resources",
+        "xml-singleton-recreation",
+        "property-changes-keep-the-last-working-values",
+        "yaml-and-removed-configuration-keys",
+        "computed-value-fields",
+        "computed-value-constructor-parameters",
+        "value-factory-method-parameters",
+        "added-factory-values-on-property-changes",
+        "transaction-and-security-proxies-on-property-changes",
+        "indirect-value-dependencies"
+      ]
+    },
+    {
+      "heading": "Data and caches",
+      "intro": "Read the [prepared-schema](#new-jpa-entities-with-a-prepared-schema) and cache reference sections below.",
+      "keys": [
+        "refreshing-a-custom-cache-after-a-helper-reload",
+        "cache-dependencies-after-reload",
+        "new-jpa-entities-with-a-prepared-schema",
+        "held-repositories-after-a-prepared-mapping-refresh"
+      ]
+    },
+    {
+      "heading": "SAP Commerce",
+      "intro": "Read the [OCC mapping](#occ-field-set-mappings) and generated DTO reference sections below.",
+      "keys": [
+        "occ-field-set-mappings",
+        "wsdto-properties-added-in-beansxml",
+        "occ-request-mappings-and-overrides",
+        "sap-populator-and-list-merge-directives"
+      ]
+    },
+    {
+      "heading": "Reload timing",
+      "intro": "Read the [request-boundary reference](#reload-between-requests) before choosing a reload timing mode.",
+      "keys": [
+        "reload-between-requests"
+      ]
+    }
+  ],
+  "manual_keys": [
+    "how-it-works",
+    "setup",
+    "finding-the-agent-jar-path",
+    "agent-arguments",
+    "workflow"
+  ],
+  "allowed_level_changes": {},
+  "h2_order": [
+    "Choosing the Right Mode",
+    "Option 2: IntelliJ Automatic Mode (Recommended)",
+    "Option 1: Manual Setup",
+    "Option 3: Auto-Build on Idle (Optional)",
+    "Option 4: Attach to Running Server",
+    "Spring beans and components",
+    "Spring service methods, scheduling and events",
+    "Spring messaging",
+    "Configuration, properties and XML",
+    "Data and caches",
+    "SAP Commerce",
+    "Reload timing",
+    "When a Reload Goes Wrong",
+    "Debugging Reloaded Code",
+    "Other Clients and Build Tools",
+    "Seeing Reloads in JDK Flight Recorder",
+    "Supported JDK Providers",
+    "Known Limitations",
+    "What Cannot Be Hot-Reloaded"
+  ]
+}

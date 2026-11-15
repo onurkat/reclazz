@@ -1,0 +1,1216 @@
+{
+  "source": "docs/usage.md",
+  "baseline": "3327bc6",
+  "source_sha256": "8f1073e7b270afb190cb79bac2dd08e21ca1d0f2189fd578ee65a4435ec53631",
+  "headings": [
+    {
+      "key": "usage-guide",
+      "identity": [
+        "Usage Guide"
+      ],
+      "occurrence": 0,
+      "level": 1,
+      "title": "Usage Guide",
+      "id": "usage-guide",
+      "body_sha256": "fbccf6fd43d0b00231fb1bbec6ad7647a243348e6708a30669c195c78cfa1ae4",
+      "heading": "# Usage Guide\n"
+    },
+    {
+      "key": "option-1-manual-setup",
+      "identity": [
+        "Option 1: Manual Setup"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Option 1: Manual Setup",
+      "id": "option-1-manual-setup",
+      "body_sha256": "a98685ebb001db72860d8fb3ce035aea183fa39d909dd28aa0d3cd3bedf8a187",
+      "heading": "## Option 1: Manual Setup\n"
+    },
+    {
+      "key": "how-it-works",
+      "identity": [
+        "Option 1: Manual Setup",
+        "How It Works"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "How It Works",
+      "id": "how-it-works",
+      "body_sha256": "69e12623ed2ee305e4faeff3b543ca65dc7a2a048cf0f8d47c0ae032a2f19a0b",
+      "heading": "### How It Works\n"
+    },
+    {
+      "key": "setup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Setup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Setup",
+      "id": "setup",
+      "body_sha256": "8e6a671e45ba753b4e3357947654f75d6e6cd0f9d29ed21316dbe90bec676f15",
+      "heading": "### Setup\n"
+    },
+    {
+      "key": "finding-the-agent-jar-path",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Finding the Agent JAR Path"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Finding the Agent JAR Path",
+      "id": "finding-the-agent-jar-path",
+      "body_sha256": "201768213ddc390d64904909d937603a058e835899605943ec9e33c545bc8c22",
+      "heading": "### Finding the Agent JAR Path\n"
+    },
+    {
+      "key": "agent-arguments",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Agent Arguments"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Agent Arguments",
+      "id": "agent-arguments",
+      "body_sha256": "d7e7f0895f25122529637a0e73358dabb476a891343d141aadca5de1016b4ece",
+      "heading": "### Agent Arguments\n"
+    },
+    {
+      "key": "message-bundles-and-cached-templates",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Message bundles and cached templates"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Message bundles and cached templates",
+      "id": "message-bundles-and-cached-templates",
+      "body_sha256": "e76770f1d4ef00dee50ba9da080c8d53ecda8af495c428bdea5c46630e01b408",
+      "heading": "### Message bundles and cached templates\n"
+    },
+    {
+      "key": "loaded-spring-xml-resources",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Loaded Spring XML resources"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Loaded Spring XML resources",
+      "id": "loaded-spring-xml-resources",
+      "body_sha256": "2e4737ed70b051bf6cc76a7280f35abb5a83c7185c2fdcb415e924a51c672608",
+      "heading": "### Loaded Spring XML resources\n"
+    },
+    {
+      "key": "occ-field-set-mappings",
+      "identity": [
+        "Option 1: Manual Setup",
+        "OCC field-set mappings"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "OCC field-set mappings",
+      "id": "occ-field-set-mappings",
+      "body_sha256": "2153d112529be1cbcffbd2f4ea847e5ac815ad0511500ff955df4a48f1f970bb",
+      "heading": "### OCC field-set mappings\n"
+    },
+    {
+      "key": "wsdto-properties-added-in-beansxml",
+      "identity": [
+        "Option 1: Manual Setup",
+        "WsDTO properties added in beans.xml"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "WsDTO properties added in beans.xml",
+      "id": "wsdto-properties-added-in-beansxml",
+      "body_sha256": "d2ced06f1a7ba26a8cfca707f5b8b23f5001fa9815c99955b9358dc5bbbfc1cb",
+      "heading": "### WsDTO properties added in beans.xml\n"
+    },
+    {
+      "key": "occ-request-mappings-and-overrides",
+      "identity": [
+        "Option 1: Manual Setup",
+        "OCC request mappings and overrides"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "OCC request mappings and overrides",
+      "id": "occ-request-mappings-and-overrides",
+      "body_sha256": "605dba66281b42da599979a315a54402c64b7fa55e7bb848477f4bbc4969b5c8",
+      "heading": "### OCC request mappings and overrides\n"
+    },
+    {
+      "key": "sap-populator-and-list-merge-directives",
+      "identity": [
+        "Option 1: Manual Setup",
+        "SAP populator and list-merge directives"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "SAP populator and list-merge directives",
+      "id": "sap-populator-and-list-merge-directives",
+      "body_sha256": "a3c3709a3b926a5874492c1a1838d944004ec130a8b0492558a65731e96fa05a",
+      "heading": "### SAP populator and list-merge directives\n"
+    },
+    {
+      "key": "refreshing-a-custom-cache-after-a-helper-reload",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Refreshing a custom cache after a helper reload"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Refreshing a custom cache after a helper reload",
+      "id": "refreshing-a-custom-cache-after-a-helper-reload",
+      "body_sha256": "56f26c2f287b1c668cf463b92aa11fc2f4f8a3508dcac239b7b489823e0a8cd0",
+      "heading": "### Refreshing a custom cache after a helper reload\n"
+    },
+    {
+      "key": "xml-singleton-recreation",
+      "identity": [
+        "Option 1: Manual Setup",
+        "XML singleton recreation"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "XML singleton recreation",
+      "id": "xml-singleton-recreation",
+      "body_sha256": "911761d4c7ac8f716248339116d8c432cc6ee22393627863009990fc54aeeb2a",
+      "heading": "### XML singleton recreation\n"
+    },
+    {
+      "key": "new-component-classes-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "New component classes after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "New component classes after startup",
+      "id": "new-component-classes-after-startup",
+      "body_sha256": "28428246807e11b02d84f445e413fcc3a4ac0b387b60918d413c5e31be466d5a",
+      "heading": "### New component classes after startup\n"
+    },
+    {
+      "key": "lifecycle-methods-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Lifecycle methods added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Lifecycle methods added after startup",
+      "id": "lifecycle-methods-added-after-startup",
+      "body_sha256": "1db9a079199ba56e3ae56bdf63e63e9b217fbbce6325160eca5e86a02b1fc052",
+      "heading": "### Lifecycle methods added after startup\n"
+    },
+    {
+      "key": "bean-methods-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Bean methods added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Bean methods added after startup",
+      "id": "bean-methods-added-after-startup",
+      "body_sha256": "a06f92b71cc468d298bb8b189c01c81da4b66c500d73544018b26ab8a361f432",
+      "heading": "### Bean methods added after startup\n"
+    },
+    {
+      "key": "exception-handlers-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Exception handlers added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Exception handlers added after startup",
+      "id": "exception-handlers-added-after-startup",
+      "body_sha256": "9bd2e4e2c2a28e39a7751218cf4f3be73011a0a60570233389e0c233112aec1e",
+      "heading": "### Exception handlers added after startup\n"
+    },
+    {
+      "key": "registered-mvc-interceptors-current-singleton-routing",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Registered MVC interceptors: current singleton routing"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Registered MVC interceptors: current singleton routing",
+      "id": "registered-mvc-interceptors-current-singleton-routing",
+      "body_sha256": "d810fabeba1a172c77c73989ec81f59b17812a0a857553dd34dcbc3b63b4ac4c",
+      "heading": "### Registered MVC interceptors: current singleton routing\n"
+    },
+    {
+      "key": "binding-and-model-methods-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Binding and model methods added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Binding and model methods added after startup",
+      "id": "binding-and-model-methods-added-after-startup",
+      "body_sha256": "15695076a11fa37f1430890857749ff7561905ced593211ac97f09f93c75fcd3",
+      "heading": "### Binding and model methods added after startup\n"
+    },
+    {
+      "key": "kafka-listeners-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Kafka listeners added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Kafka listeners added after startup",
+      "id": "kafka-listeners-added-after-startup",
+      "body_sha256": "455d3b5cfa85a91bb790078061090e8869dab29f404ec9ea999c27ed5d2b5ba9",
+      "heading": "### Kafka listeners added after startup\n"
+    },
+    {
+      "key": "jms-listeners-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "JMS listeners added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "JMS listeners added after startup",
+      "id": "jms-listeners-added-after-startup",
+      "body_sha256": "53f0db63657aca218ed6d180aa9b0c8632294880b989e5923c1ea385d04ece0b",
+      "heading": "### JMS listeners added after startup\n"
+    },
+    {
+      "key": "rabbit-listeners-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Rabbit listeners added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Rabbit listeners added after startup",
+      "id": "rabbit-listeners-added-after-startup",
+      "body_sha256": "eb4c06319d78a5638b53e6dfb7021055aa28362b2ac7b65b0b5445a9c81e799d",
+      "heading": "### Rabbit listeners added after startup\n"
+    },
+    {
+      "key": "operations-on-added-service-methods",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Operations on added service methods"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Operations on added service methods",
+      "id": "operations-on-added-service-methods",
+      "body_sha256": "7872c9bab73e1c3886918f760712ad375b4468b342da8aff23a19ef332727311",
+      "heading": "### Operations on added service methods\n"
+    },
+    {
+      "key": "authorization-on-added-service-methods",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Authorization on added service methods"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Authorization on added service methods",
+      "id": "authorization-on-added-service-methods",
+      "body_sha256": "34a6743713c51176df6360552a48ce4a917aedb552b9933bacb6834a0add52e2",
+      "heading": "### Authorization on added service methods\n"
+    },
+    {
+      "key": "composed-security-annotations-on-added-services",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Composed security annotations on added services"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Composed security annotations on added services",
+      "id": "composed-security-annotations-on-added-services",
+      "body_sha256": "0e7f7fc9e1dd9c38f4de0117fdb830004fee87f9ca2e91c8068d533467f83656",
+      "heading": "### Composed security annotations on added services\n"
+    },
+    {
+      "key": "composed-transaction-annotations-on-added-services",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Composed transaction annotations on added services"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Composed transaction annotations on added services",
+      "id": "composed-transaction-annotations-on-added-services",
+      "body_sha256": "4387cb1d9ecc78a8659a4d2a6955cf933d586e1af9e969b575a2b9cc71ce7d7b",
+      "heading": "### Composed transaction annotations on added services\n"
+    },
+    {
+      "key": "composed-cache-annotations-on-added-services",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Composed cache annotations on added services"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Composed cache annotations on added services",
+      "id": "composed-cache-annotations-on-added-services",
+      "body_sha256": "fcda366ccad49934f8490dfd8b10a063063008e90503cd5032c7fb1214637b92",
+      "heading": "### Composed cache annotations on added services\n"
+    },
+    {
+      "key": "edited-aspect-pointcuts",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Edited aspect pointcuts"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Edited aspect pointcuts",
+      "id": "edited-aspect-pointcuts",
+      "body_sha256": "11772537281ba08dd0b1b80c2e2264520c2a7b41a7291eaecc6b3d5f82e2905d",
+      "heading": "### Edited aspect pointcuts\n"
+    },
+    {
+      "key": "jackson-properties-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Jackson properties added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Jackson properties added after startup",
+      "id": "jackson-properties-added-after-startup",
+      "body_sha256": "030061a798ffe210201ce705db851705bf84d9d9637602e0cb12c52f6cf774ee",
+      "heading": "### Jackson properties added after startup\n"
+    },
+    {
+      "key": "scheduled-methods-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Scheduled methods added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Scheduled methods added after startup",
+      "id": "scheduled-methods-added-after-startup",
+      "body_sha256": "5925b0e9a2fe700004da2b1d80c81d0ddb2c98fce0b5c10ed892e35c397f7553",
+      "heading": "### Scheduled methods added after startup\n"
+    },
+    {
+      "key": "event-listener-methods-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Event listener methods added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Event listener methods added after startup",
+      "id": "event-listener-methods-added-after-startup",
+      "body_sha256": "c9f2c04819dacac80ce5d5e3f0b7a74b59bc315625005255ccf133283a00eb10",
+      "heading": "### Event listener methods added after startup\n"
+    },
+    {
+      "key": "transaction-and-cache-advice-on-added-callbacks",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Transaction and cache advice on added callbacks"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Transaction and cache advice on added callbacks",
+      "id": "transaction-and-cache-advice-on-added-callbacks",
+      "body_sha256": "d3611779e8532e3ca6cff1426ab5a0e12a5a5362231c9ac136e82ad94234f42b",
+      "heading": "### Transaction and cache advice on added callbacks\n"
+    },
+    {
+      "key": "async-scheduled-methods-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Async scheduled methods added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Async scheduled methods added after startup",
+      "id": "async-scheduled-methods-added-after-startup",
+      "body_sha256": "eeab3a7fd1a89ec5f2c31d00b653bd66cbfd0bbe00f40639b08400e522d4c6bf",
+      "heading": "### Async scheduled methods added after startup\n"
+    },
+    {
+      "key": "async-event-listeners-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Async event listeners added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Async event listeners added after startup",
+      "id": "async-event-listeners-added-after-startup",
+      "body_sha256": "9760291a68c1580e6abcdcb3f9a71e436ac4f09d7f57a5ac008e90488485c417",
+      "heading": "### Async event listeners added after startup\n"
+    },
+    {
+      "key": "async-service-methods-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Async service methods added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Async service methods added after startup",
+      "id": "async-service-methods-added-after-startup",
+      "body_sha256": "9dc16a2772b50ff4090f962e0ae33531aab3ab53fc2e14d031f94fa184f77733",
+      "heading": "### Async service methods added after startup\n"
+    },
+    {
+      "key": "transactional-event-listeners-added-after-startup",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Transactional event listeners added after startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Transactional event listeners added after startup",
+      "id": "transactional-event-listeners-added-after-startup",
+      "body_sha256": "702d720f59bc5d04e6f3344ee9822d119fa5519cb738c666b8dc7347d3a21fbf",
+      "heading": "### Transactional event listeners added after startup\n"
+    },
+    {
+      "key": "property-changes-keep-the-last-working-values",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Property changes keep the last working values"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Property changes keep the last working values",
+      "id": "property-changes-keep-the-last-working-values",
+      "body_sha256": "a33c6f7fc886d1f986c0ba62cb5a16831ba1943aef9ebc7094d893520bb33752",
+      "heading": "### Property changes keep the last working values\n"
+    },
+    {
+      "key": "yaml-and-removed-configuration-keys",
+      "identity": [
+        "Option 1: Manual Setup",
+        "YAML and removed configuration keys"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "YAML and removed configuration keys",
+      "id": "yaml-and-removed-configuration-keys",
+      "body_sha256": "bcfd7bbb5ca13a16e8ef66ff993b3fe403d9c1988e8f9f687b02ff684dcd57e5",
+      "heading": "### YAML and removed configuration keys\n"
+    },
+    {
+      "key": "computed-value-fields",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Computed @Value fields"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Computed @Value fields",
+      "id": "computed-value-fields",
+      "body_sha256": "c00c9da903c3ee2cbb0d5353dafd49424d5c235a80fd273c27c7f04789201200",
+      "heading": "### Computed @Value fields\n"
+    },
+    {
+      "key": "computed-value-constructor-parameters",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Computed @Value constructor parameters"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Computed @Value constructor parameters",
+      "id": "computed-value-constructor-parameters",
+      "body_sha256": "5741acd3267f1ea948d051fd8dfc154f3285bf9b9812c89f0a076f1bf5dacaad",
+      "heading": "### Computed @Value constructor parameters\n"
+    },
+    {
+      "key": "value-factory-method-parameters",
+      "identity": [
+        "Option 1: Manual Setup",
+        "@Value factory method parameters"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "@Value factory method parameters",
+      "id": "value-factory-method-parameters",
+      "body_sha256": "78fd52a2cb92fbd64c88d857d6bc510ac2b597cd91661f71632c0a64cac271fa",
+      "heading": "### @Value factory method parameters\n"
+    },
+    {
+      "key": "added-factory-values-on-property-changes",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Added factory values on property changes"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Added factory values on property changes",
+      "id": "added-factory-values-on-property-changes",
+      "body_sha256": "89f851088ba07048fb59158ffd307b8100b2860b2cd6e371b8c6a3a578a68b95",
+      "heading": "### Added factory values on property changes\n"
+    },
+    {
+      "key": "transaction-and-security-proxies-on-property-changes",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Transaction and security proxies on property changes"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Transaction and security proxies on property changes",
+      "id": "transaction-and-security-proxies-on-property-changes",
+      "body_sha256": "0f17c897f0ab2899efae73cdc441f2ee2c598356cdb42068bbf23a6f3f26cbb3",
+      "heading": "### Transaction and security proxies on property changes\n"
+    },
+    {
+      "key": "indirect-value-dependencies",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Indirect @Value dependencies"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Indirect @Value dependencies",
+      "id": "indirect-value-dependencies",
+      "body_sha256": "177ecf22921a6dd30f55b22af2a278ff1ee7fa9859564af72cdd4d9a35c00346",
+      "heading": "### Indirect @Value dependencies\n"
+    },
+    {
+      "key": "cache-dependencies-after-reload",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Cache dependencies after reload"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Cache dependencies after reload",
+      "id": "cache-dependencies-after-reload",
+      "body_sha256": "11311b462baef383722dcffff50ac457e03a2d4bae7284fddd728c5447c6a3f1",
+      "heading": "### Cache dependencies after reload\n"
+    },
+    {
+      "key": "new-jpa-entities-with-a-prepared-schema",
+      "identity": [
+        "Option 1: Manual Setup",
+        "New JPA entities with a prepared schema"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "New JPA entities with a prepared schema",
+      "id": "new-jpa-entities-with-a-prepared-schema",
+      "body_sha256": "53314e341c48b62f6018b37047acaa1b44db584e330ea29c745cb93ad29abfeb",
+      "heading": "### New JPA entities with a prepared schema\n"
+    },
+    {
+      "key": "held-repositories-after-a-prepared-mapping-refresh",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Held repositories after a prepared mapping refresh"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Held repositories after a prepared mapping refresh",
+      "id": "held-repositories-after-a-prepared-mapping-refresh",
+      "body_sha256": "6546df45f2cb14f3fcc96ab1811dac86440775d0271321992ea66a7074803e46",
+      "heading": "### Held repositories after a prepared mapping refresh\n"
+    },
+    {
+      "key": "reload-between-requests",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Reload between requests"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Reload between requests",
+      "id": "reload-between-requests",
+      "body_sha256": "8633730cdbecf62c10548d0c75d4f98b2f6ad67bc5e7706013d668176fccba18",
+      "heading": "### Reload between requests\n"
+    },
+    {
+      "key": "workflow",
+      "identity": [
+        "Option 1: Manual Setup",
+        "Workflow"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Workflow",
+      "id": "workflow",
+      "body_sha256": "b01b5e5f1b82b791633d09d3183485b889a97d56fce55584ae8ceafb950da440",
+      "heading": "### Workflow\n"
+    },
+    {
+      "key": "option-2-intellij-automatic-mode-recommended",
+      "identity": [
+        "Option 2: IntelliJ Automatic Mode (Recommended)"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Option 2: IntelliJ Automatic Mode (Recommended)",
+      "id": "option-2-intellij-automatic-mode-recommended",
+      "body_sha256": "c4a498e66fea3953f001a1fd1ef704e3ccd0cb1f1ddd7d8da218ebb6ecb4f6a7",
+      "heading": "## Option 2: IntelliJ Automatic Mode (Recommended)\n"
+    },
+    {
+      "key": "how-it-works-1",
+      "identity": [
+        "Option 2: IntelliJ Automatic Mode (Recommended)",
+        "How It Works"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "How It Works",
+      "id": "how-it-works-1",
+      "body_sha256": "8686b7e70fa6f26702be6723548d9dad7ac186cff1263f1b4a1937ce73abc973",
+      "heading": "### How It Works\n"
+    },
+    {
+      "key": "setup-1",
+      "identity": [
+        "Option 2: IntelliJ Automatic Mode (Recommended)",
+        "Setup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Setup",
+      "id": "setup-1",
+      "body_sha256": "709188a1c2d7f279a499a0755456d5ecd0873da76fa2713ad2e6b6b34d64b06d",
+      "heading": "### Setup\n"
+    },
+    {
+      "key": "project-settings-and-managed-sap-startup",
+      "identity": [
+        "Option 2: IntelliJ Automatic Mode (Recommended)",
+        "Project settings and managed SAP startup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Project settings and managed SAP startup",
+      "id": "project-settings-and-managed-sap-startup",
+      "body_sha256": "73c1eb2111d5d2ffc38e960bc95147ece1461d9fb5654f4ed9e408c1955b6c7a",
+      "heading": "### Project settings and managed SAP startup\n"
+    },
+    {
+      "key": "workflow-with-ant-build",
+      "identity": [
+        "Option 2: IntelliJ Automatic Mode (Recommended)",
+        "Workflow with ant build"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Workflow with ant build",
+      "id": "workflow-with-ant-build",
+      "body_sha256": "d8dc1fdabc6873c2742616d7bfc78c0a246e9b5e72bb27f6228b18d6e698a888",
+      "heading": "### Workflow with `ant build`\n"
+    },
+    {
+      "key": "workflow-with-intellij-build-autocompile-mode",
+      "identity": [
+        "Option 2: IntelliJ Automatic Mode (Recommended)",
+        "Workflow with IntelliJ Build (AutoCompile mode)"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Workflow with IntelliJ Build (AutoCompile mode)",
+      "id": "workflow-with-intellij-build-autocompile-mode",
+      "body_sha256": "0e1f0eff9eb1db04c24b917e027ae4d7e4164081b56c144a9ee782655cf8027c",
+      "heading": "### Workflow with IntelliJ Build (AutoCompile mode)\n"
+    },
+    {
+      "key": "what-the-plugin-shows",
+      "identity": [
+        "Option 2: IntelliJ Automatic Mode (Recommended)",
+        "What the Plugin Shows"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "What the Plugin Shows",
+      "id": "what-the-plugin-shows",
+      "body_sha256": "0d977931f73aed0dca529354855925b768b29ecf43ecb370a395c5692a5c3bcb",
+      "heading": "### What the Plugin Shows\n"
+    },
+    {
+      "key": "option-3-auto-build-on-idle-optional",
+      "identity": [
+        "Option 3: Auto-Build on Idle (Optional)"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Option 3: Auto-Build on Idle (Optional)",
+      "id": "option-3-auto-build-on-idle-optional",
+      "body_sha256": "306b424084dc2f7cca0e10b64d2139e476b4218a44a9a08a32b8d196dce86b37",
+      "heading": "## Option 3: Auto-Build on Idle (Optional)\n"
+    },
+    {
+      "key": "how-it-works-2",
+      "identity": [
+        "Option 3: Auto-Build on Idle (Optional)",
+        "How It Works"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "How It Works",
+      "id": "how-it-works-2",
+      "body_sha256": "30434ff09cdde10c9b3bef82729e32c2be09ca80bf1e01ec8e3965908c64d622",
+      "heading": "### How It Works\n"
+    },
+    {
+      "key": "setup-2",
+      "identity": [
+        "Option 3: Auto-Build on Idle (Optional)",
+        "Setup"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Setup",
+      "id": "setup-2",
+      "body_sha256": "af1b4bd1bc646c0a330f2eb1184b234042a90063345ac50a57f88db4fe21f852",
+      "heading": "### Setup\n"
+    },
+    {
+      "key": "how-the-debounce-timer-works",
+      "identity": [
+        "Option 3: Auto-Build on Idle (Optional)",
+        "How the Debounce Timer Works"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "How the Debounce Timer Works",
+      "id": "how-the-debounce-timer-works",
+      "body_sha256": "42f4e1ad9add46b82e56a59e917f0b45616d2840fa5aaa1f18e5b8387e73e8f6",
+      "heading": "### How the Debounce Timer Works\n"
+    },
+    {
+      "key": "adjusting-the-timer",
+      "identity": [
+        "Option 3: Auto-Build on Idle (Optional)",
+        "Adjusting the Timer"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Adjusting the Timer",
+      "id": "adjusting-the-timer",
+      "body_sha256": "d0c533044fb97ec9df2a1354067a2f3bdba2054f45dc5b62358dd747e143bfeb",
+      "heading": "### Adjusting the Timer\n"
+    },
+    {
+      "key": "performance-considerations",
+      "identity": [
+        "Option 3: Auto-Build on Idle (Optional)",
+        "Performance Considerations"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Performance Considerations",
+      "id": "performance-considerations",
+      "body_sha256": "0eefc2b10dea7e1670fb1561d5d35b3c8d07af86465b1c85727eb7cc5155141a",
+      "heading": "### Performance Considerations\n"
+    },
+    {
+      "key": "recommendation",
+      "identity": [
+        "Option 3: Auto-Build on Idle (Optional)",
+        "Recommendation"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Recommendation",
+      "id": "recommendation",
+      "body_sha256": "fcaff6a98b98d6619ce2c93895af8a91607d3387237d35db7e8681bc8f05a856",
+      "heading": "### Recommendation\n"
+    },
+    {
+      "key": "option-4-attach-to-running-server",
+      "identity": [
+        "Option 4: Attach to Running Server"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Option 4: Attach to Running Server",
+      "id": "option-4-attach-to-running-server",
+      "body_sha256": "84b84a199d6c4cdb26ac26ae74b5dbb5bb741a5b019ddadfc23f0f348efd846d",
+      "heading": "## Option 4: Attach to Running Server\n"
+    },
+    {
+      "key": "how-it-works-3",
+      "identity": [
+        "Option 4: Attach to Running Server",
+        "How It Works"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "How It Works",
+      "id": "how-it-works-3",
+      "body_sha256": "5239e251f008a0a60430e6d0c9908919dd833069358fb40980a87d8c961f91f4",
+      "heading": "### How It Works\n"
+    },
+    {
+      "key": "requirements",
+      "identity": [
+        "Option 4: Attach to Running Server",
+        "Requirements"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Requirements",
+      "id": "requirements",
+      "body_sha256": "7cb25ec305dbc5a0cd287e24a870013e1ce857f41de57a6601101d071c105e95",
+      "heading": "### Requirements\n"
+    },
+    {
+      "key": "usage",
+      "identity": [
+        "Option 4: Attach to Running Server",
+        "Usage"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Usage",
+      "id": "usage",
+      "body_sha256": "6f1e3afb246fb25646ad5bdec0f63ffd7b7f64d47f954681de6b986894aba197",
+      "heading": "### Usage\n"
+    },
+    {
+      "key": "workflow-1",
+      "identity": [
+        "Option 4: Attach to Running Server",
+        "Workflow"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Workflow",
+      "id": "workflow-1",
+      "body_sha256": "c48d0025eb8e361f5f3b95b35fbb8b07b6424cb6fce4b15cfcf997cd006dc059",
+      "heading": "### Workflow\n"
+    },
+    {
+      "key": "limitations",
+      "identity": [
+        "Option 4: Attach to Running Server",
+        "Limitations"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Limitations",
+      "id": "limitations",
+      "body_sha256": "f50aed3e6ca5977086e070ac9a889c706d9ffea577fc933c9d32fa8143285a89",
+      "heading": "### Limitations\n"
+    },
+    {
+      "key": "troubleshooting",
+      "identity": [
+        "Option 4: Attach to Running Server",
+        "Troubleshooting"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Troubleshooting",
+      "id": "troubleshooting",
+      "body_sha256": "12eafa5e500ff6db5f68a6b18597d27a36cd7274622a47f899ff8d2a75f296f8",
+      "heading": "### Troubleshooting\n"
+    },
+    {
+      "key": "when-a-reload-goes-wrong",
+      "identity": [
+        "When a Reload Goes Wrong"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "When a Reload Goes Wrong",
+      "id": "when-a-reload-goes-wrong",
+      "body_sha256": "3ac67921af503d557313bb96e3d0f1dcc8f2d458363f3a53f6ff503c32ebf9c8",
+      "heading": "## When a Reload Goes Wrong\n"
+    },
+    {
+      "key": "state-during-a-reload",
+      "identity": [
+        "When a Reload Goes Wrong",
+        "State during a reload"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "State during a reload",
+      "id": "state-during-a-reload",
+      "body_sha256": "390de19c1c2b9651229d42c65c30279cadb1634c05df5e3867161b771a45b5fd",
+      "heading": "### State during a reload\n"
+    },
+    {
+      "key": "spring-data-repository-refresh",
+      "identity": [
+        "When a Reload Goes Wrong",
+        "Spring Data repository refresh"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Spring Data repository refresh",
+      "id": "spring-data-repository-refresh",
+      "body_sha256": "e44b23e4035446cf8cb9b667120174fe1f3a0026fb2cdd7cf8d977f25038f23b",
+      "heading": "### Spring Data repository refresh\n"
+    },
+    {
+      "key": "backoffice-java-modules",
+      "identity": [
+        "When a Reload Goes Wrong",
+        "Backoffice Java modules"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Backoffice Java modules",
+      "id": "backoffice-java-modules",
+      "body_sha256": "7f036ef58194c1220040646e37e64c14bd797af7f95557dba8c4ca1a2c356013",
+      "heading": "### Backoffice Java modules\n"
+    },
+    {
+      "key": "backoffice-socket-actions",
+      "identity": [
+        "When a Reload Goes Wrong",
+        "Backoffice socket actions"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Backoffice socket actions",
+      "id": "backoffice-socket-actions",
+      "body_sha256": "54f4aba1d327227014612af904ef8f9fd99832f67c204ee427f1d07fe5f714ef",
+      "heading": "### Backoffice socket actions\n"
+    },
+    {
+      "key": "debugging-reloaded-code",
+      "identity": [
+        "Debugging Reloaded Code"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Debugging Reloaded Code",
+      "id": "debugging-reloaded-code",
+      "body_sha256": "e4d583e4209f7a25e52e384f022c92f265e05a695130c04418c7f246fff258a3",
+      "heading": "## Debugging Reloaded Code\n"
+    },
+    {
+      "key": "other-clients-and-build-tools",
+      "identity": [
+        "Other Clients and Build Tools"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Other Clients and Build Tools",
+      "id": "other-clients-and-build-tools",
+      "body_sha256": "11bec6fad750dbd5714b251d2002e044567f219919cf142b56f2aef2dcb0aa94",
+      "heading": "## Other Clients and Build Tools\n"
+    },
+    {
+      "key": "seeing-reloads-in-jdk-flight-recorder",
+      "identity": [
+        "Seeing Reloads in JDK Flight Recorder"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Seeing Reloads in JDK Flight Recorder",
+      "id": "seeing-reloads-in-jdk-flight-recorder",
+      "body_sha256": "e55afcbf7cfecbabd39c42851cab4870f906bca90a53ec215aaaffda5a3c5f41",
+      "heading": "## Seeing Reloads in JDK Flight Recorder\n"
+    },
+    {
+      "key": "choosing-the-right-mode",
+      "identity": [
+        "Choosing the Right Mode"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Choosing the Right Mode",
+      "id": "choosing-the-right-mode",
+      "body_sha256": "383c4c1938885d3ffc3ece2c9893728aef16a2638677cfcb5baf21be05be7707",
+      "heading": "## Choosing the Right Mode\n"
+    },
+    {
+      "key": "supported-jdk-providers",
+      "identity": [
+        "Supported JDK Providers"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Supported JDK Providers",
+      "id": "supported-jdk-providers",
+      "body_sha256": "f2fa3a81db155303bfa7c137518c63c261ee24410e78120b3a3d40e1f68fd778",
+      "heading": "## Supported JDK Providers\n"
+    },
+    {
+      "key": "companion-class-reflective-visibility-caveat",
+      "identity": [
+        "Supported JDK Providers",
+        "Companion-class reflective visibility caveat"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Companion-class reflective visibility caveat",
+      "id": "companion-class-reflective-visibility-caveat",
+      "body_sha256": "1af6301661b175f94899503f1b6f471b27446234240f3d694125666d25a8e7a5",
+      "heading": "### Companion-class reflective visibility caveat\n"
+    },
+    {
+      "key": "cross-class-access-to-added-instance-fields",
+      "identity": [
+        "Supported JDK Providers",
+        "Cross-class access to added instance fields"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Cross-class access to added instance fields",
+      "id": "cross-class-access-to-added-instance-fields",
+      "body_sha256": "0bd8b7e00ba5435e7033c2e09ba60c403f671d5ede1f5978ffa49f875bb0917c",
+      "heading": "### Cross-class access to added instance fields\n"
+    },
+    {
+      "key": "setting-up-jbr",
+      "identity": [
+        "Supported JDK Providers",
+        "Setting Up JBR"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Setting Up JBR",
+      "id": "setting-up-jbr",
+      "body_sha256": "04798dec5450611571de6ffe3d925561992325c2d4c7d67c2aedc0ddf896d46b",
+      "heading": "### Setting Up JBR\n"
+    },
+    {
+      "key": "known-limitations",
+      "identity": [
+        "Known Limitations"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "Known Limitations",
+      "id": "known-limitations",
+      "body_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "heading": "## Known Limitations\n"
+    },
+    {
+      "key": "changed-static-initializers",
+      "identity": [
+        "Known Limitations",
+        "Changed Static Initializers"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Changed Static Initializers",
+      "id": "changed-static-initializers",
+      "body_sha256": "89ac9bf5182d9048d3f5088ac0a0e8f9609a60caa91fe7c39122ffc80f8d054b",
+      "heading": "### Changed Static Initializers\n"
+    },
+    {
+      "key": "added-static-field-values",
+      "identity": [
+        "Known Limitations",
+        "Added Static Field Values"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Added Static Field Values",
+      "id": "added-static-field-values",
+      "body_sha256": "a68007fa55ad07e2094ae853dc0a407e5c18343ccab43a02fdcddff8d5be974a",
+      "heading": "### Added Static Field Values\n"
+    },
+    {
+      "key": "new-field-values-on-objects-that-already-existed",
+      "identity": [
+        "Known Limitations",
+        "New Field Values on Objects That Already Existed"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "New Field Values on Objects That Already Existed",
+      "id": "new-field-values-on-objects-that-already-existed",
+      "body_sha256": "16286b4fb581ffeafd8f5cfa0249eb224e04e50ef23d5319f16f609670fbd015",
+      "heading": "### New Field Values on Objects That Already Existed\n"
+    },
+    {
+      "key": "what-cannot-be-hot-reloaded",
+      "identity": [
+        "What Cannot Be Hot-Reloaded"
+      ],
+      "occurrence": 0,
+      "level": 2,
+      "title": "What Cannot Be Hot-Reloaded",
+      "id": "what-cannot-be-hot-reloaded",
+      "body_sha256": "a2e582c8dadd7939d8afe08fb074a600ea0cfabedbd165a8a51d5ab85a7c8218",
+      "heading": "## What Cannot Be Hot-Reloaded\n"
+    },
+    {
+      "key": "new-sap-process-definitions",
+      "identity": [
+        "What Cannot Be Hot-Reloaded",
+        "New SAP process definitions"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "New SAP process definitions",
+      "id": "new-sap-process-definitions",
+      "body_sha256": "ccc144a1421ce32b21a410867760bc7a5ef9ab7e6d8402385fa9558fd8b314a1",
+      "heading": "### New SAP process definitions\n"
+    },
+    {
+      "key": "targeted-sap-solr-reindexing",
+      "identity": [
+        "What Cannot Be Hot-Reloaded",
+        "Targeted SAP Solr reindexing"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Targeted SAP Solr reindexing",
+      "id": "targeted-sap-solr-reindexing",
+      "body_sha256": "7a80f7550bd068f5378a66ba0c282db3e89ff532a8ba83e770bd8054acbeaa8c",
+      "heading": "### Targeted SAP Solr reindexing\n"
+    },
+    {
+      "key": "sap-reload-outcomes-and-verification",
+      "identity": [
+        "What Cannot Be Hot-Reloaded",
+        "SAP reload outcomes and verification"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "SAP reload outcomes and verification",
+      "id": "sap-reload-outcomes-and-verification",
+      "body_sha256": "5a1d3dbba9da1c35c2aa90197523089e9fe2c045ddefb966ce21c839eb1ea368",
+      "heading": "### SAP reload outcomes and verification\n"
+    },
+    {
+      "key": "native-http-validation-and-overlapping-request-evidence",
+      "identity": [
+        "What Cannot Be Hot-Reloaded",
+        "Native HTTP validation and overlapping-request evidence"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Native HTTP validation and overlapping-request evidence",
+      "id": "native-http-validation-and-overlapping-request-evidence",
+      "body_sha256": "07c0f36082063f3ee6016fee2951e8a078c6986ee522f8bdd1a7410197912499",
+      "heading": "### Native HTTP validation and overlapping-request evidence\n"
+    },
+    {
+      "key": "cache-and-transaction-annotations-during-concurrent-reloads",
+      "identity": [
+        "What Cannot Be Hot-Reloaded",
+        "Cache and transaction annotations during concurrent reloads"
+      ],
+      "occurrence": 0,
+      "level": 3,
+      "title": "Cache and transaction annotations during concurrent reloads",
+      "id": "cache-and-transaction-annotations-during-concurrent-reloads",
+      "body_sha256": "77fd07e09f720983abcffb079dcc9b08fd6827afde6e72f90285ca4c5f1b3195",
+      "heading": "### Cache and transaction annotations during concurrent reloads\n"
+    }
+  ]
+}

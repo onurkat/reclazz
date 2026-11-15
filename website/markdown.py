@@ -3,6 +3,7 @@ from collections import Counter
 from html import escape
 from pathlib import Path
 import json
+import hashlib
 import unicodedata
 import posixpath
 import re
@@ -13,6 +14,44 @@ from markdown_it import MarkdownIt
 
 def slug(text):
     return re.sub(r'[^\w\- ]', '', text.lower()).replace(' ', '-')
+
+
+def usage_heading_blocks(text):
+    """Fenced-code-aware byte-preserving heading/body slices."""
+    tokens=MarkdownIt('commonmark', {'html':True}).parse(text)
+    headings=[(token,tokens[i+1]) for i,token in enumerate(tokens[:-1]) if token.type=='heading_open']
+    lines=text.splitlines(keepends=True);result=[];ancestors=[];seen=Counter();identities=Counter()
+    for i,(token,inline) in enumerate(headings):
+        title=''.join(c.content for c in inline.children or [] if c.type in ('text','code_inline'))
+        level=int(token.tag[1]);start=token.map[0];end=headings[i+1][0].map[0] if i+1<len(headings) else len(lines)
+        while ancestors and ancestors[-1][0]>=level:ancestors.pop()
+        identity=[x[1] for x in ancestors if x[0]>1]+[title]
+        occurrence=identities[tuple(identity)];identities[tuple(identity)]+=1
+        anchor=slug(title);count=seen[anchor];seen[anchor]+=1
+        anchor+=('-'+str(count)) if count else ''
+        body=''.join(lines[start+1:end])
+        result.append(dict(title=title,level=level,line=start,end=end,heading=lines[start],body=body,
+            body_sha256=hashlib.sha256(body.encode('utf-8')).hexdigest(),identity=identity,occurrence=occurrence,id=anchor,key=anchor))
+        ancestors.append((level,title))
+    return result
+
+
+def pinned_usage_headings(repo,source,text):
+    """Pin published usage fragments to their original section, across moves."""
+    path=Path(repo)/'website/usage-anchors.json'
+    if source!='docs/usage.md' or not path.is_file():return {},set()
+    entries=json.loads(path.read_text())['headings'];signatures={};reserved={e['id'] for e in entries}
+    for entry in entries:
+        signature=(entry['title'],entry['body_sha256'])
+        if signature in signatures:raise ValueError('Ambiguous frozen usage heading')
+        signatures[signature]=entry
+    result={};used=set()
+    for block in usage_heading_blocks(text):
+        entry=signatures.get((block['title'],block['body_sha256']))
+        if entry:
+            if entry['key'] in used:raise ValueError('Duplicate frozen usage section: '+entry['key'])
+            used.add(entry['key']);result[block['line']]=entry
+    return result,reserved
 
 
 def source_dispositions(repo):
@@ -165,17 +204,28 @@ class MarkdownRenderer:
             raise ValueError('Escaping documentation source: ' + source)
         if not path.is_file():
             raise ValueError('Missing documentation source: ' + source)
-        tokens = self.engine.parse(path.read_text(encoding='utf-8'))
+        source_text=path.read_text(encoding='utf-8')
+        tokens = self.engine.parse(source_text)
+        pinned,reserved=pinned_usage_headings(self.repo,source,source_text)
         if tokens and tokens[0].type == 'heading_open' and tokens[0].tag == 'h1':
             tokens = tokens[3:]
-        seen = Counter()
+        seen = Counter(); used_ids=set()
         for i, token in enumerate(tokens):
             if token.type == 'heading_open':
                 inline = tokens[i + 1]
                 text = ''.join(child.content for child in (inline.children or []) if child.type in ('text', 'code_inline'))
-                anchor = slug(text)
-                occurrence = seen[anchor]; seen[anchor] += 1
-                token.attrSet('id', anchor + ('-' + str(occurrence) if occurrence else ''))
+                fixed=pinned.get(token.map[0]) if token.map else None
+                if fixed:
+                    anchor=fixed['id'];token.attrSet('data-section-key',fixed['key'])
+                elif reserved:
+                    base=slug(text);anchor=base;occurrence=seen[base]
+                    while anchor in reserved or anchor in used_ids:
+                        occurrence+=1;anchor=base+'-'+str(occurrence)
+                    seen[base]=occurrence
+                else:
+                    base=slug(text);occurrence=seen[base];seen[base]+=1
+                    anchor=base+('-'+str(occurrence) if occurrence else '')
+                used_ids.add(anchor);token.attrSet('id',anchor)
             for child in token.children or []:
                 if child.type == 'link_open':
                     link = child.attrGet('href')

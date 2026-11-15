@@ -593,4 +593,55 @@ class Stage3bContractTest(unittest.TestCase):
         for bad in [html.replace('data-option="hybrisHome"','data-omitted="hybrisHome"',1),html+html,html.replace('data-option-group="Common"','data-option-group="Diagnostics"',1)]:self.assertTrue(option_group_errors(bad,options,OPTION_GROUPS))
         with self.assertRaisesRegex(ValueError,'grouped exactly once'):build.grouped_options([{'name':'unknown'}],None)
 
+class UsageStructureContractTest(unittest.TestCase):
+    def setUp(self):
+        self.source=(build.REPO/'docs/usage.md').read_text()
+        self.renderer=MarkdownRenderer(build.REPO,reference_pages(build.REPO))
+        # The real shell supplies the source H1; the Markdown renderer supplies its sections.
+        self.html='<h1 id="usage-guide">Usage</h1>'+self.renderer.render('docs/usage.md')
+    def test_T13_usage_fragments_keep_duplicate_section_identity(self):
+        from website.check import usage_contract_errors,frozen_fragment_errors
+        from website.markdown import pinned_usage_headings,usage_heading_blocks
+        self.assertEqual([],usage_contract_errors(build.REPO,rendered=self.html))
+        blocks=usage_heading_blocks(self.source);pins,_=pinned_usage_headings(build.REPO,'docs/usage.md',self.source)
+        setup={b['identity'][-2]:pins[b['line']]['id'] for b in blocks if b['title']=='Setup'}
+        self.assertEqual('setup',setup['Option 1: Manual Setup']);self.assertEqual('setup-1',setup['Option 2: IntelliJ Automatic Mode (Recommended)'])
+        bad=self.html.replace('id="setup"','id="TEMP"').replace('id="setup-1"','id="setup"').replace('id="TEMP"','id="setup-1"')
+        self.assertTrue(any('C1 rendered usage id/identity' in e for e in usage_contract_errors(build.REPO,rendered=bad)))
+        frozen=json.loads((build.REPO/'website/fragments.json').read_text())['docs/reference/usage/index.html']
+        entries=json.loads((build.REPO/'website/usage-anchors.json').read_text())['headings']
+        self.assertTrue({e['id'] for e in entries}.issubset(set(frozen)))
+        self.assertTrue({e['id'] for e in entries}.issubset(set(Document(self.html).ids)))
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);(root/'website').mkdir();out=root/'output';p=out/'docs/reference/usage/index.html';p.parent.mkdir(parents=True)
+            (root/'website/fragments.json').write_text(json.dumps({'docs/reference/usage/index.html':[e['id'] for e in entries]}))
+            (root/'website/routes.json').write_text('{}');p.write_text(self.html)
+            self.assertEqual([],frozen_fragment_errors(root,out))
+            p.write_text(self.html.replace('id="setup"','id="removed"'))
+            self.assertIn('Missing frozen fragment: docs/reference/usage/index.html#setup',frozen_fragment_errors(root,out))
+    def test_T14_usage_bodies_and_only_whitelisted_intros_are_preserved(self):
+        from website.check import usage_contract_errors
+        from website.markdown import usage_heading_blocks
+        self.assertEqual([],usage_contract_errors(build.REPO))
+        blocks=usage_heading_blocks(self.source);a=next(b for b in blocks if b['identity'][-2:]==['Option 1: Manual Setup','Setup'])
+        b=next(b for b in blocks if b['identity'][-2:]==['Option 2: IntelliJ Automatic Mode (Recommended)','Setup'])
+        lines=self.source.splitlines(keepends=True);start=a['line']+1
+        moved=next(i for i in range(start,a['end']) if lines[i].strip())
+        line=lines[moved];bad=lines[:];bad[moved]='';bad[b['line']+1]=line+bad[b['line']+1]
+        self.assertEqual(sorted(self.source.splitlines()),sorted(''.join(bad).splitlines()))
+        self.assertTrue(any('C1 missing or changed' in e for e in usage_contract_errors(build.REPO,text=''.join(bad))))
+        structure=json.loads((build.REPO/'website/usage-structure.json').read_text());intro=structure['groups'][0]['intro']
+        self.assertTrue(any('C2 unlisted usage intro' in e for e in usage_contract_errors(build.REPO,text=self.source.replace(intro,intro+'\nUnexpected added sentence.',1))))
+        # Tests read only tracked contracts and sources; there is no .collab import or runtime baseline dependency.
+    def test_T15_usage_groups_own_every_original_manual_section_once(self):
+        from website.check import usage_contract_errors
+        from website.markdown import usage_heading_blocks
+        self.assertEqual([],usage_contract_errors(build.REPO))
+        blocks=usage_heading_blocks(self.source);b=next(b for b in blocks if b['title']=='New component classes after startup')
+        chunk=b['heading']+b['body'];bad=self.source.replace(chunk,'',1)
+        self.assertTrue(any('C3 usage membership' in e for e in usage_contract_errors(build.REPO,text=bad)))
+        # Move a complete frozen section into another group: all body hashes survive, C3 must reject it.
+        target='## Spring messaging\n';bad=self.source.replace(chunk,'',1).replace(target,chunk+target,1)
+        self.assertTrue(any('C3 usage membership' in e for e in usage_contract_errors(build.REPO,text=bad)))
+
 if __name__=='__main__':unittest.main(verbosity=2)
