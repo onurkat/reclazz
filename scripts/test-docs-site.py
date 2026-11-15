@@ -458,4 +458,85 @@ class DesignGateTest(unittest.TestCase):
                         with urlopen(base+asset) as response:self.assertEqual(200,response.status,asset)
             finally:server.shutdown();server.server_close();thread.join()
 
+
+class Stage3ContractTest(unittest.TestCase):
+    def setUp(self):
+        from website.content import support_records
+        self.records=support_records(build.REPO)
+        class Renderer:
+            def resolve_link(self,*args):return '/docs/reference/'
+        self.renderer=Renderer()
+    def matrix(self,records=None):return build.support_matrix(self.records if records is None else records,self.renderer)
+    def test_T1_every_row_and_note_has_the_source_badge(self):
+        from website.check import rendered_records_errors
+        html=self.matrix();self.assertEqual([],rendered_records_errors(html,self.records))
+        for status in ('works','conditional','restart','unverified','not-reloaded'):
+            bad=html.replace('class="badge '+status+'"','class="badge wrong"',1)
+            self.assertTrue(any('badge mismatch' in e for e in rendered_records_errors(bad,self.records)),status)
+        self.assertTrue(any('badge mismatch' in e for e in rendered_records_errors(html.replace('Reloads</span>','Incorrect</span>',1),self.records)))
+    def test_T2_note_omission_duplicate_and_misclassification_fail(self):
+        from website.check import rendered_records_errors
+        html=self.matrix()
+        self.assertEqual({'jdk-new','condition-recheck','serializer','messaging-advanced','unknown-files'},{r['id'] for r in self.records if r['presentation']=='note'})
+        from website.check import stage3_contract_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);assets=root/'docs/assets';assets.mkdir(parents=True)
+            download=self.records;search=json.loads((build.REPO/'build/site/docs/assets/search-index.json').read_text())
+            (assets/'support.json').write_text(json.dumps(download));(assets/'search-index.json').write_text(json.dumps(search))
+            self.assertNotIn('Support download coverage/content drift',stage3_contract_errors(build.REPO,root))
+            (assets/'support.json').write_text(json.dumps([r for r in download if r['id']!='jdk-new']))
+            self.assertIn('Support download coverage/content drift',stage3_contract_errors(build.REPO,root))
+            (assets/'search-index.json').write_text(json.dumps([r for r in search if r['url']!='/docs/support-matrix/#jdk-new']))
+            self.assertIn('Support search coverage mismatch: jdk-new',stage3_contract_errors(build.REPO,root))
+        omitted=re.sub(r'<div class="callout" id="jdk-new".*?</div>','',html,count=1,flags=re.S)
+        self.assertNotEqual(html,omitted)
+        self.assertTrue(any('coverage mismatch' in e for e in rendered_records_errors(omitted,self.records)))
+        duplicate=re.search(r'<tr id="method-body".*?</tr>',html,re.S)[0]
+        self.assertTrue(any('coverage mismatch' in e for e in rendered_records_errors(html+duplicate,self.records)))
+        bad=html.replace('data-presentation="note"','data-presentation="row"',1)
+        self.assertTrue(any('presentation/status mismatch' in e for e in rendered_records_errors(bad,self.records)))
+    def test_T3_status_lock_rejects_a_source_change_with_matching_badge(self):
+        from website.check import stage3_contract_errors,rendered_records_errors
+        import copy
+        records=copy.deepcopy(self.records);records[0]['status']='unverified'
+        self.assertEqual([],rendered_records_errors(self.matrix(records),records))
+        with patch('website.content.support_records',return_value=records):
+            self.assertIn('Support status lock drift',stage3_contract_errors(build.REPO,build.REPO/'build/site'))
+    def test_T4_overview_is_derived_and_badge_mutation_fails(self):
+        from website.check import rendered_records_errors
+        import copy
+        html=build.support_summary(self.records,self.renderer)
+        self.assertEqual([],rendered_records_errors(html,self.records,True))
+        self.assertTrue(rendered_records_errors(html.replace('class="badge works"','class="badge restart"',1),self.records,True))
+        records=copy.deepcopy(self.records);records[0]['conditions']='A changed canonical condition.'
+        updated=build.support_summary(records,self.renderer)
+        self.assertIn('A changed canonical condition.',updated)
+        self.assertTrue(any('conditions drift' in e for e in rendered_records_errors(updated,self.records,True)))
+    def test_T5_missing_frozen_fragment_fails(self):
+        from website.check import stage3_contract_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);target=root/'docs/quickstart/index.html';target.parent.mkdir(parents=True)
+            original=(build.REPO/'build/site/docs/quickstart/index.html').read_text()
+            self.assertIn('id="optional-command-line-plugin-installation"',original)
+            target.write_text(original.replace('id="optional-command-line-plugin-installation"','id="removed-legacy-anchor"'))
+            self.assertIn('Missing frozen fragment: docs/quickstart/index.html#optional-command-line-plugin-installation',stage3_contract_errors(build.REPO,root))
+    def test_T6_panels_remain_available_without_javascript(self):
+        from website.check import quickstart_panel_errors
+        html=''.join('<section role="tabpanel" id="panel-'+str(i)+'"><h3>Route</h3><p>Steps</p></section>' for i in range(5))
+        self.assertEqual([],quickstart_panel_errors(html))
+        for bad in [html.replace('<section','<section hidden',1),html.replace('id="panel-0"','',1),html.replace('<h3>Route</h3>','',1),html.replace('role="tabpanel"','role="group"',1)]:self.assertTrue(quickstart_panel_errors(bad))
+    def test_T7_em_dash_in_prose_fails_but_code_is_preserved(self):
+        from website.check import rewritten_prose_errors
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);p=root/'docs/site/quickstart.html';p.parent.mkdir(parents=True)
+            p.write_text('<p>A sentence.</p><pre><code>code — preserved</code></pre>')
+            self.assertEqual([],rewritten_prose_errors(root))
+            p.write_text('<p>A sentence — in prose.</p>')
+            self.assertTrue(rewritten_prose_errors(root))
+            p.write_text('<p>No dash.</p>');q=root/'docs/reload-support.md'
+            q.write_text('| ID | Area | Change | Outcome | Conditions | Next action | Reference |\n|---|---|---|---|---|---|---|\n| x | Java | Edit | works | `code — kept` | Check | [Scope](usage.md) |\n')
+            self.assertEqual([],rewritten_prose_errors(root))
+            q.write_text(q.read_text().replace('`code — kept`','prose — rejected'))
+            self.assertTrue(rewritten_prose_errors(root))
+
 if __name__=='__main__':unittest.main(verbosity=2)

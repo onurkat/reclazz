@@ -51,7 +51,7 @@
     const query = document.getElementById('matrix-query');
     const category = document.getElementById('matrix-category');
     const status = document.getElementById('matrix-status');
-    const rows = [...document.querySelectorAll('.matrix-table tbody tr')];
+    const rows = [...document.querySelectorAll('[data-support-id]')];
     const count = document.getElementById('matrix-count');
     const params = new URLSearchParams(location.search);
     query.value = params.get('q') || '';
@@ -66,7 +66,8 @@
         row.hidden = !matched;
         if (matched) visible++;
       }
-      count.textContent = `Showing ${visible} of ${rows.length} changes`;
+      const notes=document.querySelector('.matrix-notes');if(notes&&(terms.length||category.value||status.value))notes.open=rows.some(row=>row.dataset.presentation==='note'&&!row.hidden);
+      count.textContent = `Showing ${visible} of ${rows.length} changes and scope notes`;
       document.getElementById('matrix-empty').hidden = visible !== 0;
       const url = new URL(location.href);
       for (const [key, value] of [['q', query.value], ['area', category.value], ['outcome', status.value]]) {
@@ -83,7 +84,7 @@
       let id;
       try { id = decodeURIComponent(location.hash.slice(1)); } catch (_) { return; }
       const target = document.getElementById(id);
-      if (target && target.matches('.matrix-table tr') && target.hidden) {
+      if (target && target.matches('[data-support-id]') && target.hidden) {
         matrixForm.reset();
         query.value = ''; category.value = ''; status.value = '';
         apply();
@@ -114,6 +115,8 @@
     drawer.addEventListener('click',event=>{if(event.target===drawer){const r=drawer.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)end();}});
     matchMedia('(min-width:960px)').addEventListener('change',event=>{if(event.matches&&drawer.open)end();});
   }
+  const revealDisclosureHash=()=>{let target;try{target=document.getElementById(decodeURIComponent(location.hash.slice(1)));}catch(_){}if(!target)return;let parent=target.parentElement;while(parent){if(parent.tagName==='DETAILS')parent.open=true;parent=parent.parentElement;}};
+  revealDisclosureHash();addEventListener('hashchange',revealDisclosureHash);
   document.querySelectorAll('[role=tablist]').forEach(list=>{
     const tabs=[...list.querySelectorAll('[role=tab]')];if(!tabs.length)return;
     const activate=(tab,focus=false)=>{
@@ -125,7 +128,7 @@
       tab.addEventListener('click',()=>{activate(tab);try{history.replaceState(null,'','#'+tab.id);}catch(_){}});
       tab.addEventListener('keydown',event=>{let next;if(event.key==='ArrowRight')next=(i+1)%tabs.length;else if(event.key==='ArrowLeft')next=(i+tabs.length-1)%tabs.length;else if(event.key==='Home')next=0;else if(event.key==='End')next=tabs.length-1;else return;event.preventDefault();activate(tabs[next],true);});
     });
-    const restore=()=>{let selected=tabs.find(t=>'#'+t.id===location.hash);try{if(!selected&&list.dataset.preference){const choice=localStorage.getItem('reclazz-tabs-'+list.dataset.preference);selected=tabs.find(t=>(t.dataset.choice||t.id)===choice);}}catch(_){}activate(selected||tabs[0]);};
+    const restore=()=>{let target;try{target=document.getElementById(decodeURIComponent(location.hash.slice(1)));}catch(_){}let selected=tabs.find(t=>'#'+t.id===location.hash)||tabs.find(t=>target&&document.getElementById(t.getAttribute('aria-controls'))?.contains(target));try{if(!selected&&list.dataset.preference){const choice=localStorage.getItem('reclazz-tabs-'+list.dataset.preference);selected=tabs.find(t=>(t.dataset.choice||t.id)===choice);}}catch(_){}activate(selected||tabs[0]);if(target&&selected)requestAnimationFrame(()=>target.scrollIntoView({block:'start'}));};
     restore();addEventListener('hashchange',restore);
   });
 

@@ -11,7 +11,7 @@ from urllib.parse import urlsplit, unquote, quote
 
 from website import layout
 from website.markdown import MarkdownRenderer, reference_pages, source_dispositions, github_anchor_map
-from website.content import LABELS, metadata, support_records, expand_guide, ai_index
+from website.content import NOTE_IDS, OVERVIEW_IDS, COMMON_IDS, LABELS, metadata, support_records, expand_guide, ai_index
 
 REPO = Path(__file__).resolve().parents[1]
 ROOT = REPO / 'website' / 'static'
@@ -126,6 +126,39 @@ def link_chrome(document):
     return re.sub(r'(<a\b[^>]*>)(.*?)</a>',arrow,document,flags=re.S)
 
 
+def support_badge(row):
+    return '<span class="badge '+row['status']+'">'+LABELS[row['status']]+'</span>'
+
+
+def support_summary(records, renderer):
+    by_id={r['id']:r for r in records}
+    body='<div class="table-scroll"><table><caption>Six edits to start with</caption><thead><tr><th scope="col">Your change</th><th scope="col">What to expect</th><th scope="col">Before you try it</th></tr></thead><tbody>'
+    for key in OVERVIEW_IDS:
+        if key not in by_id:continue # small source fixtures need not contain every production row
+        row=by_id[key]
+        body+='<tr data-summary-id="'+key+'"><th scope="row"><a href="/docs/support-matrix/#'+key+'">'+escape(row['title'])+'</a></th><td>'+support_badge(row)+'</td><td>'+escape(row['conditions'])+'</td></tr>'
+    return body+'</tbody></table></div>'
+
+
+def support_matrix(records,renderer):
+    cats=sorted({r['category'] for r in records})
+    form='<form class="matrix-controls" hidden role="search" aria-label="Filter reload changes"><label class="matrix-query">Search changes<input id="matrix-query" type="search" placeholder="Try method, properties, endpoint" autocomplete="off"></label><label>Area<select id="matrix-category"><option value="">All areas</option>'+''.join('<option>'+escape(c)+'</option>' for c in cats)+'</select></label><label>Outcome<select id="matrix-status"><option value="">All outcomes</option>'+''.join('<option value="'+k+'">'+v+'</option>' for k,v in LABELS.items())+'</select></label><button class="reset-filter" type="reset">Reset</button></form><p class="matrix-count" id="matrix-count" role="status" aria-live="polite">Showing '+str(len(records))+' of '+str(len(records))+' changes and scope notes</p>'
+    def attributes(row):
+        return ' id="'+row['id']+'" data-support-id="'+row['id']+'" data-category="'+escape(row['category'],quote=True)+'" data-status="'+row['status']+'" data-presentation="'+row['presentation']+'"'
+    def scope(row):
+        return '<p>'+escape(row['conditions'])+'</p><p class="next-action"><strong>Next:</strong> '+escape(row['action'])+'</p><a class="matrix-source" href="'+escape(renderer.resolve_link('README.md',row['source']),quote=True)+'">Read conditions</a>'
+    notes='<details class="matrix-notes"><summary id="scope-notes">Scope notes ('+str(sum(r["presentation"]=="note" for r in records))+')</summary><p>These expectations describe limits, rather than an edit you can make. The filters include them.</p>'
+    for row in records:
+        if row['presentation']=='note':notes+='<div class="callout"'+attributes(row)+'><p class="callout-label"><strong>'+escape(row['title'])+'</strong></p>'+support_badge(row)+scope(row)+'</div>'
+    notes+='</details>'
+    table='<div class="table-scroll matrix-table"><table><caption>Common edits first, followed by other changes</caption><thead><tr><th scope="col">Your change</th><th scope="col">Outcome</th><th scope="col">Conditions &amp; next step</th></tr></thead><tbody>'
+    rows=[r for r in records if r['presentation']=='row']
+    ordered=sorted(enumerate(rows),key=lambda x:(COMMON_IDS.index(x[1]['id']) if x[1]['id'] in COMMON_IDS else len(COMMON_IDS)+x[0]))
+    for _,row in ordered:
+        table+='<tr'+attributes(row)+'><th scope="row"><span class="row-category">'+escape(row['category'])+'</span><a class="row-anchor" href="#'+row['id']+'">'+escape(row['title'])+'</a></th><td>'+support_badge(row)+'</td><td>'+scope(row)+'</td></tr>'
+    return form+notes+table+'</tbody></table></div><p id="matrix-empty" class="empty-state" hidden>No matching change or scope note. Reset the filters to see everything.</p>'
+
+
 def generate(revision='main'):
     manifest = metadata(REPO)
     base = 'https://github.com/onurkat/reclazz/blob/' + revision + '/'
@@ -154,14 +187,11 @@ def generate(revision='main'):
             links = ''.join('<a' + (' aria-current="page"' if p['slug'] == slug else '') + ' href="' + url(p['slug']) + '">' + ('<span class="nav-icon" aria-hidden="true">↳</span>' if p['slug'] != slug else '<span class="nav-icon" aria-hidden="true">◈</span>') + escape(p['nav_title']) + '</a>' for p in pages if p['group'] == group)
             if links: nav += '<div class="nav-group"><p>' + escape(group) + '</p>' + links + '</div>'
         body = renderer.render(page['markdown']) if page.get('markdown') else expand_guide((SOURCE / ((slug or 'overview') + '.html')).read_text(encoding='utf-8'), renderer, manifest)
+        body=body.replace('{{SUPPORT_SUMMARY}}',support_summary(support,renderer)) if '{{SUPPORT_SUMMARY}}' in body else body
         if '{{MATRIX}}' in body:
-            cats = sorted({r['category'] for r in support})
-            filters = '''<form class="matrix-controls" hidden role="search" aria-label="Filter reload changes"><label class="matrix-query">Search changes<input id="matrix-query" type="search" placeholder="Try @Bean, YAML, enum, schema…" autocomplete="off"></label><label>Area<select id="matrix-category"><option value="">All areas</option>''' + ''.join('<option>' + escape(c) + '</option>' for c in cats) + '''</select></label><label>Outcome<select id="matrix-status"><option value="">All outcomes</option>''' + ''.join('<option value="' + key + '">' + value + '</option>' for key, value in LABELS.items()) + '''</select></label><button class="reset-filter" type="reset">Reset</button></form><p class="matrix-count" id="matrix-count" role="status" aria-live="polite">Showing ''' + str(len(support)) + ' changes</p>'
-            table = '<div class="table-scroll matrix-table"><table><caption>Reload outcomes in the documented source snapshot</caption><thead><tr><th scope="col">Your change</th><th scope="col">Outcome</th><th scope="col">Conditions &amp; next step</th></tr></thead><tbody>'
+            body=body.replace('{{MATRIX}}',support_matrix(support,renderer))
             for row in support:
-                table += '<tr id="' + row['id'] + '" data-category="' + escape(row['category']) + '" data-status="' + row['status'] + '"><th scope="row"><span class="row-category">' + row['category'] + '</span><a class="row-anchor" href="#' + row['id'] + '">' + escape(row['title']) + '</a></th><td><span class="badge ' + row['status'] + '">' + LABELS[row['status']] + '</span></td><td><p>' + escape(row['conditions']) + '</p><p class="next-action"><strong>Next:</strong> ' + escape(row['action']) + '</p><a class="matrix-source" href="' + escape(renderer.resolve_link('README.md',row['source']),quote=True) + '">Read conditions &amp; scope →</a></td></tr>'
-                index.append({'title': row['title'], 'section': row['category'] + ' · ' + LABELS[row['status']], 'url': url(slug) + '#' + row['id'], 'text': row['conditions'] + ' ' + row['action']})
-            body = body.replace('{{MATRIX}}', filters + table + '</tbody></table></div><p id="matrix-empty" class="empty-state" hidden>No matching change. Try another term or reset the filters. Missing from this table does not establish support.</p>')
+                index.append({'title':row['title'],'section':row['category']+' · '+LABELS[row['status']],'url':url(slug)+'#'+row['id'],'text':row['conditions']+' '+row['action']})
         if '{{OPTIONS}}' in body:
             table = '<section aria-labelledby="all-options"><h2 id="all-options">Startup options</h2><div class="table-scroll"><table class="options-table"><caption>Accepted keys and documented defaults at ' + escape(manifest['source_version']) + '</caption><thead><tr><th scope="col">Option</th><th scope="col">Default</th><th scope="col">Behavior and scope</th></tr></thead><tbody>'
             for option in options:
@@ -233,7 +263,7 @@ def generate(revision='main'):
     sitemap = re.sub(r'\s*<url>\s*<loc>https://reclazz\.com/docs/.*?</url>', '', sitemap, flags=re.S)
     entries = ''.join('    <url><loc>https://reclazz.com' + url(p['slug']) + '</loc><lastmod>' + manifest['reviewed'] + '</lastmod><changefreq>monthly</changefreq><priority>' + ('0.8' if not p['slug'] else '0.7') + '</priority></url>\n' for p in pages)
     output['sitemap.xml'] = sitemap.replace('</urlset>', entries + '</urlset>')
-    inputs = [p for p in SOURCE.rglob('*') if p.is_file()] + list((REPO / 'docs').glob('*.md')) + list((REPO / 'docs/feature-evidence').glob('*')) + [p for p in ROOT.rglob('*') if p.is_file()] + list((REPO/'website').glob('*.py')) + [REPO/'website/routes.json', REPO/'website/legacy-routes.txt', REPO/'requirements-docs.txt', REPO/'gradle.properties', REPO/'README.md', REPO/'SECURITY.md']
+    inputs = [p for p in SOURCE.rglob('*') if p.is_file()] + list((REPO / 'docs').glob('*.md')) + list((REPO / 'docs/feature-evidence').glob('*')) + [p for p in ROOT.rglob('*') if p.is_file()] + list((REPO/'website').glob('*.py')) + [REPO/'website/routes.json', REPO/'website/legacy-routes.txt', *[p for p in (REPO/'website').glob('*.json')], REPO/'requirements-docs.txt', REPO/'gradle.properties', REPO/'README.md', REPO/'SECURITY.md']
     output['docs/assets/build-manifest.json'] = json.dumps({
         'source_commit': manifest['source_commit'], 'source_version': manifest['source_version'],
         'reviewed': manifest['reviewed'], 'build_revision': revision, 'pages': len(pages),

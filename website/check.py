@@ -114,6 +114,7 @@ def publication_errors(output, manifest):
 def check_site(output, revision='main'):
     output = Path(output).resolve()
     errors = source_index_errors(build.REPO) + source_link_errors(build.REPO) + readable_surface_errors(build.REPO)
+    if build.metadata(build.REPO).get('content_contract')=='3a': errors.extend(stage3_contract_errors(build.REPO,output))
     expected = build.generate(revision)
     errors.extend(output_differences(output, expected))
     # Invalid/missing output must fail before attempting to parse a partial tree.
@@ -345,4 +346,99 @@ def contrast_errors(css):
         if contrast_ratio(color('on-accent'),color('accent-fill'))<4.5:errors.append('Button contrast below 4.5: '+theme)
         for bg in ('bg','surface','surface-hover','surface-alt'):
             if contrast_ratio(color('border'),color(bg))<3:errors.append('UI contrast below 3: '+theme+' border/'+bg)
+    return errors
+
+
+class ContentTree(HTMLParser):
+    """Small HTML tree for semantic checks independent of the rendering helpers."""
+    def __init__(self,text):
+        super().__init__(convert_charrefs=True)
+        self.root={'tag':'root','attrs':{},'children':[]};self.stack=[self.root];self.nodes=[];self.feed(text)
+    def handle_starttag(self,tag,attrs):
+        n={'tag':tag,'attrs':dict(attrs),'children':[]};self.stack[-1]['children'].append(n);self.nodes.append(n)
+        if tag not in {'area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr'}:self.stack.append(n)
+    def handle_endtag(self,tag):
+        for i in range(len(self.stack)-1,0,-1):
+            if self.stack[i]['tag']==tag:del self.stack[i:];break
+    def handle_data(self,data):self.stack[-1]['children'].append(data)
+
+
+def node_text(node,ignore=()):
+    if isinstance(node,str):return node
+    if node['tag'] in ignore:return ''
+    return ''.join(node_text(c,ignore) for c in node['children'])
+
+
+def descendants(node):
+    for child in node['children']:
+        if isinstance(child,dict):yield child;yield from descendants(child)
+
+
+def rewritten_prose_errors(repo):
+    repo=Path(repo);errors=[]
+    for name in ['overview','quickstart','support-matrix','troubleshooting']:
+        p=repo/'docs/site'/(name+'.html')
+        if p.is_file() and '—' in node_text(ContentTree(p.read_text()).root,('pre','code','script','style')):errors.append('Em dash in rewritten prose: '+name)
+    p=repo/'docs/reload-support.md'
+    if p.is_file():
+        tokens=MarkdownIt('commonmark').enable('table').parse(p.read_text());col=-1
+        for t in tokens:
+            if t.type=='tr_open':col=-1
+            elif t.type=='inline':
+                col+=1
+                if col in (4,5) and any(c.type=='text' and '—' in c.content for c in t.children or []):errors.append('Em dash in support condition/action')
+    return errors
+
+
+def rendered_records_errors(text,records,summary=False):
+    from website.content import LABELS,OVERVIEW_IDS
+    tree=ContentTree(text);key='data-summary-id' if summary else 'data-support-id'
+    nodes=[n for n in tree.nodes if key in n['attrs']];ids=[n['attrs'][key] for n in nodes]
+    expected={r['id']:r for r in records if not summary or r['id'] in OVERVIEW_IDS};errors=[]
+    if Counter(ids)!=Counter(expected.keys()):errors.append('Support record coverage mismatch'+(' in overview' if summary else ''))
+    for node in nodes:
+        row=expected.get(node['attrs'][key])
+        if row is None:continue
+        if not summary and (node['attrs'].get('data-status')!=row['status'] or node['attrs'].get('data-presentation')!=row['presentation']):errors.append('Support presentation/status mismatch: '+row['id'])
+        badges=[n for n in descendants(node) if 'badge' in n['attrs'].get('class','').split()]
+        if len(badges)!=1 or row['status'] not in badges[0]['attrs'].get('class','').split() or ' '.join(node_text(badges[0]).split())!=LABELS[row['status']]:errors.append('Support badge mismatch: '+row['id'])
+        if summary and row['conditions'] not in node_text(node):errors.append('Overview conditions drift: '+row['id'])
+    return errors
+
+
+def stage3_contract_errors(repo,output):
+    from website.content import support_records
+    repo=Path(repo);output=Path(output);errors=rewritten_prose_errors(repo);records=support_records(repo)
+    p=repo/'website/support-status.lock.json'
+    if not p.is_file():errors.append('Missing support status lock')
+    elif json.loads(p.read_text())!={r['id']:r['status'] for r in records}:errors.append('Support status lock drift')
+    p=repo/'website/fragments.json'
+    if not p.is_file():errors.append('Missing frozen fragments')
+    else:
+        for name,ids in json.loads(p.read_text()).items():
+            f=output/name
+            if not f.is_file():errors.append('Missing frozen page: '+name);continue
+            for key in set(ids)-set(Document(f.read_text()).ids):errors.append('Missing frozen fragment: '+name+'#'+key)
+    for name,summary in [('docs/support-matrix/index.html',False),('docs/index.html',True)]:
+        p=output/name
+        if p.is_file():errors.extend(rendered_records_errors(p.read_text(),records,summary))
+        else:errors.append('Missing support presentation: '+name)
+    p=output/'docs/assets/support.json'
+    if not p.is_file() or json.loads(p.read_text())!=records:errors.append('Support download coverage/content drift')
+    p=output/'docs/assets/search-index.json'
+    index=json.loads(p.read_text()) if p.is_file() else []
+    for row in records:
+        if sum(x['url']=='/docs/support-matrix/#'+row['id'] for x in index)!=1:errors.append('Support search coverage mismatch: '+row['id'])
+    p=output/'docs/quickstart/index.html'
+    if p.is_file():
+        errors.extend(quickstart_panel_errors(p.read_text()))
+    return errors
+
+
+def quickstart_panel_errors(text):
+    tree=ContentTree(text);panels=[n for n in tree.nodes if n['attrs'].get('role')=='tabpanel'];errors=[]
+    if len(panels)!=5:errors.append('Quickstart needs five route panels')
+    for panel in panels:
+        a=panel['attrs']
+        if not a.get('id') or 'hidden' in a or not any(n['tag'] in ('h2','h3','h4') for n in descendants(panel)):errors.append('Quickstart panel must be visible and headed in static HTML')
     return errors

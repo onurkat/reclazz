@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Changed
 
+- Make documentation task-focused with five first-reload routes, symptom-based troubleshooting and a searchable matrix that preserves every support outcome.
+
 - Improve website typography, responsive navigation and shared components with local fonts, underlined prose links, keyboard-accessible scrolling, stable mobile navigation and page quality checks.
 
 - Group website documentation by task, keep maintainer references on GitHub, and preserve legacy links through clean URL redirects.

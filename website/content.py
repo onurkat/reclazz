@@ -11,8 +11,12 @@ from urllib.parse import urlsplit, unquote
 from markdown_it import MarkdownIt
 from website.markdown import slug
 
-LABELS = {'works': 'Reloads', 'conditional': 'Conditional', 'restart': 'Restart',
-          'unverified': 'Unverified', 'not-reloaded': 'No reload'}
+LABELS = {'works': 'Reloads', 'conditional': 'Reloads, with a condition', 'restart': 'Needs a restart',
+          'unverified': 'Not verified yet', 'not-reloaded': 'No change applied'}
+NOTE_IDS = {'jdk-new','condition-recheck','serializer','messaging-advanced','unknown-files'}
+OVERVIEW_IDS = ['method-body','added-method','bean','mvc','boot-properties','items']
+COMMON_IDS = ['method-body','added-method','instance-field','bean','component','bean-factory','mvc','boot-properties','value','items','sap-config','backoffice-config']
+
 SUPPORT_COLUMNS = ['ID', 'Area', 'Change', 'Outcome', 'Conditions', 'Next action', 'Reference']
 
 
@@ -63,7 +67,8 @@ def support_records(repo):
         source = target.relative_to(Path(repo).resolve()).as_posix() + (('#'+urlsplit(source).fragment) if urlsplit(source).fragment else '')
         ids.add(key)
         records.append(dict(id=key, category=area, title=title, status=status,
-                            conditions=conditions, action=action, source=source))
+                            conditions=conditions, action=action, source=source,
+                            presentation='note' if key in NOTE_IDS else 'row'))
     if not records: raise ValueError('Empty support table')
     return records
 

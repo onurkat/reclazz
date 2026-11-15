@@ -4,8 +4,8 @@
   "pages": [
     {
       "slug": "",
-      "title": "The development loop, uninterrupted.",
-      "description": "Make a change. Compile it. Keep the JVM running. Learn what Reclazz reloads, where the limits are, and how to verify the result.",
+      "title": "Keep editing the running application",
+      "description": "Choose a setup, make your first change and understand when a restart is needed.",
       "group": "Get started",
       "eyebrow": "Reclazz documentation",
       "sources": [
@@ -18,7 +18,7 @@
     {
       "slug": "quickstart",
       "title": "Your first reload",
-      "description": "Start with the route that launches your application JVM, then prove a changed response without restarting.",
+      "description": "Choose your launch route, compile one small edit and check its result in the same JVM.",
       "group": "Get started",
       "eyebrow": "Tutorial",
       "sources": [
@@ -125,8 +125,8 @@
     },
     {
       "slug": "troubleshooting",
-      "title": "Find the cause. Keep the evidence.",
-      "description": "Diagnose the right process, watched output, pending restart and framework follow-up without guessing.",
+      "title": "When a change doesn’t reload",
+      "description": "Start with the symptom, check the IDE diagnostic and recover safely.",
       "group": "When it doesn't work",
       "eyebrow": "Troubleshooting",
       "sources": [
@@ -164,8 +164,8 @@
     },
     {
       "slug": "support-matrix",
-      "title": "Will your change reload?",
-      "description": "Find the outcome, exact conditions and next action for the edit you want to make.",
+      "title": "What reloads",
+      "description": "Find your edit, its conditions and your next step.",
       "group": "Get started",
       "eyebrow": "Reload support matrix",
       "sources": [
@@ -243,5 +243,6 @@
     "docs/usage.md": {
       "publish": "/docs/reference/usage/"
     }
-  }
+  },
+  "content_contract": "3a"
 }
