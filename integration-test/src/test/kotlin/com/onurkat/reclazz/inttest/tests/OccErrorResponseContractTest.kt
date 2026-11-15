@@ -53,7 +53,7 @@ private class OccErrorContractServer(private val source:Path,private val mode:St
         watcher=Thread({
             var previous=Files.readAllBytes(source)
             while(watching) {
-                val next=Files.readAllBytes(source)
+                val next=settledBytes(source) ?: previous
                 if(!next.contentEquals(previous)) {
                     previous=next
                     val nextV2=next.toString(Charsets.UTF_8).contains("throw new ReclazzOccSecondException(\"reclazz-c67-owned\")")

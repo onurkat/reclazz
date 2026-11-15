@@ -508,9 +508,12 @@ fun main() {
                 val future=java.util.concurrent.CompletableFuture.supplyAsync {scenario.run()}
                 if(mode!="default") {
                     val end=System.nanoTime()+TimeUnit.SECONDS.toNanos(2)
-                    while(Files.getLastModifiedTime(path).toMillis()==1L && System.nanoTime()<end) Thread.sleep(5)
+                    val expected=if(mode=="comment") commented else initial
+                    // The save truncates before it writes: wait for the written bytes, not just the new mtime.
+                    while((Files.getLastModifiedTime(path).toMillis()==1L || !(settledBytes(path)?.contentEquals(expected) ?: false))
+                        && System.nanoTime()<end) Thread.sleep(5)
                     check(Files.getLastModifiedTime(path).toMillis()!=1L) {"The explicit save was not performed"}
-                    check(Files.readAllBytes(path).contentEquals(if(mode=="comment") commented else initial))
+                    check(Files.readAllBytes(path).contentEquals(expected)) {"The explicit save did not write the expected bytes"}
                 }
                 action(server,client,future)
                 val result=future.get(2,TimeUnit.SECONDS)

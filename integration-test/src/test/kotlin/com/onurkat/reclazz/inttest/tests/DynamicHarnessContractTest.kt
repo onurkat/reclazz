@@ -30,7 +30,7 @@ private class DynamicContractServer(private val source:Path,private val mode:Str
             emit("CONNECTED","dynamic-contract");receipt(false)
             var previous=Files.readString(source)
             while(!closed) {
-                val current=runCatching {Files.readString(source)}.getOrDefault(previous)
+                val current=settledBytes(source)?.toString(Charsets.UTF_8) ?: previous
                 if(current!=previous) {
                     writes++;previous=current
                     if(writes==1 && mode=="stale") {

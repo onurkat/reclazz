@@ -79,7 +79,7 @@ private class LoadContractServer(private val source:Path,private val mode:String
         Thread({
             var previous=baseline
             while(watching) {
-                val next=Files.readAllBytes(source)
+                val next=settledBytes(source) ?: previous
                 if(!next.contentEquals(previous)) {
                     previous=next
                     if(!next.contentEquals(baseline)) when(mode) {

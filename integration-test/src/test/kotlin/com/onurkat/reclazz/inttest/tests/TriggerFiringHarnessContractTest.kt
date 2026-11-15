@@ -70,7 +70,7 @@ private class TriggerContractServer(private val source:Path,private val mode:Str
         watcher=Thread({
             var previous=Files.readAllBytes(source)
             while(watching) {
-                val next=Files.readAllBytes(source)
+                val next=settledBytes(source) ?: previous
                 if(!next.contentEquals(previous)) {
                     previous=next;val nextV2=next.toString(Charsets.UTF_8).contains("job-v2")
                     v2=nextV2||(mode=="restore-stale"&&edited);if(nextV2)edited=true

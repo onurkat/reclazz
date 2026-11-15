@@ -60,7 +60,7 @@ private class LoggerContractServer(private val source:Path,private val mode:Stri
         Thread({
             var previous=Files.readAllBytes(source)
             while(watching) {
-                val bytes=Files.readAllBytes(source)
+                val bytes=settledBytes(source) ?: previous
                 if(!bytes.contentEquals(previous)) {
                     previous=bytes;debug=bytes.toString(Charsets.UTF_8).contains("reclazzProbeTarget.level=DEBUG")
                     when {

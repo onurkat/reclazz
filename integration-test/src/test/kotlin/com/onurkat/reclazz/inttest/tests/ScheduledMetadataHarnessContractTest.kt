@@ -65,7 +65,7 @@ private class ScheduledMetadataServer(private val source:Path,private val mode:S
         watcher=Thread({
             var previous=Files.readAllBytes(source)
             while(watching) {
-                val next=Files.readAllBytes(source)
+                val next=settledBytes(source) ?: previous
                 if(!next.contentEquals(previous)) {
                     previous=next;val nextV2=next.toString(Charsets.UTF_8).contains("fixedDelay = 300")
                     v2=nextV2||(mode=="restore-stale"&&edited);if(nextV2)edited=true

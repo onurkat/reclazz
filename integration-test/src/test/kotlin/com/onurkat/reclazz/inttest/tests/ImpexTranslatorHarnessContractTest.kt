@@ -77,7 +77,7 @@ private class ImpexContractServer(private val root:Path,private val mode:String)
             while(watching) {
                 if(::writer.isInitialized) {
                     for(kind in kinds) {
-                        val next=Files.readAllBytes(source.getValue(kind))
+                        val next=settledBytes(source.getValue(kind)) ?: previous.getValue(kind)
                         if(!next.contentEquals(previous.getValue(kind))) {
                             previous[kind]=next
                             val changed=version(kind)=="v2";val name=filenames.getValue(kind)
@@ -90,7 +90,7 @@ private class ImpexContractServer(private val root:Path,private val mode:String)
                         }
                     }
                     Files.list(resourceDir).use {paths -> paths.filter {it.toString().endsWith(".impex")}.forEach {file ->
-                        val next=Files.readAllBytes(file)
+                        val next=settledBytes(file) ?: return@forEach
                         if(seen[file]?.contentEquals(next)!=true) {
                             seen[file]=next;val script=next.toString(Charsets.UTF_8)
                             val kind=kinds.find {script.contains("#kind=$it")}
