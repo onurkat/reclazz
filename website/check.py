@@ -111,9 +111,19 @@ def publication_errors(output, manifest):
     return errors
 
 
+def changelog_mention_errors(repo):
+    """Release notes are cut from CHANGELOG.md; GitHub turns a bare @Name into a user mention."""
+    errors = []
+    text = (Path(repo)/'CHANGELOG.md').read_text(encoding='utf-8')
+    for number, line in enumerate(text.split('\n'), 1):
+        outside = ''.join(part for index, part in enumerate(line.split('`')) if index % 2 == 0)
+        for name in re.findall(r'(?<![\w`/.])@([A-Za-z][A-Za-z0-9-]*)', outside):
+            errors.append(f'CHANGELOG.md:{number}: @{name} outside code becomes a GitHub mention; write `@{name}`')
+    return errors
+
 def check_site(output, revision='main'):
     output = Path(output).resolve()
-    errors = source_index_errors(build.REPO) + source_link_errors(build.REPO) + readable_surface_errors(build.REPO)
+    errors = source_index_errors(build.REPO) + source_link_errors(build.REPO) + readable_surface_errors(build.REPO) + changelog_mention_errors(build.REPO)
     if build.metadata(build.REPO).get('content_contract') in ('3a','3b','3c','4'): errors.extend(stage3_contract_errors(build.REPO,output))
     if build.metadata(build.REPO).get('content_contract') in ('3c','4'):
         usage_page=output/'docs/reference/usage/index.html'

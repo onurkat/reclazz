@@ -84,7 +84,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 - Re-scan standard Spring MVC endpoints when an actuator mapping shares the context, preserving unique custom mappings and leaving lazy mappings uninitialized.
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
+- Refresh Spring 7 MVC singleton routing and scoped `@Secured` annotation caches after supported reloads.
 
 - Recognize measured Spring 7 placeholder, exception-handler and constructor-cache shapes while retaining conservative reload checks.
 
@@ -230,8 +230,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - After a failed codegen build, classes written later (for example by a manual `ant build`) reload again; the failed build's own pending output is discarded.
 
 - Deleted ImpEx file events no longer attempt an import or warn about a missing
@@ -346,8 +344,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - SAP agent installation rejects conflicting manual agent tokens before writing,
   verifies the local.properties fallback without reading back its own block,
   and restores the previous file on verification failure. Install/Reinstall use
@@ -382,8 +378,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   again with the restored body.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - A lambda object created before a save keeps running its body when the same
   save removes the method that created it; it threw
@@ -631,8 +625,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - With `autoCompile`, a changed mapping annotation on an existing controller
   method moves the request mapping. The class's redefinition was deferred to
   the end of the reload batch, after the MVC re-scan, which mapped the old path
@@ -870,8 +862,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [1.3.0] - 2026-09-17
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 - Computed constructor and native scalar factory `@Value` changes can recreate
   singletons protected by standard classic/modern method security, optionally with
   transaction advice. Native authorization, commit/rollback and supported holder
@@ -1087,8 +1077,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [1.2.1] - 2026-09-10
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 - **Compatible with IntelliJ 2026.2.** The `until-build` was capped at `261.*`,
   so the Marketplace flagged the plugin as incompatible with IDE build 262 and
   stopped offering it to users on that release. The range now extends through
@@ -1098,8 +1086,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [1.2.0] - 2026-09-10
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 - **Added MVC endpoints in child classloaders.** Controllers loaded by Tomcat
   and other child loaders can expose reload-added endpoints without a second
   privileged lookup. Local/advice exception handling, binding and model methods
@@ -1569,8 +1555,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - **An edited constraint is re-read on Spring Boot 2 as well.** The
   validator's constraint cache was looked for behind
   `jakarta.validation.ValidatorFactory` only; Spring 5 and Boot 2 hold it
@@ -1591,8 +1575,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - **A JetBrains Runtime is recognised on a Turkish machine.** Three
   comparisons lowered a string with the machine's default locale, and in a
   Turkish one the capital I of "JetBrains" lowers to a dotless ı, so the
@@ -1604,8 +1586,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - **SAP Commerce codegen runs on Windows.** The `ant build` behind an
   items.xml or beans.xml save looked for `setantenv.sh` and
   `apache-ant/bin/ant` and ran them through bash, so on Windows, where the
@@ -1616,8 +1596,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   directory rather than in the command line, on both.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - **Breakpoints bind in reloaded code on a stock JDK.** An edited method
   body runs in a companion class, and the companion was written without
@@ -1632,8 +1610,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
   reloaded code.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - **A reload that dies unexpectedly leaves a trail.** When a class-file
   reload ended in an error thrown rather than a failure returned, from the
@@ -2028,8 +2004,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 ## [1.1.0] - 2026-09-06
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - **A `super` call into a parent that does not declare the method threw
   `NoSuchMethodError`.** Reported from an SAP Commerce project as an ImpEx
@@ -2494,8 +2468,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - A member removed and then restored stayed hidden from reflection, so an
   endpoint a save had just brought back answered 404. Shipped in 1.0.28 and
   found by the integration suite on the run after it: the undo was gated on the
@@ -2891,7 +2863,7 @@ after.
   changed key is re-resolved through the bean factory's own embedded-value
   resolver and written in place, AOP proxies unwrapped to their targets first.
   Measured live: the endpoint served the old value, the file was edited, and
-  the next request served the new one, with "Re-injected 1 @Value field(s)" in
+  the next request served the new one, with `Re-injected 1 @Value field(s)` in
   the log. Left alone on purpose and stated: SpEL expressions (re-evaluating
   arbitrary code at a moment it did not choose) and `@Value` constructor
   parameters.
@@ -2926,8 +2898,6 @@ after.
   round-tripping back through an append when the baseline is restored.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - A lambda edited into a reloaded method body now links. javac gives every
   lambda a synthetic `lambda$...` method plus an `invokedynamic` that names it,
@@ -3262,8 +3232,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - A memory leak in the reflection-root filter, the same shape 1.0.22 removed
   elsewhere. Hiding an injected member handed the class to the JDK's own
   `fieldFilterMap`/`methodFilterMap`, which keep a strong `Class` key with no
@@ -3409,8 +3377,6 @@ after.
   SAP Commerce after 4.6, with all 20 integration scenarios still passing.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - A class the JVM has never loaded is no longer reported as having been "loaded
   before Reclazz could instrument it". Missing metadata has two causes and only
@@ -3563,8 +3529,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - Adding an interface to a class was reported as a successful reload and did not
   happen. The analyser never compared interfaces at all, so the reload took the
   ordinary path: the method bodies landed, the redefinition that would have
@@ -3653,8 +3617,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - A class file built for a newer Java than the server runs is refused with an
   explanation instead of being reported as reloaded. The JVM cannot load it, and
   that rejection used to arrive as a passing warning in the middle of a reload
@@ -3668,8 +3630,6 @@ after.
 ## [1.0.22] - 2026-08-16
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - The agent no longer keeps a class, or the classloader that defined it, alive
   after the application has dropped it. Three places held per-class state in a
@@ -3751,8 +3711,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - Attaching to a running JVM can actually reload something. Classes loaded
   before the agent arrived have none of its infrastructure, and a redefinition
   cannot introduce it, so every swap failed with "attempted to change the
@@ -3776,8 +3734,6 @@ after.
 ## [1.0.18] - 2026-08-16
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - A constructor change reaches newly created objects even when the same reload
   removed something. A redefinition has to hand the JVM exactly the members the
@@ -3805,8 +3761,6 @@ after.
 ## [1.0.17] - 2026-08-16
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - Adding a method and calling it from an existing method of the same class
   works. The JVM will not accept a redefinition that adds a member, so an added
@@ -3837,8 +3791,6 @@ after.
   are not configuration.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - A saved property file is compared against its own previous content instead of
   against the running configuration, and a value still holding a `${...}`
@@ -3884,8 +3836,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - Locales files are no longer mistaken for property files, which is what made
   saving one report a successful reload and change nothing on screen.
 
@@ -3915,8 +3865,6 @@ after.
   Applications with no template engine hear nothing.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - A class referenced from instrumented bytecode is no longer skipped by the
   instrumentation itself. Computing stack map frames used ASM's default
@@ -3970,8 +3918,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - Notifications can be dismissed again. A user reported one that would not
   delete and went away only after restarting the IDE. The platform starts a
   balloon's fade-out timer either immediately, when the IDE is the active
@@ -3991,8 +3937,6 @@ after.
 ## [1.0.11] - 2026-08-14
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - The reload log no longer reports a failure that did not happen. Once a
   class has gained a member, the members live in a companion rather than in
@@ -4017,8 +3961,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - The agent no longer breaks SAP Commerce OCC. With Reclazz attached, every
   OCC response came back an empty 400, for as long as it was attached: one
   server's log carried the failure 210 times in a day, and the only known
@@ -4042,8 +3984,6 @@ after.
 ## [1.0.9] - 2026-08-14
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - Switching Reclazz on in a project now brings up the tool window straight
   away. It used to appear only after an IDE restart, because the platform
@@ -4074,8 +4014,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - Clicking the status bar item opens the Reclazz tool window. It
   previously ignored clicks, so the one part of the plugin that is always
   on screen could report "Not connected" and offer no way to act on it.
@@ -4083,8 +4021,6 @@ after.
 ## [1.0.7] - 2026-08-14
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - Updating the plugin now updates the agent your SAP Commerce server
   loads. The server starts outside the IDE and reads a staged copy of the
@@ -4112,8 +4048,6 @@ after.
 ## [1.0.5] - 2026-08-13
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - Changing an annotation now takes effect without a restart on any JDK
   17+, where it previously required JetBrains Runtime or DCEVM. Editing
@@ -4158,8 +4092,6 @@ after.
 
 ### Fixed
 
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
-
 - The introduction shown after installing no longer opens as a dialog
   while the IDE is starting. A modal dialog on the startup path holds the
   event thread until someone clicks it, so the IDE was unusable until
@@ -4176,8 +4108,6 @@ after.
 Marketplace review fixes. No change to what the plugin does.
 
 ### Fixed
-
-- Refresh Spring 7 MVC singleton routing and scoped @Secured annotation caches after supported reloads.
 
 - Looks the plugin up through the public `PluginManager` API rather than
   an internal one. Marketplace review rejects the internal call; the
