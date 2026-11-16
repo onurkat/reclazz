@@ -279,6 +279,24 @@ public final class WatchedApp implements AutoCloseable {
      * application's output without trusting the application's own clock or
      * the second-resolution timestamps in the agent's lines.
      */
+    /**
+     * The child JVM's threads as jcmd prints them, for a test that has to explain a hang
+     * (a request that did not answer). Best effort: returns the failure text instead.
+     */
+    public String threadDump() {
+        try {
+            Path jcmd = Path.of(javaBinary()).resolveSibling(
+                    System.getProperty("os.name").toLowerCase().contains("win") ? "jcmd.exe" : "jcmd");
+            Process dump = new ProcessBuilder(jcmd.toString(), Long.toString(process.pid()), "Thread.print")
+                    .redirectErrorStream(true).start();
+            byte[] out = dump.getInputStream().readAllBytes();
+            dump.waitFor(30, java.util.concurrent.TimeUnit.SECONDS);
+            return new String(out, java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            return "thread dump unavailable: " + e;
+        }
+    }
+
     public long firstSeenMillis(String needle) {
         for (int i = 0; i < output.size(); i++) {
             if (output.get(i).contains(needle)) return outputTimes.get(i);

@@ -48,6 +48,7 @@ class AddedJmsListenerReloadTest {
             app.awaitOrFail("PORT=", "JMS app did not start");
             app.awaitOrFail("Last-known-good bytecode cache:", "watcher did not finish initialization");
             int port = Integer.parseInt(app.latest("PORT=").substring(5));
+            running = app;
             assertEquals("used", http(port, "/use"));
             waitState(port, "other:assigned", app);
             if (existing) waitState(port, "existing:assigned", app);
@@ -104,9 +105,17 @@ class AddedJmsListenerReloadTest {
         do { state = http(port, "/state"); if (state.contains(text)) return; Thread.sleep(50); } while (System.nanoTime() < until);
         fail("Missing " + text + " in " + state + "\n" + app.tail());
     }
+    private static WatchedApp running;
     private static String http(int port, String path) throws Exception {
-        return HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
-                .timeout(Duration.ofSeconds(15)).GET().build(), HttpResponse.BodyHandlers.ofString()).body();
+        try {
+            return HttpClient.newHttpClient().send(HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + path))
+                    .timeout(Duration.ofSeconds(15)).GET().build(), HttpResponse.BodyHandlers.ofString()).body();
+        } catch (java.net.http.HttpTimeoutException hang) {
+            // Seen once under the full release gate and not reproducible alone: keep failing,
+            // but with the application's threads so the blocked monitor is visible.
+            throw new AssertionError(path + " did not answer in 15 s; application threads:\n"
+                    + (running == null ? "(no app)" : running.threadDump()), hang);
+        }
     }
     private static String jmsClasspath() {
         return String.join(File.pathSeparator, Arrays.stream(System.getProperty("java.class.path").split(File.pathSeparator))
